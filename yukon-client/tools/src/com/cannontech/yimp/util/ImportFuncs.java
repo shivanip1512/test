@@ -244,7 +244,7 @@ public class ImportFuncs
      * This method will bring in the communication related contents of the ImportFail
      * table in the form of ImportFail objects
      */
-    public static List getAllCommunicationFailures() {
+    public static List<ImportFail> getAllCommunicationFailures() {
         String stmt = "SELECT ADDRESS, NAME, ROUTENAME, " + 
                 " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " + 
                 "ERRORMSG, DATETIME, BILLGRP, SUBSTATIONNAME, FAILTYPE " +
@@ -262,7 +262,7 @@ public class ImportFuncs
      * This method will bring in the invalid data related contents of the ImportFail
      * table in the form of ImportFail objects
      */
-    public static List getAllDataFailures() {
+    public static List<ImportFail> getAllDataFailures() {
         String stmt = "SELECT ADDRESS, NAME, ROUTENAME, " + 
                 " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " + 
                 "ERRORMSG, DATETIME, BILLGRP, SUBSTATIONNAME, FAILTYPE " +

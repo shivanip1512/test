@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -37,7 +38,6 @@ import com.cannontech.database.data.device.MCT430S;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
@@ -71,12 +71,12 @@ public final class BulkImporter extends Observable implements MessageListener
     private Logger log = YukonLogManager.getLogger(BulkImporter.class);
     
 	private static IServerConnection connToPorter = null;
-    private Set porterMessageIDs = new java.util.HashSet();
-    private Map messageIDToRouteIDMap = new HashMap();
+    private Set<Long> porterMessageIDs = new HashSet<Long>();
+    private Map<Long, Integer> messageIDToRouteIDMap = new HashMap<Long, Integer>();
     public Request porterRequest = null;
     /* Singleton incrementor for messageIDs to send to porter connection */
     private static volatile long currentMessageID = 1;
-    private List cmdMultipleRouteList = new ArrayList();
+    private List<Request> cmdMultipleRouteList = new ArrayList<Request>();
     
     /* flag indicating more looping required*/
     //public volatile int loopRouteCounter = 0;
@@ -239,7 +239,7 @@ public void runImport(List<ImportData> imps) {
 		String templateName = currentEntry.getTemplateName();
         String billGrp = currentEntry.getBillingGroup();
         String substationName = currentEntry.getSubstationName();
-        List routeIDsFromSub = new ArrayList();
+        List<Integer> routeIDsFromSub = new ArrayList<Integer>();
 		
 		//validation
 		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
@@ -463,7 +463,7 @@ public void runImport(List<ImportData> imps) {
              * just use the first in the list.
              */
             if(routeID.intValue() == -12 && routeIDsFromSub.size() > 0) {
-                current400Series.getDeviceRoutes().setRouteID((Integer)routeIDsFromSub.get(0));
+                current400Series.getDeviceRoutes().setRouteID(routeIDsFromSub.get(0));
                 usingSub  = true;
             }
             else
@@ -476,7 +476,7 @@ public void runImport(List<ImportData> imps) {
 			Vector points = DBFuncs.getPointsForPAO(templateID);
 			boolean hasPoints = false;
 			for (int i = 0; i < points.size(); i++) {
-				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(new Integer(DBFuncs.getNextPointID() + i));
+				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
 				((com.cannontech.database.data.point.PointBase) points.get(i)).getPoint().setPaoID(deviceID);
 				objectsToAdd.getDBPersistentVector().add(points.get(i));
 				hasPoints = true;
@@ -494,7 +494,7 @@ public void runImport(List<ImportData> imps) {
                 Transaction.createTransaction(Transaction.INSERT, pc).execute();
                 
 				successVector.add(imps.get(j));
-				log.info(current400Series.getPAOClass() + "with name " + name + " with address " + address + ".");
+				log.info(current400Series.getPAOClass() + " with name " + name + " with address " + address + "successfully imported.");
 				
 				successCounter++;
 			}
@@ -506,7 +506,7 @@ public void runImport(List<ImportData> imps) {
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
 				failures.add(currentFailure);
-				log.error(current400Series.getPAOClass() + "with name " + name + "failed on INSERT into database.");
+				log.error(current400Series.getPAOClass() + " with name " + name + "failed on INSERT into database.");
 			}
 			finally {
 				try {
@@ -670,8 +670,7 @@ private void porterWorker() {
                         break;
                     }
                     
-                    List pending = ImportFuncs.getAllPending();
-                    List cmds = getCmdMultipleRouteList();
+                    List<ImportPendingComm> pending = ImportFuncs.getAllPending();
                     
 					if(pending.size() > 0) {
                         if(pending.size() > SAVETHEAMPCARDS_AMOUNT) {
@@ -682,9 +681,9 @@ private void porterWorker() {
                         
 						for(int j = 0; j < pending.size(); j++) {
 							//locate attempt (only if given multiple routes via substation)
-                            ImportPendingComm pc = ((ImportPendingComm)pending.get(j));
+                            ImportPendingComm pc = pending.get(j);
                             String routeName = pc.getRouteName();
-                            List routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(pc.getSubstationName());
+                            List<Integer> routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(pc.getSubstationName());
                             if(routeName.length() > 1) {
                                 /*
                                  * Don't actually need to set a routeID; loop will use what is attached to the device
@@ -700,15 +699,15 @@ private void porterWorker() {
                             else if(routeIDsFromSub.size() > 0) {
                                 //send first one right off
                                 porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
-                                porterRequest.setRouteID(((Integer)routeIDsFromSub.get(0)).intValue());
+                                porterRequest.setRouteID(routeIDsFromSub.get(0).intValue());
                                 log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName);
                                 writeToPorter(porterRequest);
-                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), (Integer)routeIDsFromSub.get(0));
+                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeIDsFromSub.get(0));
                                 for(int i = 1; i < routeIDsFromSub.size(); i++) {
                                     porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
-                                    porterRequest.setRouteID(((Integer)routeIDsFromSub.get(i)).intValue());
+                                    porterRequest.setRouteID(routeIDsFromSub.get(i).intValue());
                                     cmdMultipleRouteList.add(porterRequest);
-                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), (Integer)routeIDsFromSub.get(i));
+                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeIDsFromSub.get(i));
                                     log.info("Locate attempt queued: device " + porterRequest.getDeviceID() + " on route " + routeName);
                                 }
                             }
@@ -761,11 +760,11 @@ public void messageReceived(MessageEvent e) {
                     Request nextRouteLoop = null;
                     boolean removed = false;
                     for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
-                        if(removed && returnMsg.getDeviceID() == ((Request)cmdMultipleRouteList.get(j)).getDeviceID()) {
-                            nextRouteLoop = ((Request)cmdMultipleRouteList.get(j));
+                        if(removed && returnMsg.getDeviceID() == cmdMultipleRouteList.get(j).getDeviceID()) {
+                            nextRouteLoop = cmdMultipleRouteList.get(j);
                             break;
                         }
-                        if(returnMsg.getUserMessageID() == ((Request)cmdMultipleRouteList.get(j)).getUserMessageID()) {
+                        if(returnMsg.getUserMessageID() == cmdMultipleRouteList.get(j).getUserMessageID()) {
                             cmdMultipleRouteList.remove(j);
                             removed = true;
                         }
@@ -793,7 +792,7 @@ public void messageReceived(MessageEvent e) {
                             //there were multiple routes specified; remove later attempts
                             if(nextRouteLoop != null) {
                                 for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
-                                    if(removed && returnMsg.getDeviceID() == ((Request)cmdMultipleRouteList.get(j)).getDeviceID()) {
+                                    if(removed && returnMsg.getDeviceID() == cmdMultipleRouteList.get(j).getDeviceID()) {
                                         cmdMultipleRouteList.remove(j);
                                     }
                                 }
@@ -823,7 +822,7 @@ public Set getPorterMessageIDs() {
     return porterMessageIDs;
 }
 
-public void setPorterMessageIDs(Set porterMessageIDs) {
+public void setPorterMessageIDs(Set<Long> porterMessageIDs) {
     this.porterMessageIDs = porterMessageIDs;
 }
 
@@ -831,7 +830,7 @@ public List getCmdMultipleRouteList() {
     return cmdMultipleRouteList;
 }
 
-public void setCmdMultipleRouteList(List cmdList) {
+public void setCmdMultipleRouteList(List<Request> cmdList) {
     this.cmdMultipleRouteList = cmdList;
 }
 						
@@ -856,7 +855,7 @@ public void writeToPorter(Request request_) {
 }
 
 private void handleSuccessfulLocate(Return returnMsg) {
-    Integer routeID = (Integer)messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
+    Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
     MCT400SeriesBase retMCT = new MCT400SeriesBase();
     retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));
     try {
