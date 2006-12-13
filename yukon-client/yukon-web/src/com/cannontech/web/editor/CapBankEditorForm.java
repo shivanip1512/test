@@ -33,6 +33,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -455,8 +456,10 @@ private List unassignedPoints = null;
          }
 		
         public String getCtlPointName () {
-            int pointID = capBank.getCapBank().getControlPointID();
-            return DaoFactory.getPointDao().getLitePoint(pointID).getPointName();
+            Integer pointID = capBank.getCapBank().getControlPointID();
+            if (pointID != null && pointID.intValue() > 0)
+                return DaoFactory.getPointDao().getLitePoint(pointID).getPointName();
+            return "";
         }
         
         public Integer getCtlPaoID () {
