@@ -769,39 +769,40 @@ public class Multispeak implements MessageListener {
                         if( disabled ) {        //Disabled Meter found
                         	//Load the CIS serviceLocation.
                         	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                        	String billingCycle = mspServiceLocation.getBillingCycle();
                             //Enable Meter and update applicable fields.
                             String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                             String oldBillGroup = deviceMeterGroup.getBillingGroup();
                             deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
                             yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
-                            if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
-                            	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                            if (!StringUtils.isBlank(billingCycle))
+                            	deviceMeterGroup.setBillingGroup(billingCycle);
                             
                             yukonPaobject.setDisabled(false);
                             String logTemp = "";
                             if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
+                                if( StringUtils.isBlank(mspMeter.getUtilityInfo().getAccountNumber()))
                                     logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
                                 else
-                                    logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
-                                yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
+                                    logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getAccountNumber() + ").";
+                                yukonPaobject.setPAOName(mspMeter.getUtilityInfo().getAccountNumber());
                             } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
+                                if( StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
                                     logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
                                 else
-                                    logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
-                                yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
+                                    logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getServLoc() + ").";
+                                yukonPaobject.setPAOName(mspMeter.getUtilityInfo().getServLoc());
                             } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                if( StringUtils.isBlank(mspServiceLocation.getCustID()))
+                                if( StringUtils.isBlank(mspMeter.getUtilityInfo().getCustID()))
                                     logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
                                 else
-                                    logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
-                                yukonPaobject.setPAOName(mspServiceLocation.getCustID());
+                                    logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getCustID() + ").";
+                                yukonPaobject.setPAOName(mspMeter.getUtilityInfo().getCustID());
                             }
                             DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
                             logMSPActivity("MeterAddNotification",
                                            "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
-                                           "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").", 
+                                           "BillingGroup(OLD:" + oldBillGroup + " NEW:" + billingCycle +").", 
                                            mspVendor.getCompanyName());
                             logMSPActivity("MeterAddNotification",
                                            "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp, 
@@ -906,13 +907,14 @@ public class Multispeak implements MessageListener {
                                 if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Meter Number object
                                 	//Load the CIS serviceLocation.
                                 	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                                	String billingCycle = mspServiceLocation.getBillingCycle();
                                     //TODO deleteRawPointHistory(yukonPaobject);
                                     String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                                     String oldBillGroup = deviceMeterGroup.getBillingGroup();
                                     deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
                                     yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
-                                    if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
-                                    	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                                    if (!StringUtils.isBlank(billingCycle))
+                                    	deviceMeterGroup.setBillingGroup(billingCycle);
                                     
                                     String oldAddress = String.valueOf(deviceCarrierSettings.getAddress());
                                     deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
@@ -920,29 +922,29 @@ public class Multispeak implements MessageListener {
                                     yukonPaobject.setDisabled(false);
                                     String logTemp = "";
                                     if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                        if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
+                                        if( StringUtils.isBlank(mspMeter.getUtilityInfo().getAccountNumber()))
                                             logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
                                         else
-                                            logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
-                                        yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
+                                            logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getAccountNumber() + ").";
+                                        yukonPaobject.setPAOName(mspMeter.getUtilityInfo().getAccountNumber());
                                     } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                        if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
+                                        if( StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
                                             logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
                                         else
-                                            logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
-                                        yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
+                                            logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getServLoc() + ").";
+                                        yukonPaobject.setPAOName(mspMeter.getUtilityInfo().getServLoc());
                                     } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                        if( StringUtils.isBlank(mspServiceLocation.getCustID()))
+                                        if( StringUtils.isBlank(mspMeter.getUtilityInfo().getCustID()))
                                             logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
                                         else
-                                            logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
-                                        yukonPaobject.setPAOName(mspServiceLocation.getCustID());
+                                            logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getCustID() + ").";
+                                        yukonPaobject.setPAOName(mspMeter.getUtilityInfo().getCustID());
                                     }
                                     
                                     DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
                                     logMSPActivity("MeterAddNotification",
                                                    "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + "); " +
-                                                   "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
+                                                   "BillingGroup(OLD:" + oldBillGroup + " NEW:" + billingCycle +").",
                                                    mspVendor.getCompanyName());
                                     logMSPActivity("MeterAddNotification",
                                                    "MeterNumber(" + meterNo + ") - Address(OLD:" + oldAddress + " NEW:" + deviceCarrierSettings.getAddress().toString() + ").", 
@@ -1053,26 +1055,27 @@ public class Multispeak implements MessageListener {
                         //TODO deleteRawPointHistory(yukonPaobject);
                     	//Load the CIS serviceLocation.
                     	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                    	String billingCycle = mspServiceLocation.getBillingCycle();
                         yukonPaobjectByAddress.setDisabled(false);
                         String logTemp = "";
                         if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                            if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
+                            if( StringUtils.isBlank(mspMeter.getUtilityInfo().getAccountNumber()))
                                 logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
                             else
-                                logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
-                            yukonPaobjectByAddress.setPAOName(mspServiceLocation.getAccountNumber());
+                                logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getAccountNumber() + ").";
+                            yukonPaobjectByAddress.setPAOName(mspMeter.getUtilityInfo().getAccountNumber());
                         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                            if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
+                            if( StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
                                 logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
                             else
-                                logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
-                            yukonPaobjectByAddress.setPAOName(mspServiceLocation.getObjectID());
+                                logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getServLoc() + ").";
+                            yukonPaobjectByAddress.setPAOName(mspMeter.getUtilityInfo().getServLoc());
                         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                            if( StringUtils.isBlank(mspServiceLocation.getCustID()))
+                            if( StringUtils.isBlank(mspMeter.getUtilityInfo().getCustID()))
                                 logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
                             else
-                                logTemp = "; PAOName(CustID)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
-                            yukonPaobjectByAddress.setPAOName(mspServiceLocation.getCustID());
+                                logTemp = "; PAOName(CustID)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspMeter.getUtilityInfo().getCustID() + ").";
+                            yukonPaobjectByAddress.setPAOName(mspMeter.getUtilityInfo().getCustID());
                         }
                         
                         DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup();
@@ -1082,13 +1085,13 @@ public class Multispeak implements MessageListener {
                         deviceMeterGroup.setMeterNumber(meterNo);
                         deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
                         yukonPaobjectByAddress.setPAOName(yukonPaobjectByAddress.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
-                        if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
-                        	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                        if (!StringUtils.isBlank(billingCycle))
+                        	deviceMeterGroup.setBillingGroup(billingCycle);
                         
                         DaoFactory.getDbPersistentDao().performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
                         logMSPActivity("MeterAddNotification",
                                        "MeterNumber(" + meterNo + ") - MeterNumber(OLD:" +oldMeterNo + "); CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
-                                       "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
+                                       "BillingGroup(OLD:" + oldBillGroup + " NEW:" + billingCycle +").",
                                        mspVendor.getCompanyName());
                         logMSPActivity("MeterAddNotification",
                                        "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp,
@@ -1327,14 +1330,14 @@ public class Multispeak implements MessageListener {
         String billingGroup = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
         
         if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-            if( !StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
-                paoName = mspServiceLocation.getAccountNumber();
+            if( !StringUtils.isBlank(mspMeter.getUtilityInfo().getAccountNumber()))
+                paoName = mspMeter.getUtilityInfo().getAccountNumber();
         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-            if( !StringUtils.isBlank(mspServiceLocation.getObjectID()))
-                paoName = mspServiceLocation.getObjectID();
+            if( !StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
+                paoName = mspMeter.getUtilityInfo().getServLoc();
         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-            if( !StringUtils.isBlank(mspServiceLocation.getCustID()))
-                paoName = mspServiceLocation.getCustID();
+            if( !StringUtils.isBlank(mspMeter.getUtilityInfo().getCustID()))
+                paoName = mspMeter.getUtilityInfo().getCustID();
         }
 
         ImportData importData = new ImportData(address, paoName, "", meterNumber, 
@@ -1378,8 +1381,8 @@ public class Multispeak implements MessageListener {
            CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
            e.printStackTrace();
        } catch (RemoteException e) {
-           CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
-           e.printStackTrace();
+           CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " method: getServiceLocationByMeterNo  companyName: " + mspVendor.getCompanyName() + ".");
+           CTILogger.info("A default(empty) is being used for ServiceLocation");
        }
 
 		return mspServiceLocation;
