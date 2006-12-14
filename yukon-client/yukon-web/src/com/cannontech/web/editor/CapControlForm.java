@@ -40,6 +40,7 @@ import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -887,9 +888,11 @@ public class CapControlForm extends DBEditorForm{
                 if ((getDbPersistent() instanceof CapBankController702x) || 
                         (getDbPersistent() instanceof CapBankController)){
                     
-                    String name = ((YukonPAObject)getDbPersistent()).getPAOName();
+                    YukonPAObject thisObj = (YukonPAObject)getDbPersistent();
+                    DeviceBase deviceBase = (DeviceBase)dbPers;
+                    deviceBase.setPAOName(thisObj.getPAOName());
+                    deviceBase.setDisabled(thisObj.isDisabled());
                     setDbPersistent(dbPers);
-                    ((YukonPAObject)getDbPersistent()).setPAOName(name);
                 
                 }
 
