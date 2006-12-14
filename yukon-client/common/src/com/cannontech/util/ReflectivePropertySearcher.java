@@ -75,7 +75,7 @@ public class ReflectivePropertySearcher {
     
     /**
      * Uses reflection to look up the value of an fully qualified constant. For instance,
-     *   getIntForFQN(com.cannontech.whatever.SomeClass.SOMEFIELD)
+     *   getIntForFQN("com.cannontech.whatever.SomeClass.SOMEFIELD")
      * might return
      *   10000.
      * The field should be declared to be "final static" and must have been initialized
@@ -104,6 +104,23 @@ public class ReflectivePropertySearcher {
                                                + intName + " in class " + className
                                                + ": " + e.getMessage());
         }
+    }
+    
+    /**
+     * Uses reflection to look up the value of an fully qualified constant. For instance,
+     *   getIntForFQN("com.cannontech.whatever.SomeClass", "SOMEFIELD")
+     * might return
+     *   10000.
+     * The field should be declared to be "final static" and must have been initialized
+     * before this method is called (so, it should be initialized when the class is loaded).
+     * @param fqn a package and class name
+     * @param an integer field name
+     * @return the integer value
+     * @throws IllegalArgumentException if the fqn isn't valid (see nested cause for
+     *   more detail, usually a reflection problem)
+     */
+    public static synchronized int getIntForFQN(String clazz, String constant) {
+        return getIntForFQN(clazz + "." + constant);
     }
 
 
