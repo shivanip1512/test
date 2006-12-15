@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2006/12/11 16:30:04 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2006/12/15 15:49:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -673,7 +673,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     {
                         value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress-location+foundLength-1)-i]) << (i*8));
                     }
-                    CtiDeviceBase::setDynamicInfo(foundKey, value);
+                    setDynamicInfo(foundKey, value);
                     searchLocation = foundAddress+1;
                 }
                 else
@@ -717,96 +717,40 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     {
         case Emetcon::Scan_Accum:
         case Emetcon::GetValue_KWH:
-        case Emetcon::GetValue_FrozenKWH:
-        {
-            status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_FrozenKWH:           status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);   break;
 
         case Emetcon::Scan_Integrity:
-        case Emetcon::GetValue_Demand:
-        {
-            status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_Demand:              status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);    break;
 
         case Emetcon::GetValue_PeakDemand:
-        case Emetcon::GetValue_FrozenPeakDemand:
-        {
-            status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_FrozenPeakDemand:    status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);    break;
 
         case Emetcon::GetValue_Voltage:
-        case Emetcon::GetValue_FrozenVoltage:
-        {
-            status = decodeGetValueVoltage(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_FrozenVoltage:       status = decodeGetValueVoltage(InMessage, TimeNow, vgList, retList, outList);       break;
 
-        case Emetcon::GetValue_Outage:
-        {
-            status = decodeGetValueOutage(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_Outage:              status = decodeGetValueOutage(InMessage, TimeNow, vgList, retList, outList);        break;
 
-        case Emetcon::GetValue_FreezeCounter:
-        {
-            status = decodeGetValueFreezeCounter(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_FreezeCounter:       status = decodeGetValueFreezeCounter(InMessage, TimeNow, vgList, retList, outList); break;
 
-        case Emetcon::GetValue_LoadProfilePeakReport:
-        {
-            status = decodeGetValueLoadProfilePeakReport(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_LoadProfilePeakReport:   status = decodeGetValueLoadProfilePeakReport(InMessage, TimeNow, vgList, retList, outList); break;
 
-        case Emetcon::GetStatus_Internal:
-        {
-            status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_Internal:           status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case Emetcon::GetStatus_LoadProfile:
-        {
-            status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_LoadProfile:        status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
 
-        case Emetcon::GetStatus_Disconnect:
-        {
-            status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_Disconnect:         status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
 
-        case Emetcon::GetConfig_Disconnect:
-        {
-            status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Disconnect:         status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
 
-        case Emetcon::GetConfig_Intervals:
-        {
-            status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Intervals:          status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
 
-        case (Emetcon::GetConfig_Model):
-        {
-            status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Model:              status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
-        case (Emetcon::GetConfig_Multiplier):
-        case (Emetcon::GetConfig_CentronParameters):
-        {
-            status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Multiplier:
+        case Emetcon::GetConfig_CentronParameters:  status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);      break;
 
-        case (Emetcon::Control_Connect):
-        case (Emetcon::Control_Disconnect):
+        case Emetcon::Control_Connect:
+        case Emetcon::Control_Disconnect:
         {
             CtiReturnMsg *ReturnMsg;
 
@@ -827,7 +771,6 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case (Emetcon::GetValue_PFCount):
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -838,6 +781,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
             }
+
             break;
         }
     }
@@ -2280,52 +2224,52 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
         resultString  = getName() + " / Internal Status:\n";
 
         //  point offset 10
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power Fail occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Under-Voltage Event\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x04)?"Over-Voltage Event\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x08)?"Power Fail Carryover\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x10)?"RTC Adjusted\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x80)?"Tamper Flag set\n":"";
+        resultString += (DSt.Message[1] & 0x01)?"Power Fail occurred\n":"";
+        resultString += (DSt.Message[1] & 0x02)?"Under-Voltage Event\n":"";
+        resultString += (DSt.Message[1] & 0x04)?"Over-Voltage Event\n":"";
+        resultString += (DSt.Message[1] & 0x08)?"Power Fail Carryover\n":"";
+        resultString += (DSt.Message[1] & 0x10)?"RTC Adjusted\n":"";
+        resultString += (DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
+        resultString += (DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
+        resultString += (DSt.Message[1] & 0x80)?"Tamper Flag set\n":"";
 
         //  point offset 20
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage stored for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Disconnect error (demand seen after disconnect)\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Last meter reading corrupt\n":"";
+        resultString += (DSt.Message[2] & 0x01)?"Zero usage stored for 24 hours\n":"";
+        resultString += (DSt.Message[2] & 0x02)?"Disconnect error (demand seen after disconnect)\n":"";
+        resultString += (DSt.Message[2] & 0x04)?"Last meter reading corrupt\n":"";
         //  0x08 - 0x80 aren't used yet
 
         //  starts at offset 30 - NOTE that this is byte 0
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x02)?"Phase detect in progress\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"";
+        resultString += (DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+        resultString += (DSt.Message[0] & 0x02)?"Phase detect in progress\n":"";
+        resultString += (DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
+        resultString += (DSt.Message[0] & 0x08)?"Holiday active\n":"";
+        resultString += (DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+        resultString += (DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
+        resultString += (DSt.Message[0] & 0x40)?"Critical peak active\n":"";
         //  0x80 is not used yet
 
         //  Eventually, we should exclude the iCon-specific bits from the Centron result
 
         //  point offset 40
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x01)?"Soft kWh Error, Data OK\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x02)?"Low AC Volts\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x04)?"Current Too High\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x08)?"Power Failure\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x10)?"Hard EEPROM Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x20)?"Hard kWh Error, Data Lost\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x40)?"Configuration Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[3] & 0x80)?"Reverse Power\n":"";
+        resultString += (DSt.Message[3] & 0x01)?"Soft kWh Error, Data OK\n":"";
+        resultString += (DSt.Message[3] & 0x02)?"Low AC Volts\n":"";
+        resultString += (DSt.Message[3] & 0x04)?"Current Too High\n":"";
+        resultString += (DSt.Message[3] & 0x08)?"Power Failure\n":"";
+        resultString += (DSt.Message[3] & 0x10)?"Hard EEPROM Error\n":"";
+        resultString += (DSt.Message[3] & 0x20)?"Hard kWh Error, Data Lost\n":"";
+        resultString += (DSt.Message[3] & 0x40)?"Configuration Error\n":"";
+        resultString += (DSt.Message[3] & 0x80)?"Reverse Power\n":"";
 
         //  point offset 50
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x01)?"7759 Calibration Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x02)?"7759 Register Check Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x04)?"7759 Reset Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x08)?"RAM Bit Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x10)?"General CRC Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x20)?"Soft EEPROM Error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x40)?"Watchdog Restart\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[4] & 0x80)?"7759 Bit Checksum Error\n":"";
+        resultString += (DSt.Message[4] & 0x01)?"7759 Calibration Error\n":"";
+        resultString += (DSt.Message[4] & 0x02)?"7759 Register Check Error\n":"";
+        resultString += (DSt.Message[4] & 0x04)?"7759 Reset Error\n":"";
+        resultString += (DSt.Message[4] & 0x08)?"RAM Bit Error\n":"";
+        resultString += (DSt.Message[4] & 0x10)?"General CRC Error\n":"";
+        resultString += (DSt.Message[4] & 0x20)?"Soft EEPROM Error\n":"";
+        resultString += (DSt.Message[4] & 0x40)?"Watchdog Restart\n":"";
+        resultString += (DSt.Message[4] & 0x80)?"7759 Bit Checksum Error\n":"";
 
         ReturnMsg->setResultString(resultString);
 
@@ -2347,7 +2291,7 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
                 //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
                 if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
                 {
-                    double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
+                    double value = (DSt.Message[i] >> j) & 0x01;
 
                     pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
 
@@ -2371,7 +2315,6 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
     INT status = NORMAL;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -2622,7 +2565,6 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -2634,19 +2576,19 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         int  ssp;
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-        ssp  = InMessage->Buffer.DSt.Message[0];
-        ssp |= InMessage->Buffer.DSt.Message[4] << 8;
+        ssp  = DSt.Message[0];
+        ssp |= DSt.Message[4] << 8;
 
         sspec  = "\nSoftware Specification ";
         sspec += CtiNumStr(ssp);
         sspec += " Rom Revision ";
 
         //  convert 10 to 1.0, 24 to 2.4
-        sspec += CtiNumStr(((double)InMessage->Buffer.DSt.Message[1]) / 10.0, 1);
+        sspec += CtiNumStr(((double)DSt.Message[1]) / 10.0, 1);
 
         //  valid/released versions are 1.0 - 24.9
-        if( InMessage->Buffer.DSt.Message[1] <   10 ||
-            InMessage->Buffer.DSt.Message[1] >= 250 )
+        if( DSt.Message[1] <   10 ||
+            DSt.Message[1] >= 250 )
         {
             sspec += " [possible development revision]\n";
         }
@@ -2655,7 +2597,7 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 
         //  set the dynamic info for use later
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)InMessage->Buffer.DSt.Message[1]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)DSt.Message[1]);
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
