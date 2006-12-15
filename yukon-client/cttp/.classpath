@@ -5,8 +5,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
 	<classpathentry kind="lib" path="/third-party/altova.jar"/>
-	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

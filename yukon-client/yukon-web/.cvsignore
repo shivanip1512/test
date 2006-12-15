@@ -9,3 +9,6 @@ build_src
 temp
 WebContent_temp
 deploy
+WebContent_merged
+build_jsp
+generated_web.xml

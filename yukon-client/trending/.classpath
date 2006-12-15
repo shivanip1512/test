@@ -2,10 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry sourcepath="Z:/java/archive/jfreechart-1.0.0-rc1.zip" kind="lib" path="/third-party/jfreechart.jar"/>
+	<classpathentry kind="lib" path="/third-party/jfreechart.jar" sourcepath="Z:/java/archive/jfreechart-1.0.0-rc1.zip"/>
 	<classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
 	<classpathentry kind="src" path="/common"/>
-	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>

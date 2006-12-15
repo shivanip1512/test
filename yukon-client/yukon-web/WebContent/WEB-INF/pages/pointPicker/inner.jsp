@@ -1,4 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <div id="pointPicker_popup">
 
 <label>Query:<input name="pointPicker_query" id="pointPicker_query" type="text" onkeyup="pointPicker_doKeyUp(this);false;"></label>

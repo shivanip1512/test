@@ -1,5 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>

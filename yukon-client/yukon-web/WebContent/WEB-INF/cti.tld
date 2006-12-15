@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE taglib
-  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
-  "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
-
-<taglib>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" 
+        version="2.0"> 
 
   <!-- ============== Tag Library Description Elements ============= -->
 
-  <tlibversion>1.0</tlibversion>
-  <jspversion>1.1</jspversion>
+  <tlib-version>1.0</tlib-version>
   <shortname>CTI Tags</shortname>
   <uri>http://cannontech.com/tags/cti</uri>
 
   <!-- ===================== Control Flow Tags ====================== -->
   <tag>
   	<name>errormsg</name>
-	<tagclass>com.cannontech.taglib.ErrorMsgTag</tagclass>
-	<bodycontent>JSP</bodycontent>
+	<tag-class>com.cannontech.taglib.ErrorMsgTag</tag-class>
+	<body-content>JSP</body-content>
 	<attribute>
 		<name>colSpan</name>
 		<required>false</required>
@@ -27,8 +25,8 @@
   <!-- Start of user/role/roleproperty tags -->
   <tag>
   	<name>breadCrumbs</name>
-  	<tagclass>com.cannontech.web.taglib.nav.BreadCrumbsTag</tagclass>
-    <bodycontent>JSP</bodycontent>
+  	<tag-class>com.cannontech.web.taglib.nav.BreadCrumbsTag</tag-class>
+    <body-content>JSP</body-content>
   	<attribute>
   		<name>seperator</name>
   		<required>false</required>
@@ -37,8 +35,8 @@
   </tag>
   <tag>
   	<name>crumbLink</name>
-  	<tagclass>com.cannontech.web.taglib.nav.CrumbLinkTag</tagclass>
-    <bodycontent>empty</bodycontent>
+  	<tag-class>com.cannontech.web.taglib.nav.CrumbLinkTag</tag-class>
+    <body-content>empty</body-content>
   	<attribute>
   		<name>url</name>
   		<required>true</required>
@@ -54,12 +52,12 @@
 
   <tag>
   	<name>checklogin</name>
-	<tagclass>com.cannontech.web.taglib.CheckLoginTag</tagclass>		
+	<tag-class>com.cannontech.web.taglib.CheckLoginTag</tag-class>		
   </tag>
 
   <tag>
   	<name>checkRole</name>
-  	<tagclass>com.cannontech.web.taglib.CheckRole</tagclass>
+  	<tag-class>com.cannontech.web.taglib.CheckRole</tag-class>
   	<attribute>
   		<name>roleid</name>
   		<required>true</required>
@@ -69,7 +67,7 @@
   
   <tag>
   	<name>checkNoRole</name>
-  	<tagclass>com.cannontech.web.taglib.CheckNoRole</tagclass>
+  	<tag-class>com.cannontech.web.taglib.CheckNoRole</tag-class>
   	<attribute>
   		<name>roleid</name>
   		<required>true</required>
@@ -79,7 +77,7 @@
   
   <tag>
   	<name>checkProperty</name>
-  	<tagclass>com.cannontech.web.taglib.CheckProperty</tagclass>
+  	<tag-class>com.cannontech.web.taglib.CheckProperty</tag-class>
   	<attribute>
   		<name>propertyid</name>
   		<required>true</required>
@@ -89,7 +87,7 @@
   
   <tag>
   	<name>checkNoProperty</name>
-  	<tagclass>com.cannontech.web.taglib.CheckNoProperty</tagclass>
+  	<tag-class>com.cannontech.web.taglib.CheckNoProperty</tag-class>
   	<attribute>
   		<name>propertyid</name>
   		<required>true</required>
@@ -99,7 +97,7 @@
   
   <tag>
   	<name>checkMultiRole</name>
-  	<tagclass>com.cannontech.web.taglib.CheckMultiRole</tagclass>
+  	<tag-class>com.cannontech.web.taglib.CheckMultiRole</tag-class>
   	<attribute>
   		<name>roleid</name>
   		<required>true</required>
@@ -109,7 +107,7 @@
   
   <tag>
   	<name>checkMultiProperty</name>
-  	<tagclass>com.cannontech.web.taglib.CheckMultiProperty</tagclass>
+  	<tag-class>com.cannontech.web.taglib.CheckMultiProperty</tag-class>
   	<attribute>
   		<name>propertyid</name>
   		<required>true</required>
@@ -119,8 +117,8 @@
   
    <tag>
   	<name>getProperty</name>
-	<tagclass>com.cannontech.web.taglib.RoleProperty</tagclass>	
-    <teiclass>com.cannontech.web.taglib.RolePropertyTEI</teiclass>
+	<tag-class>com.cannontech.web.taglib.RoleProperty</tag-class>	
+    <tei-class>com.cannontech.web.taglib.RolePropertyTEI</tei-class>
     <attribute>
         <name>propertyid</name>
         <required>false</required>
@@ -145,7 +143,7 @@
   
   <tag>
   	<name>isPropertyTrue</name>
-  	<tagclass>com.cannontech.web.taglib.IsPropertyTrue</tagclass>
+  	<tag-class>com.cannontech.web.taglib.IsPropertyTrue</tag-class>
   	<attribute>
   		<name>propertyid</name>
   		<required>true</required>
@@ -154,7 +152,7 @@
   </tag>
   <tag>
   	<name>isPropertyFalse</name>
-  	<tagclass>com.cannontech.web.taglib.IsPropertyFalse</tagclass>
+  	<tag-class>com.cannontech.web.taglib.IsPropertyFalse</tag-class>
   	<attribute>
   		<name>propertyid</name>
   		<required>true</required>
@@ -164,9 +162,9 @@
  
    <tag>
     <name>standardPage</name>
-    <tagclass>com.cannontech.web.taglib.StandardPageTag</tagclass>
-    <teiclass>com.cannontech.web.taglib.StandardPageTEI</teiclass>
-    <bodycontent>JSP</bodycontent>
+    <tag-class>com.cannontech.web.taglib.StandardPageTag</tag-class>
+    <tei-class>com.cannontech.web.taglib.StandardPageTEI</tei-class>
+    <body-content>JSP</body-content>
     <attribute>
         <name>title</name>
         <required>true</required>
@@ -184,15 +182,15 @@
   
   <tag>
     <name>standardMenu</name>
-    <tagclass>com.cannontech.web.taglib.StandardMenuTag</tagclass>
-    <bodycontent>empty</bodycontent>
+    <tag-class>com.cannontech.web.taglib.StandardMenuTag</tag-class>
+    <body-content>empty</body-content>
   </tag>
   
   <tag>
     <name>outputDoctype</name>
-    <tagclass>com.cannontech.web.taglib.OutputDoctypeTag</tagclass>
-    <teiclass>com.cannontech.web.taglib.OutputDoctypeTEI</teiclass>
-    <bodycontent>empty</bodycontent>
+    <tag-class>com.cannontech.web.taglib.OutputDoctypeTag</tag-class>
+    <tei-class>com.cannontech.web.taglib.OutputDoctypeTEI</tei-class>
+    <body-content>empty</body-content>
     <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
     <attribute>
       <name>htmlLevel</name>
@@ -202,8 +200,8 @@
   
   <tag>
     <name>includeCss</name>
-    <tagclass>com.cannontech.web.taglib.IncludeCssTag</tagclass>
-    <bodycontent>empty</bodycontent>
+    <tag-class>com.cannontech.web.taglib.IncludeCssTag</tag-class>
+    <body-content>empty</body-content>
     <attribute>
       <name>link</name>
       <required>true</required>
@@ -212,8 +210,8 @@
   
   <tag>
     <name>includeScript</name>
-    <tagclass>com.cannontech.web.taglib.IncludeScriptTag</tagclass>
-    <bodycontent>empty</bodycontent>
+    <tag-class>com.cannontech.web.taglib.IncludeScriptTag</tag-class>
+    <body-content>empty</body-content>
     <attribute>
       <name>link</name>
       <required>true</required>
@@ -222,29 +220,29 @@
   
   <tag>
     <name>outputContent</name>
-    <tagclass>com.cannontech.web.taglib.OutputContent</tagclass>
-    <bodycontent>empty</bodycontent>
+    <tag-class>com.cannontech.web.taglib.OutputContent</tag-class>
+    <body-content>empty</body-content>
     <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
   </tag>
   
   <tag>
     <name>outputMenu</name>
-    <tagclass>com.cannontech.web.taglib.OutputMenuTag</tagclass>
-    <bodycontent>empty</bodycontent>
+    <tag-class>com.cannontech.web.taglib.OutputMenuTag</tag-class>
+    <body-content>empty</body-content>
     <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
   </tag>
   
   <tag>
     <name>outputHeadContent</name>
-    <tagclass>com.cannontech.web.taglib.OutputHeadContentTag</tagclass>
-    <bodycontent>JSP</bodycontent>
+    <tag-class>com.cannontech.web.taglib.OutputHeadContentTag</tag-class>
+    <body-content>JSP</body-content>
     <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
   </tag>
   
   <tag>
     <name>titledContainer</name>
-    <tagclass>com.cannontech.web.taglib.TitledContainerTag</tagclass>
-    <bodycontent>JSP</bodycontent>
+    <tag-class>com.cannontech.web.taglib.TitledContainerTag</tag-class>
+    <body-content>JSP</body-content>
     <attribute>
       <name>title</name>
       <required>true</required>
@@ -258,8 +256,8 @@
   </tag>
   <tag>
     <name>pointPicker</name>
-    <tagclass>com.cannontech.web.taglib.PointPickerTag</tagclass>
-    <bodycontent>JSP</bodycontent>
+    <tag-class>com.cannontech.web.taglib.PointPickerTag</tag-class>
+    <body-content>JSP</body-content>
     <attribute>
       <name>pointIdField</name>
       <required>true</required>

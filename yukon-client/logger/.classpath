@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="/common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>

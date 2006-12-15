@@ -1,5 +1,5 @@
 <%@ page import="com.cannontech.user.UserUtils" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="servComp" scope="page" class="com.cannontech.stars.web.bean.ServiceCompanyBean" />
 <%

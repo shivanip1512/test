@@ -37,11 +37,11 @@
     <target name="init">
         <echo message="JAVA_HOME=${env.JAVA_HOME}"/>
         <echo message="target=${yukon.javac.target}"/>
+        <mkdir dir="${yukon.lib}" />
     </target>
 	
     <target name="cleanlib">
-        <delete quiet="true">
-            <fileset dir="${yukon.lib}" includes="*"/>
+        <delete quiet="true" dir="${yukon.lib}">
         </delete>
     </target>
     
@@ -65,36 +65,41 @@
     </target>
     
     <target name="callall">
+        <!-- These groupings mean something to me. Talk to me if you rearrange. -Tmack -->
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
-        <ant dir="${billing}" target="${dotarget}" /> 
-        <ant dir="${calchist}" target="${dotarget}" />
-        <ant dir="${export}" target="${dotarget}" />
-        <ant dir="${trending}" target="${dotarget}" />
-    	<ant dir="${esub}" target="${dotarget}"/>
-        <ant dir="${tdc}" target="${dotarget}" />
-        <ant dir="${monitor}" target="${dotarget}" />
-        <ant dir="${dbeditor}" target="${dotarget}" />
-		<ant dir="${esub-editor}" target="${dotarget}"/>
-        <ant dir="${cbc}" target="${dotarget}" />
-        <ant dir="${loadcontrol}" target="${dotarget}" />
-        <ant dir="${macs}" target="${dotarget}" />
-		<ant dir="${commander}" target="${dotarget}" />
-        <ant dir="${commands}" target="${dotarget}" />
-        <ant dir="${logger}" target="${dotarget}"/>
-        <ant dir="${custom}" target="${dotarget}" />
-        <ant dir="${stars}" target="${dotarget}"/>
-        <ant dir="${tools}" target="${dotarget}" />
-        <ant dir="${commercialcurtailment}" target="${dotarget}"/>
-		<ant dir="${report}" target="${dotarget}"/>        
-		<ant dir="${multispeak}" target="${dotarget}"/>
+
+          <ant dir="${billing}" target="${dotarget}" /> 
+          <ant dir="${calchist}" target="${dotarget}" />
+          <ant dir="${trending}" target="${dotarget}" />
+          <ant dir="${monitor}" target="${dotarget}" />
+          <ant dir="${yukonappserver}" target="${dotarget}"/>
+            
+          <ant dir="${export}" target="${dotarget}" />
+          <ant dir="${esub}" target="${dotarget}"/>
+          <ant dir="${tdc}" target="${dotarget}" />
+          <ant dir="${dbeditor}" target="${dotarget}" />
+          <ant dir="${commander}" target="${dotarget}" />
+          <ant dir="${commands}" target="${dotarget}" />
+          <ant dir="${logger}" target="${dotarget}"/>
+          <ant dir="${custom}" target="${dotarget}" />
+          <ant dir="${resource}" target="${dotarget}"/>
+        
+          <ant dir="${esub-editor}" target="${dotarget}"/>
+          <ant dir="${cbc}" target="${dotarget}" />
+          <ant dir="${loadcontrol}" target="${dotarget}" />
+          <ant dir="${macs}" target="${dotarget}" />
+          <ant dir="${stars}" target="${dotarget}"/>
+        
+          <ant dir="${tools}" target="${dotarget}" />
+          <ant dir="${commercialcurtailment}" target="${dotarget}"/>
+
+        <ant dir="${multispeak}" target="${dotarget}"/>
+        <ant dir="${report}" target="${dotarget}"/>        
 		<ant dir="${servlet}" target="${dotarget}"/>
         <ant dir="${notification}" target="${dotarget}"/>
-        <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}"/>
-        <ant dir="${yukonappserver}" target="${dotarget}"/>
         <ant dir="${yukon-web}" target="${dotarget}"/>
-
     </target>
 
 	

@@ -18,7 +18,6 @@ Class-Path:
  activation.jar 
  commons-discovery.jar 
  commons-httpclient.jar 
- commons-logging.jar 
  jaxrpc.jar 
  wsdl4j.jar 
  commons-fileupload.jar 

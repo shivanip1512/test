@@ -5,7 +5,7 @@
 <%@page import="java.io.StringWriter"%>
 <%@page import="org.apache.commons.lang.exception.ExceptionUtils"%>
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
 
 <%

@@ -14,7 +14,6 @@
 	<classpathentry kind="src" path="/servlet"/>
 	<classpathentry kind="src" path="/stars"/>
 	<classpathentry kind="src" path="/trending"/>
-	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/esub"/>
 	<classpathentry kind="src" path="/tdc"/>
 	<classpathentry kind="src" path="/tools"/>
@@ -23,7 +22,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/web.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-validator.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsp-2.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-fileupload-1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/activation.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
@@ -64,6 +62,7 @@
 			<attribute name="javadoc_location" value="http://jakarta.apache.org/commons/lang/api/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/third-party/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

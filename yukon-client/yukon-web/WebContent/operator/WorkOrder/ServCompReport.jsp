@@ -1,5 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
 <%@ page import="com.cannontech.stars.util.FilterWrapper" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>

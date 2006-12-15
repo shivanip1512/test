@@ -4,7 +4,6 @@
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
-	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
@@ -12,14 +11,12 @@
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/jruntags.jar"/>
 	<classpathentry kind="lib" path="/third-party/struts.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="src" path="/trending"/>
-	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/ejbonly.jar"/>
 	<classpathentry kind="src" path="/resource"/>
@@ -31,5 +28,6 @@
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="resource"/>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -39,7 +39,6 @@ Class-Path: ./
  jaxm-runtime.jar 
  jaxm-api.jar 
  saaj.jar 
- commons-logging.jar 
  commons-discovery.jar 
  commons-httpclient.jar 
  commons-collections-3.2.jar 

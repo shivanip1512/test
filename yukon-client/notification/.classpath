@@ -4,16 +4,16 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
-	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
-	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/third-party"/>
 	<classpathentry kind="lib" path="/third-party/vvr_tools.jar"/>
 	<classpathentry kind="lib" path="/third-party/jdom.jar">
 		<attributes>
-			<attribute value="http://jdom.org/docs/apidocs/" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="http://jdom.org/docs/apidocs/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
+	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,7 +7,7 @@
     <updateXml>true</updateXml>
     <warLocation></warLocation>
     <extraInfo></extraInfo>
-    <webPath></webPath>
+    <webPath>ROOT</webPath>
     <webClassPathEntries>
         <webClassPathEntry>/billing/bin</webClassPathEntry>
         <webClassPathEntry>/cbc/bin</webClassPathEntry>
@@ -50,7 +50,6 @@
         <webClassPathEntry>/third-party/commons-fileupload.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-lang-2.1.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/commons-logging.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-pool-1.3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/dom4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejb3-persistence.jar</webClassPathEntry>
@@ -95,7 +94,6 @@
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/classes</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-fileupload-1.0.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-validator.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/jsp-2.0.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/standard.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/web.jar</webClassPathEntry>
         <webClassPathEntry>/yukonappserver/bin</webClassPathEntry>
