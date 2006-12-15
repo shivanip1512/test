@@ -8,21 +8,6 @@
 
 <faces-config>
 
-    <!-- Our DBCache object -->
-    <managed-bean>
-        <managed-bean-name>dbCache</managed-bean-name>
-        <managed-bean-class>com.cannontech.database.cache.DefaultDatabaseCache</managed-bean-class>
-        <managed-bean-scope>application</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>selLists</managed-bean-name>
-        <managed-bean-class>com.cannontech.web.util.CBCSelectionLists</managed-bean-class>
-        <managed-bean-scope>application</managed-bean-scope>
-    </managed-bean>
-
-
-
     
     <!-- Database specific (DBPersistent) managed beans -->
     <managed-bean>
