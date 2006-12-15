@@ -5,14 +5,11 @@ package com.cannontech.tdc.createdisplay;
  * Creation date: (1/24/00 4:54:37 PM)
  * @author: 
  */
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.model.ModelContext;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class CreateBottomPanel extends javax.swing.JPanel {
@@ -1111,22 +1108,25 @@ public void setColumnData(Vector columns)
 {
 	removeAllColumns();
 
-	for( int i = 0; i < columns.size(); i++ )
-	{
-		ColumnData currentColumn = (ColumnData)columns.elementAt( i );
-			
-		Integer width = new Integer( currentColumn.getColumnWidth().toString() );				
-		getJTextFieldTitle().setText( currentColumn.getColumnTitle() );
-
-		getJComboBoxType().setSelectedItem( currentColumn.getColumnType() );
-
-		// let this event tell the other components to change it values accordingly
-		jTextFieldTitle_CaretUpdate( null );
-			
-		// tell the GUI to add a new column with the above data
-		jButtonAdd_ActionPerformed( null );
-		getScrollPaneTable().getColumnModel().getColumn( 0 ).setPreferredWidth( width.intValue() );
-	}
+	if (columns != null)
+    {
+        for( int i = 0; i < columns.size(); i++ )
+    	{
+    		ColumnData currentColumn = (ColumnData)columns.elementAt( i );
+    			
+    		Integer width = new Integer( currentColumn.getColumnWidth().toString() );				
+    		getJTextFieldTitle().setText( currentColumn.getColumnTitle() );
+    
+    		getJComboBoxType().setSelectedItem( currentColumn.getColumnType() );
+    
+    		// let this event tell the other components to change it values accordingly
+    		jTextFieldTitle_CaretUpdate( null );
+    			
+    		// tell the GUI to add a new column with the above data
+    		jButtonAdd_ActionPerformed( null );
+    		getScrollPaneTable().getColumnModel().getColumn( 0 ).setPreferredWidth( width.intValue() );
+    	}
+    }
 }
 /**
  * This method was created in VisualAge.

@@ -14,13 +14,12 @@ import java.util.List;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.model.ModelContext;
-import com.cannontech.tdc.model.TDCDataModel;
+import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
-import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.TDCDefines;
  
-public class CreateDisplayDialog extends javax.swing.JDialog implements ModelContext{
+public class CreateDisplayDialog extends javax.swing.JDialog 
+{
 	private long currentDisplayNumber = com.cannontech.tdc.data.Display.UNKNOWN_DISPLAY_NUMBER;
 	private javax.swing.JPanel ivjJDialogContentPane = null;
 	private CreateTopPanel ivjTopPanel = null;
@@ -31,8 +30,8 @@ public class CreateDisplayDialog extends javax.swing.JDialog implements ModelCon
 	private javax.swing.JPanel ivjJPanelBottomPanelHolder = null;
 	private javax.swing.JPanel ivjJPanelTemplateHolder = null;
 	private com.cannontech.common.gui.util.OkCancelPanel ivjOkCancelPanel = null;
-    private List<String> modelContextList = new ArrayList<String>(10);
 
+    private TemplateDisplayModel tempDispModel = null;
 class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelListener {
 		public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent) {
 			if (newEvent.getSource() == CreateDisplayDialog.this.getOkCancelPanel()) 
@@ -351,7 +350,6 @@ private void initialize() {
 		setSize(629, 650);
 		setTitle("Create Display");
 		setContentPane(getJDialogContentPane());
-        initModelContextList();
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -467,22 +465,18 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
             boolean usingTemplate = getTemplatePanel().getUseTemplateCB().isSelected();
             if (usingTemplate)
             {
-                Frame owner = CtiUtilities.getParentFrame(this);
-                TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
-                Integer displayNum = new Integer ( (int)currentDisplayNumber );
-                String cxt = ModelContext.ALL_CTXTS[0];
-                dataModel.updateModel(this, "displayNum", displayNum, cxt);
-                
                 TemplatePanel templatePanel = getTemplatePanel();
                 int selectedIndex = templatePanel.getJComboBoxTemplate().getSelectedIndex();
-                BigDecimal templateNum = (BigDecimal) templatePanel.getTemplateNums().get(selectedIndex);
-                dataModel.updateModel(this, "templateNum", new Integer ( templateNum.intValue()), cxt);
-              
-                DataModelUtils.saveDataModel(owner);
+                Integer tempNum = new Integer ( ((BigDecimal) templatePanel.getTemplateNums().get(selectedIndex)).intValue());
+                Integer displayNum = new Integer ( (int)currentDisplayNumber );
+
+                getTempDispModel().saveModel(displayNum, tempNum);
+                
+
+                
             }
-            
-            
-			removeCache();			
+
+            removeCache();			
 			this.setVisible( false );
 		}
 		finally
@@ -548,10 +542,11 @@ private static void getBuilderData() {
 	A0E4E1F4E1D0CB8586GGGG81G81GBAGGG8398GGGG
 **end of data**/
 }
-public List<String> getModelContextList() {
-    return modelContextList;
-}
-public void initModelContextList() {
-    modelContextList.add(ModelContext.ALL_CTXTS[0]);
+public TemplateDisplayModel getTempDispModel() {
+    if (tempDispModel == null)
+    {
+        tempDispModel = new TemplateDisplayModel();
+    }
+    return tempDispModel;
 }
 }

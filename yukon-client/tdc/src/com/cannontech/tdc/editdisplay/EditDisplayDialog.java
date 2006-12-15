@@ -8,8 +8,6 @@ package com.cannontech.tdc.editdisplay;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JCheckBox;
 
@@ -19,14 +17,12 @@ import com.cannontech.tdc.createdisplay.ColumnData;
 import com.cannontech.tdc.createdisplay.CreateTopPanel;
 import com.cannontech.tdc.createdisplay.TemplatePanel;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.model.ModelContext;
-import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.TDCDefines;
 
-public class EditDisplayDialog extends javax.swing.JDialog implements ModelContext
+public class EditDisplayDialog extends javax.swing.JDialog 
 {
 	private String displayName = null;
 	private java.util.Vector displayNumbers = null;
@@ -41,7 +37,7 @@ public class EditDisplayDialog extends javax.swing.JDialog implements ModelConte
 	private com.cannontech.tdc.addpoints.AddPointsCenterPanel ivjAddPointsPanel = null;
 	private TemplatePanel ivjTemplatePanel = null;
 	private com.cannontech.common.gui.util.OkCancelPanel ivjOkCancelPanel = null;
-    private List<String> modelContextList = new ArrayList<String>(10);
+    private TemplateDisplayModel tempDispModel = null;
     
 
 class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelListener, java.awt.event.ActionListener {
@@ -202,18 +198,12 @@ public String createCopy()
         //update our data model
         if (usingTemplate)
         {
-            Frame owner = CtiUtilities.getParentFrame(this);
-            TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
-            Integer displayNum = new Integer ( (int)currentDisplayNumber );
-            String cxt = ModelContext.ALL_CTXTS[0];
-            dataModel.updateModel(this, "displayNum", displayNum, cxt);
             
             TemplatePanel templatePanel = getTemplatePanel();
             int selectedIndex = templatePanel.getJComboBoxTemplate().getSelectedIndex();
-            BigDecimal templateNum = (BigDecimal) templatePanel.getTemplateNums().get(selectedIndex);
-            dataModel.updateModel(this, "templateNum", new Integer ( templateNum.intValue()), cxt);
-          
-            DataModelUtils.saveDataModel(owner);
+            Integer displayNum = new Integer ( (int)currentDisplayNumber );
+            Integer tempNum = new Integer ( ((BigDecimal) templatePanel.getTemplateNums().get(selectedIndex)).intValue());
+            getTempDispModel().saveModel(displayNum, tempNum);
         }
         
 		TDCMainFrame.messageLog.addMessage("Copy of display " + getTopPanel().getName() + " created successfully", MessageBoxFrame.INFORMATION_MSG );
@@ -597,7 +587,6 @@ private void initialize()
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Edit Display");
 		setContentPane(getJDialogContentPane());
-        initModelContextList();
         initConnections();
 	}
 	catch (java.lang.Throwable ivjExc) 
@@ -624,7 +613,6 @@ private void insertCreatedColumns()
 		objs[1] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_TITLE );
 		objs[2] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER );
 		objs[3] = new Integer (i + 1); 
-            //getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_NUMBER );
 		objs[4] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_WIDTH );
 		
         DataBaseInteraction.updateDataBase( query, objs );
@@ -639,12 +627,6 @@ private void insertCreatedColumns()
 	return;
 }
 
-private void templatizeDisplay (Integer templateNum, Integer displayNum){
-    DataModelUtils.templatizeDisplay (templateNum, displayNum);
-    this.setVisible( false );
-    return;
-
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/3/00 2:10:23 PM)
@@ -766,11 +748,14 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
         boolean usingTemplate = useTemplateCB.isSelected();
         if (usingTemplate)
         {
-            Frame parentFrame = CtiUtilities.getParentFrame(this);
-            TemplateDisplayModel m = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(parentFrame, this, ModelContext.ALL_CTXTS[0]);
             BigDecimal idx = (BigDecimal)displayNumbers.get( getJComboBoxCurrentDisplay().getSelectedIndex());
-            m.setDisplayNum(new Integer (idx.intValue()));
-            m.saveModel();
+            Integer dispNum = new Integer (idx.intValue());
+            
+            int selectedIndex = getTemplatePanel().getJComboBoxTemplate().getSelectedIndex();
+            String numString = getTemplatePanel().getTemplateNums().elementAt(selectedIndex).toString();
+            Integer templateNum = Integer.parseInt ( numString);
+
+            getTempDispModel().saveModel(dispNum, templateNum);
         }
         updateCurrentDisplay(usingTemplate);
     }
@@ -802,21 +787,17 @@ public void updateCurrentDisplay(boolean templatize) {
             
             if (templateNum == null)
             {
-                templateNum = getTemplateNumberForDisplay(owner, dispNum);
+                templateNum = DataModelUtils.getDisplayTemplate(dispNum);
             }
-            updateTemplateDisplayModel(owner, templateNum);
-            //when we temlatize we make the display columns look like template columns
-            //it is useful when the new template has been created and the current
-            //display needs to be updated with information about this new template
-                templatizeDisplay(templateNum, dispNum);
+            Integer displayNum = new Integer ((int)currentDisplayNumber);
+            getTempDispModel().saveModel(displayNum, templateNum);
+            DataModelUtils.templatizeDisplay (templateNum, dispNum);
+            this.setVisible( false );
         }
         else
         {
-            
-            TemplateDisplayModel m = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(owner, this, ModelContext.ALL_CTXTS[0]);
-            m.setDisplayNum(Integer.parseInt( "" + currentDisplayNumber) );
-            m.initModel();
-            m.removeModel();
+            TemplateDisplayModel m = getTempDispModel();
+            m.removeModel((int)currentDisplayNumber);
             insertCreatedColumns();
         }
         insertDataSet();
@@ -832,21 +813,6 @@ public void updateCurrentDisplay(boolean templatize) {
     return;
 }
 
-private void updateTemplateDisplayModel(Frame owner, Integer tempNum) {
-    Integer displayNum = new Integer ((int)currentDisplayNumber);
-    String templateCxt = ModelContext.ALL_CTXTS[0];
-    TemplateDisplayModel componentDataModel = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(owner, this, templateCxt);
-    componentDataModel.setDisplayNum(displayNum);
-    componentDataModel.setTemplateNum(tempNum);
-    componentDataModel.saveModel();
-}
-
-private Integer getTemplateNumberForDisplay(Frame owner, Integer displayNum) {
-    TemplateDisplayModel componentDataModel = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(owner, this, ModelContext.ALL_CTXTS[0]);
-    componentDataModel.setDisplayNum(displayNum);
-    componentDataModel.initModel();
-    return componentDataModel.getTemplateNum();
-}
 /**
  * Remove all the columns from the database
  */
@@ -938,11 +904,12 @@ public long getCurrentDisplayNumber() {
     return currentDisplayNumber;
 }
 
-public List<String> getModelContextList() {
-    return modelContextList;
-}
-public void initModelContextList() {
-    modelContextList.add(ModelContext.ALL_CTXTS[0]);
+public TemplateDisplayModel getTempDispModel() {
+    if (tempDispModel   == null)
+    {
+        tempDispModel = new TemplateDisplayModel();
+    }
+    return tempDispModel;
 }
 
 }

@@ -7,21 +7,18 @@ package com.cannontech.tdc.createdisplay;
  * @Version: <version>
  */
 
-import java.awt.Frame;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.model.ModelContext;
-import com.cannontech.tdc.model.TDCDataModel;
+import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.DataModelUtils;
 
-public class RemoveTemplateDialog extends javax.swing.JDialog implements ModelContext{
+public class RemoveTemplateDialog extends javax.swing.JDialog 
+{
 	private Vector templateNumbers = null;
 	private javax.swing.JPanel ivjJDialogContentPane = null;
 	private javax.swing.JButton ivjJButtonCancel = null;
@@ -29,7 +26,7 @@ public class RemoveTemplateDialog extends javax.swing.JDialog implements ModelCo
 	private javax.swing.JList ivjJListTemplate = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JScrollPane ivjJScrollPane = null;
-    private List<String> modelContextList = new ArrayList<String>(10);
+    private TemplateDisplayModel tempDispModel = null;
 
 
 class IvjEventHandler implements java.awt.event.ActionListener {
@@ -273,7 +270,6 @@ private void initialize() {
 		setSize(438, 284);
 		setTitle("Remove Template");
 		setContentPane(getJDialogContentPane());
-        initModelContextList();
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -357,12 +353,9 @@ private void deleteTemplate(String string) {
     
 }
 private void deleteFromTemplateModel(BigDecimal templateNum) {
-    Frame parentFrame = CtiUtilities.getParentFrame(this);
-    TDCDataModel dataModel = ((TDCMainFrame)parentFrame).getDataModel();
     List<Integer> displays = DataModelUtils.getAllDisplaysForTemplate (new Integer ( templateNum.intValue() ));
     for (Integer displayNum : displays) {
-        dataModel.updateModel(this, "displayNum", displayNum, ModelContext.ALL_CTXTS[0]);
-        dataModel.removeModel();
+        getTempDispModel().removeModel(displayNum);
     }
 }
 /**
@@ -415,11 +408,13 @@ private static void getBuilderData() {
 	67EAAF1B5FCB564E2C0C794634ECB6BBDF4E6CD0BD47726C234348FF559C50599C1ED7378D6FA3316F101DDEC116B5C1BEFB4467417B6451B1CD8C4561A707113E4A6768037A1B76B072BDE4DA73FFD0CB8788F0E3F215458FGG88ABGGD0CB818294G94G88G88GA0F954ACF0E3F215458FGG88ABGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG7F8FGGGG
 **end of data**/
 }
-public List<String> getModelContextList() {
-    return modelContextList;
+
+public TemplateDisplayModel getTempDispModel() {
+    if (tempDispModel  == null)
+    {
+        tempDispModel = new TemplateDisplayModel();
+    }
+    return tempDispModel;
 }
-//must contain all contexts this component belongs to
-public void initModelContextList() {
-    modelContextList.add(ModelContext.ALL_CTXTS[0]);
-}
+
 }

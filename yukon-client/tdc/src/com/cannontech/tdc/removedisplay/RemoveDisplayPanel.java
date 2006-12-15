@@ -6,21 +6,15 @@ package com.cannontech.tdc.removedisplay;
  * @author: 
  */
 
-import java.awt.Frame;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.model.ModelContext;
-import com.cannontech.tdc.model.TDCDataModel;
+import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.DataModelUtils;
 
-public class RemoveDisplayPanel extends javax.swing.JPanel  implements ModelContext
+public class RemoveDisplayPanel extends javax.swing.JPanel  
 {
 	private Object[] removedDisplays = null;
 	private Vector displayNumbers = null;
@@ -33,7 +27,7 @@ public class RemoveDisplayPanel extends javax.swing.JPanel  implements ModelCont
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	protected transient com.cannontech.tdc.removedisplay.RemoveDisplayPanelListener fieldRemoveDisplayPanelListenerEventMulticaster = null;
 	private javax.swing.JButton ivjJButtonDelete = null;
-    private List<String> modelContextList = new ArrayList<String>(10);
+    private TemplateDisplayModel tempDispModel = null;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -401,7 +395,6 @@ constraintsJPanel3.gridheight = 2;
 		constraintsJPanel3.weighty = 1.0;
 		constraintsJPanel3.insets = new java.awt.Insets(10, 15, 10, 15);
 		add(getJPanel3(), constraintsJPanel3);
-		initModelContextList();
         initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -496,13 +489,8 @@ private void removeSelections()
 	for ( int i = 0; i < removedDisplays.length; i++ )
 	{
 		
-        Frame parentFrame = CtiUtilities.getParentFrame(this);
-        TDCDataModel dataModel = ((TDCMainFrame)parentFrame).getDataModel();
-      
-        String dispName = removedDisplays[ i ].toString();
-        Integer displayNum = DataModelUtils.getDisplayNum (dispName ); 
-        dataModel.updateModel(this, "displayNum", displayNum, ModelContext.ALL_CTXTS[0]);
-        dataModel.removeModel();
+        Integer displayNum = DataModelUtils.getDisplayNum (removedDisplays[ i ].toString() ); 
+        getTempDispModel().removeModel(displayNum);
 
         String query = new String
 			("delete from display where name = ?");
@@ -586,10 +574,14 @@ private static void getBuilderData() {
 	371BFAA53FE9B068115DBE0FE8D2559E90E84FF56806760EA1EBE6F954FB0AF5C9DCB699C961BD974F298E32EFB12A9F02FD77C31497057C789F1EE8E7DCDD03CE0FC7F6FAAEB6FBDDF85E55B2A20B61736C1AG528FD09B25D2796FCCE01B22FB6A73FFD0CB87880C1A0C0D0A94GG94BCGGD0CB818294G94G88G88G74F854AC0C1A0C0D0A94GG94BCGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG4494GGGG
 **end of data**/
 }
-public List<String> getModelContextList() {
-    return modelContextList;
+
+public TemplateDisplayModel getTempDispModel() {
+    if (tempDispModel  == null)
+    {
+        tempDispModel = new TemplateDisplayModel();
+    }
+    return tempDispModel;
 }
-public void initModelContextList() {
-    modelContextList.add(ModelContext.ALL_CTXTS[0]);
-}
+
+
 }

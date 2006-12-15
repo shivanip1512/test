@@ -52,13 +52,11 @@ import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.fonteditor.FontEditorFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
 import com.cannontech.tdc.roweditor.SendData;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
-import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.DateTimeUserQuery;
 import com.cannontech.tdc.utils.TDCDefines;
 import com.klg.jclass.page.JCDocument;
@@ -143,7 +141,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
     public static final URL TDC_GIF = TDCMainFrame.class.getResource("/tdcIcon.gif");
 
     
-    private TDCDataModel tdcDataModel = null;
    
 
 /**
@@ -2961,7 +2958,6 @@ public void initialize()  {
 	// user code begin {2}
 
 	setIconImage( com.cannontech.tdc.utils.TDCDefines.ICON_TDC );
-    getDataModel().initModel();
 	
 	initAppearance();
 	TDCMainFrame.messageLog.addMessage("TDC started with MAX_ROWS = " + TDCDefines.MAX_ROWS, MessageBoxFrame.INFORMATION_MSG );	
@@ -4769,13 +4765,7 @@ private void writeParameters()
 }
 
 
-public TDCDataModel getDataModel()  {
-    if (tdcDataModel == null)
-    {
-        tdcDataModel = DataModelUtils.createMainModel(this);
-    }
-    return tdcDataModel;
-}
+
 
 
 }

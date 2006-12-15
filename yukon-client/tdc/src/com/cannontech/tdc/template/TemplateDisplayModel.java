@@ -3,62 +3,44 @@ package com.cannontech.tdc.template;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.tdc.TDCMainPanel;
-import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
-import com.cannontech.tdc.createdisplay.CreateDisplayDialog;
-import com.cannontech.tdc.createdisplay.RemoveTemplateDialog;
-import com.cannontech.tdc.createdisplay.TemplatePanel;
-import com.cannontech.tdc.editdisplay.EditDisplayDialog;
-import com.cannontech.tdc.model.TDCAbstractModel;
-import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
 
-public class TemplateDisplayModel extends TDCAbstractModel {
+public class TemplateDisplayModel {
 
     // initialized in the super class
     TemplateDisplay dbPersistent;
-
     private Integer templateNum = new Integer(-1);
     private Integer displayNum = new Integer(-1);
 
-    public TemplateDisplayModel() {
-        super();
+    public TemplateDisplayModel() 
+    {
+        getDbPersistent();
+
     }
 
-       public TemplateDisplay getDbPersistent() {
+    public TemplateDisplay getDbPersistent() {
         if (dbPersistent == null) {
             dbPersistent = new TemplateDisplay();
         }
         return dbPersistent;
     }
 
-    @Override
-    public String[] getAllRegisteredComponents() {
-        String[] comps = { EditDisplayDialog.class.getName(),
-                TemplatePanel.class.getName(), TDCMainPanel.class.getName(),
-                ColumnEditorDialog.class.getName(),
-                CreateDisplayDialog.class.getName(),
-                RemoveDisplayPanel.class.getName(),
-                RemoveTemplateDialog.class.getName()};
-        return comps;
-    }
-
-    public void saveModel() {
-        // try to see if we have any records
-        try {
-            
+    public void saveModel(Integer dispNum, Integer tempNum) {
+        setDisplayNum(dispNum);
+        setTemplateNum(tempNum);
+        if (getDisplayNum() != null && getTemplateNum() != null) {
             dbPersistent.setDisplayNum(getDisplayNum());
-            if (doInsert()) {
-                setDbPersistent();
-                dbPersistent.add();
-            } else {
-                setDbPersistent();
-                dbPersistent.update();
+            try {
+                if (doInsert()) {
+                    setDbPersistent();
+                    dbPersistent.add();
+                } else {
+                    setDbPersistent();
+                    dbPersistent.update();
+                }
+            } catch (SQLException e) {
+                CTILogger.error(e);
             }
-
-        } catch (SQLException e) {
-            CTILogger.error(e);
         }
-
     }
 
     private void setDbPersistent() {
@@ -71,7 +53,7 @@ public class TemplateDisplayModel extends TDCAbstractModel {
         boolean insert = false;
         Integer dNum = dbPersistent.getDisplayNum();
         Integer tNum = dbPersistent.getTemplateNum();
-        if (dNum.equals(getDbPersistent().INITVAL) && tNum.equals(getDbPersistent().INITVAL)) {
+        if (dNum.equals(TemplateDisplay.INITVAL) && tNum.equals(TemplateDisplay.INITVAL)) {
             insert = true;
         }
         return insert;
@@ -93,8 +75,8 @@ public class TemplateDisplayModel extends TDCAbstractModel {
         this.templateNum = templateNum;
     }
 
-    public void initModel() {
-        dbPersistent.setDisplayNum(getDisplayNum());
+    public void initModel(Integer dispNum) {
+        dbPersistent.setDisplayNum(dispNum);
         try {
             dbPersistent.retrieve();
             setThisModel();
@@ -109,20 +91,15 @@ public class TemplateDisplayModel extends TDCAbstractModel {
         setDisplayNum(dbPersistent.getDisplayNum());
     }
 
-    public void removeModel() {
-        dbPersistent.setDisplayNum(getDisplayNum());
-        
+
+    public void removeModel(Integer dispNum) {
+        dbPersistent.setDisplayNum(dispNum);
+
         try {
             dbPersistent.delete();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             CTILogger.error(e);
         }
-        
+
     }
-
-    
-
-
-
 }
