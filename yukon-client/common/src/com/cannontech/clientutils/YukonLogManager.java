@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
+import javax.xml.parsers.FactoryConfigurationError;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -73,8 +73,6 @@ public class YukonLogManager {
         } else {
             //If all else fails use BasicConfigurator which will append messages to the 
             //console
-            BasicConfigurator.configure();
-            Logger.getRootLogger().setLevel(Level.INFO);
             logger.error("Unbable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
             return;
         }   
@@ -83,26 +81,40 @@ public class YukonLogManager {
     /**
      * Used for initializing the logging for clients
      * @param hostname the IP address of the host
+     * @param port the connection port number
      */
     public static synchronized void initialize(String hostname, int port) {
-        //path to the servlet
+        
+        //path to the servlet that has the logging config file
         String path = "http://" + hostname + ":" + port + "/servlet/LoggingServlet";
                 
+        //URL to loggingServlet
+        URL url;
+
         try { 
-            //gets the log4j configuration file
-            URL url = new URL(path); 
-            //get log4j xml config file from servlet, and configure logging
+            //gets the log4j configuration file from LoggingServlet
+            url = new URL(path);
+        } catch (MalformedURLException e) {
+            //If all else fails use BasicConfigurator, log to console
+            logger.error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
+            return;
+        }
+        
+        //try to configure logging
+        try {
             DOMConfigurator.configure(url);
-            
+        } catch (FactoryConfigurationError e) {
+            //If all else fails use BasicConfigurator, log to console
+            logger.error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
+            return;
+        }
             // if that worked, setup YukonRemoteAppender
             YukonRemoteAppender.setHostName(hostname);
             YukonRemoteAppender.setPortNumber(Integer.toString(port));
             YukonRemoteAppender.configureLogger();
             logger.info("The remote logging config file was found under: " + path);
-        } catch (MalformedURLException e) {
-            logger.error("Unable to get the logging config file from host ",  e);
-        }
     }
+    
     
     /**
      * Get an existing logger by class name. Creates a new logger

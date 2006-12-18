@@ -154,6 +154,10 @@ public class ClientSession {
 		else {
 			CTILogger.info("Attempting remote load of database properties...");
 			localLogin = !(success = doRemoteLogin(parent));
+            if (success) {
+                YukonLogManager.initialize(host, port);
+            }
+                
 		}			
 		
 		if(success) {
@@ -162,7 +166,6 @@ public class ClientSession {
 			prefs.setCurrentUserID(user.getUserID());
 			prefs.setCurrentYukonHost(host);
 			prefs.setCurrentYukonPort(port);
-            YukonLogManager.initialize(host, port);
 			
 			if(!localLogin) {
 				//fire up a timer to refresh the session 
