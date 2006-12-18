@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2006/12/12 21:11:04 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2006/12/18 20:38:16 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1574,6 +1574,29 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
         //  ACH:  add a dynamic info check to ensure that we're reading from Precanned Table 1
         if(parse.isKeyValid("time"))
         {
+            if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
+            {
+                //  we need to read the IED info byte out of the MCT
+                function = Emetcon::GetConfig_Model;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                if( found )
+                {
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+                    OutMessage->Request.RouteID   = getRouteID();
+
+                    strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+            }
+
             function = Emetcon::GetConfig_IEDTime;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
@@ -3738,15 +3761,6 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if( getMCTDebugLevel(DebugLevel_Scanrates) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    setScanFlag(ScanRateGeneral, false);
-    setScanFlag(ScanRateIntegrity, false);
-
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
@@ -3790,7 +3804,32 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                 resultString += getName() + " / current time: " + printable_time(ied_time) + "\n";
 
-                resultString += getName() + " / current TOU rate: " + string(1, 'A' + (DSt->Message[4] & 0x07)).c_str() + "\n";
+                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+                {
+                    resultString += getName() + " / configuration byte not read, cannot decode IED TOU rate\n";
+                }
+                else
+                {
+                    int rate;
+
+                    switch( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0xf0 )
+                    {
+                        case 0x10:  //  Landis and Gyr S4
+                            rate = (DSt->Message[4] & 0x0f);
+                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate).c_str() + "\n";
+                            break;
+
+                        case 0x20:  //  Alpha A1
+                        case 0x30:  //  Alpha Power Plus
+                            rate = (DSt->Message[4] >> 2) & 0x07;
+                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate).c_str() + "\n";
+                            break;
+
+                        default:
+                            resultString += getName() + " / current TOU rate: (unknown IED type, cannot decode)\n";
+                            break;
+                    }
+                }
 
                 //  as soon as we know what type of IED this is, we can do all of the fancy IED-specific stuff
                 /*
@@ -4289,6 +4328,9 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         {
             sspec += "\n";
         }
+
+        //  this will need to be removed when we do this automatically
+        setDynamicInfo(Keys::Key_MCT_Configuration, InMessage->Buffer.DSt.Message[3]);
 
         options += "Connected Meter: ";
         switch( InMessage->Buffer.DSt.Message[3] & 0xf0 )
