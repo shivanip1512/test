@@ -267,14 +267,14 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
              <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx"
                     onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
-                    
-                <td  >State <img class="rAlign popupImg" src="images\question.gif"
-                        onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
-                </td>
                 <td> CB Name (Order)
                         <img class="rAlign popupImg" src="images\question.gif"
                             onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
-                 </td>
+                 </td>                    
+                <td  >State <img class="rAlign popupImg" src="images\question.gif"
+                        onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
+                </td>
+
                 <td id="cb_state_td_hdr2" style="display:none" > Op Count Value</td>
                 <td>Bank Address</td>
                 <td>Date/Time</td>
@@ -389,8 +389,6 @@ for( int i = 0; i < capBanks.length; i++ )
                         ><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
                     </a>                    
                     </td>
-
-
 					<td><a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN)%></a>
 					</td>
