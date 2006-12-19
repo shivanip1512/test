@@ -1,0 +1,69 @@
+[OPTIONS]
+Compiled File=Yukon Commander Help.chm
+Title=Yukon Commander Help
+Contents File=Yukon Commander Help.hhc
+Index File=Yukon Commander Help.hhk
+Default topic=Introduction.htm
+Default Window=Commander
+Error log file=
+Display compile progress=No
+Display compile notes=No
+Full-text search=Yes
+Binary Index=No
+Auto Index=No
+Enhanced decompilation=No
+Binary TOC=No
+Flat=No
+
+[WINDOWS]
+Commander="Yukon Commander Help","Yukon Commander Help.hhc","Yukon Commander Help.hhk","","http://www.cannontech.com",,,,,0x40080420,200,0x200e,[426,0,1026,500],0x0,0x0,,0,0,0
+
+[FILES]
+Sending_or_Receiving_Data.htm
+Saving_Output.htm
+Command_Options.htm
+Finding_a_Device.htm
+Deleting_a_Serial_Number.htm
+Printing_Output.htm
+Menu_Bar.htm
+Introduction.htm
+Locating_a_Route.htm
+Error_1.htm
+Error_15.htm
+Error_16.htm
+Error_20.htm
+Error_17.htm
+Install_Addressing.htm
+Error_33.htm
+Sort_By_List.htm
+Error_31.htm
+Command_Log.htm
+Error_Messages.htm
+Command_Output_Window.htm
+Command_Lists.htm
+Serial_and_Route_Lists.htm
+Database_Item_List.htm
+Custom_Commands.htm
+Error_46.htm
+Download_TOU_Schedule.htm
+Error_57.htm
+Error_65.htm
+Error_19.htm
+Error_18.htm
+Error_22.htm
+Error_21.htm
+eHelp.xml
+RoboHHRE.lng
+
+Yukon Commander Help.glo
+Yukon Commander Help.brs
+[ALIAS]
+#include Yukon Commander Help.ali
+
+[MAP]
+#include BSSCDefault.h
+
+[TEXT POPUPS]
+BSSCDefault.h
+
+

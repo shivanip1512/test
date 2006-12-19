@@ -1,0 +1,56 @@
+<html>
+<!-- Sitemap 1.0 -->
+<object type="text/site properties">
+  <param name="SiteType" value="toc">
+  <param name="Image Width" value="16">
+  <param name="Window Styles" value="0x800002">
+  <param name="ExWindow Styles" value="0x100">
+</object>
+<ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Introduction">
+    <param name="Local" value="Introduction.htm">
+  </object>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Using Commander">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Sending or Receiving Data">
+      <param name="Local" value="Sending_or_Receiving_Data.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Locating a Route">
+      <param name="Local" value="Locating_a_Route.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Download TOU Schedule">
+      <param name="Local" value="Download_TOU_Schedule.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Install Addressing">
+      <param name="Local" value="Install_Addressing.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Finding a Device">
+      <param name="Local" value="Finding_a_Device.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Deleting a Serial Number">
+      <param name="Local" value="Deleting_a_Serial_Number.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Custom Commands">
+      <param name="Local" value="Custom_Commands.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Printing Output">
+      <param name="Local" value="Printing_Output.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Saving Output">
+      <param name="Local" value="Saving_Output.htm">
+    </object>
+    </ul>
+</ul>
+</html>
