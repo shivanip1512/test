@@ -1,0 +1,60 @@
+<html>
+<!-- Sitemap 1.0 -->
+<object type="text/site properties">
+  <param name="SiteType" value="toc">
+  <param name="Image Width" value="16">
+  <param name="Window Styles" value="0x800002">
+  <param name="ExWindow Styles" value="0x100">
+</object>
+<ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Introduction">
+    <param name="Local" value="Introduction.htm">
+  </object>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Using Trending">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Creating a Trend">
+      <param name="Local" value="Creating_a_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing a Trend">
+      <param name="Local" value="Editing_a_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Viewing a Graphical Trend">
+      <param name="Local" value="Viewing_a_Graphical_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Graphical Trend Display Options">
+      <param name="Local" value="Graphical_Trend_Display_Options.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Viewing a Tabular Trend">
+      <param name="Local" value="Viewing_a_Tabular_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Viewing a Summary Trend">
+      <param name="Local" value="Viewing_a_Summary_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Get Data Now">
+      <param name="Local" value="Get_Data_Now.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Exporting a Trend">
+      <param name="Local" value="Exporting_a_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Printing a Trend">
+      <param name="Local" value="Printing_a_Trend.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Deleting a Trend">
+      <param name="Local" value="Deleting_a_Trend.htm">
+    </object>
+    </ul>
+</ul>
+</html>

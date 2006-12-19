@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<rhpml majorversion="1" minorversion="0">
+	<windows>
+		<window>
+			<name>Trending</name>
+			<caption>Yukon Trending Help</caption>
+			<tocfile></tocfile>
+			<indexfile></indexfile>
+			<defaultfile></defaultfile>
+			<homefile>http://www.cannontech.com</homefile>
+			<jump1filename></jump1filename>
+			<jump1text></jump1text>
+			<jump2filename></jump2filename>
+			<jump2text></jump2text>
+			<flags>263457</flags>
+			<navpanewidth>150</navpanewidth>
+			<buttons>8286</buttons>
+			<windowplacement>
+				<left>410</left>
+				<top>0</top>
+				<right>1030</right>
+				<bottom>473</bottom>
+			</windowplacement>
+			<windowstyle>0</windowstyle>
+			<windowstyleex>0</windowstyleex>
+			<expandedstate>0</expandedstate>
+			<defaulttab>0</defaulttab>
+			<tabposition>0</tabposition>
+			<showwindow>0</showwindow>
+		</window>
+	</windows>
+</rhpml>

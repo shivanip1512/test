@@ -1,0 +1,52 @@
+[OPTIONS]
+Compiled File=Yukon Trending Help.chm
+Title=Yukon Trending Help
+Contents File=Yukon Trending Help.hhc
+Index File=Yukon Trending Help.hhk
+Default topic=Introduction.htm
+Default Window=Trending
+Error log file=
+Display compile progress=No
+Display compile notes=No
+Full-text search=Yes
+Binary Index=No
+Auto Index=No
+Enhanced decompilation=No
+Binary TOC=No
+Flat=No
+
+[WINDOWS]
+Trending="Yukon Trending Help","Yukon Trending Help.hhc","Yukon Trending Help.hhk","","http://www.cannontech.com",,,,,0x40521,150,0x205e,[410,0,1030,473],0x0,0x0,,0,0,0
+
+[FILES]
+Trends_List.htm
+Summary_Page.htm
+Graph_Page.htm
+Menu_Bar.htm
+Introduction.htm
+Printing_a_Trend.htm
+Deleting_a_Trend.htm
+Exporting_a_Trend.htm
+Editing_a_Trend.htm
+Creating_a_Trend.htm
+Tabular_Page.htm
+Get_Data_Now.htm
+Viewing_a_Tabular_Trend.htm
+Viewing_a_Graphical_Trend.htm
+Viewing_a_Summary_Trend.htm
+Graphical_Trend_Display_Options.htm
+eHelp.xml
+RoboHHRE.lng
+
+Yukon Trending Help.glo
+Yukon Trending Help.brs
+[ALIAS]
+#include Yukon Trending Help.ali
+
+[MAP]
+#include BSSCDefault.h
+
+[TEXT POPUPS]
+BSSCDefault.h
+
+
