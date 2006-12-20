@@ -29,8 +29,8 @@ echo The CATALINA_HOME environment variable is not defined correctly.
 echo This environment variable is needed to run this program
 goto end
 rem Make sure prerequisite environment variables are set
-if not "%JAVA_HOME%" == "" goto okHome
-echo The JAVA_HOME environment variable is not defined
+if not "%JRE_HOME%" == "" goto okHome
+echo The JRE_HOME environment variable is not defined
 echo This environment variable is needed to run this program
 goto end 
 :okHome
@@ -69,7 +69,7 @@ rem Install the service
 echo Installing the service '%PR_DISPLAYNAME%' ...
 echo Using CATALINA_HOME:    %CATALINA_HOME%
 echo Using CATALINA_BASE:    %CATALINA_BASE%
-echo Using JAVA_HOME:        %JAVA_HOME%
+echo Using JRE_HOME:        %JRE_HOME%
 
 rem Use the environment variables as an example
 rem Each command line option is prefixed with PR_
@@ -79,23 +79,20 @@ set PR_INSTALL=%EXECUTABLE%
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar
 
-rem Set the server jvm from JAVA_HOME
-set PR_JVM=%JAVA_HOME%\jre\bin\server\jvm.dll
-if exist "%PR_JVM%" goto foundJvm
-rem Set the client jvm from JAVA_HOME
-set PR_JVM=%JAVA_HOME%\jre\bin\client\jvm.dll
-if exist "%PR_JVM%" goto foundJvm
-rem Check for JRockit JVM: Bugzilla 39674
-set PR_JVM=%JAVA_HOME%\jre\bin\jrockit\jvm.dll
+rem Set the client jvm from JRE_HOME
+set PR_JVM=%JRE_HOME%\bin\client\jvm.dll
 if exist "%PR_JVM%" goto foundJvm
 set PR_JVM=auto
 
 :foundJvm
 echo Using JVM:              %PR_JVM%
-"%EXECUTABLE%" //IS//%SERVICE_NAME% --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
+"%EXECUTABLE%" //IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass 
+
+org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
 if not errorlevel 1 goto installed
 echo Failed installing '%PR_DISPLAYNAME%' service
 goto end
+
 :installed
 rem Clear the environment variables. They are not needed any more.
 set PR_DISPLAYNAME=
@@ -104,14 +101,21 @@ set PR_INSTALL=
 set PR_LOGPATH=
 set PR_CLASSPATH=
 set PR_JVM=
-rem Set extra parameters
-"%EXECUTABLE%" //US//%SERVICE_NAME% --JvmOptions "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode jvm --StopMode jvm
+
+
+rem Set extra parameters using //US// option on already installed service
+"%EXECUTABLE%" //US//%SERVICE_NAME% --JvmOptions 
+
+"-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode 
+
+jvm --StopMode jvm
+
 rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
 "%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 256 --JvmMx 384
-echo The service '%PR_DISPLAYNAME%' has been installed.
+echo The service 'Yukon Web Application Service' has been installed.
 
 :end
 cd %CURRENT_DIR%
