@@ -93,7 +93,6 @@ szServPath = TARGETDIR ^ "\\Server\\web\\bin\\";
 szCmdLine = '-uninstall "Yukon Web Applications Service"';
 LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine, WAIT );
 
-
 //make sure any legacy files are gone so that Tomcat avoids confusion
 //however, spare the esub directory and the webconfig\custom folder
 szPath = TARGETDIR + "\\Server\\web\\webapps\\yukon";
@@ -123,8 +122,8 @@ if(dirSearch = 0) then
    	DeleteDir ( szPath + "\\WebConfig\\CILC", ALLCONTENTS ); 
 endif;
 
-//set a system environment variable JAVA_HOME for use by the Tomcat service
-szName = "JAVA_HOME";         
+//set a system environment variable JRE_HOME for use by the Tomcat service
+szName = "JRE_HOME";         
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
 szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TARGETDIR + "\\Runtime" , -1 );
@@ -176,12 +175,11 @@ SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 //install Tomcat as a service (behold this lumbering behemoth of a command line)
 szServPath = TomcatPath ^ "\\bin\\";
-szCmdLine = '-install "Yukon Web Applications Service" "' + JavaPath + '\\jre\\bin\\server\\jvm.dll" -Djava.class.path="'+ TomcatPath + '\\bin\\bootstrap.jar;' + JavaPath + '\\lib\\tools.jar" -Dcatalina.home="'+ TomcatPath + '" '; 
-szCmdLine2 = '-Dyukon.base=%YUKON_BASE% -Dyukon.logdir="%YUKON_BASE%\\server\\log" -Djava.endorsed.dirs="'+ TomcatPath + '\\common\\endorsed" -Xms128M -Xmx384M -start org.apache.catalina.startup.BootstrapService ';                                                          
-szCmdLine3 = '-params start -stop org.apache.catalina.startup.BootstrapService -params stop -out "'+ TomcatPath + '\\logs\\yukon_out.log" -err "'+ TomcatPath + '\\logs\\yukon_err.log"';
+szCmdLine = '-install "Yukon Web Applications Service" "' + JavaPath + '\\jre\\bin\\server\\jvm.dll" ';
+szCmdLine2 = '-Xms128M -Xmx384M'; 
 /*nvResult = AskYesNo ( "Would you like to install Tomcat as a service?" , NO );
 if(nvResult = 1) then */
-LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine + szCmdLine2 + szCmdLine3, WAIT );
+LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine + szCmdLine2, WAIT );
 	//SprintfBox (SEVERE, "DEBUG: Command Line Contents", "%s", szCmdLine + szCmdLine2 + szCmdLine3);     
 //endif;
   
@@ -230,8 +228,8 @@ Delay(4);
      
 //remove the Tomcat service
 szServPath = TARGETDIR ^ "\\Server\\web\\bin\\";
-szCmdLine = '-uninstall "Yukon Web Applications Service"';
-LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine, WAIT );
+szCmdLine = '-remove';
+LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
 
 //make sure any legacy files are gone so that Tomcat avoids confusion
 //however, spare the esub directory and the webconfig\custom folder
