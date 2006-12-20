@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2006/12/20 22:29:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.15  2006/12/20 22:29:22  jrichter
+      BUG FIX: 716
+      -check first character to see if it is digit, + or - sign before calling atof function.
+
       Revision 1.14  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -81,6 +85,7 @@
 #include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
+#include "ctistring.h"
 
 #include "cparms.h"
 #include "msg_cmd.h"
@@ -251,7 +256,7 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
 {
 	bool retCode = false;
     bool pointValidFlag=true;
-    string tempString1;                // Will receive each token
+    CtiString tempString1;                // Will receive each token
 
     boost::char_separator<char> sep(",\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
@@ -309,7 +314,13 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
                 }
             case 3:
                 {
-                    value = atof(tempString1.c_str());
+                    if (!(tempString1.match("^[0-9]")).empty() ||
+                        (!(tempString1.match("^\\+")).empty() || !(tempString1.match("^\\-")).empty() ))
+                    {
+                        value = atof(tempString1.c_str());
+                    }
+                    else 
+                        pointValidFlag = false;
                     break;
                 }
             case 4:
