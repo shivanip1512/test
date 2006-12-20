@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.111 $
-* DATE         :  $Date: 2006/12/15 15:49:05 $
+* REVISION     :  $Revision: 1.112 $
+* DATE         :  $Date: 2006/12/20 17:38:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2200,7 +2200,7 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
     INT status = NORMAL;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -2565,7 +2565,7 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
