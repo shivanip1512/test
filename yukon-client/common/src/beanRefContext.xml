@@ -18,6 +18,7 @@
          <value>com/cannontech/cbc/applicationContext.xml</value>
          <value>com/cannontech/loadcontrol/applicationContext.xml</value>
          <value>com/cannontech/common/search/searchContext.xml</value>
+         <value>com/cannontech/common/device/deviceContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -32,6 +33,7 @@
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/core/service/applicationContext.xml</value>
+         <value>com/cannontech/common/device/deviceContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -50,6 +52,7 @@
          <value>com/cannontech/cbc/applicationContext.xml</value>
          <value>com/cannontech/core/service/applicationContext.xml</value>
          <value>com/cannontech/loadcontrol/applicationContext.xml</value>
+         <value>com/cannontech/common/device/deviceContext.xml</value>
        </list>
      </constructor-arg>
    </bean>

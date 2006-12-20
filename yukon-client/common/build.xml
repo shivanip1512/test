@@ -32,7 +32,89 @@
 
    <target name="clean">
        <delete dir="build"/>        
-
     </target>
-   
+    
+	<!-- Target to generate the castor classes for the deviceDefinition schema -->
+    <target name="generateCastorClasses">
+        
+        <taskdef name="castor-srcgen" classname="org.exolab.castor.tools.ant.taskdefs.CastorSourceGenTask">
+            <classpath id="jspc.class.path">
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </taskdef>
+
+		<!-- Clear our any old generated classes -->
+        <delete dir="src/com/cannontech/common/device/definition/model/castor" />
+        <castor-srcgen file="src/com/cannontech/common/device/definition/dao/deviceDefinition.xsd"
+                          todir="src"
+                          package="com.cannontech.common.device.definition.model.castor"
+                          types="j2"
+                          warnings="true" />
+    </target>
+
+	<!-- Compile the test classes for unit testing -->
+    <target name="compileUnitTests">
+
+		<delete dir="test/build" />
+        <mkdir dir="test/build" />
+        <javac srcdir="test" destdir="test/build" target="${yukon.javac.target}" 
+              source="${yukon.javac.source}" debug="${yukon.javac.debug}">
+            <classpath>
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+            
+    </target>
+    
+	<!-- Run unit tests - will stop running if a failure or error occurs during a test -->
+    <target name="runTests">
+        <antcall target="unitTest">
+            <param name="halt" value="yes"/>
+        </antcall>
+    </target>
+
+	<!-- Run unit tests - will run all tests even if a failure or error occurs during a test -->
+    <target name="runTestsIgnoreFailures">
+        <antcall target="unitTest">
+            <param name="halt" value="no"/>
+        </antcall>
+    </target>
+	
+    <property name="test.results.dir" value="test/unitTestResults"/>
+	<!-- Run unit tests -->
+    <target name="unitTest" depends="compileUnitTests">
+
+		<!-- Clear out any old results -->
+        <delete dir="${test.results.dir}" />
+        <mkdir dir="${test.results.dir}"/>
+    
+		<!-- Run all unit tests (currently looks for all classes whose name ends with 'Test') -->
+        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}">
+            <classpath id="junit.class.path">
+				<dirset dir="test" />
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest fork="yes" todir="${test.results.dir}" >
+                <fileset dir="test/build">
+                    <include name="**/*Test.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+     
+		<!-- Create the html reports for unit test results -->
+		<junitreport todir="${test.results.dir}">
+			<fileset dir="${test.results.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report todir="${test.results.dir}"/>
+		</junitreport>
+    </target>
+ 
 </project>

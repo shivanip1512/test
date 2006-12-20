@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="pointService" class="com.cannontech.common.device.service.PointServiceImpl" singleton="true">
+        <property name="nextValueHelper" ref="nextValueHelper" />
+    </bean>
+    <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" singleton="true">
+        <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
+        <property name="pointService" ref="pointService" />
+    </bean>
+	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" singleton="true" init-method="initialize">
+        <property name="inputFile" value="com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
+    </bean>
+</beans>

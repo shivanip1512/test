@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="deviceDefinition">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="device" type="deviceType" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="deviceType">
+        <xs:sequence>
+            <xs:element name="type" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attributeGroup ref="typeAttributes" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="displayName" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="displayGroup" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="class" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="category" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="javaClass" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="points" type="pointsType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:attributeGroup name="typeAttributes">
+        <xs:attribute name="value" type="xs:integer" minOccurs="1" maxOccurs="1" />
+        <xs:attribute name="javaConstant" type="xs:string" minOccurs="1" maxOccurs="1" />
+    </xs:attributeGroup>    
+
+    <xs:complexType name="pointsType">
+        <xs:all>
+            <xs:sequence>
+                <xs:element name="point" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="attribute" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="name" type="xs:string" maxOccurs="1" />
+                            <xs:element name="offset" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="value" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:choice>
+                                <xs:sequence>
+                                    <xs:element name="multiplier" maxOccurs="1">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:decimal" minOccurs="1" maxOccurs="1" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="unitofmeasure" maxOccurs="1">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:integer" minOccurs="1" maxOccurs="1" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                                <xs:element name="stategroup" maxOccurs="1">
+                                    <xs:complexType>
+                                        <xs:attribute name="value" type="xs:integer" minOccurs="1" maxOccurs="1" />
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:choice>
+                        </xs:sequence>
+                        <xs:attributeGroup ref="pointAttributes" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:all>
+        <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+    
+    <xs:attributeGroup name="pointAttributes">
+        <xs:attribute name="type" type="xs:string" minOccurs="1" maxOccurs="1" />
+        <xs:attribute name="init" type="xs:boolean" default="false"/>
+    </xs:attributeGroup>
+
+
+</xs:schema>
