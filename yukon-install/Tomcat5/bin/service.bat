@@ -41,13 +41,13 @@ set CATALINA_BASE=%CATALINA_HOME%
 set EXECUTABLE=%CATALINA_HOME%\bin\tomcat5.exe
 
 rem Set default Service name
-set SERVICE_NAME=Tomcat5
-set PR_DISPLAYNAME=Apache Tomcat
+set SERVICE_NAME=YukonWebApplicationService
+set PR_DISPLAYNAME=Yukon Web Application Service
 
 if "%1" == "" goto displayUsage
 if "%2" == "" goto setServiceName
 set SERVICE_NAME=%2
-set PR_DISPLAYNAME=Apache Tomcat %2
+set PR_DISPLAYNAME=%2
 :setServiceName
 if %1 == install goto doInstall
 if %1 == remove goto doRemove
@@ -61,12 +61,12 @@ goto end
 :doRemove
 rem Remove the service
 "%EXECUTABLE%" //DS//%SERVICE_NAME%
-echo The service '%SERVICE_NAME%' has been removed
+echo The service '%PR_DISPLAYNAME%' has been removed
 goto end
 
 :doInstall
 rem Install the service
-echo Installing the service '%SERVICE_NAME%' ...
+echo Installing the service '%PR_DISPLAYNAME%' ...
 echo Using CATALINA_HOME:    %CATALINA_HOME%
 echo Using CATALINA_BASE:    %CATALINA_BASE%
 echo Using JAVA_HOME:        %JAVA_HOME%
@@ -74,7 +74,7 @@ echo Using JAVA_HOME:        %JAVA_HOME%
 rem Use the environment variables as an example
 rem Each command line option is prefixed with PR_
 
-set PR_DESCRIPTION=Apache Tomcat Server - http://tomcat.apache.org
+set PR_DESCRIPTION=Yukon web server 
 set PR_INSTALL=%EXECUTABLE%
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar
@@ -94,7 +94,7 @@ set PR_JVM=auto
 echo Using JVM:              %PR_JVM%
 "%EXECUTABLE%" //IS//%SERVICE_NAME% --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
 if not errorlevel 1 goto installed
-echo Failed installing '%SERVICE_NAME%' service
+echo Failed installing '%PR_DISPLAYNAME%' service
 goto end
 :installed
 rem Clear the environment variables. They are not needed any more.
@@ -110,8 +110,8 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 128 --JvmMx 256
-echo The service '%SERVICE_NAME%' has been installed.
+"%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 256 --JvmMx 384
+echo The service '%PR_DISPLAYNAME%' has been installed.
 
 :end
 cd %CURRENT_DIR%
