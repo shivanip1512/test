@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.device.attribute.Attribute;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DeviceDisplay;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.device.DeviceBase;

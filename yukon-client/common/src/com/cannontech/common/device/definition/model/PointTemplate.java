@@ -3,7 +3,7 @@ package com.cannontech.common.device.definition.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.cannontech.common.device.attribute.Attribute;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.state.StateGroupUtils;
 

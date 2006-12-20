@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.exolab.castor.xml.Unmarshaller;
 
-import com.cannontech.common.device.attribute.Attribute;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DeviceDisplay;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.castor.Device;
