@@ -1,0 +1,170 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<html>
+
+<!--(==============================================================)-->
+<!--(Document created with RoboEditor. )============================-->
+<!--(==============================================================)-->
+
+<head>
+
+<title>Yukon Command Language Summary</title>
+
+<!--(Meta)==========================================================-->
+
+<meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
+<meta name=generator-major-version content=0.1>
+<meta name=generator-minor-version content=1>
+<meta name=filetype content=kadov>
+<meta name=filetype-version content=1>
+<meta name=page-count content=1>
+<meta name=layout-height content=541>
+<meta name=layout-width content=744>
+<meta name=date content="04 19, 2005 11:03:05 AM">
+<meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG">
+
+
+ <meta name="topic-status" content="In Progress">
+ <meta name="topic-check-list" content="Ran Smart Index">
+ <meta name="topic-priority" content="0">
+ <meta name="topic-time-estimate" content="0">
+ <meta name="topic-comment" content="">
+ <meta name="topic-id" content="Yukon Command Language Summary"><!--(Links)=========================================================-->
+
+<link rel=StyleSheet href=default.css>
+
+
+
+</head>
+
+<!--(Body)==========================================================-->
+
+
+<body>
+
+<h1>Yukon Command Language Summary</h1>
+
+<p>Yukon adds its own extensions to the Tcl script language that support 
+ a core of base commands used to collect or send data from or to field 
+ devices. This allows the system to support powerful schedules by using 
+ Tcl for schedule flow control, such as loops or delays, along with the 
+ extensions for data collection and for data downloading. Each command 
+ extension may have its own set of arguments and parameters. To stay with 
+ the standard Tcl syntax, a space is used as the delimiter between arguments. 
+ The following commands make up the core command extensions.</p>
+
+<p style="font-weight: normal;">&nbsp;</p>
+
+<ul style="list-style: disc;"
+	type=disc>
+	
+	<li class=kadov-p><p style="font-weight: normal;"><a href="SELECT_Command_Details.htm"
+														id=a1>SELECT</a> 
+ - Command used to select a target field device or group of field devices. 
+ It includes a set of arguments for selecting an individual device or a 
+ grouping of devices.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="GETVALUE_Command_Details.htm"
+	id=a2>GETVALUE</a> - Command used to collect metering or analog type 
+ data from field devices. Defaults to the most basic metering data for 
+ each device type. Includes a set of arguments used to pick between the 
+ many metering quantities often available.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="PUTVALUE_Command_Details.htm"
+	id=a3>PUTVALUE</a> - Companion command to the getvalue command, this 
+ command is used to send any metering or analog data or also to perform 
+ data freeze and resets.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="GETSTATUS_Command_Details.htm"
+	id=a4>GETSTATUS</a> - Command used to collect status or state information 
+ from field devices. Defaults to the most basic status for each device 
+ type. Includes a set of arguments used to pick between the many available 
+ statuses often available.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="PUTSTATUS_Command_Details.htm"
+	id=a5>PUTSTATUS</a> - Command used to change or reset a status in a 
+ given device (this does not include controls).</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="GETCONFIG_Command_Details.htm"
+	id=a6>GETCONFIG</a> - Command used to collect configuration type data 
+ from a field device. Defaults to the most basic configuration data for 
+ each device type. Includes a set of arguments used to pick between the 
+ many configuration parameters often available in different field devices.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="PUTCONFIG_Command_Details.htm"
+	id=a7>PUTCONFIG</a> - Command used to send configuration data to field 
+ devices. Defaults to the most basic configuration data for each device 
+ type. Includes a set of arguments used to pick between the many configuration 
+ parameters often available in different field devices.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="LOOP_Command_Details.htm"
+	id=a8>LOOP/PING</a> - Support command used to verify communications 
+ with a two-way device.</p></li>
+	
+	<li class=kadov-p><p style="margin-left: 0px; font-weight: normal;"><a 
+ href="CONTROL_Command_Details.htm"
+	id=a10>CONTROL</a> - Command used to send a control command to field 
+ devices. Defaults to the most common control type for each field device 
+ type. Includes a set of arguments used to select between different control 
+ points and control types.</p></li>
+</ul>
+
+<p style="margin-left: 0px; font-weight: normal;">&nbsp;</p>
+
+&nbsp; 
+
+<p style="margin-left: 0px; font-weight: normal;">
+<!--Metadata type="DesignerControl" startspan
+<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
+		ID=RelatedTopics
+		BORDER=0
+		style="margin-top: 0px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 0px;
+				vertical-align: baseline;"
+		align=bottom>
+<param name=_Version value="65536" >
+<param name=_ExtentX value="2117" >
+<param name=_ExtentY value="556" >
+<param name=_StockProps value="13" >
+<param name=ForeColor value="0" >
+<param name=BackColor value="13160660" >
+<param name=UseButton value="-1" >
+<param name=ControlLabel value="Related Topics" >
+<param name=UseIcon value="0" >
+<param name=Items value="Creating a MACS Schedule;Creating_a_Schedule.htm$$**$$Creating a Script Schedule;Creating_a_Script_Schedule.htm$$**$$Creating a Simple Schedule;Creating_a_Simple_Schedule.htm$$**$$Editing a MACS Schedule;Editing_a_Schedule.htm$$**$$" >
+<param name=Image value="" >
+<param name=FontInfo value="MS Sans Serif,8,0,," >
+<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon Tabular Data Console Help (GRE)\Yukon_Command_Language_Summary.htm" >
+<param name=_ID value="RelatedTopics" >
+<param name=UseMenu value="-1" >
+<param name=Frame value="_top" >
+<param name=Window value="" >
+</object>-->
+<OBJECT
+  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
+  ID="RelatedTopics"  TYPE="application/x-oleobject" >
+  <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
+  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
+  <PARAM  NAME="Font"  VALUE="MS Sans Serif,8,0,,">
+  <PARAM  NAME="Frame"  VALUE="_top">
+  <PARAM  NAME="Item1"  VALUE="Creating a MACS Schedule;Creating_a_Schedule.htm">
+  <PARAM  NAME="Item2"  VALUE="Creating a Script Schedule;Creating_a_Script_Schedule.htm">
+  <PARAM  NAME="Item3"  VALUE="Creating a Simple Schedule;Creating_a_Simple_Schedule.htm">
+  <PARAM  NAME="Item4"  VALUE="Editing a MACS Schedule;Editing_a_Schedule.htm">
+  </OBJECT>
+
+<!--Metadata type="DesignerControl" endspan-->
+</p>
+
+</body>
+
+</html>

@@ -1,0 +1,144 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<html>
+
+<!--(==============================================================)-->
+<!--(Document created with RoboEditor. )============================-->
+<!--(==============================================================)-->
+
+<head>
+
+<title>Starting a Control Scenario</title>
+
+<!--(Meta)==========================================================-->
+
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="07 22, 2004 1:16:38 PM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Starting a Control Scenario">
+<meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
+<meta name=generator-major-version content=0.1>
+<meta name=generator-minor-version content=1>
+<meta name=filetype content=kadov>
+<meta name=filetype-version content=1>
+<meta name=page-count content=1>
+<meta name=layout-height content=732>
+<meta name=layout-width content=652>
+
+
+<!--(Links)=========================================================-->
+
+<link rel=StyleSheet href=default.css>
+
+
+
+</head>
+
+<!--(Body)==========================================================-->
+
+
+<body>
+
+<h4>Starting a Control Scenario</h4>
+
+<p>Complete the following steps to start a control scenario.</p>
+
+<p>&nbsp;</p>
+
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To start a scenario, 
+ click on the <span style="font-weight: bold;">Start Scenario</span> toolbar 
+ button.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the control 
+ scenario to start from the <span style="font-weight: bold;">Scenario</span> 
+ drop-down list.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To start the scenario 
+ immediately, select the <span style="font-weight: bold;">Start Now</span> 
+ check box.<br>
+	To start the scenario later, clear the <span style="font-weight: bold;">Start 
+ Now</span> check box, enter a start time in the <span style="font-weight: bold;">Start 
+ Time</span> text box, and select a date from the drop-down list.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To specify a stop 
+ time, enter a time in the <span style="font-weight: bold;">Stop Time</span> 
+ text box and select a date from the drop-down list.<br>
+	If you do not want to specify a stop time, select the <span style="font-weight: bold;">Never 
+ Stop</span> check box. The program can then only be stopped manually.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the gear to 
+ use for all of the programs in the control scenario from the <span style="font-weight: bold;">Gear</span> 
+ drop-down list. Gears define the rates at which loads in a program are 
+ controlled.<br>
+	<br>
+	To specify gears for individual programs, select a gear from the <span 
+ style="font-weight: bold;">Gear</span> drop-down list in the table on 
+ the right-hand side of the window.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 0px;">Select whether to 
+ Observe or Check the program constraints from the <span style="font-weight: bold;">Constraints</span> 
+ drop-down list.</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Observe</span> 
+ - if the constraint is violated, the control does not occur.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Check</span> 
+ - the control is checked before it is sent to the Load Management server 
+ and the result is displayed in the Program Constraint Violation window. 
+ </p></li>
+		
+		<ul style="list-style: circle;"
+			type=circle>
+			
+			<li class=kadov-p><p style="margin-bottom: 0px;">If the control 
+ does not violate a constraint, press the <span style="font-weight: bold;">Resubmit</span> 
+ button to send the control to the Load Management server.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt;">If the control 
+ does violate a constraint, either click the <span style="font-weight: bold;">Cancel</span> 
+ button to cancel control or select the <span style="font-weight: bold;">Override</span> 
+ check box and press the <span style="font-weight: bold;">Resubmit</span> 
+ button to send the control to the Load Management server.</p></li>
+		</ul>
+	</ul>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">By default, every 
+ program in a control scenario is selected to start. To specify which programs 
+ to start, clear the <span style="font-weight: bold;">Select All</span> 
+ check box and select the check boxes of the programs to start.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">The <span style="font-weight: bold;">Start</span> 
+ and <span style="font-weight: bold;">Stop</span> columns display the start 
+ and stop offsets of the programs in the control scenario. The offsets 
+ are displayed in the format of “hours:minutes”.</p></li>
+	
+	<li class=kadov-p><p>Click <span style="font-weight: bold;">OK</span> 
+ to start the control scenario.</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p>If you selected the <span style="font-weight: bold;">Start 
+ Now</span> check box, the program starts immediately and the status in 
+ the Load Control client display changes to Manual Active.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">If you specified 
+ a <span style="font-weight: bold;">Start Time</span> in the future, the 
+ program status in the Load Control client display changes to Scheduled. 
+ When the start time is reached, the program starts and the status changes 
+ to Manual Active.</p></li>
+	</ul>
+</ol>
+
+</body>
+
+</html>

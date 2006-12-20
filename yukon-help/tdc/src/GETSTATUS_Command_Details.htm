@@ -1,0 +1,397 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<html>
+
+<!--(==============================================================)-->
+<!--(Document created with RoboEditor. )============================-->
+<!--(==============================================================)-->
+
+<head>
+
+<title>GETSTATUS Command Details</title>
+
+<!--(Meta)==========================================================-->
+
+<meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
+<meta name=generator-major-version content=0.1>
+<meta name=generator-minor-version content=1>
+<meta name=filetype content=kadov>
+<meta name=filetype-version content=1>
+<meta name=page-count content=1>
+<meta name=layout-height content=577>
+<meta name=layout-width content=744>
+<meta name=date content="04 19, 2005 10:35:18 AM">
+<meta name=x-ignored-words content="Ack;nn;TDC;Unsilence;MACS;HH;Tcl;MW;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;GETSTATUS;MCT;PFCOUNT;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;VERSACOM;cmd;cmd_parameters;PUTCONFIG;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;PUTSTATUS;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;PUTVALUE;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;getvalue;Unmute;Unacked;ACK;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external">
+
+
+ <meta name="topic-status" content="In Progress">
+ <meta name="topic-priority" content="0">
+ <meta name="topic-time-estimate" content="0">
+ <meta name="topic-comment" content="">
+ <meta name="topic-id" content="GETSTATUS Command Details"><!--(Links)=========================================================-->
+
+<link rel=StyleSheet href=default.css>
+
+
+
+</head>
+
+<!--(Body)==========================================================-->
+
+
+<body>
+
+<h4>GETSTATUS Command Details</h4>
+
+<p>This command is used to collect status type data from the various supported 
+ field devices. The command defaults to the most basic status data for 
+ each device type. Most field device types support multiple pieces of status 
+ or state data (internal and external status information). To allow the 
+ collection of the different statuses, GETSTATUS command supports additional 
+ arguments to specify the other pieces of status data.</p>
+
+<p>&nbsp;</p>
+
+<p style="font-weight: bold;">getstatus [lp] [disconnect] [internal|external] 
+ [ied [link]] [pfcount] [eventlog] [update]</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p>The arguments are as follows:</p>
+
+<p>&nbsp;</p>
+
+<!--(Table)=========================================================-->
+<table x-use-null-cells
+		style="x-cell-content-align: top;
+				width: 100%;
+				border-spacing: 0px;"
+		cellspacing=0
+		width=100%>
+<col style="width: 22.463%;">
+<col style="width: 77.537%;">
+
+<tr valign=top>
+<td style="background-color: #000080;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=22.463%>
+<p style="color: #ffffff; font-weight: bold;">Argument </td>
+<td style="background-color: #000080;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=77.537%>
+<p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>lp</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects state information regarding current load profile data collection.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>disconnect</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects the state of the disconnect for a meter equipped with a whole 
+ house disconnect.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>internal</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects status internal to the device. For example, the firmware status.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>external</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects status external to the device. For example, a status input.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>ied [link]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects a status that indicates whether or not an IED is linked to 
+ the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>pfcount</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects the power fail count from a metering type device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>eventlog</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects the eventlog for ION devices only.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>update</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Saves the data into the current/last reading table.</td></tr>
+</table>
+
+<h5 style="font-size: 11pt;"><span style="font-size: 11pt;">Examples</span></h5>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus lp update</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus disc</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus internal</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus external</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus ied</p>
+
+<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">getstatus 
+ ied link</span></p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus pfcount</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus eventlog</p>
+
+</body>
+
+</html>

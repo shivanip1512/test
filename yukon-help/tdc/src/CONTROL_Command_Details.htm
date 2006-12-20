@@ -1,0 +1,1715 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<html>
+
+<!--(==============================================================)-->
+<!--(Document created with RoboEditor. )============================-->
+<!--(==============================================================)-->
+
+<head>
+
+<title>CONTROL Command Details</title>
+
+<!--(Meta)==========================================================-->
+
+<meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
+<meta name=generator-major-version content=0.1>
+<meta name=generator-minor-version content=1>
+<meta name=filetype content=kadov>
+<meta name=filetype-version content=1>
+<meta name=page-count content=1>
+<meta name=layout-height content=1734>
+<meta name=layout-width content=977>
+<meta name=date content="06 2, 2003 10:24:30 AM">
+<meta name=x-ignored-words content="Ack;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf">
+
+
+ <meta name="topic-status" content="In Progress">
+ <meta name="topic-priority" content="0">
+ <meta name="topic-time-estimate" content="0">
+ <meta name="topic-comment" content="">
+ <meta name="topic-id" content="CONTROL Command Details"><!--(Links)=========================================================-->
+
+<link rel=StyleSheet href=default.css>
+
+
+
+</head>
+
+<!--(Body)==========================================================-->
+
+
+<body>
+
+<h4>CONTROL Command Details</h4>
+
+<p>This command is used to send control commands to the various supported 
+ field devices. The command will default to the most basic control function. 
+ Many field device types can support more than one control output. To allow 
+ for the controlling of the different outputs additional arguments are 
+ available to specify the other outputs or types of controls. </p>
+
+<p>&nbsp;</p>
+
+<p style="font-weight: bold;">control [xcom] [noramp] [cycle <span style="font-style: italic; font-weight: normal;">percent</span> 
+ (period <span style="font-style: italic; font-weight: normal;">time</span>) 
+ (count <span style="font-style: italic; font-weight: normal;">#</span>) 
+ relay <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [shed <span style="font-style: italic; font-weight: normal;">time</span> 
+ relay <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [delay (time <span style="font-style: italic; font-weight: normal;">#</span>|until 
+ <span style="font-style: italic; font-weight: normal;">hh:mm</span>)] 
+ [rand start <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [rand stop <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [restore|terminate] [open|close|connect|disconnect]</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p style="font-weight: bold;">control [xcom] [noramp] [delta] [celsius] 
+ [mode (heat|cool|both)] [delay (time <span style="font-style: italic; font-weight: normal;">#</span>|until 
+ <span style="font-style: italic; font-weight: normal;">hh:mm</span>)] 
+ [rand start <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [rand stop <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [tcycle load <span style="font-style: italic; font-weight: normal;">#</span> 
+ (period <span style="font-style: italic; font-weight: normal;">time</span>) 
+ (count <span style="font-style: italic; font-weight: normal;">#</span>) 
+ (ctrl temp <span style="font-style: italic; font-weight: normal;">#</span>) 
+ (limit <span style="font-style: italic; font-weight: normal;">temp</span> 
+ afallback <span style="font-style: italic; font-weight: normal;">percent</span>) 
+ (maxrate <span style="font-style: italic; font-weight: normal;">rate</span> 
+ bfallback <span style="font-style: italic; font-weight: normal;">percent</span>)] 
+ [setpoint (min <span style="font-style: italic; font-weight: normal;">temp</span>) 
+ (max <span style="font-style: italic; font-weight: normal;">temp</span>) 
+ (tr <span style="font-style: italic; font-weight: normal;">time</span>) 
+ (ta <span style="font-style: italic; font-weight: normal;">time</span>) 
+ (tb <span style="font-style: italic; font-weight: normal;">time</span> 
+ dsb <span style="font-style: italic; font-weight: normal;">temp</span>) 
+ (tc <span style="font-style: italic; font-weight: normal;">time</span>) 
+ (td <span style="font-style: italic; font-weight: normal;">time</span> 
+ dsd <span style="font-style: italic; font-weight: normal;">temp</span>) 
+ (te <span style="font-style: italic; font-weight: normal;">time</span>) 
+ (tf <span style="font-style: italic; font-weight: normal;">time</span> 
+ dsf <span style="font-style: italic; font-weight: normal;">temp</span>)]</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p>The standard arguments are as follows:</p>
+
+<p>&nbsp;</p>
+
+<!--(Table)=========================================================-->
+<table x-use-null-cells
+		style="x-cell-content-align: top;
+				width: 100%;
+				border-spacing: 0px;"
+		cellspacing=0
+		width=100%>
+<col style="width: 17.537%;">
+<col style="width: 82.463%;">
+
+<tr valign=top>
+<td style="background-color: #000080;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=17.537%>
+<p style="color: #ffffff; font-weight: bold;">Argument </td>
+<td style="background-color: #000080;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=82.463%>
+<p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>xcom </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Sends the command using the ExpressCom protocol. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>noramp </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Causes the device to shed immediately and adds the randomization time 
+ to the end of the first off cycle. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>cycle <span style="font-style: italic;">percent</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Percent of the time period that the device is controlled. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>period <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional length of the cycle period. Defaults to 30 minutes if omitted. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>count <span style="font-style: italic;">#</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional number of periods to operate before stopping. Defaults to 8 
+ counts if omitted. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>shed <span style="font-style: italic;">time</span> </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Defines a shed command and the length of the shed. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>relay <span style="font-style: italic;">#</span> </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>The relay of the device to which the command is being sent. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>delay time <span style="font-style: italic;">#</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Execution of this command is delayed by the specified number minutes. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>delay until <span style="font-style: italic;">hh:mm</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Execution of this command is delayed until the time hh:mm, where hh:mm 
+ is in the future and in 24 hour time format. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>rand start <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Adds a random start time to the beginning of the shed control time. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>rand stop <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Adds a random stop time to the end of the shed control time. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>restore </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Restores a shed command. Ends a cycle with a randomization of 2 1/2 
+ minutes. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>terminate </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Terminates a cycle command. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>open </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Sends a command to a CBC, RTU, etc. to open the relay that is used as 
+ the open control. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>close </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Sends a command to a CBC, RTU, etc. to close the relay that is used 
+ as the close control. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>connect </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Sends a connect command to an MCT. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>disconnect </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Sends an open command to an MCT. </td></tr>
+</table>
+
+<p>&nbsp;</p>
+
+<p>The thermostat command arguments are as follows:</p>
+
+<p>&nbsp;</p>
+
+<!--(Table)=========================================================-->
+<table x-use-null-cells
+		style="x-cell-content-align: top;
+				width: 100%;
+				border-spacing: 0px;"
+		cellspacing=0
+		width=100%>
+<col style="width: 17.537%;">
+<col style="width: 82.463%;">
+
+<tr valign=top>
+<td style="background-color: #000080;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=17.537%>
+<p style="color: #ffffff; font-weight: bold;">Argument </td>
+<td style="background-color: #000080;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=82.463%>
+<p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>xcom </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Sends the command using the ExpressCom protocol. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>noramp </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Causes the device to shed immediately and adds the randomization time 
+ to the end of the first off cycle. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>delta </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Temperatures referenced in the thermostat control command will be positive 
+ and negative offsets from the program setpoint. Default is absolute values. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>celsius </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>All temperatures referenced in the thermostat control command are Celsius. 
+ Default is Fahrenheit. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p style="font-weight: normal;">mode heat|cool|both </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Selects the system heating or cooling, which is to be targeted in a 
+ thermostat control command </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>delay time <span style="font-style: italic;">#</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Execution of this command is delayed by the specified number minutes. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>delay until <span style="font-style: italic;">hh:mm</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Execution of this command is delayed until the time hh:mm, where hh:mm 
+ is in the future and in 24 hour time format. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>rand start <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Adds a random start time to the beginning of the shed control time. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>rand stop <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Adds a random stop time to the end of the shed control time. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>tcycle </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Defines a thermostat cycle command. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>load <span style="font-style: italic;">#</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Provides the load number to control. This is a required parameter and 
+ it is normally 1, indicating the primary heating or cooling load. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>period <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional length of the cycle period. Defaults to 30 minutes if omitted. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>count <span style="font-style: italic;">#</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional number of periods to operate before stopping. Defaults to 8 
+ counts if omitted. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>ctrl temp <span style="font-style: italic;">#</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional temperature setpoint during the portion of the period in which 
+ the system is allowed to operate. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>limit <span style="font-style: italic;">temp</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional limit temperature. This parameter limits the maximum or minimum 
+ temperature allowed based upon a threshold of 72° F. If the value entered 
+ is greater than 72, it is considered a maximum if less, a minimum. Requires 
+ the option afallbak to be defined. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>afallback <span style="font-style: italic;">percent</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional fallback control percentage. If the limit temperature is reached, 
+ the control percentage will change to the afallback percentage. Requires 
+ the option limit to be defined. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>maxrate <span style="font-style: italic;">rate</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional maximum temperature change rate per hour. May be positive or 
+ negative. Requires the option bfallback to be defined. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>bfallback percent </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional fallback control percentage. If the maxrate is exceeded, the 
+ control percentage changes to the bfallback percentage. Requires the option 
+ maxrate to be defined. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>setpoint </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Defines a thermostat setpoint command. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>min <span style="font-style: italic;">temp</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional absolute temperature below which the stat will not go. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>max <span style="font-style: italic;">temp</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional absolute temperature above which the stat will not go. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>tr <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional random time period (0 - time) minutes added to the setpoint 
+ command. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>ta <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional time in minutes prior to the setpoint command execution. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>tb <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional time in minutes of ramp transition to the first temperature 
+ waypoint. Requires the option dsb to be defined. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>dsb <span style="font-style: italic;">temp</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional value in degrees indicating the final temperature at the end 
+ of tb time period. May be absolute or delta depending upon delta parameter. 
+ </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>tc <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional time in minutes to hold at the temperature set in the tb/dsb 
+ stage of the control. </td></tr>
+
+<tr valign=top>
+<td style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>td <span style="font-style: italic;">time</span> </td>
+<td style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional time in minutes of ramp transition to the control temperature 
+ waypoint. Requires the option dsd to be defined. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>dsd <span style="font-style: italic;">temp</span> </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional value in degrees indicating the final temperature at the end 
+ of td time period. May be absolute or delta depending upon delta parameter. 
+ </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>te <span style="font-style: italic;">time</span> </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional time in minutes to hold at the temperature set in the td/dsd 
+ stage of the control. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>tf <span style="font-style: italic;">time</span> </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional time in minutes of ramp transition to the final temperature 
+ waypoint. Requires the option dsf to be defined. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>dsf <span style="font-style: italic;">temp</span> </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Optional value in degrees indicating the final temperature at the end 
+ of tf time period. May be absolute or delta depending upon delta parameter. 
+ </td></tr>
+</table>
+
+<h5 style="font-size: 11pt;">Examples</h5>
+
+<p>Examples of a standard command are:</p>
+
+<p style="font-weight: bold;">control xcom cycle 50 period 30 count 6 delay 
+ time 60 relay 1</p>
+
+<p style="font-weight: bold;">control xcom shed 120 rand start 45 rand 
+ stop 60 delay until 10:00 relay 3</p>
+
+<p style="font-weight: bold;">control xcom restore</p>
+
+<p style="font-weight: bold;">control xcom terminate</p>
+
+<p style="font-weight: bold;">control xcom open</p>
+
+<p style="font-weight: bold;">control xcom close</p>
+
+<p style="font-weight: bold;">control xcom connect</p>
+
+<p style="font-weight: bold;">control xcom disconnect</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p>Examples of a thermostat command are:</p>
+
+<p style="font-weight: bold;">control xcom tcycle 50 period 30 count 8 
+ delay time 30 load 1</p>
+
+<p style="font-weight: bold;">control xcom delta mode both tcycle 50 load 
+ 1 period 60 count 4 maxrate -5 bfallback 25</p>
+
+<p style="font-weight: bold;">control xcom setpoint delta mode cool min 
+ 68 tr 30 ta 30 tb 120 dsb -5 tc 60 td 240 dsd 10 te 60</p>
+
+<p style="font-weight: bold;">control xcom setpoint min 68 tb 120 dsb 68 
+ tc 60 td 240 dsd 78 te 60</p>
+
+</body>
+
+</html>

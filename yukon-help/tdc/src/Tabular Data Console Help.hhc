@@ -1,0 +1,146 @@
+<html>
+<!-- Sitemap 1.0 -->
+<object type="text/site properties">
+  <param name="SiteType" value="toc">
+  <param name="Image Width" value="16">
+  <param name="Window Styles" value="0x800002">
+  <param name="ExWindow Styles" value="0x100">
+</object>
+<ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Introduction">
+    <param name="Local" value="Introduction.htm">
+  </object>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Using TDC">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Adding and Removing Bookmarks">
+      <param name="Local" value="Adding_and_Removing_Bookmarks.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Changing the Display Font">
+      <param name="Local" value="Changing_the_Display_Font.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Displaying Grid Lines">
+      <param name="Local" value="Displaying_Grid_Lines.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Exporting a Data Set">
+      <param name="Local" value="Exporting_a_Data_Set.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Opening Multiple TDC Windows">
+      <param name="Local" value="Opening_Multiple_Windows.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Performing a Search">
+      <param name="Local" value="Performing_a_Search.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Print Preview">
+      <param name="Local" value="Print_Preview.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Print Date (Time) Range">
+      <param name="Local" value="Print_Date_(Time)_Range.htm">
+    </object>
+    </ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Alarms and Events">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Viewing Alarms and Events">
+      <param name="Local" value="Alarms_and_Events.htm">
+    </object>
+    </ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Custom Displays">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Viewing Custom Displays">
+      <param name="Local" value="Custom_Displays.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Creating a Custom Display">
+      <param name="Local" value="Creating_a_Display.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing a Custom Display">
+      <param name="Local" value="Editing_a_Display.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Copying a Custom Display">
+      <param name="Local" value="Copying_a_Display.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Removing a Custom Display">
+      <param name="Local" value="Removing_a_Display.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Exporting a Display to SQL">
+      <param name="Local" value="Exporting_a_Display_to_SQL.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Creating Templates">
+    </object>
+    <ul>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating a Template">
+        <param name="Local" value="Creating_a_Template.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Editing a Template">
+        <param name="Local" value="Editing_a_Template.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Deleting a Template">
+        <param name="Local" value="Deleting_a_Template.htm">
+      </object>
+      </ul>
+    </ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Metering and Control Scheduler">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Using Metering and Control Scheduler">
+      <param name="Local" value="Metering_and_Control_Scheduler.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Creating a MACS Schedule">
+      <param name="Local" value="Creating_a_Schedule.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing a MACS Schedule">
+      <param name="Local" value="Editing_a_Schedule.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Yukon Command Language Summary">
+      <param name="Local" value="Yukon_Command_Language_Summary.htm">
+    </object>
+    </ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Load Management">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Load Management">
+      <param name="Local" value="Load_Management.htm">
+    </object>
+    </ul>
+  <li><object type="text/sitemap">
+    <param name="Name" value="Yukon Servers">
+  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Yukon Servers">
+      <param name="Local" value="Yukon_Servers.htm">
+    </object>
+    </ul>
+</ul>
+</html>

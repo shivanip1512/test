@@ -1,0 +1,2554 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<html>
+
+<!--(==============================================================)-->
+<!--(Document created with RoboEditor. )============================-->
+<!--(==============================================================)-->
+
+<head>
+
+<title>PUTCONFIG Command Details</title>
+
+<!--(Meta)==========================================================-->
+
+<meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
+<meta name=generator-major-version content=0.1>
+<meta name=generator-minor-version content=1>
+<meta name=filetype content=kadov>
+<meta name=filetype-version content=1>
+<meta name=page-count content=1>
+<meta name=layout-height content=3639>
+<meta name=layout-width content=744>
+<meta name=date content="04 19, 2005 10:35:25 AM">
+<meta name=x-ignored-words content="Ack;nn;TDC;Unsilence;MACS;HH;Tcl;MW;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;GETSTATUS;MCT;PFCOUNT;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;VERSACOM;cmd;cmd_parameters;PUTCONFIG;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;PUTSTATUS;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;PUTVALUE;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;getvalue;Unmute;Unacked;ACK;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;ReEnable;Program(s;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak">
+
+
+ <meta name="topic-status" content="In Progress">
+ <meta name="topic-priority" content="0">
+ <meta name="topic-time-estimate" content="0">
+ <meta name="topic-comment" content="">
+ <meta name="topic-id" content="PUTCONFIG Command Details"><!--(Links)=========================================================-->
+
+<link rel=StyleSheet href=default.css>
+
+
+<!--(Misc)==========================================================-->
+
+<<<<<<< PUTCONFIG_Command_Details.htm &lt;meta name=layout-height content=3379>
+
+
+
+</head>
+
+<!--(Body)==========================================================-->
+
+
+<body>
+
+<h4>PUTCONFIG Command Details</h4>
+
+<p>This command is used to send configuration type data to the various 
+ supported field devices. The command will default to the most basic or 
+ common configuration data for each device type. Most field device types 
+ support multiple pieces of configuration data. To allow for the programming 
+ of the different configuration data the PUTCONFIG command supports additional 
+ arguments to specify the other pieces of data.</p>
+
+<h5 style="font-size: 11pt;">VERSACOM</h5>
+
+<p style="font-weight: bold;">putconfig [VERSACOM] [template <span style="font-style: italic; font-weight: normal;">name</span>] 
+ [utility <span style="font-style: italic; font-weight: normal;"># </span>|aux 
+ <span style="font-style: italic; font-weight: normal;"># </span>|section 
+ <span style="font-style: italic; font-weight: normal;"># </span>|class 
+ (<span style="font-style: italic; font-weight: normal;">#,..,# </span>| 
+ 0x<span style="font-style: italic; font-weight: normal;">##</span>) |division 
+ (<span style="font-style: italic; font-weight: normal;">#,..,# </span>| 
+ 0x<span style="font-weight: normal; font-style: italic;">##</span>)] [fromutility 
+ # utility #| fromsect # section #| fromclass # class #| fromdivsion # 
+ division #] [assign [u<span style="font-style: italic; font-weight: normal;">#</span>] 
+ [a<span style="font-style: italic; font-weight: normal;">#</span>] [s<span 
+ style="font-style: italic; font-weight: normal;">#</span>] [c0x<span style="font-style: italic; font-weight: normal;">##</span>] 
+ [d0x<span style="font-style: italic; font-weight: normal;">##</span>]] 
+ [service (in|out) [temp]] [led (y | n)(y | n)(y | n)] [reset [rtc] [lf] 
+ [r1] [r2] [r3] [r4] [cl] [pt]] [prop <span style="font-weight: normal; font-style: italic;">time</span>] 
+ [cold [r1 <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [r2 <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [r3 <span style="font-style: italic; font-weight: normal;">time</span>]] 
+ [cycle [r1 <span style="font-style: italic; font-weight: normal;">count</span>] 
+ [r2 <span style="font-style: italic; font-weight: normal;">count</span>] 
+ [r3 <span style="font-style: italic; font-weight: normal;">count</span>]] 
+ [scram [r1 <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [r2 <span style="font-style: italic; font-weight: normal;">time</span>] 
+ [r3 <span style="font-style: italic; font-weight: normal;">time</span>]] 
+ [vdata <span style="font-style: italic; font-weight: normal;"># # # # 
+ # #</span>] [raw <span style="font-style: italic; font-weight: normal;"># 
+ # # # # #</span>]</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p>The arguments are as follows:</p>
+
+<p>&nbsp;</p>
+
+<!--(Table)=========================================================-->
+<table x-use-null-cells
+		style="x-cell-content-align: top;
+				width: 100%;
+				border-spacing: 0px;"
+		cellspacing=0
+		width=100%>
+<col style="width: 22.463%;">
+<col style="width: 77.537%;">
+
+<tr valign=top>
+<td style="background-color: #000080;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=22.463%>
+<p style="color: #ffffff; font-weight: bold;">Argument </td>
+<td style="background-color: #000080;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=77.537%>
+<p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p style="font-weight: normal;">VERSACOM</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Target type of putconfig message. The target type defaults to VERSACOM.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>template <span style="font-style: italic;">name</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Configures a device to use the addressing of the specified Load Group.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>utility #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns an utility id number to the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>aux #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns an auxiliary utility id number <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->to 
+ the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>section #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns a section number <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->to 
+ the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>class #,..,#</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns class numbers (up to 16 numbers) to the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>class 0x## <!--kadov_tag{{<spaces>}}-->&nbsp;&nbsp;&nbsp;<!--kadov_tag{{</spaces>}}-->(2 
+ bytes)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns class numbers to the device.<br>
+# is a hexadecimal number in the spec. format.<br>
+<br>
+This format enumerates bits 1-16 with the MSB as 1.</p>
+<p>Example 8000 = Class 1, F000 Class 1-4.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>division #,..,#</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns a division numbers (up to 16 numbers) to the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>division 0x## <!--kadov_tag{{<spaces>}}-->&nbsp;&nbsp;&nbsp;<!--kadov_tag{{</spaces>}}-->(2 
+ bytes)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns a division numbers to the device.<br>
+# is a hexadecimal number in the correct format.<br>
+<br>
+This format enumerates bits 1-16 with the MSB as 1.</p>
+<p>Example 8000 = Class 1, F000 Class 1-4.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>fromutility # utility #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Reassigns utility addressing using the specified utility ID </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>fromsect # section #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Reassigns section addressing using the specified section ID </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>fromclass # class #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Reassigns class addressing using the specified class ID </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>fromdivision # division #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Reassigns division addressing using the specified division ID</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>assign [u#] [a#] [s#] [c0x##] [d0x##]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Assigns utility, auxiliary, section, class, and division ID. </p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->- [u#] 
+ = utility</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->- [a#] 
+ = auxiliary</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->- [s#] 
+ = section</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->- [c0x##] 
+ = class</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->- [d0x##] 
+ = division</p>
+<p>&nbsp;</p>
+<p>Class and division addresses are a 2 byte quantity properly formatted 
+ per the protocol spec. This format enumerates bits 1-16 with the MSB as 
+ 1.</p>
+<p>&nbsp;</p>
+<p style="margin-left: 0px;">Example 8000 = Class 1, F000 = Class 1-4. 
+ </p>
+<p style="margin-left: 0px;">Any or all may be specified in one command 
+ and order is irrelevant.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>service (in|out) [temp]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Place device in or out of service. (t is an optional temporary flag.)</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>led (y|n)(y|n)(y|n)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Configures a receiver's LEDs. (y = enable.)</p>
+<p>LEDs are Load, Status, and Report respectively.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>reset</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets internal counters. </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>rtc</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets the real-time clock</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>lf</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets the LUF counter</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>r<span style="font-style: italic;">n</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets relay <span style="font-style: italic;">n</span> load control 
+ counter.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>cl</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets communications loss counter.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>pt</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Resets propagation test counter.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>prop <span style="font-style: italic;">time</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Sets propagation display time in hours. When a device receives the prop 
+ command, the LED is lit for the time specified.</p>
+<p>Valid ranges vary, but 1-9 hours are acceptable for all devices.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>cold [r1 <span style="font-style: italic;">time</span>] [r2 <span style="font-style: italic;">time</span>] 
+ [r3 <span style="font-style: italic;">time</span>]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Sets the cold load pickup time for one or more relays on the VERSACOM 
+ device. Any or all may be specified in one command.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>cycle [r1 <span style="font-style: italic;">count</span>] [r2 <span 
+ style="font-style: italic;">count</span>] [r3 <span style="font-style: italic;">count</span>]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Sets the number of load control cycles for one or more relays on the 
+ VERSACOM device. Any or all may be specified in one command.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>scram [r1 <span style="font-style: italic;">time</span>] [r2 <span style="font-style: italic;">time</span>] 
+ [r3 <span style="font-style: italic;">time</span>]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Sets the scram enable/restore time for one or more relays on the VERSACOM 
+ device. Any or all may be specified in one command.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>vdata # # # # # #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Sends an uninterpreted data command to the device. Contact Cannon Technical 
+ Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>raw # # # # # #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Sends an uninterpreted configuration command to the device. Contact 
+ Cannon Technical Support for more information.</td></tr>
+</table>
+
+<h5 style="font-size: 11pt;"><span style="font-size: 11pt;">Examples</span></h5>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig template &quot;A/C 
+ 1&quot;</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig utility 10</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig fromutility 
+ 5 utility 1</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig assign u12 s8</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig service out 
+ temp</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig led y y n</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig reset rtc lf 
+ r1 r2 r3 cl pt</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig prop 2</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig cold r1 60</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig cycle r2 5</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig scram r3 30</p>
+
+<p style="margin-left: 12px; font-weight: bold;">&nbsp;</p>
+
+<h5 style="font-size: 11pt;">ExpressCom</h5>
+
+<p style="font-weight: bold;">putconfig xcom [sync] [setstate [relaymask 
+ #] [run] [hold] [fan (on|off|auto)] [system (off|heat|cool|emheat)] [temp 
+ <span style="font-style: italic; font-weight: normal;">value</span>] [timeout 
+ <span style="font-style: italic; font-weight: normal;">time</span>]] [timesync 
+ <span style="font-style: italic; font-weight: normal;">date</span> <span 
+ style="font-weight: normal;">hh:mm</span>] [template <span style="font-weight: normal; font-style: italic;">name</span>] 
+ [raw <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [data <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [maintenance <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [assign|address [spid <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [geo<span style="font-style: italic; font-weight: normal;"> #</span>] 
+ [sub <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [feeder <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [zip <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [uda <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [program <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [splinter<span style="font-style: italic; font-weight: normal;"> #</span>]] 
+ [relay|load <span style="font-style: italic; font-weight: normal;">#</span>] 
+ [service (in|out|enable|disable) [t] (noclp|noled|bitP|bitL|cancel| offhours 
+ <span style="font-weight: normal;">time</span>)] [schedule <span style="font-style: italic; font-weight: normal;">day 
+ HH:MM, Heat Temp, Cool Temp, ...</span>]</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p>The arguments are as follows:</p>
+
+<p>&nbsp;</p>
+
+<!--(Table)=========================================================-->
+<table x-use-null-cells
+		style="x-cell-content-align: top;
+				width: 100%;
+				border-spacing: 0px;"
+		cellspacing=0
+		width=100%>
+<col style="width: 27.159%;">
+<col style="width: 72.841%;">
+
+<tr valign=top>
+<td style="background-color: #000080;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=27.159%>
+<p style="color: #ffffff; font-weight: bold;">Argument </td>
+<td style="background-color: #000080;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=72.841%>
+<p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>xcom</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Target type of putconfig message.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>sync</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Keeps devices locked to a paging company and cap code.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p style="font-weight: normal;">setstate</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sets the thermostat state.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>relaymask</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Specifies the relays of the device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>run</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Runs a program</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>hold</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Holds the current temperature.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>fan (on|off|auto)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sets the fan state to on, off, or auto.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>system (off|heat|cool|emheat)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sets the system state to off, heat, cool, or emheat (heat pump).</p>
+<p>&nbsp;</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>temp <span style="font-style: italic;">value</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sets the temperature.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>timeout <span style="font-style: italic;">time</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sets the length of time the program runs until it times out.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>timesync <span style="font-style: italic;">date</span> <span style="font-style: italic;">hh:mm</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sends a time sync with the current time of day. Including a date sends 
+ a the current time and date. Specifying the hours and minutes sends that 
+ particular time.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>template <span style="font-style: italic;">name</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Configures a device to use the addressing of the specified Load Group.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>raw #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sends an uninterpreted configuration command to the device. Contact 
+ Cannon Technical Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>data #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sends an uninterpreted data message to the device. Contact Cannon Technical 
+ Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>maintenance #</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sends an uninterpreted maintenance function to the device. Contact Cannon 
+ Technical Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>assign [s #] [g #] [b #] [f #] [z #] [u #] { [p #] [r #] [load #] }</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Assigns a new ExpressCom® address to the device. The address must be 
+ entered in the order listed.</p>
+<p>s = Spid</p>
+<p>g = Geographic</p>
+<p>b = suBstation</p>
+<p>f = Feeder</p>
+<p>z = Zip code</p>
+<p>u = User-defined </p>
+<p>p = Program</p>
+<p>r = splinteR</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>service <br>
+(in|out|enable|disable) [temp] (noclp|noled|offhours <span style="font-style: italic;">time</span>)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Sends a command to take the device out of service (disable) or to place 
+ the device in service (enable). The <span style="font-weight: bold;">temp</span> 
+ option makes the service command a temporary command. The <span style="font-weight: bold;">noclp</span> 
+ option keeps the device from running cold load pickup during startup. 
+ The <span style="font-weight: bold;">noled</span> option turns of the 
+ LEDs when the device is out of service. The <span style="font-weight: bold;">offhours</span> 
+ <span style="font-style: italic;">time</span> option takes the device 
+ out of service for a specified number of hours.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=27.159%>
+<p>schedule <span style="font-style: italic;">day HH:MM, Heat Temp, Cool 
+ Temp, ...</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=72.841%>
+<p>Assigns period schedules to a thermostat.</td></tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h5 style="font-size: 11pt;">Examples</h5>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom sync</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom setstate 
+ relaymask 1 hold fan auto system off</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom temp 72</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom timeout 
+ 120</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom timesync 
+ 06022003</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig template “A/C 
+ 1”</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom assign 
+ s 250 g 101 b 2754 f 65535 z 55112 u 12 p 11,11,11 <span style="margin-left: 12px; font-weight: bold;">r 
+ 1,2,3 load 1,2,3</span></p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom assign 
+ p 21,100 load 1,3</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom assign 
+ g 252</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom service 
+ out temp</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom schedule 
+ weekday 06:00, 68, 78, 10:00, 64, 74, 14:00, 68, 78, 16:00, 64, 74</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig xcom schedule 
+ sat 06:00, 70, 76, 10:00, 66, 76, 14:00, 70, 76, 16:00, 66, 76</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left: 12px; font-weight: bold;">&nbsp;</p>
+
+<h5 style="font-size: 11pt;">EMETCON</h5>
+
+<p style="font-weight: bold;">putconfig EMETCON [timesync] [intervals|interval 
+ (li|lp)] [onoffpeak|minmax] [disconnect|connect] [multiplier kyz <span 
+ style="font-style: italic;">offset mult</span>] [role <span style="font-style: italic;">number 
+ fixb outb inb</span>] [multi_role <span style="font-style: italic;">number</span> 
+ f<span style="font-style: italic;">n</span> vo<span style="font-style: italic;">n</span> 
+ vi<span style="font-style: italic;">n</span> stf<span style="x-text-underline: normal; font-style: italic; /*begin!kadov{{*/ text-decoration: underline; /*}}end!kadov*/ ">n</span> 
+ ][ied (scan <span style="font-style: italic;">interval delay</span>|class 
+ <span style="font-style: italic;">number offset</span>)] [install] [group 
+ (enable|disable)]</p>
+
+<p style="font-weight: bold;">&nbsp;</p>
+
+<p>The arguments are as follows:</p>
+
+<p>&nbsp;</p>
+
+<!--(Table)=========================================================-->
+<table x-use-null-cells
+		style="x-cell-content-align: top;
+				width: 100%;
+				border-spacing: 0px;"
+		cellspacing=0
+		width=100%>
+<col style="width: 25.176%;">
+<col style="width: 74.824%;">
+
+<tr valign=top>
+<td style="background-color: #000080;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=25.176%>
+<p style="color: #ffffff; font-weight: bold;">Argument </td>
+<td style="background-color: #000080;
+			border-top-width: 2px;
+			border-top-style: Solid;
+			border-top-color: #ffffff;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#000080
+	width=74.824%>
+<p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>EMETCON</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Target type of putconfig message.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>timesync</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Forces a time sync</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>intervals</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads last interval demand/voltage and load/voltage profile settings 
+ to a field device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>interval (li|lp)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads demand interval information to a field device. (li = last interval 
+ demand, lp = load profile)</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>onnoffpeak</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Configures the field device to record on peak and off peak values.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>minmax</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Configure the field device to record minimum and maximum values.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>disconnect</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Sends a disconnect command to a disconnect meter base.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>connect </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Sends a connect command to a disconnect meter base.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>multiplier kyz <span style="font-style: italic;">offset mult</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads an internal multiplier into a field device.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>role <span style="font-style: italic;">rolenum fixb</span> <span style="font-style: italic;">outb</span> 
+ <span style="font-style: italic;">inb stages</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads a role configuration data to a repeater device. Contact Cannon 
+ Technical Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>multi_role <span style="font-style: italic;">count fn</span> v<span 
+ style="font-style: italic;">on</span> v<span style="font-style: italic;">in 
+ stfn</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads multiple role configurations data to a repeater device. Contact 
+ Cannon Technical Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>raw [start=0x<span style="font-style: italic;">hexnum</span> 0x<span 
+ style="font-style: italic;">byte1</span> 0x<span style="font-style: italic;">byte2</span>]</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads a raw block of data to a field device. Contact Cannon Technical 
+ Support for more information.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>ied scan <span style="font-style: italic;">interval</span> <span style="font-style: italic;">delay</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Changes the interval and delay of a demand reading for an IED.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>ied class <span style="font-style: italic;">number</span> <span style="font-style: italic;">offset</span></td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Sets class and offset of an IED.</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>install</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Verifies the SPEC and uploads LI and LP intervals</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>group (enable|disable)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Enables or disables group addressing</td></tr>
+
+<tr valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=25.176%>
+<p>address (gold <span style="font-style: italic;">x</span> silver <span 
+ style="font-style: italic;">x</span> bronze <span style="font-style: italic;">x</span> 
+ lead meter <span style="font-style: italic;">x</span> load <span style="font-style: italic;">x</span>)</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=74.824%>
+<p>Uploads EMETCON addressing to a field device.</td></tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h5 style="font-size: 11pt;">Examples</h5>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON timesync</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON intervals</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON interval 
+ li</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON onoffpeak</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON minmax</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON connect</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON disconnect</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON multiplier 
+ kyz 1 1.25</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON role 
+ 12 7 6 0 <!--kadov_tag{{<ignored>}}-->0<!--kadov_tag{{</ignored>}}--></p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON ied 
+ scan 30 5</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON ied 
+ class 72 02</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON install</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON group 
+ enable</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON address 
+ gold 2 silver 5</p>
+
+<p style="margin-left: 12px; font-weight: bold;">putconfig EMETCON address 
+ lead meter 3 load 6</p>
+
+</body>
+
+</html>

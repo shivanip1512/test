@@ -1,0 +1,58 @@
+[Target:WebHelp Pro]
+ResultFileName=!SSL!\WebHelp_Pro\Tabular_Data_Console_Help.htm
+SSLayoutType=32
+ServerProjectName=Tabular Data Console Help
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:WebHelp]
+ResultFileName=!SSL!\WebHelp\Tabular_Data_Console_Help.htm
+SSLayoutType=2
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Microsoft HTML Help]
+ResultFileName=!SSL!\Microsoft_HTML_Help\Tabular_Data_Console_Help.chm
+SSLayoutType=1
+CreateProjectTime=09:57, December 20, 2006
+CreateProjectUser=sjohnson
+SupportMas_MPJ=1
+Enable Result Dialog=1
+ActionID For Generation=1005
+Remove Folder with prompt=1
+ViewFileName=!SSL!\Microsoft_HTML_Help\Tabular_Data_Console_Help.chm
+ResultStatus=0
+BuildTimeHi=29828175
+BuildTimeLow=-1751889294
+[Target:FlashHelp]
+ResultFileName=!SSL!\FlashHelp\Tabular_Data_Console_Help.htm
+SSLayoutType=2
+CreateProjectTime=
+CreateProjectUser=
+SupportMas_MPJ=1
+[Target:Printed Documentation]
+ResultFileName=!SSL!\Printed_Documentation\Tabular_Data_Console_Help.doc
+SSLayoutType=7
+[Target:XML Output]
+ResultFileName=!SSL!\XML_Output\Tabular_Data_Console_Help.xml
+SSLayoutType=8192
+[PreSingleSource]
+Html Help Project=C:\working\yukon-help\tdc\src\Tabular Data Console Help.hhp
+Table Of Content=C:\working\yukon-help\tdc\src\Tabular Data Console Help.hhc
+Index=C:\working\yukon-help\tdc\src\Tabular Data Console Help_merged$.hhk
+See Also Index=C:\working\yukon-help\tdc\src\Tabular Data Console Help.hha
+Browse Sequence=C:\working\yukon-help\tdc\src\Tabular Data Console Help.brs
+Topic Properties=C:\working\yukon-help\tdc\src\Tabular Data Console Help.trs
+Active Folders=C:\working\yukon-help\tdc\src\Tabular Data Console Help.trf
+Baggage Files=C:\working\yukon-help\tdc\src\Tabular Data Console Help.trb
+Skin List=C:\working\yukon-help\tdc\src\Tabular Data Console Help.trk
+OriginalHhk=C:\working\yukon-help\tdc\src\Tabular Data Console Help.hhk
+Active Layout Names=C:\working\yukon-help\tdc\src\Tabular Data Console Help.trl
+Default Topic=C:\working\yukon-help\tdc\src\Introduction.htm
+Build Tags0=7673;            
+Build Tags=
+Build Expression=
+Language ID=1033
+Language Name=English
+Language=C:\working\yukon-help\tdc\src\RoboHHRE.lng
+Stop List=C:\working\yukon-help\tdc\src\Tabular Data Console Help.stp
