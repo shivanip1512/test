@@ -38,6 +38,7 @@ public class MCT410AllPointCreate extends PointCreate
 		boolean frozenMaxVolts = true;	//offset 24 (demandAcc)
 		boolean frozenMinVolts = true;	//offset 25 (demandAcc)
 		boolean blinkCount = true;		//offset 20 (pulseAcc)
+		boolean outageLog = true;		//offset 100 (analog)
 	}
 
 
@@ -250,6 +251,19 @@ public class MCT410AllPointCreate extends PointCreate
 				    CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 					addCount++;
 			}
+			if( createPoint.outageLog)
+			{
+				int pointID = pointDao.getNextPointId();
+			    multi.addDBPersistent(
+				        PointFactory.createAnalogPoint(
+				        	"Outages", 
+							new Integer(paobjectID), 
+                            new Integer(pointID), 
+                            PointTypes.PT_OFFSET_OUTAGE, 
+                            PointUnits.UOMID_SECONDS));
+				    CTILogger.info("Adding Outage Log: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
+					addCount++;
+			}
 		}
 	
 		boolean success = writeToSQLDatabase(multi);
@@ -310,6 +324,8 @@ public class MCT410AllPointCreate extends PointCreate
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMinVolts = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_BLINK_COUNT && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).blinkCount = false;
+		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_OUTAGE && lp.getPointType() == PointTypes.ANALOG_POINT)
+			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).outageLog = false;
 		
 		return false;
 	}	
