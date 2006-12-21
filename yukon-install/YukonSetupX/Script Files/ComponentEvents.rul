@@ -172,7 +172,6 @@ szEnv = "Environment";
 pEnv = &szEnv;
 SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
-//install Tomcat as a service (behold this lumbering behemoth of a command line)
 szServPath = TomcatPath ^ "\\bin\\";
 szCmdLine = 'install';
 /*nvResult = AskYesNo ( "Would you like to install Tomcat as a service?" , NO );
@@ -183,7 +182,7 @@ LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
   
 //Add this service to the YUKON GROUP so it shows up in TDC
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SYSTEM\\CurrentControlSet\\Services\\Yukon Web Applications Service";
+szKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonWebApplicationService";
 szName = "Group";
 szValue = "YUKON GROUP";
 nSize = -1; 

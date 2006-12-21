@@ -111,8 +111,8 @@
 		<row><td>Common Bin</td><td>{C227265E-8670-4A80-9C04-743E19939F13}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Common Directories</td><td>{3E387166-F474-4E1A-964C-9F15D612CA1A}</td><td>SERVER</td><td>0</td><td/><td/><td>2561</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Common Dlls</td><td>{0A34D87B-E6BA-4B1D-BA50-8F4DB4F519D0}</td><td>SERVER</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Config Properties</td><td>{9B7AB4F9-1715-44AC-AB68-5934AE771B03}</td><td>WEB</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Database Editor</td><td>{9BCF06B7-0196-4018-BADA-8047223F1A4E}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Database Properties</td><td>{9B7AB4F9-1715-44AC-AB68-5934AE771B03}</td><td>WEB</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ESub Editor</td><td>{9FDC2ABD-23BF-4290-A9D3-AC5B93DBA740}</td><td>BIN</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{7B5F36F3-9B88-4E0C-817F-222A041C2D13}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Help</td><td>{1FEA837D-476D-4C29-9278-559F5C6BE084}</td><td>HELP</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -342,7 +342,7 @@
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>Initial Server Config</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>MACS Server</td></row>
 		<row><td>{52095A08-45B8-4DDD-AF60-1CAEDAA000DA}</td><td>Test Applications</td></row>
-		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Database Properties</td></row>
+		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Config Properties</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Yukon Web Deployment</td></row>
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td>Help</td></row>
@@ -427,7 +427,6 @@
 		<row><td>ctisvr.dll</td><td>Common Dlls</td><td>ctisvr.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctisvr.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>ctivg.dll</td><td>Common Dlls</td><td>ctivg.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctivg.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>dailypeaks.bat</td><td>Common Bin</td><td>DailyPeaks.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\DailyPeaks.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>db.properties</td><td>Database Properties</td><td>db.properties</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\db.properties</td><td>1</td><td/></row>
 		<row><td>dbeditor.jar</td><td>Database Editor</td><td>dbeditor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\dbeditor.jar</td><td>1</td><td>NewSubFolder74</td></row>
 		<row><td>dbeditoricon.ico</td><td>Common Bin</td><td>dbEditorIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\dbEditorIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>dbghelp.dll</td><td>Common Dlls</td><td>dbghelp.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\dbghelp.dll</td><td>1</td><td>NewSubFolder72</td></row>
@@ -487,7 +486,6 @@
 		<row><td>loadcontrol.jar</td><td>Common Bin</td><td>loadcontrol.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\loadcontrol.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>loadmanagement.exe</td><td>Load Management</td><td>loadmanagement.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\loadmanagement.exe</td><td>1</td><td>NewSubFolder81</td></row>
 		<row><td>loadsshed.bat</td><td>Common Bin</td><td>LoadsShed.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\LoadsShed.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>log.properties</td><td>Database Properties</td><td>log.properties</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\log.properties</td><td>1</td><td/></row>
 		<row><td>log4j_1.2.4.jar</td><td>Common Bin</td><td>log4j-1.2.4.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\log4j-1.2.4.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>logic.dll</td><td>Common Dlls</td><td>logic.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\logic.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>lucene_core_2.0.0.jar</td><td>Common Bin</td><td>lucene-core-2.0.0.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\lucene-core-2.0.0.jar</td><td>1</td><td>NewSubFolder85</td></row>
@@ -533,7 +531,7 @@
 		<row><td>saprotocol.dll</td><td>Common Dlls</td><td>SAprotocol.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\SAprotocol.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>scanner.exe</td><td>Scanner</td><td>scanner.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\scanner.exe</td><td>1</td><td>NewSubFolder2</td></row>
 		<row><td>scansup.dll</td><td>Common Dlls</td><td>scansup.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\scansup.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>server.xml</td><td>Database Properties</td><td>server.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;\conf\server.xml</td><td>1</td><td>NewSubFolder1</td></row>
+		<row><td>server.xml</td><td>Config Properties</td><td>server.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;\conf\server.xml</td><td>1</td><td>NewSubFolder1</td></row>
 		<row><td>service.dll</td><td>Common Dlls</td><td>service.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\service.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>services.jar</td><td>Common Bin</td><td>services.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\services.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>setjavapath.bat</td><td>Common Bin</td><td>setjavapath.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\setjavapath.bat</td><td>1</td><td>NewSubFolder85</td></row>
@@ -603,8 +601,8 @@
 		<row><td>Common Bin</td><td>0</td><td/><td>_DBA94BDF_F0D8_4126_A8B9_8155D3E3C7AC_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Common Directories</td><td>0</td><td/><td>_64271B00_9AEE_4EBD_AF6B_D51969F8EA80_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Common Dlls</td><td>0</td><td/><td>_F773D23D_B87B_425E_A45B_25AF5AF97E32_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Config Properties</td><td>0</td><td/><td>_2D302527_BF55_4BF9_8716_B3B5E323448C_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Database Editor</td><td>0</td><td/><td>_62680E66_D76C_41E9_BE61_641B4226E623_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Database Properties</td><td>0</td><td/><td>_2D302527_BF55_4BF9_8716_B3B5E323448C_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ESub Editor</td><td>0</td><td/><td>_A62DC5BB_FFFA_4641_AC50_CCC6873DE667_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Foreign Data Router</td><td>0</td><td/><td>_3536D6D6_BC3C_4DFF_ABA4_40B90B6BC56E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Help</td><td>0</td><td/><td>_4FE55A86_EEEB_4597_AE0A_2365C9602121_FILTER</td><td/><td/><td/><td/></row>
@@ -630,7 +628,7 @@
 		<col def="s72">Component_</col>
 		<col def="S72">ISSubFolder_Parent</col>
 		<col def="s255">Path</col>
-		<row><td>NewSubFolder1</td><td>Database Properties</td><td/><td>conf</td></row>
+		<row><td>NewSubFolder1</td><td>Config Properties</td><td/><td>conf</td></row>
 		<row><td>NewSubFolder2</td><td>Scanner</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder3</td><td>Trending</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder66</td><td>Calculation Server</td><td/><td>Bin</td></row>
