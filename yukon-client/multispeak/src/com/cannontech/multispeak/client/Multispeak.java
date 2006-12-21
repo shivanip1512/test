@@ -841,7 +841,7 @@ public class Multispeak implements MessageListener {
                                 
                                 
 //                                  Find a valid Template!
-                                String templateName = "Default Template";
+                                String templateName = "*Default Template";
                                 ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
                                 for (int j = 0; j < eItems.length; j++) {
                                     ExtensionsItem eItem = eItems[j];
