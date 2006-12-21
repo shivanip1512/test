@@ -137,8 +137,7 @@ end;
  
 export prototype Tomcat_Installed();
 function Tomcat_Installed()
-STRING szCmdLine, szCmdLine2, szCmdLine3, szCmdLine4, szCmdLine5, szCmdLine6, szCmdLine7;
-string szCmdLine8, szCmdLine9, szCmdLine10, szCmdLine11, szCmdLine12, szCmdLine13;
+STRING szCmdLine;
 string szServPath, szPath, TomcatPath, JavaPath, WarPath;
 string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile, szValue;
 number nvResult, nvType, nvSize, foundVal, dirSearch, nSize;
@@ -165,7 +164,7 @@ foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TomcatPath , -1 
 foundVal = ChangeDirectory(TomcatPath + "\\webapps\\yukon");
 WarPath = TomcatPath + '\\webapps\\yukon\\yukon.war';
 szCmdLine = '-xfv ' + WarPath;
-LaunchAppAndWait (JavaPath+"\\bin\\jar.exe" , szCmdLine, WAIT | LAAW_OPTION_NO_CHANGEDIRECTORY);
+//LaunchAppAndWait (JavaPath+"\\bin\\jar.exe" , szCmdLine, WAIT | LAAW_OPTION_NO_CHANGEDIRECTORY);
 DeleteFile(TomcatPath + "\\webapps\\yukon\\yukon.war");
 
 //make sure that Tomcat will be aware of the presence of the new environment variables
@@ -175,11 +174,10 @@ SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 //install Tomcat as a service (behold this lumbering behemoth of a command line)
 szServPath = TomcatPath ^ "\\bin\\";
-szCmdLine = '-install "Yukon Web Applications Service" "' + JavaPath + '\\jre\\bin\\server\\jvm.dll" ';
-szCmdLine2 = '-Xms128M -Xmx384M'; 
+szCmdLine = 'install';
 /*nvResult = AskYesNo ( "Would you like to install Tomcat as a service?" , NO );
 if(nvResult = 1) then */
-LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine + szCmdLine2, WAIT );
+LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
 	//SprintfBox (SEVERE, "DEBUG: Command Line Contents", "%s", szCmdLine + szCmdLine2 + szCmdLine3);     
 //endif;
   
@@ -228,7 +226,7 @@ Delay(4);
      
 //remove the Tomcat service
 szServPath = TARGETDIR ^ "\\Server\\web\\bin\\";
-szCmdLine = '-remove';
+szCmdLine = 'remove';
 LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
 
 //make sure any legacy files are gone so that Tomcat avoids confusion

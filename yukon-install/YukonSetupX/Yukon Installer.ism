@@ -280,6 +280,7 @@
 		<col def="S255">ISFeatureCabName</col>
 		<col def="S255">ISProFeatureName</col>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td><td>##ID_STRING11##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>LoadManagementService</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>New NT Services 1</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>PorterService</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING2##</td><td/><td>22</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Client Service Manager</td></row>
 		<row><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Cap Control</td><td/><td>10</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Cap Control</td></row>
 		<row><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Foreign Data Router</td><td/><td>12</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Foreign Data Router</td></row>
@@ -297,7 +298,6 @@
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Help Files</td><td>This component provides online help for all client applications</td><td>10</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Help Files</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td>##ID_STRING8##</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Runtime (Java)</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>##ID_STRING15##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACSService</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>##ID_STRING18##</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>PorterService</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Porter</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Porter</td></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Message Dispatcher</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Dispatcher</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>##ID_STRING12##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>CalcService</td></row>
@@ -720,6 +720,7 @@
 		<col def="S50">CDRomFolder</col>
 		<col def="S50">Moniker</col>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>YukonServiceManager_Installing</td><td>YukonServiceManager_Installed</td><td>YukonServiceManager_UnInstalling</td><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
@@ -737,7 +738,6 @@
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>38</td><td/><td/><td/></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
@@ -943,6 +943,25 @@
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>StartType</td><td>3,Long</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>TagID</td><td>0,Long</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>Uninstall</td><td>-1,Bool</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\Bin\\porter.exe"</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>DEPENDENCIES</td><td>""</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>Description</td><td>""</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>DesiredAccess</td><td>983088,Long</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>Desktop</td><td>0,Bool</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>DisplayName</td><td>"Yukon Port Control Service"</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>DomainUserName</td><td>""</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>ErrorControl</td><td>0,Long</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>LogOnAs</td><td>1,Long</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>Password</td><td>""</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>ServiceArg</td><td>""</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>ServiceName</td><td>"Yukon Port Control Service"</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>ServiceType</td><td>0,Long</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>StartService</td><td>0,Bool</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>StartType</td><td>3,Long</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>TagID</td><td>0,Long</td></row>
+		<row><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td><td>Uninstall</td><td>-1,Bool</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\fdr.exe"</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>Description</td><td>""</td></row>
@@ -1019,25 +1038,6 @@
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>StartType</td><td>3,Long</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>TagID</td><td>0,Long</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>Uninstall</td><td>-1,Bool</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\porter.exe"</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DEPENDENCIES</td><td>""</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Description</td><td>""</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DesiredAccess</td><td>983088,Long</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Desktop</td><td>0,Bool</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DisplayName</td><td>"Yukon Port Control Service"</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DomainUserName</td><td>""</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>ErrorControl</td><td>0,Long</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>LogOnAs</td><td>1,Long</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Password</td><td>""</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>ServiceArg</td><td>""</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>ServiceName</td><td>"Yukon Port Control Service"</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>ServiceType</td><td>0,Long</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>StartService</td><td>0,Bool</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>StartType</td><td>3,Long</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>TagID</td><td>0,Long</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Uninstall</td><td>-1,Bool</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\calc_logic.exe"</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>Description</td><td>""</td></row>
@@ -1375,12 +1375,12 @@
 	<table name="ISSetupTypeFeatures">
 		<col key="yes" def="s38">ISSetupType_</col>
 		<col key="yes" def="s38">Feature_</col>
+		<row><td>Cannon Custom Install</td><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td></row>
 		<row><td>Cannon Custom Install</td><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td></row>
 		<row><td>Cannon Custom Install</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
 		<row><td>Cannon Custom Install</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
 		<row><td>Cannon Custom Install</td><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td></row>
 		<row><td>Cannon Custom Install</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
-		<row><td>Cannon Custom Install</td><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td></row>
 		<row><td>Cannon Custom Install</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td></row>
 		<row><td>Cannon Custom Install</td><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td></row>
 		<row><td>Cannon Custom Install</td><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td></row>
