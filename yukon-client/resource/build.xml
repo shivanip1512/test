@@ -15,7 +15,7 @@
    </target>
 
 	<target name="install" depends="build">   		
-   		<copy todir="${yukon.client.config}" preservelastmodified="yes">
+   		<copy todir="${yukon.server.config}" preservelastmodified="yes">
            <fileset dir=".">
                <include name="**/*.xml"/>
            </fileset>
