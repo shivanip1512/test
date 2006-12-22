@@ -111,7 +111,7 @@
 		<row><td>Common Bin</td><td>{C227265E-8670-4A80-9C04-743E19939F13}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Common Directories</td><td>{3E387166-F474-4E1A-964C-9F15D612CA1A}</td><td>SERVER</td><td>0</td><td/><td/><td>2561</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Common Dlls</td><td>{0A34D87B-E6BA-4B1D-BA50-8F4DB4F519D0}</td><td>SERVER</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Config Properties</td><td>{9B7AB4F9-1715-44AC-AB68-5934AE771B03}</td><td>WEB</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Config Properties</td><td>{9B7AB4F9-1715-44AC-AB68-5934AE771B03}</td><td>CONFIG</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Database Editor</td><td>{9BCF06B7-0196-4018-BADA-8047223F1A4E}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ESub Editor</td><td>{9FDC2ABD-23BF-4290-A9D3-AC5B93DBA740}</td><td>BIN</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{7B5F36F3-9B88-4E0C-817F-222A041C2D13}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -243,6 +243,7 @@
 		<row><td>CLIENT</td><td>TARGETDIR</td><td>Client</td><td/><td>0</td><td/></row>
 		<row><td>CLIENT_COMMANDS</td><td>ISRUNTIMETEXTSUBS</td><td>Client\Commands</td><td/><td>0</td><td/></row>
 		<row><td>COMMONFILES</td><td>PROGRAMFILES</td><td>Common Files</td><td/><td>0</td><td/></row>
+		<row><td>CONFIG</td><td>SERVER</td><td>Config</td><td/><td>0</td><td/></row>
 		<row><td>DesktopFolder</td><td/><td>Desktop</td><td/><td>3</td><td/></row>
 		<row><td>FOLDER_FONTS</td><td>WINDIR</td><td>Fonts Folder</td><td/><td>0</td><td/></row>
 		<row><td>HELP</td><td>CLIENT</td><td>Help</td><td/><td>0</td><td/></row>
@@ -523,6 +524,7 @@
 		<row><td>portglob.dll</td><td>Common Dlls</td><td>portglob.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\portglob.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>porttest.exe</td><td>Test Applications</td><td>porttest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\porttest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>proclog.dll</td><td>Common Dlls</td><td>proclog.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\proclog.dll</td><td>1</td><td>NewSubFolder72</td></row>
+		<row><td>remotelogging.xml</td><td>Config Properties</td><td>remoteLogging.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\remoteLogging.xml</td><td>1</td><td/></row>
 		<row><td>report.jar</td><td>Common Bin</td><td>report.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\report.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>reportingicon.gif</td><td>Common Bin</td><td>ReportingIcon.gif</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\ReportingIcon.gif</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>reportingicon.ico</td><td>Common Bin</td><td>ReportingIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\ReportingIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
@@ -531,7 +533,6 @@
 		<row><td>saprotocol.dll</td><td>Common Dlls</td><td>SAprotocol.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\SAprotocol.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>scanner.exe</td><td>Scanner</td><td>scanner.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\scanner.exe</td><td>1</td><td>NewSubFolder2</td></row>
 		<row><td>scansup.dll</td><td>Common Dlls</td><td>scansup.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\scansup.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>server.xml</td><td>Config Properties</td><td>server.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;\conf\server.xml</td><td>1</td><td>NewSubFolder1</td></row>
 		<row><td>service.dll</td><td>Common Dlls</td><td>service.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\service.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>services.jar</td><td>Common Bin</td><td>services.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\services.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>setjavapath.bat</td><td>Common Bin</td><td>setjavapath.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\setjavapath.bat</td><td>1</td><td>NewSubFolder85</td></row>
@@ -560,6 +561,7 @@
 		<row><td>yc.jar</td><td>Yukon Commander</td><td>yc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yc.jar</td><td>1</td><td>NewSubFolder89</td></row>
 		<row><td>yukon.war</td><td>Yukon Web Deployment</td><td>yukon.war</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yukon.war</td><td>1</td><td/></row>
 		<row><td>yukonappserver.jar</td><td>Common Bin</td><td>yukonappserver.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\yukonappserver.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>yukonlogging.xml</td><td>Config Properties</td><td>yukonLogging.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yukonLogging.xml</td><td>1</td><td/></row>
 		<row><td>yukonnoalarm.ico</td><td>Alarm Monitor</td><td>YukonNoAlarm.ico</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\YukonNoAlarm.ico</td><td>1</td><td>NewSubFolder73</td></row>
 	</table>
 
@@ -628,7 +630,6 @@
 		<col def="s72">Component_</col>
 		<col def="S72">ISSubFolder_Parent</col>
 		<col def="s255">Path</col>
-		<row><td>NewSubFolder1</td><td>Config Properties</td><td/><td>conf</td></row>
 		<row><td>NewSubFolder2</td><td>Scanner</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder3</td><td>Trending</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder66</td><td>Calculation Server</td><td/><td>Bin</td></row>
