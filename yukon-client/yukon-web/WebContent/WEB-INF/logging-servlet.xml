@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- logging-servlet.xml controls the mapping of three urls to controllers: logMenuController, logViewController -->
+<!-- and LogDownloadController. These controllers are resolved to their corresponding jsp view -->
+
+<beans>
+    <!-- create a bean for LogMenuController.java -->
+    <bean id="logMenuController" class="com.cannontech.web.logging.LogMenuController">
+    </bean>
+    
+    <!-- create a bean for LogViewController.java -->
+    <bean id="logViewController" class="com.cannontech.web.logging.LogViewController">
+    </bean>
+    
+    <!-- create a bean for LogDownloadController.java -->
+    <bean id="logDownloadController" class="com.cannontech.web.logging.LogDownloadController">
+    </bean>
+    
+    <!-- use jsp page for view -->
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/logging/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+   
+   	 <!-- create url mappings to controllers: -->
+   	 <!-- logMenuController, logViewController, logDownloadController -->	
+     <bean id="urlMapping" 
+          class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+          <property name="urlMap">
+               <map>
+                    <entry key="/index">
+                         <ref bean="logMenuController" />
+                    </entry>
+                    <entry key="/view/*">
+                         <ref bean="logViewController" />
+                    </entry>  
+                    <entry key="/download/*">
+                         <ref bean="logDownloadController" />
+                    </entry>    
+               </map>
+          </property>
+     </bean>
+    
+</beans>

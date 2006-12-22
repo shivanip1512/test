@@ -187,6 +187,12 @@
     </servlet>
     
     <servlet>
+        <servlet-name>logging</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
         <servlet-name>lucene-index</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -505,6 +511,11 @@
         <servlet-name>jws</servlet-name>
         <url-pattern>/jws/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>logging</servlet-name>
+        <url-pattern>/logging/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>lucene-index</servlet-name>
@@ -700,5 +711,6 @@
         <exception-type>java.lang.Throwable</exception-type>
         <location>/internalError.jsp</location>
     </error-page>
+    
 
 </web-app>
