@@ -14,6 +14,7 @@
 	<classpathentry kind="src" path="/billing"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="resource"/>

@@ -17,6 +17,7 @@
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="src" path="/trending"/>
+	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/ejbonly.jar"/>
 	<classpathentry kind="src" path="/resource"/>
