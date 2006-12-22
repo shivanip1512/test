@@ -348,4 +348,60 @@ begin
  
     	
 end;
+//---------------------------------------------------------------------------
+// OnSetTARGETDIR
+//
+// OnSetTARGETDIR is called directly by the framework to initialize
+// TARGETDIR to it's default value.
+//
+// Note: This event is called for all setups.
+//---------------------------------------------------------------------------
+function OnSetTARGETDIR()
+number nId, nIgnore, nResult;
+string szId, szTARGETDIR;
+begin
+
+    // In maintenance mode the value of TARGETDIR is read from the log file.
+    if( MAINTENANCE ) then
+        return ISERR_SUCCESS;
+    endif;
+
+    // Set TARGETDIR to script default.
+    TARGETDIR = "<FOLDER_APPLICATIONS>\\<IFX_COMPANY_NAME>\\<IFX_PRODUCT_NAME>";
+
+    // Read TARGETDIR from the media.
+    nResult = MediaGetData( MEDIA, MEDIA_FIELD_TARGETDIR, nIgnore, szTARGETDIR );
+
+    // Use the TARGETDIR from the media if anything was read.
+    if( nResult >= ISERR_SUCCESS && StrLengthChars( szTARGETDIR ) ) then
+        TARGETDIR = szTARGETDIR;
+    endif;
+        
+	// Customize the default TARGETDIR for multi-instance application.
+	// TODO: If you want something different customize the code below.	
+	if( MAINT_OPTION = MAINT_OPTION_MULTI_INSTANCE  && MULTI_INSTANCE_COUNT > 0) then
+
+		// Start with the current multi-instance count plus one.
+		nId = MULTI_INSTANCE_COUNT + 1;
+
+		// Find a unique TARGETDIR.
+		while( ExistsDir( TARGETDIR ) = EXISTS )
+			
+			// Convert to string.
+			NumToStr( szId, nId );
+			
+			// Update IFX_MULTI_INSTANCE_SUFFIX
+			IFX_MULTI_INSTANCE_SUFFIX = "_" + szId;
+		
+			// Update TARGETDIR
+			TARGETDIR = TARGETDIR + IFX_MULTI_INSTANCE_SUFFIX;
+			
+			// Update nId
+			nId = nId + 1;
+
+		endwhile;
+
+	endif;
+
+end;
  
