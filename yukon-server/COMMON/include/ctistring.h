@@ -59,6 +59,7 @@ public:
     string& replace(size_t beg, size_t len, const char* str);
     string strip(stripType scope=CtiString::both, char c = ' ');
     void toLower();
+    void toUpper();
     void appendLong(long num);
 
     CtiString& operator= ( const CtiString& rs);

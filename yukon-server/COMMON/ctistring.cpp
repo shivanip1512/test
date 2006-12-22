@@ -112,6 +112,9 @@ string CtiString::strip(stripType scope, char c) {
 void CtiString::toLower(){
     std::transform(begin(), end(), begin(), ::tolower);
 }
+void CtiString::toUpper(){
+    std::transform(begin(), end(), begin(), ::toupper);
+}
 
 void CtiString::appendLong(long num){
      char ptr[1];

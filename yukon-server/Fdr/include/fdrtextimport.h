@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2005/12/20 17:17:16 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2006/12/22 19:40:23 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.h,v $
+      Revision 1.4  2006/12/22 19:40:23  jrichter
+      Bug Id: 716
+      -check first character to see if it is digit, + or - sign before calling atof function
+      -also merged thain's changes to head..
+
       Revision 1.3  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -44,6 +49,7 @@
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
+#include "textfileinterfaceparts.h"
 
 class IM_EX_FDRTEXTIMPORT CtiFDR_TextImport : public CtiFDRTextFileBase
 {
@@ -73,7 +79,15 @@ public:
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_TextImport &setDeleteFileAfterImport (bool aFlag);
 
+    bool shouldRenameSaveFileAfterImport() const; 
+    CtiFDR_TextImport &setRenameSaveFileAfterImport (bool aFlag); 
+    
     bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
+    vector <CtiFDRTextFileInterfaceParts> getFileInfoList() {return _fileInfoList;}; 
+    
+    CtiString& getFileImportBaseDrivePath(); 
+    CtiString& setFileImportBaseDrivePath(CtiString importBase); 
+
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
@@ -84,10 +98,19 @@ public:
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_DELETE_FILE;
+    static const CHAR * KEY_IMPORT_BASE_PATH; 
+    static const CHAR * KEY_RENAME_SAVE_FILE; 
+
 
 private:
     RWThreadFunction    _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
+    bool _renameSaveFileAfterImportFlag; 
+    bool _legacyDrivePath;
+    CtiString _fileImportBaseDrivePath; 
+   
+    vector <CtiFDRTextFileInterfaceParts> _fileInfoList; 
+
 };
 
 
