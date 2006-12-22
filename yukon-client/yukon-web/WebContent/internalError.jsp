@@ -1,10 +1,10 @@
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.roles.yukon.SystemRole"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="java.io.StringWriter"%>
-<%@page import="org.apache.commons.lang.exception.ExceptionUtils"%>
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
+<%@page import="com.cannontech.common.util.CtiUtilities"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
 
@@ -16,7 +16,7 @@ Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.excep
 // if the above returned null, this page was probably called via the JSP exception handler
 // because this page is declared as an error page, the exception object will be populated
 throwable = (Throwable)ObjectUtils.defaultIfNull(throwable, exception);
-Throwable root = ExceptionUtils.getRootCause(throwable);
+Throwable root = CtiUtilities.getRootCause(throwable);
 
 Object status_code = request.getAttribute("javax.servlet.error.status_code");
 status_code = ObjectUtils.defaultIfNull(status_code, "no status code");
