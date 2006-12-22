@@ -122,6 +122,9 @@ if(dirSearch = 0) then
    	DeleteDir ( szPath + "\\WebConfig\\CILC", ALLCONTENTS ); 
 endif;
 
+DeleteFile(TARGETDIR + "\\Server\\web\\log.properties");
+RenameFile(TARGETDIR + "\\Server\\web\\db.properties", TARGETDIR + "\\Server\\web\\ARCHIVED db.properties"); 
+
 //set a system environment variable JRE_HOME for use by the Tomcat service
 szName = "JRE_HOME";         
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );

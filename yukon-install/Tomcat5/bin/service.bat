@@ -86,9 +86,7 @@ set PR_JVM=auto
 
 :foundJvm
 echo Using JVM:              %PR_JVM%
-"%EXECUTABLE%" //IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass 
-
-org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
+"%EXECUTABLE%" //IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
 if not errorlevel 1 goto installed
 echo Failed installing '%PR_DISPLAYNAME%' service
 goto end
@@ -106,9 +104,7 @@ set PR_JVM=
 rem Set extra parameters using //US// option on already installed service
 "%EXECUTABLE%" //US//%SERVICE_NAME% --JvmOptions 
 
-"-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode 
-
-jvm --StopMode jvm
+"-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode jvm --StopMode jvm
 
 rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
