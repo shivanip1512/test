@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct210.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/12/26 15:43:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,8 @@ private:
     static CommandSet initCommandStore();
 
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
     enum
     {
@@ -55,6 +57,8 @@ protected:
         MCT210_ResetLen    =    3
     };
 
+    virtual INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
 public:
 
     enum
@@ -69,9 +73,5 @@ public:
     virtual ~CtiDeviceMCT210();
 
     CtiDeviceMCT210& operator=(const CtiDeviceMCT210 &aRef);
-
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-    virtual INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 };
 #endif // #ifndef __DEV_MCT210_H__
