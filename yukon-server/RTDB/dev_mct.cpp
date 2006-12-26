@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.106 $
-* DATE         :  $Date: 2006/11/16 16:58:06 $
+* REVISION     :  $Revision: 1.107 $
+* DATE         :  $Date: 2006/12/26 15:40:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -553,7 +553,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
         }
 
 
-        if(getOperation(Emetcon::Scan_General, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(Emetcon::Scan_General, OutMessage->Buffer.BSt))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -614,7 +614,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             dout << CtiTime() << " **** Demand/IEDScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        if(getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -674,7 +674,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        if(getOperation(Emetcon::Scan_Accum, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(Emetcon::Scan_Accum, OutMessage->Buffer.BSt))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -736,7 +736,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             dout << CtiTime() << " **** LoadProfileScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        if(getOperation(Emetcon::Scan_LoadProfile, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(Emetcon::Scan_LoadProfile, OutMessage->Buffer.BSt))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -1279,7 +1279,7 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
     OUTMESS *tmpOut;
 
     function = Emetcon::Command_Loop;
-    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    found = getOperation(function, OutMessage->Buffer.BSt);
 
     if(!found)
     {
@@ -1340,26 +1340,26 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         case ScanRateGeneral:
         {
             function = Emetcon::Scan_General;
-            found = getOperation(Emetcon::Scan_General, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(Emetcon::Scan_General, OutMessage->Buffer.BSt);
             break;
         }
         case ScanRateAccum:
         {
             function = Emetcon::Scan_Accum;
-            found = getOperation(Emetcon::Scan_Accum, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(Emetcon::Scan_Accum, OutMessage->Buffer.BSt);
             break;
         }
         case ScanRateIntegrity:
         {
             function = Emetcon::Scan_Integrity;
-            found = getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt);
 
             //  should we scan the IED for demand instead?
             if(getType() == TYPEMCT360 || getType() == TYPEMCT370)
             {
                 //  if we're supposed to be scanning the IED, change it to the appropriate request
                 if( ((CtiDeviceMCT31X *)this)->getIEDPort().getRealTimeScanFlag() )
-                     getOperation(Emetcon::GetValue_IEDDemand, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                     getOperation(Emetcon::GetValue_IEDDemand, OutMessage->Buffer.BSt);
             }
 
             break;
@@ -1368,7 +1368,7 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         {
             //  outmess needs to be filled in by another function, just check if it's there
             function = Emetcon::Scan_LoadProfile;
-            found = getOperation(Emetcon::Scan_LoadProfile, stub, stub, stub);
+            found = hasOperation(Emetcon::Scan_LoadProfile);
 
             if( found )
             {
@@ -1443,7 +1443,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
             {
                 function = Emetcon::GetValue_IEDDemand;
-                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                found = getOperation( function, OutMessage->Buffer.BSt);
             }
             else  //  GV_IEDKwh, GV_IEDKvarh, GV_IEDKvah
             {
@@ -1452,7 +1452,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
                 else if( parse.getFlags() & CMD_FLAG_GV_KVAH  )  function = Emetcon::GetValue_IEDKvah;
                 else  /*  default request  */                    function = Emetcon::GetValue_IEDKwh;
 
-                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                found = getOperation( function, OutMessage->Buffer.BSt);
 
                 //  if( parse.getFlags() & CMD_FLAG_GV_RATEA )  OutMessage->Buffer.BSt.Function += 0;
                 if(      parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
@@ -1477,12 +1477,12 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
     else if(parse.getFlags() & CMD_FLAG_GV_PFCOUNT)
     {
         function = Emetcon::GetValue_PFCount;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
     {
         function = Emetcon::GetValue_Demand;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
             getType() == TYPEMCT360 || getType() == TYPEMCT370 )
@@ -1520,12 +1520,12 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
             function = Emetcon::GetValue_FrozenPeakDemand;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else
         {
             function = Emetcon::GetValue_PeakDemand;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
 
         //  ACH:  minimize request length someday, like below
@@ -1535,12 +1535,12 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
             function = Emetcon::GetValue_FrozenVoltage;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else
         {
             function = Emetcon::GetValue_Voltage;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
     else if( parse.getFlags() & CMD_FLAG_GV_KWH )
@@ -1548,12 +1548,12 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
             function = Emetcon::GetValue_FrozenKWH;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else
         {
             function = Emetcon::GetValue_KWH;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
 
         int channels = 0;  //  so we'll bypass the point-cropping code if /channels/ doesn't get set by the following:
@@ -1635,7 +1635,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
             case 3:     function = Emetcon::PutValue_KYZ3;  break;
         }
 
-        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
             if(parse.isKeyValid("reset") || !parse.isKeyValid("kyz_reading"))
             {
@@ -1673,7 +1673,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
         if( parse.isKeyValid("reset") )
         {
             function = Emetcon::PutValue_ResetPFCount;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
             //  set the outgoing bytes to 0
             for(int i = 0; i < OutMessage->Buffer.BSt.Length; i++)
@@ -1693,7 +1693,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 
             if( getType() == TYPEMCT360 || getType() == TYPEMCT370 )
             {
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 switch( iedtype )
                 {
@@ -1741,7 +1741,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
             }
             else if( getType() == TYPEMCT470 )
             {
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 if( parse.getCommandStr().find(" alpha") != string::npos )
                 {
@@ -1825,18 +1825,18 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
     if(parse.getFlags() & CMD_FLAG_GS_DISCONNECT)          // Read the disconnect status
     {
         function = Emetcon::GetStatus_Disconnect;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GS_INTERNAL)
     {
         function = Emetcon::GetStatus_Internal;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GS_LOADPROFILE)
     {
         function = Emetcon::GetStatus_LoadProfile;
 
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( found && parse.isKeyValid("loadprofile_offset") )
         {
@@ -1864,18 +1864,18 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         if(parse.getFlags() & CMD_FLAG_GS_LINK)
         {
             function = Emetcon::GetStatus_IEDLink;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else if(parse.isKeyValid("ied_dnp"))
         {
             function = Emetcon::GetStatus_IEDDNP;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
     else //  if(parse.getFlags() & CMD_FLAG_GS_EXTERNAL) - default command
     {
         function = Emetcon::GetStatus_External;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
 
     if(!found)
@@ -1921,7 +1921,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
         function = Emetcon::PutStatus_Reset;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( getType() != TYPEMCT410 && getType() != TYPEMCT470 )
         {
@@ -1933,7 +1933,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
     else if( parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
     {
         function = Emetcon::PutStatus_ResetOverride;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("freeze") )
     {
@@ -1942,14 +1942,14 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
             if( parse.getiValue("freeze") == 1 )
             {
                 function = Emetcon::PutStatus_FreezeVoltageOne;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 //  set expected voltage freeze here
             }
             else if( parse.getiValue("freeze") == 2 )
             {
                 function = Emetcon::PutStatus_FreezeVoltageTwo;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 //  set expected voltage freeze here
             }
@@ -1959,14 +1959,14 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
             if( parse.getiValue("freeze") == 1 )
             {
                 function = Emetcon::PutStatus_FreezeOne;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 setExpectedFreeze(parse.getiValue("freeze"));
             }
             else if( parse.getiValue("freeze") == 2 )
             {
                 function = Emetcon::PutStatus_FreezeTwo;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 setExpectedFreeze(parse.getiValue("freeze"));
             }
@@ -1977,12 +1977,12 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
         if( parse.getiValue("peak") == TRUE )
         {
             function = Emetcon::PutStatus_PeakOn;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else
         {
             function = Emetcon::PutStatus_PeakOff;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
 
@@ -2067,40 +2067,40 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     if(parse.isKeyValid("model"))
     {
         function = Emetcon::GetConfig_Model;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("ied"))
     {
         if(parse.isKeyValid("time"))
         {
             function = Emetcon::GetConfig_IEDTime;
-            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt);
         }
         else if( parse.isKeyValid("scan"))
         {
             function = Emetcon::GetConfig_IEDScan;
-            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
     else if( parse.isKeyValid("channels") )
     {
         function = Emetcon::GetConfig_ChannelSetup;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("options"))
     {
         function = Emetcon::GetConfig_Options;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("disconnect"))
     {
         function = Emetcon::GetConfig_Disconnect;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("address_group"))
     {
         function = Emetcon::GetConfig_GroupAddress;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("time"))
     {
@@ -2113,7 +2113,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
             function = Emetcon::GetConfig_Time;
         }
 
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("multiplier"))
     {
@@ -2133,7 +2133,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
             function = Emetcon::GetConfig_Multiplier;
         }
 
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.isKeyValid("interval"))
     {
@@ -2160,14 +2160,14 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
 
         if( function != Emetcon::DLCCmd_Invalid )
         {
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
     //  needs to be moved to the 4xx base class when the inheritance gets reworked
     else if(parse.isKeyValid("holiday"))
     {
         function = Emetcon::GetConfig_Holiday;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     //  get raw memory locations
     else if(parse.isKeyValid("rawloc"))
@@ -2190,7 +2190,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         }
 
         function = Emetcon::GetConfig_Raw;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.isKeyValid("rawfunc") )
         {
@@ -2256,36 +2256,36 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     {
         //  does a read of 2 bytes or so
         function = Emetcon::PutConfig_Install;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("armc") )
     {
         function = Emetcon::PutConfig_ARMC;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("arml") )
     {
         function = Emetcon::PutConfig_ARML;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("onoffpeak") )
     {
         function = Emetcon::PutConfig_OnOffPeak;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         OutMessage->Buffer.BSt.Message[0] = 0xf8 & ~0x04;  //  make sure the 0x04 bit is NOT set
     }
     else if( parse.isKeyValid("minmax") )
     {
         function = Emetcon::PutConfig_MinMax;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         OutMessage->Buffer.BSt.Message[0] = 0xf8 |  0x04;  //  make sure the 0x04 bit is set
     }
     else if( parse.isKeyValid("disconnect") )
     {
         function = Emetcon::PutConfig_Disconnect;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( getType() == TYPEMCT410 )
         {
@@ -2336,7 +2336,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             function = Emetcon::PutConfig_GroupAddrEnable;
         }
 
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("address") )
     {
@@ -2345,7 +2345,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int uadd;
 
             function = Emetcon::PutConfig_UniqueAddr;
-            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt);
 
             uadd = parse.getiValue("uniqueaddress");
 
@@ -2390,7 +2390,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int gold, silver;
 
             function = Emetcon::PutConfig_GroupAddr_GoldSilver;
-            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt);
 
             gold   = parse.getiValue("groupaddress_gold");
             silver = parse.getiValue("groupaddress_silver");
@@ -2423,7 +2423,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int bronze;
 
             function = Emetcon::PutConfig_GroupAddr_Bronze;
-            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt);
 
             bronze = parse.getiValue("groupaddress_bronze");
 
@@ -2453,7 +2453,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int lead_load, lead_meter;
 
             function = Emetcon::PutConfig_GroupAddr_Lead;
-            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt);
 
             lead_load  = parse.getiValue("groupaddress_lead_load");
             lead_meter = parse.getiValue("groupaddress_lead_meter");
@@ -2492,7 +2492,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int scantime, scandelay;
 
             function = Emetcon::PutConfig_IEDScan;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
             scantime  = parse.getiValue("scan");
             scandelay = parse.getiValue("scandelay");
@@ -2526,7 +2526,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
 
             function = Emetcon::PutConfig_IEDClass;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
             classnum    = parse.getiValue("class");
             classoffset = parse.getiValue("classoffset");
@@ -2609,7 +2609,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         if( temp == "intervals" )
         {
             function = Emetcon::PutConfig_Intervals;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
             if( getType() == TYPEMCT410 )
             {
@@ -2628,7 +2628,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         else if( temp == "lp" )
         {
             function = Emetcon::PutConfig_LoadProfileInterval;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
             switch( getLoadProfile().getLoadProfileDemandRate() / 60 )
             {
                 case 5:
@@ -2705,7 +2705,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                 if( intervallength )
                 {
                     function = Emetcon::PutConfig_DemandInterval;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    found = getOperation(function, OutMessage->Buffer.BSt);
                     OutMessage->Buffer.BSt.Message[0] = intervallength;
                 }
             }
@@ -2735,7 +2735,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         if( parse.isKeyValid("noqueue") )
         {
             function = Emetcon::PutConfig_TSync;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
             //  the message is filled in by RefreshMCTTimeSync() in porttime.cpp
             OutMessage->EventCode |= TSYNC;
@@ -2782,24 +2782,24 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             default:
             case 1:
                 function = Emetcon::PutConfig_Multiplier;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
                 break;
 
             case 2:
                 function = Emetcon::PutConfig_Multiplier2;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
                 break;
 
             case 3:
                 function = Emetcon::PutConfig_Multiplier3;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
                 break;
         }
     }
     else if(parse.isKeyValid("rawloc"))
     {
         function = Emetcon::PutConfig_Raw;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
         temp = parse.getsValue("rawdata");
@@ -2873,7 +2873,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 
         function = Emetcon::Control_Shed;
 
-        if(getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(function, OutMessage->Buffer.BSt))
         {
             //  if at least one of relays a-d (1-4) are selected
             //  this needs better error-handling - better printouts
@@ -2898,12 +2898,12 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
     else if(parse.getFlags() & CMD_FLAG_CTL_RESTORE)
     {
         function = Emetcon::Control_Restore;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & (CMD_FLAG_CTL_CONNECT | CMD_FLAG_CTL_CLOSE) )
     {
         function = Emetcon::Control_Connect;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( getType() == TYPEMCT410 )
         {
@@ -2914,7 +2914,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
     else if( parse.getFlags() & (CMD_FLAG_CTL_DISCONNECT | CMD_FLAG_CTL_OPEN) )
     {
         function = Emetcon::Control_Disconnect;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( getType() == TYPEMCT410 )
         {
@@ -2943,7 +2943,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         string relays = parse.getsValue("latch_relays");
 
         function = Emetcon::Control_Latch;
-        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt);
 
         //  binary logic - 00, 01, 10, 11
         //    latch_relays may also contain "none", but that's the default case and doesn't need to be explicitly handled
@@ -3236,29 +3236,15 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 multnum <<= 8;
                 multnum  |= (int)DSt->Message[1];
 
-                if( getType() == TYPEMCT470 )
+                if( multnum == 1000 )
                 {
-                    int k;
-
-                    k   = (int)DSt->Message[2];
-                    k <<= 8;
-                    k  |= (int)DSt->Message[3];
-
-                    resultStr = "Mp: " + CtiNumStr((int)multnum) + string(", Kh: ") + CtiNumStr((int)k) +
-                                ", metering ratio: " + CtiNumStr((double)multnum/(double)k, 3) + "\n";
+                    resultStr += " multiplier: 1.000 (pulses)\n";
                 }
                 else
                 {
-                    if( multnum == 1000 )
-                    {
-                        resultStr += " multiplier: 1.000 (pulses)\n";
-                    }
-                    else
-                    {
-                        mult = (double)multnum;
-                        mult /= 100.0;
-                        resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + string("\n");
-                    }
+                    mult = (double)multnum;
+                    mult /= 100.0;
+                    resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + string("\n");
                 }
 
                 ReturnMsg->setResultString( resultStr );
@@ -3955,7 +3941,7 @@ INT CtiDeviceMCT::verifyAlphaBuffer(DSTRUCT *DSt)
    return status;
 }
 
-bool CtiDeviceMCT::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
    bool found = false;
 
@@ -3968,11 +3954,29 @@ bool CtiDeviceMCT::getOperation( const UINT &cmd, USHORT &function, USHORT &leng
 
    if( itr != _commandStore.end() )     // It's prego!
    {
-      function  = itr->function;     // Copy over the found funcLen pair!
-      length    = itr->length;      // Copy over the found funcLen pair!
-      io        = itr->io;
+      bst.Function  = itr->function;     // Copy over the found funcLen pair!
+      bst.Length    = itr->length;      // Copy over the found funcLen pair!
+      bst.IO        = itr->io;
 
       found = true;
+   }
+
+   return found;
+}
+
+
+bool CtiDeviceMCT::hasOperation( const UINT &cmd ) const
+{
+   bool found = false;
+
+   if( !_commandStore.empty() )
+   {
+       CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+
+       if( itr != _commandStore.end() )
+       {
+           found = true;
+       }
    }
 
    return found;
