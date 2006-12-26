@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/10/04 19:12:57 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/12/26 15:49:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ private:
 
 protected:
 
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
     enum Memory
     {
@@ -123,6 +123,13 @@ protected:
     INT decodeScanLoadProfile     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodePutConfigPeakMode   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
+    //  virtual so that the MCT318 can override them
+    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+
+    void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
+    void decodeStati( INT &stat, INT which, BYTE *Data );
+
 public:
 
     enum
@@ -139,12 +146,7 @@ public:
 
     CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
 
-    //  virtual so that the MCT318 can override them
+    //  virtual so that the MCT318 can override it
     virtual ULONG calcNextLPScanTime( void );
-    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
-
-    void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
-    void decodeStati( INT &stat, INT which, BYTE *Data );
 };
 #endif // #ifndef __DEV_MCT310_H__

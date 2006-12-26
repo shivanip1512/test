@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/11/08 20:40:09 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/12/26 15:50:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ private:
 
 protected:
 
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
     enum Commands
     {
@@ -252,6 +252,11 @@ protected:
     INT decodeGetConfigModel                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigDisconnect           ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
+    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+
+    void sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+
 public:
 
     enum
@@ -295,11 +300,7 @@ public:
 
     void setDisconnectAddress( unsigned long address );
 
-    void sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-
     virtual ULONG calcNextLPScanTime( void );
-    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
 };
 
