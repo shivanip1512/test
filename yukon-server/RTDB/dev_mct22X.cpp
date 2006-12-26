@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/11/02 15:48:44 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/12/26 15:43:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,7 +68,7 @@ CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::initCommandStore()
 }
 
 
-bool CtiDeviceMCT22X::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT22X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
    bool found = false;
 
@@ -76,20 +76,20 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
    if( itr != _commandStore.end() )
    {
-      function = itr->function;     // Copy over the found function
-      length   = itr->length;       // Copy over the found length
-      io       = itr->io;           // Copy over the found io indicator
+      bst.Function = itr->function;     // Copy over the found function
+      bst.Length   = itr->length;       // Copy over the found length
+      bst.IO       = itr->io;           // Copy over the found io indicator
 
-      if( io == Emetcon::IO_Write )
+      if( bst.IO == Emetcon::IO_Write )
       {
-          io |= Q_ARMC;
+          bst.IO |= Q_ARMC;
       }
 
       found = true;
    }
    else     // Look in the parent if not found in the child
    {
-      found = Inherited::getOperation(cmd, function, length, io);
+      found = Inherited::getOperation(cmd, bst);
    }
 
    return found;

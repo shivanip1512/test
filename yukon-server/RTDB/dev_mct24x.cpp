@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/11/02 15:48:44 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/12/26 15:44:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,7 +92,7 @@ CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
 }
 
 
-bool CtiDeviceMCT24X::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT24X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -100,28 +100,28 @@ bool CtiDeviceMCT24X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     if( itr != _commandStore.end() )
     {
-        function = itr->function;   // Copy over the found function
-        length   = itr->length;     // Copy over the found length
-        io       = itr->io;         // Copy over the found io indicator
+        bst.Function = itr->function;   // Copy over the found function
+        bst.Length   = itr->length;     // Copy over the found length
+        bst.IO       = itr->io;         // Copy over the found io indicator
 
         found = true;
 
         //  LP Interval write doesn't need Q_ARMC
-        if( io == Emetcon::IO_Write && length )
+        if( bst.IO == Emetcon::IO_Write && bst.Length )
         {
-            io |= Q_ARMC;
+            bst.IO |= Q_ARMC;
         }
 
         //  special case for the 250's status scan
         if( getType() == TYPEMCT250 && (cmd == Emetcon::Scan_General || cmd == Emetcon::GetStatus_External) )
         {
-            function = MCT250_StatusPos;
-            length   = MCT250_StatusLen;
+            bst.Function = MCT250_StatusPos;
+            bst.Length   = MCT250_StatusLen;
         }
     }
     else    // Look in the parent if not found in the child
     {
-        found = Inherited::getOperation(cmd, function, length, io);
+        found = Inherited::getOperation(cmd, bst);
     }
 
     return found;

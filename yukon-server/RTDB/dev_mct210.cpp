@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/11/02 15:48:44 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/12/26 15:42:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@ CtiDeviceMCT210::CommandSet CtiDeviceMCT210::initCommandStore()
 }
 
 
-bool CtiDeviceMCT210::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT210::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -90,20 +90,20 @@ bool CtiDeviceMCT210::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     if( itr != _commandStore.end() )
     {
-        function = itr->function;
-        length   = itr->length;
-        io       = itr->io;
+        bst.Function = itr->function;
+        bst.Length   = itr->length;
+        bst.IO       = itr->io;
 
-        if( io == Emetcon::IO_Write )
+        if( bst.IO == Emetcon::IO_Write )
         {
-            io |= Q_ARMC;
+            bst.IO |= Q_ARMC;
         }
 
         found = true;
     }
     else    // Look in the parent if not found in the child
     {
-        found = Inherited::getOperation(cmd, function, length, io);
+        found = Inherited::getOperation(cmd, bst);
     }
 
     return found;

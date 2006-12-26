@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/11/16 18:35:01 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/12/26 15:52:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ protected:
 
     string printable_time(unsigned long seconds);
 
-    bool getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io );
+    bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     enum ValueType
     {

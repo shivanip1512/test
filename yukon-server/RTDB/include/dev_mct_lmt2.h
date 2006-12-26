@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/12/26 15:52:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ private:
 
 protected:
 
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     enum
     {
@@ -59,6 +59,9 @@ protected:
 
     INT decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
+    INT calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+
 public:
 
     CtiDeviceMCT_LMT2();
@@ -68,9 +71,6 @@ public:
     CtiDeviceMCT_LMT2& operator=(const CtiDeviceMCT_LMT2& aRef);
 
     ULONG calcNextLPScanTime( void );
-    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
-
 };
 
 #endif // #ifndef __DEV_MCT_LMT2_H__

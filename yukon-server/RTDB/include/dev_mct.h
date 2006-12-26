@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/10/19 19:50:26 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/12/26 15:40:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,8 @@ protected:
         MCTConfig_ChannelCount = 4
     };
 
-    virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
+    virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
+    virtual bool hasOperation( const UINT &cmdType ) const;
 
     enum WireConfig
     {

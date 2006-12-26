@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   dev_mct310
+* File:   dev_mct410
 *
 * Date:   4/24/2001
 *
@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2006/12/20 17:38:27 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2006/12/26 15:50:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -345,7 +345,7 @@ long CtiDeviceMCT410::getLoadProfileInterval( unsigned channel )
 }
 
 
-bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT410::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -353,15 +353,15 @@ bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     if( itr != _commandStore.end( ) )
     {
-        function = itr->function;   //  Copy the relevant bits from the commandStore
-        length   = itr->length;     //
-        io       = itr->io;         //
+        bst.Function = itr->function;   //  Copy the relevant bits from the commandStore
+        bst.Length   = itr->length;     //
+        bst.IO       = itr->io;         //
 
         found = true;
     }
     else    //  Look in the parent if not found in the child
     {
-        found = Inherited::getOperation( cmd, function, length, io );
+        found = Inherited::getOperation( cmd, bst );
     }
 
     return found;
@@ -956,7 +956,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
 
         function = Emetcon::GetValue_TOU;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )    OutMessage->Buffer.BSt.Function += FuncRead_TOUFrozenOffset;
 
@@ -984,7 +984,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
             if( sspec_om )
             {
-                getOperation(Emetcon::GetConfig_Model, sspec_om->Buffer.BSt.Function, sspec_om->Buffer.BSt.Length, sspec_om->Buffer.BSt.IO);
+                getOperation(Emetcon::GetConfig_Model, sspec_om->Buffer.BSt);
 
                 sspec_om->Sequence = Emetcon::GetConfig_Model;
 
@@ -998,7 +998,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         int outagenum = parse.getiValue("outage");
 
         function = Emetcon::GetValue_Outage;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( outagenum < 0 || outagenum > 6 )
         {
@@ -1411,7 +1411,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             outage = config->getLongValueFromKey(OutageCycles);
             timeAdjustTolerance = config->getLongValueFromKey(TimeAdjustTolerance);
 
-            if( !getOperation(Emetcon::PutConfig_Options, function, length, io) )
+            if( !getOperation(Emetcon::PutConfig_Options, OutMessage->Buffer.BSt) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1436,9 +1436,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        //  bstruct IO info was filled in above
                         OutMessage->Buffer.BSt.Message[0] = (configuration);
                         OutMessage->Buffer.BSt.Message[1] = (event1mask);
                         OutMessage->Buffer.BSt.Message[2] = (event2mask);
@@ -1447,12 +1445,14 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Message[5] = (options);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+                        //  this should be changed to a lookup read
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Buffer.BSt.Function   = Memory_OptionsPos;
                         OutMessage->Buffer.BSt.Length     = Memory_OptionsLen + Memory_ConfigurationLen;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+                        //  as should this
                         OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
                         OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len + Memory_EventFlagsMask2Len + Memory_MeterAlarmMaskLen;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1469,7 +1469,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 }
             }
 
-            if( !getOperation(Emetcon::PutConfig_Outage, function, length, io) )
+            if( !getOperation(Emetcon::PutConfig_Outage, OutMessage->Buffer.BSt) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Outage not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1489,13 +1489,12 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        //  bstruct IO info was filled in above
                         OutMessage->Buffer.BSt.Message[0] = (outage);
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+                        //  this should probably be a lookup in a mapping table instead
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1512,7 +1511,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 }
             }
 
-            if( !getOperation(Emetcon::PutConfig_TimeAdjustTolerance, function, length, io) )
+            if( !getOperation(Emetcon::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1532,13 +1531,12 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        //  bstruct io info was filled in above
                         OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+                        //  this should be a lookup in a mapping table
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );

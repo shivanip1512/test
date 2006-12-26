@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/07/25 22:15:34 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/12/26 15:42:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,7 @@ CtiDeviceDCT501::CommandSet CtiDeviceDCT501::initCommandStore()
 }
 
 
-bool CtiDeviceDCT501::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceDCT501::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -75,15 +75,15 @@ bool CtiDeviceDCT501::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     if( itr != _commandStore.end() )
     {
-        function = itr->function;
-        length   = itr->length;
-        io       = itr->io;
+        bst.Function = itr->function;
+        bst.Length   = itr->length;
+        bst.IO       = itr->io;
 
         found = true;
     }
     else    // Look in the parent if not found in the child
     {
-        found = Inherited::getOperation(cmd, function, length, io);
+        found = Inherited::getOperation(cmd, bst);
     }
 
     return found;

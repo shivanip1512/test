@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/12/05 20:10:56 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2006/12/26 15:49:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ CtiDeviceMCT31X::CommandSet CtiDeviceMCT31X::initCommandStore( )
 }
 
 
-bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT31X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -139,15 +139,15 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
     }
     else if( itr != _commandStore.end( ) )   //  It's prego!
     {
-        function = itr->function;   //  Grab the funcLen pair we just found
-        length   = itr->length;
-        io       = itr->io;
+        bst.Function = itr->function;   //  Grab the funcLen pair we just found
+        bst.Length   = itr->length;
+        bst.IO       = itr->io;
 
         found = true;
     }
     else                                //  Look in the parent if not found in the child!
     {
-        found = Inherited::getOperation( cmd, function, length, io );
+        found = Inherited::getOperation( cmd, bst );
     }
 
     return found;

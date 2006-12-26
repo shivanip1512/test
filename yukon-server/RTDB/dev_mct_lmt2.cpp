@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/10/19 19:52:32 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/12/26 15:52:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ CtiDeviceMCT_LMT2::CommandSet CtiDeviceMCT_LMT2::initCommandStore()
 }
 
 
-bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, USHORT &function, USHORT &length , USHORT &io)
+bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, BSTRUCT &bst) const
 {
    bool found = false;
 
@@ -71,15 +71,15 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, USHORT &function, USHORT 
 
    if( itr != _commandStore.end() )    // It's prego!
    {
-      function = itr->function;
-      length   = itr->length;
-      io       = itr->io;
+      bst.Function = itr->function;
+      bst.Length   = itr->length;
+      bst.IO       = itr->io;
 
       found = true;
    }
    else     // Look in the parent if not found in the child
    {
-      found = Inherited::getOperation(cmd, function, length, io);
+      found = Inherited::getOperation(cmd, bst);
    }
 
    return found;

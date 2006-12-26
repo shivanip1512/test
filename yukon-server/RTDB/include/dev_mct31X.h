@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/10/04 19:14:19 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/12/26 15:49:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ private:
 
 protected:
 
-    virtual bool getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io );
+    virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     static const double MCT360_GEKV_KWHMultiplier;
 

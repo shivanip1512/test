@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/12/13 21:52:10 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/12/26 15:52:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -226,7 +226,7 @@ string CtiDeviceMCT4xx::printable_time(unsigned long seconds)
 }
 
 
-bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -234,15 +234,15 @@ bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     if( itr != _commandStore.end( ) )
     {
-        function = itr->function;   //  Copy the relevant bits from the commandStore
-        length   = itr->length;     //
-        io       = itr->io;         //
+        bst.Function = itr->function;   //  Copy the relevant bits from the commandStore
+        bst.Length   = itr->length;     //
+        bst.IO       = itr->io;         //
 
         found = true;
     }
     else    //  Look in the parent if not found in the child
     {
-        found = Inherited::getOperation( cmd, function, length, io );
+        found = Inherited::getOperation( cmd, bst );
     }
 
     return found;
@@ -712,7 +712,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                     CtiTime time_start, time_end;
 
                     function = Emetcon::GetValue_LoadProfile;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    found = getOperation(function, OutMessage->Buffer.BSt);
 
                     //  grab the beginning time, if available
                     if( parse.isKeyValid("lp_time_start") )
@@ -917,7 +917,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                     else
                     {
                         function = Emetcon::GetValue_LoadProfilePeakReport;
-                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                        found = getOperation(function, OutMessage->Buffer.BSt);
                     }
 
                     if( found )
@@ -1267,7 +1267,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     {
         function = Emetcon::PutConfig_Holiday;
 
-        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
             unsigned long holidays[3];
             int holiday_count = 0;
@@ -1353,13 +1353,13 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
         if( parse.isKeyValid("tou_enable") )
         {
             function = Emetcon::PutConfig_TOUEnable;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Sequence = function;
         }
         else if( parse.isKeyValid("tou_disable") )
         {
             function = Emetcon::PutConfig_TOUDisable;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Sequence = function;
         }
         else if( parse.isKeyValid("tou_days") )
@@ -1647,9 +1647,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     else if( parse.isKeyValid("timezone_offset") ||
              parse.isKeyValid("timezone_name") )
     {
-        unsigned short function, length, io;
-
-        if( found = getOperation(Emetcon::PutConfig_TimeZoneOffset, function, length, io) )
+        if( found = getOperation(Emetcon::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
         {
             int timezone_blocks = 0;
 
@@ -1685,9 +1683,6 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
             }
 
             OutMessage->Sequence = Emetcon::PutConfig_TimeZoneOffset;
-            OutMessage->Buffer.BSt.Function   = function;
-            OutMessage->Buffer.BSt.Length     = length;
-            OutMessage->Buffer.BSt.IO         = io;
             OutMessage->Buffer.BSt.Message[0] = timezone_blocks;
         }
         else
@@ -1723,19 +1718,14 @@ INT CtiDeviceMCT4xx::executePutValue(CtiRequestMsg         *pReq,
 
     if( parse.isKeyValid("reset") && parse.isKeyValid("tou") )
     {
-        unsigned short function, length, io;
-
-        found = getOperation(Emetcon::PutValue_TOUReset, function, length, io);
+        found = getOperation(Emetcon::PutValue_TOUReset, OutMessage->Buffer.BSt);
 
         if( parse.isKeyValid("tou_zero") )
         {
-            function = Command_TOUResetZero;
+            OutMessage->Buffer.BSt.Function = Command_TOUResetZero;
         }
 
         OutMessage->Sequence = Emetcon::PutValue_TOUReset;
-        OutMessage->Buffer.BSt.Function   = function;
-        OutMessage->Buffer.BSt.Length     = length;
-        OutMessage->Buffer.BSt.IO         = io;
 
         if( !found )
         {
@@ -1924,7 +1914,7 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq, CtiCommandP
             underVThreshold = config->getLongValueFromKey(UnderVoltageThreshold);
             overVThreshold = config->getLongValueFromKey(OverVoltageThreshold);
 
-            if(!getOperation(Emetcon::PutConfig_VThreshold, function, length, io))
+            if(!getOperation(Emetcon::PutConfig_VThreshold, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_VTreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1943,9 +1933,7 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq, CtiCommandP
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        //  the bstruct IO is set above by getOperation()
                         OutMessage->Buffer.BSt.Message[0] = (overVThreshold>>8);
                         OutMessage->Buffer.BSt.Message[1] = (overVThreshold);
                         OutMessage->Buffer.BSt.Message[2] = (underVThreshold>>8);
@@ -2300,7 +2288,7 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq, CtiCommandP
             collection = config->getLongValueFromKey(Collection);
             spid = config->getLongValueFromKey(ServiceProviderID);
 
-            if(!getOperation(Emetcon::PutConfig_Addressing, function, length, io))
+            if(!getOperation(Emetcon::PutConfig_Addressing, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2322,9 +2310,7 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq, CtiCommandP
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        //  the bstruct IO is set above by getOperation()
                         OutMessage->Buffer.BSt.Message[0] = (bronze);
                         OutMessage->Buffer.BSt.Message[1] = (lead>>8);
                         OutMessage->Buffer.BSt.Message[2] = (lead);
@@ -2377,7 +2363,7 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq, CtiCommandParser &
             dstEnd = dstConfig->getLongValueFromKey(DstEnd);
             timezoneOffset = dstConfig->getLongValueFromKey(TimeZoneOffset);
 
-            if(!getOperation(Emetcon::PutConfig_DST, function, length, io))
+            if(!getOperation(Emetcon::PutConfig_DST, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_DST not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2398,9 +2384,7 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq, CtiCommandParser &
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        //  the bstruct IO is set above by getOperation()
                         OutMessage->Buffer.BSt.Message[0] = (dstBegin>>24);
                         OutMessage->Buffer.BSt.Message[1] = (dstBegin>>16);
                         OutMessage->Buffer.BSt.Message[2] = (dstBegin>>8);
@@ -2462,7 +2446,7 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandPars
             holiday2 = config->getLongValueFromKey(HolidayDate2);
             holiday3 = config->getLongValueFromKey(HolidayDate3);
 
-            if(!getOperation(Emetcon::PutConfig_Holiday, function, length, io))
+            if(!getOperation(Emetcon::PutConfig_Holiday, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Holiday not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2483,9 +2467,7 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandPars
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        //  the bstruct IO is set above by getOperation()
                         OutMessage->Buffer.BSt.Message[0] = (holiday1>>24);
                         OutMessage->Buffer.BSt.Message[1] = (holiday1>>16);
                         OutMessage->Buffer.BSt.Message[2] = (holiday1>>8);
@@ -2570,7 +2552,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                 }
             }
 
-            if(!getOperation(Emetcon::PutConfig_LongloadProfile, function, length, io))
+            if(!getOperation(Emetcon::PutConfig_LongloadProfile, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2597,9 +2579,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        //  the bstruct IO is set above by getOperation()
                         OutMessage->Buffer.BSt.Message[0] = spid;
                         OutMessage->Buffer.BSt.Message[1] = channel1;
                         OutMessage->Buffer.BSt.Message[2] = channel2;
@@ -2608,10 +2588,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        getOperation(Emetcon::GetConfig_LongloadProfile, function, length, io);
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                        getOperation(Emetcon::GetConfig_LongloadProfile, OutMessage->Buffer.BSt);
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                         OutMessage->Priority             += 1;//return to normal
