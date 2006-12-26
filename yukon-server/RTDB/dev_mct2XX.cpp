@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/12/05 20:10:56 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/12/26 15:48:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,7 @@ CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::initCommandStore()
 }
 
 
-bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -97,20 +97,20 @@ bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     if( itr != _commandStore.end() )
     {
-        function = itr->function;             // Copy over the found function!
-        length   = itr->length;              // Copy over the found length!
-        io       = itr->io;                              // Copy over the found io indicator!
+        bst.Function = itr->function;             // Copy over the found function!
+        bst.Length   = itr->length;              // Copy over the found length!
+        bst.IO       = itr->io;                              // Copy over the found io indicator!
 
-        if( io == Emetcon::IO_Write && length )
+        if( bst.IO == Emetcon::IO_Write && bst.Length )
         {
-            io |= Q_ARMC;
+            bst.IO |= Q_ARMC;
         }
 
         found = true;
     }
     else                                         // Look in the parent if not found in the child!
     {
-        found = Inherited::getOperation(cmd, function, length, io);
+        found = Inherited::getOperation(cmd, bst);
     }
 
     return found;
@@ -129,37 +129,18 @@ INT CtiDeviceMCT2XX::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::Scan_Accum):
-        case (Emetcon::GetValue_KWH):
-        {
-            status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::Scan_Accum:
+        case Emetcon::GetValue_KWH:         status = decodeGetValueKWH      (InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case (Emetcon::Scan_Integrity):
-        case (Emetcon::GetValue_Demand):
-        {
-            status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::Scan_Integrity:
+        case Emetcon::GetValue_Demand:      status = decodeGetValueDemand   (InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case (Emetcon::GetStatus_Internal):
-        {
-            status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_Internal:   status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case (Emetcon::GetConfig_Model):
-        {
-            status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);  // Parent method.
-            break;
-        }
+        //  Parent method.
+        case Emetcon::GetConfig_Model:      status = decodeGetConfigModel   (InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case (Emetcon::GetConfig_Options):
-        {
-            status = decodeGetConfigOptions(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Options:    status = decodeGetConfigOptions (InMessage, TimeNow, vgList, retList, outList);     break;
 
         default:
         {
