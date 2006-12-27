@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/12/26 15:50:01 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/12/27 06:12:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,11 @@ private:
 
     static const ConfigPartsList _config_parts;
     static ConfigPartsList initConfigParts();
+
+    static string describeStatusAndEvents(unsigned char *buf);
+
+    static DynamicPaoAddressing_t         initDynPaoAddressing();
+    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
 
 protected:
 
@@ -70,8 +75,8 @@ protected:
         Memory_CentronMultiplierPos = 0x19,
         Memory_CentronMultiplierLen =    1,
 
-        Memory_AddressingPos        = 0x13,
-        Memory_AddressingLen        =    6,
+        Memory_UniqueAddressPos     = 0x10,
+        Memory_UniqueAddressLen     =    3,
 
         Memory_BronzeAddressPos     = 0x13,
         Memory_BronzeAddressLen     =    1,
@@ -192,6 +197,9 @@ protected:
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,
 
+        FuncWrite_SetAddressPos        = 0xf1,
+        FuncWrite_SetAddressLen        =    4,
+
         FuncWrite_CentronReadingPos    = 0xf2,
         FuncWrite_CentronReadingLen    =    8,
 
@@ -221,8 +229,6 @@ protected:
 
     bool _intervalsSent;
 
-    static DynamicPaoAddressing_t         initDynPaoAddressing();
-    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
     void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
     void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
 
@@ -251,6 +257,7 @@ protected:
     INT decodeGetConfigIntervals            ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigDisconnect           ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigAddress              ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
