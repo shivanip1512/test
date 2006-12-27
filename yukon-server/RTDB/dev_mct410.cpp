@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2006/12/27 06:14:12 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2006/12/27 22:25:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2552,7 +2552,7 @@ INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow,
 
 INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT status = NORMAL;
+    INT status = NORMAL, state = 0;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -2563,7 +2563,7 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
     {
         // No error occured, we must do a real decode!
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         resultStr  = getName() + " / Disconnect Config:\n";
 
@@ -2574,11 +2574,17 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         switch( DSt->Message[0] & 0x03 )
         {
-            case RawStatus_Connected:                resultStr += "connected\n";                 break;
-            case RawStatus_ConnectArmed:             resultStr += "connect armed\n";             break;
-            case RawStatus_DisconnectedUnconfirmed:  resultStr += "unconfirmed disconnected\n";  break;
-            case RawStatus_DisconnectedConfirmed:    resultStr += "confirmed disconnected\n";    break;
+            case RawStatus_Connected:               resultStr += "connected\n";                 state = StateGroup_Connected;      break;
+            case RawStatus_ConnectArmed:            resultStr += "connect armed\n";             state = StateGroup_ConnectArmed;   break;
+            case RawStatus_DisconnectedUnconfirmed: resultStr += "unconfirmed disconnected\n";  state = StateGroup_DisconnectedUnconfirmed; break;
+            case RawStatus_DisconnectedConfirmed:   resultStr += "confirmed disconnected\n";    state = StateGroup_DisconnectedConfirmed;   break;
         }
+
+        point_info pi_disconnect;
+        pi_disconnect.value   = state;
+        pi_disconnect.quality = NormalQuality;
+
+        insertPointDataReport(StatusPointType, 1, ReturnMsg, pi_disconnect, "Disconnect status", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
 
         if( DSt->Message[1] & 0x02 )
         {
@@ -2594,27 +2600,20 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
         point_info pi = getData(DSt->Message + 5, 2);
 
         resultStr += "Disconnect demand threshold: ";
-        resultStr += pi.value?CtiNumStr(pi.value):"disabled";
+
+        if( pi.value )  resultStr += CtiNumStr(pi.value);
+        else            resultStr += "disabled";
+
         resultStr += "\n";
 
         resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
 
         resultStr += "Disconnect load limit count: " + CtiNumStr(DSt->Message[8]) + string("\n");
 
-        if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
-        {
-            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-            ReturnMsg->setResultString(resultStr);
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultStr);
 
-            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            status = MEMORY;
-        }
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
