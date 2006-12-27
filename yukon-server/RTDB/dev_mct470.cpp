@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2006/12/27 01:45:10 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2006/12/27 05:46:31 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,6 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           Memory_ModelPos,               1));
     cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::GetValue_KWH,               Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
@@ -105,7 +104,6 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutValue_KYZ,               Emetcon::IO_Write,          FuncWrite_CurrentReading,     FuncWrite_CurrentReadingLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                             0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                             0));  //  filled in later
-    cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           Memory_ModelPos,              Memory_ModelLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Function_Read,  FuncRead_LoadProfileChannel12Pos, FuncRead_LoadProfileChannel12Len));
     cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          Memory_ChannelMultiplierPos,  Memory_ChannelMultiplierLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,     Memory_TimeZoneOffsetLen +
@@ -130,8 +128,8 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 
     //******************************** Config Related starts here *************************
     cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_AddressingPos,        Memory_AddressingLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LongloadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,     FuncWrite_LLPStorageLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_LongloadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,       FuncRead_LLPStatusLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_LongLoadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,     FuncWrite_LLPStorageLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_LongLoadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,       FuncRead_LLPStatusLen));
     cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,          Memory_DSTBeginLen
                                                                                                                            + Memory_DSTEndLen
                                                                                                                            + Memory_TimeZoneOffsetLen));
