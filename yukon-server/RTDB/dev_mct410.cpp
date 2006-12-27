@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.114 $
-* DATE         :  $Date: 2006/12/26 15:58:40 $
+* REVISION     :  $Revision: 1.115 $
+* DATE         :  $Date: 2006/12/27 06:14:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -303,10 +303,16 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write,          Command_FreezeVoltageOne,       0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write,          Command_FreezeVoltageTwo,       0));
 
+    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddress,    Emetcon::IO_Function_Write, FuncWrite_SetAddressPos,        FuncWrite_SetAddressLen));
+
     //******************************** Config Related starts here *************************
-    cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_AddressingPos,           Memory_AddressingLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LongloadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_LongloadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_BronzeAddressPos,        Memory_BronzeAddressLen
+                                                                                                                            + Memory_LeadAddressLen
+                                                                                                                            + Memory_CollectionAddressLen
+                                                                                                                            + Memory_SPIDAddressLen));
+
+    cs.insert(CommandStore(Emetcon::PutConfig_LongLoadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_LongLoadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,             Memory_DSTBeginLen
                                                                                                                             + Memory_DSTEndLen
@@ -717,10 +723,10 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     {
         case Emetcon::Scan_Accum:
         case Emetcon::GetValue_KWH:
-        case Emetcon::GetValue_FrozenKWH:           status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);   break;
+        case Emetcon::GetValue_FrozenKWH:           status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
 
         case Emetcon::Scan_Integrity:
-        case Emetcon::GetValue_Demand:              status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);    break;
+        case Emetcon::GetValue_Demand:              status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);        break;
 
         case Emetcon::GetValue_PeakDemand:
         case Emetcon::GetValue_FrozenPeakDemand:    status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);    break;
@@ -741,6 +747,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::GetStatus_Disconnect:         status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
 
         case Emetcon::GetConfig_Disconnect:         status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
+
+        case Emetcon::GetConfig_UniqueAddress:      status = decodeGetConfigAddress(InMessage, TimeNow, vgList, retList, outList);      break;
 
         case Emetcon::GetConfig_Intervals:          status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
 
@@ -827,7 +835,38 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     OutMessage->Request.RouteID   = getRouteID();
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-    if( parse.isKeyValid("centron_ratio") )
+    if( parse.isKeyValid("address") && parse.isKeyValid("uniqueaddress") )
+    {
+        int uadd;
+
+        function = Emetcon::PutConfig_UniqueAddress;
+        found    = getOperation(function, OutMessage->Buffer.BSt);
+
+        uadd = parse.getiValue("uniqueaddress");
+
+        if( uadd > 0x3fffff || uadd < 0 )
+        {
+            found = false;
+
+            if( errRet )
+            {
+                errRet->setResultString("Invalid address \"" + CtiNumStr(uadd) + "\" for device \"" + getName() + "\", not sending");
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet);
+                errRet = NULL;
+            }
+        }
+        else
+        {
+            OutMessage->Sequence = function;
+
+            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+            OutMessage->Buffer.BSt.Message[1] = ( uadd >> 16) & 0x0000ff;
+            OutMessage->Buffer.BSt.Message[2] = ( uadd >>  8) & 0x0000ff;
+            OutMessage->Buffer.BSt.Message[3] = ( uadd      ) & 0x0000ff;
+        }
+    }
+    else if( parse.isKeyValid("centron_ratio") )
     {
         //  these Centron guys are very specialized writes, so we won't put them in the command store at the
         //    moment - at least not until we get a better command store than the Cti::Protocol::Emetcon:: thing...
@@ -1072,7 +1111,17 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    if( parse.isKeyValid("centron_ratio") )
+    if( parse.isKeyValid("address_unique") )
+    {
+        found = true;
+
+        OutMessage->Buffer.BSt.Function = Memory_UniqueAddressPos;
+        OutMessage->Buffer.BSt.Length   = Memory_UniqueAddressLen;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+
+        OutMessage->Sequence = Emetcon::GetConfig_UniqueAddress;
+    }
+    else if( parse.isKeyValid("centron_ratio") )
     {
         found = true;
 
@@ -2193,6 +2242,42 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
 }
 
 
+string CtiDeviceMCT410::describeStatusAndEvents(unsigned char *buf)
+{
+    string descriptor;
+
+    if( buf )
+    {
+        // point offset 10
+        descriptor += (buf[1] & 0x01)?"Power Fail occurred\n":"";
+        descriptor += (buf[1] & 0x02)?"Under-Voltage Event\n":"";
+        descriptor += (buf[1] & 0x04)?"Over-Voltage Event\n":"";
+        descriptor += (buf[1] & 0x08)?"Power Fail Carryover\n":"";
+        descriptor += (buf[1] & 0x10)?"RTC Adjusted\n":"";
+        descriptor += (buf[1] & 0x20)?"Holiday Event occurred\n":"";
+        descriptor += (buf[1] & 0x40)?"DST Change occurred\n":"";
+        descriptor += (buf[1] & 0x80)?"Tamper Flag set\n":"";
+
+        //  point offset 20
+        descriptor += (buf[2] & 0x01)?"Zero usage stored for 24 hours\n":"";
+        descriptor += (buf[2] & 0x02)?"Disconnect error (demand seen after disconnect)\n":"";
+        descriptor += (buf[2] & 0x04)?"Last meter reading corrupt\n":"";
+        //  0x08 - 0x80 aren't used yet
+
+        //  starts at offset 30 - NOTE that this is byte 0
+        descriptor += (buf[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+        descriptor += (buf[0] & 0x02)?"Phase detect in progress\n":"";
+        descriptor += (buf[0] & 0x04)?"DST active\n":"DST inactive\n";
+        descriptor += (buf[0] & 0x08)?"Holiday active\n":"";
+        descriptor += (buf[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+        descriptor += (buf[0] & 0x20)?"Time sync needed\n":"In time sync\n";
+        descriptor += (buf[0] & 0x40)?"Critical peak active\n":"";
+        //  0x80 is not used yet
+    }
+
+    return descriptor;
+}
+
 INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
@@ -2221,31 +2306,8 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 
         resultString  = getName() + " / Internal Status:\n";
 
-        //  point offset 10
-        resultString += (DSt.Message[1] & 0x01)?"Power Fail occurred\n":"";
-        resultString += (DSt.Message[1] & 0x02)?"Under-Voltage Event\n":"";
-        resultString += (DSt.Message[1] & 0x04)?"Over-Voltage Event\n":"";
-        resultString += (DSt.Message[1] & 0x08)?"Power Fail Carryover\n":"";
-        resultString += (DSt.Message[1] & 0x10)?"RTC Adjusted\n":"";
-        resultString += (DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
-        resultString += (DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
-        resultString += (DSt.Message[1] & 0x80)?"Tamper Flag set\n":"";
-
-        //  point offset 20
-        resultString += (DSt.Message[2] & 0x01)?"Zero usage stored for 24 hours\n":"";
-        resultString += (DSt.Message[2] & 0x02)?"Disconnect error (demand seen after disconnect)\n":"";
-        resultString += (DSt.Message[2] & 0x04)?"Last meter reading corrupt\n":"";
-        //  0x08 - 0x80 aren't used yet
-
-        //  starts at offset 30 - NOTE that this is byte 0
-        resultString += (DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
-        resultString += (DSt.Message[0] & 0x02)?"Phase detect in progress\n":"";
-        resultString += (DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
-        resultString += (DSt.Message[0] & 0x08)?"Holiday active\n":"";
-        resultString += (DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
-        resultString += (DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
-        resultString += (DSt.Message[0] & 0x40)?"Critical peak active\n":"";
-        //  0x80 is not used yet
+        //  point offsets 10-39
+        resultString += describeStatusAndEvents(DSt.Message);
 
         //  Eventually, we should exclude the iCon-specific bits from the Centron result
 
@@ -2559,6 +2621,47 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 }
 
 
+INT CtiDeviceMCT410::decodeGetConfigAddress(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    string resultStr;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+        long address = DSt->Message[0] << 16 |
+                       DSt->Message[1] <<  8 |
+                       DSt->Message[2];
+
+        resultStr  = getName() + " / Unique address: " + CtiNumStr(address);
+
+        if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
+        {
+            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            ReturnMsg->setResultString(resultStr);
+
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            status = MEMORY;
+        }
+    }
+
+    return status;
+}
+
+
 INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
@@ -2568,34 +2671,78 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
+        string descriptor;
 
-        string sspec;
-        string options;
         int  ssp;
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
         ssp  = DSt.Message[0];
         ssp |= DSt.Message[4] << 8;
 
-        sspec  = "\nSoftware Specification ";
-        sspec += CtiNumStr(ssp);
-        sspec += " Rom Revision ";
+        descriptor += getName() + " / Model information:\n";
+        descriptor += "Software Specification " + CtiNumStr(ssp) + " rev ";
 
         //  convert 10 to 1.0, 24 to 2.4
-        sspec += CtiNumStr(((double)DSt.Message[1]) / 10.0, 1);
+        descriptor += CtiNumStr(((double)DSt.Message[1]) / 10.0, 1);
 
         //  valid/released versions are 1.0 - 24.9
         if( DSt.Message[1] <   10 ||
             DSt.Message[1] >= 250 )
         {
-            sspec += " [possible development revision]\n";
+            descriptor += " [possible development revision]";
         }
 
-        sspec += "\n";
+        descriptor += "\n";
 
         //  set the dynamic info for use later
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)DSt.Message[1]);
+
+        descriptor += getName() + " / Physical meter configuration:\n";
+        descriptor += "Base meter: ";
+
+        switch( DSt.Message[2] & 0x03 )
+        {
+            case 0x00:  descriptor += "Sensus iCON";    break;
+            case 0x01:  descriptor += "Itron Centron";  break;
+            case 0x02:  descriptor += "L&G Focus";      break;
+            case 0x03:  descriptor += "GE I-210";       break;
+        }
+
+        descriptor += "\n";
+
+        if( DSt.Message[2] & 0x1c )
+        {
+            descriptor += "Channel 2: ";
+
+            if( (DSt.Message[2] & 0x1c) == 0x1c )   descriptor += "Net metering mode";
+            else                                    descriptor += "Water meter";
+
+            descriptor += "\n";
+        }
+
+        if( DSt.Message[2] & 0xe0 )
+        {
+            descriptor += "Channel 3: Water meter\n";
+        }
+
+        if( DSt.Message[3] &  0x3f )
+        {
+            descriptor += getName() + " / Active options:\n";
+
+            if( DSt.Message[3] & 0x01 )      descriptor += "DST observance enabled\n";
+            if( DSt.Message[3] & 0x02 )      descriptor += "LED test enabled\n";
+            if( DSt.Message[3] & 0x04 )      descriptor += "Reconnect button disabled\n";
+
+            if(      DSt.Message[3] & 0x08 ) descriptor += "Demand limit mode active\n";
+            else if( DSt.Message[3] & 0x10 ) descriptor += "Disconnect cycling mode active\n";
+
+            if( DSt.Message[3] & 0x20 )      descriptor += "Role code enabled\n";
+        }
+
+        descriptor += getName() + " / Status and events:\n";
+
+        descriptor += describeStatusAndEvents(DSt.Message + 5);
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2606,7 +2753,7 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         }
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( sspec + options );
+        ReturnMsg->setResultString(descriptor);
 
         //  this is hackish, and should be handled in a more centralized manner...  retMsgHandler, for example
         if( InMessage->MessageFlags & MessageFlag_ExpectMore )
