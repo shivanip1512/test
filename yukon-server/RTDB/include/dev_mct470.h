@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/12/12 18:06:43 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/12/27 01:43:52 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,20 +117,13 @@ private:
     int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force, bool verifyOnly);
     string resolveDNPStatus(int status);
 
-    //  this probably won't be used... ?
-    /*
-    struct dynamic_request_times
-    {
-        unsigned long sspec;
-        unsigned long loadprofile_rate;
-        unsigned long loadprofile_config;
-        unsigned long ied_loadprofile_rate;
-    } _dyn_request;
-    */
+    bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
+    string resolveIEDName(int bits) const;
+    string describeChannel(unsigned char channel_config) const;
 
 protected:
 
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     enum MemoryMap
     {
@@ -141,10 +134,10 @@ protected:
         Memory_EventFlagsMask2Pos   = 0x09,
         Memory_EventFlagsMask2Len   =    1,
 
-        Memory_AddressBronzePos     = 0x0D,
+        Memory_AddressBronzePos     = 0x0d,
         Memory_AddressBronzeLen     =    1,
 
-        Memory_AddressLeadPos       = 0x0E,
+        Memory_AddressLeadPos       = 0x0e,
         Memory_AddressLeadLen       =    2,
 
         Memory_AddressCollectionPos = 0x10,
@@ -259,19 +252,20 @@ protected:
         FuncWrite_IntervalsPos       = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
         FuncWrite_IntervalsLen       =    3,
 
-        FuncWrite_RelaysPos         = 0x08,
-        FuncWrite_RelaysLen         =    3,
+        FuncWrite_RelaysPos          = 0x08,
+        FuncWrite_RelaysLen          =    3,
 
-        FuncWrite_LoadProfileChannelsPos = 0x07,
-        FuncWrite_LoadProfileChannelsLen =   13,
+        FuncWrite_SetupLPChannelsPos = 0x07,
+        FuncWrite_SetupLPChannelsLen =   13,
+        FuncWrite_SetupLPChannelLen  =    7,  //  if you're only doing one channel
 
-        FuncWrite_PrecannedTablePos = 0xD3,
-        FuncWrite_PrecannedTableLen =    4,
+        FuncWrite_PrecannedTablePos  = 0xd3,
+        FuncWrite_PrecannedTableLen  =    4,
 
-        FuncWrite_DNPReqTable       = 0xD6,
+        FuncWrite_DNPReqTable        = 0xd6,
 
-        Memory_AddressingPos        = 0x0D,
-        Memory_AddressingLen        =    6,
+        Memory_AddressingPos         = 0x0d,
+        Memory_AddressingLen         =    6,
 
         FuncRead_ChannelSetupDataPos = 0x20,
         FuncRead_ChannelSetupDataLen =    7,
@@ -326,7 +320,7 @@ protected:
     bool isLPDynamicInfoCurrent(void);
     void requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 
-    void sendIntervals         (OUTMESS *&OutMessage, list< OUTMESS* > &outList);
+    void sendIntervals(OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 
     static DynamicPaoAddressing_t         initDynPaoAddressing();
     static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
@@ -362,6 +356,7 @@ protected:
     INT decodeGetStatusDNP         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigChannelSetup( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigMultiplier  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     enum
@@ -380,15 +375,15 @@ protected:
         SspecRev_IEDZeroWriteMin = 13,  //  rev 1.3
         SspecRev_IEDErrorPadding = 14,  //  rev 1.4
 
-        FuncRead_ChannelSetupPos = 0x20,
-        FuncRead_ChannelSetupLen =    7,
-
         FuncWrite_IEDCommandData        = 0xd1,
         FuncWrite_IEDCommandDataBaseLen =    5,
 
         FuncWrite_CurrentReading        = 0xd5,
         FuncWrite_CurrentReadingLen     =    5,
     };
+
+    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
 public:
 
@@ -413,8 +408,6 @@ public:
     CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
 
     virtual ULONG calcNextLPScanTime( void );
-    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
 };
