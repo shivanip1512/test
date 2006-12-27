@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2006/12/18 20:38:16 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2006/12/27 01:45:10 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                             0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                             0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           Memory_ModelPos,              Memory_ModelLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           Memory_ChannelMultiplierPos,  Memory_ChannelMultiplierLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Function_Read,  FuncRead_LoadProfileChannel12Pos, FuncRead_LoadProfileChannel12Len));
     cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          Memory_ChannelMultiplierPos,  Memory_ChannelMultiplierLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,     Memory_TimeZoneOffsetLen +
                                                                                                                           Memory_RTCLen));
@@ -114,7 +114,8 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          Memory_TimeZoneOffsetPos,     Memory_TimeZoneOffsetLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,       FuncWrite_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,          Memory_IntervalsLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_ChannelSetup,     Emetcon::IO_Function_Read,  FuncRead_ChannelSetupPos,     FuncRead_ChannelSetupLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_ChannelSetup,     Emetcon::IO_Function_Read,  FuncRead_ChannelSetupDataPos, FuncRead_ChannelSetupDataLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_ChannelSetup,     Emetcon::IO_Function_Write, FuncWrite_SetupLPChannelsPos, FuncWrite_SetupLPChannelLen));
     cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,       Emetcon::IO_Function_Read,  0,                             0));
     cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,      Emetcon::IO_Function_Read,  FuncRead_LPStatusCh1Ch2Pos,   FuncRead_LPStatusLen));
     cs.insert(CommandStore(Emetcon::GetStatus_Internal,         Emetcon::IO_Read,           Memory_StatusPos,             Memory_StatusLen));
@@ -143,8 +144,8 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
                                                                                                                            + Memory_Holiday2Len
                                                                                                                            + Memory_Holiday3Len));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Options,             Emetcon::IO_Write,       FuncWrite_ConfigAlarmMaskPos,  FuncWrite_ConfigAlarmMaskLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       Memory_TimeAdjustTolerancePos, Memory_TimeAdjustToleranceLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Options,             Emetcon::IO_Function_Write,  FuncWrite_ConfigAlarmMaskPos,  FuncWrite_ConfigAlarmMaskLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,           Memory_TimeAdjustTolerancePos, Memory_TimeAdjustToleranceLen));
 
     //************************************ End Config Related *****************************
 
@@ -234,23 +235,23 @@ CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddr
     return functionSet;
 }
 
-bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool CtiDeviceMCT470::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
-    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
+    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
-    if( itr != _commandStore.end( ) )
+    if( itr != _commandStore.end() )
     {
-        function = itr->function;   //  Copy the relevant bits from the commandStore
-        length   = itr->length;
-        io       = itr->io;
+        bst.Function = itr->function;   //  Copy the relevant bits from the commandStore
+        bst.Length   = itr->length;
+        bst.IO       = itr->io;
 
         found = true;
     }
     else  //  Look in the parent if not found in the child!
     {
-        found = Inherited::getOperation( cmd, function, length, io );
+        found = Inherited::getOperation(cmd, bst);
     }
 
     return found;
@@ -307,6 +308,7 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
     addressSet.insert(DynamicPaoAddressing(Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     Keys::Key_MCT_PrecannedTableReadInterval));
     addressSet.insert(DynamicPaoAddressing(Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     Keys::Key_MCT_PrecannedMeterNumber));
     addressSet.insert(DynamicPaoAddressing(Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    Keys::Key_MCT_PrecannedTableType));
+
     return addressSet;
 }
 
@@ -1003,6 +1005,8 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_ChannelSetup:   status = decodeGetConfigChannelSetup(InMessage, TimeNow, vgList, retList, outList); break;
 
+        case Emetcon::GetConfig_Multiplier:     status = decodeGetConfigMultiplier(InMessage, TimeNow, vgList, retList, outList);   break;
+
         case Emetcon::GetConfig_Model:          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
         default:
@@ -1177,7 +1181,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
         {
             //If we need to read out the time, do so.
             function = Emetcon::GetConfig_IEDTime;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
             if( found )
             {
                 OutMessage->DeviceID  = getID();
@@ -1199,7 +1203,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
         {
             //  this will be for the real-time table
             function = Emetcon::GetValue_IEDDemand;
-            found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else if( parse.isKeyValid("ied_dnp") )
         {
@@ -1209,13 +1213,13 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                 if( i == 1 )
                 {
                     function = Emetcon::GetValue_IED;
-                    found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                    found = getOperation(function, OutMessage->Buffer.BSt);
                     OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime;
                 }
                 else if( i == 2 )
                 {
                     function = Emetcon::GetValue_IED;
-                    found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                    found = getOperation(function, OutMessage->Buffer.BSt);
                     OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime2;
                 }
                 else
@@ -1227,7 +1231,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
             else if( (i = parse.getiValue("analognumber")) != INT_MIN )
             {
                 function = Emetcon::GetValue_IED;   //This means we have to fill in the function
-                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
                 if( OutMessage->Buffer.BSt.Function >= FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
@@ -1239,7 +1243,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
             else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
             {
                 function = Emetcon::GetValue_IED;   //This means we have to fill in the function
-                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
                 if( i > MCT470_DNP_Counter_Precanned_Reads ) //only 8 reads possible.
@@ -1251,7 +1255,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
             else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
             {
                 function = Emetcon::GetValue_IED;   //This means we have to fill in the function
-                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + MCT470_DNP_Status_Precanned_Offset;
             }
@@ -1269,7 +1273,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
         {
             function = Emetcon::GetValue_IED;
 
-            found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
             if( parse.getFlags() & CMD_FLAG_GV_RATET )
             {
@@ -1306,7 +1310,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
         //  note that this is below the IED requests - we do IED KWH rate requests, so those need to be
         //    handled first...
         function = Emetcon::GetValue_TOU;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )    OutMessage->Buffer.BSt.Function += FuncRead_TOUFrozenOffset;
 
@@ -1325,7 +1329,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
     {
         function = Emetcon::GetValue_PeakDemand;
-        found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.getFlags() & CMD_FLAG_OFFSET )
         {
@@ -1421,7 +1425,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             {
                 //Read the pulse demand
                 function = Emetcon::GetValue_Demand;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 if( found )
                 {
@@ -1450,7 +1454,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                 {
                     //If we need to read out the time, do so.
                     function = Emetcon::GetConfig_IEDTime;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    found = getOperation(function, OutMessage->Buffer.BSt);
                     if( found )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
@@ -1472,7 +1476,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
 
                 //Read the IED demand
                 function = Emetcon::GetValue_IEDDemand;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 if( found )
                 {
@@ -1554,14 +1558,20 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
     if(parse.isKeyValid("multiplier"))
     {
         function = Emetcon::GetConfig_Multiplier;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.isKeyValid("multchannel") )
         {
-            if( parse.getiValue("multchannel") >= 1 &&
-                parse.getiValue("multchannel") <= ChannelCount )
+            int channel = parse.getiValue("multchannel");
+
+            if( channel >= 1 && channel <= ChannelCount )
             {
-                OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * Memory_ChannelOffset;
+                if( channel > 2 )
+                {
+                    //  this refers to a pair of functions that retrieve channels 1/2, 3/4 respectively
+                    OutMessage->Buffer.BSt.Function = FuncRead_LoadProfileChannel34Pos;
+                    OutMessage->Buffer.BSt.Length   = FuncRead_LoadProfileChannel34Len;
+                }
             }
             else
             {
@@ -1578,7 +1588,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
             {
                 //  we need to read the IED info byte out of the MCT
                 function = Emetcon::GetConfig_Model;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
                 if( found )
                 {
@@ -1598,12 +1608,12 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
             }
 
             function = Emetcon::GetConfig_IEDTime;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else if( parse.isKeyValid("scan"))
         {
             function = Emetcon::GetConfig_IEDScan;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
         }
         else if( parse.isKeyValid("dnp") )
         {
@@ -1630,7 +1640,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
             }
 
             function = Emetcon::GetConfig_IEDDNP;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found = getOperation(function, OutMessage->Buffer.BSt);
             incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
         }
     }
@@ -1661,6 +1671,87 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
 }
 
 
+bool CtiDeviceMCT470::computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const
+{
+    bool retval = true;
+
+    /*
+
+    If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
+    If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
+    However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
+
+    Mp + Kh - 1
+
+    The maximum range of the accumulator is:
+
+    65535
+
+    So the relationship between Mp and Kh can at most be:
+
+    Mp + Kh - 1 = 65535
+    Mp + Kh     = 65536
+
+    So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
+
+
+       Mp    Kh
+         1/10000 =     0.0001
+         9/10000 =     0.0009
+        99/10000 =     0.0099
+       999/10000 =     0.0999
+      9999/10000 =     0.9999
+     49999/10000 =     4.9999
+     49999/ 1000 =    49.999
+     49999/  100 =   499.99
+     49999/   10 =  4999.9
+     49999/    1 = 49999.
+
+    */
+
+
+    if( multiplier > 50000 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - Multiplier too large - must be less than 50000 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        retval = false;
+    }
+    else if( multiplier < 0.0001 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - Multiplier too small - must be at least 0.0001 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        retval = false;
+    }
+    else if( int(multiplier) == multiplier )
+    {
+        //  this is an integer, so don't make it too hard on us
+        numerator   = multiplier;
+        denominator = 1;
+    }
+    else
+    {
+        denominator = 1;
+
+        //  this will break once we cross 5000 or if we have no significant digits left
+        while( (multiplier * denominator) < 5000 &&
+               fmod(multiplier * double(denominator), 1.0) != 0.0 )
+        {
+            denominator *= 10;
+        }
+
+        numerator = (unsigned)(multiplier * denominator);
+    }
+
+    return retval;
+}
+
+
 INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
                                        CtiCommandParser      &parse,
                                        OUTMESS              *&OutMessage,
@@ -1685,97 +1776,104 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    if(parse.isKeyValid("multiplier"))
+    if( parse.isKeyValid("channel_config") )
+    {
+        int channel, input, channel_config;
+        unsigned numerator, denominator;
+        double multiplier;
+        string type;
+
+        channel = parse.getiValue("channel_offset");
+
+        //  will be one of "ied", "2-wire", "3-wire", or "none"
+        type = parse.getsValue("channel_type");
+
+        //  default the input to the same as the channel if not specified
+        input = parse.getiValue("channel_input", channel);
+
+        multiplier = parse.getdValue("channel_multiplier", 1.0);
+
+        function = Emetcon::PutConfig_ChannelSetup;
+
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
+        {
+            if( !computeMultiplierFactors(multiplier, numerator, denominator) )
+            {
+                errRet->setResultString("Invalid multiplier");
+                nRet = BADPARAM;
+                found = false;
+
+                retList.push_back(errRet);
+                errRet = 0;
+            }
+            else if( channel < 1 || channel > ChannelCount )
+            {
+                errRet->setResultString("Channel out of range (1-4)");
+                nRet = BADPARAM;
+                found = false;
+
+                retList.push_back(errRet);
+                errRet = 0;
+            }
+            else if( input < 1 || input > 16 )
+            {
+                errRet->setResultString("Input out of range (1-16)");
+                nRet = BADPARAM;
+                found = false;
+
+                retList.push_back(errRet);
+                errRet = 0;
+            }
+            else
+            {
+                if( type == "none" )    channel_config = 0;
+                if( type == "ied" )     channel_config = 1;
+                if( type == "2-wire" )  channel_config = 2;
+                if( type == "3-wire" )  channel_config = 3;
+
+                channel_config |= (input - 1) << 2;
+
+                OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+                OutMessage->Buffer.BSt.Message[1] = channel;
+                OutMessage->Buffer.BSt.Message[2] = channel_config;
+                OutMessage->Buffer.BSt.Message[3] = (numerator   >> 8) & 0xff;
+                OutMessage->Buffer.BSt.Message[4] =  numerator         & 0xff;
+                OutMessage->Buffer.BSt.Message[5] = (denominator >> 8) & 0xff;
+                OutMessage->Buffer.BSt.Message[6] =  denominator       & 0xff;
+            }
+        }
+    }
+    else if( parse.isKeyValid("multiplier") )
     {
         unsigned long multbytes;
         double multiplier = parse.getdValue("multiplier"), channel = parse.getiValue("multoffset");
-        int numerator, denominator;
+        unsigned numerator, denominator;
 
-        if( channel <= 0 || channel > ChannelCount )
+        function = Emetcon::PutConfig_Multiplier;
+
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
-            errRet->setResultString("MCT-470 KYZ channel must be between 1 and 4");
-
-            retList.push_back(errRet);
-
-            errRet = 0;
-        }
-        else
-        {
-            function = Emetcon::PutConfig_Multiplier;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-            if( found )
+            if( !computeMultiplierFactors(multiplier, numerator, denominator) )
             {
-                /*
+                errRet->setResultString("Invalid multiplier");
+                nRet = BADPARAM;
+                found = false;
 
-                If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
-                If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
-                However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
+                retList.push_back(errRet);
+                errRet = 0;
+            }
+            else if( channel < 1 || channel > ChannelCount )
+            {
+                errRet->setResultString("Channel out of range (1-4)");
+                nRet = BADPARAM;
+                found = false;
 
-                Mp + Kh - 1
+                retList.push_back(errRet);
 
-                The maximum range of the accumulator is:
-
-                65535
-
-                So the relationship between Mp and Kh can at most be:
-
-                Mp + Kh - 1 = 65535
-                Mp + Kh     = 65536
-
-                So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
-
-
-                   Mp    Kh
-                     1/10000 =     0.0001
-                     9/10000 =     0.0009
-                    99/10000 =     0.0099
-                   999/10000 =     0.0999
-                  9999/10000 =     0.9999
-                 49999/10000 =     4.9999
-                 49999/ 1000 =    49.999
-                 49999/  100 =   499.99
-                 49999/   10 =  4999.9
-                 49999/    1 = 49999.
-
-                */
-
-
-                if( multiplier > 50000 )
-                {
-                    errRet->setResultString("Multiplier too large - must be less than 50000");
-                    errRet->setStatus(NoMethod);
-                    retList.push_back( errRet );
-                    errRet = NULL;
-                }
-                if( multiplier < 0.0001 )
-                {
-                    errRet->setResultString("Multiplier too small - must be at least 0.0001");
-                    errRet->setStatus(NoMethod);
-                    retList.push_back( errRet );
-                    errRet = NULL;
-                }
-
-                denominator = 10000;
-
-                //  ex:  multiplier = 4.097, denominator = 10000
-                //         result = 40,970 <--  suitable numerator
-                //       multiplier = 689,   denominator = 10000
-                //         result = 6,890,000  <--  unsuitable numerator, divide denominator by 10
-                //       multiplier = 689,   denominator =  1000
-                //         result = 689,000    <--  unsuitable numerator, divide denominator by 10
-                //       multiplier = 689,   denominator =   100
-                //         result = 68,900     <--  unsuitable numerator, divide denominator by 10
-                //       multiplier = 689,   denominator =    10
-                //         result = 6,890      <--  suitable numerator
-
-                while( (multiplier * denominator) > 50000 )
-                {
-                    denominator /= 10;
-                }
-
-                numerator = (int)(multiplier * denominator);
-
+                errRet = 0;
+            }
+            else
+            {
                 OutMessage->Buffer.BSt.Message[0] = (numerator   >> 8) & 0xff;
                 OutMessage->Buffer.BSt.Message[1] =  numerator         & 0xff;
 
@@ -1847,7 +1945,7 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg         *pReq,
     if( parse.isKeyValid("kyz") )
     {
         function = Emetcon::PutValue_KYZ;
-        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
             if(parse.isKeyValid("kyz_offset") && parse.isKeyValid("kyz_reading") )
             {
@@ -1992,22 +2090,22 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_LoadProfileChannelsPos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_LoadProfileChannelsLen;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = spid;
-                        OutMessage->Buffer.BSt.Message[1] = 1;
-                        OutMessage->Buffer.BSt.Message[2] = (channel1);
-                        OutMessage->Buffer.BSt.Message[3] = (ratio1>>8);
-                        OutMessage->Buffer.BSt.Message[4] = (ratio1);
-                        OutMessage->Buffer.BSt.Message[5] = (kRatio1>>8);
-                        OutMessage->Buffer.BSt.Message[6] = (kRatio1);
-                        OutMessage->Buffer.BSt.Message[7] = 2;
-                        OutMessage->Buffer.BSt.Message[8] = (channel2);
-                        OutMessage->Buffer.BSt.Message[9] = (ratio2>>8);
-                        OutMessage->Buffer.BSt.Message[10] =(ratio2);
-                        OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
-                        OutMessage->Buffer.BSt.Message[12] =(kRatio2);
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
+                        OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = spid;
+                        OutMessage->Buffer.BSt.Message[1]  = 1;
+                        OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                        OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                        OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                        OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                        OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                        OutMessage->Buffer.BSt.Message[7]  = 2;
+                        OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                        OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                        OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                        OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                        OutMessage->Buffer.BSt.Message[12] = (kRatio2);
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
@@ -2058,8 +2156,8 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function    = FuncWrite_LoadProfileChannelsPos;
-                        OutMessage->Buffer.BSt.Length      = FuncWrite_LoadProfileChannelsLen;
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
+                        OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
                         OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
                         OutMessage->Buffer.BSt.Message[0]  = spid;
                         OutMessage->Buffer.BSt.Message[1]  = 3;
@@ -2371,7 +2469,7 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             configuration = config->getLongValueFromKey(Configuration);
             timeAdjustTolerance = config->getLongValueFromKey(TimeAdjustTolerance);
 
-            if( !getOperation(Emetcon::PutConfig_Options, function, length, io) )
+            if( !getOperation(Emetcon::PutConfig_Options, OutMessage->Buffer.BSt) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2395,9 +2493,6 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                         OutMessage->Buffer.BSt.Message[0] = (configuration);
                         OutMessage->Buffer.BSt.Message[1] = (event1mask);
                         OutMessage->Buffer.BSt.Message[2] = (event2mask);
@@ -2427,7 +2522,7 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 }
             }
 
-            if( !getOperation(Emetcon::PutConfig_TimeAdjustTolerance, function, length, io) )
+            if( !getOperation(Emetcon::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Time Adjust Tolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2447,9 +2542,6 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = function;
-                        OutMessage->Buffer.BSt.Length     = length;
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                         OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -4202,6 +4294,76 @@ INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
+string CtiDeviceMCT470::describeChannel(unsigned char channel_config) const
+{
+    string result_string;
+
+    /*
+    Bits 0-1 - Type:    00=Channel Not Used
+                        01 = Electronic Meter
+                        10 = 2-wire KYZ (form A)
+                        11 = 3-wire KYZ (form C)
+    Bits 2-5 - Physical Channel / Attached Meter's Channel: 0000=1      0100=5      1000=9      1100=13
+                                                            0001=2      0101=6      1001=10     1101=14
+                                                            0010=3      0110=7      1010=11     1110=15
+                                                            0011=4      0111=8      1011=12     1111=16
+    Bit 6 - Load Profile Interval #0 or #1 (0, 1)
+    */
+
+    if( channel_config & 0x03 )
+    {
+        switch( channel_config & 0x03 )
+        {
+            case 1:
+            {
+                if( hasDynamicInfo(Keys::Key_MCT_Configuration) )
+                {
+                    result_string += resolveIEDName(getDynamicInfo(Keys::Key_MCT_Configuration) >> 4) + " ";
+                }
+                else
+                {
+                    result_string += "Electronic meter ";
+                }
+
+                break;
+            }
+
+            case 2:     result_string += "2-wire KYZ (form A) ";    break;
+            case 3:     result_string += "3-wire KYZ (form C) ";    break;
+        }
+
+        if( channel_config & 0x02 ) result_string += "physical input ";
+        else                        result_string += "channel ";
+
+        result_string += CtiNumStr(((channel_config >> 2) & 0x0f) + 1);
+
+        if( channel_config & 0x02 )
+        {
+            //  TODO:  add support for LP interval 2
+            if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
+            {
+                result_string += ", " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) / 60) + " minute interval";
+            }
+            else
+            {
+                result_string += ", LP interval ";
+                result_string += (channel_config & 0x40)?"2":"1";
+            }
+        }
+        else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval) )
+        {
+            result_string += ", " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval) / 60) + " minute interval";
+        }
+    }
+    else
+    {
+        result_string += "Channel not used";
+    }
+
+    return result_string;
+}
+
+
 INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
@@ -4229,37 +4391,30 @@ INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &Tim
         {
             result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
 
+            result_string += describeChannel(DSt->Message[i]) + "\n";
+
             /*
             Bits 0-1 - Type:    00=Channel Not Used
                                 01 = Electronic Meter
                                 10 = 2-wire KYZ (form A)
                                 11 = 3-wire KYZ (form C)
-            Bits 2-5 - Physical Channel / Attached Meter's Channel: 0000=1      0100=5      1000=9      1100=13
-                                                                    0001=2      0101=6      1001=10     1101=14
-                                                                    0010=3      0110=7      1010=11     1110=15
-                                                                    0011=4      0111=8      1011=12     1111=16
+            Bits 2-5 - Physical Channel / Attached Meter's Channel
             Bit 6 - Load Profile Interval #0 or #1 (0, 1)
             */
 
+            //  type
+            dynamic_info += CtiNumStr(DSt->Message[i] & 0x03);
+
             if( DSt->Message[i] & 0x03 )
             {
-                if     ( (DSt->Message[i] & 0x03) == 1 ) { result_string += "Electronic meter ";      dynamic_info += "1"; }
-                else if( (DSt->Message[i] & 0x03) == 2 ) { result_string += "2-wire KYZ (form A) ";   dynamic_info += "2"; }
-                else if( (DSt->Message[i] & 0x03) == 3 ) { result_string += "3-wire KYZ (form C) ";   dynamic_info += "3"; }
-
-                result_string += "channel " + CtiNumStr((DSt->Message[i] >> 2) & 0x0f);
+                //  input
                 dynamic_info  += CtiNumStr((DSt->Message[i] >> 2) & 0x0f).hex();
-
-                result_string += " load profile interval #";
-                result_string += (DSt->Message[i] & 0x40)?"1":"0";
+                //  load profile interval
                 dynamic_info  += (DSt->Message[i] & 0x40)?"1":"0";
-
-                result_string += "\n";
             }
             else
             {
-                result_string += "Channel not used\n";
-                dynamic_info  += "000";
+                dynamic_info  += "00";
             }
         }
 
@@ -4269,6 +4424,7 @@ INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &Tim
             dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << dynamic_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        //  I don't like how this bit of dynamic info is set and used...  we should use a generic translation function instead
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, dynamic_info);
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -4332,17 +4488,7 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         //  this will need to be removed when we do this automatically
         setDynamicInfo(Keys::Key_MCT_Configuration, InMessage->Buffer.DSt.Message[3]);
 
-        options += "Connected Meter: ";
-        switch( InMessage->Buffer.DSt.Message[3] & 0xf0 )
-        {
-            case 0x00:  options += "None\n";                break;
-            case 0x10:  options += "Landis and Gyr S4\n";   break;
-            case 0x20:  options += "Alpha A1\n";            break;
-            case 0x30:  options += "Alpha Power Plus\n";    break;
-            case 0x40:  options += "GE kV\n";               break;
-            case 0x50:  options += "GE kV2\n";              break;
-            default:    options += "Unknown (" + CtiNumStr((int)InMessage->Buffer.DSt.Message[3]).xhex().zpad(2) + ")\n";   break;
-        }
+        options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
 
         if( InMessage->Buffer.DSt.Message[3] & 0x04 )
         {
@@ -4362,6 +4508,63 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( sspec + options );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT470::decodeGetConfigMultiplier(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    string descriptor;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT &DSt   = InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+        int channel = parse.getiValue("multchannel");
+
+        //  make sure it starts with 1 or 3
+        channel -= (channel - 1) % 2;
+
+        for( int i = 0; i < 2; i++ )
+        {
+            int offset = i * 5;
+
+            descriptor += getName() + " / channel " + CtiNumStr(channel + i).toString() + " configuration:\n";
+
+            descriptor += describeChannel(DSt.Message[offset]) + "\n";
+
+            //  is it a pulse input?
+            if( DSt.Message[offset] & 0x02 )
+            {
+                int meter_ratio, k;
+
+                meter_ratio = DSt.Message[offset+1] << 8 | DSt.Message[offset+2];
+                k           = DSt.Message[offset+3] << 8 | DSt.Message[offset+4];
+
+                descriptor += "Meter ratio / K: " + CtiNumStr(meter_ratio) + " / " + CtiNumStr(k) + "\n";
+
+                if( k )
+                {
+                    descriptor += "Effective multiplier: " + CtiNumStr((double)meter_ratio / (double)k, 4).toString() + "\n";
+                }
+            }
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(descriptor);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -4536,6 +4739,25 @@ string CtiDeviceMCT470::resolveDNPStatus(int status)
 }
 
 
+string CtiDeviceMCT470::resolveIEDName(int bits) const
+{
+    string name;
+
+    switch( bits & 0x0f )
+    {
+        case 0x00:  name += "None";                 break;
+        case 0x01:  name += "Landis and Gyr S4";    break;
+        case 0x02:  name += "Alpha A1";             break;
+        case 0x03:  name += "Alpha Power Plus";     break;
+        case 0x04:  name += "GE kV";                break;
+        case 0x05:  name += "GE kV2";               break;
+        default:    name += "Unknown (" + CtiNumStr(bits).xhex().zpad(2) + ")";   break;
+    }
+
+    return name;
+}
+
+
 void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
@@ -4548,7 +4770,7 @@ void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT31X::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT470::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Default data class: " << _iedPort.getDefaultDataClass() << endl;
         dout << "Default data offset: " << _iedPort.getDefaultDataOffset() << endl;
         dout << "Device ID: " << _iedPort.getDeviceID() << endl;
