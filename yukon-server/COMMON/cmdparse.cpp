@@ -1410,10 +1410,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 {
                     _cmd["address_group"] = CtiParseValue(TRUE);
                 }
-/*                if(token.contains("uniq"))
+                if(token.contains("uniq"))
                 {
                     _cmd["address_unique"] = CtiParseValue(TRUE);
-                }*/
+                }
             }
         }
         if(CmdStr.contains(" channels"))
