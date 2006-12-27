@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/12/06 22:12:51 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2006/12/27 01:40:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,12 +193,12 @@ INT CtiDeviceBase::RefreshDevicePoints()
 
     {
         LockGuard guard(monitor());
-    
+
         if(_pointMgr == NULL)
         {
             _pointMgr = CTIDBG_new CtiPointManager();
         }
-    
+
         if(_pointMgr != NULL)
         {
             try
@@ -209,9 +209,9 @@ INT CtiDeviceBase::RefreshDevicePoints()
                     CtiPointManager::LockGuard guard(_pointMgr->getMux());
                     /* Walk the point in memory db to see what the point range is */
                     CtiPointManager::spiterator iter = _pointMgr->begin();
-            
+
                     CtiPointManager::spiterator end = _pointMgr->end();
-            
+
                     for( ; iter != end; iter++ )
                     {
                         pointList.push_back(iter->second->getPointID());
@@ -866,7 +866,7 @@ bool CtiDeviceBase::isTAP() const
 
 
 //  this dynamic stuff might need to move to tbl_pao - it is dynamicpaoinfo, after all
-bool CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k)
+bool CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const
 {
     return (_paoInfo.find(CtiTableDynamicPaoInfo(getID(), k)) != _paoInfo.end());
 }

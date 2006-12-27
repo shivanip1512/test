@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/12/06 22:12:51 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/12/27 01:40:38 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,8 +251,7 @@ public:
     bool isSingle() const;
     bool isGroup() const;
 
-
-    bool hasDynamicInfo(Keys k);
+    bool hasDynamicInfo(Keys k) const;
     bool setDynamicInfo(const CtiTableDynamicPaoInfo &paoinfo);
     bool setDynamicInfo(Keys k, const string        &value);
     bool setDynamicInfo(Keys k, const int           &value);
