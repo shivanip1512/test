@@ -27,6 +27,7 @@ import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.TCUBase;
 import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
@@ -1528,14 +1529,14 @@ public Object getValue(Object device)
 {
    TwoWayDevice val = null;
    
-   if( device instanceof com.cannontech.database.data.multi.MultiDBPersistent )
-   {
-      val = (TwoWayDevice)com.cannontech.database.data.multi.CommonMulti.getFirstObjectOfType(
-                  TwoWayDevice.class,
-                  (com.cannontech.database.data.multi.MultiDBPersistent)device );
-   }         
-   else
-   	val = (TwoWayDevice)device;
+   if (device instanceof com.cannontech.database.data.multi.MultiDBPersistent) {
+        val = (TwoWayDevice) com.cannontech.database.data.multi.CommonMulti.getFirstObjectOfType(TwoWayDevice.class,
+                                                                                                 (com.cannontech.database.data.multi.MultiDBPersistent) device);
+    } else if (device instanceof SmartMultiDBPersistent) {
+        val = (TwoWayDevice) ((SmartMultiDBPersistent) device).getOwnerDBPersistent();
+    } else {
+        val = (TwoWayDevice) device;
+    }
 
 	Integer deviceID = val.getDevice().getDeviceID();
 	HashMap oldScanRateMap = val.getDeviceScanRateMap();

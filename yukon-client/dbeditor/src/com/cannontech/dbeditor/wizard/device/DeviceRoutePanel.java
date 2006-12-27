@@ -7,20 +7,34 @@ import java.awt.Dimension;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -130,127 +144,132 @@ public class DeviceRoutePanel
 	}
 	
 	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Object
-	 * @param val java.lang.Object
-	 */
-	public Object getValue(Object val) 
-   {
-		((CarrierBase) val).getDeviceRoutes().setRouteID(new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
-		DBPersistent chosenRoute = LiteFactory.createDBPersistent((LiteBase) getRouteComboBox().getSelectedItem());
+     * This method was created in VisualAge.
+     * @return java.lang.Object
+     * @param val java.lang.Object
+     */
+    public Object getValue(Object val) {
 
-		try 
-      {
-         chosenRoute = com.cannontech.database.Transaction.createTransaction(
-                           com.cannontech.database.Transaction.RETRIEVE,
-                           chosenRoute).execute();
+        Object value = null;
+        if (val instanceof SmartMultiDBPersistent) {
+            value = ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
+        } else {
+            value = val;
+        }
 
-		} catch (com.cannontech.database.TransactionException t) 
-      {
-			com.cannontech.clientutils.CTILogger.error(t.getMessage(), t);
-		}
+        ((CarrierBase) value).getDeviceRoutes()
+                             .setRouteID(new Integer(((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+        DBPersistent chosenRoute = LiteFactory.createDBPersistent((LiteBase) getRouteComboBox().getSelectedItem());
 
-		Integer deviceID = ((RouteBase) chosenRoute).getDeviceID();
-		
-		//special cases for some MCTs
-		DBPersistent mctVal = PointUtil.generatePointsForMCT(val);
-		if (mctVal != null) return mctVal;
+        try {
+            chosenRoute = Transaction.createTransaction(Transaction.RETRIEVE, chosenRoute)
+                                     .execute();
 
-		if (val instanceof RepeaterBase) {
-			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
-			newVal.getDBPersistentVector().add(val);
+        } catch (TransactionException t) {
+            CTILogger.error(t.getMessage(), t);
+        }
+
+        if (value instanceof RepeaterBase) {
+            MultiDBPersistent newVal = new MultiDBPersistent();
+            newVal.getDBPersistentVector().add(value);
 
             PaoDao paoDao = DaoFactory.getPaoDao();
-            ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
-           // ((DeviceBase) val).setDeviceID(paoDao.getMaxPAOid()+1);
-			
-			Integer pointID = DaoFactory.getPointDao().getNextPointId();
-         
-			//A status point is automatically added to each repeater
-			com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
-				pointID,
-				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-				"COMM STATUS",
-				((DeviceBase) val).getDevice().getDeviceID(),
-					new Integer(PointTypes.PT_OFFSET_TRANS_STATUS) );
-         
-				newPoint.getPoint().setStateGroupID( 
-					new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
-   
-				((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
-					new com.cannontech.database.db.point.PointStatus(pointID));
+            ((DeviceBase) value).setDeviceID(paoDao.getNextPaoId());
+            // ((DeviceBase) val).setDeviceID(paoDao.getMaxPAOid()+1);
 
-			newVal.getDBPersistentVector().add(newPoint);
+            Integer pointID = DaoFactory.getPointDao().getNextPointId();
 
-			//if the chosen route is a macro route then the generated route will be copied from
-			//the first route in the macro 
-			if (chosenRoute instanceof MacroRoute) {
-				if (((MacroRoute) chosenRoute).getMacroRouteVector().size()> 0) {
-					com.cannontech.database.db.route.MacroRoute firstRoute = (com.cannontech.database.db.route.MacroRoute) ((MacroRoute) chosenRoute).getMacroRouteVector().firstElement();
+            // A status point is automatically added to each repeater
+            PointBase newPoint = PointFactory.createNewPoint(pointID,
+                                                             PointTypes.STATUS_POINT,
+                                                             "COMM STATUS",
+                                                             ((DeviceBase) value).getDevice()
+                                                                                 .getDeviceID(),
+                                                             new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
 
-					IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-					synchronized (cache) {
-						List routes = cache.getAllRoutes();
-						DBPersistent rt = null;
-						
+            newPoint.getPoint()
+                    .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
 
-						for (int i = 0; i < routes.size(); i++) {
+            ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
 
-							if (firstRoute.getSingleRouteID().intValue()== ((LiteBase) routes.get(i)).getLiteID()) {
-								chosenRoute = LiteFactory.createDBPersistent((LiteBase) routes.get(i));
-								break;
-							}
-						}
+            newVal.getDBPersistentVector().add(newPoint);
 
-						try 
-                  {
-                     chosenRoute = com.cannontech.database.Transaction.createTransaction(
-                                       com.cannontech.database.Transaction.RETRIEVE,
-                                       chosenRoute).execute();
+            // if the chosen route is a macro route then the generated route
+            // will be copied from
+            // the first route in the macro
+            if (chosenRoute instanceof MacroRoute) {
+                if (((MacroRoute) chosenRoute).getMacroRouteVector().size() > 0) {
+                    com.cannontech.database.db.route.MacroRoute firstRoute = (com.cannontech.database.db.route.MacroRoute) ((MacroRoute) chosenRoute).getMacroRouteVector()
+                                                                                                                                                     .firstElement();
 
-						} catch (
-							com.cannontech.database.TransactionException t) {
-							com.cannontech.clientutils.CTILogger.error(t.getMessage(),t);
+                    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+                    synchronized (cache) {
+                        List routes = cache.getAllRoutes();
+                        DBPersistent rt = null;
 
-						}
+                        for (int i = 0; i < routes.size(); i++) {
 
-					}
+                            if (firstRoute.getSingleRouteID().intValue() == ((LiteBase) routes.get(i)).getLiteID()) {
+                                chosenRoute = LiteFactory.createDBPersistent((LiteBase) routes.get(i));
+                                break;
+                            }
+                        }
 
-				}
+                        try {
+                            chosenRoute = Transaction.createTransaction(Transaction.RETRIEVE,
+                                                                        chosenRoute).execute();
 
-			}
-			//create new route to be added - copy from the chosen route and add new repeater to it
-			//A route is automatically added to each transmitter
-			if (chosenRoute instanceof CCURoute) {
-			com.cannontech.database.data.route.RouteBase route = com.cannontech.database.data.route.RouteFactory.createRoute(com.cannontech.database.data.pao.RouteTypes.STRING_CCU);
+                        } catch (TransactionException t) {
+                            CTILogger.error(t.getMessage(), t);
 
-			route.setRouteName(((DeviceBase) val).getPAOName());
+                        }
 
-			//set default values for route tables possibly using same values in chosen route		
-			route.setDeviceID(((RouteBase) chosenRoute).getDeviceID());
-			((CCURoute) route).getCarrierRoute().setBusNumber(((CCURoute) chosenRoute).getCarrierRoute().getBusNumber());
-			((CCURoute) route).setRepeaterVector(((CCURoute) chosenRoute).getRepeaterVector());
+                    }
 
-			//add the new repeater to this route
-			com.cannontech.database.db.route.RepeaterRoute rr = new com.cannontech.database.db.route.RepeaterRoute(route.getRouteID(),((DeviceBase) val).getPAObjectID(),new Integer(7),new Integer(((CCURoute) chosenRoute).getRepeaterVector().size()+ 1));
-			
-			if (((CCURoute)route).getRepeaterVector().size() >= 7) 
-				((CCURoute)route).setRepeaterVector(new Vector());
-				
-				((CCURoute) route).getRepeaterVector().addElement(rr);
-				
-			
-			route.setDefaultRoute(com.cannontech.common.util.CtiUtilities.getTrueCharacter().toString());
-			java.util.Vector regRoute =RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(),false,route,false);
-			newVal.getDBPersistentVector().add(regRoute.firstElement());
+                }
 
-			return newVal;
-		}
-		}
-		
+            }
+            // create new route to be added - copy from the chosen route and add
+            // new repeater to it
+            // A route is automatically added to each transmitter
+            if (chosenRoute instanceof CCURoute) {
+                RouteBase route = RouteFactory.createRoute(RouteTypes.STRING_CCU);
 
-		return val;
-	}
+                route.setRouteName(((DeviceBase) value).getPAOName());
+
+                // set default values for route tables possibly using same
+                // values in chosen route
+                route.setDeviceID(((RouteBase) chosenRoute).getDeviceID());
+                ((CCURoute) route).getCarrierRoute()
+                                  .setBusNumber(((CCURoute) chosenRoute).getCarrierRoute()
+                                                                        .getBusNumber());
+                ((CCURoute) route).setRepeaterVector(((CCURoute) chosenRoute).getRepeaterVector());
+
+                // add the new repeater to this route
+                RepeaterRoute rr = new RepeaterRoute(route.getRouteID(),
+                                                     ((DeviceBase) value).getPAObjectID(),
+                                                     new Integer(7),
+                                                     new Integer(((CCURoute) chosenRoute).getRepeaterVector()
+                                                                                         .size() + 1));
+
+                if (((CCURoute) route).getRepeaterVector().size() >= 7)
+                    ((CCURoute) route).setRepeaterVector(new Vector());
+
+                ((CCURoute) route).getRepeaterVector().addElement(rr);
+
+                route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
+                Vector regRoute = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(),
+                                                                   false,
+                                                                   route,
+                                                                   false);
+                newVal.getDBPersistentVector().add(regRoute.firstElement());
+
+                return newVal;
+            }
+        }
+
+        return val;
+    }
 	/**
 	 * Called whenever the part throws an exception.
 	 * @param exception java.lang.Throwable

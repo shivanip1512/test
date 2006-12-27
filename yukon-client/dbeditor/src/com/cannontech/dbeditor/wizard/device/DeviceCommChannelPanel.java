@@ -8,30 +8,46 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.TransdataMarkV;
 import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.port.DirectPort;
+import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceVerification;
+import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.route.CarrierRoute;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
@@ -229,191 +245,176 @@ private void checkAddress()
 
 }
 
-/**
- * This method was created in VisualAge.
- * @return java.lang.Object
- * @param val java.lang.Object
- */
-public Object getValue(Object val)
-{
-	Integer portID = null;
-		
-	if( null == getPortComboBox().getSelectedItem() )
-	{
-		javax.swing.JOptionPane.showMessageDialog(
-			this, 
-			"Please create a com channel first.", 
-			"No Com Channels to Assign!",
-			javax.swing.JOptionPane.WARNING_MESSAGE );
-		throw new CancelInsertException("Device was not inserted");
-	}else portID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
-	
-	int devType = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase) val).getPAOType() );
-	
-	if( val instanceof PagingTapTerminal )
-	{
-		 ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
-	}
-	else if( val instanceof RemoteBase )
-	{
-		((RemoteBase) val).getDeviceDirectCommSettings().setPortID(portID);
+    /**
+     * This method was created in VisualAge.
+     * @return java.lang.Object
+     * @param val java.lang.Object
+     */
+    public Object getValue(Object value) {
+        
+        Object val = null;
+        if (value instanceof SmartMultiDBPersistent) {
+            val = ((SmartMultiDBPersistent) value).getOwnerDBPersistent();
+        } else {
+            val = value;
+        }
+        Integer portID = null;
 
-		//We need to set the Devices baud rate to be the same as the selected routes baud rate
-		// This requires a database hit here, could lead to problems in the future!
-		try
-		{
-			DirectPort port = (DirectPort)com.cannontech.database.data.lite.LiteFactory.createDBPersistent( (com.cannontech.database.data.lite.LiteBase)getPortComboBox().getSelectedItem() );			
-			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
-						com.cannontech.database.Transaction.RETRIEVE, port );
+        if (null == getPortComboBox().getSelectedItem()) {
+            JOptionPane.showMessageDialog(this,
+                                          "Please create a com channel first.",
+                                          "No Com Channels to Assign!",
+                                          JOptionPane.WARNING_MESSAGE);
+            throw new CancelInsertException("Device was not inserted");
+        } else
+            portID = new Integer(((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
 
-			port = (DirectPort)t.execute();
+        int devType = PAOGroups.getDeviceType(((DeviceBase) val).getPAOType());
 
-			((RemoteBase) val).getDeviceDialupSettings().setBaudRate( port.getPortSettings().getBaudRate() );
-		}
-		catch( Exception e )
-		{
-			//no big deal if we fail, the baud rates for the device and port will not be equal
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e ); 
-		}
+        if (val instanceof PagingTapTerminal) {
+            ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
+        } else if (val instanceof RemoteBase) {
+            ((RemoteBase) val).getDeviceDirectCommSettings().setPortID(portID);
 
-		if (val instanceof IDLCBase)
-			 ((IDLCBase) val).getDeviceIDLCRemote().setPostCommWait(new Integer(0));
-	}
-	else
-		throw new Error("What kind of device is this?");
+            // We need to set the Devices baud rate to be the same as the
+            // selected routes baud rate
+            // This requires a database hit here, could lead to problems in the
+            // future!
+            try {
+                DirectPort port = (DirectPort) LiteFactory.createDBPersistent((LiteBase) getPortComboBox().getSelectedItem());
+                Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, port);
 
-   //default the threshold
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformThreshold(new Integer(90));
+                port = (DirectPort) t.execute();
 
-	//transmitter is a special case
+                ((RemoteBase) val).getDeviceDialupSettings().setBaudRate(port.getPortSettings()
+                                                                             .getBaudRate());
+            } catch (Exception e) {
+                // no big deal if we fail, the baud rates for the device and
+                // port will not be equal
+                CTILogger.error(e.getMessage(), e);
+            }
 
-	if (com.cannontech.database.data.pao.DeviceClasses.getClass(((DeviceBase) val).getPAOClass()) 
-		     == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
-	{
-		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
-        PaoDao paoDao = DaoFactory.getPaoDao();
-		((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
-		
-		//checks device type and accordingly sets route type
-		
-		String routeType;
+            if (val instanceof IDLCBase)
+                ((IDLCBase) val).getDeviceIDLCRemote().setPostCommWait(new Integer(0));
+        } else
+            throw new Error("What kind of device is this?");
 
-		if( DeviceTypesFuncs.isCCU(devType) || DeviceTypesFuncs.isRepeater(devType) )
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_CCU;
-		else if( DeviceTypesFuncs.isLCU(devType) )
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_LCU;
-		else if ( DeviceTypesFuncs.isTCU(devType) )
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_TCU;
-		else if (devType == PAOGroups.TAPTERMINAL)
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_TAP_PAGING;
-		else if (devType == PAOGroups.WCTP_TERMINAL)
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
-		else if (devType == PAOGroups.SNPP_TERMINAL)
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_SNPP_TERMINAL_ROUTE;
-		else if (devType == PAOGroups.SERIES_5_LMI)
-		{
-			Integer devID = ((DeviceBase)val).getDevice().getDeviceID();
-			((com.cannontech.database.data.device.Series5Base)val).setVerification(
-				new DeviceVerification(devID, devID, "N", "N"));
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_SERIES_5_LMI_ROUTE;
-		}
-		else if (devType == PAOGroups.RTC)
-			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_RTC_ROUTE;
-		else
-			return val;
-		
-		//A route is automatically added to each transmitter
-		//create new route to be added
-		com.cannontech.database.data.route.RouteBase route = com.cannontech.database.data.route.RouteFactory.createRoute(routeType);
-		Integer routeID = paoDao.getNextPaoId();
-		
-		//make sure the name will fit in the DB!!
-		route.setRouteName(
-			( ((DeviceBase) val).getPAOName().length() <= TextFieldDocument.MAX_ROUTE_NAME_LENGTH 
-			  ? ((DeviceBase) val).getPAOName()
-			  : ((DeviceBase) val).getPAOName().substring(0, TextFieldDocument.MAX_ROUTE_NAME_LENGTH)) );
-		
-		//set default values for route tables		
-		route.setDeviceID( ((DeviceBase) val).getDevice().getDeviceID() );
-		route.setDefaultRoute( com.cannontech.common.util.CtiUtilities.getTrueCharacter().toString() );
-		
-		if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
-		{
-			((com.cannontech.database.data.route.CCURoute) route).setCarrierRoute(
-				new com.cannontech.database.db.route.CarrierRoute(routeID) );
-		}		
+        // default the threshold
+        ((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformThreshold(new Integer(90));
 
-		Integer pointID = DaoFactory.getPointDao().getNextPointId();
+        // transmitter is a special case
 
-		//A status point is automatically added to each transmitter
-		com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
-				pointID,
-				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-				"COMM STATUS",
-				((DeviceBase) val).getDevice().getDeviceID(),
-				new Integer(PointTypes.PT_OFFSET_TRANS_STATUS) );
-		
-		newPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
+        if (DeviceClasses.getClass(((DeviceBase) val).getPAOClass()) == DeviceClasses.TRANSMITTER) {
+            SmartMultiDBPersistent newVal = new SmartMultiDBPersistent();
+            PaoDao paoDao = DaoFactory.getPaoDao();
+            ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
-		((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
-			new com.cannontech.database.db.point.PointStatus(pointID));
+            // checks device type and accordingly sets route type
 
+            String routeType;
 
-		newVal.addDBPersistent( (DBPersistent)val );
-		newVal.addDBPersistent(newPoint);
-		newVal.addDBPersistent(route);
-		newVal.setOwnerDBPersistent( (DBPersistent)val );
-		
-		//newVal is a vector that contains: Transmitter device, a route & a status point
-		//and returned if device is a transmitter
-		
-		checkAddress();
-		
-		return newVal;
-	}
-	else if( DeviceTypesFuncs.isMeter(devType) 
-				 && devType != DeviceTypes.DR_87 )
-	{
-        PaoDao paoDao = DaoFactory.getPaoDao();
-		((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
+            if (DeviceTypesFuncs.isCCU(devType) || DeviceTypesFuncs.isRepeater(devType))
+                routeType = RouteTypes.STRING_CCU;
+            else if (DeviceTypesFuncs.isLCU(devType))
+                routeType = RouteTypes.STRING_LCU;
+            else if (DeviceTypesFuncs.isTCU(devType))
+                routeType = RouteTypes.STRING_TCU;
+            else if (devType == PAOGroups.TAPTERMINAL)
+                routeType = RouteTypes.STRING_TAP_PAGING;
+            else if (devType == PAOGroups.WCTP_TERMINAL)
+                routeType = RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
+            else if (devType == PAOGroups.SNPP_TERMINAL)
+                routeType = RouteTypes.STRING_SNPP_TERMINAL_ROUTE;
+            else if (devType == PAOGroups.SERIES_5_LMI) {
+                Integer devID = ((DeviceBase) val).getDevice().getDeviceID();
+                ((Series5Base) val).setVerification(new DeviceVerification(devID, devID, "N", "N"));
+                routeType = RouteTypes.STRING_SERIES_5_LMI_ROUTE;
+            } else if (devType == PAOGroups.RTC)
+                routeType = RouteTypes.STRING_RTC_ROUTE;
+            else
+                return val;
 
-		SmartMultiDBPersistent smartDB = null;
-      
-      //only add a COMM STATUS for an ION meter
-      if( DeviceTypesFuncs.isIon(devType) )
-      {
-         smartDB = new SmartMultiDBPersistent();
-         Integer pointID = DaoFactory.getPointDao().getNextPointId();
-         
-         //A status point is automatically added to each transmitter
-         com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
-               pointID,
-               com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-               "COMM STATUS",
-               ((DeviceBase) val).getDevice().getDeviceID(),
-               new Integer(PointTypes.PT_OFFSET_TRANS_STATUS) );
-         
-         newPoint.getPoint().setStateGroupID( 
-               new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
-   
-         ((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
-            new com.cannontech.database.db.point.PointStatus(pointID));
-         
-         smartDB.addDBPersistent( newPoint );
-      }
-      else
-         smartDB = createPoints( (DeviceBase)val );
+            // A route is automatically added to each transmitter
+            // create new route to be added
+            RouteBase route = RouteFactory.createRoute(routeType);
+            Integer routeID = paoDao.getNextPaoId();
 
+            // make sure the name will fit in the DB!!
+            route.setRouteName((((DeviceBase) val).getPAOName().length() <= TextFieldDocument.MAX_ROUTE_NAME_LENGTH
+                    ? ((DeviceBase) val).getPAOName()
+                    : ((DeviceBase) val).getPAOName()
+                                        .substring(0, TextFieldDocument.MAX_ROUTE_NAME_LENGTH)));
 
-		smartDB.addDBPersistent( (DeviceBase)val );
-		smartDB.setOwnerDBPersistent( (DeviceBase)val );
-		
-		return smartDB;
-	}
-	else
-		return val;
-}
+            // set default values for route tables
+            route.setDeviceID(((DeviceBase) val).getDevice().getDeviceID());
+            route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
+
+            if (routeType.equalsIgnoreCase(RouteTypes.STRING_CCU)) {
+                ((CCURoute) route).setCarrierRoute(new CarrierRoute(routeID));
+            }
+
+            Integer pointID = DaoFactory.getPointDao().getNextPointId();
+
+            // A status point is automatically added to each transmitter
+            PointBase newPoint = PointFactory.createNewPoint(pointID,
+                                                             PointTypes.STATUS_POINT,
+                                                             "COMM STATUS",
+                                                             ((DeviceBase) val).getDevice()
+                                                                               .getDeviceID(),
+                                                             new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
+
+            newPoint.getPoint()
+                    .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+
+            ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
+
+            newVal.addDBPersistent((DBPersistent) val);
+            newVal.addDBPersistent(newPoint);
+            newVal.addDBPersistent(route);
+            newVal.setOwnerDBPersistent((DBPersistent) val);
+
+            // newVal is a vector that contains: Transmitter device, a route & a
+            // status point
+            // and returned if device is a transmitter
+
+            checkAddress();
+
+            return newVal;
+        } else if (DeviceTypesFuncs.isMeter(devType) && devType != DeviceTypes.DR_87) {
+            PaoDao paoDao = DaoFactory.getPaoDao();
+            ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
+
+            SmartMultiDBPersistent smartDB = null;
+
+            // only add a COMM STATUS for an ION meter
+            if (DeviceTypesFuncs.isIon(devType)) {
+                smartDB = new SmartMultiDBPersistent();
+                Integer pointID = DaoFactory.getPointDao().getNextPointId();
+
+                // A status point is automatically added to each transmitter
+                PointBase newPoint = PointFactory.createNewPoint(pointID,
+                                                                 PointTypes.STATUS_POINT,
+                                                                 "COMM STATUS",
+                                                                 ((DeviceBase) val).getDevice()
+                                                                                   .getDeviceID(),
+                                                                 new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
+
+                newPoint.getPoint()
+                        .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+
+                ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
+
+                smartDB.addDBPersistent(newPoint);
+            } else
+                smartDB = createPoints((DeviceBase) val);
+
+            smartDB.addDBPersistent((DeviceBase) val);
+            smartDB.setOwnerDBPersistent((DeviceBase) val);
+
+            return smartDB;
+        } else
+            return val;
+    }
 
 private SmartMultiDBPersistent createPoints( DeviceBase val )
 {
@@ -425,16 +426,17 @@ private SmartMultiDBPersistent createPoints( DeviceBase val )
 
 	if( val instanceof TransdataMarkV )
 	{
-		//very special case since Transdata devices have unique points compared to
-		//other IEDs
+		// very special case since Transdata devices have unique points compared
+        // to
+		// other IEDs
 		smartDB = TransdataMarkV.createPoints( paoID );
 	}
 	else
 	{
-		//majority of the cases are the same
+		// majority of the cases are the same
 		int[] ids = DaoFactory.getPointDao().getNextPointIds(4);
 		
-		//add all ther point to the smart object
+		// add all ther point to the smart object
 		smartDB.addDBPersistent( 
 			PointFactory.createAnalogPoint(
 				"Total kWh",

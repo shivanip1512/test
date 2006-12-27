@@ -1,8 +1,16 @@
 package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.List;
 
+import javax.swing.JCheckBox;
+
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -13,7 +21,10 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -28,6 +39,8 @@ public class DeviceNameAddressPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JLabel ivjJLabelRange = null;
 	private javax.swing.JPanel ivjJPanelNameAddy = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
+    
+    private JCheckBox createPointsCheck = null;
 
 /**
  * Constructor
@@ -301,39 +314,49 @@ private javax.swing.JPanel getJPanelNameAddy() {
 		try {
 			ivjJPanelNameAddy = new javax.swing.JPanel();
 			ivjJPanelNameAddy.setName("JPanelNameAddy");
-			ivjJPanelNameAddy.setLayout(new java.awt.GridBagLayout());
-			ivjJPanelNameAddy.setMinimumSize(new java.awt.Dimension(469, 110));
-			ivjJPanelNameAddy.setMaximumSize(new java.awt.Dimension(469, 110));
+			ivjJPanelNameAddy.setLayout(new GridBagLayout());
 
-			java.awt.GridBagConstraints constraintsNameLabel = new java.awt.GridBagConstraints();
-			constraintsNameLabel.gridx = 1; constraintsNameLabel.gridy = 1;
-			constraintsNameLabel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsNameLabel.ipadx = 25;
-			constraintsNameLabel.insets = new java.awt.Insets(8, 7, 7, 5);
+			GridBagConstraints constraintsNameLabel = new GridBagConstraints();
+			constraintsNameLabel.gridx = 1; 
+            constraintsNameLabel.gridy = 1;
+			constraintsNameLabel.anchor = GridBagConstraints.WEST;
+			constraintsNameLabel.insets = new Insets(15, 10, 0, 0);
 			getJPanelNameAddy().add(getNameLabel(), constraintsNameLabel);
 
-			java.awt.GridBagConstraints constraintsPhysicalAddressLabel = new java.awt.GridBagConstraints();
-			constraintsPhysicalAddressLabel.gridx = 1; constraintsPhysicalAddressLabel.gridy = 2;
-			constraintsPhysicalAddressLabel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsPhysicalAddressLabel.insets = new java.awt.Insets(8, 7, 43, 5);
+			GridBagConstraints constraintsPhysicalAddressLabel = new GridBagConstraints();
+			constraintsPhysicalAddressLabel.gridx = 1; 
+            constraintsPhysicalAddressLabel.gridy = 2;
+			constraintsPhysicalAddressLabel.anchor = GridBagConstraints.WEST;
+			constraintsPhysicalAddressLabel.insets = new Insets(10, 10, 0, 0);
 			getJPanelNameAddy().add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
 
-			java.awt.GridBagConstraints constraintsNameTextField = new java.awt.GridBagConstraints();
-			constraintsNameTextField.gridx = 2; constraintsNameTextField.gridy = 1;
-			constraintsNameTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			// Add create points check box
+			GridBagConstraints constraintsCreatePoints = new GridBagConstraints();
+            constraintsCreatePoints.gridx = 1; 
+            constraintsCreatePoints.gridy = 3;
+            constraintsCreatePoints.anchor = GridBagConstraints.WEST;
+            constraintsCreatePoints.insets = new Insets(10, 10, 0, 0);
+            constraintsCreatePoints.weighty = 1.0;
+            this.createPointsCheck = new JCheckBox("Create default points");
+            this.createPointsCheck.setVisible(false);
+			getJPanelNameAddy().add(this.createPointsCheck, constraintsCreatePoints);
+            
+			GridBagConstraints constraintsNameTextField = new GridBagConstraints();
+			constraintsNameTextField.gridx = 2; 
+            constraintsNameTextField.gridy = 1;
+			constraintsNameTextField.fill = GridBagConstraints.HORIZONTAL;
 			constraintsNameTextField.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsNameTextField.weightx = 1.0;
-			constraintsNameTextField.ipadx = 180;
-			constraintsNameTextField.insets = new java.awt.Insets(6, 5, 5, 28);
+			constraintsNameTextField.insets = new Insets(15, 0, 0, 20);
 			getJPanelNameAddy().add(getNameTextField(), constraintsNameTextField);
 
-			java.awt.GridBagConstraints constraintsAddressTextField = new java.awt.GridBagConstraints();
-			constraintsAddressTextField.gridx = 2; constraintsAddressTextField.gridy = 2;
-			constraintsAddressTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsAddressTextField.anchor = java.awt.GridBagConstraints.WEST;
+			GridBagConstraints constraintsAddressTextField = new GridBagConstraints();
+			constraintsAddressTextField.gridx = 2; 
+            constraintsAddressTextField.gridy = 2;
+			constraintsAddressTextField.fill = GridBagConstraints.HORIZONTAL;
+			constraintsAddressTextField.anchor = GridBagConstraints.WEST;
 			constraintsAddressTextField.weightx = 1.0;
-			constraintsAddressTextField.ipadx = 180;
-			constraintsAddressTextField.insets = new java.awt.Insets(5, 5, 42, 28);
+			constraintsAddressTextField.insets = new Insets(10, 0, 0, 20);
 			getJPanelNameAddy().add(getAddressTextField(), constraintsAddressTextField);
 			// user code begin {1}
 			// user code end
@@ -504,6 +527,24 @@ public Object getValue(Object val)
 		checkMCTAddresses( address.intValue() );
 	}
 	
+	if (DeviceTypesFuncs.isMCT(getDeviceType()) || DeviceTypesFuncs.isRepeater(getDeviceType())
+                || DeviceTypesFuncs.isCCU(getDeviceType())) {
+        if (this.createPointsCheck.isSelected()) {
+            PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+            device.setDeviceID(paoDao.getNextPaoId());
+
+            DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+            List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(device);
+
+            SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
+            persistant.addOwnerDBPersistent(device);
+            for (PointBase point : defaultPoints) {
+                persistant.addDBPersistent(point);
+            }
+            return persistant;
+        }
+    }
+	
 	return val;
 }
 
@@ -544,22 +585,23 @@ private void initialize() {
 		setLayout(new java.awt.GridBagLayout());
 		setSize(350, 357);
 
-		java.awt.GridBagConstraints constraintsJPanelNameAddy = new java.awt.GridBagConstraints();
-		constraintsJPanelNameAddy.gridx = 1; constraintsJPanelNameAddy.gridy = 1;
-		constraintsJPanelNameAddy.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJPanelNameAddy.anchor = java.awt.GridBagConstraints.WEST;
+		GridBagConstraints constraintsJPanelNameAddy = new GridBagConstraints();
+		constraintsJPanelNameAddy.gridx = 1; 
+        constraintsJPanelNameAddy.gridy = 1;
+		constraintsJPanelNameAddy.fill = GridBagConstraints.HORIZONTAL;
+		constraintsJPanelNameAddy.anchor = GridBagConstraints.WEST;
 		constraintsJPanelNameAddy.weightx = 1.0;
-		constraintsJPanelNameAddy.weighty = 1.0;
-		constraintsJPanelNameAddy.insets = new java.awt.Insets(22, 5, 2, 4);
+		constraintsJPanelNameAddy.insets = new Insets(0, 0, 0, 0);
 		add(getJPanelNameAddy(), constraintsJPanelNameAddy);
 
-		java.awt.GridBagConstraints constraintsJPanel1 = new java.awt.GridBagConstraints();
-		constraintsJPanel1.gridx = 1; constraintsJPanel1.gridy = 2;
-		constraintsJPanel1.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJPanel1.anchor = java.awt.GridBagConstraints.WEST;
+		GridBagConstraints constraintsJPanel1 = new GridBagConstraints();
+		constraintsJPanel1.gridx = 1; 
+        constraintsJPanel1.gridy = 2;
+		constraintsJPanel1.fill = GridBagConstraints.HORIZONTAL;
+		constraintsJPanel1.anchor = GridBagConstraints.WEST;
 		constraintsJPanel1.weightx = 1.0;
 		constraintsJPanel1.weighty = 1.0;
-		constraintsJPanel1.insets = new java.awt.Insets(2, 4, 202, 4);
+		constraintsJPanel1.insets = new Insets(2, 4, 202, 4);
 		add(getJPanel1(), constraintsJPanel1);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
@@ -655,6 +697,15 @@ public void setDeviceType(int newDeviceType)
    if( DeviceTypesFuncs.isCCU(getDeviceType()) ) {
        getAddressTextField().setDocument( new LongRangeDocument(0L, 128L) );
    }
+   
+   if (DeviceTypesFuncs.isMCT(newDeviceType) || DeviceTypesFuncs.isRepeater(newDeviceType)
+            || DeviceTypesFuncs.isCCU(newDeviceType)) {
+        this.createPointsCheck.setVisible(true);
+        this.createPointsCheck.setSelected(true);
+    } else {
+        this.createPointsCheck.setVisible(false);
+        this.createPointsCheck.setSelected(false);
+    }
    
 }
 

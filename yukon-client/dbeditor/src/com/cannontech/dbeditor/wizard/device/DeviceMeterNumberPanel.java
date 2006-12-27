@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
  
 /**
@@ -168,8 +169,12 @@ public Object getValue(Object val)
 	if( val == null )
 		return val;
 
-   DeviceMeterGroup dmg = 
-    		((IDeviceMeterGroup)val).getDeviceMeterGroup();
+	DeviceMeterGroup dmg = null;
+    if (val instanceof SmartMultiDBPersistent) {
+        dmg = ((IDeviceMeterGroup) ((SmartMultiDBPersistent) val).getOwnerDBPersistent()).getDeviceMeterGroup();
+    } else {
+        dmg = ((IDeviceMeterGroup) val).getDeviceMeterGroup();
+    }
 
    String meterNumber = getMeterNumberTextField().getText();  
    checkMeterNumber(meterNumber);
