@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/12/27 01:35:34 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/12/27 05:42:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,10 +144,11 @@ public:
         GetConfig_Intervals,
         GetConfig_ChannelSetup,
         GetConfig_LoadProfileInterval,
-        GetConfig_LongloadProfile,
+        GetConfig_LongLoadProfile,
         GetConfig_DemandInterval,
         GetConfig_Options,
         GetConfig_GroupAddress,
+        GetConfig_UniqueAddress,
         GetConfig_Disconnect,
         GetConfig_TOU,
         GetConfig_Holiday,
@@ -156,12 +157,12 @@ public:
 
         // PutConfig commands
         PutConfig_Install,
-        PutConfig_GroupAddrInhibit,
-        PutConfig_GroupAddrEnable,
-        PutConfig_GroupAddr_GoldSilver,
-        PutConfig_GroupAddr_Bronze,
-        PutConfig_GroupAddr_Lead,
-        PutConfig_UniqueAddr,
+        PutConfig_GroupAddressInhibit,
+        PutConfig_GroupAddressEnable,
+        PutConfig_GroupAddress_GoldSilver,
+        PutConfig_GroupAddress_Bronze,
+        PutConfig_GroupAddress_Lead,
+        PutConfig_UniqueAddress,
         PutConfig_IEDScan,
         PutConfig_IEDClass,
         PutConfig_Role,   //  only for repeaters
@@ -173,7 +174,7 @@ public:
         PutConfig_ChannelSetup,
         PutConfig_LoadProfileInterest,
         PutConfig_LoadProfileReportPeriod,
-        PutConfig_LongloadProfile,
+        PutConfig_LongLoadProfile,
         PutConfig_Multiplier,
         PutConfig_Multiplier2,
         PutConfig_Multiplier3,
