@@ -45,8 +45,10 @@
             </classpath>
         </taskdef>
 
-		<!-- Clear our any old generated classes -->
-        <delete dir="src/com/cannontech/common/device/definition/model/castor" />
+		<!-- Clear out any old generated classes -->
+        <delete>
+            <fileset dir="src/com/cannontech/common/device/definition/model/castor" includes="*.java"/>
+        </delete>
         <castor-srcgen file="src/com/cannontech/common/device/definition/dao/deviceDefinition.xsd"
                           todir="src"
                           package="com.cannontech.common.device.definition.model.castor"
