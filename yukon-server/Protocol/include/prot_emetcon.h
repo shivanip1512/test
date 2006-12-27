@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/11/08 17:54:47 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/12/27 01:35:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -170,6 +170,7 @@ public:
         PutConfig_LoadProfileInterval,
         PutConfig_DemandInterval,
         PutConfig_Intervals,
+        PutConfig_ChannelSetup,
         PutConfig_LoadProfileInterest,
         PutConfig_LoadProfileReportPeriod,
         PutConfig_LongloadProfile,
