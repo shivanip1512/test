@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.107 $
-* DATE         :  $Date: 2006/12/26 15:40:36 $
+* REVISION     :  $Revision: 1.108 $
+* DATE         :  $Date: 2006/12/27 01:41:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -877,6 +877,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_Intervals:
         case Emetcon::PutConfig_DemandInterval:
         case Emetcon::PutConfig_LoadProfileInterval:
+        case Emetcon::PutConfig_ChannelSetup:
         case Emetcon::PutConfig_IEDClass:
         case Emetcon::PutConfig_IEDScan:
         case Emetcon::PutConfig_GroupAddr_Bronze:
