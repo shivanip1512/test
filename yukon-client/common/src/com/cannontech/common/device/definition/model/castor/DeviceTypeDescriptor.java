@@ -11,6 +11,10 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * Class DeviceTypeDescriptor.
@@ -164,68 +168,68 @@ public class DeviceTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
-        //-- _clazz
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Class.class, "_clazz", "class", org.exolab.castor.xml.NodeType.Element);
+        //-- _paoClass
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.PaoClass.class, "_paoClass", "paoClass", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DeviceType target = (DeviceType) object;
-                return target.getClazz();
+                return target.getPaoClass();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     DeviceType target = (DeviceType) object;
-                    target.setClazz( (com.cannontech.common.device.definition.model.castor.Class) value);
+                    target.setPaoClass( (com.cannontech.common.device.definition.model.castor.PaoClass) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.device.definition.model.castor.Class();
+                return new com.cannontech.common.device.definition.model.castor.PaoClass();
             }
         };
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _clazz
+        //-- validation code for: _paoClass
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
-        //-- _category
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Category.class, "_category", "category", org.exolab.castor.xml.NodeType.Element);
+        //-- _paoCategory
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.PaoCategory.class, "_paoCategory", "paoCategory", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DeviceType target = (DeviceType) object;
-                return target.getCategory();
+                return target.getPaoCategory();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     DeviceType target = (DeviceType) object;
-                    target.setCategory( (com.cannontech.common.device.definition.model.castor.Category) value);
+                    target.setPaoCategory( (com.cannontech.common.device.definition.model.castor.PaoCategory) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.device.definition.model.castor.Category();
+                return new com.cannontech.common.device.definition.model.castor.PaoCategory();
             }
         };
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _category
+        //-- validation code for: _paoCategory
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
         }

@@ -11,8 +11,15 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class DeviceType.
@@ -42,14 +49,14 @@ public class DeviceType implements java.io.Serializable {
     private com.cannontech.common.device.definition.model.castor.DisplayGroup _displayGroup;
 
     /**
-     * Field _clazz
+     * Field _paoClass
      */
-    private com.cannontech.common.device.definition.model.castor.Class _clazz;
+    private com.cannontech.common.device.definition.model.castor.PaoClass _paoClass;
 
     /**
-     * Field _category
+     * Field _paoCategory
      */
-    private com.cannontech.common.device.definition.model.castor.Category _category;
+    private com.cannontech.common.device.definition.model.castor.PaoCategory _paoCategory;
 
     /**
      * Field _javaClass
@@ -75,28 +82,6 @@ public class DeviceType implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'category'.
-     * 
-     * @return Category
-     * @return the value of field 'category'.
-     */
-    public com.cannontech.common.device.definition.model.castor.Category getCategory()
-    {
-        return this._category;
-    } //-- com.cannontech.common.device.definition.model.castor.Category getCategory() 
-
-    /**
-     * Returns the value of field 'clazz'.
-     * 
-     * @return Class
-     * @return the value of field 'clazz'.
-     */
-    public com.cannontech.common.device.definition.model.castor.Class getClazz()
-    {
-        return this._clazz;
-    } //-- com.cannontech.common.device.definition.model.castor.Class getClazz() 
 
     /**
      * Returns the value of field 'displayGroup'.
@@ -130,6 +115,28 @@ public class DeviceType implements java.io.Serializable {
     {
         return this._javaClass;
     } //-- com.cannontech.common.device.definition.model.castor.JavaClass getJavaClass() 
+
+    /**
+     * Returns the value of field 'paoCategory'.
+     * 
+     * @return PaoCategory
+     * @return the value of field 'paoCategory'.
+     */
+    public com.cannontech.common.device.definition.model.castor.PaoCategory getPaoCategory()
+    {
+        return this._paoCategory;
+    } //-- com.cannontech.common.device.definition.model.castor.PaoCategory getPaoCategory() 
+
+    /**
+     * Returns the value of field 'paoClass'.
+     * 
+     * @return PaoClass
+     * @return the value of field 'paoClass'.
+     */
+    public com.cannontech.common.device.definition.model.castor.PaoClass getPaoClass()
+    {
+        return this._paoClass;
+    } //-- com.cannontech.common.device.definition.model.castor.PaoClass getPaoClass() 
 
     /**
      * Returns the value of field 'points'.
@@ -200,26 +207,6 @@ public class DeviceType implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'category'.
-     * 
-     * @param category the value of field 'category'.
-     */
-    public void setCategory(com.cannontech.common.device.definition.model.castor.Category category)
-    {
-        this._category = category;
-    } //-- void setCategory(com.cannontech.common.device.definition.model.castor.Category) 
-
-    /**
-     * Sets the value of field 'clazz'.
-     * 
-     * @param clazz the value of field 'clazz'.
-     */
-    public void setClazz(com.cannontech.common.device.definition.model.castor.Class clazz)
-    {
-        this._clazz = clazz;
-    } //-- void setClazz(com.cannontech.common.device.definition.model.castor.Class) 
-
-    /**
      * Sets the value of field 'displayGroup'.
      * 
      * @param displayGroup the value of field 'displayGroup'.
@@ -248,6 +235,26 @@ public class DeviceType implements java.io.Serializable {
     {
         this._javaClass = javaClass;
     } //-- void setJavaClass(com.cannontech.common.device.definition.model.castor.JavaClass) 
+
+    /**
+     * Sets the value of field 'paoCategory'.
+     * 
+     * @param paoCategory the value of field 'paoCategory'.
+     */
+    public void setPaoCategory(com.cannontech.common.device.definition.model.castor.PaoCategory paoCategory)
+    {
+        this._paoCategory = paoCategory;
+    } //-- void setPaoCategory(com.cannontech.common.device.definition.model.castor.PaoCategory) 
+
+    /**
+     * Sets the value of field 'paoClass'.
+     * 
+     * @param paoClass the value of field 'paoClass'.
+     */
+    public void setPaoClass(com.cannontech.common.device.definition.model.castor.PaoClass paoClass)
+    {
+        this._paoClass = paoClass;
+    } //-- void setPaoClass(com.cannontech.common.device.definition.model.castor.PaoClass) 
 
     /**
      * Sets the value of field 'points'.

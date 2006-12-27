@@ -26,12 +26,12 @@
                     <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
                 </xs:complexType>
             </xs:element>
-            <xs:element name="class" minOccurs="0" maxOccurs="1">
+            <xs:element name="paoClass" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
                 </xs:complexType>
             </xs:element>
-            <xs:element name="category" minOccurs="0" maxOccurs="1">
+            <xs:element name="paoCategory" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
                 </xs:complexType>

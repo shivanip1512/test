@@ -11,14 +11,17 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.validators.StringValidator;
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.validators.*;
 
 /**
- * Class CategoryDescriptor.
+ * Class PaoClassDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class CategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class PaoClassDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -50,10 +53,10 @@ public class CategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      //- Constructors -/
     //----------------/
 
-    public CategoryDescriptor() 
+    public PaoClassDescriptor() 
      {
         super();
-        xmlName = "category";
+        xmlName = "paoClass";
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
@@ -66,14 +69,14 @@ public class CategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                Category target = (Category) object;
+                PaoClass target = (PaoClass) object;
                 return target.getValue();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    Category target = (Category) object;
+                    PaoClass target = (PaoClass) object;
                     target.setValue( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
@@ -98,7 +101,7 @@ public class CategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
-    } //-- com.cannontech.common.device.definition.model.castor.CategoryDescriptor()
+    } //-- com.cannontech.common.device.definition.model.castor.PaoClassDescriptor()
 
 
       //-----------/
@@ -150,7 +153,7 @@ public class CategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      */
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.common.device.definition.model.castor.Category.class;
+        return com.cannontech.common.device.definition.model.castor.PaoClass.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
