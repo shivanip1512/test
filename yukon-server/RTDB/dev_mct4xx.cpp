@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/12/26 15:52:04 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/12/27 05:45:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2552,10 +2552,10 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                 }
             }
 
-            if(!getOperation(Emetcon::PutConfig_LongloadProfile, OutMessage->Buffer.BSt))
+            if(!getOperation(Emetcon::PutConfig_LongLoadProfile, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_LongLoadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
             }
             else
@@ -2588,7 +2588,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        getOperation(Emetcon::GetConfig_LongloadProfile, OutMessage->Buffer.BSt);
+                        getOperation(Emetcon::GetConfig_LongLoadProfile, OutMessage->Buffer.BSt);
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                         OutMessage->Priority             += 1;//return to normal
