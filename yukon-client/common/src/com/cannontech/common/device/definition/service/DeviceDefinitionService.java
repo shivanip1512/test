@@ -3,7 +3,7 @@ package com.cannontech.common.device.definition.service;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.device.definition.model.DeviceDisplay;
+import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.point.PointBase;
 
@@ -31,5 +31,5 @@ public interface DeviceDefinitionService {
      * types
      * @return Map with key: display group name, value: list of device display
      */
-    public abstract Map<String, List<DeviceDisplay>> getDeviceDisplayGroupMap();
+    public abstract Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap();
 }

@@ -52,6 +52,11 @@ public class Point implements java.io.Serializable {
     private java.lang.String _name;
 
     /**
+     * Field _description
+     */
+    private java.lang.String _description;
+
+    /**
      * Field _offset
      */
     private com.cannontech.common.device.definition.model.castor.Offset _offset;
@@ -95,6 +100,17 @@ public class Point implements java.io.Serializable {
     {
         return this._attribute;
     } //-- com.cannontech.common.device.definition.model.castor.Attribute getAttribute() 
+
+    /**
+     * Returns the value of field 'description'.
+     * 
+     * @return String
+     * @return the value of field 'description'.
+     */
+    public java.lang.String getDescription()
+    {
+        return this._description;
+    } //-- java.lang.String getDescription() 
 
     /**
      * Returns the value of field 'init'.
@@ -218,6 +234,16 @@ public class Point implements java.io.Serializable {
     {
         this._attribute = attribute;
     } //-- void setAttribute(com.cannontech.common.device.definition.model.castor.Attribute) 
+
+    /**
+     * Sets the value of field 'description'.
+     * 
+     * @param description the value of field 'description'.
+     */
+    public void setDescription(java.lang.String description)
+    {
+        this._description = description;
+    } //-- void setDescription(java.lang.String) 
 
     /**
      * Sets the value of field 'init'.

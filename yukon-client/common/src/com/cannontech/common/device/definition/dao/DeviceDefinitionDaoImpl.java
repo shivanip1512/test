@@ -14,10 +14,10 @@ import java.util.Set;
 import org.exolab.castor.xml.Unmarshaller;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.DeviceDisplay;
+import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.castor.Device;
-import com.cannontech.common.device.definition.model.castor.DeviceDefinition;
+import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -39,11 +39,11 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     // Map<DeviceType, List<PointTemplate>>
     private Map<Integer, Set<PointTemplate>> deviceAllPointTemplateMap = null;
 
-    // Map<DeviceType, DeviceDisplayName>
-    private Map<Integer, String> deviceDisplayNameMap = null;
+    // Map<DeviceType, DeviceDefinition>
+    private Map<Integer, DeviceDefinition> deviceTypeMap = null;
 
     // <Map<DeviceDisplayGroup, List<DeviceDisplay>>
-    private Map<String, List<DeviceDisplay>> deviceDisplayGroupMap = null;
+    private Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = null;
 
     public void setInputFile(String inputFile) {
         this.inputFile = inputFile;
@@ -56,9 +56,27 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
             return attributeMap.keySet();
         } else {
-            throw new IllegalArgumentException("Device type '" + deviceType + "' is not supported.");
+            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+                    + "' is not supported.");
         }
 
+    }
+
+    public PointTemplate getPointTemplateForAttribute(DeviceBase device, Attribute attribute) {
+
+        Integer deviceType = PAOGroups.getDeviceType(device.getPAOType());
+        if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
+            Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
+            if (attributeMap.containsKey(attribute)) {
+                return attributeMap.get(attribute);
+            } else {
+                throw new IllegalArgumentException("Attribute " + attribute.getKey()
+                        + " is not supported for Device type '" + deviceType + "'");
+            }
+        } else {
+            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+                    + "' is not supported.");
+        }
     }
 
     public Set<PointTemplate> getAllPointTemplates(DeviceBase device) {
@@ -67,7 +85,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
             return this.deviceAllPointTemplateMap.get(deviceType);
         } else {
-            throw new IllegalArgumentException("Device type '" + deviceType + "' is not supported.");
+            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+                    + "' is not supported.");
         }
     }
 
@@ -84,14 +103,28 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                 }
             }
         } else {
-            throw new IllegalArgumentException("Device type '" + deviceType + "' is not supported.");
+            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+                    + "' is not supported.");
         }
 
         return templateSet;
     }
 
-    public Map<String, List<DeviceDisplay>> getDeviceDisplayGroupMap() {
+    public Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap() {
         return this.deviceDisplayGroupMap;
+    }
+
+    public boolean isDeviceTypeChangeable(DeviceBase device) {
+
+        Integer deviceType = PAOGroups.getDeviceType(device.getPAOType());
+        if (this.deviceTypeMap.containsKey(deviceType)) {
+            DeviceDefinition deviceDefinition = this.deviceTypeMap.get(deviceType);
+            return deviceDefinition.isChangeable();
+        } else {
+            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+                    + "' is not supported.");
+        }
+
     }
 
     /**
@@ -101,9 +134,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
      */
     public void initialize() throws Exception {
 
-        this.deviceDisplayNameMap = new HashMap<Integer, String>();
+        this.deviceTypeMap = new HashMap<Integer, DeviceDefinition>();
         this.deviceAllPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
-        this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDisplay>>();
+        this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
         this.deviceAttributePointTemplateMap = new HashMap<Integer, Map<Attribute, PointTemplate>>();
 
         InputStreamReader reader = null;
@@ -113,8 +146,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             reader = new InputStreamReader(resource.openStream());
 
             // Use castor to parse the xml file
-            DeviceDefinition definition = (DeviceDefinition) Unmarshaller.unmarshal(DeviceDefinition.class,
-                                                                                    reader);
+            DeviceDefinitions definition = (DeviceDefinitions) Unmarshaller.unmarshal(DeviceDefinitions.class,
+                                                                                      reader);
 
             // Add each device in the xml into the device maps
             for (Device device : definition.getDevice()) {
@@ -154,22 +187,30 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         if (device.getDisplayName() != null) {
             String displayName = device.getDisplayName().getValue();
+            String group = null;
+            if (device.getDisplayGroup() != null) {
+                group = device.getDisplayGroup().getValue();
+            }
 
-            // Add deviceDisplayName to type map
-            this.deviceDisplayNameMap.put(deviceType, displayName);
+            DeviceDefinition deviceDefinition = new DeviceDefinition(deviceType,
+                                                                     displayName,
+                                                                     group,
+                                                                     javaConstant,
+                                                                     device.getType()
+                                                                           .getChangeable());
+
+            // Add deviceDefinition to type map
+            this.deviceTypeMap.put(deviceType, deviceDefinition);
 
             // Add deviceDisplayName to group map
-            if (device.getDisplayGroup() != null) {
-                String group = device.getDisplayGroup().getValue();
-                if (group != null) {
-                    List<DeviceDisplay> typeList = this.deviceDisplayGroupMap.get(group);
-                    if (typeList == null) {
-                        typeList = new ArrayList<DeviceDisplay>();
-                        this.deviceDisplayGroupMap.put(group, typeList);
-                    }
-
-                    typeList.add(new DeviceDisplay(deviceType, displayName));
+            if (group != null) {
+                List<DeviceDefinition> typeList = this.deviceDisplayGroupMap.get(group);
+                if (typeList == null) {
+                    typeList = new ArrayList<DeviceDefinition>();
+                    this.deviceDisplayGroupMap.put(group, typeList);
                 }
+
+                typeList.add(deviceDefinition);
             }
         }
 
@@ -240,5 +281,4 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         return template;
     }
-
 }

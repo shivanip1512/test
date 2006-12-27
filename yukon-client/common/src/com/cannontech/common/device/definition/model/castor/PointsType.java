@@ -61,7 +61,6 @@ public class PointsType implements java.io.Serializable {
      * 
      * @param vPoint
      */
-    @SuppressWarnings("unchecked")
     public void addPoint(com.cannontech.common.device.definition.model.castor.Point vPoint)
         throws java.lang.IndexOutOfBoundsException
     {
@@ -76,7 +75,6 @@ public class PointsType implements java.io.Serializable {
      * @param index
      * @param vPoint
      */
-    @SuppressWarnings("unchecked")
     public void addPoint(int index, com.cannontech.common.device.definition.model.castor.Point vPoint)
         throws java.lang.IndexOutOfBoundsException
     {
@@ -241,7 +239,6 @@ public class PointsType implements java.io.Serializable {
      * @param index
      * @param vPoint
      */
-    @SuppressWarnings("unchecked")
     public void setPoint(int index, com.cannontech.common.device.definition.model.castor.Point vPoint)
         throws java.lang.IndexOutOfBoundsException
     {
@@ -259,7 +256,6 @@ public class PointsType implements java.io.Serializable {
      * 
      * @param pointArray
      */
-    @SuppressWarnings("unchecked")
     public void setPoint(com.cannontech.common.device.definition.model.castor.Point[] pointArray)
     {
         //-- copy array

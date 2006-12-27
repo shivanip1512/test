@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <xs:element name="deviceDefinition">
+    <xs:element name="deviceDefinitions">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="device" type="deviceType" maxOccurs="unbounded" />
@@ -46,8 +46,9 @@
     </xs:complexType>
 
     <xs:attributeGroup name="typeAttributes">
-        <xs:attribute name="value" type="xs:integer" minOccurs="1" maxOccurs="1" />
-        <xs:attribute name="javaConstant" type="xs:string" minOccurs="1" maxOccurs="1" />
+        <xs:attribute name="value" type="xs:integer" maxOccurs="1" use="required" />
+        <xs:attribute name="javaConstant" type="xs:string" maxOccurs="1" use="required" />
+        <xs:attribute name="changeable" type="xs:boolean" maxOccurs="1" default="false" />
     </xs:attributeGroup>    
 
     <xs:complexType name="pointsType">
@@ -62,6 +63,7 @@
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="name" type="xs:string" maxOccurs="1" />
+                            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
                             <xs:element name="offset" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:attribute name="value" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />

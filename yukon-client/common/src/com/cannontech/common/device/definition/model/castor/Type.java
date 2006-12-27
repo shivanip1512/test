@@ -41,6 +41,16 @@ public class Type implements java.io.Serializable {
      */
     private java.lang.String _javaConstant;
 
+    /**
+     * Field _changeable
+     */
+    private boolean _changeable = false;
+
+    /**
+     * keeps track of state for field: _changeable
+     */
+    private boolean _has_changeable;
+
 
       //----------------/
      //- Constructors -/
@@ -57,6 +67,15 @@ public class Type implements java.io.Serializable {
     //-----------/
 
     /**
+     * Method deleteChangeable
+     * 
+     */
+    public void deleteChangeable()
+    {
+        this._has_changeable= false;
+    } //-- void deleteChangeable() 
+
+    /**
      * Method deleteValue
      * 
      */
@@ -64,6 +83,17 @@ public class Type implements java.io.Serializable {
     {
         this._has_value= false;
     } //-- void deleteValue() 
+
+    /**
+     * Returns the value of field 'changeable'.
+     * 
+     * @return boolean
+     * @return the value of field 'changeable'.
+     */
+    public boolean getChangeable()
+    {
+        return this._changeable;
+    } //-- boolean getChangeable() 
 
     /**
      * Returns the value of field 'javaConstant'.
@@ -86,6 +116,18 @@ public class Type implements java.io.Serializable {
     {
         return this._value;
     } //-- int getValue() 
+
+    /**
+     * Method hasChangeable
+     * 
+     * 
+     * 
+     * @return boolean
+     */
+    public boolean hasChangeable()
+    {
+        return this._has_changeable;
+    } //-- boolean hasChangeable() 
 
     /**
      * Method hasValue
@@ -144,6 +186,17 @@ public class Type implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'changeable'.
+     * 
+     * @param changeable the value of field 'changeable'.
+     */
+    public void setChangeable(boolean changeable)
+    {
+        this._changeable = changeable;
+        this._has_changeable = true;
+    } //-- void setChangeable(boolean) 
 
     /**
      * Sets the value of field 'javaConstant'.

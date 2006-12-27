@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.DeviceDisplay;
+import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.device.DeviceBase;
 
@@ -21,6 +21,15 @@ public interface DeviceDefinitionDao {
      * @throws IllegalArgumentException - If the device is not supported
      */
     public abstract Set<Attribute> getAvailableAttributes(DeviceBase device);
+
+    /**
+     * Method to get the point template for a given device and attribute
+     * @param device - Device to get point template for
+     * @param attribute - Attribute to get point template for
+     * @return
+     */
+    public abstract PointTemplate getPointTemplateForAttribute(DeviceBase device,
+            Attribute attribute);
 
     /**
      * Method to get all of the point templates for a given device
@@ -43,5 +52,12 @@ public interface DeviceDefinitionDao {
      * types
      * @return Map with key: display group name, value: list of device display
      */
-    public abstract Map<String, List<DeviceDisplay>> getDeviceDisplayGroupMap();
+    public abstract Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap();
+
+    /**
+     * Method used to determine if a device can have it's type changed
+     * @param device - Device to change
+     * @return True if the device's type can be changed
+     */
+    public abstract boolean isDeviceTypeChangeable(DeviceBase device);
 }

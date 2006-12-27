@@ -10,7 +10,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.DeviceDisplay;
+import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT470;
@@ -53,6 +53,45 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         try {
             device.setDeviceType("invalid");
             dao.getAvailableAttributes(device);
+            fail("Exception should be thrown for invalid device type");
+        } catch (IllegalArgumentException e) {
+            // expected exception
+        } catch (Exception e) {
+            fail("Threw wrong type of exception: " + e.getClass());
+        }
+    }
+
+    public void testGetPointTemplateForAttribute() {
+
+        // Test with supported device type
+        PointTemplate expectedTemplate = new PointTemplate("kWh",
+                                                           2,
+                                                           1,
+                                                           1.0,
+                                                           1,
+                                                           0,
+                                                           true,
+                                                           Attribute.USAGE);
+
+        PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, Attribute.USAGE);
+
+        assertEquals("Expected point template did not match: ", expectedTemplate, actualTemplate);
+
+        // Test with invalid attribute for the device
+        try {
+            device.setDeviceType("invalid");
+            dao.getPointTemplateForAttribute(device, new Attribute("invalid", "invalid"));
+            fail("Exception should be thrown for invalid device type");
+        } catch (IllegalArgumentException e) {
+            // expected exception
+        } catch (Exception e) {
+            fail("Threw wrong type of exception: " + e.getClass());
+        }
+
+        // Test with unsupported device type
+        try {
+            device.setDeviceType("invalid");
+            dao.getPointTemplateForAttribute(device, Attribute.USAGE);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -126,7 +165,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      */
     public void testGetDeviceDisplayGroupMap() {
 
-        Map<String, List<DeviceDisplay>> deviceDisplayGroupMap = dao.getDeviceDisplayGroupMap();
+        Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = dao.getDeviceDisplayGroupMap();
 
         // Make sure there are the correct number of device type groups
         assertEquals("There should be 5 device type groups", 5, deviceDisplayGroupMap.keySet()
@@ -180,6 +219,30 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
             fail("There is not an Virtual device type group");
         }
 
+    }
+
+    /**
+     * Test isDeviceTypeChangeable()
+     */
+    public void testIsDeviceTypeChangeable() {
+
+        // Test with supported device type that is changeable
+        assertTrue("MCT-470 is changeable", dao.isDeviceTypeChangeable(device));
+
+        // Test with supported device type that is not changeable
+        device.setDeviceType("MCT-430S");
+        assertTrue("MCT-430S is not changeable", !dao.isDeviceTypeChangeable(device));
+
+        // Test with unsupported device type
+        try {
+            device.setDeviceType("invalid");
+            dao.isDeviceTypeChangeable(device);
+            fail("Exception should be thrown for invalid device type");
+        } catch (IllegalArgumentException e) {
+            // expected exception
+        } catch (Exception e) {
+            fail("Threw wrong type of exception: " + e.getClass());
+        }
     }
 
     /**

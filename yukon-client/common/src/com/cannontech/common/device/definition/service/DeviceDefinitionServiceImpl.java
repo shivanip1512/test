@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceDisplay;
+import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.database.data.device.DeviceBase;
@@ -46,7 +46,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         }
     }
 
-    public Map<String, List<DeviceDisplay>> getDeviceDisplayGroupMap() {
+    public Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap() {
         return deviceDefinitionDao.getDeviceDisplayGroupMap();
     }
 }

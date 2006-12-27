@@ -17,11 +17,11 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
 /**
- * Class DeviceDefinition.
+ * Class DeviceDefinitions.
  * 
  * @version $Revision$ $Date$
  */
-public class DeviceDefinition implements java.io.Serializable {
+public class DeviceDefinitions implements java.io.Serializable {
 
 
       //--------------------------/
@@ -38,11 +38,11 @@ public class DeviceDefinition implements java.io.Serializable {
      //- Constructors -/
     //----------------/
 
-    public DeviceDefinition() 
+    public DeviceDefinitions() 
      {
         super();
         _deviceList = new ArrayList();
-    } //-- com.cannontech.common.device.definition.model.castor.DeviceDefinition()
+    } //-- com.cannontech.common.device.definition.model.castor.DeviceDefinitions()
 
 
       //-----------/
@@ -56,7 +56,6 @@ public class DeviceDefinition implements java.io.Serializable {
      * 
      * @param vDevice
      */
-    @SuppressWarnings("unchecked")
     public void addDevice(com.cannontech.common.device.definition.model.castor.Device vDevice)
         throws java.lang.IndexOutOfBoundsException
     {
@@ -71,7 +70,6 @@ public class DeviceDefinition implements java.io.Serializable {
      * @param index
      * @param vDevice
      */
-    @SuppressWarnings("unchecked")
     public void addDevice(int index, com.cannontech.common.device.definition.model.castor.Device vDevice)
         throws java.lang.IndexOutOfBoundsException
     {
@@ -215,7 +213,6 @@ public class DeviceDefinition implements java.io.Serializable {
      * @param index
      * @param vDevice
      */
-    @SuppressWarnings("unchecked")
     public void setDevice(int index, com.cannontech.common.device.definition.model.castor.Device vDevice)
         throws java.lang.IndexOutOfBoundsException
     {
@@ -233,7 +230,6 @@ public class DeviceDefinition implements java.io.Serializable {
      * 
      * @param deviceArray
      */
-    @SuppressWarnings("unchecked")
     public void setDevice(com.cannontech.common.device.definition.model.castor.Device[] deviceArray)
     {
         //-- copy array
@@ -254,7 +250,7 @@ public class DeviceDefinition implements java.io.Serializable {
     public static java.lang.Object unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.common.device.definition.model.castor.DeviceDefinition) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.DeviceDefinition.class, reader);
+        return (com.cannontech.common.device.definition.model.castor.DeviceDefinitions) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.DeviceDefinitions.class, reader);
     } //-- java.lang.Object unmarshal(java.io.Reader) 
 
     /**

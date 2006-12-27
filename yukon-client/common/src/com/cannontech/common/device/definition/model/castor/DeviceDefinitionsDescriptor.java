@@ -13,11 +13,11 @@ package com.cannontech.common.device.definition.model.castor;
 
 
 /**
- * Class DeviceDefinitionDescriptor.
+ * Class DeviceDefinitionsDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class DeviceDefinitionDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -49,10 +49,10 @@ public class DeviceDefinitionDescriptor extends org.exolab.castor.xml.util.XMLCl
      //- Constructors -/
     //----------------/
 
-    public DeviceDefinitionDescriptor() 
+    public DeviceDefinitionsDescriptor() 
      {
         super();
-        xmlName = "deviceDefinition";
+        xmlName = "deviceDefinitions";
         
         //-- set grouping compositor
         setCompositorAsSequence();
@@ -69,14 +69,14 @@ public class DeviceDefinitionDescriptor extends org.exolab.castor.xml.util.XMLCl
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                DeviceDefinition target = (DeviceDefinition) object;
+                DeviceDefinitions target = (DeviceDefinitions) object;
                 return target.getDevice();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    DeviceDefinition target = (DeviceDefinition) object;
+                    DeviceDefinitions target = (DeviceDefinitions) object;
                     target.addDevice( (com.cannontech.common.device.definition.model.castor.Device) value);
                 }
                 catch (java.lang.Exception ex) {
@@ -98,7 +98,7 @@ public class DeviceDefinitionDescriptor extends org.exolab.castor.xml.util.XMLCl
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
-    } //-- com.cannontech.common.device.definition.model.castor.DeviceDefinitionDescriptor()
+    } //-- com.cannontech.common.device.definition.model.castor.DeviceDefinitionsDescriptor()
 
 
       //-----------/
@@ -150,7 +150,7 @@ public class DeviceDefinitionDescriptor extends org.exolab.castor.xml.util.XMLCl
      */
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.common.device.definition.model.castor.DeviceDefinition.class;
+        return com.cannontech.common.device.definition.model.castor.DeviceDefinitions.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
