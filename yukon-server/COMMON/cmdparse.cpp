@@ -1961,6 +1961,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     boost::regex  re_loadlimit("load limit " + str_num + " "
                                + str_num);
     boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
+    boost::regex  re_channel("channel " + str_num + " (ied|2-wire|3-wire|none)( input " + str_num + ")?( multiplier " + str_floatnum + ")?");
 
     //  matches any of AKT, HT, PT, MT, CT, ET, the standard/daylight versions of each, and whole/fractional hour offsets
     boost::regex  re_timezone("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?" + str_floatnum + "))");
@@ -2178,6 +2179,42 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 }
 
                 _cmd["rawdata"] = CtiParseValue( rawData );
+            }
+        }
+        if(CmdStr.contains(" channel"))
+        {
+            if(!(token = CmdStr.match(re_channel)).empty())
+            {
+                int channel, input;
+                float multiplier;
+
+                CtiTokenizer cmdtok(token);
+
+                //  channel /n/ (ied|2-wire|3-wire|none) [input /n/] [multiplier n.nn]
+
+                //  go past "channel"
+                cmdtok();
+
+                _cmd["channel_config"] = true;
+
+                _cmd["channel_offset"] = atoi(cmdtok().data());
+
+                //  will be one of "ied", "2-wire", "3-wire", or "none"
+                _cmd["channel_type"] = cmdtok();
+
+                temp2 = cmdtok();
+
+                if( !temp2.compareTo("input") )
+                {
+                    _cmd["channel_input"] = atoi(cmdtok().data());
+
+                    temp2 = cmdtok();
+                }
+
+                if( !temp2.compareTo("multiplier") )
+                {
+                    _cmd["channel_multiplier"] = atof(cmdtok().data());
+                }
             }
         }
         if(CmdStr.contains(" timezone"))
