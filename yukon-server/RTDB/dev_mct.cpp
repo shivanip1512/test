@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.108 $
-* DATE         :  $Date: 2006/12/27 01:41:12 $
+* REVISION     :  $Revision: 1.109 $
+* DATE         :  $Date: 2006/12/27 05:43:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -398,11 +398,12 @@ CtiDeviceMCT::CommandSet CtiDeviceMCT::initCommandStore()
     cs.insert(CommandStore(Emetcon::Command_Loop,        Emetcon::IO_Read, Memory_ModelPos, 1));
 
     cs.insert(CommandStore(Emetcon::GetConfig_Model,     Emetcon::IO_Read, Memory_ModelPos, Memory_ModelLen));  //  Decode happens in the children please...
+
     cs.insert(CommandStore(Emetcon::PutConfig_Install,   Emetcon::IO_Read, Memory_ModelPos, Memory_ModelLen));  //  This basically does a getconfig model so
                                                                                                                 //    we know what devicetype we're installing
 
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrEnable,  Emetcon::IO_Write, Command_GroupAddrEnable,  0));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrInhibit, Emetcon::IO_Write, Command_GroupAddrInhibit, 0));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddressEnable,  Emetcon::IO_Write, Command_GroupAddressEnable,  0));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddressInhibit, Emetcon::IO_Write, Command_GroupAddressInhibit, 0));
 
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,       Emetcon::IO_Read,           0,                  0));  //  this will be filled in by executeGetConfig
 
@@ -870,8 +871,8 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_Multiplier:
         case Emetcon::PutConfig_Multiplier2:
         case Emetcon::PutConfig_Multiplier3:
-        case Emetcon::PutConfig_GroupAddrEnable:
-        case Emetcon::PutConfig_GroupAddrInhibit:
+        case Emetcon::PutConfig_GroupAddressEnable:
+        case Emetcon::PutConfig_GroupAddressInhibit:
         case Emetcon::PutConfig_Raw:
         case Emetcon::PutConfig_TSync:
         case Emetcon::PutConfig_Intervals:
@@ -880,10 +881,10 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_ChannelSetup:
         case Emetcon::PutConfig_IEDClass:
         case Emetcon::PutConfig_IEDScan:
-        case Emetcon::PutConfig_GroupAddr_Bronze:
-        case Emetcon::PutConfig_GroupAddr_GoldSilver:
-        case Emetcon::PutConfig_GroupAddr_Lead:
-        case Emetcon::PutConfig_UniqueAddr:
+        case Emetcon::PutConfig_GroupAddress_Bronze:
+        case Emetcon::PutConfig_GroupAddress_GoldSilver:
+        case Emetcon::PutConfig_GroupAddress_Lead:
+        case Emetcon::PutConfig_UniqueAddress:
         case Emetcon::PutConfig_LoadProfileInterest:
         case Emetcon::PutConfig_Disconnect:
         case Emetcon::PutConfig_LoadProfileReportPeriod:
@@ -2290,7 +2291,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
         if( getType() == TYPEMCT410 )
         {
-            long tmpaddr = _disconnectAddress & 0x3fffff;  //  make sure it's only 22 bits
+            long tmpaddress = _disconnectAddress & 0x3fffff;  //  make sure it's only 22 bits
             int  demand_threshold = 0,  //  default to no load limit
                  connect_delay    = 5;  //  default to a 5 minute connect delay
 
@@ -2316,9 +2317,9 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                 }
             }
 
-            OutMessage->Buffer.BSt.Message[0] = (tmpaddr >> 16) & 0xff;
-            OutMessage->Buffer.BSt.Message[1] = (tmpaddr >>  8) & 0xff;
-            OutMessage->Buffer.BSt.Message[2] =  tmpaddr        & 0xff;
+            OutMessage->Buffer.BSt.Message[0] = (tmpaddress >> 16) & 0xff;
+            OutMessage->Buffer.BSt.Message[1] = (tmpaddress >>  8) & 0xff;
+            OutMessage->Buffer.BSt.Message[2] =  tmpaddress        & 0xff;
 
             OutMessage->Buffer.BSt.Message[3] = (demand_threshold >> 8) & 0xff;
             OutMessage->Buffer.BSt.Message[4] =  demand_threshold       & 0xff;
@@ -2330,11 +2331,11 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     {
         if( parse.getiValue("groupaddress_enable") == 0 )
         {
-            function = Emetcon::PutConfig_GroupAddrInhibit;
+            function = Emetcon::PutConfig_GroupAddressInhibit;
         }
         else
         {
-            function = Emetcon::PutConfig_GroupAddrEnable;
+            function = Emetcon::PutConfig_GroupAddressEnable;
         }
 
         found = getOperation(function, OutMessage->Buffer.BSt);
@@ -2345,7 +2346,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         {
             int uadd;
 
-            function = Emetcon::PutConfig_UniqueAddr;
+            function = Emetcon::PutConfig_UniqueAddress;
             found    = getOperation(function, OutMessage->Buffer.BSt);
 
             uadd = parse.getiValue("uniqueaddress");
@@ -2390,7 +2391,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         {
             int gold, silver;
 
-            function = Emetcon::PutConfig_GroupAddr_GoldSilver;
+            function = Emetcon::PutConfig_GroupAddress_GoldSilver;
             found    = getOperation(function, OutMessage->Buffer.BSt);
 
             gold   = parse.getiValue("groupaddress_gold");
@@ -2423,7 +2424,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         {
             int bronze;
 
-            function = Emetcon::PutConfig_GroupAddr_Bronze;
+            function = Emetcon::PutConfig_GroupAddress_Bronze;
             found    = getOperation(function, OutMessage->Buffer.BSt);
 
             bronze = parse.getiValue("groupaddress_bronze");
@@ -2453,7 +2454,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         {
             int lead_load, lead_meter;
 
-            function = Emetcon::PutConfig_GroupAddr_Lead;
+            function = Emetcon::PutConfig_GroupAddress_Lead;
             found    = getOperation(function, OutMessage->Buffer.BSt);
 
             lead_load  = parse.getiValue("groupaddress_lead_load");

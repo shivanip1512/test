@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/12/26 15:49:02 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/12/27 05:44:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,20 +93,20 @@ protected:
 
     enum
     {
-        MCT3XX_GroupAddrPos            = 0x10,
-        MCT3XX_GroupAddrLen            =    5,
+        MCT3XX_GroupAddressPos           = 0x10,
+        MCT3XX_GroupAddressLen           =    5,
 
-        MCT3XX_UniqAddrPos             = 0x0A,
-        MCT3XX_UniqAddrLen             =    6,
-        MCT3XX_GroupAddrBronzePos      = 0x10,
-        MCT3XX_GroupAddrBronzeLen      =    1,
-        MCT3XX_GroupAddrLeadPos        = 0x11,
-        MCT3XX_GroupAddrLeadLen        =    3,
-        MCT3XX_GroupAddrGoldSilverPos  = 0x14,
-        MCT3XX_GroupAddrGoldSilverLen  =    1,
+        MCT3XX_UniqueAddressPos          = 0x0a,
+        MCT3XX_UniqueAddressLen          =    6,
+        MCT3XX_GroupAddressBronzePos     = 0x10,
+        MCT3XX_GroupAddressBronzeLen     =    1,
+        MCT3XX_GroupAddressLeadPos       = 0x11,
+        MCT3XX_GroupAddressLeadLen       =    3,
+        MCT3XX_GroupAddressGoldSilverPos = 0x14,
+        MCT3XX_GroupAddressGoldSilverLen =    1,
 
-        MCT310_Rollover                = 100000,   //  5 digits
-        MCT310_MaxPulseCount           = 10000000,
+        MCT310_Rollover                  =   100000,   //  5 digits
+        MCT310_MaxPulseCount             = 10000000,
     };
 
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );

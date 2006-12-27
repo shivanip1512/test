@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/12/26 15:44:29 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/12/27 05:44:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,31 +62,31 @@ CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,           Emetcon::IO_Read,           MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,   Emetcon::IO_Write,          MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,       Emetcon::IO_Write,          MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,         Emetcon::IO_Write,          MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,            Emetcon::IO_Read,          MCT2XX_GroupAddressPos,           MCT2XX_GroupAddressLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_GoldSilver, Emetcon::IO_Write,         MCT2XX_GroupAddressGoldSilverPos, MCT2XX_GroupAddressGoldSilverLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Bronze,     Emetcon::IO_Write,         MCT2XX_GroupAddressBronzePos,     MCT2XX_GroupAddressBronzeLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Lead,       Emetcon::IO_Write,         MCT2XX_GroupAddressLeadPos,       MCT2XX_GroupAddressLeadLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_General,                     Emetcon::IO_Read,           MCT24X_StatusPos,               MCT24X_StatusLen));
+    cs.insert(CommandStore(Emetcon::Scan_General,                      Emetcon::IO_Read,          MCT24X_StatusPos,                 MCT24X_StatusLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                       Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_KWH,                     Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                        Emetcon::IO_Function_Read, MCT24X_MReadPos,                  MCT24X_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,                      Emetcon::IO_Function_Read, MCT24X_MReadPos,                  MCT24X_MReadLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                     Emetcon::IO_Write,          MCT24X_PutMReadPos,             MCT24X_PutMReadLen));
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                      Emetcon::IO_Write,         MCT24X_PutMReadPos,               MCT24X_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                   Emetcon::IO_Read,           MCT24X_DemandPos,               MCT24X_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,                  Emetcon::IO_Read,           MCT24X_DemandPos,               MCT24X_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                    Emetcon::IO_Read,          MCT24X_DemandPos,                 MCT24X_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,                   Emetcon::IO_Read,          MCT24X_DemandPos,                 MCT24X_DemandLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,                 Emetcon::IO_Read,           0,                              0));
+    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,                  Emetcon::IO_Read,          0,                                0));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_External,               Emetcon::IO_Read,           MCT24X_StatusPos,               MCT24X_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,            Emetcon::IO_Read,           MCT24X_LPStatusPos,             MCT24X_LPStatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_External,                Emetcon::IO_Read,          MCT24X_StatusPos,                 MCT24X_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,             Emetcon::IO_Read,          MCT24X_LPStatusPos,               MCT24X_LPStatusLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,         Emetcon::IO_Read,           MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,         Emetcon::IO_Write,          MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,          Emetcon::IO_Read,          MCT24X_DemandIntervalPos,         MCT24X_DemandIntervalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,          Emetcon::IO_Write,         MCT24X_DemandIntervalPos,         MCT24X_DemandIntervalLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,    Emetcon::IO_Read,           MCT24X_LPIntervalPos,           MCT24X_LPIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,    Emetcon::IO_Write,          Command_LPInt,                  0));
+    cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,     Emetcon::IO_Read,          MCT24X_LPIntervalPos,             MCT24X_LPIntervalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,     Emetcon::IO_Write,         Command_LPInt,                    0));
 
     return cs;
 }

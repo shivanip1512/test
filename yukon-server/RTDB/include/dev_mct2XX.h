@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2XX.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/12/26 15:48:16 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/12/27 05:44:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,17 +61,17 @@ protected:
         //  these addresses are not valid for the 210 series meters, but that
         //    doesn't matter because these are never added in the 210 initCommandStore
 
-        MCT2XX_GroupAddrPos     = 0x28,
-        MCT2XX_GroupAddrLen     =    5,
+        MCT2XX_GroupAddressPos = 0x28,
+        MCT2XX_GroupAddressLen =    5,
 
-        MCT2XX_GroupAddrBronzePos      = 0x28,
-        MCT2XX_GroupAddrBronzeLen      =    1,
-        MCT2XX_GroupAddrLeadPos        = 0x29,
-        MCT2XX_GroupAddrLeadLen        =    3,
-        MCT2XX_GroupAddrGoldSilverPos  = 0x2c,
-        MCT2XX_GroupAddrGoldSilverLen  =    1,
-        MCT2XX_UniqAddrPos             = 0x22,
-        MCT2XX_UniqAddrLen             =    6
+        MCT2XX_GroupAddressBronzePos      = 0x28,
+        MCT2XX_GroupAddressBronzeLen      =    1,
+        MCT2XX_GroupAddressLeadPos        = 0x29,
+        MCT2XX_GroupAddressLeadLen        =    3,
+        MCT2XX_GroupAddressGoldSilverPos  = 0x2c,
+        MCT2XX_GroupAddressGoldSilverLen  =    1,
+        MCT2XX_UniqueAddressPos           = 0x22,
+        MCT2XX_UniqueAddressLen           =    6
     };
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

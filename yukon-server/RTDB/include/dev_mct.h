@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/12/26 15:40:01 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/12/27 05:43:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,18 +156,18 @@ protected:
 
     enum Commands
     {
-        Command_Disconnect       = 0x41,
-        Command_Connect          = 0x42,
+        Command_Disconnect          = 0x41,
+        Command_Connect             = 0x42,
 
-        Command_Latch            = 0x48,
+        Command_Latch               = 0x48,
 
-        Command_GroupAddrInhibit = 0x53,
-        Command_GroupAddrEnable  = 0x54,
-        Command_ARML             = 0x60,
-        Command_ARMD             = 0x61,
-        Command_ARMC             = 0x62,
+        Command_GroupAddressInhibit = 0x53,
+        Command_GroupAddressEnable  = 0x54,
+        Command_ARML                = 0x60,
+        Command_ARMD                = 0x61,
+        Command_ARMC                = 0x62,
 
-        Command_LPInt            = 0x70,
+        Command_LPInt               = 0x70,
 
         Command_Restore     = 0x00,
         Command_Shed_07m    = 0x00,

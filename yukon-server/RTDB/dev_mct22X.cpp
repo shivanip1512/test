@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/12/26 15:43:42 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/12/27 05:44:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,10 +52,10 @@ CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::initCommandStore()
 {
    CommandSet cs;
 
-   cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,          Emetcon::IO_Read,  MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,  Emetcon::IO_Write, MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,      Emetcon::IO_Write, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,        Emetcon::IO_Write, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
+   cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,            Emetcon::IO_Read,  MCT2XX_GroupAddressPos,            MCT2XX_GroupAddressLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_GoldSilver, Emetcon::IO_Write, MCT2XX_GroupAddressGoldSilverPos,  MCT2XX_GroupAddressGoldSilverLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Bronze,     Emetcon::IO_Write, MCT2XX_GroupAddressBronzePos,      MCT2XX_GroupAddressBronzeLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Lead,       Emetcon::IO_Write, MCT2XX_GroupAddressLeadPos,        MCT2XX_GroupAddressLeadLen));
 
    cs.insert(CommandStore(Emetcon::GetValue_KWH,        Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
    cs.insert(CommandStore(Emetcon::Scan_Accum,          Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
