@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -67,6 +68,9 @@ public class LMControlLogModel extends SystemLogModel
 	public LMControlLogModel()
 	{
 		super();
+		setFilterModelTypes(new int[]{ 
+				ModelFactory.LMGROUPS}
+				);
 	}	
 	/**
 	 * Constructor class
