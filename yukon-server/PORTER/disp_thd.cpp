@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/06/02 20:05:57 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/12/28 21:02:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,10 +65,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 CtiConnection VanGoghConnection;
 
-namespace Cti { namespace Porter { namespace DNPUDP {
+namespace Cti { namespace Porter {
 
-    extern CtiFIFOQueue< CtiMessage > MessageQueue;
-}
+    extern CtiFIFOQueue< CtiMessage > UDP_MessageQueue;
 }
 }
 
@@ -152,7 +151,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         }
 
                         //  the UDP thread needs to reload each item individually, so we can't ever discard any
-                        Cti::Porter::DNPUDP::MessageQueue.putQueue(MsgPtr->replicateMessage());
+                        Cti::Porter::UDP_MessageQueue.putQueue(MsgPtr->replicateMessage());
 
                         if(pChg)
                         {
