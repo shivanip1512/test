@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/11/06 21:46:54 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/12/28 20:50:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,6 @@
 #include "utility.h"
 
 #include "elogger.h"       // for Send4PartToLogger()
-#include "mpc.h"
 
 #include "numstr.h"
 

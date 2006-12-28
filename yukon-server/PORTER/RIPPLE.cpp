@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/11/16 16:54:41 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/12/28 20:53:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,6 @@
 #include "perform.h"
 #include "scanner.h"
 #include "elogger.h"
-#include "mpc.h"
 #include "drp.h"
 
 #include "portglob.h"
@@ -97,6 +96,8 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu);
 BOOL LCUsAreDoneTransmitting(CtiDeviceSPtr splcu);
 INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMESS *OutMessage, INT resultCode);
 
+SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len);
+SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph);
 /*
  *  Assumes lcu is the global LCU.
  */
