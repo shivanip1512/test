@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/10/23 18:57:50 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/12/28 20:58:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -451,13 +451,12 @@ enum CtiOutMessageFlags_t
     MessageFlag_ApplyExclusionLogic        = 0x00000001 << 0,
     MessageFlag_RequeueCommandOnceOnFail   = 0x00000001 << 1,
     MessageFlag_RouteToPorterGatewayThread = 0x00000001 << 2,
-    MessageFlag_RouteToPorterDNPUDPThread  = 0x00000001 << 3,
-    MessageFlag_ExpectMore                 = 0x00000001 << 4,
-    MessageFlag_QueuedToDevice             = 0x00000001 << 5,
-    MessageFlag_MessageRequeued            = 0x00000001 << 6,   // This message was reque'd and retries were decremented.
-    MessageFlag_PortSharing                = 0x00000001 << 7,
-    MessageFlag_AddSilence                 = 0x00000001 << 8,
-    MessageFlag_StatisticsRequested        = 0x00000001 << 9,
+    MessageFlag_ExpectMore                 = 0x00000001 << 3,
+    MessageFlag_QueuedToDevice             = 0x00000001 << 4,
+    MessageFlag_MessageRequeued            = 0x00000001 << 5,   // This message was reque'd and retries were decremented.
+    MessageFlag_PortSharing                = 0x00000001 << 6,
+    MessageFlag_AddSilence                 = 0x00000001 << 7,
+    MessageFlag_StatisticsRequested        = 0x00000001 << 8,
 };
 
 
