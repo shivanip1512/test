@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.102 $
-* DATE         :  $Date: 2006/12/06 22:12:51 $
+* REVISION     :  $Revision: 1.103 $
+* DATE         :  $Date: 2006/12/28 20:59:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,7 +171,6 @@
 #include "numstr.h"
 
 #define DO_GATEWAYTHREAD               1
-#define DO_DNPUDPTHREAD                1
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
 #define DO_VCONFIGTHREAD               1
@@ -235,7 +234,6 @@ RWThreadFunction _connThread;
 RWThreadFunction _dispThread;
 RWThreadFunction _guiThread;
 RWThreadFunction _gwThread;
-RWThreadFunction _dnpudpThread;
 RWThreadFunction _pilThread;
 RWThreadFunction _tsyncThread;
 RWThreadFunction _perfuThread;
@@ -880,13 +878,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _gwThread.start();
     }
 
-    if(DO_DNPUDPTHREAD)
-    {
-        //  once created, the Inbound thread creates and manages the other threads that the UDP code uses
-        _dnpudpThread = rwMakeThreadFunction( Cti::Porter::DNPUDP::ExecuteThread, (void*)NULL );
-        _dnpudpThread.start();
-    }
-
     /* Another new Yukon Thread:
      * This thread manages connections to iMacs and other RWCollectable message senders
      * This guy is the PIL
@@ -1138,7 +1129,6 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
     if(_gwThread.isValid())                 _gwThread.requestCancellation(200);
-    if(_dnpudpThread.isValid())             _dnpudpThread.requestCancellation(200);
     if(_pilThread.isValid())                _pilThread.requestCancellation(200);
     if(_dispThread.isValid())               _dispThread.requestCancellation(200);
     if(_connThread.isValid())               _connThread.requestCancellation(200);
@@ -1264,20 +1254,6 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " _gwThread shutdown" << endl;
-        }
-    }
-
-    if(_dnpudpThread.isValid())
-    {
-        if(_dnpudpThread.join(1000) != RW_THR_COMPLETED )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _dnpudpThread did not shutdown" << endl;
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _dnpudpThread shutdown" << endl;
         }
     }
 
