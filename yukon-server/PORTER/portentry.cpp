@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/11/15 20:41:10 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/12/28 20:59:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,14 +97,6 @@ using namespace std;
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
 extern CtiLocalConnect PorterToPil;
-
-namespace Cti { namespace Porter { namespace DNPUDP {
-
-    extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > OutMessageQueue;
-}
-}
-}
-
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
@@ -350,12 +342,6 @@ VOID ConnectionThread (VOID *Arg)
 
                 SendError(OutMessage, BADPARAM);
             }
-
-            continue;
-        }
-        else if( OutMessage->MessageFlags & MessageFlag_RouteToPorterDNPUDPThread )
-        {
-            Cti::Porter::DNPUDP::OutMessageQueue.putQueue( OutMessage );
 
             continue;
         }
