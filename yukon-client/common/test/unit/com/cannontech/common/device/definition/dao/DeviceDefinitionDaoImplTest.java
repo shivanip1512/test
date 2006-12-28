@@ -13,7 +13,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.MCT470;
+import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class DeviceDefinitionDaoImplTest extends TestCase {
 
@@ -23,14 +23,16 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     protected void setUp() throws Exception {
         dao = new DeviceDefinitionDaoImpl();
 
-        // Use testFixedDeviceAttributes.xml for testing
-        ((DeviceDefinitionDaoImpl) dao).setInputFile("com/cannontech/common/device/definition/dao/deviceDefinition.xml");
+        // Use testDeviceDefinition.xml for testing
+        ((DeviceDefinitionDaoImpl) dao).setInputFile(this.getClass()
+                                                         .getClassLoader()
+                                                         .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
+        ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new MockPaoGroups());
+        ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(MockPaoGroups.class.getName());
         ((DeviceDefinitionDaoImpl) dao).initialize();
 
-        // Chose to test a 470 because it has many points both initialized and
-        // not
-        device = new MCT470();
-        device.setDeviceType("MCT-470");
+        device = new MockDevice();
+        device.setDeviceType("device1");
     }
 
     /**
@@ -43,7 +45,6 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         expectedAttributes.add(Attribute.USAGE);
         expectedAttributes.add(Attribute.DEMAND);
         expectedAttributes.add(new Attribute("totalUsage", "totalUsage"));
-        expectedAttributes.add(new Attribute("peakDemand", "peakDemand"));
 
         Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
 
@@ -64,7 +65,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetPointTemplateForAttribute() {
 
         // Test with supported device type
-        PointTemplate expectedTemplate = new PointTemplate("kWh",
+        PointTemplate expectedTemplate = new PointTemplate("pulse1",
                                                            2,
                                                            1,
                                                            1.0,
@@ -107,7 +108,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported device type
         // Sort the sets into lists for ease of test trouble shooting
-        Set<PointTemplate> expectedTemplates = this.getExpected470AllTemplates();
+        Set<PointTemplate> expectedTemplates = this.getExpectedAllTemplates();
         List<PointTemplate> expected = new ArrayList<PointTemplate>();
         expected.addAll(expectedTemplates);
         Collections.sort(expected);
@@ -136,7 +137,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      */
     public void testGetInitPointTemplates() {
         // Test with supported device type
-        Set<PointTemplate> expectedTemplates = this.getExpected470InitTemplates();
+        Set<PointTemplate> expectedTemplates = this.getExpectedInitTemplates();
         List<PointTemplate> expected = new ArrayList<PointTemplate>();
         expected.addAll(expectedTemplates);
         Collections.sort(expected);
@@ -168,55 +169,26 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = dao.getDeviceDisplayGroupMap();
 
         // Make sure there are the correct number of device type groups
-        assertEquals("There should be 5 device type groups", 5, deviceDisplayGroupMap.keySet()
+        assertEquals("There should be 2 device type groups", 2, deviceDisplayGroupMap.keySet()
                                                                                      .size());
 
-        // Make sure there are the correct number of mct device types
+        // Make sure there are the correct number of display1 device types
         try {
-            assertEquals("There should be 23 MCT device types",
-                         23,
-                         deviceDisplayGroupMap.get("MCT").size());
+            assertEquals("There should be 2 display1 device types",
+                         2,
+                         deviceDisplayGroupMap.get("display1").size());
         } catch (NullPointerException e) {
-            fail("There is not an MCT device type group");
+            fail("There is not a display1 device type group");
         }
 
-        // Make sure there are the correct number of Signal Transmitters device
+        // Make sure there are the correct number of display2 device
         // types
         try {
-            assertEquals("There should be 17 Signal Transmitters device types",
-                         17,
-                         deviceDisplayGroupMap.get("Signal Transmitters").size());
-        } catch (NullPointerException e) {
-            fail("There is not an Signal Transmitters device type group");
-        }
-
-        // Make sure there are the correct number of Electronic Meters device
-        // types
-        try {
-            assertEquals("There should be 16 Electronic Meters device types",
-                         16,
-                         deviceDisplayGroupMap.get("Electronic Meters").size());
-        } catch (NullPointerException e) {
-            fail("There is not an Electronc Meters device type group");
-        }
-
-        // Make sure there are the correct number of RTU device
-        // types
-        try {
-            assertEquals("There should be 7 RTU device types", 7, deviceDisplayGroupMap.get("RTU")
-                                                                                       .size());
-        } catch (NullPointerException e) {
-            fail("There is not an RTU device type group");
-        }
-
-        // Make sure there are the correct number of Virtual device
-        // types
-        try {
-            assertEquals("There should be 1 Virtual device types",
+            assertEquals("There should be 1 display2 device types",
                          1,
-                         deviceDisplayGroupMap.get("Virtual").size());
+                         deviceDisplayGroupMap.get("display2").size());
         } catch (NullPointerException e) {
-            fail("There is not an Virtual device type group");
+            fail("There is not a display2 device type group");
         }
 
     }
@@ -227,11 +199,11 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testIsDeviceTypeChangeable() {
 
         // Test with supported device type that is changeable
-        assertTrue("MCT-470 is changeable", dao.isDeviceTypeChangeable(device));
+        assertTrue("device1 is changeable", dao.isDeviceTypeChangeable(device));
 
         // Test with supported device type that is not changeable
-        device.setDeviceType("MCT-430S");
-        assertTrue("MCT-430S is not changeable", !dao.isDeviceTypeChangeable(device));
+        device.setDeviceType("device3");
+        assertTrue("device3 is not changeable", !dao.isDeviceTypeChangeable(device));
 
         // Test with unsupported device type
         try {
@@ -246,22 +218,47 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     }
 
     /**
-     * Helper method to get the set of init point templates for the 470
+     * Test getDeviceTypesForChangeGroup()
+     */
+    public void testGetDeviceTypesForChangeGroup() {
+
+        // Test with supported change group
+        Set<Integer> expectedDeviceTypesList = new HashSet<Integer>();
+        expectedDeviceTypesList.add(MockPaoGroups.constant1);
+        expectedDeviceTypesList.add(MockPaoGroups.constant2);
+
+        Set<Integer> actualDeviceTypesList = dao.getDeviceTypesForChangeGroup("change1");
+
+        assertEquals("Incorrect device type list for change group: change1",
+                     expectedDeviceTypesList,
+                     actualDeviceTypesList);
+
+        // Test with invalid change group
+        try {
+            dao.getDeviceTypesForChangeGroup("invalid");
+            fail("Exception should be thrown for invalid paoClass");
+        } catch (IllegalArgumentException e) {
+            // expected exception
+        } catch (Exception e) {
+            fail("Threw wrong type of exception: " + e.getClass());
+        }
+    }
+
+    /**
+     * Helper method to get the set of init point templates for device1
      * @return Set of all point templates
      */
-    private Set<PointTemplate> getExpected470InitTemplates() {
+    private Set<PointTemplate> getExpectedInitTemplates() {
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
 
         // Pulse Accumulators
-        expectedTemplates.add(new PointTemplate("kWh", 2, 1, 1.0, 1, 0, true, Attribute.USAGE));
-        expectedTemplates.add(new PointTemplate("Blink Count", 2, 20, 1.0, 9, 0, true, null));
+        expectedTemplates.add(new PointTemplate("pulse1", 2, 1, 1.0, 1, 0, true, Attribute.USAGE));
 
         // Demand Accumulators
-        expectedTemplates.add(new PointTemplate("kW", 3, 1, 1.0, 0, 0, true, Attribute.DEMAND));
-        expectedTemplates.add(new PointTemplate("kW-LP", 3, 101, 1.0, 0, 0, true, null));
+        expectedTemplates.add(new PointTemplate("demand1", 3, 1, 1.0, 0, 0, true, Attribute.DEMAND));
 
         // Analog
-        expectedTemplates.add(new PointTemplate("Total kWh",
+        expectedTemplates.add(new PointTemplate("analog1",
                                                 1,
                                                 1,
                                                 1.0,
@@ -269,62 +266,57 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                 0,
                                                 true,
                                                 new Attribute("totalUsage", "totalUsage")));
-        expectedTemplates.add(new PointTemplate("Peak kW (Rate A kW)",
-                                                1,
-                                                2,
-                                                1.0,
-                                                0,
-                                                0,
-                                                true,
-                                                new Attribute("peakDemand", "peakDemand")));
-        expectedTemplates.add(new PointTemplate("Rate A kWh", 1, 3, 1.0, 1, 0, true, null));
-        expectedTemplates.add(new PointTemplate("Last Interval kW", 1, 10, 1.0, 0, 0, true, null));
-        expectedTemplates.add(new PointTemplate("Outages", 1, 100, 1.0, 31, 0, true, null));
 
         return expectedTemplates;
 
     }
 
     /**
-     * Helper method to get the set of all point templates for the 470
+     * Helper method to get the set of all point templates for device1
      * @return Set of all point templates
      */
-    private Set<PointTemplate> getExpected470AllTemplates() {
+    private Set<PointTemplate> getExpectedAllTemplates() {
 
         // Get the init templates first
-        Set<PointTemplate> expectedTemplates = this.getExpected470InitTemplates();
+        Set<PointTemplate> expectedTemplates = this.getExpectedInitTemplates();
 
-        // Add the rest of the 470 templates
-
-        // Pulse Accumulators
-        expectedTemplates.add(new PointTemplate("Channel 2 kWh", 2, 2, 0.01, 1, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Channel 3 kWh", 2, 3, 0.01, 1, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Channel 4 kWh", 2, 4, 0.01, 1, 0, false, null));
-
-        // Demand Accumulators
-        expectedTemplates.add(new PointTemplate("Channel 2 kW", 3, 2, 0.01, 0, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Channel 3 kW", 3, 3, 0.01, 0, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Channel 4 kW", 3, 4, 0.01, 0, 0, false, null));
-
-        // Analog
-        expectedTemplates.add(new PointTemplate("Rate B kW", 1, 4, 1.0, 0, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Rate B kWh", 1, 5, 1.0, 1, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Rate C kW", 1, 6, 1.0, 0, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Rate C kWh", 1, 7, 1.0, 1, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Rate D kW", 1, 8, 1.0, 0, 0, false, null));
-        expectedTemplates.add(new PointTemplate("Rate D kWh", 1, 9, 1.0, 1, 0, false, null));
+        // Add the rest of the templates
 
         // Status
-        expectedTemplates.add(new PointTemplate("Disconnect Status", 0, 1, 1.0, -1, -6, false, null));
-        expectedTemplates.add(new PointTemplate("Communication Status (CVD)",
-                                                0,
-                                                2000,
-                                                1.0,
-                                                -1,
-                                                0,
-                                                false,
-                                                null));
+        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0, false, null));
 
         return expectedTemplates;
+    }
+
+    /**
+     * Mock device to be used for testing - was created to enable instantiation
+     * of a device base
+     */
+    private class MockDevice extends DeviceBase {
+    }
+
+    /**
+     * Mock PaoGroups class for testing purposes. This class is public because
+     * outside classes need access to the constants
+     */
+    public class MockPaoGroups implements PaoGroupsWrapper {
+
+        public static final int constant1 = 1;
+        public static final int constant2 = 2;
+        public static final int constant3 = 3;
+
+        public int getDeviceType(String typeString) {
+
+            if ("device1".equals(typeString)) {
+                return constant1;
+            } else if ("device2".equals(typeString)) {
+                return constant2;
+            } else if ("device3".equals(typeString)) {
+                return constant3;
+            }
+
+            return 0;
+        }
+
     }
 }

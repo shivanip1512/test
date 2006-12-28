@@ -60,4 +60,11 @@ public interface DeviceDefinitionDao {
      * @return True if the device's type can be changed
      */
     public abstract boolean isDeviceTypeChangeable(DeviceBase device);
+
+    /**
+     * Method to get a set of device types that are in a given change group
+     * @param changeGroup - Change group to get the device types for
+     * @return A set of device types
+     */
+    public abstract Set<Integer> getDeviceTypesForChangeGroup(String changeGroup);
 }

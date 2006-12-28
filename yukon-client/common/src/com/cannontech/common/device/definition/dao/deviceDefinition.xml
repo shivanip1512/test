@@ -9,7 +9,7 @@ This file contains default device and point information for all of the devices i
     
     <!-- MCTs -->
     <device>
-        <type value="1080" javaConstant="MCT470" changeable="true" />
+        <type value="1080" javaConstant="MCT470" changeGroup="mct" />
         <displayName value="MCT-470"/>
         <displayGroup value="MCT"/>
         <points>
@@ -159,7 +159,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1086" javaConstant="MCT430A" changeable="true" />
+        <type value="1086" javaConstant="MCT430A" changeGroup="mct" />
         <displayName value="MCT-430A"/>
         <displayGroup value="MCT"/>
         <points>
@@ -305,7 +305,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1065" javaConstant="MCT410IL" changeable="true" />
+        <type value="1065" javaConstant="MCT410IL" changeGroup="mct" />
         <displayName value="MCT-410IL"/>
         <displayGroup value="MCT"/>
         <points>
@@ -492,7 +492,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1081" javaConstant="MCT410CL" changeable="true" />
+        <type value="1081" javaConstant="MCT410CL" changeGroup="mct" />
         <displayName value="MCT-410CL"/>
         <displayGroup value="MCT"/>
         <points>
@@ -679,7 +679,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1022" javaConstant="MCT370" changeable="true" />
+        <type value="1022" javaConstant="MCT370" changeGroup="mct" />
         <displayName value="MCT-370"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1017,7 +1017,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1021" javaConstant="MCT360" changeable="true" />
+        <type value="1021" javaConstant="MCT360" changeGroup="mct" />
         <displayName value="MCT-360"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1263,7 +1263,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1036" javaConstant="MCT318L" changeable="true" />
+        <type value="1036" javaConstant="MCT318L" changeGroup="mct" />
         <displayName value="MCT-318L"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1276,7 +1276,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1020" javaConstant="MCT318" changeable="true" />
+        <type value="1020" javaConstant="MCT318" changeGroup="mct" />
         <displayName value="MCT-318"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1447,7 +1447,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1039" javaConstant="MCT310CT" changeable="true" />
+        <type value="1039" javaConstant="MCT310CT" changeGroup="mct" />
         <displayName value="MCT-310CT"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1460,7 +1460,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1034" javaConstant="MCT310ID" changeable="true" />
+        <type value="1034" javaConstant="MCT310ID" changeGroup="mct" />
         <displayName value="MCT-310ID"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1484,7 +1484,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1063" javaConstant="MCT310IDL" changeable="true" />
+        <type value="1063" javaConstant="MCT310IDL" changeGroup="mct" />
         <displayName value="MCT-310IDL"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1514,7 +1514,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1035" javaConstant="MCT310IL" changeable="true" />
+        <type value="1035" javaConstant="MCT310IL" changeGroup="mct" />
         <displayName value="MCT-310IL"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1539,7 +1539,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1040" javaConstant="MCT310IM" changeable="true" />
+        <type value="1040" javaConstant="MCT310IM" changeGroup="mct" />
         <displayName value="MCT-310IM"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1552,7 +1552,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1019" javaConstant="MCT310" changeable="true" />
+        <type value="1019" javaConstant="MCT310" changeGroup="mct" />
         <displayName value="MCT-310"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1651,7 +1651,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1025" javaConstant="MCT250" changeable="true" />
+        <type value="1025" javaConstant="MCT250" changeGroup="mct" />
         <displayName value="MCT-250"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1745,7 +1745,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1024" javaConstant="MCT248" changeable="true" />
+        <type value="1024" javaConstant="MCT248" changeGroup="mct" />
         <displayName value="MCT-248"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1818,7 +1818,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1023" javaConstant="MCT240" changeable="true" />
+        <type value="1023" javaConstant="MCT240" changeGroup="mct" />
         <displayName value="MCT-240"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1886,7 +1886,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1037" javaConstant="MCT213" changeable="true" />
+        <type value="1037" javaConstant="MCT213" changeGroup="mct" />
         <displayName value="MCT-213"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1944,7 +1944,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1026" javaConstant="MCT210" changeable="true" />
+        <type value="1026" javaConstant="MCT210" changeGroup="mct" />
         <displayName value="MCT-210"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1997,7 +1997,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="MCT"/>
     </device>
     <device>
-        <type value="1028" javaConstant="LMT_2" changeable="true" />
+        <type value="1028" javaConstant="LMT_2" />
         <displayName value="LMT-2"/>
         <displayGroup value="MCT"/>
         <points>
@@ -2127,7 +2127,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1031" javaConstant="DCT_501" changeable="true" />
+        <type value="1031" javaConstant="DCT_501" />
         <displayName value="DCT-501"/>
         <displayGroup value="MCT"/>
         <points>
@@ -2211,7 +2211,7 @@ This file contains default device and point information for all of the devices i
     
     <!-- Signal Transmitters -->
     <device>
-        <type value="1001" javaConstant="CCU710A" changeable="true" />
+        <type value="1001" javaConstant="CCU710A" changeGroup="ccu" />
         <displayName value="CCU-710A"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
@@ -2223,7 +2223,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1002" javaConstant="CCU711" changeable="true" />
+        <type value="1002" javaConstant="CCU711" changeGroup="ccu" />
         <displayName value="CCU-711"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
@@ -2235,7 +2235,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1005" javaConstant="LCU415" changeable="true" />
+        <type value="1005" javaConstant="LCU415" />
         <displayName value="LCU-415"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
@@ -2373,7 +2373,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1006" javaConstant="LCULG" changeable="true" />
+        <type value="1006" javaConstant="LCULG" />
         <displayName value="LCU-LG"/>
         <displayGroup value="Signal Transmitters"/>
     </device>
@@ -2393,7 +2393,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="Signal Transmitters"/>
     </device>
     <device>
-        <type value="1027" javaConstant="REPEATER" changeable="true" />
+        <type value="1027" javaConstant="REPEATER" changeGroup="repeater" />
         <displayName value="REPEATER 900"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
@@ -2405,17 +2405,17 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1018" javaConstant="REPEATER_800" changeable="true" />
+        <type value="1018" javaConstant="REPEATER_800" changeGroup="repeater" />
         <displayName value="REPEATER 800"/>
         <displayGroup value="Signal Transmitters"/>
     </device>
     <device>
-        <type value="1093" javaConstant="REPEATER_801"/>
+        <type value="1093" javaConstant="REPEATER_801" changeGroup="repeater" />
         <displayName value="REPEATER 801"/>
         <displayGroup value="Signal Transmitters"/>
     </device>
     <device>
-        <type value="1094" javaConstant="REPEATER_921"/>
+        <type value="1094" javaConstant="REPEATER_921" changeGroup="repeater" />
         <displayName value="REPEATER 921"/>
         <displayGroup value="Signal Transmitters"/>
     </device>
@@ -2435,7 +2435,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="Signal Transmitters"/>
     </device>
     <device>
-        <type value="1003" javaConstant="TCU5000" changeable="true" />
+        <type value="1003" javaConstant="TCU5000" />
         <displayName value="TCU-5000"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
@@ -2497,7 +2497,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1004" javaConstant="TCU5500" changeable="true" />
+        <type value="1004" javaConstant="TCU5500" />
         <displayName value="TCU-5500"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
@@ -2576,7 +2576,7 @@ This file contains default device and point information for all of the devices i
     
     <!-- Electronic Meters -->
     <device>
-        <type value="1009" javaConstant="ALPHA_PPLUS" changeable="true" />
+        <type value="1009" javaConstant="ALPHA_PPLUS" />
         <displayName value="ALPHA POWER PLUS"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -2906,7 +2906,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1014" javaConstant="ALPHA_A1" changeable="true" />
+        <type value="1014" javaConstant="ALPHA_A1" />
         <displayName value="ALPHA A1"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -3566,7 +3566,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1015" javaConstant="DR_87" changeable="true" />
+        <type value="1015" javaConstant="DR_87" />
         <displayName value="DR-87"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -3621,7 +3621,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1010" javaConstant="FULCRUM" changeable="true" />
+        <type value="1010" javaConstant="FULCRUM" />
         <displayName value="FULCRUM"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -4626,7 +4626,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1012" javaConstant="LANDISGYRS4" changeable="true" />
+        <type value="1012" javaConstant="LANDISGYRS4" />
         <displayName value="LANDIS-GYR S4"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -4956,7 +4956,7 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1016" javaConstant="QUANTUM" changeable="true" />
+        <type value="1016" javaConstant="QUANTUM" />
         <displayName value="QUANTUM"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -5946,12 +5946,12 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     <device>
-        <type value="1066" javaConstant="TRANSDATA_MARKV" changeable="true" />
+        <type value="1066" javaConstant="TRANSDATA_MARKV" />
         <displayName value="TRANSDATA MARK-V"/>
         <displayGroup value="Electronic Meters"/>
     </device>
     <device>
-        <type value="1011" javaConstant="VECTRON" changeable="true" />
+        <type value="1011" javaConstant="VECTRON" />
         <displayName value="VECTRON"/>
         <displayGroup value="Electronic Meters"/>
         <points>
@@ -6298,7 +6298,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="RTU"/>
     </device>
     <device>
-        <type value="1029" javaConstant="RTUILEX" changeable="true" />
+        <type value="1029" javaConstant="RTUILEX" />
         <displayName value="RTU-ILEX"/>
         <displayGroup value="RTU"/>
     </device>
@@ -6308,7 +6308,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="RTU"/>
     </device>
     <device>
-        <type value="1030" javaConstant="RTUWELCO" changeable="true" />
+        <type value="1030" javaConstant="RTUWELCO" />
         <displayName value="RTU-WELCO"/>
         <displayGroup value="RTU"/>
     </device>

@@ -10,14 +10,16 @@ public class DeviceDefinition {
     private String displayGroup = null;
     private String javaConstant = null;
     private boolean changeable = false;
+    private String changeGroup = null;
 
     public DeviceDefinition(int type, String displayName, String displayGroup, String javaConstant,
-            boolean changeable) {
+            String changeGroup) {
         this.type = type;
         this.displayName = displayName;
         this.displayGroup = displayGroup;
         this.javaConstant = javaConstant;
-        this.changeable = changeable;
+        this.changeGroup = changeGroup;
+        this.changeable = changeGroup != null;
     }
 
     public String getDisplayName() {
@@ -58,6 +60,14 @@ public class DeviceDefinition {
 
     public void setJavaConstant(String javaConstant) {
         this.javaConstant = javaConstant;
+    }
+
+    public String getChangeGroup() {
+        return changeGroup;
+    }
+
+    public void setChangeGroup(String changeGroup) {
+        this.changeGroup = changeGroup;
     }
 
     public String toString() {

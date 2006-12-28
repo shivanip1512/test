@@ -10,6 +10,9 @@
         <property name="pointService" ref="pointService" />
     </bean>
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" singleton="true" init-method="initialize">
-        <property name="inputFile" value="com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
+        <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
+        <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
     </bean>
+	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" singleton="true" />
 </beans>

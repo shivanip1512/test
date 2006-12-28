@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="deviceDefinition.xsl"?>
+
+<!--
+This file contains default device and point information for all of the devices in Yukon.
+-->
+
+<deviceDefinition>
+    
+    <!-- Group 1 -->
+    <device>
+        <type value="1" javaConstant="constant1" changeGroup="change1" />
+        <displayName value="Device 1"/>
+        <displayGroup value="display1"/>
+        <points>
+            <point init="true" type="PulseAccumulator">
+                <attribute name="usage"/>
+                <name>pulse1</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="1"/>
+            </point>
+            
+            <point init="true" type="DemandAccumulator">
+                <attribute name="demand"/>
+                <name>demand1</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="0"/>
+            </point>
+            
+            <point init="true" type="Analog">
+                <attribute name="totalUsage"/>
+                <name>analog1</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="1"/>
+                
+            </point>
+                <point type="Status">
+                <name>status1</name>
+                <offset value="1"/>
+                <stategroup value="0"/>
+            </point>
+            
+        </points>
+    </device>
+    <device>
+        <type value="2" javaConstant="constant2" changeGroup="change1" />
+        <displayName value="Device 2"/>
+        <displayGroup value="display1"/>
+        <points>
+            <point init="true" type="Analog">
+                <name>analog1</name>
+                <offset value="1"/>
+                <multiplier value=".0001"/>
+                <unitofmeasure value="1"/>
+            </point>
+        </points>
+    </device>
+    
+    
+    <!-- Group 2 -->
+    <device>
+        <type value="3" javaConstant="constant3" />
+        <displayName value="Device 3"/>
+        <displayGroup value="display2"/>
+        <points>
+            <point type="Status">
+                <name>status1</name>
+                <offset value="2000"/>
+                <stategroup value="0"/>
+            </point>
+        </points>
+    </device>
+    
+</deviceDefinition>
