@@ -49,14 +49,9 @@ public class Type implements java.io.Serializable {
     private java.lang.String _javaConstant;
 
     /**
-     * Field _changeable
+     * Field _changeGroup
      */
-    private boolean _changeable = false;
-
-    /**
-     * keeps track of state for field: _changeable
-     */
-    private boolean _has_changeable;
+    private java.lang.String _changeGroup;
 
 
       //----------------/
@@ -74,15 +69,6 @@ public class Type implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method deleteChangeable
-     * 
-     */
-    public void deleteChangeable()
-    {
-        this._has_changeable= false;
-    } //-- void deleteChangeable() 
-
-    /**
      * Method deleteValue
      * 
      */
@@ -92,15 +78,15 @@ public class Type implements java.io.Serializable {
     } //-- void deleteValue() 
 
     /**
-     * Returns the value of field 'changeable'.
+     * Returns the value of field 'changeGroup'.
      * 
-     * @return boolean
-     * @return the value of field 'changeable'.
+     * @return String
+     * @return the value of field 'changeGroup'.
      */
-    public boolean getChangeable()
+    public java.lang.String getChangeGroup()
     {
-        return this._changeable;
-    } //-- boolean getChangeable() 
+        return this._changeGroup;
+    } //-- java.lang.String getChangeGroup() 
 
     /**
      * Returns the value of field 'javaConstant'.
@@ -123,18 +109,6 @@ public class Type implements java.io.Serializable {
     {
         return this._value;
     } //-- int getValue() 
-
-    /**
-     * Method hasChangeable
-     * 
-     * 
-     * 
-     * @return boolean
-     */
-    public boolean hasChangeable()
-    {
-        return this._has_changeable;
-    } //-- boolean hasChangeable() 
 
     /**
      * Method hasValue
@@ -195,15 +169,14 @@ public class Type implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'changeable'.
+     * Sets the value of field 'changeGroup'.
      * 
-     * @param changeable the value of field 'changeable'.
+     * @param changeGroup the value of field 'changeGroup'.
      */
-    public void setChangeable(boolean changeable)
+    public void setChangeGroup(java.lang.String changeGroup)
     {
-        this._changeable = changeable;
-        this._has_changeable = true;
-    } //-- void setChangeable(boolean) 
+        this._changeGroup = changeGroup;
+    } //-- void setChangeGroup(java.lang.String) 
 
     /**
      * Sets the value of field 'javaConstant'.

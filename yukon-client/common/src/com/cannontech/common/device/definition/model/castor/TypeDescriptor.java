@@ -143,28 +143,22 @@ public class TypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- _changeable
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_changeable", "changeable", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _changeGroup
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_changeGroup", "changeGroup", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Type target = (Type) object;
-                if(!target.hasChangeable())
-                    return null;
-                return (target.getChangeable() ? java.lang.Boolean.TRUE : java.lang.Boolean.FALSE);
+                return target.getChangeGroup();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     Type target = (Type) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteChangeable();
-                        return;
-                    }
-                    target.setChangeable( ((java.lang.Boolean)value).booleanValue());
+                    target.setChangeGroup( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -178,10 +172,11 @@ public class TypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _changeable
+        //-- validation code for: _changeGroup
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            BooleanValidator typeValidator = new BooleanValidator();
+            StringValidator typeValidator = new StringValidator();
+            typeValidator.setWhiteSpace("preserve");
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

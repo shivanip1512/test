@@ -48,7 +48,7 @@
     <xs:attributeGroup name="typeAttributes">
         <xs:attribute name="value" type="xs:integer" maxOccurs="1" use="required" />
         <xs:attribute name="javaConstant" type="xs:string" maxOccurs="1" use="required" />
-        <xs:attribute name="changeable" type="xs:boolean" maxOccurs="1" default="false" />
+        <xs:attribute name="changeGroup" type="xs:string" maxOccurs="1" />
     </xs:attributeGroup>    
 
     <xs:complexType name="pointsType">
