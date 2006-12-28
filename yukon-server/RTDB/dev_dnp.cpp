@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/12/11 16:39:54 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/12/28 21:01:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,7 @@
 #include "cparms.h"
 
 using namespace std;
+
 namespace Cti       {
 namespace Device    {
 
@@ -495,11 +496,6 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
         OutMessage->TargetID = getID();
         EstablishOutMessagePriority(OutMessage, pReq->getMessagePriority());
 
-        if( getPortID() == gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0) )
-        {
-            OutMessage->MessageFlags |= MessageFlag_RouteToPorterDNPUDPThread;
-        }
-
         sendCommRequest(OutMessage, outList);
 
         nRet = NoError;
@@ -665,11 +661,25 @@ int DNP::sendCommResult(INMESS *InMessage)
         strings.pop_back();
     }
 
-    //  ... as does this
+    int length_remaining = sizeof(InMessage->Buffer.InMessage) - 1;
     for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
     {
+        if( (*itr)->size() >= length_remaining )
+        {
+            string cropped("\n---cropped---");
+
+            //  erase the end chunk so we can append the "cropped" string in
+            result_string.erase(sizeof(InMessage->Buffer.InMessage) - cropped.size() - 1, result_string.size());
+            result_string += cropped;
+
+            //  breaking out of the loop, we've plugged all we can in there
+            break;
+        }
+
         result_string += *(*itr);
         result_string += "\n";
+
+        length_remaining -= (*itr)->size() + 1;
     }
 
     while( !_string_results.empty() )
@@ -677,24 +687,6 @@ int DNP::sendCommResult(INMESS *InMessage)
         delete _string_results.back();
 
         _string_results.pop_back();
-    }
-
-    if( result_string.size() >= sizeof(InMessage->Buffer.InMessage) )
-    {
-        //  make sure we complain about it so we know the magnitude of the problem when people bring it up...
-        //    one possible alternative is to send multple InMessages across with the string data - although,
-        //    considering that the largest message I saw was on the order of 60k, sending 15 InMessages is not very appealing
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        string cropped("\n---cropped---");
-
-        //  erase the end chunk so we can append the "cropped" string in
-        result_string.erase(sizeof(InMessage->Buffer.InMessage) - cropped.size() - 1, result_string.size());
-        result_string += cropped;
     }
 
     InMessage->InLength = result_string.size() + 1;
@@ -810,7 +802,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - demand accumulator calculation data for device \"" << getName() << "\", pointid " << point->getPointID() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "current.point_value  = " << current.point_value << endl;
                             dout << "current.point_time   = " << current.point_time << endl;
                             dout << "previous.point_value = " << previous.point_value << endl;
@@ -936,7 +928,7 @@ INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             InMessage->InLength = sizeof(InMessage->Buffer.InMessage);
