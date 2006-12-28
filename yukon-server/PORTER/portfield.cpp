@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.199 $
-* DATE         :  $Date: 2006/11/16 16:59:21 $
+* REVISION     :  $Revision: 1.200 $
+* DATE         :  $Date: 2006/12/28 20:55:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,7 +90,6 @@
 #include "tcpsup.h"
 #include "perform.h"
 #include "tapterm.h"
-#include "porttcp.h"
 
 #include "portglob.h"
 #include "prot_sa3rdparty.h"
@@ -116,6 +115,7 @@
 #include "rtdb.h"
 
 #include "port_base.h"
+#include "port_udp.h"
 #include "prot_711.h"
 #include "prot_emetcon.h"
 #include "statistics.h"
@@ -207,6 +207,8 @@ VOID PortThread(void *pid)
 
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
 
+    Cti::Porter::UDP_Port *udp_port = 0;
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
@@ -218,15 +220,16 @@ VOID PortThread(void *pid)
     // Let the threads get up and running....
     WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
 
-    if( portid == gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0) )
+    if( Port && Port->getIPAddress() == "udp" )
     {
-        while( !PorterQuit )
-        {
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L) )
-            {
-                PorterQuit = TRUE;
-            }
-        }
+        //  Seems like the namespace should flow like Cti::Porter::Port::UDP or something...
+        //
+        //  pass in the portid so it knows which queue from which to read
+        udp_port = CTIDBG_new Porter::UDP_Port(portid, Port->getIPPort());
+
+        udp_port->run();
+
+        //  udp_port->run() will only return on PorterQuit == TRUE
     }
 
     /* and wait for something to come in */
