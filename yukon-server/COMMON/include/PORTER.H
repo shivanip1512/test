@@ -15,34 +15,6 @@ class ROUTE;
 #include "devicetypes.h"
 #include "queues.h"
 
-/* stack sizes for various threads */
-#define PORT_THREAD_STK_SIZE 32768
-#define PIPE_THREAD_STK_SIZE 32768
-#define ROUTER_THREAD_STK_SIZE 32768
-#define REASSURE_THREAD_STK_SIZE 8192
-#define QUEUE_THREAD_STK_SIZE 32768
-#define RESPONSE_THREAD_STK_SIZE 32768
-#define KICKER_THREAD_STK_SIZE 32768
-#define TIMESYNC_THREAD_STK_SIZE 16384
-#define FILLER_THREAD_STK_SIZE 16384
-#define VCONFIG_THREAD_STK_SIZE 16384
-#define PERF_THREAD_STK_SIZE 16384
-#define PERF_UPDATE_THREAD_STK_SIZE 16384
-#define PORT_TCPSERVER_THREAD_STK_SIZE 32768
-
-#define EXT_PORT_COUNT_MAX  50
-
-/* Definitions for minimum and maximum tcpip transaction threads */
-#define MINTRANSACTIONTHREADS 10
-#define MAXTRANSACTIONTHREADS 1024
-
-/* Port and Remote Btrieve create structures */
-#define PORTNUMKEYS 3
-#define REMOTENUMKEYS 6
-
-#define SANITY_RATE              300    //Number from van goh that slows down reporting rate for threads, note this can be tweaked or used differently
-#define SANITY_RATE_MED_SLEEPERS  75    //for medium rate sleepers!
-#define SANITY_RATE_LONG_SLEEPERS 10    //this is for objects that can sleep for a very long time
 /* Data structures used to access Btrieve records */
 struct PORT
 {
@@ -80,22 +52,6 @@ struct REMOTEPERF
     USHORT Remote;
     USHORT Error;
 };
-
-
-/* Definitions used inside porter for flags in PortFlags */
-#define REMOTEPORT          0X0001
-
-/* Define the range of the ports (for now) */
-#define PORTDIRECTMIN       0
-#define PORTDIRECTMAX       99
-#define PORTTCPMIN          0
-#define PORTTCPMAX          99
-#define PORTMODEMPOOLMIN    100
-#define PORTMODEMPOOLMAX    109
-#define PORTTCPMODEMPOOLMIN 110
-#define PORTTCPMODEMPOOLMAX 119
-#define PORTTCPSERVERMIN    PORTMAX
-#define PORTTCPSERVERMAX    PORTMAX
 
 
 /* IDLC command definitions */
@@ -321,95 +277,5 @@ struct  CCUINFO
 };
 
 typedef CCUINFO *PCCUINFO;
-
-struct PORTSTATS
-{
-        STATS Stats;
-};
-
-typedef PORTSTATS *PPORTSTATS;
-
-struct REMSHAREDSTRUCT
-{
-        ULONG WaitSem;
-        OUTMESS *OutMessage;
-        CtiConnect *MyNexusHandle;
-};
-
-#ifdef OLD_CODE
-
-INT AnalogLoop (OUTMESS *, CtiPort *, CtiDeviceBase *);
-
-/* Prototypes for PTPRINT.C */
-INT TraceIn (PBYTE, USHORT, USHORT, USHORT, USHORT);
-INT TraceOut (PBYTE, USHORT, USHORT, USHORT);
-INT TPrint (PBYTE, USHORT);
-INT BinPrint (BYTE);
-
-/* Prototypes from VERSACOM.C */
-INT VersacomSend (OUTMESS *);
-INT setNibble (PBYTE, INT, INT);
-INT VersaCommSend (OUTMESS *);
-
-/* Prototypes from PUPDATE.C */
-IM_EX_CTIBASE INT InitPorterDB (VOID);
-IM_EX_CTIBASE INT InitPortDB(VOID);
-IM_EX_CTIBASE INT CreatePortDB (PCHAR);
-IM_EX_CTIBASE INT InitRemoteDB(VOID);
-IM_EX_CTIBASE INT CreateRemoteDB (PCHAR);
-IM_EX_CTIBASE INT ClosePorterDB (VOID);
-IM_EX_CTIBASE INT ClosePortDB(VOID);
-IM_EX_CTIBASE INT CloseRemoteDB(VOID);
-
-//IM_EX_CTIBASE INT PortAdd (CtiPort *);
-//IM_EX_CTIBASE INT PortUpdate (CtiPort *);
-//IM_EX_CTIBASE INT PortFastUpdate (CtiPort *);
-//IM_EX_CTIBASE INT PortDelete (CtiPort *);
-//IM_EX_CTIBASE INT PortGetEqual (CtiPort *);
-//IM_EX_CTIBASE INT PortLock (CtiPort *);
-//IM_EX_CTIBASE INT PortUnLock (CtiPort *);
-//IM_EX_CTIBASE INT PortGetFirst (CtiPort *);
-//IM_EX_CTIBASE INT PortGetNext (CtiPort *);
-//IM_EX_CTIBASE INT PortGetGT (CtiPort *);
-//IM_EX_CTIBASE INT PortGetPrev (CtiPort *);
-
-//IM_EX_CTIBASE INT RemoteAdd (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteUpdate (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteFastUpdate (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteDelete (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetEqual (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteLock (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteUnLock (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetPortRemoteEqual (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetFirst (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetNext (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetPrev (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetPortFirst (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetPortGT (CtiDeviceBase *);
-//IM_EX_CTIBASE INT RemoteGetGT (CtiDeviceBase *);
-
-IM_EX_CTIBASE INT PortRecords (PULONG);
-IM_EX_CTIBASE INT RemoteRecords (PULONG);
-IM_EX_CTIBASE INT PortClearAll (VOID);
-IM_EX_CTIBASE INT PortClearEqual (CtiPort *);
-IM_EX_CTIBASE INT RemoteClearAll (VOID);
-IM_EX_CTIBASE INT RemoteClearEqual (CtiDeviceBase *);
-IM_EX_CTIBASE INT OpenPortDB(PCHAR, PBYTE);
-IM_EX_CTIBASE INT OpenRemoteDB (PCHAR, PBYTE);
-IM_EX_CTIBASE INT FO_CopyPortDB (PCHAR, PCHAR);
-IM_EX_CTIBASE INT FO_CopyRemoteDB (PCHAR, PCHAR);
-IM_EX_CTIBASE INT FO_IntegrityCheckRemoteRecs (PCHAR SrcPathName, PCHAR DestPathName,
-                                 PULONG RecCnt);
-IM_EX_CTIBASE INT FO_IntegrityReportRemoteRecs (PCHAR SrcPathName, PCHAR DestPathName,
-                                 PULONG RecCnt);
-IM_EX_CTIBASE INT FO_CompareRemoteSourceToTarGet (CtiDeviceBase *SrcRecord, CtiDeviceBase *TarGet);
-IM_EX_CTIBASE INT Check4PortDBChange (ULONG, PCHAR);
-IM_EX_CTIBASE INT Check4RemoteDBChange (ULONG, PCHAR);
-IM_EX_CTIBASE INT BDB_CopyPortDB (PCHAR, PCHAR);
-IM_EX_CTIBASE INT BDB_CopyRemoteDB (PCHAR, PCHAR);
-
-extern HANDLE hStdOut;
-
-#endif  // OLD_CODE
 
 #endif
