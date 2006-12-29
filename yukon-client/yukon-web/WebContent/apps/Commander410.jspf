@@ -158,14 +158,6 @@ function setCommand(cmd)
           <td> 
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td align="right" class="TableCell"> 
-                  <input type="checkbox" name="updateDB" checked onMouseOver="window.status='Read Energy (from the meter)';return true;"
-                onMouseOut="window.status='';return true;">
-                  Update Database</td>
-              </tr>
-            </table>
-            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-              <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Energy</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
