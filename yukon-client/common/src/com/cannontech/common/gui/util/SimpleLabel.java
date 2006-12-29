@@ -10,7 +10,7 @@ public class SimpleLabel extends javax.swing.JComponent {
 	private java.awt.Color background;
 	private java.awt.Color foreground;
 	private java.awt.FontMetrics fontMetrics;
-	private java.awt.Dimension size;
+	public java.awt.Dimension size;
 	private java.awt.Font fonts;
 /**
  * SimpleLabel constructor comment.
@@ -62,5 +62,13 @@ public void setText(java.lang.String newText) {
 	size.width = fontMetrics.stringWidth(text);
 	size.height = fontMetrics.getHeight();
 	setPreferredSize(size);
+}
+
+public void setBackground(java.awt.Color c) {
+    this.background = c;
+}
+
+public void setForeground(java.awt.Color c) {
+    this.foreground = c;
 }
 }

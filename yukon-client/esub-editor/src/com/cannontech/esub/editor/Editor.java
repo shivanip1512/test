@@ -11,6 +11,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -31,25 +32,34 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
+import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.Drawing;
+import com.cannontech.esub.editor.element.ElementEditorFactory;
+import com.cannontech.esub.editor.element.LineElementEditor;
+import com.cannontech.esub.editor.element.LineElementEditorPanel;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.roles.application.EsubEditorRole;
+import com.loox.jloox.LxAbstractLine;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxLine;
 import com.loox.jloox.LxMouseAdapter;
 import com.loox.jloox.LxMouseEvent;
 import com.loox.jloox.LxMouseListener;
+import com.loox.jloox.LxMouseMotionListener;
 import com.loox.jloox.LxView;
 
 /**
@@ -61,7 +71,7 @@ public class Editor extends JPanel {
 	
 	private static final String APPLICATION_NAME = "Esubstation Editor";
 	private static final Dimension defaultSize = new Dimension(800, 600);
-
+    final PropertyPanel lineEditor;
 	// the drawing to edit
 	// Synchronize on the drawing to stop any updates
 	// from happening 
@@ -81,7 +91,9 @@ public class Editor extends JPanel {
 
 	// All the actions for this editor
 	EditorActions editorActions;
-	
+	boolean placingLine = false;
+    boolean drawingLine = false;
+    
 	// Handles clicks on the LxView	
 	private final MouseListener viewMouseListener = new MouseAdapter() {
 		public void mousePressed(MouseEvent evt) {
@@ -90,9 +102,26 @@ public class Editor extends JPanel {
 				elementPlacer.setXPosition(evt.getX());
 				elementPlacer.setYPosition(evt.getY());
 				configureObject(elementPlacer);
-			}
+			}else if( placingLine == true) {
+                
+                elementPlacer.setXPosition(evt.getX());
+                elementPlacer.setYPosition(evt.getY());
+                configureLine(elementPlacer);
+                
+            }
 		}
-	};
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if(drawingLine == true){
+                
+                drawingLine = false;
+                elementPlacer.setXPosition(e.getX());
+                elementPlacer.setYPosition(e.getY());
+                drawingLine(elementPlacer);
+            }
+        }
+    };
 	
 	// Handles double clicks on an LxElement in the LxView
 	private final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
@@ -102,8 +131,19 @@ public class Editor extends JPanel {
 			}
 		}		
 	};
-	
-	/* Get a notification when something is selected */
+    
+    private final MouseMotionListener mouseMotionListener = new MouseMotionListener()
+    {
+        public void mouseDragged(MouseEvent evt) {
+            if(drawingLine) {
+                LineElement elem =  (LineElement) elementPlacer.getElement();
+                elem.setPoint2(evt.getX(), evt.getY());
+            }
+        }
+        public void mouseMoved(MouseEvent evt) {}
+    };
+
+    /* Get a notification when something is selected */
 	private final ItemListener itemListener = new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			synchActionsWithSelection();
@@ -115,8 +155,10 @@ public class Editor extends JPanel {
 	 */
 	public Editor() {
 		super();
+        lineEditor = ElementEditorFactory.getInstance().createEditorPanel(LineElement.class);
 		initEditor(this);
 	}
+    
 	/**
 	 * When an element is ready to be placed this
 	 * method will actually put it onto the drawing
@@ -131,29 +173,92 @@ public class Editor extends JPanel {
 				
 				synchronized(getDrawing()) {
 
-				try {
-					LxComponent elem = placer.getElement();
-					elem.setCenter(
-						placer.getXPosition(),
-						placer.getYPosition());
-
-					if (elem instanceof DrawingElement) {
-						((DrawingElement) elem).setDrawing(getDrawing());
-					}
-					getDrawing().getLxGraph().add(elem);
-	
-					editElement(elem);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally { //make to always get back into not placing mode
-					elementPlacer.setIsPlacing(false);
-					getDrawing().getLxView().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-				
+    				try {
+    					LxComponent elem = placer.getElement();
+    					elem.setCenter(
+    						placer.getXPosition(),
+    						placer.getYPosition());
+    
+    					if (elem instanceof DrawingElement) {
+    						((DrawingElement) elem).setDrawing(getDrawing());
+    					}
+    					getDrawing().getLxGraph().add(elem);
+    	
+    					editElement(elem);
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    				} finally { //make to always get back into not placing mode
+    					elementPlacer.setIsPlacing(false);
+    					getDrawing().getLxView().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    				}
 				}
 			}
 		});
 	}
+    
+    void configureLine(final ElementPlacer placer) {
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                
+                synchronized(getDrawing()) {
+
+                    try {
+                        LineElement elem = (LineElement) placer.getElement();
+                        elem.setPoint1(
+                            placer.getXPosition(),
+                            placer.getYPosition());
+                        
+                        elem.setPoint2(
+                            placer.getXPosition(),
+                            placer.getYPosition());
+    
+                        ((DrawingElement) elem).setDrawing(getDrawing());
+                        
+                        getDrawing().getLxGraph().add(elem);
+        
+                        placingLine = false;
+                        drawingLine = true;
+                        getDrawing().getLxView().addMouseMotionListener(mouseMotionListener);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } 
+                }
+            }
+        });
+    }
+    
+    void drawingLine(final ElementPlacer placer) {
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                
+                synchronized(getDrawing()) {
+
+                    try {
+                        LineElement elem = (LineElement) placer.getElement();
+                        elem.setPoint2(
+                            placer.getXPosition(),
+                            placer.getYPosition());
+        
+                        placingLine = false;
+                        drawingLine = false;
+                        getDrawing().getLxView().removeMouseMotionListener(mouseMotionListener);
+                        elem.setSelected(true);
+                        getDrawing().getLxView().lassoSetDisplayed(true);
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally { //make to always get back into not placing mode
+                        elementPlacer.setIsPlacing(false);
+                        getDrawing().getLxView().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+            }
+        });
+    }
 	
 	/**
 	 * Creation date: (12/18/2001 2:53:17 PM)
@@ -164,48 +269,54 @@ public class Editor extends JPanel {
 		//no more updates for a bit
 		stopUpdating();
 		
-		
-		if (propertyDialog == null)
-			propertyDialog =
-				new JDialog(
-					com.cannontech.common.util.CtiUtilities.getParentFrame(
-						getDrawing().getLxView()),
-					true);
-		
-		final com.cannontech.common.editor.PropertyPanel editor =
-			com
-				.cannontech
-				.esub
-				.editor
-				.element
-				.ElementEditorFactory
-				.getInstance()
-				.createEditorPanel(elem.getClass());
-
-		if( editor != null ) {
-			editor.addPropertyPanelListener(new PropertyPanelListener() {
-				public void selectionPerformed(PropertyPanelEvent e) {
-					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
-						
-					} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
-						editor.getValue(elem);						
-					}
-					propertyDialog.setVisible(false);								
-				}
-			});
-			
-			getDrawing().getLxGraph().startUndoEdit("edit object");
-			editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
-			editor.setValue(elem);
-			propertyDialog.setContentPane(editor);		
-			propertyDialog.pack();
-			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
-			propertyDialog.setVisible(true);
-			getDrawing().getLxGraph().cancelUndoEdit();
-			
-			// start the updates again
-			startUpdating();
-			
+        if (propertyDialog == null){
+			propertyDialog = new JDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), true);
+        }
+        if (elem instanceof LineElement) {
+            if( lineEditor != null ) {
+                
+                
+                getDrawing().getLxGraph().startUndoEdit("edit object");
+                lineEditor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
+                lineEditor.setValue(elem);
+                propertyDialog.setContentPane(lineEditor);      
+                propertyDialog.pack();
+                propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
+                propertyDialog.setVisible(true);
+    
+                getDrawing().getLxGraph().cancelUndoEdit();
+                
+                // start the updates again
+                startUpdating();
+            }
+        }else {
+            final PropertyPanel editor = ElementEditorFactory.getInstance().createEditorPanel(elem.getClass());
+            
+    		if( editor != null ) {
+    			editor.addPropertyPanelListener(new PropertyPanelListener() {
+    				public void selectionPerformed(PropertyPanelEvent e) {
+    					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
+    						
+    					} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
+    						editor.getValue(elem);						
+    					}
+    					propertyDialog.setVisible(false);								
+    				}
+    			});
+    			
+    			getDrawing().getLxGraph().startUndoEdit("edit object");
+    			editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
+    			editor.setValue(elem);
+                propertyDialog.setContentPane(editor);		
+    			propertyDialog.pack();
+    			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
+    			propertyDialog.setVisible(true);
+    
+    			getDrawing().getLxGraph().cancelUndoEdit();
+    			
+    			// start the updates again
+    			startUpdating();
+            }
 		}
 	}
 
@@ -266,8 +377,8 @@ public class Editor extends JPanel {
 		p.add(scrollPane, java.awt.BorderLayout.CENTER);
 		p.add(menuBar, java.awt.BorderLayout.NORTH);
 		p.add(toolBar, java.awt.BorderLayout.WEST);
-		lxView.addMouseListener(viewMouseListener);				
-		lxView.addMouseListener(new MouseAdapter() { 
+		lxView.addMouseListener(viewMouseListener);
+        lxView.addMouseListener(new MouseAdapter() { 
 			public void mousePressed(MouseEvent e) {
 				maybeShowPopup(e);
 			}
@@ -281,7 +392,18 @@ public class Editor extends JPanel {
 				}
 			}
 		});
-		
+        
+        lineEditor.addPropertyPanelListener(new PropertyPanelListener() {
+            public void selectionPerformed(PropertyPanelEvent e) {
+                if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
+                    
+                } else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
+                    ((LineElementEditor)lineEditor).selectionPerformed();
+                }
+                propertyDialog.setVisible(false);                               
+            }
+        });
+        
 		updateSize();
 		
 		synchActionsWithSelection();
@@ -310,20 +432,14 @@ public class Editor extends JPanel {
 				loadDrawing(newDrawing);
 
 				try {
-					EditorPrefs.getPreferences().setWorkingDir(
-						fileChooser
-							.getSelectedFile()
-							.getParentFile()
-							.getCanonicalPath());
+					EditorPrefs.getPreferences().setWorkingDir(fileChooser.getSelectedFile().getParentFile().getCanonicalPath());
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
 
 				//HACKHACK
 				currentDir = EditorPrefs.getPreferences().getWorkingDir();
-				com.cannontech.common.gui.image.ImageChooser.getInstance().setCurrentDirectory(
-					new File(currentDir));
-
+				ImageChooser.getInstance().setCurrentDirectory(new File(currentDir));
 			}
 		}
 	}
@@ -394,11 +510,7 @@ public class Editor extends JPanel {
 			}
 		});
 		
-		SplashWindow splash = new SplashWindow(
-			frame,
-			CtiUtilities.CTISMALL_GIF,
-			"Loading " + CtiUtilities.getApplicationName() + "...",
-			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+		SplashWindow splash = new SplashWindow(frame, CtiUtilities.CTISMALL_GIF,"Loading " + CtiUtilities.getApplicationName() + "...",	new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 	
 		frame.setSize(defaultSize);
 		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
@@ -424,16 +536,15 @@ public class Editor extends JPanel {
 		editor.setFrameTitle("Untitled");
 		frame.pack();
 		frame.setVisible(true);
-
 		
 		//get this stuff loaded into the cache asap
 		DefaultDatabaseCache.getInstance().getAllDevices();
 		DefaultDatabaseCache.getInstance().getAllStateGroupMap();
 	}
+    
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
 	 */
-
 	void saveAsDrawing() {
 
 		JFileChooser fileChooser =
@@ -465,8 +576,7 @@ public class Editor extends JPanel {
 
 			//HACKHACK
 			currentDir = EditorPrefs.getPreferences().getWorkingDir();
-			com.cannontech.common.gui.image.ImageChooser.getInstance().setCurrentDirectory(
-				new File(currentDir));
+			ImageChooser.getInstance().setCurrentDirectory(new File(currentDir));
 				
 			int currentWidth = getDrawing().getMetaElement().getDrawingWidth();
 			int currentHeight = getDrawing().getMetaElement().getDrawingHeight();
@@ -527,9 +637,10 @@ public class Editor extends JPanel {
 			elem.addMouseListener(editElementMouseListener);
 		}
 		
-		if( elem instanceof DynamicGraphElement ||
-			elem instanceof CurrentAlarmsTable) {
-			elem.removeDefaultDoubleClickBehavior();
+		if( elem instanceof com.cannontech.esub.element.DynamicGraphElement 
+            || elem instanceof com.cannontech.esub.element.CurrentAlarmsTable
+            || elem instanceof com.cannontech.esub.element.LineElement) {
+            elem.removeDefaultDoubleClickBehavior();
 			elem.removeMouseListener(editElementMouseListener);	
 			elem.addMouseListener(editElementMouseListener);	
 		}
@@ -561,7 +672,6 @@ public class Editor extends JPanel {
 			piFrame.setTitle(title + " - Esubstation Editor");
 			return;
 		}
-
 	}
 	
 	/**
@@ -667,8 +777,6 @@ public class Editor extends JPanel {
 		editorActions.getAction(EditorActions.DELETE_ELEMENT).setEnabled(anySelected);	
 		editorActions.getAction(EditorActions.TO_FRONT_LAYER).setEnabled(anySelected);
 		editorActions.getAction(EditorActions.TO_BACK_LAYER).setEnabled(anySelected);
-		
-
 		editorActions.getAction(EditorActions.UNDO_OPERATION).setEnabled(getUndoManager().canUndo());
 		editorActions.getAction(EditorActions.REDO_OPERATION).setEnabled(getUndoManager().canRedo());				
 	}

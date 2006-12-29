@@ -10,6 +10,7 @@ import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.esub.element.LineElement;
 
 /**
  * Creation date: (12/18/2001 12:53:50 PM)
@@ -25,7 +26,8 @@ public class ElementEditorFactory {
 		{ DrawingMetaElement.class, DrawingMetaElementEditor.class },
 		{ CurrentAlarmsTable.class, CurrentAlarmsTableEditor.class },
 		{ AlarmTextElement.class, AlarmTextElementEditor.class },
-        { FunctionElement.class, FunctionElementEditor.class }
+        { FunctionElement.class, FunctionElementEditor.class },
+        { LineElement.class, LineElementEditor.class }
 	};
 		
 	private static ElementEditorFactory instance = null;

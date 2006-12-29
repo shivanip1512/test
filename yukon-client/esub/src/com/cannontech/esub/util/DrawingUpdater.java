@@ -7,18 +7,18 @@ import java.util.TimerTask;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.PointService;
-import com.cannontech.core.service.impl.PointServiceImpl;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.Drawing;
+import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
+import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.message.dispatch.message.PointData;
@@ -84,6 +84,62 @@ public class DrawingUpdater extends TimerTask {
 									dt.setText(text);
 								}
 							}
+                            
+                            int colorPoint = dt.getColorPointID();
+                            int textPoint = -1;
+                            if( (dt.getDisplayAttribs() & PointAttributes.STATE_TEXT) != 0 ) {
+                                textPoint = dt.getPointID();
+                            }
+                            if (colorPoint > 0) {
+                                LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+
+                                if (liteColorPoint != null) {
+                                    if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT) {
+                                        LiteState ls = pointService.getCurrentState(liteColorPoint.getPointID());
+                                        if (ls != null) {
+                                            dt.setCurrentColorState(ls);
+                                            dt.updateColor();
+                                            change = true;
+                                        }
+                                    } else {
+                                        PointData pData = dynamicDataSource.getPointData(liteColorPoint.getLiteID());
+
+                                        if (pData != null) {
+                                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
+                                            if (ls != null) {
+                                                dt.setCurrentColorState(ls);
+                                                dt.updateColor();
+                                                change = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (textPoint > 0) {
+                                LitePoint liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
+
+                                if (liteTextPoint != null) {
+                                    if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT) {
+                                        LiteState ls = pointService.getCurrentState(liteTextPoint.getPointID());
+                                        if (ls != null) {
+                                            dt.setCurrentTextState(ls);
+                                            dt.updateText();
+                                            change = true;
+                                        }
+                                    } else {
+                                        PointData pData = dynamicDataSource.getPointData(liteTextPoint.getLiteID());
+
+                                        if (pData != null) {
+                                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteTextPoint.getStateGroupID(), (int) pData.getValue());
+                                            if (ls != null) {
+                                                dt.setCurrentTextState(ls);
+                                                dt.updateText();
+                                                change = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 						}
 
 						if (comp[i] instanceof StateImage) 
@@ -179,6 +235,113 @@ public class DrawingUpdater extends TimerTask {
 							}
 							change = true;
 						}
+                        if(comp[i] instanceof LineElement) {
+                            LineElement le = (LineElement) comp[i];                           
+                            int colorPoint = le.getColorPointID();
+                            int thicknessPoint = le.getThicknessPointID();
+                            int arrowPoint = le.getArrowPointID();
+                            int opacityPoint = le.getOpacityPointID();
+                            if (colorPoint > 0) {
+                                LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+
+                                if (liteColorPoint != null) {
+                                    if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT) {
+                                        LiteState ls = pointService.getCurrentState(liteColorPoint.getPointID());
+                                        if (ls != null) {
+                                            le.setCurrentColorState(ls);
+                                            le.updateColor();
+                                            change = true;
+                                        }
+                                    } else {
+                                        PointData pData = dynamicDataSource.getPointData(liteColorPoint.getLiteID());
+
+                                        if (pData != null) {
+                                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
+                                            if (ls != null) {
+                                                le.setCurrentColorState(ls);
+                                                le.updateColor();
+                                                change = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (thicknessPoint > 0) {
+                                LitePoint liteThicknessPoint = DaoFactory.getPointDao().getLitePoint(thicknessPoint);
+
+                                if (liteThicknessPoint != null) {
+                                    if (liteThicknessPoint.getPointType() == PointTypes.ANALOG_POINT) {
+                                        LiteState ls = pointService.getCurrentState(liteThicknessPoint.getPointID());
+                                        if (ls != null) {
+                                            le.setCurrentThicknessState(ls);
+                                            le.updateThickness();
+                                            change = true;
+                                        }
+                                    } else {
+                                        PointData pData = dynamicDataSource.getPointData(liteThicknessPoint.getLiteID());
+
+                                        if (pData != null) {
+                                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteThicknessPoint.getStateGroupID(), (int) pData.getValue());
+                                            if (ls != null) {
+                                                le.setCurrentThicknessState(ls);
+                                                le.updateThickness();
+                                                change = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (arrowPoint > 0) {
+                                LitePoint liteArrowPoint = DaoFactory.getPointDao().getLitePoint(arrowPoint);
+
+                                if (liteArrowPoint != null) {
+                                    if (liteArrowPoint.getPointType() == PointTypes.ANALOG_POINT) {
+                                        LiteState ls = pointService.getCurrentState(liteArrowPoint.getPointID());
+                                        if (ls != null) {
+                                            le.setCurrentArrowState(ls);
+                                            le.updateArrow();
+                                            change = true;
+                                        }
+                                    } else {
+                                        PointData pData = dynamicDataSource.getPointData(liteArrowPoint.getLiteID());
+
+                                        if (pData != null) {
+                                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteArrowPoint.getStateGroupID(), (int) pData.getValue());
+                                            if (ls != null) {
+                                                le.setCurrentArrowState(ls);
+                                                le.updateArrow();
+                                                change = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (opacityPoint > 0) {
+                                LitePoint liteOpacityPoint = DaoFactory.getPointDao().getLitePoint(opacityPoint);
+
+                                if (liteOpacityPoint != null) {
+                                    if (liteOpacityPoint.getPointType() == PointTypes.ANALOG_POINT) {
+                                        LiteState ls = pointService.getCurrentState(liteOpacityPoint.getPointID());
+                                        if (ls != null) {
+                                            le.setCurrentOpacityState(ls);
+                                            le.updateOpacity();
+                                            change = true;
+                                        }
+                                    } else {
+                                        PointData pData = dynamicDataSource.getPointData(liteOpacityPoint.getLiteID());
+
+                                        if (pData != null) {
+                                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteOpacityPoint.getStateGroupID(), (int) pData.getValue());
+                                            if (ls != null) {
+                                                le.setCurrentOpacityState(ls);
+                                                le.updateOpacity();
+                                                change = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 					}
 
 					//Only force an update if there is a view present
@@ -187,6 +350,7 @@ public class DrawingUpdater extends TimerTask {
 					if (change && view != null) {
 						view.repaint();
 					}
+                    
 				}
 drawing.getLxGraph().cancelUndoEdit();
 			} catch (Throwable t) {

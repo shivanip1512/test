@@ -105,9 +105,9 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("DynamicTextEditor");
-		setPreferredSize(new java.awt.Dimension(405, 650));
+		setPreferredSize(new java.awt.Dimension(525, 300));
 		setLayout(new java.awt.GridBagLayout());
-		setSize(400, 650);
+		setSize(520, 400);
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}

@@ -22,14 +22,17 @@ import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.FunctionElement;
+import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxAbstractAction;
+import com.loox.jloox.LxAbstractLine;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxLine;
 import com.loox.jloox.LxView;
 
 class EditorActions {
@@ -50,7 +53,8 @@ class EditorActions {
 	public static final String CREATE_IMAGE = "CREATE IMAGE";
 	public static final String CREATE_TEXT = "CREATE TEXT";
 
-	public static final String STATIC_IMAGE = "STATIC IMAGE";
+	public static final String LINE_ELEMENT= "LINE ELEMENT";
+    public static final String STATIC_IMAGE = "STATIC IMAGE";
 	public static final String DYNAMIC_TEXT = "DYNAMIC TEXT";
 	public static final String STATE_IMAGE = "STATE IMAGE";
 	public static final String STATIC_TEXT = "STATIC TEXT";
@@ -652,6 +656,32 @@ class EditorActions {
 	};
 
 	// ELEMENT ACTIONS
+    
+    private final LxAbstractAction lineElementAction =
+        new LxAbstractAction(
+            LINE_ELEMENT,
+            "Line Element",
+            "Line Element",
+            "LineIcon.gif",
+            true) {
+
+        public void processAction(java.awt.event.ActionEvent e) {
+            
+            com.cannontech.esub.element.LineElement elem = new LineElement();
+//            editor.getDrawing().getLxView().createInteractively(LineElement.class);
+//            editor.getDrawing().getLxView().stopInteractiveCreation();
+            elem.setDrawing(editor.getDrawing());
+
+            editor.setBehavior(elem);
+            editor.elementPlacer.setIsPlacing(false);
+            editor.elementPlacer.setElement(elem);
+            
+            editor.placingLine = true;
+            editor.drawingLine = false;
+            editor.getDrawing().getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+            editor.getDrawing().getLxView().lassoSetDisplayed(false);
+        }
+    };
 
 	private final LxAbstractAction staticImageAction =
 		new LxAbstractAction(
@@ -909,7 +939,8 @@ class EditorActions {
 
 		actionMap.put(EDIT_ELEMENT, editElementAction);
 
-		actionMap.put(STATIC_IMAGE, staticImageAction);
+		actionMap.put(LINE_ELEMENT, lineElementAction);
+        actionMap.put(STATIC_IMAGE, staticImageAction);
 		actionMap.put(DYNAMIC_TEXT, dynamicTextAction);
 		actionMap.put(STATE_IMAGE, stateImageAction);
 		actionMap.put(STATIC_TEXT, staticTextAction);
@@ -923,23 +954,23 @@ class EditorActions {
 		
 		LxView v = e.getDrawing().getLxView();
 
-		LxAbstractAction action =
-			(LxAbstractAction) v.getAction(LxView.CREATE_LINE_ACTION);
-		action.setIcon(new ImageIcon(Util.findImage("LineIcon.gif")));
-
-		actionMap.put(CREATE_LINE, action);
-
-		//		action = (LxAbstractAction) v.getAction(LxView.CREATE_LINK_ACTION);
-		//		action.setIcon(
-		//		actionMap.put(CREATE_LINK, action);
-
-		action = (LxAbstractAction) v.getAction(LxView.CREATE_RECTANGLE_ACTION);
+        LxAbstractAction action = (LxAbstractAction) v.getAction(LxView.CREATE_RECTANGLE_ACTION);
 		action.setIcon(new ImageIcon(Util.findImage("SquareIcon.gif")));
 		actionMap.put(CREATE_RECTANGLE, action);
-		//		actionMap.put(CREATE_IMAGE, v.getAction(LxView.CREATE_IMAGE_ACTION));
-
+		
 		actionMap.put(CREATE_TEXT, v.getAction(LxView.CREATE_TEXT_ACTION));
 		actionMap.put("ZOOM", v.getAction(LxView.ZOOM_IN_400_ACTION));
+        
+//        action = (LxAbstractAction) v.getAction(LxView.CREATE_LINE_ACTION);
+//        action.setIcon(new ImageIcon(Util.findImage("LineIcon.gif")));
+//        actionMap.put(CREATE_LINE, action);
+        
+//      action = (LxAbstractAction) v.getAction(LxView.CREATE_LINK_ACTION);
+//      action.setIcon(
+//      actionMap.put(CREATE_LINK, action);
+        
+//      actionMap.put(CREATE_IMAGE, v.getAction(LxView.CREATE_IMAGE_ACTION));
+        
 	}
 	LxAbstractAction getAction(String actionName) {
 		return (LxAbstractAction) actionMap.get(actionName);

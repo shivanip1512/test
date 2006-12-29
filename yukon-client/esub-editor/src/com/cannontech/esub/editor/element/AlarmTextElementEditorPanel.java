@@ -695,7 +695,7 @@ private void initialize() {
 		setName("AlarmTextElementEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(467, 611);
-
+        
 		java.awt.GridBagConstraints constraintsLinkToPanel = new java.awt.GridBagConstraints();
         constraintsLinkToPanel.gridwidth = 2;
 		constraintsLinkToPanel.gridx = 0; constraintsLinkToPanel.gridy = 0;

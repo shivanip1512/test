@@ -37,7 +37,8 @@ public void addToToolBar(LxAbstractAction action, JToolBar toolBar) {
 				
 		toolBar = new javax.swing.JToolBar(JToolBar.VERTICAL);
 
-		addToToolBar( actions.getAction(EditorActions.CREATE_LINE ), toolBar);
+		addToToolBar( actions.getAction(EditorActions.LINE_ELEMENT ), toolBar);
+//        addToToolBar( actions.getAction(EditorActions.CREATE_LINE ), toolBar);
 		addToToolBar( actions.getAction(EditorActions.CREATE_RECTANGLE), toolBar);
 		addToToolBar( actions.getAction(EditorActions.STATIC_IMAGE), toolBar);
 		addToToolBar( actions.getAction(EditorActions.STATIC_TEXT), toolBar);

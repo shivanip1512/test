@@ -9,6 +9,7 @@ var stateImageID = 'stateImage';
 var dynamicGraphID = 'dynamicGraph';
 var alarmsTableID = 'alarmsTable';
 var alarmTextID = 'alarmText';
+var lineElementID = 'lineElement';
 
 /* refresh rates of various elements in milliseconds */
 var graphRefreshRate = 360 * 1000;
@@ -20,6 +21,8 @@ var allDynamicTextElem = new Array();
 var allAlarmTextElem = new Array();
 var allStateImageElem = new Array();
 var allDynamicGraphElem = new Array();
+var allLineElem = new Array();
+var allBlinkers = new Array();
 
 /* Onload, store all the things that we might be displaying alarms for */
 var allAlarmDeviceIds = "";
@@ -36,6 +39,15 @@ function refresh(evt) {
 	
 	/* Find all the dynamic elements and store them so 
 	   we don't have to look them up again. */
+    dynLines = SVGDoc.getElementsByTagName('path');
+    for(var k=0; k<dynLines.getLength(); k++)
+    {
+        var elemID = dynLines.item(k).getAttribute('elementID');
+        if(elemID == lineElementID) {
+            allLineElem.push(dynLines.item(k));
+        }
+    }    
+        
 	dynText = SVGDoc.getElementsByTagName('text');
 	for (var i=0; i<dynText.getLength(); i++) 
 	{		
@@ -96,6 +108,9 @@ function updateAllPoints() {
 	for(i = 0; i < allStateImageElem.length; i++) {
 		updateImage(allStateImageElem[i]);
 	}
+    for(i = 0; i < allLineElem.length; i++){
+        updateLine(allLineElem[i]);
+    }  
 } //end updatePoints
 
 function updateAllGraphs() {
@@ -204,10 +219,22 @@ function updateAlarmsTable(node,url) {
 } // end updateAlarmsTable
 
 function updateNode(node) {
-	if (node.getAttribute('dattrib')) {
+	var colorPointID = node.getAttribute('colorid');
+	var currentStatePointID = node.getAttribute('currentstateid');
+	if(colorPointID > 0){
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
+        getURL(url, cfn);
+    }
+    
+    if(currentStatePointID > 0){
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
+        getURL(url, tfn);
+    }else { 
+    	if (node.getAttribute('dattrib')) {
 	    
-		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
-		getURL(url, fn);
+			url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
+			getURL(url, fn);
+		}
 	}
 
 	function fn(obj) {
@@ -215,6 +242,26 @@ function updateNode(node) {
 			node.getFirstChild().setData(obj.content);
 		}	
 	}
+	
+	function cfn(obj) {
+        if(obj.content) {
+            var value = obj.content;
+            var color = node.getAttribute('color'+trim(value));
+            var color_array = color.split(",");
+            var red = color_array[0];
+            var green = color_array[1];
+            var blue = color_array[2];
+            node.getStyle().setProperty('fill', 'rgb('+red+','+green+','+blue+')');
+        }
+    }
+	
+	function tfn(obj) {
+    	if(obj.content) {
+    		var value = obj.content;
+    		var text = node.getAttribute('string'+trim(value));
+    		node.getFirstChild().setData(text);
+    	}
+    }
 } //end updateNode
 
 /* update a single state image */
@@ -234,6 +281,62 @@ function updateImage(node) {
 			node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
 		}
 	}
+} //end updateImage
+
+/* update a single line element */
+function updateLine(node) {
+    var colorPointID = node.getAttribute('colorid');
+    var thicknessPointID = node.getAttribute('thicknessid');
+    var arrowPointID = node.getAttribute('arrowid');
+    var opacityPointID = node.getAttribute('opacityid');
+    if(colorPointID > 0){
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
+        getURL(url, cfn);
+    }
+    if(thicknessPointID > 0){
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + thicknessPointID + '&dattrib=4096';
+        getURL(url, tfn);
+    }
+    if(arrowPointID > 0){
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + arrowPointID + '&dattrib=4096';
+        getURL(url, afn);
+    }
+    if(opacityPointID > 0){
+	    url = '/servlet/DynamicTextServlet' + '?' + 'id=' + opacityPointID + '&dattrib=4096';
+	    getURL(url, ofn);
+    }
+    function cfn(obj) {
+        if(obj.content) {
+            var value = obj.content;
+            var color = node.getAttribute('color'+trim(value));
+            var color_array = color.split(",");
+            var red = color_array[0];
+            var green = color_array[1];
+            var blue = color_array[2];
+            node.getStyle().setProperty('stroke', 'rgb('+red+','+green+','+blue+')');
+        }
+    }
+    function tfn(obj) {
+        if(obj.content){
+            var value = obj.content;
+            var width = node.getAttribute('width'+trim(value));
+            node.getStyle().setProperty('stroke-width', width);
+        }
+    }
+    function afn(obj) {
+        if(obj.content){
+            var value = obj.content;
+            var arrow = node.getAttribute('d'+trim(value));
+            node.setAttributeNS(null, "d", arrow);
+        }
+    }
+    function ofn(obj) {
+        if(obj.content){
+            var value = obj.content;
+            var opacity = node.getAttribute('opacity'+trim(value));
+            node.getStyle().setProperty('opacity',opacity);
+        }
+    }
 } //end updateImage
 
 /* update a single alarm text element */

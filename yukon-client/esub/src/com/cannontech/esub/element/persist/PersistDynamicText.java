@@ -46,6 +46,16 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setLinkTo(LxSaveUtils.readString(in));   
                     elem.setControlEnabled(LxSaveUtils.readBoolean(in));
                 }
+                
+                case 3: {
+                    elem.setPointID(LxSaveUtils.readInt(in));
+                    elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
+                    elem.setLinkTo(LxSaveUtils.readString(in));   
+                    elem.setControlEnabled(LxSaveUtils.readBoolean(in));
+                    elem.setColorPointID(LxSaveUtils.readInt(in));
+                    elem.setCustomColorMap(PersistUtils.readIntColorMap(in));
+                    elem.setCustomTextMap(PersistUtils.readIntStringMap(in));
+                }
                 break;
 				
 				default: {
@@ -64,6 +74,9 @@ public class PersistDynamicText extends BasePersistElement {
   			LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
    			LxSaveUtils.writeString(out, elem.getLinkTo());
             LxSaveUtils.writeBoolean(out, elem.getControlEnabled());
+            LxSaveUtils.writeInt(out, elem.getColorPointID());
+            PersistUtils.writeIntColorMap(out, elem.getCustomColorMap());
+            PersistUtils.writeIntStringMap(out, elem.getCustomTextMap());
 	}
 
 }

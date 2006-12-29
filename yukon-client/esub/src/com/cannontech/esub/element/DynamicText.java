@@ -6,10 +6,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.element.persist.PersistDynamicText;
@@ -26,19 +32,27 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private static final String ELEMENT_ID = "dynamicText";
 	public static final int INVALID_POINT = -1;	
 	
-	private static final int CURRENT_VERSION = 2;
+	private static final int CURRENT_VERSION = 3;
 	
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	
 	private com.cannontech.database.data.lite.LitePoint point;	
 	private int displayAttribs = 0x00;
-	
+    private Color color = DEFAULT_COLOR;
+    private String text = "";
 	private transient Drawing drawing = null;
 	private String linkTo = null;
 	private Properties props = new Properties();
 	private int version = CURRENT_VERSION;
-    private boolean controlEnabled = true;
+    private boolean controlEnabled = false;
+    private int colorPointID = -1;
+    private int controlPointID = -1;
+    private Map customColorMap = new HashMap(13);
+    private Map customTextMap = new HashMap(13);
+    private LiteState currentColorState;
+    private LiteState currentTextState;
+    private HashMap oldColorMap = new HashMap(11);
 	
 /**
  * DynamicText constructor comment.
@@ -92,6 +106,37 @@ public DynamicText(String arg1) {
 	initialize();
 }
 
+public Map getCustomColorMap() {
+    return customColorMap;
+}
+
+public void setCustomColorMap(Map m) {
+    customColorMap = m;
+}
+
+public Map getCustomTextMap() {
+    return customTextMap;
+}
+
+public void setCustomTextMap(Map m) {
+    customTextMap = m;
+}
+
+public int getColorPointID(){
+    return colorPointID;
+}
+
+public void setColorPointID(int pointID) {
+    colorPointID = pointID;
+}
+
+public int getControlPointID(){
+    return controlPointID;
+}
+
+public void setControlPointID(int pointID) {
+    controlPointID = pointID;
+}
 public boolean getControlEnabled()
 {
     return controlEnabled;
@@ -119,11 +164,23 @@ public int getPointID() {
 /**
  * Creation date: (12/18/2001 4:58:59 PM)
  */
+@SuppressWarnings("unchecked")
 private void initialize() {
 	
 	setFont(DEFAULT_FONT);
 	setPaint(DEFAULT_COLOR);
 	point = new com.cannontech.database.data.lite.LitePoint(INVALID_POINT);
+    oldColorMap.put(0, java.awt.Color.green);
+    oldColorMap.put(1, java.awt.Color.red);
+    oldColorMap.put(2, java.awt.Color.white);
+    oldColorMap.put(3, java.awt.Color.yellow);
+    oldColorMap.put(4, java.awt.Color.blue);
+    oldColorMap.put(5, java.awt.Color.cyan);
+    oldColorMap.put(6, java.awt.Color.black);
+    oldColorMap.put(7, java.awt.Color.orange);
+    oldColorMap.put(8, java.awt.Color.magenta);
+    oldColorMap.put(9, java.awt.Color.gray);
+    oldColorMap.put(10, java.awt.Color.pink);
 }
 
 /**
@@ -190,6 +247,22 @@ public void setPointID(int newPointID)  {
 	public void setDisplayAttribs(int displayAttribs) {
 		this.displayAttribs = displayAttribs;
 	}
+    
+    /**
+     * Sets the currentState.
+     * @param currentState The currentState to set
+     */
+    public void setCurrentColorState(LiteState currentState) {
+        this.currentColorState = currentState;
+    }
+    
+    /**
+     * Sets the currentState.
+     * @param currentState The currentState to set
+     */
+    public void setCurrentTextState(LiteState currentState) {
+        this.currentTextState = currentState;
+    }
 
 	/**
 	 * Returns the editable.
@@ -203,6 +276,114 @@ public void setPointID(int newPointID)  {
 				displayAttribs == PointAttributes.MULTIPLIER ||
 				displayAttribs == PointAttributes.DATA_OFFSET );		
 	}
+    
+    @SuppressWarnings("unchecked")
+    public List getColors() {
+        List textColors = new ArrayList(6);
+        LitePoint point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
+        if(point == null) {
+            textColors.add(getPaint());
+            return textColors;
+        }
+        
+        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+        List states = lsg.getStatesList();
+        for(int i = 0; i < states.size(); i++) {
+            Color colorObj = (Color) customColorMap.get(new Integer(i));
+            Color color; 
+            if(colorObj != null) {
+                color = colorObj;
+            } 
+            else {
+                color = (Color) oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+            }
+            textColors.add(color);
+        }
+        return textColors;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List getTextStrings() {
+        List textStrings = new ArrayList(6);
+        LitePoint point = DaoFactory.getPointDao().getLitePoint(getControlPointID());
+        if(point == null) {
+            textStrings.add(getText());
+            return textStrings;
+        }
+        
+        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+        List states = lsg.getStatesList();
+        for(int i = 0; i < states.size(); i++) {
+            String textObj = (String) customTextMap.get(new Integer(i));
+            String text;
+            if(textObj != null) {
+                text = textObj;
+            } 
+            else {
+                text = ((LiteState) states.get(i)).getStateText();
+            }
+            textStrings.add(text);
+        }
+        return textStrings;
+    }
+    
+    /**
+     * Returns the currentState.
+     * @return LiteState
+     */
+    public LiteState getCurrentColorState() {
+        return currentColorState;
+    }
+    
+    /**
+     * Returns the currentState.
+     * @return LiteState
+     */
+    public LiteState getCurrentTextState() {
+        return currentTextState;
+    }
+    
+    /**
+     * Updates the elements actual color with the current state
+     * This should only be called if the LineElement is being point driven
+     */
+    public void updateColor() {
+        LiteState state = getCurrentColorState();
+        if(state != null) {
+            color = com.cannontech.common.gui.util.Colors.getColor(state.getFgColor());
+            Color customColor = (java.awt.Color) customColorMap.get(new Integer(state.getStateRawState()));
+            if(customColor != null) {
+                color = customColor;
+            }
+            
+        }
+        
+        setPaint(color);
+        setColor(color);
+        setLineColor(color);
+    }
+    
+    /**
+     * Updates the elements actual color with the current state
+     * This should only be called if the LineElement is being point driven
+     */
+    public void updateText() {
+        LiteState state = getCurrentTextState();
+        if(state != null) {
+            text = state.getStateText();
+            String customString = (String) customTextMap.get(new Integer(state.getStateRawState()));
+            if(customString != null) {
+                text = customString;
+            }
+            
+        }
+        
+        setText(text);
+    }
+    
+    public void setColor(Color c) {
+        color = c;
+    }
 
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getElementProperties()

@@ -27,12 +27,14 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.Drawing;
+import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.FunctionElement;
+import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -166,8 +168,8 @@ public class SVGGenerator {
 			
 			Element elem = null;
 						
-			if( comp instanceof LxLine ) {
-				elem = createLine(doc, (LxLine) comp);
+			if( comp instanceof LineElement ) {
+				elem = createLine(doc, (LineElement) comp);
 			}
 			else			
 			if( comp instanceof LxRectangle ) {
@@ -279,7 +281,28 @@ public class SVGGenerator {
 		
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
-		
+        
+		if(text.getColorPointID() > 0) {
+            
+            List colors = text.getColors();
+            for(int i = 0; i < colors.size(); i++) {
+                
+                String colorString = ((Color)colors.get(i)).getRed() +"," + ((Color)colors.get(i)).getGreen() + "," + ((Color)colors.get(i)).getBlue();
+                textElem.setAttributeNS(null, "color" + i, colorString);
+            }
+        }
+        
+        if( (text.getDisplayAttribs() & PointAttributes.STATE_TEXT) != 0 ) {
+            
+            List strings = text.getTextStrings();
+            for(int i = 0; i < strings.size(); i++) {
+                
+                String textString = (String)strings.get(i);
+                textElem.setAttributeNS(null, "string" + i, textString);
+            }
+        }
+        textElem.setAttributeNS(null, "colorid", Integer.toString(text.getColorPointID()));
+        textElem.setAttributeNS(null, "currentstateid", Integer.toString(text.getPointID()));
 		return textElem;					
 	}
 
@@ -313,7 +336,7 @@ public class SVGGenerator {
 	 * @param line
 	 * @throws IOException
 	 */
-	private  Element createLine(SVGDocument doc, LxLine line)  {		
+	private  Element createLine(SVGDocument doc, LineElement line)  {		
 		Color c = line.getStyle().getLineColor();
 		Shape[] s = line.getShape();
 		float opacity = line.getStyle().getTransparency();
@@ -325,8 +348,54 @@ public class SVGGenerator {
 		lineElem.setAttributeNS(null, "id", line.getName());
 		lineElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
 		lineElem.setAttributeNS(null, "d", pathStr);
-
-		return lineElem;		
+        
+        if(line.getColorPointID() > 0) {
+            
+            List colors = line.getColors();
+            for(int i = 0; i < colors.size(); i++) {
+                
+                String colorString = ((Color)colors.get(i)).getRed() +"," + ((Color)colors.get(i)).getGreen() + "," + ((Color)colors.get(i)).getBlue();
+                lineElem.setAttributeNS(null, "color" + i, colorString);
+            }
+        }
+        
+        if(line.getThicknessPointID() > 0) {
+            
+            List widths = line.getWidths();
+            for(int i = 0; i < widths.size(); i++) {
+                
+                String widthString = ((Float)widths.get(i)).toString();
+                lineElem.setAttributeNS(null, "width" + i, widthString);
+            }
+        }
+        
+        if(line.getArrowPointID() > 0) {
+            
+            List arrows = line.getArrows();
+            for(int i = 0; i < arrows.size(); i++) {
+                
+                String arrowString = (String)arrows.get(i);
+                lineElem.setAttributeNS(null, "d" + i, arrowString);
+            }
+        }
+        
+        if(line.getOpacityPointID() > 0) {
+            
+            List opacities = line.getOpacities();
+            for(int i = 0; i < opacities.size(); i++) {
+                
+                String opacityString = ((Float)opacities.get(i)).toString();
+                lineElem.setAttributeNS(null, "opacity" + i, opacityString);
+            }
+        }
+        
+        String lineColorString = ((Color)line.getPaint()).getRed() + "," + ((Color)line.getPaint()).getGreen() +"," + ((Color)line.getPaint()).getBlue();
+        lineElem.setAttributeNS(null,"lineColor", lineColorString);
+        lineElem.setAttributeNS(null, "colorid", Integer.toString(line.getColorPointID()));
+        lineElem.setAttributeNS(null, "thicknessid", Integer.toString(line.getThicknessPointID()));
+        lineElem.setAttributeNS(null, "arrowid", Integer.toString(line.getArrowPointID()));
+        lineElem.setAttributeNS(null, "opacityid", Integer.toString(line.getOpacityPointID()));
+        return lineElem;		
 	}
 		
 	private Element createDynamicGraph(SVGDocument doc, DynamicGraphElement graph) {
@@ -584,7 +653,7 @@ public class SVGGenerator {
 	 * @param cy
 	 * @return String
 	 */
-	private String getPathString(Shape[] s, double cx, double cy) {
+	public static String getPathString(Shape[] s, double cx, double cy) {
 		String pathStr = "";
 				
 		//array to store segment info

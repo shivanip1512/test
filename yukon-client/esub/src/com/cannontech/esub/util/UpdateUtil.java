@@ -29,6 +29,52 @@ import com.cannontech.spring.YukonSpringHook;
 public class UpdateUtil {
 
 	private static final String UNKNOWN_CHAR = "?";
+    
+    public static String getLineElementString(int pointID) {
+        String text = "";
+        try {
+            DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");        
+            
+            boolean prev = false;
+            
+            LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
+            
+            if(lp.getPointType() == PointTypes.STATUS_POINT)
+            {
+                PointData pData = dynamicDataSource.getPointData(pointID);
+        
+                if (pData != null) {
+                    LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                    if( ls != null ) {          
+                        text += ls.getStateRawState();
+                        prev = true;
+                    }
+                }
+            }else
+            {
+                PointService pointService = (PointService) YukonSpringHook.getBean("pointService");
+                LiteState ls = pointService.getCurrentState(lp.getPointID());
+                if( ls != null ) {          
+                    text += ls.getStateRawState();
+                    prev = true;
+                }
+            }
+            
+            if( !prev )
+                text = "?";
+            
+            if(text.length() == 1) { //workaround for bugin adobe svg geturl function!
+                text = " " + text;
+            }   
+        } 
+        catch(NotFoundException nfe) {
+            text = nfe.getMessage();
+        }
+        catch(DynamicDataAccessException ddae) {
+            text = ddae.getMessage();
+        }
+        return text;
+    }
 	
 	public static String getDynamicTextString(int pointID, int displayAttrib) {
         String text = "";

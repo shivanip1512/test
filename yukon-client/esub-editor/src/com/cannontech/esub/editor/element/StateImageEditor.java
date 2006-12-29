@@ -104,7 +104,7 @@ private void handleException(java.lang.Throwable exception) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		setName("DynamicTextEditor");
+		setName("StateImageEditor");
 		setLayout(new java.awt.GridBagLayout());
         
 		setPreferredSize(new java.awt.Dimension(540, 630));
