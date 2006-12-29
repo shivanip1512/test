@@ -35,6 +35,21 @@ public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
 	}
 
 	/**
+	 * @param outUsername
+	 * @param outPassword
+	 */
+	public YukonMultispeakMsgHeader(String outUsername, String outPassword) {
+		super();
+		setVersion("3.0");	//The Multispeak version?
+		setUserID(outUsername);
+		setPwd(outPassword);
+		setAppName("Yukon");
+		setAppVersion(VersionTools.getYUKON_VERSION());
+		setCompany("Cannon");
+		setCSUnits(MessageHeaderCSUnits.feet);
+	}
+
+	/**
 	 * @param version
 	 * @param userID
 	 * @param pwd

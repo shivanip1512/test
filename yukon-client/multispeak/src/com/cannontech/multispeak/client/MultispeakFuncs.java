@@ -114,7 +114,7 @@ public class MultispeakFuncs
 	}
     
     public static SOAPHeaderElement getHeader(MultispeakVendor mspVendor) {
-        return new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+        return new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword()));
     }
     
 	public static void loadResponseHeader() 

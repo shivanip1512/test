@@ -565,7 +565,7 @@ public class Multispeak implements MessageListener {
 			
 			OA_ODSoap_PortType port = service.getOA_ODSoap();
 			
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(vendor.getOutUserName(), vendor.getOutPassword()));
 			((OA_ODSoap_BindingStub)port).setHeader(header);
 			((OA_ODSoap_BindingStub)port).setTimeout(10000);	//should respond within 10 seconds, right?
 	
@@ -608,7 +608,7 @@ public class Multispeak implements MessageListener {
             
             CB_MRSoap_PortType port = service.getCB_MRSoap();
             
-            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(vendor.getOutUserName(), vendor.getOutPassword()));
             ((CB_MRSoap_BindingStub)port).setHeader(header);
             ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
     
@@ -651,7 +651,7 @@ public class Multispeak implements MessageListener {
             
             CB_CDSoap_PortType port = service.getCB_CDSoap();
             
-            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(vendor.getOutUserName(), vendor.getOutPassword()));
             ((CB_CDSoap_BindingStub)port).setHeader(header);
             ((CB_CDSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
 

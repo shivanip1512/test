@@ -205,10 +205,10 @@ public class MultispeakServlet extends HttpServlet
             mspBean.setSelectedVendorID(1);   //set to default
         }        
         else if( action.equalsIgnoreCase("pingURL")) {
-            pingURL(session, mspService, serviceURL);
+            pingURL(session, mspVendor, mspService, serviceURL);
         }        
 		else if( action.equalsIgnoreCase("getMethods")) {
-            getMethods(session, mspService, serviceURL);
+            getMethods(session, mspVendor, mspService, serviceURL);
 		}
 		return redirect;
 	}
@@ -291,12 +291,13 @@ public class MultispeakServlet extends HttpServlet
     /**
      * Implements the pingURL webservice
      * @param session The request session. 
+     * @param mspVendor The multispeak vendor to invoke. 
      * @param mspService The multispeak webservice to invoke.
      * @param serviceURL The url for the mspService
      */
-    private void pingURL(HttpSession session, String mspService, String serviceURL){
+    private void pingURL(HttpSession session, MultispeakVendor mspVendor, String mspService, String serviceURL){
         try {
-            ArrayOfErrorObject objects = pingURL(serviceURL, mspService);
+            ArrayOfErrorObject objects = pingURL(mspVendor, serviceURL, mspService);
             if( objects != null && objects.getErrorObject() != null  && objects.getErrorObject().length > 0){
                 String result = "";
                 for (int i = 0; i < objects.getErrorObject().length; i++) {
@@ -318,12 +319,13 @@ public class MultispeakServlet extends HttpServlet
     /**
      * Implements the getMethod webservice
      * @param session The request session. 
+     * @param mspVendor The multispeak vendor to invoke. 
      * @param mspService The multispeak webservice to invoke.
      * @param serviceURL The url for the mspService
      */
-    private void getMethods(HttpSession session, String mspService, String serviceURL){
+    private void getMethods(HttpSession session, MultispeakVendor mspVendor, String mspService, String serviceURL){
         try {
-            ArrayOfString objects = getMethods(serviceURL, mspService);
+            ArrayOfString objects = getMethods(mspVendor, serviceURL, mspService);
             if( objects != null && objects.getString() != null)
             {
                 String resultStr = mspService + " available methods:\n";
@@ -351,14 +353,15 @@ public class MultispeakServlet extends HttpServlet
     /**
      * Utility to implement the pingURL method for the service.
      * @param serviceURL The url of for the webservice to be called.
+     * @param mspVendor The multispeak vendor to invoke. 
      * @param service The string representation of the webservice to run. 
      * @return Returns an ArrayOfErrorObjects
      * @throws RemoteException
      */
-    public static ArrayOfErrorObject pingURL(String serviceURL, String service) throws RemoteException
+    public static ArrayOfErrorObject pingURL(MultispeakVendor mspVendor, String serviceURL, String service) throws RemoteException
     {
         ArrayOfErrorObject objects = new ArrayOfErrorObject();
-        MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader();
+        MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword());
         SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msHeader);
         URL instanceURL = null;
         try {
@@ -422,15 +425,16 @@ public class MultispeakServlet extends HttpServlet
     
     /**
      * Utility to implement the getMethods method for the service.
+     * @param mspVendor The multispeak vendor to invoke. 
      * @param serviceURL The url of for the webservice to be called.
      * @param service The string representation of the webservice to run. 
      * @return Returns an ArrayOfErrorObjects
      * @throws RemoteException
      */
-    public static ArrayOfString getMethods(String serviceURL, String service) throws RemoteException
+    public static ArrayOfString getMethods(MultispeakVendor mspVendor, String serviceURL, String service) throws RemoteException
     {
         ArrayOfString objects = new ArrayOfString();
-        MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader();
+        MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword());
         SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msHeader);
         URL instanceURL = null;
         try {
