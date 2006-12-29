@@ -77,7 +77,7 @@ function vendorChanged(vendor)
       <c:forEach var="mspVendorEntry" items="${multispeakBean.mspVendorList}">
         <option <c:if test="${mspVendorEntry.vendorID == multispeakBean.selectedVendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
       </c:forEach>
-      </SELECT>         
+      </SELECT>
     </td>
   </tr>
   <tr>
@@ -116,6 +116,17 @@ function vendorChanged(vendor)
         <option value="deviceName" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'deviceName'}">selected</c:if>>deviceName</option>
       </SELECT>                     
     </td>
+    <c:if test="${param.vendor == null or param.vendor == 1}">
+    <td onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Primary CIS</td>
+    <td>
+      <select name="mspPrimaryCIS">
+        <option selected value='0'>(none)</option>
+      <c:forEach var="mspVendorEntry" items="${multispeakBean.mspVendorList}">
+        <option <c:if test="${mspVendorEntry.vendorID == multispeakBean.primaryCIS}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
+      </c:forEach>
+      </SELECT>
+    </td>
+  </c:if>
   </tr>
   <tr height="40" valign="bottom">
     <td colspan="2" style="text-align:right"><u>Interfaces</u>

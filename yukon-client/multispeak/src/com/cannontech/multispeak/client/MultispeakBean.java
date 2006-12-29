@@ -3,11 +3,14 @@ package com.cannontech.multispeak.client;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.yukon.MultispeakRole;
 
 public class MultispeakBean
 {
     private int selectedVendorID = 1;
+    private int primaryCIS = 0;
     private MultispeakVendor selectedMspVendor;
     private LiteYukonUser yukonUser;
     private List<MultispeakVendor> mspVendorList;
@@ -43,6 +46,14 @@ public class MultispeakBean
         if( this.selectedVendorID != selectedVendorID)
             selectedMspVendor = null;
         this.selectedVendorID = selectedVendorID;
+    }
+
+    /**
+     * @return Returns the primaryCIS vendorID.
+     */
+    public int getPrimaryCIS()
+    {
+        return Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue();
     }
 
     /**

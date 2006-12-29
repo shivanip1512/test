@@ -23,7 +23,12 @@ import org.apache.axis.message.SOAPHeaderElement;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.user.YukonGroup;
+import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.multispeak.client.MultispeakBean;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -48,6 +53,8 @@ import com.cannontech.multispeak.service.MultiSpeakMsgHeader;
 import com.cannontech.multispeak.service.OA_MRSoap_BindingStub;
 import com.cannontech.multispeak.service.OA_ODSoap_BindingStub;
 import com.cannontech.multispeak.service.OD_OASoap_BindingStub;
+import com.cannontech.roles.YukonGroupRoleDefs;
+import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -134,6 +141,9 @@ public class MultispeakServlet extends HttpServlet
 //        load action parameters from req
         String mspService = req.getParameter("actionService");
         String mspEndpoint = req.getParameter("actionEndpoint");
+        int mspPrimaryCIS = 0;
+        if (req.getParameter("mspPrimaryCIS") != null)
+        	mspPrimaryCIS = Integer.valueOf(req.getParameter("mspPrimaryCIS")).intValue();
         
         if( !mspURL.endsWith("/"))
             mspURL += "/";
@@ -163,6 +173,29 @@ public class MultispeakServlet extends HttpServlet
         
         if( action.equalsIgnoreCase("Save")) {
             MultispeakFuncs.getMultispeakDao().updateMultispeakVendor(mspVendor);
+            if ( mspPrimaryCIS != mspBean.getPrimaryCIS()){
+    			try
+    			{
+    				LiteYukonGroup yukGrp = DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
+    				YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
+    				//fill out the DB Persistent with data
+    				yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();
+
+    				for( int j = 0; j < yukGrpPersist.getYukonGroupRoles().size(); j++ ){
+    					YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
+    					if( MultispeakRole.MSP_PRIMARY_CB_VENDORID == grpRole.getRolePropertyID().intValue() ) {
+							grpRole.setValue(String.valueOf(mspPrimaryCIS));
+							//update any changed values in the DB
+							DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
+    						break;
+    					}
+    				}				
+    			}
+    			catch (Exception e)
+    			{
+    				CTILogger.error( "Unable to connect to DISPATCH.  MSPPrimaryCIS role not saved", e );					
+    			}
+            }
 		}
         else if( action.equalsIgnoreCase("Create")) {
             redirect = req.getContextPath() + "/msp_setup.jsp?vendor="+ createMultispeakInterface(session, mspVendor);

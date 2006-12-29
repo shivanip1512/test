@@ -100,16 +100,13 @@ function setCommand(cmd)
 {
     document.commandForm.command.value = cmd;
 }
-function setMspCommand(cmd)
-{
-    document.mspCommandForm.command.value = cmd;
-    document.mspCommandForm.submit();
-}
 </SCRIPT>
   <td width="657" valign="top" bgcolor="#FFFFFF"> 
     <div align="center"> 
       <% String header = "MCT 410 - CONTROL COMMANDS"; %>
       <table width="100%" border="0" cellspacing="0" cellpadding="1">
+        <tr>
+        <% if (Integer.valueOf(RoleFuncs.getGlobalPropertyValue(com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue() > 0) { %> 
         <form name="mspCommandForm" method="POST" action="<%= request.getContextPath() %>/servlet/MultispeakServlet">
           <input type="hidden" name="deviceID" value="<%=deviceID%>">
           <input type="hidden" name="ACTION" value="CB_MR">
@@ -117,7 +114,6 @@ function setMspCommand(cmd)
           <input type="hidden" name="timeOut" value="8000">
           <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
           <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">      
-        <tr>
           <td width="10%" class="SubTitleHeader">Customer:</td>
           <td width="20%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByMeterNo')" 
             onMouseOver="window.status='Read Customer data from CIS';return true;"
@@ -139,6 +135,8 @@ function setMspCommand(cmd)
               <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
           </td>
 --%>
+		</form>
+		<%}%>
         </tr>
         <tr>
           <td colspan="3" align="center" class="TitleHeader"><%= header %></td>
@@ -146,7 +144,6 @@ function setMspCommand(cmd)
         <tr>
           <td colspan="3" width="100%" class="SubtitleHeader" align="center"><%=liteYukonPao.getPaoName()%></td>
         </tr>
-                </form>
       </table>
       <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
       <% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>

@@ -45,18 +45,48 @@ else
         document.commandForm.command.value = document.commandForm.commonCommand.value;
     }
     </SCRIPT>
-
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center">
-              <% String header = "CONTROL COMMANDS"; %>
-              <br>
-            <table width="100%" border="0" cellspacing="0" cellpadding="3">
-              <tr>
-                <td align="center" class="TitleHeader"><%= header %></td>
-              </tr>
-            </table>
-
-            <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+<td width="657" valign="top" bgcolor="#FFFFFF"> 
+    <div align="center"> 
+      <% String header = "CONTROL COMMANDS"; %>
+      <table width="100%" border="0" cellspacing="0" cellpadding="1">
+        <tr>
+        <% if (Integer.valueOf(RoleFuncs.getGlobalPropertyValue(com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue() > 0) { %> 
+        <form name="mspCommandForm" method="POST" action="<%= request.getContextPath() %>/servlet/MultispeakServlet">
+          <input type="hidden" name="deviceID" value="<%=deviceID%>">
+          <input type="hidden" name="ACTION" value="CB_MR">
+          <input type="hidden" name="command" value="">
+          <input type="hidden" name="timeOut" value="8000">
+          <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
+          <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">      
+          <td width="10%" class="SubTitleHeader">Customer:</td>
+          <td width="20%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByMeterNo')" 
+            onMouseOver="window.status='Read Customer data from CIS';return true;"
+            onMouseOut="window.status='';return true;">Show Details</a>)
+          </td>
+          <td width="40%"/>
+<%--          <td width="16%" align="left" class="SubTitleHeader">Service Location:</td>
+          <td width="14%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByServiceLocation')" 
+            onMouseOver="window.status='Read Customer data from CIS';return true;"
+            onMouseOut="window.status='';return true;">Show Details</a>)
+          </td>          
+--%>
+        </form>        
+        <%}%>
+        </tr>
+        <tr>
+           <td colspan="3" class="NavText">
+              <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
+          </td>
+<%--           <td colspan="2" class="SubText" align="left">
+              <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
+          </td>
+--%>
+        </tr>
+        <tr>
+          <td colspan="3" align="center" class="TitleHeader"><%= header %></td>
+        </tr>
+      </table>
+      <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <table width="600" border="0" cellspacing="0" cellpadding="3" class="TableCell">
               <tr> 
                 <td class="SubtitleHeader" align="right">Name:</td>
