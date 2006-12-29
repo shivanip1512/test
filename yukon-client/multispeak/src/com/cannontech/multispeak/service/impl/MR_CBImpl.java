@@ -74,7 +74,8 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
                                          "initiateUsageMonitoring",
                                          "cancelUsageMonitoring",
                                          "initiateDisconnectedStatus",
-                                         "cancelDisconnectedStatus"};     
+                                         "cancelDisconnectedStatus",
+                                         "serviceLocationChangedNotification"};          
         return MultispeakFuncs.getMethods(MultispeakDefines.MR_CB_STR , methods);
     }
 
@@ -268,7 +269,9 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     public ArrayOfErrorObject serviceLocationChangedNotification(ArrayOfServiceLocation changedServiceLocations) throws java.rmi.RemoteException {
         init();
-        return null;
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = Multispeak.getInstance().updateServiceLocation(vendor, changedServiceLocations.getServiceLocation());
+        return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject meterChangedNotification(ArrayOfMeter changedMeters) throws java.rmi.RemoteException {
