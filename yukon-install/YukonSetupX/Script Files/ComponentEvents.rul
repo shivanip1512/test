@@ -76,7 +76,7 @@ end;
 export prototype Tomcat_Installing();
 function Tomcat_Installing()
 number nvSize, nvType, nvResult, foundVal, backupVer, stSize, verCon, dirSearch;
-string szKey, szName, keyValue, minVersion, szCmdLine, szPath, szServPath;
+string szKey, szSubKey, szName, keyValue, minVersion, szCmdLine, szPath, szServPath;
 STRING szTitle, szFormat, szString, szSrcFile, szTargetFile;
 number fileExists;
 
@@ -132,6 +132,9 @@ szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TARGETDIR + "\\Runtime" , -1 );
 //SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
 
+szSubKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+RegDBDeleteValue ( szSubKey , "JAVA_HOME" );
+
 end;
 ///////////////////////////////////////////////////////////////////////////////
 //  EVENT:      Installed event is sent just after files for the component: 
@@ -151,17 +154,17 @@ begin
 TomcatPath = TARGETDIR ^ "\\Server\\web";
 JavaPath = TARGETDIR ^ "\\Runtime";
 
-//make sure that Tomcat will be aware of any new environment variables
-szEnv = "Environment";
-pEnv = &szEnv;
-SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
-
 //set a system environment variable CATALINA_HOME for use by the Tomcat service
 szName = "CATALINA_HOME";         
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
 szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TomcatPath , -1 );
 //SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+
+//make sure that Tomcat will be aware of any new environment variables
+szEnv = "Environment";
+pEnv = &szEnv;
+SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 //unpack the war file
 foundVal = ChangeDirectory(TomcatPath + "\\webapps\\bin");
@@ -182,6 +185,7 @@ DeleteDir (TomcatPath + "\\webapps\\lib", ALLCONTENTS );
 foundVal = ChangeDirectory(TomcatPath + "\\webapps");
 GetSystemInfo ( DATE, foundVal, dateString );
 RenameFile(TomcatPath + "\\webapps\\ROOT", TomcatPath + "\\webapps\\ArchivedROOT" + dateString);
+DeleteDir (TomcatPath + "\\webapps\\ROOT", ALLCONTENTS );
 RenameFile(TomcatPath + "\\webapps\\bin", TomcatPath + "\\webapps\\ROOT"); 
 /*****/
 
