@@ -104,7 +104,7 @@ function disableAllButtons()
       <% String header = "MCT 410 - ADVANCED CONTROL COMMANDS"; %>
       <table width="100%" border="0" cellspacing="0" cellpadding="1">
         <tr>
-        <% if (Integer.valueOf(RoleFuncs.getGlobalPropertyValue(com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue() > 0) { %> 
+        <% if (Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue() > 0) { %> 
         <form name="mspCommandForm" method="POST" action="<%= request.getContextPath() %>/servlet/MultispeakServlet">
           <input type="hidden" name="deviceID" value="<%=deviceID%>">
           <input type="hidden" name="ACTION" value="CB_MR">
