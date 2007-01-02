@@ -111,16 +111,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		
 		Thread initThrd = new Thread(new Runnable() {
 			public void run() {
-				
-			    /////////////////////////////////
-                java.util.Date loadStart = null;
-                java.util.Date loadStop = null;
-
-                loadStart = new java.util.Date(); 
-                /////////////////////////////////
-                
-                for (int i = 0; i < companies.length; i++) 
-                {
+                for (int i = 0; i < companies.length; i++) {
 					if (!ECUtils.isDefaultEnergyCompany( companies[i] )) 
                     {
 						companies[i].loadAllInventory( true );
@@ -128,16 +119,6 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                         companies[i].loadAllWorkOrders( true );
                     }
                 }
-                
-                /////////////////////////////////////////////    
-                loadStop = new java.util.Date();
-
-                com.cannontech.clientutils.CTILogger.info( "$$$$$$$$$ CACHE IS NOW PRELOADED: " +
-                    (loadStop.getTime() - loadStart.getTime())*.001 + 
-                      " Secs for this to happen $$$$$$$$$$$$" );
-                
-                /////////////////////////////////////////////
-                
 			}
 		});
 		initThrd.start();
