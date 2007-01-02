@@ -161,12 +161,15 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         
         MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         
-        LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
-        ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNo);
-        device.populateWithPointData(lPao.getYukonID());
-                    
-        return device.getMeterRead();
-
+        //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
+        if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") ) {
+        	return Multispeak.getInstance().getLatestReadingInterrogate(vendor, meterNo);
+        } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!! 
+	        LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
+	        ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNo);
+	        device.populateWithPointData(lPao.getYukonID());
+	        return device.getMeterRead();
+        }
     }
 
     public ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {

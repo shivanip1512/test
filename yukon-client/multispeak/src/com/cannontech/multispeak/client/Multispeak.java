@@ -399,6 +399,59 @@ public class Multispeak implements MessageListener {
         return event.getLoadActionCode();
     }
     
+    /**
+     * This is a workaround method for SEDC.  This method is used to perform an actual meter interrogation and then return
+     * the collected reading if message recieved within 2 minutes.
+     * @param mspVendor
+     * @param meterNumber
+     * @return
+     * @throws RemoteException
+     */
+    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, String meterNumber) throws RemoteException
+    {
+        LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNumber);
+    	long id = generateMessageID();      
+        MeterReadEvent event = new MeterReadEvent(mspVendor, id);
+                
+        if (lPao != null)
+        {
+            ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNumber);
+            event.setDevice(device);
+            getEventsMap().put(new Long(id), event);
+            String command = "getvalue kwh update";
+            if( DeviceTypesFuncs.isMCT4XX(lPao.getType()) )
+                command = "getvalue peak update";
+            
+            Request pilRequest = null;
+            CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
+
+//          getvalue peak returns the peak kW and the total kWh
+            pilRequest = new Request(lPao.getYukonID(), command, id);
+            pilRequest.setPriority(15);
+            getPilConn().write(pilRequest);
+
+            synchronized (event)
+            {
+                long millisTimeOut = 0; //
+                while (!event.getDevice().isPopulated() && millisTimeOut < 120000)  //quit after 2 minutes
+                {
+                    try
+                    {
+                        Thread.sleep(1000);
+                        millisTimeOut += 1000;
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
+                    logMSPActivity("GetLatestReading", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
+                }
+            }
+      }
+        return event.getDevice().getMeterRead();
+    }
+    
 	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
 	 * @param meterNumbers
