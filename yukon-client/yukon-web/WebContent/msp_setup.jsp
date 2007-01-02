@@ -117,12 +117,25 @@ function vendorChanged(vendor)
       </SELECT>                     
     </td>
     <c:if test="${param.vendor == null or param.vendor == 1}">
-    <td onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Primary CIS</td>
+    <td onMouseOver="dispStatusMsg('Select the Primary CIS vendor');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Primary CIS</td>
     <td>
       <select name="mspPrimaryCIS">
         <option selected value='0'>(none)</option>
       <c:forEach var="mspVendorEntry" items="${multispeakBean.mspVendorList}">
         <option <c:if test="${mspVendorEntry.vendorID == multispeakBean.primaryCIS}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
+      </c:forEach>
+      </SELECT>
+    </td>
+  </c:if>
+  </tr>
+  <tr>
+    <td colspan="3">&nbsp;</td>
+    <c:if test="${param.vendor == null or param.vendor == 1}">
+    <td onMouseOver="dispStatusMsg('Select the DeviceName Alias field');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">DeviceName Alias</td>
+    <td>
+      <select name="mspPaoNameAlias">
+      <c:forEach var="mspPaoNameAliasEntry" items="${multispeakBean.selectedMspVendor.paoNameAliasStrings}" varStatus="status">
+        <option <c:if test="${status.index == multispeakBean.paoNameAlias}">selected</c:if> value='<c:out value="${status.index}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
       </c:forEach>
       </SELECT>
     </td>

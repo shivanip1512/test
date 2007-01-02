@@ -10,7 +10,6 @@ import com.cannontech.roles.yukon.MultispeakRole;
 public class MultispeakBean
 {
     private int selectedVendorID = 1;
-    private int primaryCIS = 0;
     private MultispeakVendor selectedMspVendor;
     private LiteYukonUser yukonUser;
     private List<MultispeakVendor> mspVendorList;
@@ -54,6 +53,14 @@ public class MultispeakBean
     public int getPrimaryCIS()
     {
         return Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue();
+    }
+
+    /**
+     * @return Returns the PaoName Alias enum.
+     */
+    public int getPaoNameAlias()
+    {
+        return Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS)).intValue();
     }
 
     /**
