@@ -20,12 +20,10 @@ import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -49,8 +47,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     // Map<DeviceDisplayGroup, List<DeviceDefinition>
     private Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = null;
 
-    // Map<ChangeGroup, Set<DeviceType>
-    private Map<String, Set<Integer>> changeGroupDeviceTypesMap = null;
+    // Map<ChangeGroup, Set<DeviceDefinition>
+    private Map<String, Set<DeviceDefinition>> changeGroupDevicesMap = null;
 
     public void setInputFile(InputStream inputFile) {
         this.inputFile = inputFile;
@@ -95,56 +93,42 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     }
 
     public Set<PointTemplate> getAllPointTemplates(DeviceBase device) {
-
         Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
-        if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
-            return this.deviceAllPointTemplateMap.get(deviceType);
-        } else {
-            throw new IllegalArgumentException("Device type '" + device.getPAOType()
-                    + "' is not supported.");
-        }
+        return this.getAllPointTemplates(deviceType);
+    }
+
+    public Set<PointTemplate> getAllPointTemplates(DeviceDefinition deviceDefinition) {
+        return this.getAllPointTemplates(deviceDefinition.getType());
     }
 
     public Set<PointTemplate> getInitPointTemplates(DeviceBase device) {
-
-        Set<PointTemplate> templateSet = new HashSet<PointTemplate>();
-
         Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
-        if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
-            Set<PointTemplate> allTemplateSet = this.deviceAllPointTemplateMap.get(deviceType);
-            for (PointTemplate template : allTemplateSet) {
-                if (template.isShouldInitialize()) {
-                    templateSet.add(template);
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("Device type '" + device.getPAOType()
-                    + "' is not supported.");
-        }
+        return this.getInitPointTemplates(deviceType);
+    }
 
-        return templateSet;
+    public Set<PointTemplate> getInitPointTemplates(DeviceDefinition deviceDefinition) {
+        return this.getInitPointTemplates(deviceDefinition.getType());
     }
 
     public Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap() {
         return this.deviceDisplayGroupMap;
     }
 
-    public Set<Integer> getDeviceTypesForChangeGroup(String changeGroup) {
+    public Set<DeviceDefinition> getDevicesForChangeGroup(String changeGroup) {
 
-        if (this.changeGroupDeviceTypesMap.containsKey(changeGroup)) {
-            return this.changeGroupDeviceTypesMap.get(changeGroup);
+        if (this.changeGroupDevicesMap.containsKey(changeGroup)) {
+            return this.changeGroupDevicesMap.get(changeGroup);
         } else {
             throw new IllegalArgumentException("No device types found for change group: "
                     + changeGroup);
         }
     }
 
-    public boolean isDeviceTypeChangeable(DeviceBase device) {
+    public DeviceDefinition getDeviceDefinition(DeviceBase device) {
 
         Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
         if (this.deviceTypeMap.containsKey(deviceType)) {
-            DeviceDefinition deviceDefinition = this.deviceTypeMap.get(deviceType);
-            return deviceDefinition.isChangeable();
+            return this.deviceTypeMap.get(deviceType);
         } else {
             throw new IllegalArgumentException("Device type '" + device.getPAOType()
                     + "' is not supported.");
@@ -162,7 +146,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceTypeMap = new HashMap<Integer, DeviceDefinition>();
         this.deviceAllPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
         this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
-        this.changeGroupDeviceTypesMap = new HashMap<String, Set<Integer>>();
+        this.changeGroupDevicesMap = new HashMap<String, Set<DeviceDefinition>>();
         this.deviceAttributePointTemplateMap = new HashMap<Integer, Map<Attribute, PointTemplate>>();
 
         InputStreamReader reader = null;
@@ -176,6 +160,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
             // Add each device in the xml into the device maps
             for (Device device : definition.getDevice()) {
+                this.validateDeviceConstant(device);
                 this.addDevice(device);
             }
         } finally {
@@ -189,12 +174,34 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    /**
-     * Helper method to add the device and it's point templates to the
-     * appropriate maps
-     * @param device - Device to add
-     */
-    private void addDevice(Device device) {
+    private Set<PointTemplate> getAllPointTemplates(Integer deviceType) {
+        if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
+            return this.deviceAllPointTemplateMap.get(deviceType);
+        } else {
+            throw new IllegalArgumentException("Device type '"
+                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
+        }
+    }
+
+    private Set<PointTemplate> getInitPointTemplates(Integer deviceType) {
+        Set<PointTemplate> templateSet = new HashSet<PointTemplate>();
+
+        if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
+            Set<PointTemplate> allTemplateSet = this.deviceAllPointTemplateMap.get(deviceType);
+            for (PointTemplate template : allTemplateSet) {
+                if (template.isShouldInitialize()) {
+                    templateSet.add(template);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Device type '"
+                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
+        }
+
+        return templateSet;
+    }
+
+    private void validateDeviceConstant(Device device) {
 
         // Validate xml device type int / java constant
         String javaConstant = device.getType().getJavaConstant();
@@ -211,46 +218,58 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             throw new RuntimeException(e);
         }
 
-        // Add deviceType to change group map
+    }
+
+    /**
+     * Helper method to add the device and it's point templates to the
+     * appropriate maps
+     * @param device - Device to add
+     */
+    private void addDevice(Device device) {
+
+        int deviceType = device.getType().getValue();
+        String javaConstant = device.getType().getJavaConstant();
+
+        String displayName = null;
+        if (device.getDisplayName() != null) {
+            displayName = device.getDisplayName().getValue();
+        }
+        String group = null;
+        if (device.getDisplayGroup() != null) {
+            group = device.getDisplayGroup().getValue();
+        }
+
+        DeviceDefinition deviceDefinition = new DeviceDefinition(deviceType,
+                                                                 displayName,
+                                                                 group,
+                                                                 javaConstant,
+                                                                 device.getType().getChangeGroup());
+
+        // Add deviceDefinition to type map
+        this.deviceTypeMap.put(deviceType, deviceDefinition);
+
+        // Add deviceDefinition to change group map
         if (device.getType().getChangeGroup() != null) {
             String changeGroup = device.getType().getChangeGroup();
 
             // Add the paoClass to the hashmap if not there
-            if (!this.changeGroupDeviceTypesMap.containsKey(changeGroup)) {
-                this.changeGroupDeviceTypesMap.put(changeGroup, new HashSet<Integer>());
+            if (!this.changeGroupDevicesMap.containsKey(changeGroup)) {
+                this.changeGroupDevicesMap.put(changeGroup, new HashSet<DeviceDefinition>());
             }
 
-            this.changeGroupDeviceTypesMap.get(changeGroup).add(deviceType);
+            this.changeGroupDevicesMap.get(changeGroup).add(deviceDefinition);
 
         }
 
-        if (device.getDisplayName() != null) {
-            String displayName = device.getDisplayName().getValue();
-            String group = null;
-            if (device.getDisplayGroup() != null) {
-                group = device.getDisplayGroup().getValue();
+        // Add deviceDefinition to group map
+        if (group != null) {
+            List<DeviceDefinition> typeList = this.deviceDisplayGroupMap.get(group);
+            if (typeList == null) {
+                typeList = new ArrayList<DeviceDefinition>();
+                this.deviceDisplayGroupMap.put(group, typeList);
             }
 
-            DeviceDefinition deviceDefinition = new DeviceDefinition(deviceType,
-                                                                     displayName,
-                                                                     group,
-                                                                     javaConstant,
-                                                                     device.getType()
-                                                                           .getChangeGroup());
-
-            // Add deviceDefinition to type map
-            this.deviceTypeMap.put(deviceType, deviceDefinition);
-
-            // Add deviceDisplayName to group map
-            if (group != null) {
-                List<DeviceDefinition> typeList = this.deviceDisplayGroupMap.get(group);
-                if (typeList == null) {
-                    typeList = new ArrayList<DeviceDefinition>();
-                    this.deviceDisplayGroupMap.put(group, typeList);
-                }
-
-                typeList.add(deviceDefinition);
-            }
+            typeList.add(deviceDefinition);
         }
 
         // Add device points

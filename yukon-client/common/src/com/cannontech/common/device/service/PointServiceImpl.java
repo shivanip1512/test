@@ -38,6 +38,7 @@ public class PointServiceImpl implements PointService {
 
         case PointTypes.STATUS_POINT:
             point = (StatusPoint) PointFactory.createBankStatusPt(paoId);
+            point.setPointID(pointId);
             point.getPoint().setPointName(name);
             point.getPoint().setPointOffset(offset);
             point.getPoint().setStateGroupID(stateGroupId);

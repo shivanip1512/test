@@ -7,5 +7,7 @@ package com.cannontech.database.data.pao;
 public interface PaoGroupsWrapper {
 
     public abstract int getDeviceType(String typeString);
+    
+    public abstract String getPAOTypeString(int type);
 
 }

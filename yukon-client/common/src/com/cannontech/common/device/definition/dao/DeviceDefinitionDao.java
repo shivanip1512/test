@@ -38,6 +38,8 @@ public interface DeviceDefinitionDao {
      */
     public abstract Set<PointTemplate> getAllPointTemplates(DeviceBase device);
 
+    public abstract Set<PointTemplate> getAllPointTemplates(DeviceDefinition deviceDefiniton);
+
     /**
      * Method to get all of the point templates for a given device that should
      * be initialized
@@ -47,6 +49,8 @@ public interface DeviceDefinitionDao {
      */
     public abstract Set<PointTemplate> getInitPointTemplates(DeviceBase device);
 
+    public abstract Set<PointTemplate> getInitPointTemplates(DeviceDefinition newDefinition);
+
     /**
      * Method to get a map of device display groups and their associated device
      * types
@@ -55,16 +59,17 @@ public interface DeviceDefinitionDao {
     public abstract Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap();
 
     /**
-     * Method used to determine if a device can have it's type changed
-     * @param device - Device to change
-     * @return True if the device's type can be changed
+     * Method used to get a device definition for a device
+     * @param device - Device to get definition for
+     * @return The device's device definition
      */
-    public abstract boolean isDeviceTypeChangeable(DeviceBase device);
+    public abstract DeviceDefinition getDeviceDefinition(DeviceBase device);
 
     /**
      * Method to get a set of device types that are in a given change group
      * @param changeGroup - Change group to get the device types for
-     * @return A set of device types
+     * @return A set of device definitions
      */
-    public abstract Set<Integer> getDeviceTypesForChangeGroup(String changeGroup);
+    public abstract Set<DeviceDefinition> getDevicesForChangeGroup(String changeGroup);
+
 }

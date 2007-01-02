@@ -1,9 +1,12 @@
 package com.cannontech.common.device.definition.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Class which contains device definition data
  */
-public class DeviceDefinition {
+public class DeviceDefinition implements Comparable<DeviceDefinition>{
 
     private int type = -1;
     private String displayName = null;
@@ -72,5 +75,42 @@ public class DeviceDefinition {
 
     public String toString() {
         return this.displayName;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof DeviceDefinition == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        DeviceDefinition deviceDefinition = (DeviceDefinition) obj;
+        return new EqualsBuilder().append(type, deviceDefinition.getType())
+                                  .append(displayName, deviceDefinition.getDisplayName())
+                                  .append(displayGroup, deviceDefinition.getDisplayGroup())
+                                  .append(javaConstant, deviceDefinition.getJavaConstant())
+                                  .append(changeGroup, deviceDefinition.getChangeGroup())
+                                  .append(changeable, deviceDefinition.isChangeable())
+                                  .isEquals();
+    }
+
+    public int hashCode() {
+        return new HashCodeBuilder(49, 69).append(type)
+                                          .append(displayName)
+                                          .append(displayGroup)
+                                          .append(javaConstant)
+                                          .append(changeGroup)
+                                          .append(changeable)
+                                          .toHashCode();
+    }
+    
+    public int compareTo(DeviceDefinition o) {
+
+        if (o == null) {
+            return 0;
+        }
+
+        return o.getDisplayName().compareTo(displayName);
+
     }
 }

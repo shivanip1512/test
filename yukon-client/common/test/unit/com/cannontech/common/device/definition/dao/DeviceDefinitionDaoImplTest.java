@@ -12,24 +12,36 @@ import junit.framework.TestCase;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.mock.MockDevice;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
+/**
+ * Test class for DeviceDefinitionDao
+ */
 public class DeviceDefinitionDaoImplTest extends TestCase {
 
     private DeviceDefinitionDao dao = null;
     private DeviceBase device = null;
 
-    protected void setUp() throws Exception {
-        dao = new DeviceDefinitionDaoImpl();
+    public static DeviceDefinitionDao getTestDeviceDefinitionDao() throws Exception {
+
+        DeviceDefinitionDaoImpl dao = new DeviceDefinitionDaoImpl();
 
         // Use testDeviceDefinition.xml for testing
-        ((DeviceDefinitionDaoImpl) dao).setInputFile(this.getClass()
-                                                         .getClassLoader()
-                                                         .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
-        ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new MockPaoGroups());
+        ((DeviceDefinitionDaoImpl) dao).setInputFile(dao.getClass()
+                                                        .getClassLoader()
+                                                        .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
+        ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
         ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(MockPaoGroups.class.getName());
         ((DeviceDefinitionDaoImpl) dao).initialize();
+
+        return dao;
+    }
+
+    protected void setUp() throws Exception {
+
+        dao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
 
         device = new MockDevice();
         device.setDeviceType("device1");
@@ -107,18 +119,19 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetAllPointTemplates() {
 
         // Test with supported device type
-        // Sort the sets into lists for ease of test trouble shooting
         Set<PointTemplate> expectedTemplates = this.getExpectedAllTemplates();
-        List<PointTemplate> expected = new ArrayList<PointTemplate>();
-        expected.addAll(expectedTemplates);
-        Collections.sort(expected);
 
         Set<PointTemplate> actualTemplates = dao.getAllPointTemplates(device);
-        List<PointTemplate> actual = new ArrayList<PointTemplate>();
-        actual.addAll(actualTemplates);
-        Collections.sort(actual);
 
-        assertEquals("Expected all point templates did not match: ", expected, actual);
+        // Test the overloaded method - should return same results
+        Set<PointTemplate> acutalDefinitionTemplates = dao.getAllPointTemplates(dao.getDeviceDefinition(device));
+        assertEquals("Expected definition templates did not match device templates",
+                     this.getSortedList(actualTemplates),
+                     this.getSortedList(acutalDefinitionTemplates));
+
+        assertEquals("Expected all point templates did not match: ",
+                     this.getSortedList(expectedTemplates),
+                     this.getSortedList(actualTemplates));
 
         // Test with unsupported device type
         try {
@@ -136,18 +149,20 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      * Test getInitPointTemplates()
      */
     public void testGetInitPointTemplates() {
+
         // Test with supported device type
-        Set<PointTemplate> expectedTemplates = this.getExpectedInitTemplates();
-        List<PointTemplate> expected = new ArrayList<PointTemplate>();
-        expected.addAll(expectedTemplates);
-        Collections.sort(expected);
-
+        Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
         Set<PointTemplate> actualTemplates = dao.getInitPointTemplates(device);
-        List<PointTemplate> actual = new ArrayList<PointTemplate>();
-        actual.addAll(actualTemplates);
-        Collections.sort(actual);
 
-        assertEquals("Expected init point templates did not match: ", expected, actual);
+        // Test the overloaded method - should return same results
+        Set<PointTemplate> acutalDefinitionTemplates = dao.getInitPointTemplates(dao.getDeviceDefinition(device));
+        assertEquals("Expected definition templates did not match device templates",
+                     this.getSortedList(actualTemplates),
+                     this.getSortedList(acutalDefinitionTemplates));
+
+        assertEquals("Expected init point templates did not match: ",
+                     this.getSortedList(expectedTemplates),
+                     this.getSortedList(actualTemplates));
 
         // Test with unsupported device type
         try {
@@ -194,21 +209,24 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     }
 
     /**
-     * Test isDeviceTypeChangeable()
+     * Test getDeviceDefinition()
      */
-    public void testIsDeviceTypeChangeable() {
+    public void testGetDeviceDefinition() {
 
-        // Test with supported device type that is changeable
-        assertTrue("device1 is changeable", dao.isDeviceTypeChangeable(device));
-
-        // Test with supported device type that is not changeable
-        device.setDeviceType("device3");
-        assertTrue("device3 is not changeable", !dao.isDeviceTypeChangeable(device));
+        // Test with supported device type
+        DeviceDefinition expectedDefinition = new DeviceDefinition(1,
+                                                                   "Device 1",
+                                                                   "display1",
+                                                                   "constant1",
+                                                                   "change1");
+        assertEquals("device1 definition is not as expected",
+                     expectedDefinition,
+                     dao.getDeviceDefinition(device));
 
         // Test with unsupported device type
         try {
             device.setDeviceType("invalid");
-            dao.isDeviceTypeChangeable(device);
+            dao.getDeviceDefinition(device);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -220,14 +238,22 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     /**
      * Test getDeviceTypesForChangeGroup()
      */
-    public void testGetDeviceTypesForChangeGroup() {
+    public void testGetDevicesForChangeGroup() {
 
         // Test with supported change group
-        Set<Integer> expectedDeviceTypesList = new HashSet<Integer>();
-        expectedDeviceTypesList.add(MockPaoGroups.constant1);
-        expectedDeviceTypesList.add(MockPaoGroups.constant2);
+        Set<DeviceDefinition> expectedDeviceTypesList = new HashSet<DeviceDefinition>();
+        expectedDeviceTypesList.add(new DeviceDefinition(1,
+                                                         "Device 1",
+                                                         "display1",
+                                                         "constant1",
+                                                         "change1"));
+        expectedDeviceTypesList.add(new DeviceDefinition(2,
+                                                         "Device 2",
+                                                         "display1",
+                                                         "constant2",
+                                                         "change1"));
 
-        Set<Integer> actualDeviceTypesList = dao.getDeviceTypesForChangeGroup("change1");
+        Set<DeviceDefinition> actualDeviceTypesList = dao.getDevicesForChangeGroup("change1");
 
         assertEquals("Incorrect device type list for change group: change1",
                      expectedDeviceTypesList,
@@ -235,7 +261,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with invalid change group
         try {
-            dao.getDeviceTypesForChangeGroup("invalid");
+            dao.getDevicesForChangeGroup("invalid");
             fail("Exception should be thrown for invalid paoClass");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -248,7 +274,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      * Helper method to get the set of init point templates for device1
      * @return Set of all point templates
      */
-    private Set<PointTemplate> getExpectedInitTemplates() {
+    public static Set<PointTemplate> getExpectedInitTemplates() {
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
 
         // Pulse Accumulators
@@ -278,7 +304,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     private Set<PointTemplate> getExpectedAllTemplates() {
 
         // Get the init templates first
-        Set<PointTemplate> expectedTemplates = this.getExpectedInitTemplates();
+        Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
 
         // Add the rest of the templates
 
@@ -289,15 +315,23 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     }
 
     /**
-     * Mock device to be used for testing - was created to enable instantiation
-     * of a device base
+     * Helper method to turn a set into a sorted list - This method should be
+     * used to more easily see the differences between to sets if a test fails
+     * @param set - Set to get list for
+     * @return A sorted list containing ever object that was in the set
      */
-    private class MockDevice extends DeviceBase {
+    private List<PointTemplate> getSortedList(Set<PointTemplate> set) {
+        List<PointTemplate> list = new ArrayList<PointTemplate>();
+        list.addAll(set);
+        Collections.sort(list);
+
+        return list;
     }
 
     /**
      * Mock PaoGroups class for testing purposes. This class is public because
-     * outside classes need access to the constants
+     * outside classes need access to the constants. The methods in this class
+     * return static value expected for unit testing
      */
     public class MockPaoGroups implements PaoGroupsWrapper {
 
@@ -315,7 +349,12 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                 return constant3;
             }
 
-            return 0;
+            throw new IllegalArgumentException("Device type '" + typeString
+                    + "' is not supported for testing");
+        }
+
+        public String getPAOTypeString(int type) {
+            return null;
         }
 
     }

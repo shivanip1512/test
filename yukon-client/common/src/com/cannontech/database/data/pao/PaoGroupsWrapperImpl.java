@@ -7,7 +7,15 @@ package com.cannontech.database.data.pao;
 public class PaoGroupsWrapperImpl implements PaoGroupsWrapper {
 
     public final int getDeviceType(String typeString) {
-        return PAOGroups.getDeviceType(typeString);
+        int deviceType = PAOGroups.getDeviceType(typeString);
+        if (deviceType == PAOGroups.INVALID) {
+            throw new IllegalArgumentException("Device type: " + typeString + " is not supported");
+        }
+        return deviceType;
+    }
+
+    public String getPAOTypeString(int type) {
+        return PAOGroups.getPAOTypeString(type);
     }
 
 }
