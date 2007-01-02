@@ -7,7 +7,7 @@
     </bean>
     <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" singleton="true">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
-        <property name="devicePointService" ref="pointService" />
+        <property name="pointService" ref="devicePointService" />
     </bean>
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" singleton="true" init-method="initialize">
         <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
