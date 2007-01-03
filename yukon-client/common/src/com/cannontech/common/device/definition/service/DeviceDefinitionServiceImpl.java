@@ -77,7 +77,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
 
         // Get all of the devices in the device's change group
-        Set<DeviceDefinition> devices = deviceDefinitionDao.getDevicesForChangeGroup(deviceDefinition.getChangeGroup());
+        Set<DeviceDefinition> devices = deviceDefinitionDao.getChangeableDevices(deviceDefinition);
 
         // Remove the current device
         devices.remove(deviceDefinition);
@@ -173,7 +173,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
      * Helper method to get the list of point templates that correspond to
      * attribute points that exist for the given device
      * @param device - Device to get pointTemplates for
-     * @return A set of existing point templates
+     * @return A set of existing point templates (returns a new copy each time
+     *         the method is called)
      */
     private Set<PointTemplate> getExistingPointTemplates(DeviceBase device) {
 

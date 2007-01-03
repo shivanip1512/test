@@ -17,7 +17,7 @@ public interface DeviceDefinitionDao {
     /**
      * Method to get a set of attributes defined for a given device
      * @param device - Device to get attributes for
-     * @return A set of attributes for the device
+     * @return An immutable set of attributes for the device
      * @throws IllegalArgumentException - If the device is not supported
      */
     public abstract Set<Attribute> getAvailableAttributes(DeviceBase device);
@@ -34,10 +34,17 @@ public interface DeviceDefinitionDao {
     /**
      * Method to get all of the point templates for a given device
      * @param device - Device to get point templates for
-     * @return A set of all point templates for the device
+     * @return A set of all point templates for the device (returns a new copy
+     *         each time the method is called)
      */
     public abstract Set<PointTemplate> getAllPointTemplates(DeviceBase device);
 
+    /**
+     * Method to get all of the point templates for a given device definition
+     * @param deviceDefiniton - Device definition to get point templates for
+     * @return A set of all point templates for the device (returns a new copy
+     *         each time the method is called)
+     */
     public abstract Set<PointTemplate> getAllPointTemplates(DeviceDefinition deviceDefiniton);
 
     /**
@@ -45,16 +52,24 @@ public interface DeviceDefinitionDao {
      * be initialized
      * @param device - Device to get point templates for
      * @return A set of all point templates for the device that should be
-     *         initialized
+     *         initialized (returns a new copy each time the method is called)
      */
     public abstract Set<PointTemplate> getInitPointTemplates(DeviceBase device);
 
+    /**
+     * Method to get all of the point templates for a given device definition
+     * that should be initialized
+     * @param newDefinition - Device definition to get point templates for
+     * @return A set of all point templates for the device that should be
+     *         initialized (returns a new copy each time the method is called)
+     */
     public abstract Set<PointTemplate> getInitPointTemplates(DeviceDefinition newDefinition);
 
     /**
      * Method to get a map of device display groups and their associated device
      * types
-     * @return Map with key: display group name, value: list of device display
+     * @return An immutable map with key: display group name, value: list of
+     *         device display
      */
     public abstract Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap();
 
@@ -66,10 +81,11 @@ public interface DeviceDefinitionDao {
     public abstract DeviceDefinition getDeviceDefinition(DeviceBase device);
 
     /**
-     * Method to get a set of device types that are in a given change group
-     * @param changeGroup - Change group to get the device types for
-     * @return A set of device definitions
+     * Method to get a set of device types that the given device can change into
+     * @param deviceDefinition - Definition of device to change
+     * @return A set of device definitions (returns a new copy each time the
+     *         method is called)
      */
-    public abstract Set<DeviceDefinition> getDevicesForChangeGroup(String changeGroup);
+    public abstract Set<DeviceDefinition> getChangeableDevices(DeviceDefinition deviceDefinition);
 
 }

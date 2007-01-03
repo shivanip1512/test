@@ -13,6 +13,7 @@ import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockDevice;
@@ -207,11 +208,11 @@ public class DeviceDefinitionServiceImplTest extends TestCase {
         Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
 
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
-                                                                            new DeviceDefinition(1,
-                                                                                                 "Device1",
-                                                                                                 "display1",
-                                                                                                 "constant1",
-                                                                                                 "change1"));
+                                                                            new DeviceDefinitionImpl(1,
+                                                                                                     "Device1",
+                                                                                                     "display1",
+                                                                                                     "constant1",
+                                                                                                     "change1"));
 
         assertEquals("Point templates to add were not as expected",
                      expectedTemplates,
@@ -242,11 +243,11 @@ public class DeviceDefinitionServiceImplTest extends TestCase {
         Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
 
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToRemove(device,
-                                                                               new DeviceDefinition(2,
-                                                                                                    "Device2",
-                                                                                                    "display2",
-                                                                                                    "constant2",
-                                                                                                    "change1"));
+                                                                               new DeviceDefinitionImpl(2,
+                                                                                                        "Device2",
+                                                                                                        "display2",
+                                                                                                        "constant2",
+                                                                                                        "change1"));
 
         assertEquals("Point templates to remove were not as expected",
                      expectedTemplates,

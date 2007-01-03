@@ -20,7 +20,8 @@ public interface DeviceDefinitionService {
      * this will create the points in memory ONLY - the default points will NOT
      * be persisted
      * @param device - Device to create points for
-     * @return A list of the default points for the device
+     * @return A list of the default points for the device (returns a new copy
+     *         each time the method is called)
      */
     public abstract List<PointBase> createDefaultPointsForDevice(DeviceBase device);
 
@@ -28,14 +29,16 @@ public interface DeviceDefinitionService {
      * Method to create all of the points for the given device. NOTE: this will
      * create the points in memory ONLY - the points will NOT be persisted
      * @param device - Device to create points for
-     * @return A list of all the points for the device
+     * @return A list of all the points for the device (returns a new copy each
+     *         time the method is called)
      */
     public abstract List<PointBase> createAllPointsForDevice(DeviceBase device);
 
     /**
      * Method to get a map of device display groups and their associated device
      * types
-     * @return Map with key: display group name, value: list of device display
+     * @return An immutable map with key: display group name, value: list of
+     *         device display
      */
     public abstract Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap();
 
@@ -51,6 +54,7 @@ public interface DeviceDefinitionService {
      * device can be changed into
      * @param device - Device to change
      * @return A set of device definitions that the given device can change into
+     *         (returns a new copy each time the method is called)
      */
     public abstract Set<DeviceDefinition> getChangeableDevices(DeviceBase device);
 
@@ -59,7 +63,8 @@ public interface DeviceDefinitionService {
      * device if its type is changed to the given device definition
      * @param device - Device to change type
      * @param deviceDefinition - Definition of type to change to
-     * @return Set of points that will be added to the device
+     * @return Set of points that will be added to the device (returns a new
+     *         copy each time the method is called)
      */
     public abstract Set<PointTemplate> getPointTemplatesToAdd(DeviceBase device,
             DeviceDefinition deviceDefinition);
@@ -69,7 +74,8 @@ public interface DeviceDefinitionService {
      * if its type is changed to the given device definition
      * @param device - Device to change type
      * @param deviceDefinition - Definition of type to change to
-     * @return Set of points that will be removed from the device
+     * @return Set of points that will be removed from the device (returns a new
+     *         copy each time the method is called)
      */
     public abstract Set<PointTemplate> getPointTemplatesToRemove(DeviceBase device,
             DeviceDefinition deviceDefinition);

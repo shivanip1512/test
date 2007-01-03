@@ -11,7 +11,9 @@ import junit.framework.TestCase;
 
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.common.mock.MockDevice;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -77,14 +79,14 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetPointTemplateForAttribute() {
 
         // Test with supported device type
-        PointTemplate expectedTemplate = new PointTemplate("pulse1",
-                                                           2,
-                                                           1,
-                                                           1.0,
-                                                           1,
-                                                           0,
-                                                           true,
-                                                           Attribute.USAGE);
+        PointTemplate expectedTemplate = new PointTemplateImpl("pulse1",
+                                                               2,
+                                                               1,
+                                                               1.0,
+                                                               1,
+                                                               0,
+                                                               true,
+                                                               Attribute.USAGE);
 
         PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, Attribute.USAGE);
 
@@ -214,11 +216,11 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetDeviceDefinition() {
 
         // Test with supported device type
-        DeviceDefinition expectedDefinition = new DeviceDefinition(1,
-                                                                   "Device 1",
-                                                                   "display1",
-                                                                   "constant1",
-                                                                   "change1");
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(1,
+                                                                       "Device 1",
+                                                                       "display1",
+                                                                       "constant1",
+                                                                       "change1");
         assertEquals("device1 definition is not as expected",
                      expectedDefinition,
                      dao.getDeviceDefinition(device));
@@ -242,18 +244,23 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported change group
         Set<DeviceDefinition> expectedDeviceTypesList = new HashSet<DeviceDefinition>();
-        expectedDeviceTypesList.add(new DeviceDefinition(1,
-                                                         "Device 1",
-                                                         "display1",
-                                                         "constant1",
-                                                         "change1"));
-        expectedDeviceTypesList.add(new DeviceDefinition(2,
-                                                         "Device 2",
-                                                         "display1",
-                                                         "constant2",
-                                                         "change1"));
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(1,
+                                                             "Device 1",
+                                                             "display1",
+                                                             "constant1",
+                                                             "change1"));
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(2,
+                                                             "Device 2",
+                                                             "display1",
+                                                             "constant2",
+                                                             "change1"));
 
-        Set<DeviceDefinition> actualDeviceTypesList = dao.getDevicesForChangeGroup("change1");
+        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(1,
+                                                                   "test",
+                                                                   "test",
+                                                                   "test",
+                                                                   "change1");
+        Set<DeviceDefinition> actualDeviceTypesList = dao.getChangeableDevices(definition);
 
         assertEquals("Incorrect device type list for change group: change1",
                      expectedDeviceTypesList,
@@ -261,7 +268,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with invalid change group
         try {
-            dao.getDevicesForChangeGroup("invalid");
+            definition.setChangeGroup("invalid");
+            dao.getChangeableDevices(definition);
             fail("Exception should be thrown for invalid paoClass");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -278,20 +286,34 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
 
         // Pulse Accumulators
-        expectedTemplates.add(new PointTemplate("pulse1", 2, 1, 1.0, 1, 0, true, Attribute.USAGE));
+        expectedTemplates.add(new PointTemplateImpl("pulse1",
+                                                    2,
+                                                    1,
+                                                    1.0,
+                                                    1,
+                                                    0,
+                                                    true,
+                                                    Attribute.USAGE));
 
         // Demand Accumulators
-        expectedTemplates.add(new PointTemplate("demand1", 3, 1, 1.0, 0, 0, true, Attribute.DEMAND));
+        expectedTemplates.add(new PointTemplateImpl("demand1",
+                                                    3,
+                                                    1,
+                                                    1.0,
+                                                    0,
+                                                    0,
+                                                    true,
+                                                    Attribute.DEMAND));
 
         // Analog
-        expectedTemplates.add(new PointTemplate("analog1",
-                                                1,
-                                                1,
-                                                1.0,
-                                                1,
-                                                0,
-                                                true,
-                                                new Attribute("totalUsage", "totalUsage")));
+        expectedTemplates.add(new PointTemplateImpl("analog1",
+                                                    1,
+                                                    1,
+                                                    1.0,
+                                                    1,
+                                                    0,
+                                                    true,
+                                                    new Attribute("totalUsage", "totalUsage")));
 
         return expectedTemplates;
 
@@ -309,7 +331,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Add the rest of the templates
 
         // Status
-        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0, false, null));
+        expectedTemplates.add(new PointTemplateImpl("status1", 0, 1, 1.0, -1, 0, false, null));
 
         return expectedTemplates;
     }

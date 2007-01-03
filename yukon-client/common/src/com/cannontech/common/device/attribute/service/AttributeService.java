@@ -36,7 +36,7 @@ public interface AttributeService {
     /**
      * Method to get a set of attributes available for the given device
      * @param device - The device to get attributes for
-     * @return All attributes available for this device
+     * @return An immutable set of all attributes available for this device
      */
     public abstract Set<Attribute> getAvailableAttributes(DeviceBase device);
 
@@ -44,7 +44,8 @@ public interface AttributeService {
      * Method to get a set of all attributes for which points exist for a given
      * device
      * @param device - Device to get points for
-     * @return A set of attributes
+     * @return A set of attributes (returns a new copy each time the method is
+     *         called)
      */
     public abstract Set<Attribute> getAllExistingAtributes(DeviceBase device);
 }
