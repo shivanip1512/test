@@ -117,9 +117,14 @@ public class LGAccountingReport extends YukonReportBase
 
 		for (int i = 1; i < getModel().getColumnCount(); i++)
 		{
-			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));	//lower this row of "headings"
-			header.addElement(factory.createElement());
+			if( !(i == LoadGroupModel.DAILY_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowDailyTotal()) &&
+					!(i == LoadGroupModel.MONTHLY_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowMonthlyTotal()) &&
+					!(i == LoadGroupModel.SEASONAL_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowSeasonalTotal()) &&
+					!(i == LoadGroupModel.ANNUAL_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowAnnualTotal()) ) {
+				factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+				factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));	//lower this row of "headings"
+				header.addElement(factory.createElement());
+			}
 		}
 		collGrpGroup.setHeader(header);
 
@@ -181,8 +186,13 @@ public class LGAccountingReport extends YukonReportBase
 		//Start at 1, we don't want to include the Load Group column, our group by column.
 		for (int i = 1; i < getModel().getColumnCount(); i++)
 		{
-			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-			items.addElement(factory.createElement());
+			if( !(i == LoadGroupModel.DAILY_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowDailyTotal()) &&
+					!(i == LoadGroupModel.MONTHLY_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowMonthlyTotal()) &&
+					!(i == LoadGroupModel.SEASONAL_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowSeasonalTotal()) &&
+					!(i == LoadGroupModel.ANNUAL_CONTROL_COLUMN && !((LoadGroupModel)getModel()).isShowAnnualTotal()) ) {
+				factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+				items.addElement(factory.createElement());
+			}
 		}
 		return items;
 	}

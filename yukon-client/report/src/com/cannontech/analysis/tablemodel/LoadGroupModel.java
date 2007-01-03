@@ -69,9 +69,6 @@ public class LoadGroupModel extends ReportModelBase
 
 	/** A string for the title of the data */
 	private static String title = "LOAD GROUP ACCOUNTING";
-		
-	/** Array of IDs (of loadGroup paobjectIDs)*/
-	private int loadGroups[] = null;
 	
 	/** A holder for the most recent soe_Tag returned in the query resultset */
 	private int lastSoeTag = -1;
@@ -82,6 +79,17 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	private boolean showAllActiveRestore = false;
 	private static final String ATT_ALL_RESTORE_TYPES = "allRestoreTypes";
+	private boolean ignoreZeroDuration = false;
+	private static final String ATT_IGNORE_ZERO_DURATION = "ignoreZeroDuration";
+	
+	private static final String ATT_SHOW_DAILY_TOTAL = "showDailyTotal";
+	private boolean showDailyTotal = true;
+	private static final String ATT_SHOW_MONTHLY_TOTAL = "showMonthlyTotal";
+	private boolean showMonthlyTotal = true;
+	private static final String ATT_SHOW_SEASONAL_TOTAL = "showSeasonalTotal";
+	private boolean showSeasonalTotal = true;
+	private static final String ATT_SHOW_ANNUAL_TOTAL = "showAnnualTotal";
+	private boolean showAnnualTotal = true;
 	
 	public static Comparator lmControlHistoryPAONameComparator = new java.util.Comparator()
 	{
@@ -116,7 +124,7 @@ public class LoadGroupModel extends ReportModelBase
 	
 	/**
 	 * Constructor class
-	 * @param loadGroups_ (Array of)YukonPaobject.paobjectID (of single load group)
+	 * @param paoIDs_ (Array of)YukonPaobject.paobjectID (of single load group)
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTime
 	 */
@@ -188,6 +196,8 @@ public class LoadGroupModel extends ReportModelBase
 				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
 				if(!isShowAllActiveRestore())
 					sql.append(" AND LMCH.ACTIVERESTORE IN ('R', 'T', 'O', 'M') ");
+				if(isIgnoreZeroDuration())
+					sql.append(" AND LMCH.ControlDuration > 0 ");
 //				20060110 - SN Doing this again, sorting data using the SOE tag did not work...back to R, T, O, M records!
 //				" AND LMCH.ACTIVERESTORE NOT IN ('C', 'L') ");
 				
@@ -402,13 +412,13 @@ public class LoadGroupModel extends ReportModelBase
 				new ColumnProperties(0, 1, 60, "MM/dd/yyyy"),
 				new ColumnProperties(60, 1, 50, "HH:mm:ss"),
 				new ColumnProperties(110, 1, 50, "HH:mm:ss"),
-				new ColumnProperties(160, 1, 50, null),
-				new ColumnProperties(210, 1, 50, null),
-				new ColumnProperties(260, 1, 190, null),
-				new ColumnProperties(450, 1, 50, null),
-				new ColumnProperties(500, 1, 50, null),
-				new ColumnProperties(550, 1, 50, null),
-				new ColumnProperties(600, 1, 50, null)
+				new ColumnProperties(160, 1, 60, null),
+				new ColumnProperties(220, 1, 50, null),
+				new ColumnProperties(270, 1, 190, null),
+				new ColumnProperties(460, 1, 60, null),
+				new ColumnProperties(520, 1, 60, null),
+				new ColumnProperties(580, 1, 60, null),
+				new ColumnProperties(640, 1, 60, null)
 			};
 		}
 		return columnProperties;
@@ -439,6 +449,55 @@ public class LoadGroupModel extends ReportModelBase
 		showAllActiveRestore = showAll;
 	}
 	
+	/**
+	 * @return
+	 */
+	public boolean isIgnoreZeroDuration()
+	{
+		return ignoreZeroDuration;
+	}
+
+	/**
+	 * When true - only duration greater than 0
+	 * When false - all control durations
+	 */
+	public void setIgnoreZeroDuration(boolean ignoreZero)
+	{
+		ignoreZeroDuration = ignoreZero;
+	}
+
+	public boolean isShowAnnualTotal() {
+		return showAnnualTotal;
+	}
+
+	public void setShowAnnualTotal(boolean showAnnualTotal) {
+		this.showAnnualTotal = showAnnualTotal;
+	}
+
+	public boolean isShowDailyTotal() {
+		return showDailyTotal;
+	}
+
+	public void setShowDailyTotal(boolean showDailyTotal) {
+		this.showDailyTotal = showDailyTotal;
+	}
+
+	public boolean isShowMonthlyTotal() {
+		return showMonthlyTotal;
+	}
+
+	public void setShowMonthlyTotal(boolean showMonthlyTotal) {
+		this.showMonthlyTotal = showMonthlyTotal;
+	}
+
+	public boolean isShowSeasonalTotal() {
+		return showSeasonalTotal;
+	}
+
+	public void setShowSeasonalTotal(boolean showSeasonalTotal) {
+		this.showSeasonalTotal = showSeasonalTotal;
+	}
+
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -462,7 +521,35 @@ public class LoadGroupModel extends ReportModelBase
 		html += "          <td><input type='checkbox' name='" +ATT_ALL_RESTORE_TYPES + "' value='true'>Show Additional Detail (Multiple entries for one control)" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' checked name='" +ATT_IGNORE_ZERO_DURATION + "' value='true'>Ignore zero(00:00:00.000) Control Duration" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
 
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Show Control Totals</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_DAILY_TOTAL + "' value='true'>Daily" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_MONTHLY_TOTAL + "' value='true'>Monthly" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_SEASONAL_TOTAL + "' value='true'>Seasonal" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_SEASONAL_TOTAL + "' value='true'>Annual" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
 
@@ -498,6 +585,39 @@ public class LoadGroupModel extends ReportModelBase
 				setShowAllActiveRestore(Boolean.valueOf(param).booleanValue());
 			else 
 				setShowAllActiveRestore(false);
+			
+			param = req.getParameter(ATT_IGNORE_ZERO_DURATION);
+			if( param != null)
+				setIgnoreZeroDuration(Boolean.valueOf(param).booleanValue());
+			else 
+				setIgnoreZeroDuration(false);
+			
+			param = req.getParameter(ATT_IGNORE_ZERO_DURATION);
+			if( param != null)
+				setIgnoreZeroDuration(Boolean.valueOf(param).booleanValue());
+			else 
+				setIgnoreZeroDuration(false);
+
+			param = req.getParameter(ATT_SHOW_DAILY_TOTAL);
+			if( param != null)
+				setShowDailyTotal(Boolean.valueOf(param).booleanValue());
+			else 
+				setShowDailyTotal(false);
+			param = req.getParameter(ATT_SHOW_MONTHLY_TOTAL);
+			if( param != null)
+				setShowMonthlyTotal(Boolean.valueOf(param).booleanValue());
+			else 
+				setShowMonthlyTotal(false);
+			param = req.getParameter(ATT_SHOW_SEASONAL_TOTAL);
+			if( param != null)
+				setShowSeasonalTotal(Boolean.valueOf(param).booleanValue());
+			else 
+				setShowSeasonalTotal(false);
+			param = req.getParameter(ATT_SHOW_ANNUAL_TOTAL);
+			if( param != null)
+				setShowAnnualTotal(Boolean.valueOf(param).booleanValue());
+			else 
+				setShowAnnualTotal(false);
 		}
 	}
     
