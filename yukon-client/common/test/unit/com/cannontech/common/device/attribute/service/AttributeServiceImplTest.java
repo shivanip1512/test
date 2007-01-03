@@ -50,7 +50,7 @@ public class AttributeServiceImplTest extends TestCase {
         // Test for device that doesn't exist
         try {
             device.setDeviceType("invalid");
-            service.getPointForAttribute(device, new Attribute("invalid", "invalid"));
+            service.getPointForAttribute(device, new Attribute("invalid"));
             fail("getPointForAttribute should've thrown exception for invalid device");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -60,7 +60,7 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for attribute that doesn't exist
         try {
-            service.getPointForAttribute(device, new Attribute("invalid", "invalid"));
+            service.getPointForAttribute(device, new Attribute("invalid"));
             fail("getPointForAttribute should've thrown exception for invalid attribute");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -79,7 +79,7 @@ public class AttributeServiceImplTest extends TestCase {
         Set<Attribute> expectedAtributes = new HashSet<Attribute>();
         expectedAtributes.add(Attribute.USAGE);
         expectedAtributes.add(Attribute.DEMAND);
-        expectedAtributes.add(new Attribute("totalUsage", "totalUsage"));
+        expectedAtributes.add(new Attribute("totalUsage"));
 
         Set<Attribute> actualAtributes = service.getAllExistingAtributes(device);
 

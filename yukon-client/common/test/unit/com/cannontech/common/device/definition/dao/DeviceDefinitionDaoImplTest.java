@@ -58,7 +58,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Set<Attribute> expectedAttributes = new HashSet<Attribute>();
         expectedAttributes.add(Attribute.USAGE);
         expectedAttributes.add(Attribute.DEMAND);
-        expectedAttributes.add(new Attribute("totalUsage", "totalUsage"));
+        expectedAttributes.add(new Attribute("totalUsage"));
 
         Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
 
@@ -95,7 +95,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Test with invalid attribute for the device
         try {
             device.setDeviceType("invalid");
-            dao.getPointTemplateForAttribute(device, new Attribute("invalid", "invalid"));
+            dao.getPointTemplateForAttribute(device, new Attribute("invalid"));
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -313,7 +313,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     true,
-                                                    new Attribute("totalUsage", "totalUsage")));
+                                                    new Attribute("totalUsage")));
 
         return expectedTemplates;
 

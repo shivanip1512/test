@@ -316,7 +316,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         if (point.getAttribute() != null) {
             String attributeName = point.getAttribute().getName();
-            template.setAttribute(new Attribute(attributeName, attributeName));
+            template.setAttribute(new Attribute(attributeName));
         }
 
         template.setType(PointTypes.getType(point.getType()));

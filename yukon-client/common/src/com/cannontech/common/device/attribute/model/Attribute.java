@@ -8,15 +8,20 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 public class Attribute {
 
-    public static final Attribute LOAD = new Attribute("load", "load");
-    public static final Attribute USAGE = new Attribute("usage", "usage");
-    public static final Attribute DEMAND = new Attribute("demand", "demand");
+    public static final Attribute LOAD = new Attribute("load");
+    /**
+     * Attribute representing total usage
+     */
+    public static final Attribute USAGE = new Attribute("usage");
+    /**
+     * Attribute representing total demand
+     */
+    public static final Attribute DEMAND = new Attribute("demand");
 
-    private String name = null;
     private String key = null;
+    private String description = null;
 
-    public Attribute(String name, String key) {
-        this.name = name;
+    public Attribute(String key) {
         this.key = key;
     }
 
@@ -28,12 +33,12 @@ public class Attribute {
         this.key = key;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String name) {
+        this.description = name;
     }
 
     public String toString() {
@@ -48,12 +53,10 @@ public class Attribute {
             return true;
         }
         Attribute attribute = (Attribute) obj;
-        return new EqualsBuilder().append(key, attribute.getKey())
-                                  .append(name, attribute.getName())
-                                  .isEquals();
+        return new EqualsBuilder().append(key, attribute.getKey()).isEquals();
     }
 
     public int hashCode() {
-        return new HashCodeBuilder(39, 49).append(key).append(name).toHashCode();
+        return new HashCodeBuilder(39, 49).append(key).toHashCode();
     }
 }
