@@ -353,27 +353,63 @@ public final class MultispeakDaoImpl implements MultispeakDao
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
                 uniqueKey = "PAONAME"; 
 
+            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
+            			 " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
+            			 DeviceCarrierSettings.TABLE_NAME + " dcs, " +
+            			 YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
+            			 " WHERE DMG.DEVICEID = PAO.PAOBJECTID" +
+            			 " AND PAO.PAOBJECTID = DCS.DEVICEID " +
+            			 " AND ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " +
+                       			             "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
+                       			             "'" + DeviceTypes.STRING_MCT_310IDL[0] + "') " +
+                               " OR ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
+                             					  "'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
+                             					  " AND DISCONNECTADDRESS IS NOT NULL) ) " +
+                         " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
+          
+            List mspMeters = new ArrayList();
+            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
+            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
+            return mspMeters;
+        } catch (IncorrectResultSizeDataAccessException e) {
+        	throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
+        }
+    }
+
+    /**
+     * Returns true is objectID (meter) is a disconnect meter. 
+     * @param key
+     * @return
+     */
+    public boolean isCDSupportedMeter(String objectID, String key) {
+      try {
+          String uniqueKey = "METERNUMBER";
+          if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+              uniqueKey = "PAONAME"; 
+
           String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
                        " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
                        DeviceCarrierSettings.TABLE_NAME + " dcs, " +
                        YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
                        " WHERE DMG.DEVICEID = PAO.PAOBJECTID" + 
                        " AND PAO.PAOBJECTID = DCS.DEVICEID " +
-                       " AND PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " + 
-                                         "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
-                                         "'" + DeviceTypes.STRING_MCT_310IDL[0] + "', " +
-                                         "'" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
-                                         "'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
-                       " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
-          List mspMeters = new ArrayList();
-          ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
-          jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
-          return mspMeters;
+                       " AND ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " +
+                       					   "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
+                       					   "'" + DeviceTypes.STRING_MCT_310IDL[0] + "') " +
+                       		 " OR ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
+                       		 					"'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
+                       		 					" AND DISCONNECTADDRESS IS NOT NULL) ) " +
+                       " AND " + uniqueKey + " = ?";
+
+          List cdMeters = jdbcOps.query(sql, new Object[] { objectID}, mspCDMeterRowMapper);
+          return !cdMeters.isEmpty();
       } catch (IncorrectResultSizeDataAccessException e) {
-          throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
+    	  //No results simply mean that the meterNumber is not a CD supported meter 
+    	  if (e.getActualSize() > 0)
+    		  return true;
+    	  return false;
       }
   }
-
     private static Meter createMspMeter( ResultSet rset) throws SQLException {
 
         String objectID = rset.getString(1).trim();
