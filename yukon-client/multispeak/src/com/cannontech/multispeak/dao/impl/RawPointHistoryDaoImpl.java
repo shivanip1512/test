@@ -146,9 +146,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
             }
         }
         
-        catch( java.sql.SQLException e )
-        {
-            e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            CTILogger.error(e);
         }
         finally
         {
@@ -159,9 +158,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                 if( conn != null )
                     conn.close();
             }
-            catch( java.sql.SQLException e )
-            {
-                e.printStackTrace();
+            catch( java.sql.SQLException e ) {
+                CTILogger.error(e);
             }
         }
         return meterReadArray;
