@@ -22,6 +22,7 @@ import com.cannontech.yukon.conns.ConnPool;
 public class OneLineSubs implements MessageListener
 {
 	private String dirBase = null;
+    private CBCClientConnection myConnection;
 
 
 	/**
@@ -105,16 +106,18 @@ public class OneLineSubs implements MessageListener
 
     public void start()
     {
-        CTILogger.info("Starting CBC One-Line ....");
+        CTILogger.info("Starting CBC One-Line...");
     	try
         {
-        	getConnection().addMessageListener( this );
-        	getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
-        	CTILogger.info("CBC One-Line successfully started...");
+        	myConnection = getConnection();
+            myConnection.addMessageListener( this );
+        	myConnection.executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+
+        	CTILogger.info("CBC One-Line successfully started.");
         }
         catch( Exception e ) {
          	
-        	CTILogger.info("CBC One-Line could not be started: " +  e.getMessage());
+        	CTILogger.info("CBC One-Line could not be started.", e);
             
         }
     }
@@ -128,11 +131,11 @@ public class OneLineSubs implements MessageListener
         CTILogger.info("Stopping CBC One-Line ....");
     	try
         {
-        	getConnection().removeMessageListener( this );
+        	myConnection.removeMessageListener( this );
         	CTILogger.info("CBC One-Line successfully stoped.");
         }
         catch( Exception e ) {
-        	CTILogger.info("CBC One-Line could not be stopped: " +  e.getMessage());        	
+        	CTILogger.info("CBC One-Line could not be stopped.", e);        	
         }
     }
     
