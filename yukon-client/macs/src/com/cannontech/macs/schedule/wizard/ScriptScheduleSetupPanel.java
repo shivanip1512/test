@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -127,6 +128,9 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		if( file != null )
 			getFilePathTextField().setText( file );
 		repaint();
+	}
+	else if (e.getSource() == getGroupTypeComboBox()) {
+		loadGroupComboBox(getGroupTypeComboBox().getSelectedIndex());
 	}
 	
     fireInputUpdate();
@@ -945,9 +949,6 @@ private javax.swing.JComboBox getGroupComboBox() {
 			ivjGroupComboBox = new javax.swing.JComboBox();
 			ivjGroupComboBox.setName("GroupComboBox");
 			// user code begin {1}
-			String [] collGroups = DeviceMeterGroup.getDeviceCollectionGroups();
-			for (int i = 0; i < collGroups.length; i++)
-				ivjGroupComboBox.addItem(collGroups[i]);
 			ivjGroupComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(GROUP_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -992,7 +993,6 @@ private javax.swing.JComboBox getGroupTypeComboBox() {
 			ivjGroupTypeComboBox = new javax.swing.JComboBox();
 			ivjGroupTypeComboBox.setName("GroupTypeComboBox");
 			ivjGroupTypeComboBox.setToolTipText("The type of group.");
-			ivjGroupTypeComboBox.setVisible(false);
 			// user code begin {1}
 			for( int i = 0; i < DeviceMeterGroup.getValidBillGroupTypeDisplayStrings().length; i++)
 			    ivjGroupTypeComboBox.addItem(DeviceMeterGroup.getValidBillGroupTypeDisplayStrings()[i]);
@@ -1020,7 +1020,6 @@ private javax.swing.JLabel getGroupTypeLabel() {
 			ivjGroupTypeLabel.setToolTipText("The type of group.");
 			ivjGroupTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjGroupTypeLabel.setText("Group Type:");
-			ivjGroupTypeLabel.setVisible(false);
 			// user code begin {1}
 			ivjGroupTypeLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(GROUP_TYPE_PARAM));
 			// user code end
@@ -2243,6 +2242,7 @@ private void initialize() {
 	getScriptTextArea().addCaretListener(this);
 	getScriptTextArea().addFocusListener(this);
 	getGroupComboBox().addActionListener(this);
+	getGroupTypeComboBox().addActionListener(this);
 	getPorterTimeoutTextField().addCaretListener(this);
 	getFilePathTextField().addCaretListener(this);
 	getMissedFileNameTextField().addCaretListener(this);
@@ -2292,7 +2292,6 @@ private void initSwingCompValues()
     getScriptNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(SCRIPT_FILE_NAME_PARAM));
     getDescriptionTextField().setText((String)getScriptTemplate().getParamToValueMap().get(SCRIPT_DESC_PARAM));
     getFilePathTextField().setText((String)getScriptTemplate().getParamToValueMap().get(FILE_PATH_PARAM));
-    getGroupComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(GROUP_NAME_PARAM));
     getMissedFileNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(MISSED_FILE_NAME_PARAM));
     getSuccessFileNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(SUCCESS_FILE_NAME_PARAM));
     getPorterTimeoutTextField().setText((String)getScriptTemplate().getParamToValueMap().get(PORTER_TIMEOUT_PARAM));
@@ -2301,13 +2300,21 @@ private void initSwingCompValues()
     getMaxRetryHoursTextField().setText((String)getScriptTemplate().getParamToValueMap().get(MAX_RETRY_HOURS_PARAM));
     getQueueOffCountTextField().setText((String)getScriptTemplate().getParamToValueMap().get(QUEUE_OFF_COUNT_PARAM));
 
-    if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup"))
+    if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup")){
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING);
-    else if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup"))	//N/A 20041208
+        loadGroupComboBox(DeviceMeterGroup.TEST_COLLECTION_GROUP);
+    }
+    else if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup")) {
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING);
-    else //if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
+        loadGroupComboBox(DeviceMeterGroup.BILLING_GROUP);
+    }
+    else { //if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING);
-
+        loadGroupComboBox(DeviceMeterGroup.COLLECTION_GROUP);
+    }
+    //This must be set after the groupTypeComboBox is set, then we have the group values for the correct type loaded
+    getGroupComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(GROUP_NAME_PARAM));
+    
     //Billing setup
     enableContainer(getBillingPanel(), Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(BILLING_FLAG_PARAM)).booleanValue());
     getGenerateBillingCheckBox().setSelected(Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(BILLING_FLAG_PARAM)).booleanValue());
@@ -2679,5 +2686,22 @@ public void valueChanging(JCValueEvent arg0)
 	{
 		frozenRegisterGroup = group;
 	}
-
+	
+	public void loadGroupComboBox(int groupType) {
+		getGroupComboBox().removeAllItems();
+		String [] groups = null;
+		try {
+			if( groupType == DeviceMeterGroup.TEST_COLLECTION_GROUP) {
+					groups = DeviceMeterGroup.getDeviceTestCollectionGroups();
+			} else if (groupType == DeviceMeterGroup.BILLING_GROUP) {
+				groups = DeviceMeterGroup.getDeviceBillingGroups();
+			} else {
+				groups = DeviceMeterGroup.getDeviceCollectionGroups();
+			}
+			for (int i = 0; i < groups.length; i++)
+				getGroupComboBox().addItem(groups[i]);
+		} catch (SQLException e1) {
+			CTILogger.error(e1);
+		}
+	}
 }
