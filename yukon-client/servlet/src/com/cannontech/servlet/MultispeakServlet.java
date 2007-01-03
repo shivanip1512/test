@@ -144,6 +144,9 @@ public class MultispeakServlet extends HttpServlet
         int mspPrimaryCIS = 0;
         if (req.getParameter("mspPrimaryCIS") != null)
         	mspPrimaryCIS = Integer.valueOf(req.getParameter("mspPrimaryCIS")).intValue();
+        int mspPaoNameAlias = 0;
+        if (req.getParameter("mspPaoNameAlias") != null)
+        	mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
         
         if( !mspURL.endsWith("/"))
             mspURL += "/";
@@ -173,9 +176,10 @@ public class MultispeakServlet extends HttpServlet
         
         if( action.equalsIgnoreCase("Save")) {
             MultispeakFuncs.getMultispeakDao().updateMultispeakVendor(mspVendor);
-            if ( mspPrimaryCIS != mspBean.getPrimaryCIS()){
+            if ( mspPrimaryCIS != mspBean.getPrimaryCIS() || mspPaoNameAlias != mspBean.getPaoNameAlias()){
     			try
     			{
+    				boolean breakTime = false;
     				LiteYukonGroup yukGrp = DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
     				YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
     				//fill out the DB Persistent with data
@@ -185,11 +189,20 @@ public class MultispeakServlet extends HttpServlet
     					YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
     					if( MultispeakRole.MSP_PRIMARY_CB_VENDORID == grpRole.getRolePropertyID().intValue() ) {
 							grpRole.setValue(String.valueOf(mspPrimaryCIS));
-							//update any changed values in the DB
-							DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
-    						break;
+							if( !breakTime )
+								breakTime = true;
+							else
+								break;							
+    					} else if( MultispeakRole.MSP_PAONAME_ALIAS == grpRole.getRolePropertyID().intValue() ) {
+							grpRole.setValue(String.valueOf(mspPaoNameAlias));
+							if( !breakTime )
+								breakTime = true;
+							else
+								break;
     					}
-    				}				
+    				}
+					//update any changed values in the DB
+					DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
     			}
     			catch (Exception e)
     			{
@@ -281,9 +294,8 @@ public class MultispeakServlet extends HttpServlet
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
             e.printStackTrace();
         } catch (RemoteException e) {
-            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
+        	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  getXXXByMeterNo\nRemoteException Detail: "+e.getCause().toString());
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-            e.printStackTrace();
         }
         return mspObject;
     }
