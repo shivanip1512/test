@@ -32,8 +32,10 @@ public class MultispeakVendor
     private String outPassword = CtiUtilities.STRING_NONE;
     //Valid values are meternumber | devicename
     private String uniqueKey = "meternumber";
-    
-    public static int DEFAULT_PAONAME = 0;
+
+	public static int TIMEOUT = 60000;	//TODO Added this to the MultispeakRole
+
+	public static int DEFAULT_PAONAME = 0;
     public static int ACCOUNT_NUMBER_PAONAME = 1;
     public static int SERVICE_LOCATION_PAONAME = 2;
     public static int CUSTOMER_PAONAME = 3;
