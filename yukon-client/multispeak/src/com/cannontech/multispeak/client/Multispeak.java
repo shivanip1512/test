@@ -634,9 +634,7 @@ public class Multispeak implements MessageListener {
 			CTILogger.info("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			
-			CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
-			e.printStackTrace();
+			CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection\nRemoteException Detail: "+e.getCause().toString());
 		}	
 	}
     
@@ -677,9 +675,7 @@ public class Multispeak implements MessageListener {
             CTILogger.info("CB_MR service is not defined for company name: " + vendor.getCompanyName()+ ".  Method cancelled.");
             e.printStackTrace();
         } catch (RemoteException e) {
-            
-            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  Method cancelled.");
-            e.printStackTrace();
+        	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  ReadingChangedNotification\nRemoteException Detail: "+e.getCause().toString());
         }   
     }
     
@@ -714,9 +710,7 @@ public class Multispeak implements MessageListener {
             CTILogger.info("CB_CD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateConnectDisconnect cancelled.");
             e.printStackTrace();
         } catch (RemoteException e) {
-            
-            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateConnectDisconnect cancelled.");
-            e.printStackTrace();
+            CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateConnectDisconnect\nRemoteException Detail: "+e.getCause().toString());
         }   
     }
     
@@ -1293,8 +1287,7 @@ public class Multispeak implements MessageListener {
                     CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
                     e.printStackTrace();
                 } catch (RemoteException e) {
-                    CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
-                    e.printStackTrace();
+                	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  updateServiceLocation\nRemoteException Detail: "+e.getCause().toString());
                 } 
             }
             String logTemp = "";
@@ -1434,7 +1427,7 @@ public class Multispeak implements MessageListener {
            CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
            e.printStackTrace();
        } catch (RemoteException e) {
-           CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " method: getServiceLocationByMeterNo  companyName: " + mspVendor.getCompanyName() + ".");
+       	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  getServiceLocationByMeterNo\nRemoteException Detail: "+e.getCause().toString());
            CTILogger.info("A default(empty) is being used for ServiceLocation");
        }
 
