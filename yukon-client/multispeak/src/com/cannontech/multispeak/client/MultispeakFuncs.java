@@ -114,7 +114,9 @@ public class MultispeakFuncs
 	}
     
     public static SOAPHeaderElement getHeader(MultispeakVendor mspVendor) {
-        return new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword()));
+        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword()));
+        header.setPrefix("");	//Trying to eliminate "ns1" prefix for the namespace showing up.  Exceleron had problems with this.
+        return header;
     }
     
 	public static void loadResponseHeader() 
@@ -126,13 +128,11 @@ public class MultispeakFuncs
 			// Get SOAP envelope of response
 			SOAPEnvelope env = ctx.getResponseMessage().getSOAPEnvelope();
 			
-			//Create SOAP header object } } } 
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+			MultispeakVendor mspVendor = getMultispeakVendor(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
 
 			// Set Header
-			env.addHeader(header);
-		} catch (AxisFault e) {
-			// TODO Auto-generated catch block
+			env.addHeader(getHeader(mspVendor));
+		} catch (RemoteException e) {
 			CTILogger.error(e);
 		}
 	}
@@ -175,13 +175,10 @@ public class MultispeakFuncs
 	 */
 	public static void init()
 	{
-		try
-		{
+		try {
 			CTILogger.info("MSP MESSAGE RECEIVED: " + MessageContext.getCurrentContext().getCurrentMessage().getSOAPPartAsString().toString());
-		} catch (AxisFault e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (AxisFault e) {
+			CTILogger.error(e);
 		}
 		MultispeakFuncs.loadResponseHeader();
 	}
@@ -236,9 +233,8 @@ public class MultispeakFuncs
                 }
 			}
 		}
-		catch (SOAPException e)
-		{
-			e.printStackTrace();
+		catch (SOAPException e) {
+			CTILogger.error(e);
 		}
 		return companyName;
 	}
@@ -266,7 +262,7 @@ public class MultispeakFuncs
             }
         }
         catch (SOAPException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         }
         return appName;
     }    

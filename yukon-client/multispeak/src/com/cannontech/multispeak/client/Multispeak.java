@@ -15,7 +15,6 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -378,13 +377,11 @@ public class Multispeak implements MessageListener {
                 long millisTimeOut = 0; //
                 while (event.getLoadActionCode() == null && millisTimeOut < 120000)  //quit after 2 minutes
                 {
-                    try
-                    {
+                    try {
                         Thread.sleep(1000);
                         millisTimeOut += 1000;
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        CTILogger.error(e);
                     }
                 }
                 if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
@@ -435,13 +432,11 @@ public class Multispeak implements MessageListener {
                 long millisTimeOut = 0; //
                 while (!event.getDevice().isPopulated() && millisTimeOut < 120000)  //quit after 2 minutes
                 {
-                    try
-                    {
+                    try {
                         Thread.sleep(1000);
                         millisTimeOut += 1000;
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        CTILogger.error(e);
                     }
                 }
                 if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
@@ -563,12 +558,11 @@ public class Multispeak implements MessageListener {
             String meterNumber = cdEvent.getObjectID();
             LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNumber);
             if (lPao == null) {
-                ErrorObject err = MultispeakFuncs.getErrorObject(meterNumber, 
-                                                                 "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
+                ErrorObject err = MultispeakFuncs.getErrorObject(meterNumber,
+                												 "MeterNumber (" + meterNumber + ") - Invalid Yukon MeterNumber.",
                                                                  "Meter");
                 errorObjects.add(err);
-            }
-            else {
+            } else if (MultispeakFuncs.getMultispeakDao().isCDSupportedMeter(meterNumber, vendor.getUniqueKey())){
                 long id = generateMessageID();      
                 CDEvent event = new CDEvent(vendor, id);
                 getEventsMap().put(new Long(id), event);
@@ -583,8 +577,12 @@ public class Multispeak implements MessageListener {
                 pilRequest = new Request(lPao.getYukonID(), commandStr, id);
                 pilRequest.setPriority(13); //just below Client applications
                 getPilConn().write(pilRequest);
+            } else {
+                ErrorObject err = MultispeakFuncs.getErrorObject(meterNumber, 
+                												"MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
+                												"Meter");
+                errorObjects.add(err);
             }
-            
         }
             
         if( !errorObjects.isEmpty())
@@ -618,9 +616,8 @@ public class Multispeak implements MessageListener {
 			
 			OA_ODSoap_PortType port = service.getOA_ODSoap();
 			
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(vendor.getOutUserName(), vendor.getOutPassword()));
-			((OA_ODSoap_BindingStub)port).setHeader(header);
-			((OA_ODSoap_BindingStub)port).setTimeout(10000);	//should respond within 10 seconds, right?
+			((OA_ODSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
+			((OA_ODSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);			
 	
 			OutageDetectionEvent[] odEventArray = new OutageDetectionEvent[1];
 			odEventArray[0] = odEvent.getOutageDetectionEvent();
@@ -629,13 +626,13 @@ public class Multispeak implements MessageListener {
 			ArrayOfErrorObject errObjects = port.ODEventNotification(arrayODEvents);
 			if( errObjects != null)
 				MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
-		} catch (ServiceException e)
-		{	
-			CTILogger.info("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
-			e.printStackTrace();
+		} catch (ServiceException e) {	
+			CTILogger.error("OA_OD service is not defined for company(" + vendor.getCompanyName()+ ") - ODEventNotification failed.");
+			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
 		} catch (RemoteException e) {
-			CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection\nRemoteException Detail: "+e.getCause().toString());
-		}	
+			CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + vendor.getCompanyName() + ")");
+			CTILogger.error("RemoteExceptionDetail: " + e.getCause().toString());
+		}
 	}
     
     /**
@@ -659,10 +656,9 @@ public class Multispeak implements MessageListener {
             
             CB_MRSoap_PortType port = service.getCB_MRSoap();
             
-            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(vendor.getOutUserName(), vendor.getOutPassword()));
-            ((CB_MRSoap_BindingStub)port).setHeader(header);
-            ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
-    
+            ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
+            ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
+            
             MeterRead [] meterReadArray = new MeterRead[1];
             meterReadArray[0] = meterReadEvent.getDevice().getMeterRead();
             ArrayOfMeterRead arrayMeterRead = new ArrayOfMeterRead(meterReadArray);
@@ -670,12 +666,12 @@ public class Multispeak implements MessageListener {
             ArrayOfErrorObject errObjects = port.readingChangedNotification(arrayMeterRead);
             if( errObjects != null)
                 MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
-        } catch (ServiceException e)
-        {   
-            CTILogger.info("CB_MR service is not defined for company name: " + vendor.getCompanyName()+ ".  Method cancelled.");
-            e.printStackTrace();
+        } catch (ServiceException e) {   
+            CTILogger.info("CB_MR service is not defined for company(" + vendor.getCompanyName()+ ") - ReadingChangedNotification failed.");
+            CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
         } catch (RemoteException e) {
-        	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  ReadingChangedNotification\nRemoteException Detail: "+e.getCause().toString());
+			CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + vendor.getCompanyName() + ")");
+			CTILogger.error("RemoteExceptionDetail: " + e.getCause().toString());
         }   
     }
     
@@ -700,18 +696,17 @@ public class Multispeak implements MessageListener {
             
             CB_CDSoap_PortType port = service.getCB_CDSoap();
             
-            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(vendor.getOutUserName(), vendor.getOutPassword()));
-            ((CB_CDSoap_BindingStub)port).setHeader(header);
-            ((CB_CDSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+            ((CB_CDSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
+            ((CB_CDSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
 
-            port.CDStateChangedNotification(cdEvent.getMeterNumber().toString(), cdEvent.getLoadActionCode());
-        } catch (ServiceException e)
-        {   
-            CTILogger.info("CB_CD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateConnectDisconnect cancelled.");
-            e.printStackTrace();
+            port.CDStateChangedNotification(cdEvent.getMeterNumber()+"x", cdEvent.getLoadActionCode());
+        } catch (ServiceException e) {   
+            CTILogger.info("CB_CD service is not defined for company(" + vendor.getCompanyName()+ ") - CDStateChangedNotification failed.");
+            CTILogger.error("ServiceExceptionDetail: "+e.getCause().toString());
         } catch (RemoteException e) {
-            CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateConnectDisconnect\nRemoteException Detail: "+e.getCause().toString());
-        }   
+        	CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + vendor.getCompanyName() + ")");
+			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
+		}   
     }
     
 	/**
@@ -1271,7 +1266,7 @@ public class Multispeak implements MessageListener {
                     ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
                     CB_MRSoap_PortType port = service.getCB_MRSoap();
                     ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
-                    ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+                    ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
                     
                     ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
                     if( mspMeters != null && mspMeters.getMeter() != null) {
@@ -1283,11 +1278,12 @@ public class Multispeak implements MessageListener {
                             }
                         }
                     }
-                } catch (ServiceException e) {   
-                    CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-                    e.printStackTrace();
+                } catch (ServiceException e) {
+                	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getMeterByServLoc failed.");
+        			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
                 } catch (RemoteException e) {
-                	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  updateServiceLocation\nRemoteException Detail: "+e.getCause().toString());
+                	CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ")");
+        			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
                 } 
             }
             String logTemp = "";
@@ -1420,17 +1416,17 @@ public class Multispeak implements MessageListener {
            CB_MRSoap_PortType port = service.getCB_MRSoap();
            
            ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
-           ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+           ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
            
-   		mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);            
-       } catch (ServiceException e) {   
-           CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-           e.printStackTrace();
+   			mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);            
+       } catch (ServiceException e) {
+       	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getServiceLocationByMeterNo failed.");
+			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
        } catch (RemoteException e) {
-       	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  getServiceLocationByMeterNo\nRemoteException Detail: "+e.getCause().toString());
+       	CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
+			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
            CTILogger.info("A default(empty) is being used for ServiceLocation");
        }
-
-		return mspServiceLocation;
+       return mspServiceLocation;
    }
 }

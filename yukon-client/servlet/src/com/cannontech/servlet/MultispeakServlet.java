@@ -22,7 +22,6 @@ import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -33,7 +32,6 @@ import com.cannontech.multispeak.client.MultispeakBean;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfString;
@@ -49,7 +47,6 @@ import com.cannontech.multispeak.service.MR_CBSoap_BindingStub;
 import com.cannontech.multispeak.service.MR_EASoap_BindingStub;
 import com.cannontech.multispeak.service.MR_OASoap_BindingStub;
 import com.cannontech.multispeak.service.MspObject;
-import com.cannontech.multispeak.service.MultiSpeakMsgHeader;
 import com.cannontech.multispeak.service.OA_MRSoap_BindingStub;
 import com.cannontech.multispeak.service.OA_ODSoap_BindingStub;
 import com.cannontech.multispeak.service.OD_OASoap_BindingStub;
@@ -277,7 +274,7 @@ public class MultispeakServlet extends HttpServlet
             ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
             CB_MRSoap_PortType port = service.getCB_MRSoap();
             ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
-            ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+            ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
 
             if( command.equalsIgnoreCase("getServiceLocationByMeterNo")) {
                 port.getServiceLocationByMeterNo(meterNumber);
@@ -289,12 +286,13 @@ public class MultispeakServlet extends HttpServlet
                             
 //            ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
 
-        } catch (ServiceException e) {   
-            CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
+        } catch (ServiceException e) {
+        	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getXXXByMeterNo failed.");
+			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-            e.printStackTrace();
         } catch (RemoteException e) {
-        	CTILogger.info("EXCEPTION! TargetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  getXXXByMeterNo\nRemoteException Detail: "+e.getCause().toString());
+        	CTILogger.error("TargetService: " + endpointURL + " - getXXXByMeterNo (" + mspVendor.getCompanyName() + ")");
+			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
         }
         return mspObject;
@@ -373,13 +371,12 @@ public class MultispeakServlet extends HttpServlet
     public static ArrayOfErrorObject pingURL(MultispeakVendor mspVendor, String serviceURL, String service) throws RemoteException
     {
         ArrayOfErrorObject objects = new ArrayOfErrorObject();
-        MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword());
-        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msHeader);
+        SOAPHeaderElement header = MultispeakFuncs.getHeader(mspVendor);
         URL instanceURL = null;
         try {
             instanceURL = new URL(serviceURL);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         }
         
         if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
@@ -446,13 +443,12 @@ public class MultispeakServlet extends HttpServlet
     public static ArrayOfString getMethods(MultispeakVendor mspVendor, String serviceURL, String service) throws RemoteException
     {
         ArrayOfString objects = new ArrayOfString();
-        MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword());
-        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msHeader);
+        SOAPHeaderElement header = MultispeakFuncs.getHeader(mspVendor);
         URL instanceURL = null;
         try {
             instanceURL = new URL(serviceURL);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         }
         if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
             OD_OASoap_BindingStub instance = new OD_OASoap_BindingStub(instanceURL, new Service());
