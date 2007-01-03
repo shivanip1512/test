@@ -157,19 +157,19 @@ public class SystemLogModel extends ReportModelBase
 			sql.append(" WHERE (DATETIME > ?) AND (DATETIME <= ?)" + 
 						" AND P.POINTID = SL.POINTID " + 
 						" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+
+			if( getPaoIDs()!= null)	//null load groups means ALL groups!
+			{
+				sql.append(" AND P.PAOBJECTID in (" + getPaoIDs()[0] ); 
+				for (int i = 1; i < getPaoIDs().length; i++)
+					sql.append(", " + getPaoIDs()[i]+" ");
+				sql.append(") ");
+			}
 			
 			//if LMControlLog model, let's trust the YUKONPAOBJECT.class value = 'GROUP'
 			// rather than the SYSTEMLOG.type value == 3 (LOADMANAGMENT)	SN / COREY
-			if(this instanceof LMControlLogModel)
-			{
+			if(this instanceof LMControlLogModel) {
 				sql.append(" AND PAOCLASS = '" + DeviceClasses.STRING_CLASS_GROUP + "' ");
-				if( getPaoIDs() != null)
-				{
-					sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-					for (int i = 1; i < getPaoIDs().length; i++)
-						sql.append(" , " + getPaoIDs()[i]);
-					sql.append(" )");					
-				}
 			}
 			else 
 			{
