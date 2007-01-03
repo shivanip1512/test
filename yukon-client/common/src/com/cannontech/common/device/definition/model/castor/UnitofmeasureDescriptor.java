@@ -63,27 +63,21 @@ public class UnitofmeasureDescriptor extends org.exolab.castor.xml.util.XMLClass
         //-- initialize attribute descriptors
         
         //-- _value
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_value", "value", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_value", "value", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Unitofmeasure target = (Unitofmeasure) object;
-                if(!target.hasValue())
-                    return null;
-                return new java.lang.Integer(target.getValue());
+                return target.getValue();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     Unitofmeasure target = (Unitofmeasure) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteValue();
-                        return;
-                    }
-                    target.setValue( ((java.lang.Integer)value).intValue());
+                    target.setValue( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -100,7 +94,8 @@ public class UnitofmeasureDescriptor extends org.exolab.castor.xml.util.XMLClass
         //-- validation code for: _value
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            IntegerValidator typeValidator = new IntegerValidator();
+            StringValidator typeValidator = new StringValidator();
+            typeValidator.setWhiteSpace("preserve");
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

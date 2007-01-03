@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.exolab.castor.xml.Unmarshaller;
+import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -22,7 +23,12 @@ import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
 import com.cannontech.common.device.definition.model.castor.Point;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -37,6 +43,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private InputStream inputFile = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private String javaConstantClassName = null;
+    private UnitMeasureDao unitMeasureDao = null;
+    private StateDao stateDao = null;
 
     // Map<DeviceType, Map<Attribute, PointTemplate>>
     private Map<Integer, Map<Attribute, PointTemplate>> deviceAttributePointTemplateMap = null;
@@ -63,6 +71,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     public void setJavaConstantClassName(String javaConstantClassName) {
         this.javaConstantClassName = javaConstantClassName;
+    }
+
+    public void setStateDao(StateDao stateDao) {
+        this.stateDao = stateDao;
+    }
+
+    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
+        this.unitMeasureDao = unitMeasureDao;
     }
 
     public Set<Attribute> getAvailableAttributes(DeviceBase device) {
@@ -226,8 +242,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         int constantValue = ReflectivePropertySearcher.getIntForFQN(javaConstantClassName,
                                                                     javaConstant);
         if (deviceType != constantValue) {
-            throw new Exception("Java constant value for '" + javaConstant + "' (" + constantValue
-                    + ") does not match value in xml file (" + deviceType + ")");
+            throw new Exception("Java constant value for " + javaConstant + ": " + constantValue
+                    + " does not match value in deviceDefinition.xml file " + deviceType);
         }
 
     }
@@ -335,10 +351,18 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                                   .doubleValue();
             }
             if (point.getPointChoice().getPointChoiceSequence().getUnitofmeasure() != null) {
-                unitOfMeasure = point.getPointChoice()
-                                     .getPointChoiceSequence()
-                                     .getUnitofmeasure()
-                                     .getValue();
+                String unitOfMeasureName = point.getPointChoice()
+                                                .getPointChoiceSequence()
+                                                .getUnitofmeasure()
+                                                .getValue();
+                LiteUnitMeasure unitMeasure = null;
+                try {
+                    unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
+                } catch (DataAccessException e) {
+                    throw new NotFoundException("Unit of measure does not exist: "
+                            + unitOfMeasureName + ". Check the deviceDefinition.xml file ");
+                }
+                unitOfMeasure = unitMeasure.getUomID();
             }
         }
         template.setMultiplier(multiplier);
@@ -346,7 +370,16 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
         if (point.getPointChoice().getStategroup() != null) {
-            stateGroupId = point.getPointChoice().getStategroup().getValue();
+
+            String stateGroupName = point.getPointChoice().getStategroup().getValue();
+            LiteStateGroup stateGroup = null;
+            try {
+                stateGroup = stateDao.getLiteStateGroup(stateGroupName);
+            } catch (NotFoundException e) {
+                throw new NotFoundException("State group does not exist: " + stateGroupName
+                        + ". Check the deviceDefinition.xml file ");
+            }
+            stateGroupId = stateGroup.getStateGroupID();
         }
         template.setStateGroupId(stateGroupId);
 

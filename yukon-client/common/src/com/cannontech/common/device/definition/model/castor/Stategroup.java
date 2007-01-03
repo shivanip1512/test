@@ -36,12 +36,7 @@ public class Stategroup implements java.io.Serializable {
     /**
      * Field _value
      */
-    private int _value;
-
-    /**
-     * keeps track of state for field: _value
-     */
-    private boolean _has_value;
+    private java.lang.String _value;
 
 
       //----------------/
@@ -59,36 +54,15 @@ public class Stategroup implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method deleteValue
-     * 
-     */
-    public void deleteValue()
-    {
-        this._has_value= false;
-    } //-- void deleteValue() 
-
-    /**
      * Returns the value of field 'value'.
      * 
-     * @return int
+     * @return String
      * @return the value of field 'value'.
      */
-    public int getValue()
+    public java.lang.String getValue()
     {
         return this._value;
-    } //-- int getValue() 
-
-    /**
-     * Method hasValue
-     * 
-     * 
-     * 
-     * @return boolean
-     */
-    public boolean hasValue()
-    {
-        return this._has_value;
-    } //-- boolean hasValue() 
+    } //-- java.lang.String getValue() 
 
     /**
      * Method isValid
@@ -141,11 +115,10 @@ public class Stategroup implements java.io.Serializable {
      * 
      * @param value the value of field 'value'.
      */
-    public void setValue(int value)
+    public void setValue(java.lang.String value)
     {
         this._value = value;
-        this._has_value = true;
-    } //-- void setValue(int) 
+    } //-- void setValue(java.lang.String) 
 
     /**
      * Method unmarshal

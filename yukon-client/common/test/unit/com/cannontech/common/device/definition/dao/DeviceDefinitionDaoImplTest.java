@@ -15,7 +15,12 @@ import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.common.mock.MockDevice;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 /**
@@ -36,6 +41,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                         .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
         ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
         ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(MockPaoGroups.class.getName());
+        ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
+        ((DeviceDefinitionDaoImpl) dao).setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
         ((DeviceDefinitionDaoImpl) dao).initialize();
 
         return dao;
@@ -376,6 +383,60 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         }
 
         public String getPAOTypeString(int type) {
+            return null;
+        }
+
+    }
+
+    private class MockUnitMeasureDao implements UnitMeasureDao {
+
+        public List<LiteUnitMeasure> getLiteUnitMeasures() {
+            return null;
+        }
+
+        public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
+            return null;
+        }
+
+        public LiteUnitMeasure getLiteUnitMeasure(int uomid) {
+            return null;
+        }
+
+        public LiteUnitMeasure getLiteUnitMeasure(String uomName) {
+
+            if (uomName.equals("measure0")) {
+                return new LiteUnitMeasure(0, uomName, 0, uomName);
+            } else if (uomName.equals("measure1")) {
+                return new LiteUnitMeasure(1, uomName, 0, uomName);
+            }
+            throw new IllegalArgumentException("Unit of measure doesn't exist: " + uomName);
+        }
+
+    }
+
+    private class MockStateDao implements StateDao {
+
+        public LiteState getLiteState(int stateGroupID, int rawState) {
+            return null;
+        }
+
+        public LiteStateGroup getLiteStateGroup(int stateGroupID) {
+            return null;
+        }
+
+        public LiteStateGroup getLiteStateGroup(String stateGroupName) {
+
+            if (stateGroupName.equals("state0")) {
+                return new LiteStateGroup(0);
+            }
+            throw new IllegalArgumentException("State group doesn't exist: " + stateGroupName);
+        }
+
+        public LiteState[] getLiteStates(int stateGroupID) {
+            return null;
+        }
+
+        public LiteStateGroup[] getAllStateGroups() {
             return null;
         }
 

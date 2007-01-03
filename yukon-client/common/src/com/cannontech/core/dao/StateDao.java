@@ -18,6 +18,13 @@ public interface StateDao {
 
     public LiteStateGroup getLiteStateGroup(int stateGroupID);
 
+    /**
+     * Method to get a state group by name
+     * @param stateGroupName - Name of state group
+     * @return State group
+     */
+    public LiteStateGroup getLiteStateGroup(String stateGroupName);
+
     public LiteState[] getLiteStates(int stateGroupID);
 
     /**

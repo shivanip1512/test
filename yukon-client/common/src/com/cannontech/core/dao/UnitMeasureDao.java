@@ -26,5 +26,12 @@ public interface UnitMeasureDao {
      * @param pointID int
      */
     public LiteUnitMeasure getLiteUnitMeasure(int uomid);
+    
+    /**
+     * Method to get a unit of measure by name
+     * @param uomName - Name of unit of measure
+     * @return - A unit of measure
+     */
+    public LiteUnitMeasure getLiteUnitMeasure(String uomName);
 
 }

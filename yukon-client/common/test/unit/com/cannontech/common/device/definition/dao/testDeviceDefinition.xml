@@ -18,7 +18,7 @@ This file contains default device and point information for all of the devices i
                 <name>pulse1</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="1"/>
+                <unitofmeasure value="measure1"/>
             </point>
             
             <point init="true" type="DemandAccumulator">
@@ -26,7 +26,7 @@ This file contains default device and point information for all of the devices i
                 <name>demand1</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="0"/>
+                <unitofmeasure value="measure0"/>
             </point>
             
             <point init="true" type="Analog">
@@ -34,13 +34,13 @@ This file contains default device and point information for all of the devices i
                 <name>analog1</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="1"/>
+                <unitofmeasure value="measure1"/>
                 
             </point>
                 <point type="Status">
                 <name>status1</name>
                 <offset value="1"/>
-                <stategroup value="0"/>
+                <stategroup value="state0"/>
             </point>
             
         </points>
@@ -54,7 +54,7 @@ This file contains default device and point information for all of the devices i
                 <name>analog1</name>
                 <offset value="1"/>
                 <multiplier value=".0001"/>
-                <unitofmeasure value="1"/>
+                <unitofmeasure value="measure1"/>
             </point>
         </points>
     </device>
@@ -69,7 +69,7 @@ This file contains default device and point information for all of the devices i
             <point type="Status">
                 <name>status1</name>
                 <offset value="2000"/>
-                <stategroup value="0"/>
+                <stategroup value="state0"/>
             </point>
         </points>
     </device>

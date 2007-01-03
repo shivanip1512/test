@@ -54,6 +54,15 @@ public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
         
         return lum;
     }
+
+    public LiteUnitMeasure getLiteUnitMeasure(String uomName)  {        
+        String sql = liteUoMSql + " where LongName=?";
+        
+        LiteUnitMeasure lum = (LiteUnitMeasure)
+        jdbcOps.queryForObject(sql, new Object[] { uomName }, liteUnitMeasureRowMapper);
+        
+        return lum;
+    }
     
     public List<LiteUnitMeasure> getLiteUnitMeasures() {
         List<LiteUnitMeasure> unitMeasures = 

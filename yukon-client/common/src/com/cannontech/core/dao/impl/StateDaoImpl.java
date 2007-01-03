@@ -1,8 +1,11 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
@@ -53,6 +56,20 @@ public final class StateDaoImpl implements StateDao
 	{
 		return (LiteStateGroup)
 			databaseCache.getAllStateGroupMap().get( new Integer(stateGroupID) );
+	}
+
+    @SuppressWarnings("unchecked")
+    public LiteStateGroup getLiteStateGroup(String stateGroupName) 
+	{
+	    Map allStateGroupMap = databaseCache.getAllStateGroupMap();
+        Collection<LiteStateGroup> stateGroups = allStateGroupMap.values();
+        for(LiteStateGroup group : stateGroups){
+            if(stateGroupName.equals(group.getStateGroupName())){
+                return group;
+            }
+        }
+        
+        throw new NotFoundException("State group '" + stateGroupName + "' doesn't exist");
 	}
 	
 	/* (non-Javadoc)

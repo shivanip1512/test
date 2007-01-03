@@ -78,13 +78,13 @@
                                     </xs:element>
                                     <xs:element name="unitofmeasure" maxOccurs="1">
                                         <xs:complexType>
-                                            <xs:attribute name="value" type="xs:integer" minOccurs="1" maxOccurs="1" />
+                                            <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
                                         </xs:complexType>
                                     </xs:element>
                                 </xs:sequence>
                                 <xs:element name="stategroup" maxOccurs="1">
                                     <xs:complexType>
-                                        <xs:attribute name="value" type="xs:integer" minOccurs="1" maxOccurs="1" />
+                                        <xs:attribute name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
                                     </xs:complexType>
                                 </xs:element>
                             </xs:choice>

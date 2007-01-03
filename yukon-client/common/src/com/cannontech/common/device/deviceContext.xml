@@ -18,6 +18,8 @@
         <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
         <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
+        <property name="unitMeasureDao" ref="unitMeasureDao" />
+        <property name="stateDao" ref="stateDao" />
     </bean>
 	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" singleton="true" />
 </beans>
