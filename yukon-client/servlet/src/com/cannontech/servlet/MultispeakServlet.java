@@ -288,11 +288,11 @@ public class MultispeakServlet extends HttpServlet
 
         } catch (ServiceException e) {
         	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getXXXByMeterNo failed.");
-			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
+			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
         } catch (RemoteException e) {
         	CTILogger.error("TargetService: " + endpointURL + " - getXXXByMeterNo (" + mspVendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
+			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
         }
         return mspObject;

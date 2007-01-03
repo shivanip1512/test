@@ -628,10 +628,10 @@ public class Multispeak implements MessageListener {
 				MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
 		} catch (ServiceException e) {	
 			CTILogger.error("OA_OD service is not defined for company(" + vendor.getCompanyName()+ ") - ODEventNotification failed.");
-			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
+			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
 		} catch (RemoteException e) {
 			CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + vendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: " + e.getCause().toString());
+			CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
 		}
 	}
     
@@ -668,10 +668,10 @@ public class Multispeak implements MessageListener {
                 MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
         } catch (ServiceException e) {   
             CTILogger.info("CB_MR service is not defined for company(" + vendor.getCompanyName()+ ") - ReadingChangedNotification failed.");
-            CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
+            CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
         } catch (RemoteException e) {
 			CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + vendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: " + e.getCause().toString());
+			CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
         }   
     }
     
@@ -702,10 +702,10 @@ public class Multispeak implements MessageListener {
             port.CDStateChangedNotification(cdEvent.getMeterNumber()+"x", cdEvent.getLoadActionCode());
         } catch (ServiceException e) {   
             CTILogger.info("CB_CD service is not defined for company(" + vendor.getCompanyName()+ ") - CDStateChangedNotification failed.");
-            CTILogger.error("ServiceExceptionDetail: "+e.getCause().toString());
+            CTILogger.error("ServiceExceptionDetail: "+e.getMessage());
         } catch (RemoteException e) {
         	CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + vendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
+			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
 		}   
     }
     
@@ -1280,10 +1280,10 @@ public class Multispeak implements MessageListener {
                     }
                 } catch (ServiceException e) {
                 	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getMeterByServLoc failed.");
-        			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
+        			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
                 } catch (RemoteException e) {
                 	CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ")");
-        			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
+        			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
                 } 
             }
             String logTemp = "";
@@ -1421,10 +1421,10 @@ public class Multispeak implements MessageListener {
    			mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);            
        } catch (ServiceException e) {
        	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getServiceLocationByMeterNo failed.");
-			CTILogger.error("ServiceExceptionDetail: " + e.getCause().toString());
+			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
        } catch (RemoteException e) {
        	CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: "+e.getCause().toString());
+			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
            CTILogger.info("A default(empty) is being used for ServiceLocation");
        }
        return mspServiceLocation;
