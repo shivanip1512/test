@@ -4,11 +4,13 @@ package com.cannontech.web.logging;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -43,16 +45,20 @@ public class LogMenuController extends LogController {
         };
         //extract local log file names and add to a list
         File[] localFiles = getLocalDir().listFiles(filter);
-        for (File logFile : localFiles) {
-            localLogList.add(logFile.getName());
+        if (!ArrayUtils.isEmpty(localFiles)) {
+            for (File logFile : localFiles) {
+                localLogList.add(logFile.getName());
+            }
         }
         
         //extract remote file names and add to a list
         File[] remoteFiles = getRemoteDir().listFiles(filter);
-        for (File logFile : remoteFiles) {
-            remoteLogList.add(logFile.getName());
+        if (!ArrayUtils.isEmpty(remoteFiles)) {
+            for (File logFile : remoteFiles) {
+                remoteLogList.add(logFile.getName());
+            }
         }
-        
+
         //add local and remote log lists to model and view
         mav.addObject("localLogList", localLogList);
         mav.addObject("remoteLogList", remoteLogList);
