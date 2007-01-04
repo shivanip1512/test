@@ -699,7 +699,7 @@ public class Multispeak implements MessageListener {
             ((CB_CDSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
             ((CB_CDSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
 
-            port.CDStateChangedNotification(cdEvent.getMeterNumber()+"x", cdEvent.getLoadActionCode());
+            port.CDStateChangedNotification(cdEvent.getMeterNumber(), cdEvent.getLoadActionCode());
         } catch (ServiceException e) {   
             CTILogger.info("CB_CD service is not defined for company(" + vendor.getCompanyName()+ ") - CDStateChangedNotification failed.");
             CTILogger.error("ServiceExceptionDetail: "+e.getMessage());
