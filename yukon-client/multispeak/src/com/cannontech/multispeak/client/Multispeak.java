@@ -1030,7 +1030,7 @@ public class Multispeak implements MessageListener {
                 List liteYukonPaoByAddressList = DaoFactory.getPaoDao().getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                 if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                     //Find a valid Template!
-                    String templateName = null;
+                	String templateName = "*Default Template";
                     ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
                     for (int j = 0; j < eItems.length; j++) {
                         ExtensionsItem eItem = eItems[j];
@@ -1038,7 +1038,7 @@ public class Multispeak implements MessageListener {
                         if ( extName.equalsIgnoreCase("AMRMeterType"))
                             templateName = eItem.getExtValue();
                     }
-                    if (templateName == null) { //Template NOT provided!
+                    /*if (templateName == null) { //Template NOT provided!
                         ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
                                                                          "Error: MeterNumber(" + meterNo + ") - AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.",
                                                                          "Meter");
@@ -1048,46 +1048,44 @@ public class Multispeak implements MessageListener {
                                        mspVendor.getCompanyName());
                                                         
                         //TODO Need to use "default" template if possible
-                    } else {    //Find template object in Yukon
-                        LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
-                        if( liteYukonPaobjectTemplate == null){ 
-                            ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                             "Error: MeterNumber(" + meterNo + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
-                                                                             "Meter");
-                            errorObjects.add(err);
+                    } */
+                    LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
+                    if( liteYukonPaobjectTemplate == null){ 
+                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                         "Error: MeterNumber(" + meterNo + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
+                                                                         "Meter");
+                        errorObjects.add(err);
+                        logMSPActivity("MeterAddNotification",
+                                       "MeterNumber(" + meterNo + ") - AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.", 
+                                       mspVendor.getCompanyName());
+                    }
+                    else {    //Valid template found
+                    	//Load the CIS serviceLocation.
+                    	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                        //Find a valid substation
+                        if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
+                            addImportData(mspMeter, mspServiceLocation, templateName, "");
                             logMSPActivity("MeterAddNotification",
-                                           "MeterNumber(" + meterNo + ") - AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.", 
+                                           "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.",
                                            mspVendor.getCompanyName());
-                        }
-                        else {    //Valid template found
-                        	//Load the CIS serviceLocation.
-                        	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
-                            //Find a valid substation
-                            if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                                addImportData(mspMeter, mspServiceLocation, templateName, "");
+                        } else {
+                            String substationName = mspMeter.getUtilityInfo().getSubstationName();
+                            List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
+                            if( routeNames.isEmpty()){
+                                ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                                 "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
+                                                                                 "Meter");
+                                errorObjects.add(err);
                                 logMSPActivity("MeterAddNotification",
-                                               "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.",
+                                               "MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") not found in Yukon. Meter was NOT added.", 
                                                mspVendor.getCompanyName());
-                            } else {
-                                String substationName = mspMeter.getUtilityInfo().getSubstationName();
-                                List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
-                                if( routeNames.isEmpty()){
-                                    ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                     "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
-                                                                                     "Meter");
-                                    errorObjects.add(err);
-                                    logMSPActivity("MeterAddNotification",
-                                                   "MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") not found in Yukon. Meter was NOT added.", 
-                                                   mspVendor.getCompanyName());
-                                }
-                                else {
-                                    addImportData(mspMeter, mspServiceLocation, templateName, substationName);
-                                    logMSPActivity("MeterAddNotification",
-                                                   "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
-                                                   mspVendor.getCompanyName());
-                                }
                             }
-                        
+                            else {
+                                addImportData(mspMeter, mspServiceLocation, templateName, substationName);
+                                logMSPActivity("MeterAddNotification",
+                                               "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
+                                               mspVendor.getCompanyName());
+                            }
                         }
                     }
                 } else { // mspAddress already exists in Yukon 
