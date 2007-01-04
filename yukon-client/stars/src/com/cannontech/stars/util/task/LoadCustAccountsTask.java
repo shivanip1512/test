@@ -69,7 +69,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 			" ba.LocationAddress1 as BAddr1, ba.LocationAddress2 as BAddr2, ba.CityName as BCity, ba.StateCode as BState, ba.ZipCode as BZip, ba.County as BCounty," +
 			" acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, " +
 			" sa.LocationAddress1 as SAddr1, sa.LocationAddress2 as SAddr2, sa.CityName as SCity, sa.StateCode as SState, sa.ZipCode as SZip, sa.County as SCounty," +
-			" si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, sub.SubstationName, sub.RouteID" +
+			" si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, sub.SubstationName, sub.LMRouteID" +
 			" FROM CustomerAccount ac, Address ba, AccountSite acs, Address sa, SiteInformation si, Substation sub, ECToAccountMapping map" +
 			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() + " AND map.AccountID = ac.AccountID" +
 			" AND ac.BillingAddressID = ba.AddressID AND ac.AccountSiteID = acs.AccountSiteID AND acs.StreetAddressID = sa.AddressID" +
