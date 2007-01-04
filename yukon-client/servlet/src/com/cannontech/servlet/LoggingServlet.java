@@ -14,6 +14,7 @@ import org.springframework.util.FileCopyUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 
 /**
@@ -23,6 +24,7 @@ import com.cannontech.clientutils.YukonLogManager;
  */
 public class LoggingServlet extends HttpServlet {
 
+    private static final String REMOTE_LOGGING_XML = "remoteLogging.xml";
     Logger logger = YukonLogManager.getLogger(LoggingServlet.class);
     /**
      *  typically c:\Yukon, but installation dependent
@@ -32,7 +34,7 @@ public class LoggingServlet extends HttpServlet {
     /**
      *  The path to the log file
      */
-    private final static String path = yukonBase + "/Server/Config/remoteLogging.xml";
+    private final static String path = yukonBase + "/Server/Config/" + REMOTE_LOGGING_XML;
     
     /**
      * default constructor
@@ -48,12 +50,14 @@ public class LoggingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
+        URL classpathUrl = CTILogger.class.getClassLoader().getResource(REMOTE_LOGGING_XML);        
         //get xml config file for logging
-        URL url = null;
         File file = new File(path);
-        if(file.canRead()) {
-            url = file.toURL();
-            FileCopyUtils.copy(url.openStream(), response.getOutputStream());
+        if (classpathUrl != null) {
+            FileCopyUtils.copy(classpathUrl.openStream(), response.getOutputStream());
+        } else if(file.canRead()) {
+            URL fileUrl = file.toURL();
+            FileCopyUtils.copy(fileUrl.openStream(), response.getOutputStream());
         } else {
             logger.error("cannot read xml config file for logging, client is only logging to console");
         }
