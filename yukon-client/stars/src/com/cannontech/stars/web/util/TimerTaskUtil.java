@@ -3,6 +3,10 @@ package com.cannontech.stars.web.util;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.task.DailyTimerTask;
@@ -17,12 +21,12 @@ import com.cannontech.stars.util.task.StarsTimerTask;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TimerTaskUtil {
+public class TimerTaskUtil implements ApplicationListener {
 
 	// Timer object for less frequently happened tasks
-	private static ScheduledExecutorService timer = YukonSpringHook.getGlobalExecutor();
+	private ScheduledExecutorService timer;
 	
-	private static void runTimerTask(StarsTimerTask timerTask) {
+	private void runTimerTask(StarsTimerTask timerTask) {
         // This class used to go to great lengths to clear and reschedule all of the classes.
         // Because it no longer does this, make sure that the tasks don't throw any exceptions.
         
@@ -47,7 +51,7 @@ public class TimerTaskUtil {
 		}
 	}
 	
-	public static void startAllTimerTasks() {
+	public void startAllTimerTasks() {
 		runTimerTask( new DailyTimerTask());
 		
 		runTimerTask( new HourlyTimerTask());
@@ -57,7 +61,7 @@ public class TimerTaskUtil {
 		CTILogger.info("Stars timer tasks started");
 	}
     
-    private static Runnable createSafeRunnable(final StarsTimerTask stt) {
+    private Runnable createSafeRunnable(final StarsTimerTask stt) {
         return new Runnable() {
             public void run() {
                 try {
@@ -67,5 +71,21 @@ public class TimerTaskUtil {
                 }
             }
         };
+    }
+
+    public void onApplicationEvent(ApplicationEvent event) {
+        // by starting the timer tasks this way, we can guarantee that
+        // calls to YukonSpringHook (and the DaoFactory) will succeed
+        if (event instanceof ContextRefreshedEvent) {
+            startAllTimerTasks();
+        }
+    }
+
+    public ScheduledExecutorService getTimer() {
+        return timer;
+    }
+
+    public void setTimer(ScheduledExecutorService timer) {
+        this.timer = timer;
     }
 }

@@ -16,20 +16,19 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class DynamicJNLPServlet extends HttpServlet
+public class DynamicJNLPServlet extends ErrorAwareInitializingServlet
 {
     private HashMap jnlpMap = new HashMap();
     private ArrayList matchList;
     private boolean parseQueryString;
 
 
-    public void init(ServletConfig config) throws ServletException
+    public void doInit(ServletConfig config) throws ServletException
     {
         super.init(config);
 

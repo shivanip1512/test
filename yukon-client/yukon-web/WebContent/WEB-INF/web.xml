@@ -157,10 +157,6 @@
         <listener-class>com.cannontech.servlet.CannonContextLoaderListener</listener-class>
     </listener>
     
-    <listener>
-        <listener-class>com.cannontech.servlet.TimerTaskInitializer</listener-class>
-    </listener>
-
     <!-- Faces Listener, that does all the startup work (configuration, init). -->
     <listener>
         <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>

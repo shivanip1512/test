@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +34,6 @@ import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
-import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -41,7 +42,7 @@ import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class CBCServlet extends HttpServlet 
+public class CBCServlet extends ErrorAwareInitializingServlet 
 {		
 	// Key used to store instances of this in the servlet context, this is the same
 	//   as the application scope on JSP pages
@@ -122,7 +123,7 @@ private CapControlCache getCapControlCache()
  * @param config javax.servlet.ServletConfig
  * @exception javax.servlet.ServletException The exception description.
  */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
+public void doInit(ServletConfig config) throws ServletException
 {
 	super.init(config);
 

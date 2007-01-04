@@ -136,7 +136,6 @@ public class DBUpdater extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("CONNECTING TO THE FOLLOWING DATABASE:");
 			getIMessageFrame().addOutput("   DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
 			getIMessageFrame().addOutput("   DB Alias     : " + CtiUtilities.getDatabaseAlias() );			
-			getIMessageFrame().addOutput("   DB URL       : " + PoolManager.getInstance().getProperty(PoolManager.URL) );			
 			
 			getUpdateCommands();
 			

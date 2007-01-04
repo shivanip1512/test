@@ -13,9 +13,12 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.clientutils.YukonLogManager;
 
@@ -144,16 +147,16 @@ public class ClientSession {
 		}
 		
 	public synchronized boolean establishSession(Frame parent) {
-		Properties dbProps = PoolManager.loadDBProperties();
-		
 		boolean success = false;
-		if(dbProps != null && !dbProps.isEmpty()) {
+		if(MasterConfigHelper.isLocalConfigAvailable()) {
 			CTILogger.info("Attempting local load of database properties...");
-			localLogin = (success = doLocalLogin(parent, dbProps));
+			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
+            localLogin = success;
 		}
 		else {
 			CTILogger.info("Attempting remote load of database properties...");
-			localLogin = !(success = doRemoteLogin(parent));
+            success = doRemoteLogin(parent);
+			localLogin = !success;
             if (success) {
                 YukonLogManager.initialize(host, port);
             }
@@ -188,39 +191,29 @@ public class ClientSession {
      */
     public synchronized boolean establishDefServerSession()
     {
-        Properties dbProps = PoolManager.loadDBProperties();
-        
         boolean success = false;
-        if(dbProps != null && !dbProps.isEmpty())
-        {
-            CTILogger.info("Attempting local load of database properties for SERVER login...");
+        CTILogger.info("Attempting local load of database properties for SERVER login...");
 
-            int userID = UserUtils.USER_ADMIN_ID;
-            LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
-            if(u != null)
-            {
-                CTILogger.debug("  Assuming SERVER loginID to be " + userID );
-                setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);      
-                success = true;
-            }
-            else
-            {
-                CTILogger.info("Unable to find default SERVER loginID of " + userID );
-                success = false;
-            }
-                
+        int userID = UserUtils.USER_ADMIN_ID;
+        LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
+        if(u != null)
+        {
+            CTILogger.debug("  Assuming SERVER loginID to be " + userID );
+            setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);      
+            success = true;
         }
         else
         {
-            CTILogger.info("Unable to find local copy of db.properties for SERVER login");
+            CTILogger.info("Unable to find default SERVER loginID of " + userID );
             success = false;
-        }           
-        
+        }
+            
         return success;
     }
     
-	private boolean doLocalLogin(Frame p, Properties props) {
-		PoolManager.setDBProperties(props);
+	private boolean doLocalLogin(Frame p, ConfigurationSource configSource) {
+		//PoolManager.setDBProperties(props);
+        PoolManager.setConfigurationSource(configSource);
 		
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		int userID = prefs.getCurrentUserID();
@@ -282,23 +275,23 @@ public class ClientSession {
             }
             
             String localSessionId = LoginSupport.getSessionID(jwsHost, jwsPort, jwsUser, jwsPassword);
-            
-            Properties dbProps = LoginSupport.getDBProperties(localSessionId, jwsHost, jwsPort);
-            if(!dbProps.isEmpty()) {
-                PoolManager.setDBProperties(dbProps);
-                //Do not log in the user again
-                LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(jwsUser);
-                if(u != null) {
-                    //score! we found them
-                    setSessionInfo(u, localSessionId, jwsHost, jwsPort);
-                    
-                    return true;
-                } else {
-                    //ooh, thats bad.
-                    CTILogger.info("Server returned valid session ID but user \"" + jwsUser + "\" couldn't be found in the local cache. Aborting JWS Login");                   
-                }
+            MasterConfigHelper.setRemoteHostAndPort(jwsHost, jwsPort);
+            MasterConfigHelper.setSessionId(localSessionId);
+            ConfigurationSource config = MasterConfigHelper.getConfiguration();
+            PoolManager.setConfigurationSource(config);
+            // force load of the application context
+            YukonSpringHook.getContext();
+
+            //Do not log in the user again
+            LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(jwsUser);
+            if(u != null) {
+                //score! we found them
+                setSessionInfo(u, localSessionId, jwsHost, jwsPort);
+                
+                return true;
             } else {
-                CTILogger.info("Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding. Aborting JWS Login");
+                //ooh, thats bad.
+                CTILogger.info("Server returned valid session ID but user \"" + jwsUser + "\" couldn't be found in the local cache. Aborting JWS Login");                   
             }
             return true;
         } catch (Exception e) {
@@ -318,23 +311,23 @@ public class ClientSession {
 		{
 			if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
 				// have a session info already lets try it
-				Properties props = LoginSupport.getDBProperties(sessionID, host, port);
-				if(!props.isEmpty())
-                {
-                    //load both DB and log properties
-					PoolManager.setDBProperties(props);
-                    
-					//LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
-					//already 'logged in' so we try to re-establish the login
-					// with the existing credentials
-					String oldUserName = prefs.getDefaultUsername();
-					String oldPassword = prefs.getDefaultPassword();
-					LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);					
-					if(u != null) {
-						//score! we found them
-						setSessionInfo(u, sessionID, host, port);
-						return true;
-					}
+                MasterConfigHelper.setRemoteHostAndPort(host, port);
+                MasterConfigHelper.setSessionId(sessionID);
+                
+                ConfigurationSource config = MasterConfigHelper.getConfiguration();
+                PoolManager.setConfigurationSource(config);
+                // force load of the application context
+                YukonSpringHook.getContext();
+                
+				//already 'logged in' so we try to re-establish the login
+				// with the existing credentials
+				String oldUserName = prefs.getDefaultUsername();
+				String oldPassword = prefs.getDefaultPassword();
+				LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);					
+				if(u != null) {
+					//score! we found them
+					setSessionInfo(u, sessionID, host, port);
+					return true;
 				}
 			}  // current session didn't work out, lets try to establish a new one
 		}
@@ -343,10 +336,16 @@ public class ClientSession {
 			CTILogger.error("Unable to use old credentials, forcing login process");
 		}
 
+        // if we get here, we need to release the application context
+        YukonSpringHook.shutdownContext();
+        
 		if (tryWebStartLogin()) {
 		    return true;
         }
 
+		// if we get here, we need to release the application context
+		YukonSpringHook.shutdownContext();
+		
 		LoginPanel lp = makeRemoteLoginPanel();
 		while(collectInfo(p, lp)) {
 			try {
@@ -357,36 +356,42 @@ public class ClientSession {
 				continue;
 			}
 			
-			Properties dbProps = LoginSupport.getDBProperties(sessionID, lp.getYukonHost(), lp.getYukonPort());
-			if(!dbProps.isEmpty()) {
-				PoolManager.setDBProperties(dbProps);
-				//Do not log in the user again
-				LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(lp.getUsername());
-				if(u != null) {
-					//score! we found them
-				  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
-				  	
-					boolean saveInfo = lp.isRememberPassword();
-					prefs.setDefaultRememberPassword(saveInfo);
-					if(saveInfo) {
-						prefs.setDefaultUsername(lp.getUsername());
-						prefs.setDefaultPassword(lp.getPassword());
-					}
-					else {
-						prefs.setDefaultUsername("");
-						prefs.setDefaultPassword("");
-					}
-				  	return true;
-				}
-				else {
-					//ooh, thats bad.
-					displayMessage(p, "Server returned valid session ID but user id: " + lp.getUsername() + " couldn't be found in the local cache.  This is either a bug or a configuration problem.", "Error");					
-				}
-			}
-			//sometimes inside the IDE this returns no properties
-			// make the programmer aware
-			else
-				displayMessage(p, "Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding.", "Error");
+            try {
+                MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getYukonPort());
+                MasterConfigHelper.setSessionId(sessionID);
+                
+                ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
+                PoolManager.setConfigurationSource(configuration);
+                // force load of the application context
+                YukonSpringHook.getContext();
+                
+                //Do not log in the user again
+                LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(lp.getUsername());
+                if(u != null) {
+                	//score! we found them
+                  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
+                  	
+                	boolean saveInfo = lp.isRememberPassword();
+                	prefs.setDefaultRememberPassword(saveInfo);
+                	if(saveInfo) {
+                		prefs.setDefaultUsername(lp.getUsername());
+                		prefs.setDefaultPassword(lp.getPassword());
+                	}
+                	else {
+                		prefs.setDefaultUsername("");
+                		prefs.setDefaultPassword("");
+                	}
+                  	return true;
+                }
+                else {
+                	//ooh, thats bad.
+                	String msg = "Server returned valid session ID but user id: " + lp.getUsername() + " couldn't be found in the local cache.  This is either a bug or a configuration problem.";
+                    displayMessage(p, msg, "Error");					
+                }
+            } catch (RuntimeException e) {
+                String msg = "Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding.";
+                displayMessage(p, msg, "Error");
+            }
 				
 		}
 		return false;		 
@@ -424,6 +429,7 @@ public class ClientSession {
 	}
 	
 	private void displayMessage(Frame p, String msg, String title) {
+        CTILogger.info(title + ": " + msg);
 		JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE); 
 	}
 	

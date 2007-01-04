@@ -55,6 +55,8 @@ function dispStatusMsg(msgStr) { //v1.0
     <div align="center">
 		<span class="defaultText">Blue</span> items are default values.
 		<span class="redMsg">Red</span> items are required.<br><br>
+    <p>Database settings are now configured via the master.cfg file.<br> Seperate configuration for client
+       and server is no longer required.</p>
 <%
 	String retMsg = "";
 	String temp = null;
@@ -94,75 +96,6 @@ function dispStatusMsg(msgStr) { //v1.0
         <tr> 
           <td rowspan = "3" width="555" height="102" valign="top" ><br>
             <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
-			  <br>
-              <table width="635" border="0" cellspacing="0" cellpadding="3" align="center">
-                <tr> 
-                  <td align="center" colspan=2>
-				  <img src="WebConfig/yukon/databaseProps.jpg" align="center"></td>
-				</tr>
-
-                <tr> 
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('The username the database will use to login with');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  DB User Name:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="db_user_name" value="<%= PoolManager.getInstance().getProperty(PoolManager.USER) %>">
-                  </td>
-				</tr>
-                <tr> 
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('The password the database user will use to login with');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  DB User Password:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="password" name="db_user_password">
-                    <span class="defaultText"> (Used to change password only)</span>
-                  </td>
-				</tr>
-				<tr>
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('Where the database is at on your network and how to connect to it');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  DB Host:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="db_url" value="<%= PoolManager.getInstance().getProperty(PoolManager.HOST) %>">
-                    <span class="defaultText"> dbserver.here.com</span> </td>
-                </tr>
-				<tr>
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('Where the database is at on your network and how to connect to it');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  DB Port:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="db_port" value="<%= PoolManager.getInstance().getProperty(PoolManager.PORT) %>">
-                    <span class="defaultText"> 1433</span> </td>
-                </tr>
-                <tr> 
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('What type of database you are using');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  Database:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-					<select name="db_driver">
-					<option value="jtds" <% if( PoolManager.getInstance().isJTDS() ) {%> SELECTED <%}%> > SQL Server (JTDS)</option>
-					<option value="sql" <% if( PoolManager.getInstance().isMS() ) {%> SELECTED <%}%> > SQL Server (MS)</option>
-					<option value="oracle" <% if( PoolManager.getInstance().isOracle() ) {%> SELECTED <%}%> > Oracle </option>
-					</select>					
-                  </td>
-				</tr>
-				<tr>
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('Database service name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  Service Name(Optional):</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="db_service" value="<%= PoolManager.getInstance().getProperty(PoolManager.SERVICE) %>">
-                    </td>
-                </tr>
-				<tr>
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('The number of DB connections initially created in the pool');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  Initial DB Connections:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="db_initconns" value="<%= PoolManager.getInstance().getProperty(PoolManager.INITCONNS) %>"><span class="defaultText"> 2</span> </td>
-                </tr>
-				<tr>
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('The maximum number of DB connections used');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  Max DB Connections:</td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="max_initconns" value="<%= PoolManager.getInstance().getProperty(PoolManager.MAXCONNS) %>"><span class="defaultText"> 6</span> </td>
-                </tr>
-
-              </table>
-			  <br><br><br>              
               <table width="635" border="0" cellspacing="0" cellpadding="3" align="center">
 			  
                 <tr> 

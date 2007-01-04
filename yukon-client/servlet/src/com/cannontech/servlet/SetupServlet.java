@@ -3,10 +3,7 @@
  */
 package com.cannontech.servlet;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +32,6 @@ import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.YukonRoleDefs;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.user.UserUtils;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.util.URLParameters;
 
 /**
@@ -54,36 +50,6 @@ import com.cannontech.util.URLParameters;
  */
 public class SetupServlet extends HttpServlet 
 {
-	static final String LF = System.getProperty("line.separator");
-	//jdbc:microsoft:sqlserver://dbserver:1433;SelectMethod=cursor;
-	//jdbc:oracle:thin:@10.100.1.76:1521:preprod
-	
-	static final String FOOTER_TEXT = LF + LF +
-		"---------------- Some Sample driver URL strings ----------" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#- OpenSource SqlServer JDBC native driver URL           -#" + LF +
-		"#-   (Recommended driver if using SQLServer)             -#" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#yukon.url=jdbc:jtds:sqlserver://127.0.0.1:1433;APPNAME=yukon-client;TDS=8.0" + LF +
-		"" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#- Microsoft SqlServer 2000 native driver URL            -#" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#yukon.url=jdbc:microsoft:sqlserver://127.0.0.1:1433;SelectMethod=cursor" + LF +
-		"" + LF +	
-		"#---------------------------------------------------------#" + LF +
-		"#- Oracle 8.x native driver URL                          -#" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#yukon.url=jdbc:oracle:thin:@127.0.0.1:1521:yukon" + LF +
-		"" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#- ODBC SqlServer driver and URL                         -#" + LF +
-		"#-   (Only use if no other option is available)          -#" + LF +
-		"#---------------------------------------------------------#" + LF +
-		"#yukon.url=jdbc:odbc:sqlserver";
-			
-
-
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
 	{
 		URLParameters urlParams = new URLParameters();
@@ -106,40 +72,6 @@ public class SetupServlet extends HttpServlet
 			}
 
 		}
-		
-
-		
-		try
-		{
-			if( writeDBProperties(req) )
-			{
-				urlParams.put( "dbprop", "true" );
-			
-				/*** This seems to cause a NullPointerException in a loader ***/ 
-				//remove any cache elements we may have from the prvious DB
-				try
-				{
-                    //release the cache
-                    DefaultDatabaseCache.getInstance().releaseAllCache();
-
-                    //restart tomcat servlets here maybe?
-					//This seems to happen automatically by modifying the resource (db.properties)
-					String server = "http://localhost:8080/mgr/reload?path=/";
-				}
-				catch( Exception ex) {}
-
-
-                //load all group properties
-                DefaultDatabaseCache.getInstance().getYukonGroupRolePropertyMap();                
-			}
-			
-		}
-		catch( Exception e )
-		{
-			CTILogger.error( "Unable to write DB properties", e );
-			urlParams.put( "dbprop", "false" );			
-		}
-
 		
 		boolean isValidDBConn = false;
 		try
@@ -249,106 +181,6 @@ public class SetupServlet extends HttpServlet
 					yukGrpPersist, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		
 		return dbChangeMsgs;
-	}
-
-
-	private boolean writeDBProperties( final HttpServletRequest req ) throws Exception
-	{
-		final String dbal = CtiUtilities.getDatabaseAlias();
-		boolean hasChanged = false;
-		
-		String userName = ServletUtil.getParameter( req, "db_user_name");
-		hasChanged |= !userName.equalsIgnoreCase( PoolManager.getInstance().getProperty(PoolManager.USER) );
-
-		String initConns = ServletUtil.getParameter( req, "db_initconns");
-		hasChanged |= !initConns.equalsIgnoreCase( PoolManager.getInstance().getProperty(PoolManager.INITCONNS) );
-		
-		String maxConns = ServletUtil.getParameter( req, "max_initconns");
-		hasChanged |= !maxConns.equalsIgnoreCase( PoolManager.getInstance().getProperty(PoolManager.MAXCONNS) );
-
-		String pword = ServletUtil.getParameter( req, "db_user_password");
-		if( pword == null ) //if not present, use the old pwrod
-			pword = PoolManager.getInstance().getProperty(PoolManager.PASSWORD);
-
-		hasChanged |= !pword.equals( PoolManager.getInstance().getProperty(PoolManager.PASSWORD) );
-
-		
-		String url = ServletUtil.getParameter( req, "db_url");
-		String port = ServletUtil.getParameter( req, "db_port");		
-		String driver = ServletUtil.getParameter( req, "db_driver");
-		String service = ServletUtil.getParameter( req, "db_service");
-		
-
-		//icky poooh
-		if( driver.equalsIgnoreCase("sql") )
-		{				
-			url = PoolManager.DRV_SQLSERVER + "//" 
-					+ url + (service != null ? "/" + service : "") +
-					":" + port + ";SelectMethod=cursor;";			
-		}
-		else if( driver.equalsIgnoreCase("jtds") )
-		{				
-			url = PoolManager.DRV_JTDS + "//" 
-					+ url + ":" + port + ";APPNAME=yukon-client;TDS=8.0";
-
-			if( service != null )
-				url += ";INSTANCE=" + service;
-		}
-		else if( driver.equalsIgnoreCase("oracle") )
-		{
-			url = PoolManager.DRV_ORACLE + "@" 
-					+ url + ":" + port + ":" + service;
-		}
-		else
-			throw new Error("Unknown driver specified");
-
-
-		hasChanged |= !url.equals( PoolManager.getInstance().getProperty(PoolManager.URL) );
-
-
-		if( !hasChanged )
-			return false;
-
-
-
-		FileWriter fw = null;
-		try
-		{
-			File f = new File( PoolManager.getPropertyURL().getFile() );
-			fw = new FileWriter(f, false);
-			
-			//write a timestamp so we keep some sort of record in the file
-			fw.write( "#" + new Date().toString() + LF );
-
-			fw.write( dbal + PoolManager.URL + "=" + url + LF );			
-			fw.write( dbal + PoolManager.USER + "=" + userName + LF );			
-			fw.write( dbal + PoolManager.PASSWORD + "=" + pword + LF );
-			fw.write( dbal + PoolManager.INITCONNS + "=" + initConns + LF );
-			fw.write( dbal + PoolManager.MAXCONNS + "=" + maxConns + LF );
-
-
-
-			//print out some sample driver URL string just in case the user
-			// wants to edit the file directly
-			fw.write( FOOTER_TEXT );
-
-			fw.flush();			
-		}
-		finally
-		{
-			try
-			{
-				fw.close();
-			}
-			catch ( IOException io )
-			{}
-		}
-
-
-		//lets have the pool reset itself
-		//PoolManager.getInstance().resetPool();					
-	
-		return true;  //wrote the file	
 	}
 
 

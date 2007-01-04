@@ -1,158 +1,149 @@
 package com.cannontech.database;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.config.UnknownKeyException;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.debug.LoggingDataSource;
 
 public class PoolManager {
-	public static final String FILE_BASE = System.getProperty("catalina.base");
+    private static final Logger dsLog = YukonLogManager.getLogger("com.cannontech.datasource");
+    private static final Logger log = YukonLogManager.getLogger(PoolManager.class);
 	
-    public static final String DB_PROPERTIES_FILE = "/db.properties";
-
-    public static final String DRV_SQLSERVER = "jdbc:microsoft:sqlserver:";
-    public static final String DRV_ORACLE = "jdbc:oracle:thin:";
-    public static final String DRV_JTDS = "jdbc:jtds:sqlserver:";
-
-    public static final String URL = ".url";
-    public static final String USER = ".user";
-    public static final String PASSWORD = ".password";
-    public static final String MAXCONNS = ".maxconns";
-    public static final String INITCONNS = ".initconns";
-
-    // derived props stored from other props
-    public static final String HOST = "db.host";
-    public static final String PORT = "db.port";
-    public static final String SERVICE = "db.servicename"; // oracle only
-
-    public static final String[] ALL_DRIVERS = { "oracle.jdbc.OracleDriver",
-            "com.microsoft.jdbc.sqlserver.SQLServerDriver",
-            "net.sourceforge.jtds.jdbc.Driver", "sun.jdbc.odbc.JdbcOdbcDriver" // only
-                                                                                // exists
-                                                                                // for
-                                                                                // backwards
-                                                                                // compatibility
+    public static final String[] ALL_DRIVERS = { 
+        "oracle.jdbc.OracleDriver",
+        "com.microsoft.jdbc.sqlserver.SQLServerDriver",
+        "net.sourceforge.jtds.jdbc.Driver", 
+        "sun.jdbc.odbc.JdbcOdbcDriver" // only exists for backwards compatibility
     };
 
-    static private Properties dbProps;
     static private PoolManager instance;
 
     private Map<String, DataSource> pools = new HashMap<String, DataSource>();
     private Map<String, DataSource> wrappedPools = new HashMap<String, DataSource>();
 
+    private static ConfigurationSource configSource = null;
+
     private PoolManager() {
         init();
     }
 
-    /**
-     * defaults to get only properties for the DatabaseAlias in CTIUtilities
-     * @param key_
-     * @return
-     */
-    public String getProperty(String key_) {
-        return dbProps.getProperty(CtiUtilities.getDatabaseAlias() + key_);
-    }
-
-    public boolean isMS() {
-        String url = getProperty(URL);
-        if (url != null)
-            return url.indexOf(DRV_SQLSERVER) >= 0;
-        else
-            return false;
-    }
-
-    public boolean isJTDS() {
-        String url = getProperty(URL);
-        if (url != null)
-            return url.indexOf(DRV_JTDS) >= 0;
-        else
-            return false;
-    }
-
-    public boolean isOracle() {
-        String url = getProperty(URL);
-        if (url != null)
-            return url.indexOf(DRV_ORACLE) >= 0;
-        else
-            return false;
-    }
-
-
-    private void createPools(Properties props) {
-
-        Enumeration propNames = props.propertyNames();
-        while (propNames.hasMoreElements()) {
-            String name = (String) propNames.nextElement();
-            if (name.endsWith(URL)) {
-                String poolName = name.substring(0, name.lastIndexOf("."));
-                String url = props.getProperty(poolName + URL);
-                if (url == null) {
-                    CTILogger.error("No URL specified for " + poolName);
-                    continue;
-                }
-
-                String user = props.getProperty(poolName + USER);
-                String password = props.getProperty(poolName + PASSWORD);
-
-                String maxConns = props.getProperty(poolName + MAXCONNS, "0");
-                int max;
-                try {
-                    max = Integer.valueOf(maxConns).intValue();
-                } catch (NumberFormatException e) {
-                    CTILogger.error("Invalid maxconns value " + maxConns + " for " + poolName);
-                    max = 0;
-                }
-
-                String initConns = props.getProperty(poolName + INITCONNS, "0");
-                int init;
-                try {
-                    init = Integer.valueOf(initConns).intValue();
-                } catch (NumberFormatException e) {
-                    CTILogger.error("Invalid initconns value " + initConns + " for " + poolName);
-                    init = 0;
-                }
-
-                String loginTimeOut = props.getProperty(poolName + ".logintimeout",
-                                                        "5");
-                int timeOut;
-                try {
-                    timeOut = Integer.valueOf(loginTimeOut).intValue();
-                } catch (NumberFormatException e) {
-                    CTILogger.info("Invalid logintimeout value " + loginTimeOut + " for " + poolName + ", defaulting to 5");
-                    timeOut = 5;
-                }
-
-                // ConnectionPool pool =
-                // new ConnectionPool(poolName, url, user, password,
-                // max, init, timeOut );
-                // MBeanUtil.tryRegisterMBean("type=ConnectionPool,poolName=" +
-                // poolName, pool);
-
-                BasicDataSource bds = new BasicDataSource();
-                bds.setUrl(url);
-                bds.setUsername(user);
-                bds.setPassword(password);
-                bds.setInitialSize(init);
-                bds.setMaxActive(max);
-                pools.put(poolName, bds);
-                wrappedPools.put(poolName,
-                                 new TransactionAwareDataSourceProxy(bds));
+    private String getConnectionUrl() {
+        String jdbcUrl;
+        jdbcUrl = configSource.getString("DB_JAVA_URL");
+        if (StringUtils.isNotBlank(jdbcUrl)) {
+            log.debug("Using DB_JAVA_URL=" + jdbcUrl);
+            return jdbcUrl;
+        }
+        
+        // otherwise, see what dll is setup
+        
+        String rwDllName = configSource.getString("DB_RWDBDLL");
+        if ("msq15d.dll".equals(rwDllName)) {
+            // configure as microsoft
+            // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
+            StringBuilder url = new StringBuilder();
+            url.append("jdbc:jtds:sqlserver://");
+            String host = configSource.getRequiredString("DB_SQLSERVER");
+            url.append(host);
+            url.append(":1433;APPNAME=yukon-client;TDS=8.0");
+            log.debug("Found msq15d.dll, url=" + jdbcUrl);
+            return url.toString();
+        }
+        
+        if ("ora15d.dll".equals(rwDllName)) {
+            try {
+                // configure as Oracle
+                // example: jdbc:oracle:thin:@mn1db02:1521:xcel
+                StringBuilder url = new StringBuilder();
+                url.append("jdbc:oracle:thin:@");
+                String host = configSource.getRequiredString("DB_SQLSERVER_HOST");
+                url.append(host);
+                url.append(":1521:");
+                String tnsName = configSource.getRequiredString("DB_SQLSERVER");
+                url.append(tnsName);
+                
+                log.debug("Found ora15d.dll, url=" + jdbcUrl);
+                return url.toString();
+            } catch (UnknownKeyException e) {
+                throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
             }
+        }
+        
+        throw new BadConfigurationException("Unrecognized DB_RWDBDLL in master.cfg: " + rwDllName);
+    }
+
+    private void createPools() {
+        
+        // see if we have some very specific settings
+        registerDriver();
+
+        String url = getConnectionUrl();
+        log.info("DB URL=" + url);
+
+        String user = configSource.getRequiredString("DB_USERNAME");
+        log.info("DB username=" + user);
+        String password = configSource.getRequiredString("DB_PASSWORD");
+        log.info("DB password=" + password);
+
+        String maxConns = configSource.getString("DB_JAVA_MAXCONS");
+        int max = 6;
+        if (StringUtils.isNotBlank(maxConns)) {
+            max = Integer.valueOf(maxConns);
+            log.info("DB maxconns=" + max);
+        }
+
+        String initConns = configSource.getString("DB_JAVA_INITCONS");
+        int init = 0;
+        if (StringUtils.isNotBlank(initConns)) {
+            init = Integer.valueOf(initConns);
+            log.info("DB initconns=" + init);
+        }
+        
+        BasicDataSource bds = new BasicDataSource();
+        bds.setUrl(url);
+        bds.setUsername(user);
+        bds.setPassword(password);
+        bds.setInitialSize(init);
+        bds.setMaxActive(max);
+        log.debug("Created BasicDataSource:" + bds);
+
+        DataSource actualDs = bds;
+        if (dsLog.isDebugEnabled()) {
+            actualDs = new LoggingDataSource(bds);
+            log.info("DataSource logging has been enabled. DataSource is now: " + actualDs);
+        }
+
+        pools.put("yukon", actualDs);
+        wrappedPools.put("yukon", new TransactionAwareDataSourceProxy(actualDs));
+    }
+
+    private void registerDriver() {
+        try {
+            String driverName;
+            driverName = configSource.getString("DB_JAVA_DRIVER");
+            if (StringUtils.isBlank(driverName)) {
+                return;
+            }
+            Class.forName(driverName);
+            log.info("Registered JDBC driver (forced) " + driverName);
+        } catch (Exception e) {
+            log.warn("Unable to force register driver", e);
         }
     }
 
@@ -221,64 +212,6 @@ public class PoolManager {
         }
     }
 
-    public static final URL getPropertyURL() {
-        try {
-            URL retURL = PoolManager.class.getResource(DB_PROPERTIES_FILE);
-
-            if (retURL == null) // not in CLASSPATH, check catalina
-            {
-                File f = new File(FILE_BASE + DB_PROPERTIES_FILE);
-                retURL = f.toURL();
-            }
-
-            return retURL;
-        } catch (Exception ex) {
-            CTILogger.error("Something went wrong with the URL of a file", ex);
-            return null;
-        }
-
-    }
-
-    static synchronized public Properties loadDBProperties() {
-        try {
-            InputStream is = getDBInputStream();
-            
-            dbProps = new Properties();
-            dbProps.load(is);
-            
-            is.close();
-        } catch (Exception e) {
-            CTILogger.error("Can't read the properties file. " + 
-                            "Make sure db.properties is in the CLASSPATH" + 
-                            (FILE_BASE != null ? " or in the directory: " + FILE_BASE
-                                    : ""));
-        }
-        
-        return dbProps;
-
-    }
-
-    static synchronized public InputStream getDBInputStream() throws Exception {
-        InputStream is = PoolManager.class.getResourceAsStream(DB_PROPERTIES_FILE);
-
-        if (is == null) //not in CLASSPATH, check catalina
-        {
-            File f = new File(FILE_BASE + DB_PROPERTIES_FILE);
-            is = new FileInputStream(FILE_BASE + DB_PROPERTIES_FILE);
-
-            CTILogger.info(" Searching for db.properties in : " + f.getAbsolutePath());
-            CTILogger.info("   catalina.base = " + FILE_BASE);
-        } else {
-            CTILogger.info(" Using db.properties found in CLASSPATH");
-        }
-
-        return is;
-    }
-
-    static synchronized public void setDBProperties(Properties props) {
-        dbProps = props;
-    }
-
     static synchronized public PoolManager getInstance() {
         if (instance == null) {
             instance = new PoolManager();
@@ -287,22 +220,34 @@ public class PoolManager {
     }
 
     private void init() {
-        if (dbProps == null)
-            dbProps = loadDBProperties();
+        if (configSource == null) {
+            configSource = MasterConfigHelper.getConfiguration();
+        }
 
-        loadDrivers(dbProps);
-        createPools(dbProps);
+        loadDrivers();
+        createPools();
     }
 
-    private void loadDrivers(Properties props) {
+    private void loadDrivers() {
         for (String drivername : ALL_DRIVERS) {
             try {
                 Class.forName(drivername);
-                CTILogger.info("Registered JDBC driver " + drivername);
+                log.info("Registered JDBC driver " + drivername);
             } catch (ClassNotFoundException e) {
-                CTILogger.error("Can't register JDBC driver: " + drivername,e);
+                log.error("Can't register JDBC driver: " + drivername,e);
             }
         }
+    }
+
+    /**
+     * This can be used to set a new ConfigurationSource. Used primarily by the 
+     * clients after the user enters the host and login information.
+     * @param configSource
+     */
+    public static void setConfigurationSource(ConfigurationSource configSource) {
+        log.debug("Setting ConfigurationSource to " + configSource);
+        PoolManager.configSource = configSource;
+        instance = null;
     }
 
 }

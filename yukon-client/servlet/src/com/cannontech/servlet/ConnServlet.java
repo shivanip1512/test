@@ -5,11 +5,14 @@ package com.cannontech.servlet;
  * 
  */
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class ConnServlet extends javax.servlet.http.HttpServlet
+public class ConnServlet extends ErrorAwareInitializingServlet
 {
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLETS_CONTEXT_ID = "AllConns";
@@ -57,7 +60,7 @@ public void destroy()
  * @param config javax.servlet.ServletConfig
  * @exception javax.servlet.ServletException The exception description.
  */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
+public void doInit(ServletConfig config) throws ServletException
 {
 	super.init(config);
 

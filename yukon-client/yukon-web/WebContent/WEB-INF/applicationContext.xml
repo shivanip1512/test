@@ -7,6 +7,14 @@
       Currently, beans are loaded via a parent context specified in web.xml.
     
     </description>
+    
+    <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
+          factory-method="getLocalConfiguration">
+    </bean>
 
+    <bean id="timerTaskUtil" class="com.cannontech.stars.web.util.TimerTaskUtil">
+      <property name="timer" ref="globalScheduledExecutor"/>
+    </bean>
+    <bean id="timerTaskInitializer" class="com.cannontech.servlet.TimerTaskInitializer"/>
   
 </beans>

@@ -1,7 +1,6 @@
 package com.cannontech.common.config;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
@@ -58,7 +57,8 @@ public class MasterConfigMapTest extends TestCase {
         InputStream masterCfgResource = getClass().getResourceAsStream("master.cfg"); 
         assertNotNull("Could not find master.cfg in path", masterCfgResource);
         masterConfigMap = new MasterConfigMap();
-        masterConfigMap.read(new InputStreamReader(masterCfgResource));
+        masterConfigMap.setConfigSource(masterCfgResource);
+        masterConfigMap.initialize();
     }
 
 }

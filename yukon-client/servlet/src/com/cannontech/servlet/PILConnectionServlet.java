@@ -9,12 +9,15 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class PILConnectionServlet extends javax.servlet.http.HttpServlet implements MessageListener
+public class PILConnectionServlet extends ErrorAwareInitializingServlet implements MessageListener
 {
 
 	// Key used to store instances of this in the servlet context
@@ -48,7 +51,7 @@ public IServerConnection getConnection()
  * @param config javax.servlet.ServletConfig
  * @exception javax.servlet.ServletException The exception description.
  */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
+public void doInit(ServletConfig config) throws ServletException
 {
 	super.init(config);
     

@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -138,4 +137,8 @@ public class ErrorHelperFilter  implements Filter {
         servletContext.setAttribute(SERVLET_STARTUP_ERROR, t);
     }
 
+    public static boolean doesStartupErrorExist(ServletContext servletContext) {
+        return servletContext.getAttribute(SERVLET_STARTUP_ERROR) != null;
+    }
+    
 }

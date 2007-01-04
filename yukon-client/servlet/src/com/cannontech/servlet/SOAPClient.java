@@ -69,13 +69,6 @@ public class SOAPClient extends HttpServlet {
 		super();
 	}
 
-	/**
-	 * @see javax.servlet.GenericServlet#init()
-	 */
-	public void init() throws ServletException {
-		super.init();
-	}
-
 	public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
 		String referer = req.getHeader( "referer" );
 		String action = req.getParameter( "action" );

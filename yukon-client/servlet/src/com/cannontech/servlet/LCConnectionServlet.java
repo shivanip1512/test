@@ -10,6 +10,8 @@ package com.cannontech.servlet;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -33,7 +35,7 @@ import com.cannontech.web.loadcontrol.LMSession;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
 import com.cannontech.web.loadcontrol.WebCmdMsg;
 
-public class LCConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
+public class LCConnectionServlet extends ErrorAwareInitializingServlet implements java.util.Observer {
 		
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLET_CONTEXT_ID = "LCConnection";
@@ -79,7 +81,7 @@ public LoadControlClientConnection getConnection() {
  * @param config javax.servlet.ServletConfig
  * @exception javax.servlet.ServletException The exception description.
  */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
+public void doInit(ServletConfig config) throws ServletException
 {
 	super.init(config);
 

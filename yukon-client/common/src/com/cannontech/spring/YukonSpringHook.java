@@ -71,7 +71,9 @@ public class YukonSpringHook {
     
     public static void shutdownContext() {
         if (beanFactoryRef != null) {
+            applicationContext = null;
             beanFactoryRef.release();
+            beanFactoryRef = null;
         }
     }
     
