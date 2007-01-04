@@ -6,10 +6,9 @@
 <!-- logView.jsp shows the contents of a requested log file -->
 <pre>
 <b>
-<c:out value="${logFileName}" />
+${logFileName}
 </b>
-<c:out value="${logContents}" /> 
+${logContents} 
 </pre>
-</ul>
 
 </cti:standardPage>
