@@ -74,11 +74,9 @@ public class StarsRequestPword extends RequestPword {
 					LiteStarsCustAccountInformation lCustInf = 
 						(LiteStarsCustAccountInformation)allCustAccts.get(0);
 
-					LiteContact lc = (LiteContact)
-						DaoFactory.getContactDao().getContact( lCustInf.getCustomer().getPrimaryContactID() );
+					LiteContact lc = DaoFactory.getContactDao().getContact( lCustInf.getCustomer().getPrimaryContactID() );
 
-					LiteYukonUser user =
-						DaoFactory.getYukonUserDao().getLiteYukonUser( lc.getLoginID() );
+					LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser( lc.getLoginID() );
 					
 					foundData.add( " User Name: " + user.getUsername() );					
 					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
