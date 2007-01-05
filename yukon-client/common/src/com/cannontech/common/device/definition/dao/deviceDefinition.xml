@@ -22,25 +22,25 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Channel 2 kWh</name>
                 <offset value="2"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Channel 3 kWh</name>
                 <offset value="3"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Channel 4 kWh</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -54,31 +54,31 @@
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Channel 2 kW</name>
                 <offset value="2"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Channel 3 kW</name>
                 <offset value="3"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Channel 4 kW</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point init="true" type="Analog">
@@ -86,62 +86,62 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="peakDemand"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -171,61 +171,61 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value=".0001"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <name>Peak KW (Rate A KW)</name>
                 <offset value="2"/>
                 <multiplier value=".001"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value=".0001"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <name>Last Interval KW</name>
                 <offset value="10"/>
                 <multiplier value=".001"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -244,61 +244,61 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value=".0001"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <name>Peak KW (Rate A KW)</name>
                 <offset value="2"/>
                 <multiplier value=".01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value=".0001"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <name>Last Interval KW</name>
                 <offset value="10"/>
                 <multiplier value=".01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -318,25 +318,25 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 2)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 3)</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 4)</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -348,44 +348,44 @@
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point init="true" type="DemandAccumulator">
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 2)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 3)</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Voltage</name>
@@ -397,7 +397,7 @@
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Max Volts</name>
@@ -415,7 +415,7 @@
                 <name>Frozen Peak Demand</name>
                 <offset value="21"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Frozen Max Volts</name>
@@ -433,19 +433,19 @@
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 2)</name>
                 <offset value="102"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 3)</name>
                 <offset value="103"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Voltage-LP</name>
@@ -457,25 +457,25 @@
                 <name>Rate A kW</name>
                 <offset value="111"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Rate B kW</name>
                 <offset value="131"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Rate C kW</name>
                 <offset value="151"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Rate D kW</name>
                 <offset value="171"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -506,25 +506,25 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 2)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 3)</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 4)</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -536,44 +536,44 @@
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point init="true" type="DemandAccumulator">
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 2)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 3)</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Voltage</name>
@@ -585,7 +585,7 @@
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Max Volts</name>
@@ -603,7 +603,7 @@
                 <name>Frozen Peak Demand</name>
                 <offset value="21"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Frozen Max Volts</name>
@@ -621,19 +621,19 @@
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 2)</name>
                 <offset value="102"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 3)</name>
                 <offset value="103"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
                 <name>Voltage-LP</name>
@@ -645,25 +645,25 @@
                 <name>Rate A kW</name>
                 <offset value="111"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Rate B kW</name>
                 <offset value="131"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Rate C kW</name>
                 <offset value="151"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Rate D kW</name>
                 <offset value="171"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -706,7 +706,7 @@
                 <name>kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #1 (Frozen)</name>
@@ -798,172 +798,172 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>kVarh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="12"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="13"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="16"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="17"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="18"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="19"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             
             <point type="Analog">
                 <name>kVah</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Phase A Voltage</name>
@@ -1033,7 +1033,7 @@
                 <name>kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="DemandAccumulator">
@@ -1047,171 +1047,171 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>kVarh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="12"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="13"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="16"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="17"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="18"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="19"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             
             <point type="Analog">
                 <name>kVah</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Phase A Voltage</name>
@@ -1280,7 +1280,7 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
         </points>
     </device>
@@ -1294,37 +1294,37 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #2 (Current)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #3 (Current)</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #1 (Frozen)</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #2 (Frozen)</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #3 (Frozen)</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Power Fail Count</name>
@@ -1466,7 +1466,7 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
         </points>
     </device>
@@ -1480,7 +1480,7 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -1505,7 +1505,7 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -1517,7 +1517,7 @@
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Status">
                 <name>DISCONNECT STATUS</name>
@@ -1536,7 +1536,7 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -1548,7 +1548,7 @@
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
         </points>
     </device>
@@ -1562,7 +1562,7 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
         </points>
     </device>
@@ -1576,37 +1576,37 @@
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #2 (Current)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #3 (Current)</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #1 (Frozen)</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #2 (Frozen)</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Pulse Input #3 (Frozen)</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
                 <name>Blink Count</name>
@@ -1619,19 +1619,19 @@
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Pulse Input #2 - Demand</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Pulse Input #3 - Demand</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -1700,7 +1700,7 @@
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -1788,7 +1788,7 @@
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -1861,7 +1861,7 @@
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -1929,7 +1929,7 @@
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -1987,7 +1987,7 @@
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -2600,238 +2600,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -2930,238 +2930,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -3260,238 +3260,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -3645,238 +3645,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -3990,238 +3990,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -4320,238 +4320,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -4650,238 +4650,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -4980,238 +4980,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -5310,238 +5310,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -5640,238 +5640,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
@@ -5976,238 +5976,238 @@
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate A kW</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate B kW</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate C kW</name>
                 <offset value="6"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate D kW</name>
                 <offset value="8"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Rate E kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate E kWh</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KWH"/>
+                <unitofmeasure value="kWH"/>
             </point>
             
             <point type="Analog">
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVarh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVar</name>
                 <offset value="22"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVarh</name>
                 <offset value="23"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVar</name>
                 <offset value="24"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVarh</name>
                 <offset value="25"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVar</name>
                 <offset value="26"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVarh</name>
                 <offset value="27"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVar</name>
                 <offset value="28"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVarh</name>
                 <offset value="29"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVar</name>
                 <offset value="30"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVarh</name>
                 <offset value="31"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVARH"/>
+                <unitofmeasure value="kVArh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVar</name>
                 <offset value="34"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVar</name>
                 <offset value="35"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAR"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
                 <name>Total kVah</name>
                 <offset value="41"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVa</name>
                 <offset value="42"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate A kVah</name>
                 <offset value="43"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVa</name>
                 <offset value="44"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate B kVah</name>
                 <offset value="45"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVa</name>
                 <offset value="46"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate C kVah</name>
                 <offset value="47"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVa</name>
                 <offset value="48"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate D kVah</name>
                 <offset value="49"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVa</name>
                 <offset value="50"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Rate E kVah</name>
                 <offset value="51"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVAH"/>
+                <unitofmeasure value="kVAh"/>
             </point>
             <point type="Analog">
                 <name>Last Interval/Instantaneous kVa</name>
                 <offset value="54"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             <point type="Analog">
                 <name>Load Profile kVa</name>
                 <offset value="55"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="KVA"/>
+                <unitofmeasure value="kVA"/>
             </point>
             
             <point type="Analog">
