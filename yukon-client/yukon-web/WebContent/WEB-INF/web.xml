@@ -172,31 +172,31 @@
     
     <servlet>
         <servlet-name>point-picker</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     
     <servlet>
         <servlet-name>jws</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     
     <servlet>
         <servlet-name>logging</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     
     <servlet>
         <servlet-name>lucene-index</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>httpRemote</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
