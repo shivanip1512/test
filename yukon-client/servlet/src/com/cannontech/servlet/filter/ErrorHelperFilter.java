@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -23,7 +24,8 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class ErrorHelperFilter  implements Filter {
 
-	private static final String SERVLET_STARTUP_ERROR = "com.cannontech.SERVLET_STARTUP_ERROR";
+	private static final String SERVLET_STARTUP_ERROR = "comcannontechSERVLET_STARTUP_ERROR";
+    private static final String SERVLET_STARTUP_ERROR_ROOT_MESSAGE = "comcannontechSERVLET_STARTUP_ERROR_ROOT_MESSAGE";
     private ServletContext servletContext;
 
     public void init(FilterConfig arg0) throws ServletException {
@@ -97,7 +99,9 @@ public class ErrorHelperFilter  implements Filter {
             Throwable startupException = (Throwable) attribute;
             Throwable rootCause = null;
             rootCause = CtiUtilities.getRootCause(startupException);
-            response.getWriter().println("Fatal startup error (usually database related): " + rootCause.getMessage());
+            servletContext.setAttribute(SERVLET_STARTUP_ERROR_ROOT_MESSAGE, rootCause.getMessage());
+            RequestDispatcher requestDispatcher = request.getRequestDispatcher("startupError.jsp");
+            requestDispatcher.forward(request, response);
             return;
         }
 		try {
