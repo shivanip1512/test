@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.filter.ErrorHelperFilter;
 
-public class ErrorAwareInitializingServlet extends HttpServlet {
+public abstract class ErrorAwareInitializingServlet extends HttpServlet {
     private boolean startupErrorsAreFatal;
 
     public ErrorAwareInitializingServlet() {
@@ -41,8 +41,7 @@ public class ErrorAwareInitializingServlet extends HttpServlet {
         }
     }
 
-    protected void doInit(ServletConfig servletConfig) throws ServletException {
-    }
+    protected abstract void doInit(ServletConfig servletConfig) throws ServletException;
 
     private void handleException(ServletContext servletContext, Throwable e) {
         if (startupErrorsAreFatal) {
