@@ -62,10 +62,7 @@ public void destroy()
  */
 public void doInit(ServletConfig config) throws ServletException
 {
-	super.init(config);
-
 	getServletContext().setAttribute(SERVLETS_CONTEXT_ID, this);
-
 }
 
 }

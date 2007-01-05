@@ -30,8 +30,6 @@ public class DynamicJNLPServlet extends ErrorAwareInitializingServlet
 
     public void doInit(ServletConfig config) throws ServletException
     {
-        super.init(config);
-
         this.initMatchList();
 
         this.parseQueryString = config.getInitParameter("parse.querystring")

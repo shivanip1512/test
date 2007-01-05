@@ -83,8 +83,6 @@ public LoadControlClientConnection getConnection() {
  */
 public void doInit(ServletConfig config) throws ServletException
 {
-	super.init(config);
-
 	String lcHost = "127.0.0.1";
 	int lcPort = 1920;
 

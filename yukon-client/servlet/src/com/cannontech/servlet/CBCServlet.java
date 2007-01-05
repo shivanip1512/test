@@ -12,7 +12,6 @@ import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -125,8 +124,6 @@ private CapControlCache getCapControlCache()
  */
 public void doInit(ServletConfig config) throws ServletException
 {
-	super.init(config);
-
 	// Call the getters to init our objects in the context
 	getCapControlCache();
 	//start one line service

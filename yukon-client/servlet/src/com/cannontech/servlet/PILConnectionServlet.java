@@ -53,8 +53,6 @@ public IServerConnection getConnection()
  */
 public void doInit(ServletConfig config) throws ServletException
 {
-	super.init(config);
-    
     getConnection().addMessageListener( this );
 
 	// Add this to the servlet context
