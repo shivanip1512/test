@@ -49,14 +49,15 @@ alter table Substation
    add constraint PK_SUBSTATION primary key  (SubstationID);
 go
 alter table Substation
-   add constraint FK_Sub_Rt foreign key (RouteID)
+   add constraint FK_Sub_Rt foreign key (LMRouteID)
       references Route (RouteID);
 go
 /* @error ignore-end */
 
-
+/* @error ignore-begin */
 sp_rename 'Substation.RouteID', 'LMRouteID', 'COLUMN';
 go
+/* @error ignore-end */
 
 /*==============================================================*/
 /* Table: SubstationToRouteMapping                              */
