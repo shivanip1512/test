@@ -315,10 +315,12 @@ public class RequestPword
 
 
 		}
+		//TODO: This should be overhauled to improve exception handling.  For now, will just
+        //change the text of the error message.
 		catch( Exception e )
 		{
 			//send this request with all its data to CTI
-			setState( RET_FAILED, "Unknown error occured, please contact the WebMaster for more details" );
+			setState( RET_FAILED, "The information you supplied does not match a known user.  Please verify that the information you have entered is correct." );
 			subject = "WebMaster: " + subject;
 
 			CTILogger.error( e.getMessage(), e );

@@ -24,15 +24,13 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
  *  
  * NOTE: Can't put this class in common since it uses STARS
  */
-public class StarsRequestPword extends RequestPword
-{
+public class StarsRequestPword extends RequestPword {
 	private String accNum = null;		
 
 	/**
 	 * 
 	 */
-	public StarsRequestPword( String userName_, String email_, String fName_, String lName_, String accNum_ )
-	{
+	public StarsRequestPword( String userName_, String email_, String fName_, String lName_, String accNum_ ) {
 		super(
 			userName_,
 			email_,
@@ -48,15 +46,10 @@ public class StarsRequestPword extends RequestPword
 		allParams = tParams;	
 	}
 	
-	public void doRequest()
-	{
-
-		try
-		{
-				
+	public void doRequest() {
+		try {
 			//uses STARS functionality
-			if( accNum != null )
-			{
+			if( accNum != null ) {
 				//we may continue after this, remove all the stored data
 				foundData.clear();
 				
@@ -64,22 +57,19 @@ public class StarsRequestPword extends RequestPword
 				LiteStarsEnergyCompany eComp = null;
 				ArrayList allCustAccts = new ArrayList(8);
 
-				for( int i = 0; i < engrComps.size(); i++ )
-				{
+				for( int i = 0; i < engrComps.size(); i++ ) {
 					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
 					
 					LiteStarsCustAccountInformation lCustInfo =
 							lsec.searchAccountByAccountNo( accNum );
 					
-					if( lCustInfo != null )
-					{
+					if( lCustInfo != null ) {
 						allCustAccts.add( lCustInfo );
 						eComp = lsec;
 					}
 				}
 					
-				if( allCustAccts.size() == 1 )
-				{
+				if( allCustAccts.size() == 1 ) {
 					//only 1 found, this is good
 					LiteStarsCustAccountInformation lCustInf = 
 						(LiteStarsCustAccountInformation)allCustAccts.get(0);
@@ -99,18 +89,15 @@ public class StarsRequestPword extends RequestPword
 
 					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
 				}
-				else if( allCustAccts.size() < 1 )
-				{
+				else if( allCustAccts.size() < 1 ) {
 					setState( RET_FAILED, "Account Number not found, try again" );					
 				}
-				else
-				{
+				else {
 					setState( RET_FAILED, "More than one account number found, forwarding request onto the WebMaster" );
 					subject = "WebMaster: " + subject;
 					foundData.add( " " + getResultString() );
 					foundData.add( " Number of Account Numbers for this Account: " + allCustAccts.size() );
-					for( int i = 0; i < allCustAccts.size(); i++ )
-					{
+					for( int i = 0; i < allCustAccts.size(); i++ ) {
 						LiteStarsCustAccountInformation lCstInfo =
 							(LiteStarsCustAccountInformation)allCustAccts.get(i);
 						
@@ -119,28 +106,22 @@ public class StarsRequestPword extends RequestPword
 
 					sendEmails( new String[] { masterMail }, genBody() );
 				}
-
-
 			}
 			
 			//try the parents functionality
-			if( getState() != RET_SUCCESS )
-			{
+			if( getState() != RET_SUCCESS ) {
 				super.doRequest();
 			}
-
-
-				
 		}
-		catch( Exception e )
-		{
+        //TODO: This whole servlet should be overhauled to improve exception handling.  For now, will just
+        //change the text of the error message.
+		catch( Exception e ) {
 			//send this request with all its data to CTI
-			setState( RET_FAILED, "Unknown error occured, please contact the WebMaster for more details" );
+			setState( RET_FAILED, "The information you supplied does not match a known user.  Please verify that the information you have entered is correct." );
 			subject = "WebMaster: " + subject;
 
 			CTILogger.error( e.getMessage(), e );
 		}
-
 	}
 
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
@@ -154,5 +135,4 @@ public class StarsRequestPword extends RequestPword
 		// Try the parent's functionality
 		return super.processContact( lCont_ );
 	}
-
 }
