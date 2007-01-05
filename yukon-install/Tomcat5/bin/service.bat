@@ -60,7 +60,7 @@ goto end
 
 :doRemove
 rem Remove the service
-"%EXECUTABLE%" //DS//%SERVICE_NAME%
+"%EXECUTABLE%"//DS//%SERVICE_NAME%
 echo The service '%PR_DISPLAYNAME%' has been removed
 goto end
 
@@ -86,7 +86,7 @@ set PR_JVM=auto
 
 :foundJvm
 echo Using JVM:              %PR_JVM%
-"%EXECUTABLE%" //IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
+"%EXECUTABLE%"//IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
 if not errorlevel 1 goto installed
 echo Failed installing '%PR_DISPLAYNAME%' service
 goto end
@@ -102,7 +102,7 @@ set PR_JVM=
 
 
 rem Set extra parameters using //US// option on already installed service
-"%EXECUTABLE%" //US//%SERVICE_NAME% --JvmOptions 
+"%EXECUTABLE%"//US//%SERVICE_NAME% --JvmOptions 
 
 "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode jvm --StopMode jvm
 
@@ -110,7 +110,7 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 256 --JvmMx 384
+"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 256 --JvmMx 384
 echo The service 'Yukon Web Application Service' has been installed.
 
 :end
