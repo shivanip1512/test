@@ -135,8 +135,8 @@ public class RegenerateRoute
     {
 
         // Indexed by CCUFixedBit, VariableBit.  Set to 0 if no routes have a claim.
-        int[][] usedBitMatrix = new int[LARGE_VALID_FIXED][LARGE_VALID_VARIABLE];
-        for (int i=0; i < LARGE_VALID_FIXED; i++) {
+        int[][] usedBitMatrix = new int[LARGE_VALID_FIXED + 1][LARGE_VALID_VARIABLE];
+        for (int i=0; i <= LARGE_VALID_FIXED; i++) {
             for (int j=0; j < LARGE_VALID_VARIABLE; j++) {
                 usedBitMatrix[i][j] = -1;
             }
