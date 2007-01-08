@@ -2,15 +2,15 @@
 *
 * File:   port_udp
 *
-* Class:  Cti::Porter::UDP::Port
+* Class:  Cti::Porter::UDPInterface
 * Date:   4/27/2006
 *
 * Author: Matthew Fisher
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/12/28 21:00:29 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/01/08 20:06:04 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,10 @@
 //#include <iostream>
 #include <map>
 #include <queue>
+
+#include "queue.h"
+#include "dev_single.h"
+#include "port_base.h"
 
 using namespace std;
 
@@ -32,10 +36,12 @@ namespace Cti
 namespace Porter
 {
 
-//  I'd like CtiThread to become Cti::Thread someday
-class UDP_Port : public CtiThread
+
+class UDPInterface
 {
 private:
+
+    CtiPortSPtr _port;
 
 protected:
 
@@ -97,7 +103,8 @@ protected:
     typedef map< pair< unsigned short, unsigned short >, device_record * > dr_address_map;
     typedef map< long, device_record * > dr_id_map;
 
-    CtiFIFOQueue< packet > _packet_queue;
+    CtiFIFOQueue< packet >     _packet_queue;
+    CtiFIFOQueue< CtiMessage > _message_queue;
 
     void startLog( void );
     void haltLog ( void );
@@ -151,21 +158,35 @@ protected:
 
     SOCKET _udp_socket;
 
-    long _udp_portnum, _port_id;
-
     bool _devices_idle;
 
 public:
 
-    UDP_Port( long portid, long udp_port );
-
-    string getTag( void );
+    UDPInterface( CtiPortSPtr &port );
 
     void run();
+
+    push_back(CtiMessage *msg);
 
     static const char *tickle_packet;
 };
 
+
+class UDPMessenger
+{
+private:
+
+    CtiCriticalSection _critical_section;
+    list< UDPInterface * > _clients;
+
+public:
+
+    UDPMessenger();
+
+    void addClient(UDPInterface *client);
+
+    void push_back(CtiMessage *msg);
+};
 
 }
 }
