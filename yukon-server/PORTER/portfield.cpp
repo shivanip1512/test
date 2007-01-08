@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.201 $
-* DATE         :  $Date: 2007/01/08 16:48:06 $
+* REVISION     :  $Revision: 1.202 $
+* DATE         :  $Date: 2007/01/08 21:56:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,7 +230,7 @@ VOID PortThread(void *pid)
             dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    else if( Port->getIPAddress() == "udp" )
+    else if( !stringCompareIgnoreCase(Port->getIPAddress(), "udp") )
     {
         //  perhaps this should be created by a PortFactory... ?
 
