@@ -28,8 +28,10 @@
 	if( request.getParameter("deviceID") != null)
 	{
 		deviceID = Integer.parseInt(request.getParameter("deviceID"));
-        if( YC_BEAN.getDeviceID() != deviceID)
+        if( YC_BEAN.getDeviceID() != deviceID) {
             session.removeAttribute("CustomerDetail"); //delete this for now, we'll figure out a way to store per meter later
+            session.removeAttribute("ServLocDetail"); //delete this for now, we'll figure out a way to store per meter later
+        }
 	}
 	else
 	{

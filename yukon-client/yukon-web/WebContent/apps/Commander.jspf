@@ -50,60 +50,27 @@ else
       <% String header = "CONTROL COMMANDS"; %>
       <table width="100%" border="0" cellspacing="0" cellpadding="1">
         <tr>
-        <% if (Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue() > 0) { %> 
-        <form name="mspCommandForm" method="POST" action="<%= request.getContextPath() %>/servlet/MultispeakServlet">
-          <input type="hidden" name="deviceID" value="<%=deviceID%>">
-          <input type="hidden" name="ACTION" value="CB_MR">
-          <input type="hidden" name="command" value="">
-          <input type="hidden" name="timeOut" value="8000">
-          <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
-          <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">      
-          <td width="10%" class="SubTitleHeader">Customer:</td>
-          <td width="20%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByMeterNo')" 
-            onMouseOver="window.status='Read Customer data from CIS';return true;"
-            onMouseOut="window.status='';return true;">Show Details</a>)
-          </td>
-          <td width="40%"/>
-<%--          <td width="16%" align="left" class="SubTitleHeader">Service Location:</td>
-          <td width="14%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByServiceLocation')" 
-            onMouseOver="window.status='Read Customer data from CIS';return true;"
-            onMouseOut="window.status='';return true;">Show Details</a>)
-          </td>          
---%>
-        </form>        
-        <%}%>
+          <td colspan="5" align="center" class="TitleHeader"><%= header %></td>
         </tr>
         <tr>
-           <td colspan="3" class="NavText">
-              <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
-          </td>
-<%--           <td colspan="2" class="SubText" align="left">
-              <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
-          </td>
---%>
-        </tr>
-        <tr>
-          <td colspan="3" align="center" class="TitleHeader"><%= header %></td>
-        </tr>
+        <% String name;
+        if( serialType.equals("xcom"))
+            name = "Expresscom";
+        else if( serialType.equals("vcom"))
+            name = "Versacom";
+        else if( serialType.equals("sa205"))
+            name = "DCU-205";
+        else if( serialType.equals("sa305"))
+            name = "DCU-305";
+        else                
+             name = liteYukonPao.getPaoName();
+        %>
+          <td colspan="5" width="100%" class="SubtitleHeader" align="center"><%=name%></td>
+        </tr>        
+        <%@ include file="MspCISDetail.jspf"%>
       </table>
       <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <table width="600" border="0" cellspacing="0" cellpadding="3" class="TableCell">
-              <tr> 
-                <td class="SubtitleHeader" align="right">Name:</td>
-                <% String name;
-                if( serialType.equals("xcom"))
-                    name = "Expresscom";
-                else if( serialType.equals("vcom"))
-                    name = "Versacom";
-                else if( serialType.equals("sa205"))
-                    name = "DCU-205";
-                else if( serialType.equals("sa305"))
-                    name = "DCU-305";
-                else                
-                     name = liteYukonPao.getPaoName();
-                %>
-                <td class="TableCell" colspan="2"><%=name%></td>
-              </tr>
               <tr> 
                 <td class="SubtitleHeader" align="right">Type:</td>
                 <td class="TableCell" colspan="2"><%=YC_BEAN.getDeviceType()%></td>
