@@ -39,7 +39,6 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
-import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.event.CDEvent;
 import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
@@ -49,29 +48,21 @@ import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeter;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
 import com.cannontech.multispeak.service.ArrayOfOutageDetectionEvent;
-import com.cannontech.multispeak.service.CB_CD;
-import com.cannontech.multispeak.service.CB_CDLocator;
 import com.cannontech.multispeak.service.CB_CDSoap_BindingStub;
-import com.cannontech.multispeak.service.CB_CDSoap_PortType;
-import com.cannontech.multispeak.service.CB_MR;
-import com.cannontech.multispeak.service.CB_MRLocator;
 import com.cannontech.multispeak.service.CB_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.CB_MRSoap_PortType;
 import com.cannontech.multispeak.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.ExtensionsItem;
 import com.cannontech.multispeak.service.LoadActionCode;
 import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.MeterRead;
-import com.cannontech.multispeak.service.OA_OD;
-import com.cannontech.multispeak.service.OA_ODLocator;
 import com.cannontech.multispeak.service.OA_ODSoap_BindingStub;
-import com.cannontech.multispeak.service.OA_ODSoap_PortType;
 import com.cannontech.multispeak.service.OutageDetectDeviceType;
 import com.cannontech.multispeak.service.OutageDetectionEvent;
 import com.cannontech.multispeak.service.OutageEventType;
 import com.cannontech.multispeak.service.OutageLocation;
 import com.cannontech.multispeak.service.ServiceLocation;
+import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -601,28 +592,15 @@ public class Multispeak implements MessageListener {
 	public void ODEventNotification(ODEvent odEvent)
 	{
         MultispeakVendor vendor = odEvent.getMspVendor();
-        //TODO need to change using the getServiceToEndpointMap
-		MultispeakInterface mspInterface = odEvent.getMspVendor().getMspInterfaceMap().get(MultispeakDefines.OA_OD_STR);
-		String endpointURL = "";			
-		if( mspInterface != null)
-			endpointURL = vendor.getUrl() + mspInterface.getMspEndpoint();
-
-        CTILogger.info("Sending ODEventNotification ("+ endpointURL+ "): Meter Number " + odEvent.getOutageDetectionEvent().getObjectID());
+		String endpointURL = vendor.getEndpointURL(MultispeakDefines.OA_OD_STR);
+		CTILogger.info("Sending ODEventNotification ("+ endpointURL+ "): Meter Number " + odEvent.getOutageDetectionEvent().getObjectID());
 		try
 		{
-			
-			OA_OD service = new OA_ODLocator();
-			((OA_ODLocator)service).setOA_ODSoapEndpointAddress(endpointURL);
-			
-			OA_ODSoap_PortType port = service.getOA_ODSoap();
-			
-			((OA_ODSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
-			((OA_ODSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);			
-	
 			OutageDetectionEvent[] odEventArray = new OutageDetectionEvent[1];
 			odEventArray[0] = odEvent.getOutageDetectionEvent();
 			ArrayOfOutageDetectionEvent arrayODEvents = new ArrayOfOutageDetectionEvent(odEventArray);
 			
+        	OA_ODSoap_BindingStub port = MultispeakPortFactory.getOA_ODPort(vendor);
 			ArrayOfErrorObject errObjects = port.ODEventNotification(arrayODEvents);
 			if( errObjects != null)
 				MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
@@ -642,27 +620,15 @@ public class Multispeak implements MessageListener {
     public void ReadingChangedNotification(MeterReadEvent meterReadEvent)
     {
         MultispeakVendor vendor = meterReadEvent.getMspVendor();
-        MultispeakInterface mspInterface = meterReadEvent.getMspVendor().getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
-
-        String endpointURL = "";            
-        if( mspInterface != null)
-            endpointURL = vendor.getUrl() + mspInterface.getMspEndpoint();
-
+        String endpointURL = vendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
         CTILogger.info("Sending ReadingChangedNotification ("+ endpointURL+ "): Meter Number " + meterReadEvent.getDevice().getMeterRead().getObjectID()); 
         try
         {            
-            CB_MR service = new CB_MRLocator();
-            ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);
-            
-            CB_MRSoap_PortType port = service.getCB_MRSoap();
-            
-            ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
-            ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
-            
             MeterRead [] meterReadArray = new MeterRead[1];
             meterReadArray[0] = meterReadEvent.getDevice().getMeterRead();
             ArrayOfMeterRead arrayMeterRead = new ArrayOfMeterRead(meterReadArray);
-            
+
+        	CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(vendor);            
             ArrayOfErrorObject errObjects = port.readingChangedNotification(arrayMeterRead);
             if( errObjects != null)
                 MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
@@ -682,24 +648,12 @@ public class Multispeak implements MessageListener {
     public void CDEventNotification(CDEvent cdEvent)
     {
         MultispeakVendor vendor = cdEvent.getMspVendor();
-        //TODO need to change using the getServiceToEndpointMap
-        MultispeakInterface mspInterface = (MultispeakInterface)cdEvent.getMspVendor().getMspInterfaceMap().get(MultispeakDefines.CB_CD_STR);
-        String endpointURL = "";            
-        if( mspInterface != null)
-            endpointURL = vendor.getUrl() + mspInterface.getMspEndpoint();
-
+        String endpointURL = vendor.getEndpointURL(MultispeakDefines.CB_CD_STR);
         CTILogger.info("Sending CDStateChangedNotification ("+ endpointURL+ "): Meter Number " + cdEvent.getMeterNumber());
         try
         {
-            CB_CD service = new CB_CDLocator();
-            ((CB_CDLocator)service).setCB_CDSoapEndpointAddress(endpointURL);
-            
-            CB_CDSoap_PortType port = service.getCB_CDSoap();
-            
-            ((CB_CDSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(vendor));
-            ((CB_CDSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
-
-            port.CDStateChangedNotification(cdEvent.getMeterNumber(), cdEvent.getLoadActionCode());
+        	CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(vendor);
+        	port.CDStateChangedNotification(cdEvent.getMeterNumber(), cdEvent.getLoadActionCode());
         } catch (ServiceException e) {   
             CTILogger.info("CB_CD service is not defined for company(" + vendor.getCompanyName()+ ") - CDStateChangedNotification failed.");
             CTILogger.error("ServiceExceptionDetail: "+e.getMessage());
@@ -870,7 +824,7 @@ public class Multispeak implements MessageListener {
                             if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                                 //Need to "remove" the existing (disabled) Meter Number
                                 deviceMeterGroup.setMeterNumber(meterNo + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
-                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + deviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
+                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
                                 String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                                 if( deviceMeterGroup.getCollectionGroup().indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) < 0) {
                                     deviceMeterGroup.setCollectionGroup(DeviceMeterGroup.INVENTORY_GROUP_PREFIX + oldCollGroup);
@@ -1254,19 +1208,11 @@ public class Multispeak implements MessageListener {
             }
             else { // lookup by meter number
                 //lookup meter by servicelocation
-                MultispeakInterface mspInterface = (MultispeakInterface)mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
-                String endpointURL = "";
-                if( mspInterface != null)
-                    endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
-                
+                String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+
                 try {
-                    CB_MR service = new CB_MRLocator();
-                    ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
-                    CB_MRSoap_PortType port = service.getCB_MRSoap();
-                    ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
-                    ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
-                    
-                    ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
+                	CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+                	ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
                     if( mspMeters != null && mspMeters.getMeter() != null) {
                         for ( int j = 0; j < mspMeters.getMeter().length; j++){
                             LiteYukonPAObject tempPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(mspMeters.getMeter(j).getMeterNo());
@@ -1401,29 +1347,19 @@ public class Multispeak implements MessageListener {
     * @return
     */
    private ServiceLocation getServiceLocation(MultispeakVendor mspVendor, String meterNo) {
-   	// Load the CIS serviceLocation.
-   	ServiceLocation mspServiceLocation = new ServiceLocation();
-       MultispeakInterface mspInterface = (MultispeakInterface)mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
-       String endpointURL = "";
-       if( mspInterface != null)
-           endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
-
-       try {
-       	CB_MR service = new CB_MRLocator();
-           ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
-           CB_MRSoap_PortType port = service.getCB_MRSoap();
-           
-           ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
-           ((CB_MRSoap_BindingStub)port).setTimeout(MultispeakVendor.TIMEOUT);
-           
-   			mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);            
-       } catch (ServiceException e) {
-       	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getServiceLocationByMeterNo failed.");
+	   // Load the CIS serviceLocation.
+   		ServiceLocation mspServiceLocation = new ServiceLocation();
+   		String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+    	try {
+    		CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+   			mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);
+    	} catch (ServiceException e) {
+    		CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getServiceLocationByMeterNo failed.");
 			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
-       } catch (RemoteException e) {
-       	CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
+    	} catch (RemoteException e) {
+    		CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
 			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-           CTILogger.info("A default(empty) is being used for ServiceLocation");
+			CTILogger.info("A default(empty) is being used for ServiceLocation");
        }
        return mspServiceLocation;
    }

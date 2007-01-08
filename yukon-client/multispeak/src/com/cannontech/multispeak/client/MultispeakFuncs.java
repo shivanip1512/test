@@ -19,7 +19,7 @@ import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
-import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -36,6 +36,7 @@ import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.Extensions;
 import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.Nameplate;
+import com.cannontech.multispeak.service.ServiceLocation;
 import com.cannontech.multispeak.service.UtilityInfo;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -113,12 +114,6 @@ public class MultispeakFuncs
 		}
 	}
     
-    public static SOAPHeaderElement getHeader(MultispeakVendor mspVendor) {
-        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword()));
-        header.setPrefix("");	//Trying to eliminate "ns1" prefix for the namespace showing up.  Exceleron had problems with this.
-        return header;
-    }
-    
 	public static void loadResponseHeader() 
 	{
 		try {
@@ -131,7 +126,7 @@ public class MultispeakFuncs
 			MultispeakVendor mspVendor = getMultispeakVendor(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
 
 			// Set Header
-			env.addHeader(getHeader(mspVendor));
+			env.addHeader(mspVendor.getHeader());
 		} catch (RemoteException e) {
 			CTILogger.error(e);
 		}
@@ -400,39 +395,77 @@ public class MultispeakFuncs
     public static String customerToString(Customer customer) {
         String returnStr = "";
         
-        returnStr += (customer.getObjectID() != null ? "Customer: " + customer.getObjectID() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(customer.getObjectID()) ? "Customer: " + customer.getObjectID() + "/r/n" : "");
         
-        String tempString = (customer.getLastName() != null ? customer.getLastName() + ", " : "") +
-                     (customer.getFirstName() != null ? customer.getFirstName() + " " : "" ) + 
-                     (customer.getMName() != null ? customer.getMName() : "" );
-        if( tempString.length() > 0)
+        String tempString = (StringUtils.isNotBlank(customer.getLastName()) ? customer.getLastName() + ", " : "") +
+                     (StringUtils.isNotBlank(customer.getFirstName()) ? customer.getFirstName() + " " : "" ) + 
+                     (StringUtils.isNotBlank(customer.getMName()) ? customer.getMName() : "" );
+        if( StringUtils.isNotBlank(tempString))
             returnStr += "Name: " + tempString  + "/r/n";
         
-        returnStr += (customer.getDBAName() != null ? "DBA Name: " +customer.getDBAName() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(customer.getDBAName()) ? "DBA Name: " +customer.getDBAName() + "/r/n": "");
         
-        tempString = (customer.getHomeAc() != null ? "(" + customer.getHomeAc() +") " : "");
-        tempString += (customer.getHomePhone() != null ? customer.getHomePhone(): "");
-        if( tempString.length() > 0)
+        tempString = (StringUtils.isNotBlank(customer.getHomeAc()) ? "(" + customer.getHomeAc() +") " : "");
+        tempString += (StringUtils.isNotBlank(customer.getHomePhone()) ? customer.getHomePhone(): "");
+        if( StringUtils.isNotBlank(tempString))
             returnStr += "Home Phone: " + tempString + "/r/n";
         
-        tempString = (customer.getDayAc() != null ? "(" + customer.getDayAc() +") " : "");
-        tempString += (customer.getDayPhone() != null ? customer.getDayPhone(): "");
-        if( tempString.length() > 0)
+        tempString = (StringUtils.isNotBlank(customer.getDayAc()) ? "(" + customer.getDayAc() +") " : "");
+        tempString += (StringUtils.isNotBlank(customer.getDayPhone()) ? customer.getDayPhone(): "");
+        if( StringUtils.isNotBlank(tempString))
             returnStr += "Home Phone: " + tempString + "/r/n";
         
-        returnStr += (customer.getBillAddr1() != null ? "Address 1: " + customer.getBillAddr1() + "/r/n": "");
-        returnStr += (customer.getBillAddr2() != null ? "Address 2: " + customer.getBillAddr2() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(customer.getBillAddr1()) ? "Bill Addr1: " + customer.getBillAddr1() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(customer.getBillAddr2()) ? "Bill Addr2: " + customer.getBillAddr2() + "/r/n": "");
         
-        tempString = (customer.getBillCity() != null ? customer.getBillCity() + ", ": "");
-        tempString += (customer.getBillState() != null ? customer.getBillState() + " " : "");
-        tempString += (customer.getBillZip() != null ? customer.getBillZip() : "");
-        if( tempString.length() > 0)
+        tempString = (StringUtils.isNotBlank(customer.getBillCity()) ? customer.getBillCity() + ", ": "");
+        tempString += (StringUtils.isNotBlank(customer.getBillState()) ? customer.getBillState() + " " : "");
+        tempString += (StringUtils.isNotBlank(customer.getBillZip()) ? customer.getBillZip() : "");
+        if( StringUtils.isNotBlank(tempString))
             returnStr += "City/State/Zip: " + tempString + "/r/n";
 
         return returnStr;
-        
     }
-    
+
+    public static String serviceLocationToString(ServiceLocation serviceLocation) {
+        String returnStr = "";
+        
+        /* NISC fields availalbe toDate 20070101
+        private com.cannontech.multispeak.service.Network network;
+        network.getBoardDist();
+        network.getDistrict();
+        network.getEaLoc().getName();
+        network.getFeeder();
+        network.getLinkedTransformer().getBankID();
+        network.getPhaseCd().getValue();
+        network.getSubstationCode();
+        revenueClass;
+        billingCycle;
+        route;
+        specialNeeds;
+        connectDate;*/        
+        
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getObjectID()) ? "Service Location: " + serviceLocation.getObjectID() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getCustID()) ? "Customer ID: " +serviceLocation.getCustID() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getAccountNumber()) ? "Account #: " +serviceLocation.getAccountNumber() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getGridLocation()) ? "Grid Location: " +serviceLocation.getGridLocation() + "/r/n": "");
+        
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getBillingCycle()) ? "Billing Cycle: " +serviceLocation.getBillingCycle() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServType()) ? "Service Type: " +serviceLocation.getServType() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServStatus()) ? "Service Status: " +serviceLocation.getServStatus() + "/r/n": "");
+        
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServAddr1()) ? "Service Addr1: " + serviceLocation.getServAddr1() + "/r/n": "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServAddr2()) ? "Service Addr2: " + serviceLocation.getServAddr2() + "/r/n": "");
+        
+        String tempString = (StringUtils.isNotBlank(serviceLocation.getServCity()) ? serviceLocation.getServCity() + ", ": "");
+        tempString += (StringUtils.isNotBlank(serviceLocation.getServState()) ? serviceLocation.getServState() + " " : "");
+        tempString += (StringUtils.isNotBlank(serviceLocation.getServZip()) ? serviceLocation.getServZip() : "");
+        if( StringUtils.isNotBlank(tempString))
+            returnStr += "City/State/Zip: " + tempString + "/r/n";
+
+        return returnStr;
+    }
+
     public static int getPaoNameAlias() {
         
         String value = DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS);

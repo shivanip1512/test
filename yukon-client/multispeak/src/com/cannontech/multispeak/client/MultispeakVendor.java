@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.axis.message.SOAPHeaderElement;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.multispeak.db.MultispeakInterface;
 
@@ -33,7 +35,7 @@ public class MultispeakVendor
     //Valid values are meternumber | devicename
     private String uniqueKey = "meternumber";
 
-	public static int TIMEOUT = 60000;	//TODO Added this to the MultispeakRole
+	public int DEFAULT_TIMEOUT = 60000;	//TODO Added this to the MultispeakRole
 
 	public static int DEFAULT_PAONAME = 0;
     public static int ACCOUNT_NUMBER_PAONAME = 1;
@@ -75,7 +77,7 @@ public class MultispeakVendor
         this.outUserName = outUserName;
         this.outPassword = outPassword;
         this.uniqueKey = uniqueKey;
-        this.timeout = timeout;
+        setTimeout(timeout);
         this.url = url;
     }
 
@@ -89,7 +91,7 @@ public class MultispeakVendor
         this.userName = userName;
         this.password = password;
         this.uniqueKey = uniqueKey;
-        this.timeout = timeout;
+        setTimeout(timeout);
         this.url = url;
     }
 
@@ -232,11 +234,15 @@ public class MultispeakVendor
     }
 
     /**
+     * If the timeout is less than 1, DEFAULT_TIMEOUT will be set instead 
      * @param timeout The timeout to set.
      */
     public void setTimeout(int timeout)
     {
-        this.timeout = timeout;
+    	if (timeout < 1)
+    		this.timeout = DEFAULT_TIMEOUT;
+    	else
+    		this.timeout = timeout;
     }
 
     public String getAppName() {
@@ -265,5 +271,20 @@ public class MultispeakVendor
     
     public String[] getPaoNameAliasStrings() {
         return paoNameAliasStrings;
+    }
+    
+    public String getEndpointURL(String service) {
+		MultispeakInterface mspInterface = (MultispeakInterface)getMspInterfaceMap().get(service);
+		String endpointURL = "";
+		if( mspInterface != null)
+			endpointURL = getUrl() + mspInterface.getMspEndpoint();
+		return endpointURL;
+    }
+    
+    public SOAPHeaderElement getHeader() {
+    	YukonMultispeakMsgHeader yukonMspMsgHeader = new YukonMultispeakMsgHeader(getOutUserName(), getOutPassword());
+        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", yukonMspMsgHeader);
+        header.setPrefix("");	//Trying to eliminate "ns1" prefix for the namespace showing up.  Exceleron had problems with this.
+        return header;
     }
 }
