@@ -58,14 +58,11 @@ public class ClientSession {
 			Properties p = null;
 			try {			
 				CTILogger.debug("Refreshing client session: " + sessionID + " with host: " + host + " port: " + port);
-				p = LoginSupport.getDBProperties(sessionID, host, port);
+                ConfigurationSource config = MasterConfigHelper.getRemoteConfiguration();
+                config.getRequiredString("DB_USERNAME");
 			}
 			catch(Exception e) {
 				CTILogger.warn("Unable to refresh client  session: " + sessionID + " with host: " + host + " port: " + port, e);							
-			}
-
-			if(p != null && p.size() > 0) {
-				CTILogger.info("Refreshed client session: " + sessionID + " with host: " + host + " port: " + port);
 			}
 		}
 	}

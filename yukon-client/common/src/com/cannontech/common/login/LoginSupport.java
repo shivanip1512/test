@@ -57,32 +57,6 @@ class LoginSupport {
 		}
 	}
 	
-	static Properties getDBProperties(String sessionID, String yukonHost, int port) {
-		URL url;
-		try {
-			url = new URL("http", yukonHost, port, "/servlet/DBPropertiesServlet");
-		}
-		catch(MalformedURLException e) {
-			throw new RuntimeException("Bad URL", e);			
-		}
-	 	HttpURLConnection conn = null;
-
-	 	try {
-	 		conn = (HttpURLConnection) url.openConnection();	 		
-	 		conn.setRequestProperty("Cookie", sessionID);
-	 		InputStream in = conn.getInputStream();			
-	 		Properties dbProps = new Properties();
-			dbProps.load(in);			
-			return dbProps;
-	 	}
-	 	catch(IOException e) {
-	 		try {
-	 			throw new RuntimeException(conn.getResponseMessage());
-	 		}
-	 		catch(IOException ioe2) { throw new RuntimeException(e.getMessage()); }
-	 	}	 	
-	}
-	
 	static void closeSession(String sessionID, String yukonHost, int port) {
 		URL url;
 		try {
