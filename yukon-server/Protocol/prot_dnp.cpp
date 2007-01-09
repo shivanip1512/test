@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/10/24 16:15:06 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2007/01/09 22:47:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,9 +212,21 @@ int DNPInterface::generate( CtiXfer &xfer )
 
                 break;
             }
-            case Command_Unsolicited:
+            case Command_UnsolicitedInbound:
             {
                 //  special case
+
+                break;
+            }
+            case Command_UnsolicitedEnable:
+            {
+                _app_layer.setCommand(Application::RequestEnableUnsolicited);
+
+                break;
+            }
+            case Command_UnsolicitedDisable:
+            {
+                _app_layer.setCommand(Application::RequestDisableUnsolicited);
 
                 break;
             }
@@ -348,7 +360,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
         }
 
-        if( _command == Command_Unsolicited )
+        if( _command == Command_UnsolicitedInbound )
         {
             _app_layer.initUnsolicited();
         }
@@ -480,6 +492,20 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             case Command_WriteTime:
             {
                 _string_results.push_back(CTIDBG_new string("Time sync sent"));
+            }
+
+            case Command_UnsolicitedEnable:
+            {
+                _string_results.push_back(CTIDBG_new string("Unsolicited reporting enabled"));
+
+                break;
+            }
+
+            case Command_UnsolicitedDisable:
+            {
+                _string_results.push_back(CTIDBG_new string("Unsolicited reporting disabled"));
+
+                break;
             }
 
             case Command_Loopback:

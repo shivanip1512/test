@@ -1598,6 +1598,18 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             _cmd["timesync"] = CtiParseValue("TRUE");
         }
 
+        if(CmdStr.contains(" unsolicited"))
+        {
+            if(CmdStr.contains(" enable"))
+            {
+                _cmd["unsolicited"] = CtiParseValue(true);
+            }
+            if(CmdStr.contains(" disable"))
+            {
+                _cmd["unsolicited"] = CtiParseValue(false);
+            }
+        }
+
         // Template should be global.
         if(!(token = CmdStr.match("template " + str_quoted_token)).empty())
         {

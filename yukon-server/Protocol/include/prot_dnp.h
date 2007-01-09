@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/10/24 16:15:06 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/01/09 22:47:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,7 +175,10 @@ public:
 
         Command_Loopback,  //  actually a time-delay request
 
-        Command_Unsolicited,
+        Command_UnsolicitedEnable,
+        Command_UnsolicitedDisable,
+
+        Command_UnsolicitedInbound,  //  special case - just greases the wheels for the inbound message
 
         Command_Complete
     };

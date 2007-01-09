@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/12/28 21:01:52 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2007/01/09 22:47:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -457,6 +457,17 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
             {
                 command = Protocol::DNPInterface::Command_WriteTime;
             }
+            else if( parse.isKeyValid("unsolicited") )
+            {
+                if( parse.getiValue("unsolicited") )
+                {
+                    command = Protocol::DNPInterface::Command_UnsolicitedEnable;
+                }
+                else
+                {
+                    command = Protocol::DNPInterface::Command_UnsolicitedDisable;
+                }
+            }
 
             break;
         }
@@ -628,7 +639,7 @@ int DNP::recvCommRequest( OUTMESS *OutMessage )
 
 void DNP::initUnsolicited()
 {
-    _dnp.setCommand(Protocol::DNPInterface::Command_Unsolicited);
+    _dnp.setCommand(Protocol::DNPInterface::Command_UnsolicitedInbound);
 }
 
 
