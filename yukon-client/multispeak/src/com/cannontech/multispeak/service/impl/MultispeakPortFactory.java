@@ -106,7 +106,7 @@ public class MultispeakPortFactory {
 	public static CD_CBSoap_BindingStub getCD_CBPort(MultispeakVendor mspVendor) throws ServiceException {
 
 		CD_CBLocator service = new CD_CBLocator();
-        service.setCD_CBSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.MR_CB_STR));
+        service.setCD_CBSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.CD_CB_STR));
         
         CD_CBSoap_PortType port = service.getCD_CBSoap();
         ((CD_CBSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
