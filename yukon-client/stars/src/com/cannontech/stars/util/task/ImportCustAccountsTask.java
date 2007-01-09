@@ -234,9 +234,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
         try {
 			final String fs = System.getProperty( "file.separator" );
-			File uploadDir = new File(
-					ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + energyCompany.getName());
-			if (!uploadDir.exists()) uploadDir.mkdirs();
+            String ecName = energyCompany.getName();
+            if(ecName.indexOf('<') > -1) {
+                ecName = "EnergyCompany" + energyCompany.getEnergyCompanyID();
+            }
+            File uploadDir = new File(
+                    ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + ecName);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
 			
 			Date now = new Date();
 			String logFileName = StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
