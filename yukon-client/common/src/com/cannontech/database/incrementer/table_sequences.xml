@@ -44,5 +44,8 @@
       <sequence name="categoryid">
         <table name="DCCategory" identitycolumn="CATEGORYID" initsequence="true"/>
       </sequence>
+      <sequence name="activityLogId">
+        <table name="ActivityLog" identitycolumn="ACTIVITYLOGID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

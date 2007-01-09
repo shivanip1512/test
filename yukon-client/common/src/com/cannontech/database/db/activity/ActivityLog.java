@@ -10,6 +10,7 @@ import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author aaron
@@ -230,35 +231,7 @@ public class ActivityLog extends DBPersistent {
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
 	 */
-	public static final Integer getNextUserID( java.sql.Connection conn ) {
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be null.");
-		
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-		
-		String sql = "SELECT max(ActivityLogID)+1 " + "FROM " + TABLE_NAME;
-		int newID = 0;
-		
-		try	{
-			pstmt = conn.prepareStatement(sql.toString());
-			rset = pstmt.executeQuery();							
-			
-			if( rset.next() ) {
-				newID = rset.getInt(1);
-			}
-		}
-		catch( java.sql.SQLException e ) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if( pstmt != null ) pstmt.close();
-			} 
-			catch( java.sql.SQLException e2 ) {
-				CTILogger.error( e2.getMessage(), e2 ); //something is up
-			}	
-		}			
-		return new Integer(newID);
+	public Integer getNextUserID( java.sql.Connection conn ) {
+        return YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
 	}
 }
