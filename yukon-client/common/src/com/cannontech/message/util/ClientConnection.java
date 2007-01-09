@@ -142,7 +142,7 @@ public void connect( long millis )
 	catch( InterruptedException e )
 	{
 		//CTILogger.error( e.getMessage(), e );
-		logger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
+		logger.info("Interruped while waiting for connection on " + this, e);
 	}
 }
 
@@ -363,7 +363,7 @@ public void run()
 			// we were not given a Socket, so create a new one everytime
 			if( !isServerSocket() )
 			{
-				String logStr = "Attempting to open SOCKET to: " + this.host + " " + this.port;
+				String logStr = "Attempting to open SOCKET for " + this;
 				if(retryCount == 0) 
 				{
 					logger.info(logStr);
@@ -403,7 +403,7 @@ public void run()
             fireMessageEvent( new ConnStateChange(true) );
             
 						
-			logger.info("SOCKET open for " + this.getClass().getName() );
+			logger.info("SOCKET open for " + this );
 
 			do
 			{
@@ -414,14 +414,14 @@ public void run()
 			inThread.interrupt();
 			outThread.interrupt();
 
-			logger.info("CLOSING SOCKET for " + this.getClass().getName() );
+			logger.info("CLOSING SOCKET for " + this );
 			sock.close();
 			
 		}
 		catch( InterruptedException e )
 		{
 			// The monitorThread must have been interrupted probably from disconnect()
-			logger.info("  InterruptedException in monitorThread : " + e.getMessage() );
+			logger.info("InterruptedException in monitorThread", e );
 			return;
 		}
 		catch( java.io.IOException io )
@@ -436,7 +436,7 @@ public void run()
 			}
 		}
 		
-		logger.debug("Setting connection to " + host + " " + port + " invalid");
+		logger.debug("Setting " + this + " invalid");
 		
 		isValid = false;
 
@@ -467,11 +467,11 @@ public void run()
 		
 		if(retryCount == 0)
 		{
-			logger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
+			logger.info("Attempting to reconnect " + this );
 		}
 		else
 		{
-			logger.debug("Attempting to reconnect to " + getHost() + ":" + getPort() );
+			logger.debug("Attempting to reconnect " + this );
 		}
 		retryCount++;
 	} 
@@ -523,7 +523,7 @@ public void write(Object o) {
 	synchronized(outQueue) {
         if (!isValid()) {
             throw new ConnectionException("Unable to write message (" + o + 
-                                          "), connection (" + this + ") is invalid.");
+                                          "), " + this + " is invalid.");
         }
 		outQueue.add(o);
 		outQueue.notifyAll();
@@ -592,4 +592,9 @@ protected void fireMessageEvent(Message msg) {
 	public void setQueueMessages(boolean b) {
 		queueMessages = b;
 	}
+    
+    @Override
+    public String toString() {
+        return "ClientConnection[name=" + getName() + ", host=" + getHost() + ", port=" + getPort() + "]";
+    }
 }
