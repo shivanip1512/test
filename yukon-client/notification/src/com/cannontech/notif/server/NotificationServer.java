@@ -182,23 +182,20 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 				 
 	}
 	
-	public static void main( String[] argsv )
-	{
-		System.setProperty("cti.app.name", "Notification-Server");
-        CTILogger.info("Starting notification server from main method");
-		NotificationServer ns = (NotificationServer)YukonSpringHook.getServicesContext().getBean("notificationServer");
-		
-        MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
-        
-		try 
-		{
-			ns.start();
-		}
-		catch( Throwable t )
-		{
-            CTILogger.error("There was an error starting up the Notification Server", t);
-		}
+	public static void main( String[] argsv ) {
+	    try {
+	        System.setProperty("cti.app.name", "Notification-Server");
+	        CTILogger.info("Starting notification server from main method");
+	        NotificationServer ns = (NotificationServer)YukonSpringHook.getServicesContext().getBean("notificationServer");
 
+	        MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
+
+	        ns.start();
+	    }
+	    catch( Throwable t )
+	    {
+	        CTILogger.error("There was an error starting up the Notification Server", t);
+	    }
 	}
 
     public void testInjectMessage(Message msg) {
