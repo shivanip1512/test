@@ -98,6 +98,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	
 	protected static final String ATT_FILTER_MODEL_TYPE = "filterModelType";
 	protected static final String ATT_FILTER_MODEL_VALUES = "filterValues";
+	protected static final String ATT_FILTER_METER_VALUES = "filterMeterValues";
+	protected static final String ATT_FILTER_DEVICE_VALUES = "filterDevice Values";
 
 	public  static final int ASCENDING = 0;
 	public static final int DESCENDING = 1;
@@ -419,9 +421,15 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
                 if( getFilterModelTypes()[i] == ModelFactory.MCT || getFilterModelTypes()[i] == ModelFactory.METER ){
                     html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
                     html += " ";
-                    html += "        <input type='text' name='" + ATT_FILTER_MODEL_VALUES+ "' style='width:500px;'/>" + LINE_SEPARATOR;
+                    html += "        <input type='text' name='" + ATT_FILTER_METER_VALUES+ "' style='width:650px;'/>" + LINE_SEPARATOR;
                     html += "      " + LINE_SEPARATOR;
                     html += "<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>" + LINE_SEPARATOR;                    
+                } else if( getFilterModelTypes()[i] == ModelFactory.DEVICE){
+                    html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
+                    html += " ";
+                    html += "        <input type='text' name='" + ATT_FILTER_DEVICE_VALUES+ "' style='width:650px;'/>" + LINE_SEPARATOR;
+                    html += "      " + LINE_SEPARATOR;
+                    html += "<BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>" + LINE_SEPARATOR;                    
                 }
                 else {
     				html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
@@ -506,11 +514,10 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 					
 				//Unload paoIDs
 				setPaoIDs(null);
-			}
-            else if( getFilterModelType() == ModelFactory.MCT ||
-                    getFilterModelType() == ModelFactory.METER) {
+			} else if( getFilterModelType() == ModelFactory.MCT ||
+                    getFilterModelType() == ModelFactory.METER ) {
              
-                String filterValueList = req.getParameter(ATT_FILTER_MODEL_VALUES).trim();
+                String filterValueList = req.getParameter(ATT_FILTER_METER_VALUES).trim();
                 StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
                 int[] idsArray = new int[st.countTokens()];
                 int i = 0;
@@ -525,12 +532,31 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
                     setPaoIDs(idsArray);
                 else
                     setPaoIDs(null);
-                
-            }
-                        
-			else	//Load PaobjectID int values
-			{
-				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
+                //Unload billingGroups
+                setBillingGroups(null);
+            } else if( getFilterModelType() == ModelFactory.DEVICE ) {
+             
+                String filterValueList = req.getParameter(ATT_FILTER_DEVICE_VALUES).trim();
+                StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
+                int[] idsArray = new int[st.countTokens()];
+                int i = 0;
+        		while (st.hasMoreTokens()) {
+                    String deviceName = st.nextToken().trim();
+                    LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(deviceName);
+                    if( lPao != null) {
+                        idsArray[i++] = lPao.getYukonID();
+                    }
+                }
+                if( idsArray.length > 0 )
+                    setPaoIDs(idsArray);
+                else
+                    setPaoIDs(null);
+
+                //Unload billingGroups
+                setBillingGroups(null);   
+            } else { //Load PaobjectID int values
+
+            	String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
 				if( paramArray != null)
 				{
 					int [] idsArray = new int[paramArray.length];

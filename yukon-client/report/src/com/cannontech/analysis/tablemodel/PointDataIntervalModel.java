@@ -67,12 +67,14 @@ public class PointDataIntervalModel extends ReportModelBase
 	public final static int CALC_POINT_TYPE = PointTypes.CALCULATED_POINT;
 	public final static int ANALOG_POINT_TYPE = PointTypes.ANALOG_POINT;
 	public final static int DEMAND_ACC_POINT_TYPE = PointTypes.DEMAND_ACCUMULATOR_POINT;
+	public final static int PULSE_ACC_POINT_TYPE = PointTypes.PULSE_ACCUMULATOR_POINT;
 	public final static int STATUS_POINT_TYPE = PointTypes.STATUS_POINT;
 	
 	public final static String LOAD_PROFILE_POINT_TYPE_STRING = "All Load Profile";	//some "unused" PointType int
 	public final static String CALC_POINT_TYPE_STRING = "All Calculated";
 	public final static String ANALOG_POINT_TYPE_STRING = "All Analog";
 	public final static String DEMAND_ACC_POINT_TYPE_STRING = "All Demand Accumulator";
+	public final static String PULSE_ACC_POINT_TYPE_STRING = "All Pulse Accumulator";
 	public final static String STATUS_POINT_TYPE_STRING = "All Status";
 
 	private final static int[] ALL_POINT_TYPES = new int[]
@@ -81,6 +83,7 @@ public class PointDataIntervalModel extends ReportModelBase
 		CALC_POINT_TYPE,
 		ANALOG_POINT_TYPE,
 		DEMAND_ACC_POINT_TYPE,
+		PULSE_ACC_POINT_TYPE,
 		STATUS_POINT_TYPE	
 	};
 	
@@ -133,6 +136,7 @@ public class PointDataIntervalModel extends ReportModelBase
 		setSortOrder(sortOrder_);
 		setFilterModelTypes(new int[]{
 				ModelFactory.METER,
+				ModelFactory.DEVICE,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP,
@@ -217,6 +221,10 @@ public class PointDataIntervalModel extends ReportModelBase
 			else if ( getPointType() == DEMAND_ACC_POINT_TYPE)
 			{
 				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT) + "' ");
+			}
+			else if ( getPointType() == PULSE_ACC_POINT_TYPE)
+			{
+				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) + "' ");
 			}
 			else if ( getPointType() == ANALOG_POINT_TYPE )
 			{
@@ -449,6 +457,8 @@ public class PointDataIntervalModel extends ReportModelBase
 				return ANALOG_POINT_TYPE_STRING;
 			case DEMAND_ACC_POINT_TYPE:
 				return DEMAND_ACC_POINT_TYPE_STRING;
+			case PULSE_ACC_POINT_TYPE:
+				return PULSE_ACC_POINT_TYPE_STRING;
 			case STATUS_POINT_TYPE:
 				return STATUS_POINT_TYPE_STRING;
 		}

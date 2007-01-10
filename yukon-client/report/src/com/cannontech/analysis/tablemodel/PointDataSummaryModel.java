@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -177,12 +178,14 @@ public class PointDataSummaryModel extends ReportModelBase
 	public final static int CALC_POINT_TYPE = PointTypes.CALCULATED_POINT;
 	public final static int ANALOG_POINT_TYPE = PointTypes.ANALOG_POINT;
 	public final static int DEMAND_ACC_POINT_TYPE = PointTypes.DEMAND_ACCUMULATOR_POINT;
+	public final static int PULSE_ACC_POINT_TYPE = PointTypes.PULSE_ACCUMULATOR_POINT;
 	public final static int STATUS_POINT_TYPE = PointTypes.STATUS_POINT;
 	
 	public final static String LOAD_PROFILE_POINT_TYPE_STRING = "All Load Profile";	//some "unused" PointType int
 	public final static String CALC_POINT_TYPE_STRING = "All Calculated";
 	public final static String ANALOG_POINT_TYPE_STRING = "All Analog";
 	public final static String DEMAND_ACC_POINT_TYPE_STRING = "All Demand Accumulator";
+	public final static String PULSE_ACC_POINT_TYPE_STRING = "All Pulse Accumulator";
 	public final static String STATUS_POINT_TYPE_STRING = "All Status";
 	
 	private int pointType = DEMAND_ACC_POINT_TYPE;	//default to Load Profile PointTypes
@@ -192,6 +195,7 @@ public class PointDataSummaryModel extends ReportModelBase
 		CALC_POINT_TYPE,
 		ANALOG_POINT_TYPE,
 		DEMAND_ACC_POINT_TYPE,
+		PULSE_ACC_POINT_TYPE,
 		STATUS_POINT_TYPE	
 	};
 
@@ -267,6 +271,7 @@ public class PointDataSummaryModel extends ReportModelBase
 		super(start_, stop_);
 		setFilterModelTypes(new int[]{
                 ModelFactory.METER,
+                ModelFactory.DEVICE,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP,
@@ -299,12 +304,14 @@ public class PointDataSummaryModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, DMG.METERNUMBER, DCS.ADDRESS, " + 
-                                             " P.POINTNAME, RPH.POINTID, TIMESTAMP, VALUE ");
+                                             " P.POINTNAME, RPH.POINTID, TIMESTAMP, VALUE, QUALITY ");
 		
 		if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)
 			sql.append(", DLP.LOADPROFILEDEMANDRATE, DLP.VOLTAGEDMDRATE, DLP.LASTINTERVALDEMANDRATE, DLP.VOLTAGEDMDINTERVAL ");
 		
-		sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS");
+        sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO " + 
+        		" left outer join DEVICEMETERGROUP DMG on PAO.PAOBJECTID = DMG.DEVICEID " + 
+        		" left outer join DEVICECARRIERSETTINGS DCS on PAO.PAOBJECTID = DCS.DEVICEID ");
 		if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)//catch kwLP, voltageLP, kW
 		    sql.append(", DEVICELOADPROFILE DLP ");
 				
@@ -312,9 +319,7 @@ public class PointDataSummaryModel extends ReportModelBase
 //		    sql.append(", DEVICEMETERGROUP DMG ");
 			
 		sql.append(" WHERE P.POINTID = RPH.POINTID " +
-            		" AND P.PAOBJECTID = PAO.PAOBJECTID " +  //Use PAO for ordering
-                    " AND PAO.PAOBJECTID = DMG.DEVICEID " +
-                    " AND PAO.PAOBJECTID = DCS.DEVICEID ");
+        " AND P.PAOBJECTID = PAO.PAOBJECTID ");  //Use PAO for ordering
 		
 		sql.append(" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 		
@@ -335,6 +340,10 @@ public class PointDataSummaryModel extends ReportModelBase
 			//Do not allow LP data, those points fall into the LP point type option.
 			" AND (P.POINTOFFSET < " + PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND + " OR P.POINTOFFSET > " + PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND + ") ");			
 		}
+        else if ( getPointType() == PULSE_ACC_POINT_TYPE )
+        {
+        	sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) + "' ");
+        }        
 		else if ( getPointType() == ANALOG_POINT_TYPE )
 		{
 			sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.ANALOG_POINT) + "' ");
@@ -412,11 +421,12 @@ public class PointDataSummaryModel extends ReportModelBase
 				{
 					Integer paobjectID = new Integer(rset.getInt(1));
                     String paoName = rset.getString(2);
-                    String paoType = rset.getString(3);
-                    String meterNumber = rset.getString(4);
-                    int address = rset.getInt(5);
-                    String pointName = rset.getString(6);
-                    Integer pointID = new Integer(rset.getInt(7));
+                    String paoCategory = rset.getString(3);
+                    String paoType = rset.getString(4);
+                    String meterNumber = rset.getString(5);
+                    Object address = rset.getObject(6);
+                    String pointName = rset.getString(7);
+                    Integer pointID = new Integer(rset.getInt(8));
                     
 					if( pointID.intValue() != currentPointid)	//enter all
 					{
@@ -447,9 +457,9 @@ public class PointDataSummaryModel extends ReportModelBase
 							countData = 0;
 						}
 					}
-					Timestamp ts = rset.getTimestamp(8);
-					Double value = new Double(rset.getDouble(9));
-                    Integer quality = new Integer(rset.getInt(10));
+                    Timestamp ts = rset.getTimestamp(9);
+                    Double value = new Double(rset.getDouble(10));
+                    Integer quality = new Integer(rset.getInt(11));
 					
 					lpDemandRate = null;
 					voltageDemandRate = null;
@@ -466,11 +476,15 @@ public class PointDataSummaryModel extends ReportModelBase
 					MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, pointName, new Date(ts.getTime()), value, quality);
                     LiteYukonPAObject litePaobject = new LiteYukonPAObject(paobjectID);
                     litePaobject.setPaoName(paoName);
-                    litePaobject.setAddress(address);
+                    if( address != null)
+                    	litePaobject.setAddress(((BigDecimal)address).intValue());
+                    litePaobject.setType(PAOGroups.getPAOType(paoCategory, paoType));
                     mpData.setLitePaobject(litePaobject);
-                    LiteDeviceMeterNumber liteDevMeterNum = new LiteDeviceMeterNumber(paobjectID);
-                    liteDevMeterNum.setMeterNumber(meterNumber);
-                    mpData.setLiteDeviceMeterNumber(liteDevMeterNum);
+                    if (meterNumber != null) {
+	                    LiteDeviceMeterNumber liteDevMeterNum = new LiteDeviceMeterNumber(paobjectID.intValue());
+	                    liteDevMeterNum.setMeterNumber(meterNumber);
+	                    mpData.setLiteDeviceMeterNumber(liteDevMeterNum);
+                    }
 					LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
 					getData().add(lpMeterData);
 					tempMPDataVector.add(mpData);
@@ -999,6 +1013,8 @@ public class PointDataSummaryModel extends ReportModelBase
 				return ANALOG_POINT_TYPE_STRING;
 			case DEMAND_ACC_POINT_TYPE:
 				return DEMAND_ACC_POINT_TYPE_STRING;
+			case PULSE_ACC_POINT_TYPE:
+				return PULSE_ACC_POINT_TYPE_STRING;
 			case STATUS_POINT_TYPE:
 				return STATUS_POINT_TYPE_STRING;
 		}
