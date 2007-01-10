@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.16 $
-*    DATE         :  $Date: 2006/12/22 19:40:23 $
+*    REVISION     :  $Revision: 1.17 $
+*    DATE         :  $Date: 2007/01/10 00:20:00 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.17  2007/01/10 00:20:00  tspar
+      Regular expression was not matching, fixed. merged from 3.2
+
+      Cleaned up the code a little by removing CtiTokenizer by making calls to "getTranslationValue(string)"
+
+      Added .c_str()  to all the strings in _snprintf calls to allow them to work properly.
+
       Revision 1.16  2006/12/22 19:40:23  jrichter
       Bug Id: 716
       -check first character to see if it is digit, + or - sign before calling atof function
@@ -101,7 +108,6 @@
 #include "fdrtextfilebase.h"
 #include "fdrtextimport.h"
 #include "utility.h"
-#include "ctitokenizer.h"
 
 CtiFDR_TextImport * textImportInterface;
 
@@ -690,6 +696,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
     CtiFDRPoint *       translationPoint = NULL;
     string           tempString1;
     string           tempString2;
+    string           pointID;
     CtiString           translationName;
     CtiString           translationDrivePath; 
     CtiString           translationFilename; 
@@ -754,96 +761,58 @@ bool CtiFDR_TextImport::loadTranslationLists()
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-                        CtiTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation()); 
                         translationName = ""; 
 
-                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
+                        pointID = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
 
                         // now we have a point id
-                        if ( !tempString2.empty() )
+                        if ( !pointID.empty() )
                         {
-                            translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                            { 
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                dout << "Parsing Yukon Point ID " << translationPoint->getPointID(); 
-                                dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl; 
-                            } 
-
                             successful = true;
 
                             translationName += " "; 
-                            translationName += tempString2; 
-                            translationName.toUpper(); 
+                            translationName += pointID; 
+                            translationName.toUpper();
 
-
-                            if (!(tempString1 = nextTranslate(";")).empty())
+                            tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
+                            if (!tempString1.empty())
                             {
-
-                                CtiTokenizer nextTempToken(tempString1); 
-
-                                // do not care about the first part 
-                                nextTempToken(":"); 
-
-                                tempString2 = nextTempToken(";"); 
-                                tempString2 = tempString2.substr(1,(tempString2.length()-1));
-
-
                                 // now we have a Drive/Path 
-                                if ( !tempString2.empty() )
+                                translationFolderName = tempString1; 
+                                translationFolderName.toLower(); 
+
+                                if ((translationDrivePath = translationFolderName.match(boost::regex("([A-Z]|[a-z]):\\\\"))).empty())
                                 {
-                                    translationFolderName = tempString2; 
-                                    translationFolderName.toLower(); 
+                                    translationDrivePath = getFileImportBaseDrivePath(); 
+                                    translationDrivePath.toUpper(); 
+                                } else
+                                    translationDrivePath = translationFolderName; 
 
-                                    if ((translationDrivePath = translationFolderName.match(boost::regex("([A-Z]|[a-z]):\\"))).empty())
-                                    {
-                                        translationDrivePath = getFileImportBaseDrivePath(); 
-                                        //translationDrivePath += tempString2; 
-                                        translationDrivePath.toUpper(); 
-                                    } else
-                                        translationDrivePath = translationFolderName; 
-                                    //setDriveAndPath(translationDrivePath); 
+                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
+                                    dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
+                                    dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
+                                }
 
-                                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                        dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
-                                        dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
-                                    }
+                                translationName += " ";
+                                translationName += tempString1;
+                                translationName.toUpper();
 
-                                    translationName += " "; 
-                                    translationName += tempString2; 
-                                    translationName.toUpper(); 
+                                tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
+                                if ( !tempString1.empty() )
+                                {
+                                    translationFilename = tempString1;
+                                    translationFilename.toLower();
 
-                                    if (!(tempString1 = nextTranslate(";")).empty())
-                                    {
-
-                                        CtiTokenizer nextTempToken(tempString1); 
-
-                                        // do not care about the first part 
-                                        nextTempToken(":"); 
-
-                                        tempString2 = nextTempToken(";"); 
-                                        tempString2 = tempString2.substr(1,(tempString2.length()-1));
-
-
-                                        // now we have a Drive/Path 
-                                        if ( !tempString2.empty() )
-                                        {
-                                            translationFilename = tempString2; 
-                                            translationFilename.toLower(); 
-
-                                            translationName += " "; 
-                                            translationName += translationFilename; 
-                                            translationName.toUpper(); 
-
-                                        }
-                                    }
+                                    translationName += " ";
+                                    translationName += translationFilename;
+                                    translationName.toUpper();
                                 }
                             }
-
+                            translationPoint->getDestinationList()[x].setTranslation (pointID);//ts
 
                             if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                             {
@@ -851,11 +820,13 @@ bool CtiFDR_TextImport::loadTranslationLists()
                                 dout << " translationFilename ** "<< translationFilename<<" translationDrivePath ** "<<translationDrivePath<< endl; 
                             }
                             CtiFDRTextFileInterfaceParts tempFileInfoList ( translationFilename, translationDrivePath, 0); 
-                            _snprintf(fileName, 200, "%s\\%s",tempFileInfoList.getDriveAndPath(),tempFileInfoList.getFileName()); 
+
+                            _snprintf(fileName, 200, "%s\\%s", translationDrivePath.c_str(), translationFilename.c_str() ); 
+                            
                             int matchFlag = 0; 
                             for (int xx = 0; xx < getFileInfoList().size(); xx++)
                             {
-                                _snprintf(fileName2, 200, "%s\\%s",getFileInfoList()[xx].getDriveAndPath(),getFileInfoList()[xx].getFileName()); 
+                                _snprintf(fileName2, 200, "%s\\%s",getFileInfoList()[xx].getDriveAndPath().c_str(),getFileInfoList()[xx].getFileName().c_str()); 
                                 if (!strcmp(fileName,fileName2))
                                 {
                                     matchFlag = 1; 
@@ -873,9 +844,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
                                 dout << " FILE INFO LIST SIZE = " << getFileInfoList().size() << endl; 
                                 dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl; 
                             }
-
                         }
-
                     }
                 }   // end for interator
 
@@ -979,7 +948,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                             attemptCounter = 0; 
                             HANDLE hSearch; 
                             fileData = new WIN32_FIND_DATA(); 
-                            _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getDriveAndPath(),getFileInfoList()[fileIndex].getFileName()); 
+                            _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getDriveAndPath().c_str(),getFileInfoList()[fileIndex].getFileName().c_str()); 
                             hSearch = FindFirstFile(fileName, fileData); 
 
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
@@ -991,7 +960,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                             if (hSearch != INVALID_HANDLE_VALUE)
                             {//found it. 
 
-                                _snprintf(fileNameAndPath, 250, "%s\\%s", getFileInfoList()[fileIndex].getDriveAndPath(), fileData->cFileName); 
+                                _snprintf(fileNameAndPath, 250, "%s\\%s", getFileInfoList()[fileIndex].getDriveAndPath().c_str(), fileData->cFileName); 
                                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout); 
@@ -1006,12 +975,12 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                 }
                             } else
                             {//defaulting cause not found 
-                                _snprintf(fileNameAndPath, 200, "%s\\%s",getFileImportBaseDrivePath(),getFileName()); 
+                                _snprintf(fileNameAndPath, 200, "%s\\%s",getFileImportBaseDrivePath().c_str(),getFileName().c_str()); 
 
                                 hSearch = FindFirstFile(fileNameAndPath, fileData); 
                                 if (hSearch != INVALID_HANDLE_VALUE)
                                 {
-                                    _snprintf(fileNameAndPath, 250, "%s\\%s", getFileImportBaseDrivePath(), fileData->cFileName); 
+                                    _snprintf(fileNameAndPath, 250, "%s\\%s", getFileImportBaseDrivePath().c_str(), fileData->cFileName); 
                                 } else
                                 {
                                     _snprintf(fileNameAndPath, 250, "%s", fileName); 
@@ -1114,7 +1083,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                             tempTime = tempTime.replace(3,1,"_");
                                             tempTime = tempTime.erase(13,1); 
 
-                                            _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime); 
+                                            _snprintf(newFileName, 250, "%s%s%s", fileNameAndPath, ".", tempTime.c_str() ); 
                                             MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
 
                                             DWORD lastError = GetLastError(); 
@@ -1158,7 +1127,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                     {
                         fptr = NULL; 
                         attemptCounter = 0; 
-                        _snprintf(fileNameAndPath, 200, "%s\\%s",getDriveAndPath(),getFileName()); 
+                        _snprintf(fileNameAndPath, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str()); 
 
                     } catch (...)
                     {
@@ -1243,19 +1212,19 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                         if ( periodPtr )
                                         {
                                             *periodPtr = NULL; 
-                                        } else
+                                        }else
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout); 
                                             dout << "Uh Sir" << endl; 
-                                        } 
+                                        }
                                         CtiTime timestamp= CtiTime(); 
                                         string tempTime = timestamp.asString().erase(16);
                                         tempTime = tempTime.replace(10,1,"_");
-                                        tempTime = tempTime.replace(7,1,"_");
-                                        tempTime = tempTime.replace(3,1,"_");
-                                        tempTime = tempTime.erase(13,1);                               
+                                        tempTime = tempTime.replace(5,1,"_");
+                                        tempTime = tempTime.replace(2,1,"_");
+                                        tempTime = tempTime.erase(13,1);
 
-                                        _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime); 
+                                        _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime.c_str()); 
                                         MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
 
                                         DWORD lastError = GetLastError(); 
