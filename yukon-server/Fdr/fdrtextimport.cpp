@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.17 $
-*    DATE         :  $Date: 2007/01/10 00:20:00 $
+*    REVISION     :  $Revision: 1.18 $
+*    DATE         :  $Date: 2007/01/10 21:23:19 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.18  2007/01/10 21:23:19  tspar
+      Changed the tokenizer so it will keep empty tokens.
+
       Revision 1.17  2007/01/10 00:20:00  tspar
       Regular expression was not matching, fixed. merged from 3.2
 
@@ -280,7 +283,7 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
     bool pointValidFlag=true;
     CtiString tempString1;                // Will receive each token
 
-    boost::char_separator<char> sep(",\r\n");
+    boost::char_separator<char> sep(",", "", boost::keep_empty_tokens);
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
@@ -300,6 +303,12 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
     while ( (tok_iter != cmdLine.end()) && pointValidFlag)
     {
         tempString1 = *tok_iter; tok_iter++;
+
+        if( tempString1.empty() ) {
+            pointValidFlag = false;
+            break;
+        }
+
         switch (fieldNumber)
         {
         case 1:
