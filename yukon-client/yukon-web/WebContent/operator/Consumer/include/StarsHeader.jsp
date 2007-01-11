@@ -81,9 +81,6 @@
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
 	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
-	java.text.DecimalFormat format_nv3 = new java.text.DecimalFormat("#0.000");
-	java.text.DecimalFormat format_nsec = new java.text.DecimalFormat("#0 secs");
-	
 	String dbAlias = CtiUtilities.getDatabaseAlias();
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);

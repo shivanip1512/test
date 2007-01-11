@@ -3,8 +3,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory"%> 
+<%@ page import="java.util.*" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
@@ -13,7 +14,21 @@
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole"%>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.stars.util.ServletUtils" %>
+<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
 <%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
+
+<%
+    java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
+    java.text.DecimalFormat format_nv3 = new java.text.DecimalFormat("#0.000");
+    java.text.DecimalFormat format_nsec = new java.text.DecimalFormat("#0 secs");
+    LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+    String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+%>
+
 <cti:checklogin/> 
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
