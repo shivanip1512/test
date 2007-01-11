@@ -115,7 +115,7 @@ public String getEnergyCompanyProperty(LiteYukonUser user, int rolePropertyID) {
  * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com.cannontech.database.data.lite.LiteEnergyCompany, int)
  */
 public String getEnergyCompanyProperty(LiteEnergyCompany ec, int rolePropertyID) {
-    return getEnergyCompanyProperty(getEnergyCompanyUser(ec), rolePropertyID);
+    return authDao.getRolePropertyValue(getEnergyCompanyUser(ec), rolePropertyID);
 }
 
 /* (non-Javadoc)
