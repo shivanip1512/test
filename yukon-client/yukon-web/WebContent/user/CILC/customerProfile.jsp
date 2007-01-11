@@ -28,8 +28,17 @@
 
 </t:dataList>
 
-<t:commandButton value="Add Contact" action="#{sCustomerProfile.addContact}"/>
+<t:panelGrid columns="1" styleClass="contactEditor">
+  <t:panelGrid columns="2">
+    <t:outputLabel value="First Name:"/>
+    <t:inputText value="#{sCustomerProfile.newContact.contact.contFirstName}"/>
+    
+    <t:outputLabel value="Last Name:"/>
+    <t:inputText value="#{sCustomerProfile.newContact.contact.contLastName}"/>
 
+  </t:panelGrid>
+    <t:commandButton value="Add Contact" action="#{sCustomerProfile.addContact}"/>
+</t:panelGrid>
 </h:form>
 
 </cti:standardPage>

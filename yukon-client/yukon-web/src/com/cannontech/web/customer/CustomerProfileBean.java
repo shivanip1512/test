@@ -1,11 +1,11 @@
 package com.cannontech.web.customer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.model.SelectItem;
+
+import org.apache.commons.lang.RandomStringUtils;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.CustomerDao;
@@ -14,7 +14,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.web.util.JSFUtil;
 
@@ -23,6 +25,7 @@ public class CustomerProfileBean {
     private Customer thisCustomer;
     private Contact selectedContact;
     private Contact primaryContact;
+    private Contact newContact;
     private List<Contact> additionalContactList = new ArrayList<Contact>();
     private ContactNotification selectedNotification;
     private CustomerDao customerDao;
@@ -63,6 +66,8 @@ public class CustomerProfileBean {
         Integer primaryContactId = customer.getCustomer().getPrimaryContactID();
         primaryContact = new Contact(primaryContactId);
         dbPersistentDao.performDBChange(primaryContact, Transaction.RETRIEVE);
+        
+        newContact = new Contact();
     }
     
     public String save() {
@@ -72,7 +77,14 @@ public class CustomerProfileBean {
         int[] contactIds = new int[additionalContactList.size()];
         int i=0;
         for (Contact contact : additionalContactList) {
-            dbPersistentDao.performDBChange(contact, Transaction.UPDATE);
+            if (contact.getContact().getContactID() == null) {
+                YukonUser user = createYukonUser(contact);
+                
+                contact.getContact().setLogInID(user.getUserID());
+                dbPersistentDao.performDBChange(contact, Transaction.INSERT);
+            } else {
+                dbPersistentDao.performDBChange(contact, Transaction.UPDATE);
+            }
             contactIds[i++] = contact.getContact().getContactID();
         }
         thisCustomer.setCustomerContactIDs(contactIds);
@@ -103,10 +115,23 @@ public class CustomerProfileBean {
     }
     
     public String addContact() {
-        Contact contact = new Contact(null);
-        getAdditionalContactList().add(contact);
-        dbPersistentDao.performDBChange(contact, Transaction.INSERT);
+        getAdditionalContactList().add(newContact);
+        newContact = new Contact();
         return null;
+    }
+
+    private YukonUser createYukonUser(Contact contact) {
+        YukonUser user = new YukonUser();
+        YukonUser loggedInUser = (YukonUser) LiteFactory.convertLiteToDBPersAndRetrieve(getYukonUser());
+        user.setYukonGroups(loggedInUser.getYukonGroups());
+        String firstName = contact.getContact().getContFirstName();
+        String lastName = contact.getContact().getContLastName();
+        String salt = RandomStringUtils.randomNumeric(5);
+        String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
+        user.getYukonUser().setUsername(stupidUserName);
+        user.getYukonUser().setPassword(RandomStringUtils.randomAlphanumeric(12));
+        dbPersistentDao.performDBChange(user, Transaction.INSERT);
+        return user;
     }
     
     public List<Contact> getAdditionalContactList() {
@@ -161,6 +186,14 @@ public class CustomerProfileBean {
 
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
+    }
+
+    public Contact getNewContact() {
+        return newContact;
+    }
+
+    public void setNewContact(Contact newContact) {
+        this.newContact = newContact;
     }
     
 
