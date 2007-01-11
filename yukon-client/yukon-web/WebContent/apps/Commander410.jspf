@@ -1,4 +1,5 @@
 <%@ page import="com.cannontech.database.data.lite.LitePointUnit"%>
+<%@ page import="com.cannontech.yukon.IDatabaseCache"%>
 <jsp:directive.page import="com.cannontech.core.dao.DaoFactory"/>
 <%
 
