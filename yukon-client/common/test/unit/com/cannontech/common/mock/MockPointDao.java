@@ -18,6 +18,10 @@ import com.cannontech.database.data.lite.LiteStateGroup;
  */
 public class MockPointDao implements PointDao {
 
+    /**
+     * This method will return a point based on a fake id (ids 1 thru 4 are
+     * valid)
+     */
     public LitePoint getLitePoint(int pointID) {
 
         switch (pointID) {
@@ -28,6 +32,8 @@ public class MockPointDao implements PointDao {
             return new LitePoint(1, "pulse1", 2, 1, 1, 0, 0, 1);
         case 3:
             return new LitePoint(1, "demand1", 3, 1, 1, 0, 0, 0);
+        case 4:
+            return new LitePoint(1, "pulse2", 3, 1, 4, 0, 0, 0);
         }
         throw new NotFoundException("point not found");
     }
@@ -81,6 +87,10 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
+    /**
+     * This method will return a fake point id that is just the point type or
+     * the point offset if type is 2
+     */
     public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType) {
 
         switch (pointType) {
@@ -88,7 +98,7 @@ public class MockPointDao implements PointDao {
         case 1:
             return 1;
         case 2:
-            return 2;
+            return pointOffset;
         case 3:
             return 3;
         }

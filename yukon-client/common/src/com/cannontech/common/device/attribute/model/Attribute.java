@@ -8,7 +8,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 public class Attribute {
 
-    public static final Attribute LOAD = new Attribute("load");
     /**
      * Attribute representing total usage
      */
@@ -17,6 +16,10 @@ public class Attribute {
      * Attribute representing total demand
      */
     public static final Attribute DEMAND = new Attribute("demand");
+    /**
+     * Attribute representing load profile
+     */
+    public static final Attribute LOAD_PROFILE = new Attribute("loadProfile");
 
     private String key = null;
     private String description = null;

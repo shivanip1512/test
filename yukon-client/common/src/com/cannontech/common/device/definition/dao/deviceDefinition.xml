@@ -19,6 +19,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
+            	<attribute name="usage"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -75,6 +76,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="loadProfile" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
@@ -82,8 +84,7 @@
             </point>
             
             <point init="true" type="Analog">
-            	<attribute name="usage"/>
-                <name>Total kWh</name>
+            	<name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -430,6 +431,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="loadProfile" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -618,6 +620,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="loadProfile" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -1514,6 +1517,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="loadProfile" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
@@ -1545,6 +1549,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="loadProfile" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>

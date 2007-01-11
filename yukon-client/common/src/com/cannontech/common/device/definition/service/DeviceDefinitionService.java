@@ -79,4 +79,37 @@ public interface DeviceDefinitionService {
      */
     public abstract Set<PointTemplate> getPointTemplatesToRemove(DeviceBase device,
             DeviceDefinition deviceDefinition);
+
+    /**
+     * Method to get a set of points that will be transfered from the given
+     * device type to the new device type if its type is changed to the given
+     * device definition
+     * @param device - Device to change type
+     * @param deviceDefinition - Definition of type to change to
+     * @return Set of point templates that will be transfered from the device
+     *         (returns a new copy each time the method is called)
+     */
+    public abstract Set<PointTemplate> getPointTemplatesToTransfer(DeviceBase device,
+            DeviceDefinition deviceDefinition);
+
+    /**
+     * Method to get a set of point templates that transferred points will map
+     * to for the device definition that the device will be changed into.
+     * @param device - Device to change type
+     * @param deviceDefinition - Definition of type to change to
+     * @return Set of point templates that existing points on the device map to
+     *         in the new type (returns a new copy each time the method is
+     *         called)
+     */
+    public abstract Set<PointTemplate> getNewPointTemplatesForTransfer(DeviceBase device,
+            DeviceDefinition deviceDefinition);
+
+    /**
+     * Method to change a device's type
+     * @param currentDevice - Device to change
+     * @param newDefinition - Definition of type to change to
+     * @return The changed device
+     */
+    public abstract DeviceBase changeDeviceType(DeviceBase currentDevice,
+            DeviceDefinition newDefinition);
 }

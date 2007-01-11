@@ -66,6 +66,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         expectedAttributes.add(Attribute.USAGE);
         expectedAttributes.add(Attribute.DEMAND);
         expectedAttributes.add(new Attribute("totalUsage"));
+        expectedAttributes.add(new Attribute("pulse2"));
 
         Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
 
@@ -88,7 +89,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Test with supported device type
         PointTemplate expectedTemplate = new PointTemplateImpl("pulse1",
                                                                2,
-                                                               1,
+                                                               2,
                                                                1.0,
                                                                1,
                                                                0,
@@ -295,7 +296,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Pulse Accumulators
         expectedTemplates.add(new PointTemplateImpl("pulse1",
                                                     2,
-                                                    1,
+                                                    2,
                                                     1.0,
                                                     1,
                                                     0,
@@ -336,6 +337,16 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
 
         // Add the rest of the templates
+
+        // Pulse Accumulator
+        expectedTemplates.add(new PointTemplateImpl("pulse2",
+                                                    2,
+                                                    4,
+                                                    1.0,
+                                                    1,
+                                                    0,
+                                                    false,
+                                                    new Attribute("pulse2")));
 
         // Status
         expectedTemplates.add(new PointTemplateImpl("status1", 0, 1, 1.0, -1, 0, false, null));

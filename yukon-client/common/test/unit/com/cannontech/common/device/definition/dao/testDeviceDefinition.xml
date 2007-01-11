@@ -16,7 +16,15 @@ This file contains default device and point information for all of the devices i
             <point init="true" type="PulseAccumulator">
                 <attribute name="usage"/>
                 <name>pulse1</name>
-                <offset value="1"/>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="measure1"/>
+            </point>
+
+            <point type="PulseAccumulator">
+                <attribute name="pulse2"/>
+                <name>pulse2</name>
+                <offset value="4"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
             </point>
@@ -50,7 +58,15 @@ This file contains default device and point information for all of the devices i
         <displayName value="Device 2"/>
         <displayGroup value="display1"/>
         <points>
+            <point type="PulseAccumulator">
+                <attribute name="pulse2"/>
+                <name>pulse2</name>
+                <offset value="3"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="measure1"/>
+            </point>
             <point init="true" type="Analog">
+            	<attribute name="demand"/>
                 <name>analog1</name>
                 <offset value="1"/>
                 <multiplier value=".0001"/>

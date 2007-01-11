@@ -1,6 +1,8 @@
 package com.cannontech.common.device.service;
 
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 
 /**
@@ -29,5 +31,21 @@ public interface PointService {
      * @return A new point for the pao object based on the template
      */
     public abstract PointBase createPoint(int paoId, PointTemplate template);
+
+    /**
+     * Method to get an existing point for a device based on a template
+     * @param device - Device to get point for
+     * @param template - Template of point to get
+     * @return - Existing point
+     */
+    public abstract LitePoint getPointForDevice(DeviceBase device, PointTemplate template);
+
+    /**
+     * Method to determine if a point exists for the given device
+     * @param device - Device
+     * @param template - Template of point to determine existance
+     * @return True if point exists for the device
+     */
+    public abstract boolean pointExistsForDevice(DeviceBase device, PointTemplate template);
 
 }

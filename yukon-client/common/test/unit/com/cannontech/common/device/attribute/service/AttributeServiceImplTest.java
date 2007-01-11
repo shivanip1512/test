@@ -8,9 +8,11 @@ import junit.framework.TestCase;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
+import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.incrementer.NextValueHelper;
 
 public class AttributeServiceImplTest extends TestCase {
 
@@ -26,8 +28,15 @@ public class AttributeServiceImplTest extends TestCase {
         deviceDefinitionDao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
         service.setDeviceDefinitionDao(deviceDefinitionDao);
 
+        PointServiceImpl pointService = new PointServiceImpl();
+        pointService.setNextValueHelper(new NextValueHelper() {
+            public int getNextValue(String tableName) {
+                return 1;
+            }
+        });
         pointDao = new MockPointDao();
-        service.setPointDao(pointDao);
+        pointService.setPointDao(pointDao);
+        service.setPointService(pointService);
 
         device = new MockDevice();
         device.setDeviceType("device1");
@@ -80,6 +89,7 @@ public class AttributeServiceImplTest extends TestCase {
         expectedAtributes.add(Attribute.USAGE);
         expectedAtributes.add(Attribute.DEMAND);
         expectedAtributes.add(new Attribute("totalUsage"));
+        expectedAtributes.add(new Attribute("pulse2"));
 
         Set<Attribute> actualAtributes = service.getAllExistingAtributes(device);
 
@@ -88,7 +98,7 @@ public class AttributeServiceImplTest extends TestCase {
         // Test for device with no attributes
         expectedAtributes = new HashSet<Attribute>();
 
-        device.setDeviceType("device2");
+        device.setDeviceType("device3");
         actualAtributes = service.getAllExistingAtributes(device);
 
         assertEquals("There shouldn't be any attributes", expectedAtributes, actualAtributes);

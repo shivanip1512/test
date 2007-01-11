@@ -1,6 +1,10 @@
 package com.cannontech.common.device.service;
 
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -14,7 +18,12 @@ import com.cannontech.database.incrementer.NextValueHelper;
  */
 public class PointServiceImpl implements PointService {
 
+    private PointDao pointDao = null;
     private NextValueHelper nextValueHelper = null;
+
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
 
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
@@ -79,5 +88,28 @@ public class PointServiceImpl implements PointService {
                                 template.getMultiplier(),
                                 template.getUnitOfMeasure(),
                                 template.getStateGroupId());
+    }
+
+    public LitePoint getPointForDevice(DeviceBase device, PointTemplate template) {
+
+        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getPAObjectID(),
+                                                                     template.getOffset(),
+                                                                     template.getType());
+
+        return pointDao.getLitePoint(pointId);
+    }
+
+    public boolean pointExistsForDevice(DeviceBase device, PointTemplate template) {
+
+        try {
+            LitePoint point = this.getPointForDevice(device, template);
+            if (point.getPointType() == PointTypes.SYSTEM_POINT) {
+                return false;
+            }
+        } catch (NotFoundException e) {
+            return false;
+        }
+
+        return true;
     }
 }

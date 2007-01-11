@@ -18,7 +18,7 @@ yukon-client/common/.cvsignore
 yukon-client/common/bin
 yukon-client/common/build
 yukon-client/common/test/build
-yukon-client/common/test/unitTestResults
+yukon-client/common/test/testResults
 yukon-client/cttp/bin
 yukon-client/cttp/build
 yukon-client/custom/.cvsignore
