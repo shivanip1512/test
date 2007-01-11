@@ -359,9 +359,13 @@ public class Multispeak implements MessageListener {
             Request pilRequest = null;
             CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
 
-            pilRequest = new Request(lPao.getYukonID(), "getstatus disconnect", id);
+            String commandStr = "getstatus disconnect";
+            pilRequest = new Request(lPao.getYukonID(), commandStr, id);
             pilRequest.setPriority(15);
             getPilConn().write(pilRequest);
+            logMSPActivity("getCDMeterState",
+            				"(ID:" + lPao.getYukonID()+ ") MeterNumber (" + meterNumber + ") - " + commandStr,
+            				mspVendor.getCompanyName());    
 
             synchronized (event)
             {
@@ -377,6 +381,7 @@ public class Multispeak implements MessageListener {
                 }
                 if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
                     event.setResultMessage("Reading Timed out after 2 minutes.");
+                    logMSPActivity("getCDMeterState", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
                     if(event.getLoadActionCode() == null)
                         event.setLoadActionCode(LoadActionCode.Unknown);
                 }
@@ -406,17 +411,20 @@ public class Multispeak implements MessageListener {
             ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNumber);
             event.setDevice(device);
             getEventsMap().put(new Long(id), event);
-            String command = "getvalue kwh update";
+            String commandStr = "getvalue kwh update";
             if( DeviceTypesFuncs.isMCT4XX(lPao.getType()) )
-                command = "getvalue peak update";
+                commandStr = "getvalue peak update";
             
             Request pilRequest = null;
             CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
 
 //          getvalue peak returns the peak kW and the total kWh
-            pilRequest = new Request(lPao.getYukonID(), command, id);
+            pilRequest = new Request(lPao.getYukonID(), commandStr, id);
             pilRequest.setPriority(15);
             getPilConn().write(pilRequest);
+            logMSPActivity("getLatestReadingByMeterNo",
+    						"(ID:" + lPao.getYukonID()+ ") MeterNumber (" + meterNumber + ") - " + commandStr,
+    						mspVendor.getCompanyName());
 
             synchronized (event)
             {
@@ -431,7 +439,7 @@ public class Multispeak implements MessageListener {
                     }
                 }
                 if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
-                    logMSPActivity("GetLatestReading", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
+                    logMSPActivity("getLatestReadingByMeterNo", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
                 }
             }
       }
@@ -510,11 +518,11 @@ public class Multispeak implements MessageListener {
                 getEventsMap().put(new Long(id), event);
                 
 //                pilRequest = new Request(lPao.getYukonID(), "getvalue kwh update", id);
-                String command = "getvalue kwh update";
+                String commandStr = "getvalue kwh update";
                 if( DeviceTypesFuncs.isMCT4XX(lPao.getType()) )
-                    command = "getvalue peak update";
+                    commandStr = "getvalue peak update";
                 //getvalue peak returns the peak kW and the total kWh
-                pilRequest = new Request(lPao.getYukonID(), command, id);
+                pilRequest = new Request(lPao.getYukonID(), commandStr, id);
                 pilRequest.setPriority(13); //just below Client applications
                 getPilConn().write(pilRequest);
                 
@@ -568,6 +576,9 @@ public class Multispeak implements MessageListener {
                 pilRequest = new Request(lPao.getYukonID(), commandStr, id);
                 pilRequest.setPriority(13); //just below Client applications
                 getPilConn().write(pilRequest);
+                logMSPActivity("initiateConnectDisconnect",
+        						"(ID:" + lPao.getYukonID()+ ") MeterNumber (" + meterNumber + ") - " + commandStr + " sent for ReasonCode: " + cdEvent.getReasonCode().getValue(),
+        						vendor.getCompanyName());
             } else {
                 ErrorObject err = MultispeakFuncs.getErrorObject(meterNumber, 
                 												"MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
