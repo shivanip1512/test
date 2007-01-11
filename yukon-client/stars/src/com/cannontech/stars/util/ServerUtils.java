@@ -88,8 +88,8 @@ public class ServerUtils {
 			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
 			
 			IServerConnection conn = ConnPool.getInstance().getDefDispatchConn();
-			if (conn == null) {
-				CTILogger.error( "Cannot get dispatch client connection" );
+			if (conn == null || !conn.isValid()) {
+				CTILogger.error( "Not connected to dispatch." );
 				return;
 			}
 			
