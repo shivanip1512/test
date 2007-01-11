@@ -691,8 +691,12 @@ public class Multispeak implements MessageListener {
                 if (yukonPaobject instanceof MCTBase){
                     String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
                     if( origCollGroup.indexOf(statusPrefix) < 0) {
-                        ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(statusPrefix + origCollGroup);
+                    	String newCollGroup = statusPrefix + origCollGroup;
+                        ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(newCollGroup);
                         MultispeakFuncs.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+                        logMSPActivity("initiateStatusChange",
+                                "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + origCollGroup + " NEW:" + newCollGroup + ");", 
+                                mspVendor.getCompanyName());                        
                     } else {
                         ErrorObject err = MultispeakFuncs.getErrorObject(meterNo,
                                                                          "MeterNumber: " + meterNo + " - Is already in State (" + origCollGroup +").  Cannot initiate change.",
@@ -726,8 +730,12 @@ public class Multispeak implements MessageListener {
                 if (yukonPaobject instanceof MCTBase){
                     String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
                     if( origCollGroup.indexOf(statusPrefix) > -1) {
-                        ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(origCollGroup.replaceAll(statusPrefix, ""));
+                    	String newCollGroup = origCollGroup.replaceAll(statusPrefix, "");
+                        ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(newCollGroup);
                         MultispeakFuncs.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+                        logMSPActivity("cancelStatusChange",
+                                "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + origCollGroup + " NEW:" + newCollGroup + ");", 
+                                mspVendor.getCompanyName());                        
                     }
                     else {
                         ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
@@ -735,12 +743,12 @@ public class Multispeak implements MessageListener {
                                                                          "Meter");
                         errorObjects.add(err);
                     }
-                } else {
-                    ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                     "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
-                                                                     "Meter");
-                    errorObjects.add(err);
                 }
+            } else {
+                ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                 "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
+                                                                 "Meter");
+                errorObjects.add(err);
             }
         }
         if( !errorObjects.isEmpty())
