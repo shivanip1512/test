@@ -36,6 +36,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
@@ -53,6 +54,7 @@ import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
@@ -82,7 +84,7 @@ import com.cannontech.dbeditor.menu.SystemCreateMenu;
 import com.cannontech.dbeditor.menu.ToolsMenu;
 import com.cannontech.dbeditor.menu.ViewMenu;
 import com.cannontech.dbeditor.offsets.PointOffsetLegend;
-import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
+import com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
@@ -91,6 +93,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.yukon.BillingRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -248,6 +251,8 @@ public class DatabaseEditor
     private static boolean showDeviceConfiguration = false;
     
     private static DatabaseEditor editor = null;
+    
+    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
     
 /**
  * DatabaseEditor constructor comment.
@@ -975,14 +980,10 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 				MessageEvent.ERROR_MESSAGE));		 
 	  }
 
-	  if( userObject instanceof com.cannontech.database.data.device.DeviceBase         
-		   && DeviceChngTypesPanel.isDeviceTypeChangeable( 
-               ((com.cannontech.database.data.device.DeviceBase)userObject).getPAOType()) )
-	  {
-         showChangeTypeWizardPanel(
-         		new com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel(
-         	 	  userObject));
-	  }
+      if (userObject instanceof DeviceBase
+              && deviceDefinitionService.isDeviceTypeChangeable((DeviceBase) userObject)) {
+          showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(userObject));
+      }
 	  else if (userObject instanceof com.cannontech.database.data.point.PointBase)
 	  {
 		 try
@@ -2904,6 +2905,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 	javax.swing.JInternalFrame f = new javax.swing.JInternalFrame();
 	
 	f.setContentPane( wizard );
+    f.setResizable(true);
 	f.setSize( (int)wizard.getActualSize().getWidth(),
 		  		  (int)wizard.getActualSize().getHeight());//410,470);
 
