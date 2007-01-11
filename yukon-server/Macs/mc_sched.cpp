@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/01/11 21:58:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
 ---------------------------------------------------------------------------*/
 #include "mc_sched.h"
+#include "utility.h"
 #include "ctidate.h"
 #include <rw/collstr.h>
 #include <rwutil.h>
@@ -199,13 +200,17 @@ bool CtiMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CtiMCSchedule::Update()
 {
+    bool ret = false;
     if( !checkSchedule() )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    bool ret = ( _pao_table.Update().errorCode() == RWDBStatus::ok );
+    if( getScheduleID != 0 )
+    {
+        ret = ( _pao_table.Update().errorCode() == RWDBStatus::ok );
+    }
     
     if( ret )
     {    
@@ -239,11 +244,24 @@ bool CtiMCSchedule::Insert()
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    if( getScheduleID() == 0 )
+    {
+        setScheduleID(PAOIdGen());
+    }
+
     bool ret = ( _pao_table.Insert().errorCode() == RWDBStatus::ok );
     
     if( ret )
     {
         ret = _schedule_table.Insert();
+    }
+    else
+    {
+        setScheduleID(0);//This guy is screwed up. Next time we will try to get him a new ID.
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << "**** Checkpoint **** There was probably an ID conflict, this is bad. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     if( ret && isSimpleSchedule() )

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/11/28 16:20:41 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2007/01/11 21:58:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -628,7 +628,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             CtiMCSchedule* new_sched = NULL;
             if( (new_sched = _schedule_manager.addSchedule( add_msg->getSchedule() )) != NULL )
             {
-
+                 _db_update_thread.forceImmediateUpdate();
                  _scheduler.initEvents( stripSeconds( CtiTime::now()), *new_sched );
 
                  _client_listener.BroadcastMessage( new_sched->replicateMessage() );

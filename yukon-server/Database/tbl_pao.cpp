@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/26 13:53:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/01/11 21:58:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,12 +307,13 @@ RWDBStatus CtiTblPAO::Insert()
     getDisableFlagStr() <<
     getStatisticsStr();
 
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    RWDBStatus result = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    if( result.errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return result;
 }
 
 RWDBStatus CtiTblPAO::Update()
