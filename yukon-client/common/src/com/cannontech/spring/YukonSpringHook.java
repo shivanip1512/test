@@ -41,11 +41,20 @@ public class YukonSpringHook {
         return applicationContext;
     }
     
+    /**
+     * This is used to get a special context. It should be called once at the begining of
+     * a program. Other, possibly shared, code can then call getContext() and get the
+     * same copy of the context.
+     * @param contextName
+     * @return
+     */
+    public static ApplicationContext getContext(String contextName) {
+        beanFactoryKey = contextName;
+        return getContext();
+    }
+    
     public static ApplicationContext getServicesContext() {
-        BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
-        BeanFactoryReference bfr = bfl.useBeanFactory("com.cannontech.context.services");
-        ApplicationContext context = (ApplicationContext) bfr.getFactory();
-        return context;
+        return getContext("com.cannontech.context.services");
     }
     
     public static Object getBean(String name) {
