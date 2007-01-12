@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <!-- Pooled Connection Factory -->
+  <bean id="sensusJmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="connectionFactory">
+      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL">
+          <value>tcp://s1.139.usamr.amdswireless.com:61616</value>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- Spring JMS Template -->
+  <bean id="sensusJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="sensusJmsFactory"/>
+  </bean>
+  
+  <!-- this is the Message Driven POJO (MDP) -->
+  <bean id="sensusMessageListener" class="com.cannontech.sensus.SensusMessageListener">
+    <property name="sensusMessageHandler" ref="faultDetectProcessor"/>
+  </bean>
+  
+  <bean id="destination" class="org.apache.activemq.command.ActiveMQTopic">
+    <!-- Set the Destination Name -->
+    <constructor-arg index="0">
+       <value>AMDS-OBJ</value>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="destinationXml" class="org.apache.activemq.command.ActiveMQTopic">
+    <!-- Set the Destination Name -->
+    <constructor-arg index="0">
+       <value>AMDS</value>
+    </constructor-arg>
+  </bean>
+  
+
+<!-- and this is the message listener container -->
+  <bean id="listenerContainer" 
+	 class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    <property name="destination" ref="destination" />
+    <property name="concurrentConsumers" value="1"/>
+    <property name="connectionFactory" ref="sensusJmsFactory" />
+    <property name="messageListener" ref="sensusMessageListener" />
+  </bean>
+  
+  <bean id="oneDeviceLookup" class="com.cannontech.sensus.OneDeviceForAllLookup">
+    <property name="deviceName" value="SensusTest1"/>
+    <property name="deviceDao" ref="deviceDao"/>
+  </bean>
+  
+  <bean id="deviceLookup" class="com.cannontech.sensus.ConfigurableDeviceLookup">
+    <property name="deviceDao" ref="deviceDao"/>
+    <property name="deviceMapping">
+      <map>
+        <entry key="95" value="SensusTest1"/>
+        <entry key="80" value="SensusAccept80"/>
+        <entry key="81" value="SensusAccept81"/>
+        <entry key="82" value="SensusAccept82"/>
+        <entry key="83" value="SensusAccept83"/>
+        <entry key="84" value="SensusAccept84"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor">
+      <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
+      <property name="yukonDeviceLookup" ref="deviceLookup"/>
+      <property name="bindingKeyRegEx" value="^CPS.*"/>
+      <property name="faultGenerator" ref="faulStatusGenerator"/>
+      <property name="latGenerator" ref="latitudeGenerator"/>
+      <property name="longGenerator" ref="longitudeGenerator"/>
+      <property name="batteryVoltageGenerator" ref="batteryVoltageGenerator"/>
+      <property name="no60Generator" ref="no60HzUnderGenerator"/>
+      <property name="deviceTemperatureGenerator" ref="deviceTemperatureGenerator"/>
+      <property name="batteryLowGenerator" ref="batteryLowGenerator"/>
+  </bean>
+  
+  <bean id="abstractPointDataGenerator" class="com.cannontech.sensus.PointDataGenerator" abstract="true">
+    <property name="yukonDeviceLookup" ref="deviceLookup"/>
+    <property name="dispatchConnection" ref="dispatchConnection"/>
+    <property name="pointDao" ref="pointDao"/>
+  </bean>
+  
+  <bean id="faulStatusGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="1"/>
+    <property name="type" value="0"/> <!-- Status -->
+  </bean>
+  
+  <bean id="latitudeGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="1"/>
+    <property name="type" value="1"/>  <!-- Analog -->
+  </bean>
+  
+  <bean id="longitudeGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="2"/>
+    <property name="type" value="1"/>  <!-- Analog -->
+  </bean>
+  
+  <bean id="no60HzUnderGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="2"/>
+    <property name="type" value="0"/>  <!-- Analog -->
+  </bean>
+  
+  <bean id="batteryVoltageGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="3"/>
+    <property name="type" value="1"/>  <!-- Analog -->
+  </bean>
+  
+  <bean id="deviceTemperatureGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="4"/>
+    <property name="type" value="1"/>  <!-- Analog -->
+  </bean>
+  
+  <bean id="batteryLowGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="4"/>
+    <property name="type" value="0"/>  <!-- Analog -->
+  </bean>
+  
+
+</beans>
