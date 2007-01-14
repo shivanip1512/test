@@ -53,6 +53,7 @@ public class CreateYukonUsers {
         String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
         user.getYukonUser().setUsername(stupidUserName);
         user.getYukonUser().setPassword(RandomStringUtils.randomAlphanumeric(12));
+        user.getYukonUser().setStatus("Enabled");
         dbPersistentDao.performDBChange(user, Transaction.INSERT);
         return user;
     }
