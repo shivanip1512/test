@@ -5,6 +5,14 @@
 update mspVendor set CompanyName = 'Cannon' where vendorid = 1;
 update mspVendor set AppName = 'Yukon' where vendorid = 1;
 
+/* @error ignore-begin */
+insert into billingfileformats values(21, 'SIMPLE_TOU');
+go
+
+insert into billingfileformats values(22, 'EXTENDED_TOU');
+go
+/* @error ignore-end */
+
 insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
 
 
