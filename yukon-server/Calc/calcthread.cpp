@@ -365,8 +365,7 @@ void CtiCalculateThread::onUpdateThread( void )
                 while( _auAffectedPoints.entries( ) )
                 {
                     recalcPointID = _auAffectedPoints.removeFirst( );
-                    CtiHashKey recalcKey(recalcPointID);
-                    std::map<CtiHashKey*, CtiCalc* >::iterator itr = _onUpdatePoints.find(&recalcKey);
+                    std::map<long, CtiCalc* >::iterator itr = _onUpdatePoints.find(recalcPointID);
 
                     //  if not ready
                     if( itr == _onUpdatePoints.end() || !calcPoint->ready( ) )
@@ -1312,25 +1311,25 @@ void CtiCalculateThread::resumeThreads(  )
 
 bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int updateinterval, string &qualityFlag )
 {
-    std::pair< std::map<CtiHashKey*,CtiCalc*>::iterator , bool > inserted;
+    std::pair< std::map<long,CtiCalc*>::iterator , bool > inserted;
 
     CtiCalc *newPoint;
     newPoint = CTIDBG_new CtiCalc( pointid, updatetype, updateinterval, qualityFlag );
     switch( newPoint->getUpdateType( ) )
     {
     case periodic:
-        inserted = _periodicPoints.insert( std::pair<CtiHashKey*,CtiCalc*>(CTIDBG_new CtiHashKey(pointid), newPoint) );
+        inserted = _periodicPoints.insert( std::pair<long,CtiCalc*>(pointid, newPoint) );
         break;
     case allUpdate:
     case anyUpdate:
     case periodicPlusUpdate:
-        inserted = _onUpdatePoints.insert(   std::pair<CtiHashKey*,CtiCalc*> (CTIDBG_new CtiHashKey(pointid), newPoint) );
+        inserted = _onUpdatePoints.insert(   std::pair<long,CtiCalc*> (pointid, newPoint) );
         break;
     case constant:
-        inserted = _constantPoints.insert(   std::pair<CtiHashKey*,CtiCalc*> (CTIDBG_new CtiHashKey(pointid), newPoint) );
+        inserted = _constantPoints.insert(   std::pair<long,CtiCalc*> (pointid, newPoint) );
         break;
     case historical:
-        inserted = _historicalPoints.insert( std::pair<CtiHashKey*,CtiCalc*> (CTIDBG_new CtiHashKey(pointid), newPoint) );
+        inserted = _historicalPoints.insert( std::pair<long,CtiCalc*> (pointid, newPoint) );
         break;
     default:
         {
@@ -1356,30 +1355,29 @@ bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int upda
 void CtiCalculateThread::appendPointComponent( long pointID, string &componentType, long componentPointID,
                                                string &operationType, double constantValue, string &functionName )
 {
-    CtiHashKey pointHashKey(pointID);
     CtiCalc *targetCalcPoint = NULL;
     CtiCalcComponent *newComponent = NULL;
     CtiPointStoreElement *tmpElementPtr = NULL;
     PointUpdateType updateType;
 
-    if( _periodicPoints.find( &pointHashKey ) != _periodicPoints.end() )
+    if( _periodicPoints.find( pointID ) != _periodicPoints.end() )
     {
-        targetCalcPoint  = _periodicPoints[&pointHashKey];
+        targetCalcPoint  = _periodicPoints[pointID];
         updateType = periodic;
     }
-    else if( _onUpdatePoints.find( &pointHashKey ) != _onUpdatePoints.end() )
+    else if( _onUpdatePoints.find( pointID ) != _onUpdatePoints.end() )
     {
-        targetCalcPoint  = _onUpdatePoints[&pointHashKey];
+        targetCalcPoint  = _onUpdatePoints[pointID];
         updateType = targetCalcPoint->getUpdateType();
     }
-    else if( _constantPoints.find( &pointHashKey ) != _constantPoints.end() )
+    else if( _constantPoints.find( pointID ) != _constantPoints.end() )
     {
-        targetCalcPoint  = _constantPoints[&pointHashKey];
+        targetCalcPoint  = _constantPoints[pointID];
         updateType = constant;
     }
-    else if( _historicalPoints.find( &pointHashKey ) != _historicalPoints.end())
+    else if( _historicalPoints.find( pointID ) != _historicalPoints.end())
     {
-        targetCalcPoint = _historicalPoints[&pointHashKey];
+        targetCalcPoint = _historicalPoints[pointID];
         updateType = historical;
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
@@ -1444,15 +1442,9 @@ BOOL CtiCalculateThread::isACalcPointID(const long aPointID)
 
 BOOL CtiCalculateThread::isAPeriodicCalcPointID(const long aPointID)
 {
-    CtiCalc *calcPoint;
-
     BOOL foundPoint(FALSE);
-
-    CtiHashKey recalcKey(aPointID);
-
-    calcPoint = (CtiCalc *)(*(_periodicPoints.find(&recalcKey))).second;
-
-    if(calcPoint != rwnil)
+    
+    if(_periodicPoints.find(aPointID) != _periodicPoints.end())
     {
         foundPoint = TRUE;
     }
@@ -1463,16 +1455,9 @@ BOOL CtiCalculateThread::isAPeriodicCalcPointID(const long aPointID)
 
 BOOL CtiCalculateThread::isAnOnUpdateCalcPointID(const long aPointID)
 {
-
-    CtiCalc *calcPoint;
-
     BOOL foundPoint(FALSE);
 
-    CtiHashKey recalcKey(aPointID);
-
-    calcPoint = (CtiCalc *)(*_onUpdatePoints.find(&recalcKey)).second;
-
-    if(calcPoint != rwnil)
+    if(_onUpdatePoints.find(aPointID) != _onUpdatePoints.end())
     {
         foundPoint = TRUE;
     }
@@ -1482,16 +1467,9 @@ BOOL CtiCalculateThread::isAnOnUpdateCalcPointID(const long aPointID)
 
 BOOL CtiCalculateThread::isAConstantCalcPointID(const long aPointID)
 {
-
-    CtiCalc *calcPoint;
-
     BOOL foundPoint(FALSE);
 
-    CtiHashKey recalcKey(aPointID);
-
-    calcPoint = (* _constantPoints.find(&recalcKey)).second ;
-
-    if(calcPoint != rwnil)
+    if(_constantPoints.find(aPointID) != _constantPoints.end())
     {
         foundPoint = TRUE;
     }
@@ -1501,16 +1479,9 @@ BOOL CtiCalculateThread::isAConstantCalcPointID(const long aPointID)
 
 BOOL CtiCalculateThread::isAHistoricalCalcPointID(const long aPointID)
 {
-
-    CtiCalc *calcPoint;
-
     BOOL foundPoint(FALSE);
 
-    CtiHashKey recalcKey(aPointID);
-
-    calcPoint = (CtiCalc *)(*_historicalPoints.find(&recalcKey)).second;
-
-    if(calcPoint != rwnil)
+    if(_historicalPoints.find(aPointID) != _historicalPoints.end())
     {
         foundPoint = TRUE;
     }
@@ -1637,25 +1608,24 @@ void CtiCalculateThread::clearPointMaps()
 
 void CtiCalculateThread::removePointStoreObject( const long aPointID )
 {
-    CtiHashKey pointHashKey(aPointID);
     CtiCalc *targetCalcPoint = NULL;
     CtiPointStoreElement *tmpElementPtr = NULL;
 
-    if( _periodicPoints.find( &pointHashKey ) != _periodicPoints.end() )
+    if( _periodicPoints.find( aPointID ) != _periodicPoints.end() )
     {
-        targetCalcPoint  = _periodicPoints[&pointHashKey];
+        targetCalcPoint  = _periodicPoints[aPointID];
     }
-    else if( _onUpdatePoints.find( &pointHashKey ) != _onUpdatePoints.end() )
+    else if( _onUpdatePoints.find( aPointID ) != _onUpdatePoints.end() )
     {
-        targetCalcPoint  = _onUpdatePoints[&pointHashKey];
+        targetCalcPoint  = _onUpdatePoints[aPointID];
     }
-    else if( _constantPoints.find( &pointHashKey ) != _constantPoints.end() )
+    else if( _constantPoints.find( aPointID ) != _constantPoints.end() )
     {
-        targetCalcPoint  = _constantPoints[&pointHashKey];
+        targetCalcPoint  = _constantPoints[aPointID];
     }
-    else if( _historicalPoints.find( &pointHashKey ) != _historicalPoints.end())
+    else if( _historicalPoints.find( aPointID ) != _historicalPoints.end())
     {
-        targetCalcPoint = _historicalPoints[&pointHashKey];
+        targetCalcPoint = _historicalPoints[aPointID];
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {

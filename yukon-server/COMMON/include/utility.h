@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/10/18 16:52:47 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/01/15 21:17:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -346,7 +346,6 @@ inline void delete_map( std::map<K,T> V )
 {
 
    for (std::map<K,T>::iterator itr = V.begin(); itr != V.end(); itr++) {
-        delete (*itr).first;
         delete (*itr).second;
    }
 }
@@ -355,7 +354,6 @@ inline void delete_map( std::map<K,T> *V )
 {
 
    for (std::map<K,T>::iterator itr = V->begin(); itr != V->end(); itr++) {
-        delete (*itr).first;
         delete (*itr).second;
    }
 }

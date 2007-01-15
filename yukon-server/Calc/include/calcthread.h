@@ -37,8 +37,8 @@ public:
 
     } CtiCalcThreadInterruptReason;
 
-    typedef std::map<CtiHashKey*, CtiCalc* > CtiCalcPointMap;
-    typedef std::map<CtiHashKey*, CtiCalc* >::iterator CtiCalcPointMapIterator;
+    typedef std::map<long, CtiCalc* > CtiCalcPointMap;
+    typedef std::map<long, CtiCalc* >::iterator CtiCalcPointMapIterator;
     
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
