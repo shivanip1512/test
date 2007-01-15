@@ -40,19 +40,22 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     private Properties props = new Properties();
     private int version = CURRENT_VERSION;
     private Color color = DEFAULT_COLOR;
+    private int blink = 0;
     private int colorPointID = -1;
     private int thicknessPointID = -1;
     private int arrowPointID = -1;
     private int opacityPointID = -1;
+    private int blinkPointID = -1;
     private Map customColorMap = new HashMap(13);
     private Map customThicknessMap = new HashMap(13);
     private Map customArrowMap = new HashMap(13);
     private Map customOpacityMap = new HashMap(13);
-    
+    private Map customBlinkMap = new HashMap(13);
     private LiteState currentColorState;
     private LiteState currentThicknessState;
     private LiteState currentArrowState;
     private LiteState currentOpacityState;
+    private LiteState currentBlinkState;
     private HashMap oldColorMap = new HashMap(11);
     
     
@@ -72,6 +75,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         setLineThickness(1.0f);
         setLineArrow(LxArrowElement.ARROW_NONE);
         setTransparency(1.0f);
+        setLineBlink(0);
         oldColorMap.put(0, java.awt.Color.green);
         oldColorMap.put(1, java.awt.Color.red);
         oldColorMap.put(2, java.awt.Color.white);
@@ -91,6 +95,14 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     
     public void setColor(Color c) {
         color = c;
+    }
+    
+    public int getLineBlink(){
+        return blink;
+    }
+    
+    public void setLineBlink(int b) {
+        blink = b;
     }
     
     public void setIsNew(boolean b) {
@@ -204,6 +216,30 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         return lineOpacities;
     }
     
+    @SuppressWarnings("unchecked")
+    public List getBlinks() {
+        List lineBlinks = new ArrayList(6);
+        LitePoint point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
+        if(point == null) {
+            return lineBlinks;
+        }
+        
+        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+        List states = lsg.getStatesList();
+        for(int i = 0; i < states.size(); i++) {
+            Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
+            Integer blink; 
+            if(blinkObj != null) {
+                blink =blinkObj;
+            } 
+            else {
+                blink = new Integer(0);
+            }
+            lineBlinks.add(blink);
+        }
+        return lineBlinks;
+    }
+    
     public int getColorPointID(){
         return colorPointID;
     }
@@ -234,6 +270,14 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     
     public void setOpacityPointID(int pointID) {
         opacityPointID = pointID;
+    }
+    
+    public int getBlinkPointID() {;
+        return blinkPointID;
+    }
+
+    public void setBlinkPointID(int pointID) {
+        blinkPointID = pointID;
     }
 
     /**
@@ -354,6 +398,14 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         customOpacityMap = m;
     }
     
+    public Map getCustomBlinkMap() {
+        return customBlinkMap;
+    }
+    
+    public void setCustomBlinkMap(Map m) {
+        customBlinkMap = m;
+    }
+    
     /**
      * Returns the currentState.
      * @return LiteState
@@ -419,6 +471,22 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
     }
     
     /**
+     * Returns the currentState.
+     * @return LiteState
+     */
+    public LiteState getCurrentBlinkState() {
+        return currentBlinkState;
+    }
+
+    /**
+     * Sets the currentState.
+     * @param currentState The currentState to set
+     */
+    public void setCurrentBlinkState(LiteState currentState) {
+        this.currentBlinkState = currentState;
+    }
+    
+    /**
      * Updates the elements actual color with the current state
      * This should only be called if the LineElement is being point driven
      */
@@ -475,5 +543,17 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
             
         }
         setTransparency(opacity);
+    }
+    
+    public void updateBlink() {
+        LiteState state = getCurrentBlinkState();
+        int blink = 0;
+        if(state != null) {
+            Integer customBlink = (Integer)customBlinkMap.get(new Integer(state.getStateRawState()));
+            if(customBlink != null) {
+                blink = customBlink;
+            }
+        }
+        setLineBlink(blink);
     }
 }

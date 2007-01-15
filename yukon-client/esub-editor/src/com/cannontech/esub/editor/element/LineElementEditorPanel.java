@@ -25,22 +25,27 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
     private JLabel thicknessLabel = null;
     private JLabel arrowLabel = null;
     private JLabel opacityLabel = null;
+    private JLabel blinkLabel = null;
     private JButton lineColorButton = null;
     private JSlider thicknessSlider = null;
     private JComboBox arrowComboBox = null;
     private JSlider opacitySlider = null;
-    private JCheckBox colorCheckBox = null;
-    private JCheckBox thicknessCheckBox = null;
-    private JCheckBox arrowCheckBox = null;
-    private JCheckBox opacityCheckBox = null;
+    private JCheckBox blinkCheckBox = null;
+    private JCheckBox colorPointCheckBox = null;
+    private JCheckBox thicknessPointCheckBox = null;
+    private JCheckBox arrowPointCheckBox = null;
+    private JCheckBox opacityPointCheckBox = null;
+    private JCheckBox blinkPointCheckBox = null;
     private JButton colorButton = null;
     private JButton thicknessPointButton = null;
     private JButton arrowPointButton = null;
     private JButton opacityPointButton = null;
+    private JButton blinkPointButton = null;
     private LineColorPointPanel colorPointPanel = null;
     private LineThicknessPointPanel thicknessPointPanel = null;
     private LineArrowPointPanel arrowPointPanel = null;
     private LineOpacityPointPanel opacityPointPanel = null;
+    private LineBlinkPointPanel blinkPointPanel = null;
     private JColorChooser colorChooser;
     private JDialog pointPanelDialog;
     private PropertyPanel parent;
@@ -52,6 +57,8 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
     private int initialArrowPointID;
     private float initialOpacity;
     private int initialOpacityPointID;
+    private int initialBlink;
+    private int initialBlinkPointID;
 
     /**
      * Constructer for LineElementEditorPanel
@@ -95,6 +102,12 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             opacityLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
             add(getOpacityLabel(), opacityLabelConstraint);
             
+            java.awt.GridBagConstraints blinkLabelConstraint = new java.awt.GridBagConstraints();
+            blinkLabelConstraint.gridx = 0; blinkLabelConstraint.gridy = 4;
+            blinkLabelConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            blinkLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+            add(getBlinkLabel(), blinkLabelConstraint);
+            
             java.awt.GridBagConstraints colorButtonConstraint = new java.awt.GridBagConstraints();
             colorButtonConstraint.gridx = 1; colorButtonConstraint.gridy = 0;
             colorButtonConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -119,29 +132,41 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             opacitySliderConstraint.insets = new java.awt.Insets(5,5,5,5);
             add(getOpacitySlider(), opacitySliderConstraint);
             
+            java.awt.GridBagConstraints blinkCheckBoxConstraint = new java.awt.GridBagConstraints();
+            blinkCheckBoxConstraint.gridx = 1; blinkCheckBoxConstraint.gridy = 4;
+            blinkCheckBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            blinkCheckBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
+            add(getBlinkCheckBox(), blinkCheckBoxConstraint);
+            
             java.awt.GridBagConstraints colorCheckBoxConstraint = new java.awt.GridBagConstraints();
             colorCheckBoxConstraint.gridx = 2; colorCheckBoxConstraint.gridy = 0;
             colorCheckBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
             colorCheckBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
-            add(getColorCheckBox(), colorCheckBoxConstraint);
+            add(getColorPointCheckBox(), colorCheckBoxConstraint);
             
             java.awt.GridBagConstraints thicknessCheckBoxConstraint = new java.awt.GridBagConstraints();
             thicknessCheckBoxConstraint.gridx = 2; thicknessCheckBoxConstraint.gridy = 1;
             thicknessCheckBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
             thicknessCheckBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
-            add(getThicknessCheckBox(), thicknessCheckBoxConstraint);
+            add(getThicknessPointCheckBox(), thicknessCheckBoxConstraint);
             
             java.awt.GridBagConstraints arrowCheckBoxConstraint = new java.awt.GridBagConstraints();
             arrowCheckBoxConstraint.gridx = 2; arrowCheckBoxConstraint.gridy = 2;
             arrowCheckBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
             arrowCheckBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
-            add(getArrowCheckBox(), arrowCheckBoxConstraint);
+            add(getArrowPointCheckBox(), arrowCheckBoxConstraint);
             
             java.awt.GridBagConstraints opacityCheckBoxConstraint = new java.awt.GridBagConstraints();
             opacityCheckBoxConstraint.gridx = 2; opacityCheckBoxConstraint.gridy = 3;
             opacityCheckBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
             opacityCheckBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
-            add(getOpacityCheckBox(), opacityCheckBoxConstraint);
+            add(getOpacityPointCheckBox(), opacityCheckBoxConstraint);
+            
+            java.awt.GridBagConstraints blinkPointCheckBoxConstraint = new java.awt.GridBagConstraints();
+            blinkPointCheckBoxConstraint.gridx = 2; blinkPointCheckBoxConstraint.gridy = 4;
+            blinkPointCheckBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            blinkPointCheckBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
+            add(getBlinkPointCheckBox(), blinkPointCheckBoxConstraint);
             
             java.awt.GridBagConstraints colorPointButtonConstraint = new java.awt.GridBagConstraints();
             colorPointButtonConstraint.gridx = 3; colorPointButtonConstraint.gridy = 0;
@@ -167,6 +192,12 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             opacityButtonConstraint.insets = new java.awt.Insets(5,5,5,5);
             add(getOpacityPointButton(), opacityButtonConstraint);
             
+            java.awt.GridBagConstraints blinkButtonConstraint = new java.awt.GridBagConstraints();
+            blinkButtonConstraint.gridx = 3; blinkButtonConstraint.gridy = 4;
+            blinkButtonConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            blinkButtonConstraint.insets = new java.awt.Insets(5,5,5,5);
+            add(getBlinkPointButton(), blinkButtonConstraint);
+            
             initConnections();
             JFrame parent = (JFrame) CtiUtilities.getParentFrame(this);
             if(parent != null) {
@@ -185,25 +216,30 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
      */
     private void initConnections() throws java.lang.Exception {
         getColorButton().addActionListener(this);
-        getColorCheckBox().addActionListener(this);
+        getColorPointCheckBox().addActionListener(this);
         getColorPointButton().addActionListener(this);
         
         getThicknessSlider().addChangeListener(this);
-        getThicknessCheckBox().addActionListener(this);
+        getThicknessPointCheckBox().addActionListener(this);
         getThicknessPointButton().addActionListener(this);
         
-        getArrowCheckBox().addActionListener(this);
+        getArrowPointCheckBox().addActionListener(this);
         getArrowPointButton().addActionListener(this);
         getArrowComboBox().addActionListener(this);
         
         getOpacitySlider().addChangeListener(this);
-        getOpacityCheckBox().addActionListener(this);
+        getOpacityPointCheckBox().addActionListener(this);
         getOpacityPointButton().addActionListener(this);
+        
+        getBlinkCheckBox().addChangeListener(this);
+        getBlinkPointCheckBox().addActionListener(this);
+        getBlinkPointButton().addActionListener(this);
         
         getColorPointPanel().getOkButton().addActionListener(this);
         getThicknessPointPanel().getOkButton().addActionListener(this);
         getOpacityPointPanel().getOkButton().addActionListener(this);
         getArrowPointPanel().getOkButton().addActionListener(this);
+        getBlinkPointPanel().getOkButton().addActionListener(this);
         parent.getPropertyButtonPanel().getCancelJButton().addActionListener(this);
     }
     
@@ -293,6 +329,13 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         }
         return thicknessSlider;
     }
+    
+    public JCheckBox getBlinkCheckBox() {
+        if( blinkCheckBox == null ){
+            blinkCheckBox = new JCheckBox("Line will blink");
+        }
+        return blinkCheckBox;
+    }
 
     public JLabel getThicknessLabel() {
         if( thicknessLabel == null ){
@@ -301,37 +344,52 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         return thicknessLabel;
     }
     
-    public JCheckBox getThicknessCheckBox() {
-        if( thicknessCheckBox == null ){
-            thicknessCheckBox = new JCheckBox("Point Driven?:");
+    public JLabel getBlinkLabel() {
+        if( blinkLabel == null ){
+            blinkLabel = new JLabel("Blink:");
         }
-        return thicknessCheckBox;
+        return blinkLabel;
     }
     
-    public JCheckBox getColorCheckBox() {
-        if( colorCheckBox == null ){
-            colorCheckBox = new JCheckBox("Point Driven?:");
+    public JCheckBox getThicknessPointCheckBox() {
+        if( thicknessPointCheckBox == null ){
+            thicknessPointCheckBox = new JCheckBox("Point Driven?:");
         }
-        return colorCheckBox;
+        return thicknessPointCheckBox;
     }
     
-    public JCheckBox getArrowCheckBox() {
-        if( arrowCheckBox == null ){
-            arrowCheckBox = new JCheckBox("Point Driven?:");
+    public JCheckBox getColorPointCheckBox() {
+        if( colorPointCheckBox == null ){
+            colorPointCheckBox = new JCheckBox("Point Driven?:");
         }
-        return arrowCheckBox;
+        return colorPointCheckBox;
     }
     
-    public JCheckBox getOpacityCheckBox() {
-        if( opacityCheckBox == null ){
-            opacityCheckBox = new JCheckBox("Point Driven?:");
+    public JCheckBox getArrowPointCheckBox() {
+        if( arrowPointCheckBox == null ){
+            arrowPointCheckBox = new JCheckBox("Point Driven?:");
         }
-        return opacityCheckBox;
+        return arrowPointCheckBox;
+    }
+    
+    public JCheckBox getOpacityPointCheckBox() {
+        if( opacityPointCheckBox == null ){
+            opacityPointCheckBox = new JCheckBox("Point Driven?:");
+        }
+        return opacityPointCheckBox;
+    }
+    
+    public JCheckBox getBlinkPointCheckBox() {
+        if( blinkPointCheckBox == null ){
+            blinkPointCheckBox = new JCheckBox("Point Driven?:");
+        }
+        return blinkPointCheckBox;
     }
     
     public JButton getColorPointButton() {
         if( colorButton == null ){
             colorButton = new JButton("Point");
+            colorButton.setEnabled(false);
         }
         return colorButton;
     }
@@ -339,6 +397,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
     public JButton getThicknessPointButton() {
         if( thicknessPointButton == null ){
             thicknessPointButton = new JButton("Point");
+            thicknessPointButton.setEnabled(false);
         }
         return thicknessPointButton;
     }
@@ -346,6 +405,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
     public JButton getArrowPointButton() {
         if( arrowPointButton == null ){
             arrowPointButton = new JButton("Point");
+            arrowPointButton.setEnabled(false);
         }
         return arrowPointButton;
     }
@@ -353,8 +413,17 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
     public JButton getOpacityPointButton() {
         if( opacityPointButton == null ){
             opacityPointButton = new JButton("Point");
+            opacityPointButton.setEnabled(false);
         }
         return opacityPointButton;
+    }
+    
+    public JButton getBlinkPointButton() {
+        if( blinkPointButton == null ){
+            blinkPointButton = new JButton("Point");
+            blinkPointButton.setEnabled(false);
+        }
+        return blinkPointButton;
     }
     
     public void selectionPerformed() {
@@ -369,7 +438,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         line.setLineColor(colorChooser.getColor());
         line.setColor(colorChooser.getColor());
         
-        if(getColorCheckBox().isSelected()) {
+        if(getColorPointCheckBox().isSelected()) {
             if(getColorPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
                 CTILogger.error("No color point selected");
                 JOptionPane.showMessageDialog(this, "Please select a point for color or uncheck the point driven checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
@@ -380,7 +449,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             line.setColorPointID(-1);
         }
         line.setLineThickness(new Float(getThicknessSlider().getValue()).floatValue());
-        if(getThicknessCheckBox().isSelected()) {
+        if(getThicknessPointCheckBox().isSelected()) {
             if(getThicknessPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
                 CTILogger.error("No thickness point selected");
                 JOptionPane.showMessageDialog(this, "Please select a point for thickness or uncheck the point driven checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
@@ -396,7 +465,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             slider = 12;
         }
         line.setLineArrow(slider);
-        if(getArrowCheckBox().isSelected()) {
+        if(getArrowPointCheckBox().isSelected()) {
             if(getArrowPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
                 CTILogger.error("No arrow point selected");
                 JOptionPane.showMessageDialog(this, "Please select a point for arrows or uncheck the point driven checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
@@ -406,7 +475,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             line.setArrowPointID(-1);
         }
         line.setTransparency(new Float(getOpacitySlider().getValue()).floatValue()*.01f);
-        if(getOpacityCheckBox().isSelected()) {
+        if(getOpacityPointCheckBox().isSelected()) {
             if(getOpacityPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
                 CTILogger.error("No opacity point selected");
                 JOptionPane.showMessageDialog(this, "Please select a point for opacity or uncheck the point driven checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
@@ -414,6 +483,20 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             line.setOpacityPointID(getOpacityPointPanel().getPointSelectionPanel().getSelectedPoint().getLiteID());
         }else {
             line.setOpacityPointID(-1);
+        }
+        if( getBlinkCheckBox().isSelected()) {
+            line.setLineBlink(1);
+        }else {
+            line.setLineBlink(0);
+        }
+        if(getBlinkPointCheckBox().isSelected()) {
+            if(getBlinkPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
+                CTILogger.error("No opacity point selected");
+                JOptionPane.showMessageDialog(this, "Please select a point for blink or uncheck the point driven checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
+            }
+            line.setBlinkPointID(getBlinkPointPanel().getPointSelectionPanel().getSelectedPoint().getLiteID());
+        }else {
+            line.setBlinkPointID(-1);
         }
         
         return line;
@@ -433,9 +516,10 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         initialArrowPointID = lineElement.getArrowPointID();
         initialOpacity = lineElement.getTransparency();
         initialOpacityPointID = lineElement.getOpacityPointID();
+        initialBlink = lineElement.getLineBlink();
+        initialBlinkPointID = lineElement.getBlinkPointID();
         
-        if(!lineElement.isNew()) 
-        {
+        if(!lineElement.isNew()){
             colorChooser.setColor(lineElement.getLineColor());
             colorChooser.setColor((java.awt.Color)lineElement.getPaint());
             getColorButton().setBackground(colorChooser.getColor());
@@ -452,11 +536,16 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             float f = lineElement.getTransparency() *100f;
             getOpacitySlider().setValue(new Float(f).intValue());
             
+            if(lineElement.getLineBlink() == 0) {
+                getBlinkCheckBox().setSelected(false);
+            }else {
+                getBlinkCheckBox().setSelected(true);
+            }
             if(lineElement.getColorPointID() < 0) {
-                getColorCheckBox().setSelected(false);
+                getColorPointCheckBox().setSelected(false);
                 getColorPointButton().setEnabled(false);
             }else {
-                getColorCheckBox().setSelected(true);
+                getColorPointCheckBox().setSelected(true);
                 getColorPointButton().setEnabled(true);
                 getColorButton().setEnabled(false);
                 getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
@@ -465,33 +554,43 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             }
             
             if(lineElement.getThicknessPointID() < 0) {
-                getThicknessCheckBox().setSelected(false);
+                getThicknessPointCheckBox().setSelected(false);
                 getThicknessPointButton().setEnabled(false);
             }else {
-                getThicknessCheckBox().setSelected(true);
+                getThicknessPointCheckBox().setSelected(true);
                 getThicknessPointButton().setEnabled(true);
                 getThicknessSlider().setEnabled(false);
                 getThicknessPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getThicknessPointID()));
             }
             
             if(lineElement.getArrowPointID() < 0) {
-                getArrowCheckBox().setSelected(false); 
+                getArrowPointCheckBox().setSelected(false); 
                 getArrowPointButton().setEnabled(false);
             }else {
-                getArrowCheckBox().setSelected(true);
+                getArrowPointCheckBox().setSelected(true);
                 getArrowPointButton().setEnabled(true);
                 getArrowComboBox().setEnabled(false);
                 getArrowPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getArrowPointID()));
             }
             
             if(lineElement.getOpacityPointID() < 0) {
-                getOpacityCheckBox().setSelected(false);
+                getOpacityPointCheckBox().setSelected(false);
                 getOpacityPointButton().setEnabled(false);
             }else {
-                getOpacityCheckBox().setSelected(true);
+                getOpacityPointCheckBox().setSelected(true);
                 getOpacityPointButton().setEnabled(true);
                 getOpacitySlider().setEnabled(false);
                 getOpacityPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getOpacityPointID()));
+            }
+            
+            if(lineElement.getBlinkPointID() < 0) {
+                getBlinkPointCheckBox().setSelected(false);
+                getBlinkPointButton().setEnabled(false);
+            }else {
+                getBlinkPointCheckBox().setSelected(true);
+                getBlinkPointButton().setEnabled(true);
+                getBlinkCheckBox().setEnabled(false);
+                getBlinkPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getBlinkPointID()));
             }
         }
     }
@@ -522,6 +621,13 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             opacityPointPanel = new LineOpacityPointPanel();
         }
         return opacityPointPanel;
+    }
+    
+    public LineBlinkPointPanel getBlinkPointPanel() {
+        if (blinkPointPanel == null) {
+            blinkPointPanel = new LineBlinkPointPanel();
+        }
+        return blinkPointPanel;
     }
 
     @SuppressWarnings({"deprecation"})
@@ -556,8 +662,8 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 arrow = 12;
             }
             lineElement.setLineArrow(arrow);
-        }else if( source == getColorCheckBox()) {
-            if( getColorCheckBox().isSelected()) {
+        }else if( source == getColorPointCheckBox()) {
+            if( getColorPointCheckBox().isSelected()) {
                 getColorPointButton().setEnabled(true);
                 getColorButton().setEnabled(false);
                 getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
@@ -570,29 +676,37 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getColorLabel().setBackground(colorChooser.getColor());
                 getColorLabel().repaint(getColorLabel().getVisibleRect());
             }
-        }else if( source == getThicknessCheckBox()) {
-            if( getThicknessCheckBox().isSelected()) {
+        }else if( source == getThicknessPointCheckBox()) {
+            if( getThicknessPointCheckBox().isSelected()) {
                 getThicknessPointButton().setEnabled(true);
                 getThicknessSlider().setEnabled(false);
             }else { 
                 getThicknessPointButton().setEnabled(false);
                 getThicknessSlider().setEnabled(true);
             }
-        }else if( source == getArrowCheckBox()) {
-            if( getArrowCheckBox().isSelected()) {
+        }else if( source == getArrowPointCheckBox()) {
+            if( getArrowPointCheckBox().isSelected()) {
                 getArrowPointButton().setEnabled(true);
                 getArrowComboBox().setEnabled(false);
             }else {
                 getArrowPointButton().setEnabled(false);
                 getArrowComboBox().setEnabled(true);
             }
-        }else if( source == getOpacityCheckBox()) {
-            if( getOpacityCheckBox().isSelected()) {
+        }else if( source == getOpacityPointCheckBox()) {
+            if( getOpacityPointCheckBox().isSelected()) {
                 getOpacityPointButton().setEnabled(true);
                 getOpacitySlider().setEnabled(false);
             }else {
                 getOpacityPointButton().setEnabled(false);
                 getOpacitySlider().setEnabled(true);
+            }
+        }else if( source == getBlinkPointCheckBox()) {
+            if( getBlinkPointCheckBox().isSelected()) {
+                getBlinkPointButton().setEnabled(true);
+                getBlinkCheckBox().setEnabled(false);
+            }else {
+                getBlinkPointButton().setEnabled(false);
+                getBlinkCheckBox().setEnabled(true);
             }
         }else if( source == getColorPointButton()) {
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
@@ -622,9 +736,15 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             getOpacityPointPanel().setValue(lineElement);
             pointPanelDialog.show();
         }
+        else if( source == getBlinkPointButton()) {
+            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog.setContentPane(getBlinkPointPanel());
+            pointPanelDialog.setSize(new java.awt.Dimension(540, 500));
+            getBlinkPointPanel().setValue(lineElement);
+            pointPanelDialog.show();
+        }
         else if( source == getColorPointPanel().getOkButton()) {
             getColorPointPanel().getValue(lineElement);
-            
             pointPanelDialog.setVisible(false);
         }else if( source == getThicknessPointPanel().getOkButton()) {
             getThicknessPointPanel().getValue(lineElement);
@@ -634,6 +754,9 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             pointPanelDialog.setVisible(false);
         }else if( source == getArrowPointPanel().getOkButton()) {
             getArrowPointPanel().getValue(lineElement);
+            pointPanelDialog.setVisible(false);
+        }else if( source == getBlinkPointPanel().getOkButton()) {
+            getBlinkPointPanel().getValue(lineElement);
             pointPanelDialog.setVisible(false);
         }else if( source ==  parent.getPropertyButtonPanel().getCancelJButton()) {
             cancelPerformed();
@@ -651,6 +774,8 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         lineElement.setArrowPointID(initialArrowPointID);
         lineElement.setTransparency(initialOpacity);
         lineElement.setOpacityPointID(initialOpacityPointID);
+        lineElement.setLineBlink(initialBlink);
+        lineElement.setBlinkPointID(initialBlinkPointID);
     }
 
     public void stateChanged(ChangeEvent e) {

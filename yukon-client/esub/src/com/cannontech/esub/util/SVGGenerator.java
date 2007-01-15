@@ -343,12 +343,12 @@ public class SVGGenerator {
 		
 		String pathStr = getPathString(s, line.getCenterX(), line.getCenterY());
 		float width = line.getStyle().getLineThickness();
-		
+		int blink = line.getLineBlink();
 		Element lineElem = doc.createElementNS(svgNS, "path");
 		lineElem.setAttributeNS(null, "id", line.getName());
 		lineElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
 		lineElem.setAttributeNS(null, "d", pathStr);
-        
+        lineElem.setAttributeNS(null, "blink", Integer.toString(blink));
         if(line.getColorPointID() > 0) {
             
             List colors = line.getColors();
@@ -389,12 +389,24 @@ public class SVGGenerator {
             }
         }
         
+        if(line.getBlinkPointID() > 0) {
+            
+            List blinks = line.getBlinks();
+            for(int i = 0; i < blinks.size(); i++) {
+                
+                String blinkString = ((Integer)blinks.get(i)).toString();
+                lineElem.setAttributeNS(null, "blink" + i, blinkString);
+            }
+        }
+        
         String lineColorString = ((Color)line.getPaint()).getRed() + "," + ((Color)line.getPaint()).getGreen() +"," + ((Color)line.getPaint()).getBlue();
         lineElem.setAttributeNS(null,"lineColor", lineColorString);
         lineElem.setAttributeNS(null, "colorid", Integer.toString(line.getColorPointID()));
         lineElem.setAttributeNS(null, "thicknessid", Integer.toString(line.getThicknessPointID()));
         lineElem.setAttributeNS(null, "arrowid", Integer.toString(line.getArrowPointID()));
         lineElem.setAttributeNS(null, "opacityid", Integer.toString(line.getOpacityPointID()));
+        lineElem.setAttributeNS(null, "blinkid", Integer.toString(line.getBlinkPointID()));
+        lineElem.setAttributeNS(null, "displayState", "inline");
         return lineElem;		
 	}
 		

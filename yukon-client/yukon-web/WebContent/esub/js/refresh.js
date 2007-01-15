@@ -16,13 +16,14 @@ var graphRefreshRate = 360 * 1000;
 var pointRefreshRate  = 15 * 1000; 
 var tableRefreshRate  = 15 * 1000; 
 var alarmAudioCheckRate = 5 * 1000;
+var blinkerRefreshRate = 600;
 
+var allDynamicBlinkers = new Array();
 var allDynamicTextElem = new Array();
+var allDynamicGraphElem = new Array();
 var allAlarmTextElem = new Array();
 var allStateImageElem = new Array();
-var allDynamicGraphElem = new Array();
 var allLineElem = new Array();
-var allBlinkers = new Array();
 
 /* Onload, store all the things that we might be displaying alarms for */
 var allAlarmDeviceIds = "";
@@ -45,6 +46,7 @@ function refresh(evt) {
         var elemID = dynLines.item(k).getAttribute('elementID');
         if(elemID == lineElementID) {
             allLineElem.push(dynLines.item(k));
+            allDynamicBlinkers.push(dynLines.item(k));
         }
     }    
         
@@ -92,6 +94,7 @@ function refresh(evt) {
 	setInterval('updateAllPoints()', pointRefreshRate);
 	setInterval('updateAllGraphs()', graphRefreshRate); 
 	setInterval('updateAllTables()', tableRefreshRate);
+	setInterval('updateAllBlinkers()', blinkerRefreshRate);
 	setInterval('checkAlarmAudio(allAlarmDeviceIds, allAlarmPointIds, allAlarmAlarmCategoryIds)', alarmAudioCheckRate);
 } //end refresh
 
@@ -117,6 +120,13 @@ function updateAllGraphs() {
 	var i;
 	for(i = 0; i < allDynamicGraphElem.length; i++) {
 		updateGraph(allDynamicGraphElem[i]);
+	}
+} //end updateGraphs
+
+function updateAllBlinkers() {
+	var i;
+	for(i = 0; i < allDynamicBlinkers.length; i++) {
+		updateBlinker(allDynamicBlinkers[i]);
 	}
 } //end updateGraphs
 
@@ -217,6 +227,49 @@ function updateAlarmsTable(node,url) {
 		}
 	} // end f2
 } // end updateAlarmsTable
+
+//  Check every svg element that can blink and toggles its blink value
+function updateBlinker(node){
+	var blink = node.getAttribute('blink');
+	var blinkPointID = node.getAttribute('blinkid');
+
+	if(blinkPointID > 0) {
+		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + blinkPointID + '&dattrib=4096';
+        getURL(url, bfn);
+	}else if(blink == "1"){
+		var displayState = node.getAttribute('displayState');
+		if ( displayState == "none" ) {
+			node.getStyle().setProperty('display', 'inline');
+			node.setAttribute('displayState', 'inline');
+		}else {
+			node.getStyle().setProperty('display', 'none');
+			node.setAttribute('displayState', 'none');
+		}
+	}else {
+			node.getStyle().setProperty('display', 'inline');
+			node.setAttribute('displayState', 'inline');
+	 }
+	
+	function bfn(obj) {
+		if(obj.content) {
+            var value = obj.content;
+            var blink = node.getAttribute('blink'+trim(value));
+			var displayState = node.getAttribute('displayState');
+            if(blink > 0){
+            	if( displayState == "inline") {
+            	   	node.getStyle().setProperty('display', 'none');
+            	   	node.setAttribute('displayState' , 'none');
+            	}else {
+            		node.getStyle().setProperty('display', 'inline');
+	           	   	node.setAttribute('displayState' , 'inline');
+            	}
+            }else {
+            	node.getStyle().setProperty('display', 'inline');
+            	node.setAttribute('displayState', 'inline');
+            }
+        }
+    }
+}// end updateAllBlinkers
 
 function updateNode(node) {
 	var colorPointID = node.getAttribute('colorid');

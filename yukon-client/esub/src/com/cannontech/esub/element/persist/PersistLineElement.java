@@ -63,6 +63,9 @@ public class PersistLineElement extends BasePersistElement {
                     float opacity = LxSaveUtils.readFloat(in);
                     int opacityPointID = LxSaveUtils.readInt(in);
                     Map customOpacityMap = PersistUtils.readIntFloatMap(in);
+                    int blink = LxSaveUtils.readInt(in);
+                    int blinkPointID = LxSaveUtils.readInt(in);
+                    Map customBlinkMap = PersistUtils.readIntIntMap(in);
                     elem.setPaint(c);
                     elem.setColorPointID(colorPointID);
                     elem.setCustomColorMap(customColorMap);
@@ -75,6 +78,9 @@ public class PersistLineElement extends BasePersistElement {
                     elem.setTransparency(opacity);
                     elem.setOpacityPointID(opacityPointID);
                     elem.setCustomOpacityMap(customOpacityMap);
+                    elem.setLineBlink(blink);
+                    elem.setBlinkPointID(blinkPointID);
+                    elem.setCustomBlinkMap(customBlinkMap);
                     elem.setLinkTo( LxSaveUtils.readString(in) );
                 }
                 
@@ -105,6 +111,9 @@ public class PersistLineElement extends BasePersistElement {
             LxSaveUtils.writeFloat(out, elem.getTransparency());
             LxSaveUtils.writeInt(out, elem.getOpacityPointID());
             PersistUtils.writeIntFloatMap(out, elem.getCustomOpacityMap());
+            LxSaveUtils.writeInt(out, elem.getLineBlink());
+            LxSaveUtils.writeInt(out, elem.getBlinkPointID());
+            PersistUtils.writeIntIntMap(out, elem.getCustomBlinkMap());
             LxSaveUtils.writeString(out, elem.getLinkTo() );
         }
 }
