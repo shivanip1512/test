@@ -50,6 +50,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 	public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
 	public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
 	public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
+    public static final int CMD_STANDALONE_VERIFY = VERIFY_OFFSET + 6;
 
 
 	public static final String[] COMMAND_STRINGS =
@@ -99,7 +100,9 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		"FailedBanks",
 		"QuestionableBanks", //43
 		"DisableVerify", //44
-	};
+        "",
+        "VerifyStandaloneBanks"	
+        };
 	
 
 

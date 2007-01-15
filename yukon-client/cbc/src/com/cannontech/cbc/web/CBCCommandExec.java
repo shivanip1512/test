@@ -49,7 +49,8 @@ public class CBCCommandExec
 			(_cmdID == CBCCommand.CMD_FQ_BANKS) ||
 			(_cmdID == CBCCommand.CMD_FAILED_BANKS) ||
 			(_cmdID == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
-			(_cmdID == CBCCommand.CMD_DISABLE_VERIFY))	
+			(_cmdID == CBCCommand.CMD_DISABLE_VERIFY)	||
+            (_cmdID == CBCCommand.CMD_STANDALONE_VERIFY))
 		{
 			_executeVerifySub (_paoID, _cmdID);
 		}

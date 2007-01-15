@@ -114,7 +114,8 @@ function generateSubMenu (id, state, opts) {
 	 				 v_fq_banks:41,
 	 				 v_failed_banks:42,
 	 				 v_question_banks:43,
-	 				 v_disable_verify:44
+	 				 v_disable_verify:44,
+	 				 v_standalone_banks:46
 	 				}
  //var table_header = "<table>";
  var table_footer = "</table>";
@@ -136,6 +137,7 @@ function generateSubMenu (id, state, opts) {
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_failed_banks, 'Verify_Failed_Banks');
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_question_banks, 'Verify_Questionable_Banks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_standalone_banks, 'Verify_Standalone_Banks');
  	}
  	else {
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_disable_verify, 'Verify_Stop');	
