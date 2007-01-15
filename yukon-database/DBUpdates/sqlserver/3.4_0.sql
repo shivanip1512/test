@@ -174,6 +174,15 @@ alter table TemplateDisplay
       references TEMPLATE (TEMPLATENUM);
 go
 
+/* @error ignore-begin */
+update mspVendor set CompanyName = 'Cannon' where vendorid = 1;
+update mspVendor set AppName = 'Yukon' where vendorid = 1;
+
+insert into billingfileformats values(21, 'SIMPLE_TOU');
+insert into billingfileformats values(22, 'EXTENDED_TOU');
+insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
+/* @error ignore-end */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
