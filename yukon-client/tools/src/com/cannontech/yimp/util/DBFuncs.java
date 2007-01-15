@@ -69,14 +69,14 @@ public class DBFuncs {
 	 * This should be changed to use cache at a later time
 	 */
 	public static Integer getRouteFromName(String name) {
-		Integer routeID = new Integer(-12);
+		Integer routeID = -12;
 		
         try {
             String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
                 + name + "' AND PAOCLASS = 'ROUTE'";
             
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            routeID = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+            routeID = jdbcOps.queryForInt(stmt);
             return routeID;
         } catch (IncorrectResultSizeDataAccessException e) {
             return routeID;
@@ -89,7 +89,7 @@ public class DBFuncs {
 	 */
 	public static MCT400SeriesBase get410FromTemplateName(String name) {
 		MCT400SeriesBase template410 = new MCT400SeriesBase();
-		template410.setDeviceID(new Integer(-12));
+		template410.setDeviceID(-12);
         Integer id = null;
         
 		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
@@ -97,7 +97,7 @@ public class DBFuncs {
         
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            id = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+            id = jdbcOps.queryForInt(stmt);
             if(id != null && id > 0) {
                 template410.setDeviceID(id);
                 template410 = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
@@ -117,7 +117,7 @@ public class DBFuncs {
 		try {
 		    Integer paoID = 0;
 		    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-		    paoID = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+		    paoID = jdbcOps.queryForInt(stmt);
             return paoID > 0;
         } 
         catch (IncorrectResultSizeDataAccessException e) {
@@ -136,7 +136,7 @@ public class DBFuncs {
 		    
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            returnDeviceID = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+            returnDeviceID = jdbcOps.queryForInt(stmt);
         } 
         catch (IncorrectResultSizeDataAccessException e) {
             return null;
@@ -294,7 +294,7 @@ public class DBFuncs {
     
     public static boolean removeFromPendingAndFailed(int devID) {
         ImportPendingComm pc = new ImportPendingComm();
-        pc.setPendingID(new Integer(devID));
+        pc.setPendingID(devID);
         
         try {
             pc = (ImportPendingComm)Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
