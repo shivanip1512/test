@@ -2703,6 +2703,7 @@ insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
 insert into billingfileformats values(-20, 'IVUE_BI_T65');
 insert into billingfileformats values(21, 'SIMPLE_TOU');
 insert into billingfileformats values(22, 'EXTENDED_TOU');
+insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
 
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key  (FormatID)
@@ -7366,7 +7367,7 @@ create table MSPVendor (
 go
 
 
-insert into MSPVendor values (1, 'cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap', '(none)', '(none)', '(none)');
+insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)');
 alter table MSPVendor
    add constraint PK_MSPVENDOR primary key  (VendorID)
 go
