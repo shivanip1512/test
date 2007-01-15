@@ -60,6 +60,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                          sql += " AND DMG.METERNUMBER = ? ";
                      else if (readBy == ReadBy.COLL_GROUP)
                          sql += " AND DMG.COLLECTIONGROUP = ? ";
+                     else if (readBy == ReadBy.BILL_GROUP)
+                         sql += " AND DMG.BILLINGGROUP = ? ";                     
                      sql += " AND P.POINTID = PU.POINTID " +
                      " AND PU.UOMID = UOM.UOMID " +
                      " AND TIMESTAMP > ? AND TIMESTAMP <= ? ";

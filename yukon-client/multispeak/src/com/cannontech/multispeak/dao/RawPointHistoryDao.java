@@ -8,7 +8,8 @@ public interface RawPointHistoryDao
 {    
     public enum ReadBy {
         METER_NUMBER, 
-        COLL_GROUP        
+        COLL_GROUP,
+        BILL_GROUP
     }
     
     /**
