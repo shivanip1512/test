@@ -117,12 +117,7 @@ public class MultispeakFuncs
 	public static void loadResponseHeader() 
 	{
 		try {
-			//Get current message context
-			MessageContext ctx = MessageContext.getCurrentContext();
-
-			// Get SOAP envelope of response
-			SOAPEnvelope env = ctx.getResponseMessage().getSOAPEnvelope();
-			
+			SOAPEnvelope env = getResponseMessageSOAPEnvelope();
 			MultispeakVendor mspVendor = getMultispeakVendor(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
 
 			// Set Header
@@ -132,14 +127,17 @@ public class MultispeakFuncs
 		}
 	}
 
-    public static YukonMultispeakMsgHeader getResponseHeader() throws AxisFault {
+    public static YukonMultispeakMsgHeader getResponseHeader() throws RemoteException {
+        SOAPEnvelope env = getResponseMessageSOAPEnvelope();
+        return (YukonMultispeakMsgHeader)env.getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue();
+    }
+    
+    private static SOAPEnvelope getResponseMessageSOAPEnvelope() throws RemoteException {
         // Get current message context
         MessageContext ctx = MessageContext.getCurrentContext();
-
         // Get SOAP envelope of response
         SOAPEnvelope env = ctx.getResponseMessage().getSOAPEnvelope();
-        
-        return (YukonMultispeakMsgHeader)env.getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue();
+        return env;
     }
     
     public static String getObjectID(String key, int deviceID)
@@ -206,9 +204,9 @@ public class MultispeakFuncs
 		return new ArrayOfString(methods);
 	}
 	
-	public static String getCompanyNameFromSOAPHeader() throws java.rmi.RemoteException
+	private static String getAtributeFromSOAPHeader(String attributeName) throws java.rmi.RemoteException
 	{
-		String companyName = null;
+		String attributeValue = null;
 		try
 		{
 			// Gets the SOAPHeader for the Request Message
@@ -221,8 +219,8 @@ public class MultispeakFuncs
                 Iterator iterAllAttr = ele.getAllAttributes();
                 while (iterAllAttr.hasNext()){
                     PrefixedQName pQName = (PrefixedQName)iterAllAttr.next();
-                    if( pQName.getQualifiedName().equalsIgnoreCase("company")){
-                        companyName = ele.getAttribute(pQName.getQualifiedName());
+                    if( pQName.getQualifiedName().equalsIgnoreCase(attributeName)){
+                        attributeValue = ele.getAttribute(pQName.getQualifiedName());
                         break;
                     }
                 }
@@ -231,35 +229,14 @@ public class MultispeakFuncs
 		catch (SOAPException e) {
 			CTILogger.error(e);
 		}
-		return companyName;
+		return attributeValue;
 	}
-    
+	public static String getCompanyNameFromSOAPHeader() throws java.rmi.RemoteException {
+		return getAtributeFromSOAPHeader("company");
+	}
     public static String getAppNameFromSOAPHeader() throws java.rmi.RemoteException
     {
-        String appName = null;
-        try
-        {
-            // Gets the SOAPHeader for the Request Message
-            SOAPHeader soapHead = (SOAPHeader)MessageContext.getCurrentContext().getRequestMessage().getSOAPEnvelope().getHeader();
-            // Gets all the SOAPHeaderElements into an Iterator
-            Iterator itrElements= soapHead.getChildElements();
-            while(itrElements.hasNext())
-            {
-                org.apache.axis.message.SOAPHeaderElement ele = (org.apache.axis.message.SOAPHeaderElement)itrElements.next();
-                Iterator iterAllAttr = ele.getAllAttributes();
-                while (iterAllAttr.hasNext()){
-                    PrefixedQName pQName = (PrefixedQName)iterAllAttr.next();
-                    if( pQName.getQualifiedName().equalsIgnoreCase("appname")){
-                        appName = ele.getAttribute(pQName.getQualifiedName());
-                        break;
-                    }
-                }
-            }
-        }
-        catch (SOAPException e) {
-            CTILogger.error(e);
-        }
-        return appName;
+        return getAtributeFromSOAPHeader("appname");
     }    
     
     public static MultispeakVendor getMultispeakVendorFromHeader() throws RemoteException {

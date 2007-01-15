@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.axis.AxisFault;
-import org.apache.axis.MessageContext;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
@@ -15,7 +14,6 @@ import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.ArrayOfConnectDisconnectEvent;
 import com.cannontech.multispeak.service.ArrayOfCustomer;
@@ -85,7 +83,7 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
         CTILogger.info("Returning " + arrayOfMeters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         //TODO = need to get the true number of meters remaining
         int numRemaining = (arrayOfMeters.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
-        ((YukonMultispeakMsgHeader)MessageContext.getCurrentContext().getResponseMessage().getSOAPEnvelope().getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue()).setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         return new ArrayOfMeter(arrayOfMeters);
     }
 

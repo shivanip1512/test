@@ -7,8 +7,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.axis.MessageContext;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -18,11 +16,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
@@ -31,7 +27,6 @@ import com.cannontech.multispeak.service.ArrayOfMeter;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
 import com.cannontech.multispeak.service.ArrayOfString;
 import com.cannontech.multispeak.service.DomainMember;
-import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.EventCode;
 import com.cannontech.multispeak.service.MR_CBSoap_BindingImpl;
 import com.cannontech.multispeak.service.MR_EASoap_BindingImpl;
@@ -193,7 +188,7 @@ public class MR_EAImpl extends MR_EASoap_BindingImpl
             meterReads[indexCount++] = mr;
         }
         if( endIndex != allMeters.size())
-            ((YukonMultispeakMsgHeader)MessageContext.getCurrentContext().getResponseMessage().getSOAPEnvelope().getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue()).setObjectsRemaining(new BigInteger(String.valueOf(allMeters.size()-endIndex)));
+            MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(allMeters.size()-endIndex)));
                         
         return new ArrayOfMeterRead(meterReads);
     }
