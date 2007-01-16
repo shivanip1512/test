@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -249,7 +250,7 @@ public void runImport(List<ImportData> imps) {
 		badEntry = false;
 		updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
 		       
-        if(templateName.length() < 1) {
+        if(StringUtils.isBlank(templateName)) {
             if(updateDeviceID == null) {
                 log.info("Import entry with name " + name + " has no specified 410 template.");
                 badEntry = true;
@@ -266,7 +267,7 @@ public void runImport(List<ImportData> imps) {
             }
         }
         
-		if(name.length() < 1 || name.length() > 60) {
+		if(StringUtils.isBlank(name) || name.length() > 60) {
 			log.info("Import entry with address " + address + " has a name with an improper length.");
 			badEntry = true;
 			errorMsg.append("improper name length; ");			
@@ -334,34 +335,34 @@ public void runImport(List<ImportData> imps) {
         /*New 400 series MCTs will each need a clause added above if address range
          * validation is desired
          */
-		if(meterNumber.length() < 1 && notUpdate) {
+		if(StringUtils.isBlank(meterNumber) && notUpdate) {
 			log.error("Import entry with name " + name + " has no meter number.");
 			badEntry = true;
 			errorMsg.append("has no meter number specified; ");	
 		}
-		if(collectionGrp.length() < 1 && notUpdate) {
+		if(StringUtils.isBlank(collectionGrp) && notUpdate) {
 			log.error("Import entry with name " + name + " has no collection group.");
 			badEntry = true;
 			errorMsg.append("has no collection group specified; ");	
 		}
-		if(altGrp.length() < 1 && notUpdate) {
+		if(StringUtils.isBlank(altGrp) && notUpdate) {
 			log.error("Import entry with name " + name + " has no alternate group.");
 			badEntry = true;
 			errorMsg.append("has no alternate group specified; ");	
 		}
-        if(billGrp.length() < 1 && notUpdate) {
+        if(StringUtils.isBlank(billGrp) && notUpdate) {
             log.error("Import entry with name " + name + " has no billing group.");
             //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
         }
-		if(routeName.length() < 1) {
-			if(substationName.length() < 1) {
+		if(StringUtils.isBlank(routeName)) {
+			if(StringUtils.isBlank(substationName)) {
                 if(notUpdate) {
                     log.error("Import entry with name " + name + " has no specified substation or route.");
                     badEntry = true;
                     errorMsg.append("has no substation or route specified; ");
                 }
             } 
-            else if(substationName.length() > 0) {
+            else if(!StringUtils.isBlank(substationName)) {
                 routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(substationName);
                 if(routeIDsFromSub.size() < 1) {
                     log.error("Import entry with name " + name + " specifies a substation with routes not in the Yukon database.");
