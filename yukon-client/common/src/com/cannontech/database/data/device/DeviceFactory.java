@@ -28,6 +28,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.CCU711:
 			returnDevice = new CCU711();
 			break;
+		case PAOGroups.CCU721:
+		    returnDevice = new CCU721();
+		    break;
 		case PAOGroups.TCU5000:
 			returnDevice = new TCU5000();
 			break;
@@ -146,11 +149,20 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.MCT410CL:
 			returnDevice = new MCT410CL();
 			break;
-        case PAOGroups.MCT430A:
-            returnDevice = new MCT430A();
+		case PAOGroups.MCT410FL:
+		    returnDevice = new MCT410FL();
+		    break;
+		case PAOGroups.MCT410GL:
+		    returnDevice = new MCT410GL();
+		    break;
+        case PAOGroups.MCT430EL:
+            returnDevice = new MCT430EL();
             break;
-        case PAOGroups.MCT430S:
-            returnDevice = new MCT430S();
+        case PAOGroups.MCT430LG:
+            returnDevice = new MCT430LG();
+            break;
+        case PAOGroups.MCT430IN:
+            returnDevice = new MCT430IN();
             break;
 		case PAOGroups.MCT470:
 			returnDevice = new MCT470();

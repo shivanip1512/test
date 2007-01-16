@@ -23,6 +23,9 @@ public class DeviceAddressRange
     private static final RangeBase RANGE_MCT430S = 
         new RangeBase( 100000, 2796201, "Valid range for MCT430S addresses is 100000 to 2796201");
         // and can not be 1398101" );
+
+    private static final RangeBase RANGE_MCT430IN = 
+        new RangeBase( 100000, 2796201, "Valid range for MCT430IN addresses is 100000 to 2796201");
    	
 	private static final RangeBase RANGE_MCT410CL = 
 		new RangeBase( 0, 2796201, "Valid range for MCT410CL addresses is 0 to 2796201");
@@ -31,6 +34,12 @@ public class DeviceAddressRange
    	private static final RangeBase RANGE_MCT410IL = 
 		new RangeBase( 1000000, 2796201, "Valid range for MCT410IL addresses is 1000000 to 2796201");
 		// and can not be 1398101" );   
+   	
+   	private static final RangeBase RANGE_MCT410FL = 
+   	    new RangeBase( 0, 2796201, "Valid range for MCT410FL addresses is 0 to 2796201");
+   	
+   	private static final RangeBase RANGE_MCT410GL = 
+   	    new RangeBase( 0, 2796201, "Valid range for MCT410GL addresses is 0 to 2796201");
    
    	private static final RangeBase RANGE_MCT = 
     	new RangeBase( 0, 2796201, "Valid range for MCT addresses is 0 to 2796201");
@@ -44,6 +53,9 @@ public class DeviceAddressRange
 
    	private static final RangeBase RANGE_CCU711 = 
         new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_CCU_711[0] + " addresses is 0 to 127" );
+   	
+   	private static final RangeBase RANGE_CCU721 = 
+   	    new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_CCU_721[0] + " addresses is 0 to 127" );
 
    	private static final RangeBase RANGE_RTU_WELCO = 
         new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_RTU_WELCO[0] + " addresses is 0 to 127" );
@@ -83,14 +95,19 @@ public class DeviceAddressRange
 	   		return RANGE_MCT470;	
 		}
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430A)
+        if(deviceType_ == DeviceTypesFuncs.MCT430EL)
         {
             return RANGE_MCT430A;    
         }
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430S)
+        if(deviceType_ == DeviceTypesFuncs.MCT430LG)
         {
             return RANGE_MCT430S;    
+        }
+        
+        if(deviceType_ == DeviceTypesFuncs.MCT430IN)
+        {
+            return RANGE_MCT430IN;    
         }
 
 		if( deviceType_ == DeviceTypesFuncs.MCT410CL )
@@ -100,6 +117,14 @@ public class DeviceAddressRange
       	if( deviceType_ == DeviceTypesFuncs.MCT410IL )
       	{
         	return RANGE_MCT410IL;
+      	}
+      	if( deviceType_ == DeviceTypesFuncs.MCT410FL )
+      	{
+      	    return RANGE_MCT410FL;
+      	}
+      	if( deviceType_ == DeviceTypesFuncs.MCT410GL )
+      	{
+      	    return RANGE_MCT410GL;
       	}
       	else if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(deviceType_) )
       	{
@@ -112,6 +137,10 @@ public class DeviceAddressRange
       	else if( DeviceTypes.CCU711 == deviceType_ )
       	{
         	return RANGE_CCU711;
+      	}
+      	else if( DeviceTypes.CCU721 == deviceType_ )
+      	{
+      	    return RANGE_CCU721;
       	}
       	else if( DeviceTypes.MCTBROADCAST == deviceType_ )
       	{

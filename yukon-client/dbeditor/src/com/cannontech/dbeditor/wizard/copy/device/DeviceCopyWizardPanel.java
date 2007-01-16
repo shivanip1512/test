@@ -234,10 +234,13 @@ protected DataInputPanel getNextInputPanel(
 		}
 	}else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
             && (getDeviceType() == DeviceTypes.MCT470
-                    || getDeviceType() == DeviceTypes.MCT430S
-                    || getDeviceType() == DeviceTypes.MCT430A
+                    || getDeviceType() == DeviceTypes.MCT430LG
+                    || getDeviceType() == DeviceTypes.MCT430EL
+                    || getDeviceType() == DeviceTypes.MCT430IN
                     || getDeviceType() == DeviceTypes.MCT410IL
                     || getDeviceType() == DeviceTypes.MCT410CL
+                    || getDeviceType() == DeviceTypes.MCT410FL
+                    || getDeviceType() == DeviceTypes.MCT410GL
                     || getDeviceType() == DeviceTypes.MCT370
                     || getDeviceType() == DeviceTypes.MCT360
                     || getDeviceType() == DeviceTypes.MCT318L
@@ -281,10 +284,13 @@ protected DataInputPanel getNextInputPanel(
     {
 		return getCapBankCntrlCreationPanel();
     }else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
-                                                    || getDeviceType() == DeviceTypes.MCT430S
-                                                    || getDeviceType() == DeviceTypes.MCT430A
+                                                    || getDeviceType() == DeviceTypes.MCT430LG
+                                                    || getDeviceType() == DeviceTypes.MCT430EL
+                                                    || getDeviceType() == DeviceTypes.MCT430IN
                                                     || getDeviceType() == DeviceTypes.MCT410IL
                                                     || getDeviceType() == DeviceTypes.MCT410CL
+                                                    || getDeviceType() == DeviceTypes.MCT410FL
+                                                    || getDeviceType() == DeviceTypes.MCT410GL
                                                     || getDeviceType() == DeviceTypes.MCT370
                                                     || getDeviceType() == DeviceTypes.MCT360
                                                     || getDeviceType() == DeviceTypes.MCT318L
@@ -392,10 +398,13 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
     {
 		return (currentPanel == getCapBankCntrlCreationPanel());
     }else if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
-                                                                 || getDeviceType() == DeviceTypes.MCT430S
-                                                                 || getDeviceType() == DeviceTypes.MCT430A
+                                                                 || getDeviceType() == DeviceTypes.MCT430LG
+                                                                 || getDeviceType() == DeviceTypes.MCT430EL
+                                                                 || getDeviceType() == DeviceTypes.MCT430IN
                                                                  || getDeviceType() == DeviceTypes.MCT410IL
                                                                  || getDeviceType() == DeviceTypes.MCT410CL
+                                                                 || getDeviceType() == DeviceTypes.MCT410FL
+                                                                 || getDeviceType() == DeviceTypes.MCT410GL
                                                                  || getDeviceType() == DeviceTypes.MCT370
                                                                  || getDeviceType() == DeviceTypes.MCT360
                                                                  || getDeviceType() == DeviceTypes.MCT318L
@@ -409,10 +418,13 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
     {
         return false;
     }else if((currentPanel == getRoutePanel()) && (getDeviceType() == DeviceTypes.MCT470
-                                                                || getDeviceType() == DeviceTypes.MCT430S
-                                                                || getDeviceType() == DeviceTypes.MCT430A
+                                                                || getDeviceType() == DeviceTypes.MCT430LG
+                                                                || getDeviceType() == DeviceTypes.MCT430EL
+                                                                || getDeviceType() == DeviceTypes.MCT430IN
                                                                 || getDeviceType() == DeviceTypes.MCT410IL
                                                                 || getDeviceType() == DeviceTypes.MCT410CL
+                                                                || getDeviceType() == DeviceTypes.MCT410FL
+                                                                || getDeviceType() == DeviceTypes.MCT410GL
                                                                 || getDeviceType() == DeviceTypes.MCT370
                                                                 || getDeviceType() == DeviceTypes.MCT360
                                                                 || getDeviceType() == DeviceTypes.MCT318L

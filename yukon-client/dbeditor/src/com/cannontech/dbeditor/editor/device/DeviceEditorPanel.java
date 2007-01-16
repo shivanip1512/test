@@ -18,7 +18,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 	private static final int[][] EDITOR_TYPES =
 	{
 		{   //0 - DeviceBaseEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
+			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, PAOGroups.ALPHA_A1, 
 			PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM,
 			PAOGroups.DAVISWEATHER, PAOGroups.LANDISGYRS4, PAOGroups.SIXNET, PAOGroups.MCT310, 
@@ -32,7 +32,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL,
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, 
 			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-			PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
+            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430EL, PAOGroups.MCT430LG, PAOGroups.MCT430IN, 
+            PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -42,7 +43,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.DCT_501, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.ION_7330,
 			PAOGroups.ION_7700, PAOGroups.ION_8300, PAOGroups.MCT310IDL, 
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.KV, PAOGroups.KVII, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-			PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
+            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430EL, PAOGroups.MCT430LG, PAOGroups.MCT430IN, 
+            PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,
@@ -52,7 +54,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		  PAOGroups.SERIES_5_LMI
 	  	},
 		{	//4 - DeviceScanRateEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
+			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER,
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, 
 			PAOGroups.QUANTUM, PAOGroups.DAVISWEATHER, PAOGroups.LANDISGYRS4,
@@ -65,7 +67,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
          	PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_DART,
          	PAOGroups.MCT310IDL, PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, PAOGroups.RTU_MODBUS,
          	PAOGroups.RTC,  PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-			PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
+            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430EL, PAOGroups.MCT430LG, 
+            PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
 
 		{   //5 - TapTerminalPanel
@@ -102,14 +105,14 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCTBROADCAST
 		},
 		{	//10 - PAOExclusionEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
+			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
 			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
 			
 		},
 		{	//11 - ExclusionTimingEditorPanel
-			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
+			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
 			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
@@ -119,7 +122,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		},
 		{
 			//13 - DeviceMCT400SeriesOptionPanel
-			PAOGroups.MCT410IL, PAOGroups.MCT410CL
+			PAOGroups.MCT410IL, PAOGroups.MCT410CL, PAOGroups.MCT410FL, PAOGroups.MCT410GL
 		}
 
 };

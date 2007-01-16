@@ -32,9 +32,12 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCT410CL;
+import com.cannontech.database.data.device.MCT410FL;
+import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
-import com.cannontech.database.data.device.MCT430A;
-import com.cannontech.database.data.device.MCT430S;
+import com.cannontech.database.data.device.MCT430EL;
+import com.cannontech.database.data.device.MCT430IN;
+import com.cannontech.database.data.device.MCT430LG;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
@@ -297,15 +300,30 @@ public void runImport(List<ImportData> imps) {
             badEntry = true;
             errorMsg.append("address out of MCT410CL range; "); 
         }
-        else if(template400SeriesBase instanceof MCT430S && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT430S address.");
+        else if(template400SeriesBase instanceof MCT410FL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410FL, Long.parseLong(address))) {
+            log.error("Import entry with name " + name + " has an incorrect MCT410FL address.");
             badEntry = true;
-            errorMsg.append("address out of MCT430S range; "); 
+            errorMsg.append("address out of MCT410FL range; "); 
         }
-        else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT430A address.");
+        else if(template400SeriesBase instanceof MCT410GL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410GL, Long.parseLong(address))) {
+            log.error("Import entry with name " + name + " has an incorrect MCT410GL address.");
             badEntry = true;
-            errorMsg.append("address out of MCT430A range; "); 
+            errorMsg.append("address out of MCT410GL range; "); 
+        }
+        else if(template400SeriesBase instanceof MCT430LG && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430LG, Long.parseLong(address))) {
+            log.error("Import entry with name " + name + " has an incorrect MCT430LG address.");
+            badEntry = true;
+            errorMsg.append("address out of MCT430LG range; "); 
+        }
+        else if(template400SeriesBase instanceof MCT430EL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430EL, Long.parseLong(address))) {
+            log.error("Import entry with name " + name + " has an incorrect MCT430EL address.");
+            badEntry = true;
+            errorMsg.append("address out of MCT430EL range; "); 
+        }
+        else if(template400SeriesBase instanceof MCT430IN && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430IN, Long.parseLong(address))) {
+            log.error("Import entry with name " + name + " has an incorrect MCT430IN address.");
+            badEntry = true;
+            errorMsg.append("address out of MCT430IN range; "); 
         }
         else if(template400SeriesBase instanceof MCT470 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT470, Long.parseLong(address))) {
             log.error("Import entry with name " + name + " has an incorrect MCT470 address.");

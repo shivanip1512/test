@@ -116,6 +116,8 @@ public final static int getDeviceType(String typeString)
 	  return CCU710A;
    else if (isStringDevice(compareString, STRING_CCU_711))
 	  return CCU711;
+   else if (isStringDevice(compareString, STRING_CCU_721))
+       return CCU721;
    else if (isStringDevice(compareString, STRING_TCU_5000))
 	  return TCU5000;
    else if (isStringDevice(compareString, STRING_TCU_5500))
@@ -170,12 +172,18 @@ public final static int getDeviceType(String typeString)
 	  return MCT410IL;
 	else if (isStringDevice(compareString, STRING_MCT_410CL))
 	   return MCT410CL;
+	else if (isStringDevice(compareString, STRING_MCT_410FL))
+	    return MCT410FL;
+	else if (isStringDevice(compareString, STRING_MCT_410GL))
+	    return MCT410GL;
    else if (isStringDevice(compareString, STRING_MCT_470))
       return MCT470;
-   else if (isStringDevice(compareString, STRING_MCT_430A))
-       return MCT430A;
-   else if (isStringDevice(compareString, STRING_MCT_430S))
-       return MCT430S;
+   else if (isStringDevice(compareString, STRING_MCT_430EL))
+       return MCT430EL;
+   else if (isStringDevice(compareString, STRING_MCT_430LG))
+       return MCT430LG;
+   else if (isStringDevice(compareString, STRING_MCT_430IN))
+       return MCT430IN;
    else if (isStringDevice(compareString, STRING_MCT_318))
 	  return MCT318;
    else if (isStringDevice(compareString, STRING_MCT_360))
@@ -373,6 +381,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_CCU_710[0];
 	  	case CCU711:
 		  	return STRING_CCU_711[0];
+	  	case CCU721:
+	  	    return STRING_CCU_721[0];
 	  	case TCU5000:
 			return STRING_TCU_5000[0];
 	  	case TCU5500:
@@ -442,10 +452,16 @@ public final static String getPAOTypeString(int type)
 			return STRING_MCT_410IL[0];
 		case MCT410CL:
 			return STRING_MCT_410CL[0];
-        case MCT430A:
-            return STRING_MCT_430A[0];
-        case MCT430S:
-            return STRING_MCT_430S[0];
+		case MCT410FL:
+		    return STRING_MCT_410FL[0];
+		case MCT410GL:
+		    return STRING_MCT_410GL[0];
+        case MCT430EL:
+            return STRING_MCT_430EL[0];
+        case MCT430LG:
+            return STRING_MCT_430LG[0];
+        case MCT430IN:
+            return STRING_MCT_430IN[0];
 		case MCT470:
 			return STRING_MCT_470[0];
 		

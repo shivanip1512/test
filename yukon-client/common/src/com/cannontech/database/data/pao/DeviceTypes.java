@@ -107,8 +107,8 @@ public interface DeviceTypes extends TypeBase
     
     public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
 	public final static int RTU_MODBUS				= DEVICE_OFFSET + 85;
-    public final static int MCT430A                  = DEVICE_OFFSET + 86;
-    public final static int MCT430S                  = DEVICE_OFFSET + 87;
+    public final static int MCT430EL                  = DEVICE_OFFSET + 86;
+    public final static int MCT430LG                  = DEVICE_OFFSET + 87;
 	
 	
     public final static int CBC_7022                = DEVICE_OFFSET + 88;
@@ -120,16 +120,22 @@ public interface DeviceTypes extends TypeBase
     public final static int REPEATER_801        = DEVICE_OFFSET + 93;
     public final static int REPEATER_921        = DEVICE_OFFSET + 94;
     
+    public final static int MCT410FL                = DEVICE_OFFSET + 95;
+    public final static int MCT410GL                = DEVICE_OFFSET + 96;
     
+    public final static int MCT430IN                  = DEVICE_OFFSET + 97;
+    
+    public final static int CCU721                  = DEVICE_OFFSET + 98;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 94;
+	public final static int DEVICE_TYPES_COUNT = 98;
 	
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
 	public static final String[] STRING_CCU_711 = {"CCU-711", "CCU711"};
+	public static final String[] STRING_CCU_721 = {"CCU-721"};
 	public static final String[] STRING_TCU_5000 = {"TCU-5000", "TCU5000"};
 	public static final String[] STRING_TCU_5500 = {"TCU-5500", "TCU5500"};
 	public static final String[] STRING_LCU_415 = {"LCU-415", "LCU415"};
@@ -156,10 +162,13 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
 	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
 	public static final String[] STRING_MCT_410CL = {"MCT-410CL", "MCT410CL"};
+	public static final String[] STRING_MCT_410FL = {"MCT-410FL"};
+	public static final String[] STRING_MCT_410GL = {"MCT-410GL"};
 	
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
-    public static final String[] STRING_MCT_430A = {"MCT-430A", "MCT430A"};
-    public static final String[] STRING_MCT_430S = {"MCT-430S", "MCT430S"};
+    public static final String[] STRING_MCT_430EL = {"MCT-430EL"};
+    public static final String[] STRING_MCT_430LG = {"MCT-430LG"};
+    public static final String[] STRING_MCT_430IN = {"MCT-430IN"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
