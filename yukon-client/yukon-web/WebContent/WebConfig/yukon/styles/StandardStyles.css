@@ -102,7 +102,7 @@ body {
     color: white;
 }
 
-#Menu #topMenu a:hover, #Menu #topMenu a.stdhdr_selected {
+#Menu #topMenu a:hover, #Menu #topMenu a.selected {
     color: #f90;
 }
 
