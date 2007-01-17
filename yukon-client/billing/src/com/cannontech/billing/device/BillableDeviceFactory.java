@@ -62,6 +62,10 @@ public class BillableDeviceFactory {
             device = new MCT470();
             break;
 
+        case DeviceTypes.SENTINEL:
+            device = new Sentinel();
+            break;
+
         default:
             device = new GenericMCT();
             break;
