@@ -72,6 +72,9 @@ public final class BillingFormatterFactory {
         case FileFormatTypes.BIG_RIVERS_ELEC_COOP:
             return new BigRiversElecCoopFormatter();
 
+        case FileFormatTypes.EXTENDED_TOU_INCODE:
+        	return new ExtendedTOU_IncodeRecordFormatter();
+        	
         // case FileFormatTypes.WLT_40:
         // return new WLT_40Format();
 

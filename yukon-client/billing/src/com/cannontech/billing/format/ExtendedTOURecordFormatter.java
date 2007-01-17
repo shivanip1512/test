@@ -163,7 +163,7 @@ public class ExtendedTOURecordFormatter extends BillingFormatterBase {
      * @param channel - Channel for this billing record
      * @param type - ReadingType for this billing record
      */
-    private void addFormattedLine(StringBuffer writeToFile, BillableDevice device, String code,
+    protected void addFormattedLine(StringBuffer writeToFile, BillableDevice device, String code,
             Channel channel, ReadingType type) {
 
         addToStringBuffer(writeToFile, device.getData(BillableField.meterNumber), true);
