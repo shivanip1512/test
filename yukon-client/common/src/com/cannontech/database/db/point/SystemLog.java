@@ -27,6 +27,7 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 	public static final int TYPE_MACS = 7; 
 	public static final int TYPE_ALARM = 8;
 	public static final int TYPE_MULTISPEAK = 9;
+	public static final int TYPE_CAP_CONTROL = 10;
 
 	public static final String TYPE_GENERAL_STRING = "General";
 	public static final String TYPE_POINT_CHANGE_STRING = "Point Change"; //May not be used
@@ -35,6 +36,7 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 	public static final String TYPE_MACS_STRING = "MACS"; 
 	public static final String TYPE_ALARM_STRING = "Alarming";
 	public static final String TYPE_MULTISPEAK_STRING = "Multispeak";
+	public static final String TYPE_CAP_CONTROL_STRING = "Cap Control";
 	
 	//THE TYPE id VALUE IS NOT REPRESENTATIVE OF THE INDEX OF THE ITEMS!!!
 	public static final int[] LOG_TYPES = {
@@ -45,7 +47,8 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 		TYPE_USER,
 		TYPE_MACS,	
 		TYPE_ALARM,
-		TYPE_MULTISPEAK
+		TYPE_MULTISPEAK,
+		TYPE_CAP_CONTROL
 	};
 	public static final String[] LOG_TYPE_STRINGS = {
 		
@@ -55,7 +58,8 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 		TYPE_USER_STRING,
 		TYPE_MACS_STRING,	
 		TYPE_ALARM_STRING,
-		TYPE_MULTISPEAK_STRING
+		TYPE_MULTISPEAK_STRING,
+		TYPE_CAP_CONTROL_STRING
 	};	
 	
 	public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
@@ -98,6 +102,8 @@ public static String getLogTypeStringFromID(int id_)
 			return TYPE_ALARM_STRING;
 		case TYPE_MULTISPEAK:
 			return TYPE_MULTISPEAK_STRING;
+		case TYPE_CAP_CONTROL:
+			return TYPE_CAP_CONTROL_STRING;
 		default :
 			return "Invalid";
 	}
