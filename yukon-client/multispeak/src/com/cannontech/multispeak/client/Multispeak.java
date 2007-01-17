@@ -30,6 +30,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.importer.ImportData;
+import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
@@ -1355,7 +1356,7 @@ public class Multispeak implements MessageListener {
     }
     
     private void logMSPActivity(String method, String description, String userName) {
-        getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName); 
+        getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName, SystemLog.TYPE_MULTISPEAK); 
     }
     
     /**
