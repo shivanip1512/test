@@ -36,41 +36,69 @@
     <!--  Any instance of JnlpController will be automatically found by the menu
           controller and the mapping handler. Defining a new JWS Client only
           requires adding a bean in this section. -->
-  
-    <bean class="com.cannontech.web.jws.JnlpController">
+    
+    <bean id="jnlpTemplate" abstract="true">
+        <property name="excludedJars">
+            <set>
+                <value>mail.jar</value>
+                <value>activation.jar</value>
+                <value>jsp-api.jar</value>
+                <value>lucene-core-2.0.0.jar</value>
+                <value>yukon-web.jar</value>
+                <value>servlet-api.jar</value>
+                <value>servlets.jar</value>
+            </set>
+        </property>
+    </bean>
+    
+    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
         <property name="path" value="dbeditor.jnlp"/>
-        <property name="appTitle" value="Database Editor"/>
+        <property name="appTitle" value="Yukon® Database Editor"/>
+        <property name="appDescription" value="Allows users to add, modify, or remove database items in the Yukon database."/>
         <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
         <property name="appMainClassJar" value="dbeditor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/dbEditorIcon64.gif" />
         <property name="requiredRole" value="DBEditorRole.ROLEID" />
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController">
+    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
         <property name="path" value="tdc.jnlp"/>
-        <property name="appTitle" value="TDC"/>
+        <property name="appTitle" value="Yukon® Tabular Data Console"/>
+        <property name="appDescription" value="Allows users to view real-time data in tabular format."/>
         <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
         <property name="appMainClassJar" value="tdc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/tdcIcon64.gif" />
         <property name="requiredRole" value="TDCRole.ROLEID" />
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController">
+    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
         <property name="path" value="trending.jnlp"/>
-        <property name="appTitle" value="Trending"/>
+        <property name="appTitle" value="Yukon® Trending"/>
+        <property name="appDescription" value="Allows users to view real-time data in graphical format."/>
         <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
-        <property name="appMainClassJar" value="graph.jar"/>
+        <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphIcon64.gif" />
-        <property name="requiredRole" value="WebGraphRole.ROLEID" />
+        <property name="requiredRole" value="TrendingRole.ROLEID" />
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController">
+    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
         <property name="path" value="esub.jnlp"/>
-        <property name="appTitle" value="Esub Editor"/>
+        <property name="appTitle" value="Yukon® Esubstation Editor"/>
+        <property name="appDescription" value="Allows users to create, modify, and save Esubstation drawings."/>
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/esubEditorIcon64.gif" />
         <property name="requiredRole" value="EsubEditorRole.ROLEID" />
+    </bean>
+    
+    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
+        <property name="path" value="commander.jnlp"/>
+        <property name="appTitle" value="Yukon® Commander"/>
+        <property name="appDescription" value="Allows users to send commands to field devices."/>
+        <property name="appMainClass" value="com.cannontech.yc.gui.YukonCommander"/>
+        <property name="appMainClassJar" value="yc.jar"/>
+        <property name="appIcon" value="/WebConfig/yukon/Icons/esubEditorIcon64.gif" />
+        <property name="requiredRole" value="CommanderRole.ROLEID" />
     </bean>
     
     <!--  This controller handles piping the JARs back to the JWS client. -->

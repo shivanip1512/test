@@ -2,11 +2,14 @@ package com.cannontech.web.jws;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -21,11 +24,13 @@ import com.cannontech.util.ServletUtil;
 public class JnlpController extends AbstractController {
 
     private String appTitle;
+    private String appDescription;
     private String appMainClass;
     private String appMainClassJar;
     private String appIcon;
     private String path;
     private String requiredRole;
+    private Set<String> excludedJars = Collections.emptySet();
     
     public JnlpController() {
         setCacheSeconds(0);
@@ -86,6 +91,9 @@ public class JnlpController extends AbstractController {
             if (jarFile.getName().equalsIgnoreCase(appMainClassJar)) {
                 continue;
             }
+            if (excludedJars.contains(jarFile.getName())) {
+                continue;
+            }
             Element jarElem = new Element("jar");
             jarElem.setAttribute("href", jarFile.getName());
             resourcesElem.addContent(jarElem);
@@ -103,6 +111,14 @@ public class JnlpController extends AbstractController {
             passwordPropElem.setAttribute("name", "yukon.jws.password");
             passwordPropElem.setAttribute("value", user.getPassword());
             resourcesElem.addContent(passwordPropElem);
+        }
+        
+        String cookies = request.getHeader("Cookie");
+        if (StringUtils.isNotBlank(cookies)) {
+            Element hostPropElem = new Element("property");
+            hostPropElem.setAttribute("name", "yukon.jws.cookies");
+            hostPropElem.setAttribute("value", cookies);
+            resourcesElem.addContent(hostPropElem);
         }
         
         // add server info
@@ -175,6 +191,18 @@ public class JnlpController extends AbstractController {
 
     public void setRequiredRole(String requiredRole) {
         this.requiredRole = requiredRole;
+    }
+
+    public void setExcludedJars(Set<String> excludedJars) {
+        this.excludedJars = excludedJars;
+    }
+
+    public void setAppDescription(String appDescription) {
+        this.appDescription = appDescription;
+    }
+
+    public String getAppDescription() {
+        return appDescription;
     }
 
 
