@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/12/28 20:58:38 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2007/01/17 16:08:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,7 @@ enum CtiLogTypeClass_t
 
     MACSLogType = 7,
     AlarmCategoryLogType = 8,
-
+    MultispeakLogType = 9,
     CapControlLogType = 10,
 
     InvalidLogType
