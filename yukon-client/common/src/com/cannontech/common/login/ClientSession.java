@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.core.dao.DaoFactory;
@@ -20,7 +21,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
-import com.cannontech.clientutils.YukonLogManager;
 
 /**
  * Holds session information for client programs.
@@ -260,6 +260,7 @@ public class ClientSession {
         try {
             String jwsUser = System.getProperty("yukon.jws.user");
             String jwsPassword = System.getProperty("yukon.jws.password");
+            String jwsCookies = System.getProperty("yukon.jws.cookies");
             String jwsHost = System.getProperty("yukon.jws.host");
             int jwsPort;
             try {
@@ -271,7 +272,13 @@ public class ClientSession {
                 return false;
             }
             
-            String localSessionId = LoginSupport.getSessionID(jwsHost, jwsPort, jwsUser, jwsPassword);
+            String localSessionId;
+            if (StringUtils.isBlank(jwsCookies)) {
+                localSessionId = LoginSupport.getSessionID(jwsHost, jwsPort, jwsUser, jwsPassword);
+            } else {
+                localSessionId = jwsCookies;
+            }
+            
             MasterConfigHelper.setRemoteHostAndPort(jwsHost, jwsPort);
             MasterConfigHelper.setSessionId(localSessionId);
             ConfigurationSource config = MasterConfigHelper.getConfiguration();
