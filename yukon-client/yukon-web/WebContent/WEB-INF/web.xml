@@ -403,21 +403,6 @@
         <servlet-name>CallbackServlet</servlet-name>
         <servlet-class>com.cannontech.servlet.HttpCallback</servlet-class>
     </servlet>
-    <!-- Start JNLP servlets -->
-    <servlet>
-        <servlet-name>DynamicJNLPServlet</servlet-name>
-        <servlet-class>com.cannontech.servlet.DynamicJNLPServlet</servlet-class>
-        <init-param>
-            <param-name>match.list</param-name>
-            <param-value>dbeditor|tdc|trending|esub-editor</param-value>
-        </init-param>        
-        <init-param>
-            <param-name>parse.querystring</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <!-- END JNLP servlets -->
     
     <!-- AXIS servlets -->
     <servlet>
@@ -459,11 +444,6 @@
         <url-pattern>/home</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>DynamicJNLPServlet</servlet-name>
-        <url-pattern>*.jnlp</url-pattern>
-    </servlet-mapping>
-    <!-- ASIX Servlet Mappings -->
   <servlet-mapping>
     <servlet-name>AxisServlet</servlet-name>
     <url-pattern>/servlet/AxisServlet</url-pattern>
