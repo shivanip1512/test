@@ -17,6 +17,7 @@ Error msg:
 <h3>Notes</h3>
 <ul>
   <li>"Hibernate Dialect must be explicitly set": This is related to a database connection problem. Check the log for the exact error.</li>
+  <li>"signer information does not match signer information of other classes in the same package": A JAR was added to the classpath that wasn't correctly signed. If the system was recently patched, ensure that the creator of the patch ran the sign task.</li>
 </ul>
 </body>
 </html>
