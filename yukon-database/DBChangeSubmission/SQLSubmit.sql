@@ -2,7 +2,20 @@
 /*to split your new additions from those already there.  Thanks!
 */
 /***********************************************************************************/
-
+/* SN - 20070116 
+Increase the MeterNumber field lenght, 15 characters is too small for Incode (CIS system) 
+Make changes for 3.2 and head*/
+/*SQLServer*/
+alter table devicemetergroup alter column MeterNumber varchar(50) not null;
+go
+/*Oracle*/
+alter table DeviceMeterGroup modify MeterNumber VARCHAR2(50);
+/*The DeviceMeterGroup.MeterNumber column will need to be changed in the creation scripts also*/
+/************************/
+/* SN - 20070116 
+New billing format for Incode, add to head and branch creation and update scripts*/
+insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
+/********************************/
 /* Change 430A to 430EL and 430S to 430LG. */
 /* Also add commands for new devices: CCU-721, MCT-410FL, MCT-410GL, MCT-430IN */
 
