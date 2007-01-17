@@ -1,5 +1,6 @@
 package com.cannontech.message.dispatch.message;
 
+import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -50,10 +51,20 @@ public class SystemLogHelper {
      * @param description
      */
     public void log(int signalPointID, String action, String description, String username) {
+    	log(signalPointID, action, description, username, SystemLog.TYPE_GENERAL);
+    }   
+    
+    /**
+     * Send a log message to dispatch.
+     * @param action
+     * @param description
+     */
+    public void log(int signalPointID, String action, String description, String username, int logType) {
         Signal sig = new Signal();
         sig.setPointID(signalPointID);
         sig.setDescription(description);
         sig.setAction(action);
+        sig.setLogType(logType);
         if( username != null)
             sig.setUserName(username);
         sig.setCategoryID(Signal.EVENT_SIGNAL);
