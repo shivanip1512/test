@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2006/12/27 05:46:31 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2007/01/17 22:24:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4749,6 +4749,8 @@ string CtiDeviceMCT470::resolveIEDName(int bits) const
         case 0x03:  name += "Alpha Power Plus";     break;
         case 0x04:  name += "GE kV";                break;
         case 0x05:  name += "GE kV2";               break;
+        case 0x06:  name += "Sentinel";             break;
+        case 0x07:  name += "DNP";                  break;
         default:    name += "Unknown (" + CtiNumStr(bits).xhex().zpad(2) + ")";   break;
     }
 
