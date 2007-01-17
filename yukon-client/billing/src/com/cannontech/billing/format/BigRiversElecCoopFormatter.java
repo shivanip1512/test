@@ -23,8 +23,13 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
         StringBuffer writeToFile = new StringBuffer("");
 
         // Meter number
+        String meterNumber = device.getData(BillableField.meterNumber);
+        if (meterNumber != null && meterNumber.length() > 8) {
+            // cut the account down to field size
+            meterNumber = meterNumber.substring(meterNumber.length() - 8);
+        }
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             device.getData(BillableField.meterNumber),
+                                             meterNumber,
                                              8,
                                              " ",
                                              false);
