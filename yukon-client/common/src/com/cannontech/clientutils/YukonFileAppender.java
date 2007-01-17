@@ -66,6 +66,11 @@ public class YukonFileAppender extends AppenderSkeleton {
      * the log file
      */
     public YukonFileAppender() {
+    }
+    
+    @Override
+    public void activateOptions() {
+        super.activateOptions();
         
         //initialize dailyRollingFileAppender 
         //get the name of the application running this appender
