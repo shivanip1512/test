@@ -24,8 +24,9 @@ public interface BillingFormatter {
      * and then write the string out to a file in the deviceList
      * @param defaults - Current BillingFileDefaults
      * @param deviceList - List of devices to create a billing file for
+     * @return The number of valid readings
      */
-    public void writeBillingFile(BillingFileDefaults defaults, List<BillableDevice> deviceList)
+    public int writeBillingFile(BillingFileDefaults defaults, List<BillableDevice> deviceList)
             throws IOException;
 
 }

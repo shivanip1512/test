@@ -69,6 +69,9 @@ public final class BillingFormatterFactory {
         case FileFormatTypes.EXTENDED_TOU:
             return new ExtendedTOURecordFormatter();
 
+        case FileFormatTypes.BIG_RIVERS_ELEC_COOP:
+            return new BigRiversElecCoopFormatter();
+
         // case FileFormatTypes.WLT_40:
         // return new WLT_40Format();
 

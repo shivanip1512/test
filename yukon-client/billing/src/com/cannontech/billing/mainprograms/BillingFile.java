@@ -227,9 +227,10 @@ public class BillingFile extends java.util.Observable implements Runnable
                 success = deviceList.size() > 0;
             }
             try {
+                int validReadings = 0;
                 if (success) {
                     try {
-                        billingFormatter.writeBillingFile(getBillingDefaults(), deviceList);
+                        validReadings = billingFormatter.writeBillingFile(getBillingDefaults(), deviceList);
                     } catch (IllegalArgumentException e) {
                         setChanged();
                         notify(e.getMessage());
@@ -241,8 +242,8 @@ public class BillingFile extends java.util.Observable implements Runnable
                 }
 
                 setChanged();
-                notify("Successfully created the file : " + fileFormatBase.getOutputFileName()
-                        + "\n" + deviceList.size() + " Valid Readings Reported.");
+                notify("Successfully created the file : " + billingDefaults.getOutputFileDir()
+                        + "\n" + validReadings + " Valid Readings Reported.");
             } catch (java.io.IOException ioe) {
                 setChanged();
                 notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName());

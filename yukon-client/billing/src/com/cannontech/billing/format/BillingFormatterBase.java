@@ -22,15 +22,18 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     public static final DecimalFormat DECIMAL_FORMAT5V0 = new DecimalFormat("00000");
     public static final DecimalFormat DECIMAL_FORMAT6V3 = new DecimalFormat("000000.000");
     public static final DecimalFormat DECIMAL_FORMAT_7V2 = new DecimalFormat("#######.00");
+    public static final DecimalFormat DECIMAL_FORMAT7V0 = new DecimalFormat("0000000");
     public static final DecimalFormat DECIMAL_FORMAT_8V3 = new DecimalFormat("########.000");
     public static final DecimalFormat DECIMAL_FORMAT9V0 = new DecimalFormat("000000000");
     public static final DecimalFormat DECIMAL_FORMAT_10V2 = new DecimalFormat("##########.00");
 
     public static final DecimalFormat KW_FORMAT = new DecimalFormat("##0.000");
 
+    private int readingCount = 0;
+
     abstract public String dataToString(BillableDevice device);
 
-    public void writeBillingFile(BillingFileDefaults defaults, List<BillableDevice> deviceList)
+    public int writeBillingFile(BillingFileDefaults defaults, List<BillableDevice> deviceList)
             throws IOException {
 
         StringBuffer output = new StringBuffer();
@@ -50,6 +53,8 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         outputFileWriter.flush();
         outputFileWriter.close();
 
+        return this.readingCount;
+
     }
 
     /**
@@ -65,7 +70,11 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         while (deviceListIter.hasNext()) {
             BillableDevice device = deviceListIter.next();
 
-            billingFileString.append(dataToString(device));
+            String deviceString = dataToString(device);
+            if (deviceString != null && deviceString.length() > 0) {
+                this.readingCount++;
+            }
+            billingFileString.append(deviceString);
         }
 
         return billingFileString.toString();
@@ -138,7 +147,7 @@ public abstract class BillingFormatterBase implements BillingFormatter {
      * at the end if indicated
      * @param buffer - StringBuffer to add to
      * @param object - Object to add
-     * @param fieldLength - Length the field should be (spaces are added after
+     * @param fieldLength - Length the field should be (spaces are added before
      *            the object value if the object does not fill the field)
      * @param filler - String used to fill the spaces to reach the field length
      * @param addComma - True if a comma should be added after the object

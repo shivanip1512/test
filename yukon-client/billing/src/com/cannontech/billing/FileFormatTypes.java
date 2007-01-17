@@ -39,6 +39,7 @@ public final class FileFormatTypes {
 	public static final int IVUE_BI_T65 = 20;
 	public static final int SIMPLE_TOU = 21;
 	public static final int EXTENDED_TOU = 22;
+    public static final int BIG_RIVERS_ELEC_COOP = 23;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -61,6 +62,7 @@ public final class FileFormatTypes {
 	public static final String IVUE_BI_T65_STRING = "IVUE_BI_T65";
 	public static final String SIMPLE_TOU_STRING = "SIMPLE_TOU";
 	public static final String EXTENDED_TOU_STRING = "EXTENDED_TOU";
+    public static final String BIG_RIVERS_STRING = "Big Rivers Elec Coop";
 	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;

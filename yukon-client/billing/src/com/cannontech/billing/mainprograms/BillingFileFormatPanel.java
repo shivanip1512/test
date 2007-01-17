@@ -76,7 +76,11 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getGenerateFileToggleButton())
 	{
-		setFileFormatBase( FileFormatFactory.createFileFormat(getBillingDefaults().getFormatID() ));
+        try {
+            setFileFormatBase( FileFormatFactory.createFileFormat(getBillingDefaults().getFormatID() ));
+        } catch (Error e) {
+            // We must be using a billing formatter instead.
+        }
         
         getBillingFile().setBillingFormatter(BillingFormatterFactory.createFileFormat(getBillingDefaults().getFormatID()));
 		
