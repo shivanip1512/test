@@ -6,6 +6,8 @@ import java.net.URL;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -30,11 +32,6 @@ public class YukonLogManager {
     
     private static final String YUKON_LOGGING_XML = "yukonLogging.xml";
 
-    /**
-     * create a logger for this class
-     */
-    private final static Logger logger = Logger.getLogger("com.cannontech.clientutils.YukonLogManager");
-    
     //Constructor never gets used, YukonLogManager has only static methods
     private YukonLogManager() {
         super();
@@ -63,19 +60,29 @@ public class YukonLogManager {
         url = CTILogger.class.getClassLoader().getResource(YUKON_LOGGING_XML);
         if (url != null){
             DOMConfigurator.configure(url);
-            logger.info("The config file was found on classpath: " + url);
+            getMyLogger().info("The config file was found on classpath: " + url);
             return;
         } else if (path.canRead()){
             //update the file if it changes every 3000 milliseconds
             DOMConfigurator.configureAndWatch(path.getAbsolutePath(), 3000);
-            logger.info("The config file was found under " + path);
+            getMyLogger().info("The config file was found under " + path);
             return;
         } else {
             //If all else fails use BasicConfigurator which will append messages to the 
             //console
-            logger.error("Unbable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
+            BasicConfigurator.configure();
+            Logger.getRootLogger().setLevel(Level.INFO);
+            getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
             return;
         }   
+    }
+    
+    /**
+     * Try not to call this before Log4j is configured.
+     * @return
+     */
+    private static Logger getMyLogger() {
+        return Logger.getLogger(YukonLogManager.class);
     }
     
     /**
@@ -96,7 +103,7 @@ public class YukonLogManager {
             url = new URL(path);
         } catch (MalformedURLException e) {
             //If all else fails use BasicConfigurator, log to console
-            logger.error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
+            getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
             return;
         }
         
@@ -105,14 +112,14 @@ public class YukonLogManager {
             DOMConfigurator.configure(url);
         } catch (FactoryConfigurationError e) {
             //If all else fails use BasicConfigurator, log to console
-            logger.error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
+            getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
             return;
         }
             // if that worked, setup YukonRemoteAppender
             YukonRemoteAppender.setHostName(hostname);
             YukonRemoteAppender.setPortNumber(Integer.toString(port));
             YukonRemoteAppender.configureLogger();
-            logger.info("The remote logging config file was found under: " + path);
+            getMyLogger().info("The remote logging config file was found under: " + path);
     }
     
     
