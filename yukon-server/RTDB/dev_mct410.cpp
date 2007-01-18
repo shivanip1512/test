@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2006/12/27 22:25:20 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2007/01/18 18:52:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -247,15 +247,26 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getLoadProfileData(unsigned channel
 {
     point_info pi;
 
-    //  input channel is 0-based, enums are 1-based
-    if( (channel + 1) == Channel_Voltage )
+    // input channel is 0-based, enums are 1-based
+    channel++;
+
+    if( channel <= ChannelCount )
+    {
+        pi = getData(buf, len, ValueType_LoadProfile_Demand);
+        pi.value *= 3600 / getLoadProfileInterval(channel);
+    }
+    else if( channel == Channel_Voltage )
     {
         pi = getData(buf, len, ValueType_LoadProfile_Voltage);
     }
     else
     {
-        pi = getData(buf, len, ValueType_LoadProfile_Demand);
-        pi.value *= 3600 / getLoadProfileInterval(channel);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - channel = " << channel << " in CtiDeviceMCT410::getLoadProfileData() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        pi = getData(buf, len, ValueType_Raw);
     }
 
     return pi;
