@@ -402,7 +402,7 @@ for( int i = 0; i < capBanks.length; i++ )
     </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { 
-								initFilter($('parent_fdr_td'), $('capBankTable'), 1);			
+								initFilter($('parent_fdr_td'), $('capBankTable'), 7);			
 								new CtiNonScrollTable('capBankTable','capBankHeaderTable');
 });
 </script>
