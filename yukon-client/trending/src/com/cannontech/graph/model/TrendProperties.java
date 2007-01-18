@@ -85,9 +85,9 @@ public class TrendProperties
 	public String getRangeLabel(int axisIndex)
 	{
 		if(axisIndex >= 0 && axisIndex < rangeLabel.length)
-			return rangeLabel[GraphDefines.PRIMARY_AXIS];
+			return rangeLabel[axisIndex];
 		
-		return rangeLabel[axisIndex];
+		return rangeLabel[GraphDefines.PRIMARY_AXIS];
 	}
 
 	/**
