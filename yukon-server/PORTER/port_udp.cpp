@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/01/08 20:08:55 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/01/18 18:21:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,8 @@
 #include <queue>
 
 using namespace std;
+
+#include "boost/shared_ptr.hpp"
 
 #include "portglob.h"
 #include "mgr_device.h"
@@ -39,6 +41,7 @@ extern CtiDeviceManager DeviceManager;
 extern CtiConnection VanGoghConnection;
 
 extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
+extern void commFail(CtiDeviceSPtr &Device);
 
 
 namespace Cti
@@ -872,6 +875,13 @@ void UDPInterface::sendResults( void )
                     im.EventCode = dr->work.status;
 
                     OUTMESS *om = dr->work.outbound.front();
+
+                    bool commFailed = (dr->work.status == NORMAL);
+
+                    if( dr->device->adjustCommCounts(commFailed, om->Retry > 0) )
+                    {
+                        commFail(boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+                    }
 
                     statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
 
