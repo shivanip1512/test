@@ -1,5 +1,7 @@
 package com.cannontech.cbc.daoimpl;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -66,7 +68,10 @@ public class CBCDaoImpl  implements CBCDao{
             }
             else 
             {
-                pointTimestamp.setValue(new Double ( pointData.getValue() ).toString() );
+                Double analogVal = new Double ( pointData.getValue() );
+                DecimalFormat formater = new DecimalFormat(".##");
+                String format = formater.format(analogVal.doubleValue());
+                pointTimestamp.setValue(format);
             }
             
             if (!pointData.getPointDataTimeStamp().equals( CBCUtils.getDefaultStartTime()) )
