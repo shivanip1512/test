@@ -69,8 +69,7 @@ public class CBCCopyUtils {
 		pointComposite.setLogicalGroup(base.getPoint().getLogicalGroup());
 		pointComposite.setOutOfService(base.getPoint().isOutOfService());
 		pointComposite.setPaoID(base.getPoint().getPaoID());
-		pointComposite.setPointName("Copy of " + base.getPoint().getPointName()
-				+ " " + System.currentTimeMillis());
+		pointComposite.setPointName(base.getPoint().getPointName());
 		pointComposite.setPointOffset(base.getPoint().getPointOffset());
 		pointComposite.setServiceFlag(base.getPoint().getServiceFlag());
 		pointComposite.setStateGroupID(base.getPoint().getStateGroupID());
@@ -97,8 +96,7 @@ public class CBCCopyUtils {
 		cbc.setCommID(controller.getCommID());
 		cbc.setSchedules(controller.getSchedules());
 		cbc.setDisabled(controller.isDisabled());
-		cbc.setPAOName("Copy of " + controller.getPAOName() + " "
-				+ System.currentTimeMillis());
+		cbc.setPAOName(controller.getPAOName());
 		return cbc;
 	}
 
@@ -110,8 +108,7 @@ public class CBCCopyUtils {
 		cbc702.setCommID(controller.getCommID());
 		cbc702.setSchedules(controller.getSchedules());
 		cbc702.setDisabled(controller.isDisabled());
-		cbc702.setPAOName("Copy of " + controller.getPAOName() + " "
-				+ System.currentTimeMillis());
+		cbc702.setPAOName(controller.getPAOName());
 		return cbc702;
 	}
 
