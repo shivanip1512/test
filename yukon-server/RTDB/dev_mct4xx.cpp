@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/12/27 05:45:01 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2007/01/18 18:51:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2734,7 +2734,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 //  but we want interval *ending* times, so add on one more interval
                 timeStamp += interval_len;
 
-                pi = getLoadProfileData(channel + 1, DSt->Message + (i * 2) + 1, 2);
+                pi = getLoadProfileData(channel, DSt->Message + (i * 2) + 1, 2);
 
                 insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + channel,
                                       ReturnMsg, pi, point_name, timeStamp, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
