@@ -428,6 +428,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		TrendProperties props = getAdvOptsPanel().showAdvancedOptions(getGraphParentFrame());
 		if (props != null)
 		{
+			refresh();
 //			getCommandLogPanel().setVisible( defaults.getShowMessageLog() );			
 //			ycClass.setYCDefaults(defaults);
 		}
