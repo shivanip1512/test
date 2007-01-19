@@ -1,5 +1,11 @@
 package com.cannontech.graph.exportdata;
 
+import java.awt.EventQueue;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.basic.BasicFileChooserUI;
+
 import com.cannontech.database.db.graph.GraphRenderers;
 
 /**
@@ -69,12 +75,13 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 	
 		eDataFile.setExtension( ((com.cannontech.common.util.FileFilter)getFileFilter()).getFirstExt());
 		setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
-	
-		addPropertyChangeListener("fileFilterChanged", this);
+		addPropertyChangeListener(this);
 			
 		int status = showSaveDialog(this);
 		if( status == APPROVE_OPTION )
 		{
+			//Set the selectedFile one more time in case the extension has been removed from the filename
+			setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
 			file = getSelectedFile();
 			eDataFile.writeFile(file);
 		}
@@ -83,19 +90,47 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 	}
 	public void propertyChange(java.beans.PropertyChangeEvent event)
 	{
-		if( getSelectedFile() != null)
+		if (event.getPropertyName() == JFileChooser.FILE_FILTER_CHANGED_PROPERTY)
 		{
-			String selectedFile = getSelectedFile().getName();
-			eDataFile.setFileName( selectedFile.substring(0, selectedFile.lastIndexOf('.') + 1));
+			final BasicFileChooserUI ui = (BasicFileChooserUI) getUI();
+			eDataFile.setExtension(((com.cannontech.common.util.FileFilter)(event.getNewValue())).getFirstExt());
+			String fileName = ui.getFileName(); 
+			int endIndex = fileName.length();
+			if (fileName.indexOf('.') > 0)
+				 endIndex = fileName.lastIndexOf('.');
+			eDataFile.setFileName( fileName.substring(0, endIndex));
 
-			eDataFile.setExtension(((com.cannontech.common.util.FileFilter)(event.getNewValue())).getFirstExt());
 			setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
-		}
-		else
-		{
-			eDataFile.setExtension(((com.cannontech.common.util.FileFilter)(event.getNewValue())).getFirstExt());
-			setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
-		}
+		}	
 	}
 	
+	/**
+	 * This method is overriden because of a bug in the JDK 1.4 and greater.
+	 *  The bug sets the filename to null whenever the filefilter changes.
+	 *  It is somewhat of a hack to set the fileName again this way, 
+	 *   but what else do you do, right? (Tom...no comments, please)
+	 */
+	public void setFileFilter(FileFilter filter) {
+		super.setFileFilter(filter);
+        
+		if (!(getUI() instanceof BasicFileChooserUI)) {
+			return;
+		}
+
+		final BasicFileChooserUI ui = (BasicFileChooserUI) getUI();
+		final String name = ui.getFileName().trim();
+
+		if ((name == null) || (name.length() == 0)) {
+			return;
+		}
+		
+		EventQueue.invokeLater(new Thread() {
+			public void run() {
+				String currentName = ui.getFileName();
+				if ((currentName == null) || (currentName.length() == 0)) {
+					ui.setFileName(name);
+				}
+			}
+		});
+	}
 }
