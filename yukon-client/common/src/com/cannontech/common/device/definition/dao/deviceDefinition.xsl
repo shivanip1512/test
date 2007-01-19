@@ -1,141 +1,112 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
-<xsl:template match="/">
-      <html>
+  <xsl:output method="html" indent="yes" encoding="UTF-8" />
+  <xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" />
+  <xsl:output doctype-system="http://www.w3.org/TR/html4/strict.dtd" />
+  <xsl:key name="list" match="device" use="displayGroup/@value" />
+  <xsl:template match="deviceDefinition">
+    <html>
+      <head>
+        <title>Yukon Device Definitions</title>
+        <style type="text/css">
+          <![CDATA[
+  .pointTable {
+    border: 1px solid black;
+    border-collapse: collapse;
+    font-size: .8em;
+  }
+  .pointTable td, .pointTable th {
+    border: 1px solid black;
+    padding-right: .3em;
+  }
+  h3 {
+    margin-top: 1em;
+    margin-bottom: .2em;
+    margin-left: 1em;
+  }
+  
+  .deviceBody {
+    margin-left: 2em;
+  }
+  ]]>
+        </style>
+      </head>
       <body>
-        <h2>Devices</h2>
-        <table border="0">
-        <xsl:for-each select="deviceDefinition/device">
-        <xsl:sort select="displayGroup/@value" />
-        <xsl:sort select="displayName/@value" />
-        
-        <tr bgcolor="#cccccc">
-            <td><b><xsl:value-of select="displayName/@value"/></b></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td align="right">Device Group:</td>
-            <td><xsl:value-of select="displayGroup/@value"/></td>
-        </tr>
-        <tr>
-            <td align="right">Java Constant:</td>
-            <td><xsl:value-of select="type/@javaConstant"/></td>
-        </tr>
-        <tr>
-            <td align="right">Device Type:</td>
-            <td><xsl:value-of select="type/@value"/></td>
-        </tr>
-            <tr>
-                <td></td>
-                <td  bgcolor="#00CCFF"><h3>Pulse Accumulator Points</h3></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <table bgcolor="#00CCFF">
-                        <tr>
-                            <th>Offset</th>
-                            <th>Name</th>
-                            <th>Multipler</th>
-                            <th>Unit of Measure</th>
-                        </tr>    
-                        <xsl:for-each select="points/point">
-                            <xsl:if test="@type='PulseAccumulator'">
-                        <tr>
-                            <td align="center"><xsl:value-of select="offset/@value"/></td>
-                            <td><xsl:value-of select="name"/></td>
-                            <td align="center"><xsl:value-of select="multiplier/@value"/></td>
-                            <td align="center"><xsl:value-of select="unitofmeasure/@value"/></td>
-                        </tr>
-                           </xsl:if>
-                        </xsl:for-each>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td bgcolor="#33FF00"><h3>Demand Accumulator Points</h3></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <table bgcolor="#33FF00">
-                        <tr>
-                            <th>Offset</th>
-                            <th>Name</th>
-                            <th>Multipler</th>
-                            <th>Unit of Measure</th>
-                        </tr>    
-                        <xsl:for-each select="points/point[@type='DemandAccumulator']">
-                        <tr>
-                            <td align="center"><xsl:value-of select="offset/@value"/></td>
-                            <td><xsl:value-of select="name"/></td>
-                            <td align="center"><xsl:value-of select="multiplier/@value"/></td>
-                            <td align="center"><xsl:value-of select="unitofmeasure/@value"/></td>
-                        </tr>
-                        </xsl:for-each>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td bgcolor="#FFFF00"><h3>Analog Points</h3></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <table bgcolor="#FFFF00">
-                        <tr>
-                            <th>Offset</th>
-                            <th>Name</th>
-                            <th>Multipler</th>
-                            <th>Unit of Measure</th>
-                        </tr>    
-                        <xsl:for-each select="points/point">
-                            <xsl:if test="@type='Analog'">
-                        <tr>
-                            <td align="center"><xsl:value-of select="offset/@value"/></td>
-                            <td><xsl:value-of select="name"/></td>
-                            <td align="center"><xsl:value-of select="multiplier/@value"/></td>
-                            <td align="center"><xsl:value-of select="unitofmeasure/@value"/></td>
-                        </tr>
-                           </xsl:if>
-                        </xsl:for-each>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td bgcolor="#FF6633"><h3>Status Points</h3></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <table bgcolor="#FF6633">
-                        <tr>
-                            <th>Offset</th>
-                            <th>Name</th>
-                            <th>State Group</th>
-                        </tr>    
-                        <xsl:for-each select="points/point">
-                            <xsl:if test="@type='Status'">
-                        <tr>
-                            <td align="center"><xsl:value-of select="offset/@value"/></td>
-                            <td><xsl:value-of select="name"/></td>
-                            <td align="center"><xsl:value-of select="stategroup/@value"/></td>
-                        </tr>
-                           </xsl:if>
-                        </xsl:for-each>
-                    </table>
-                </td>
-            </tr>
-            <br /><br /><br />
+        <h1>Yukon Devices</h1>
+        <!-- I don't know how the following works, but it groups by displayGroup. -->
+        <xsl:for-each
+          select="device[generate-id(.)=generate-id(key('list', displayGroup/@value))]/displayGroup/@value">
+          <xsl:sort />
+          <h2>
+            <xsl:value-of select="." />
+          </h2>
+          <xsl:for-each select="key('list', .)">
+            <xsl:sort />
+            <h3>
+              <xsl:value-of select="./displayName/@value" />
+            </h3>
+            <div class="deviceBody">
+              Type ID:
+              <xsl:value-of select="type/@value" />
+              <br />
+              Java Constant:
+              <xsl:value-of select="type/@javaConstant" />
+              <br />
+              <xsl:if test="type/@changeGroup">
+                Change Group:
+                <xsl:value-of select="type/@changeGroup" />
+                <br />
+              </xsl:if>
+
+              <xsl:if test="count(./points/point) > 0">
+                <table class="pointTable">
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Offset</th>
+                    <th>Multiplier</th>
+                    <th>UofM</th>
+                  </tr>
+                  <xsl:for-each select="./points/point">
+                    <xsl:sort select="@type" />
+                    <xsl:sort select="offset/@value" data-type="number" />
+                    <tr>
+                      <td>
+                        <xsl:value-of select="name" />
+                        <xsl:if test="@init = 'true'">
+                          <xsl:text>*</xsl:text>
+                        </xsl:if>
+                        <xsl:if test="attribute/@name">
+                          <xsl:text>[</xsl:text>
+                          <xsl:value-of select="attribute/@name" />
+                          <xsl:text>]</xsl:text>
+                        </xsl:if>
+                      </td>
+                      <td>
+                        <xsl:value-of select="@type" />
+                      </td>
+                      <td>
+                        <xsl:value-of select="offset/@value" />
+                      </td>
+                      <td>
+                        <xsl:value-of select="multiplier/@value" />
+                      </td>
+                      <td>
+                        <xsl:value-of select="unitofmeasure/@value" />
+                      </td>
+                    </tr>
+                  </xsl:for-each>
+                </table>
+                <xsl:if test="count(./points/point/@init) > 0">
+                  *=Initially created by default
+                </xsl:if>
+              </xsl:if>
+            </div>
+          </xsl:for-each>
         </xsl:for-each>
-        </table>
       </body>
-      </html>
-    </xsl:template>
+    </html>
+  </xsl:template>
 
 </xsl:stylesheet>
