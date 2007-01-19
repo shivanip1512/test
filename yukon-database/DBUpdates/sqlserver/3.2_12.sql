@@ -11,7 +11,10 @@ insert into billingfileformats values(22, 'EXTENDED_TOU');
 /* @error ignore-end */
 
 insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
+insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
 
+alter table devicemetergroup alter column MeterNumber varchar(50) not null;
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -24,4 +27,4 @@ insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.2', 'Jon', '15-Jan-2007', 'Latest Update', 12 );
+/* __YUKON_VERSION__ */
