@@ -4288,7 +4288,7 @@ create table DEVICEMETERGROUP (
    CollectionGroup      varchar(50)          not null,
    TestCollectionGroup  varchar(50)          not null,
    METERNUMBER          varchar(50)          not null,
-   BillingGroup         varchar(20)          not null
+   BillingGroup         varchar(50)          not null
 )
 go
 

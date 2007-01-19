@@ -2075,7 +2075,7 @@ create table DEVICEMETERGROUP  (
    CollectionGroup      VARCHAR2(50)                    not null,
    TestCollectionGroup  VARCHAR2(50)                    not null,
    METERNUMBER          VARCHAR2(50)                    not null,
-   BillingGroup         VARCHAR2(20)                    not null
+   BillingGroup         VARCHAR2(50)                    not null
 );
 
 alter table DEVICEMETERGROUP
