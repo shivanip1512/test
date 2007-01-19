@@ -10,10 +10,10 @@ a.Link3:active {color: #99FFFF}
 a.Link3:visited {color: #99FFFF}
 a.Link3:link {color: #99FFFF}
 a.Link3:hover {color: #99FFFF}
-a.Link4:active {color: #666699}
-a.Link4:visited {color: #666699}
-a.Link4:link {color: #666699}
-a.Link4:hover {color: #666699}
+a.Link4:active {color: #000077}
+a.Link4:visited {color: #000077}
+a.Link4:link {color: #000077}
+a.Link4:hover {color: #000077}
 
 .MainText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
 .defaultText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #6666FF}
@@ -41,13 +41,13 @@ a.Link4:hover {color: #666699}
 .Nav {  font-family: Arial, Helvetica, sans-serif; font-size: 9px;  color: #99FFFF}
 .NavTextNoLink {  font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #FFFFFF}
 
-.cal_day_header {  background-color: #666699; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_header {  background-color: #000077; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
 .cal_day_mouseover { font-size: 9px; font-weight: bold; color:#FFCC66; background-color: buttonface; height: 14px; width: 20px; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
 .cal_day_selected {  font-size: 9px; font-weight: bold; background-color: #99FFFF; height: 12px; width: 18px; text-align: center; cursor: default; border: 1px #CCCCCC inset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
 
-.Background {  background-color: #666699}
+.Background {  background-color: #000077}
 .esubBackground {  background-color: #000000}
-.tooltip { position:absolute; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; color: #FFFFFF; background-color: #666699; border: 3px #666699 outset; visibility: hidden; clip:  rect(   ); padding-top: 3px; padding-right: 3px; padding-bottom: 3px; padding-left: 3px}
+.tooltip { position:absolute; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; color: #FFFFFF; background-color: #000077; border: 3px #000077 outset; visibility: hidden; clip:  rect(   ); padding-top: 3px; padding-right: 3px; padding-bottom: 3px; padding-left: 3px}
 .tempText1 {  font-family: Arial, Helvetica, sans-serif; font-size: 36px; color: #003366; height: 50px; width: 65px}
 .tempText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 35px; font-style: normal; color: #FF0000}
 .Clickable { cursor:pointer; text-decoration: underline }
@@ -56,11 +56,11 @@ a.Link4:hover {color: #666699}
 .ConfirmMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0000FF }
 .redMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #CC0000 }
 
-.bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #666699 outset; visibility: hidden; cursor:default; width:120 px;}
-.optmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:120 px;}
-.optmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #666699; cursor:default; width:120 px;}
+.bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #000077 outset; visibility: hidden; cursor:default; width:120 px;}
+.optmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #000077; cursor:default; width:120 px;}
+.optmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #000077; color: #FFFFFF;   border: 1px #000077; cursor:default; width:120 px;}
 .navmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #CCCCCC; color: #000000;   border: 1px #99FFFF; cursor:default; width:120 px;}
-.navmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #99FFFF; cursor:default; width:120 px;}
-.SchedText { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #666699 }
+.navmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #000077; color: #FFFFFF;   border: 1px #99FFFF; cursor:default; width:120 px;}
+.SchedText { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000077 }
 
-.LeftCell { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; background-color: #666699}
+.LeftCell { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; background-color: #000077}
