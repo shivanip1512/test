@@ -126,6 +126,16 @@ void  CtiCommandParser::parse()
         }
     }
 
+    if(CmdStr.contains("system message "))
+    {
+        _cmd["system_message"] = CtiParseValue(true);
+
+        if(CmdStr.contains("port entries"))
+        {
+            _cmd["port_entries"] = CtiParseValue(true);
+        }
+    }
+
     if(CmdStr.contains(" select"))
     {
         boost::regex re_name   ("select name "        + str_quoted_token);
