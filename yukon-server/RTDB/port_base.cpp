@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2006/04/26 22:26:51 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2007/01/22 21:32:35 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.67  2007/01/22 21:32:35  jotteson
+* Ports now track timing of messages.
+*
 * Revision 1.66  2006/04/26 22:26:51  cplender
 * Altered a few commFail Functions to make certain the state is maintained.
 *
@@ -616,7 +619,8 @@ _queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
 _simulated(0),
 _sharingStatus(false),
 _sharingToggle(false),
-_communicating(false)
+_communicating(false),
+_entryMsecTime(0)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
@@ -626,7 +630,8 @@ _queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
 _portFunc(0),
 _minMaxIdle(false),
 _sharingStatus(false),
-_sharingToggle(false)
+_sharingToggle(false),
+_entryMsecTime(0)
 {
     *this = aRef;
 }
@@ -1692,8 +1697,11 @@ void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
         }
         else
         {
-            map< LONG, int >::value_type insertVal(deviceID, workCount);
-            _queuedWork.insert(insertVal);
+            if( workCount > 0 )
+            {
+                map< LONG, int >::value_type insertVal(deviceID, workCount);
+                _queuedWork.insert(insertVal);
+            }
         }
         _criticalSection.release();
     }
@@ -1703,18 +1711,33 @@ void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
     }
 }
 
-void CtiPort::setPortCommunicating(bool state)
+void CtiPort::setPortCommunicating(bool state, DWORD ticks)
 {
     try
     {
         _criticalSection.acquire();
         _communicating = state;
         _criticalSection.release();
+
+        if( ticks > 0 )
+        {
+            addPortTiming(ticks);
+        }
     }
     catch( ... )
     {
         _criticalSection.release();
     }
+}
+
+void CtiPort::addPortTiming(DWORD ticks)
+{
+    _entryMsecTime = (_entryMsecTime*4 + ticks)/5;
+}
+
+DWORD CtiPort::getPortTiming()
+{
+    return _entryMsecTime;
 }
 
 int CtiPort::getWorkCount()

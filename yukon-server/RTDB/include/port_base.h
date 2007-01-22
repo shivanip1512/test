@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/04/20 17:15:30 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2007/01/22 21:32:35 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,8 +249,10 @@ public:
     CtiPort& setDeviceQueued(LONG id);
     CtiPort& resetDeviceQueued(LONG id);
     void addDeviceQueuedWork(long deviceID, int workCount);
-    void setPortCommunicating(bool state = true);
+    void setPortCommunicating(bool state = true, DWORD ticks = 0);
+    void addPortTiming(DWORD ticks);
     int getWorkCount();
+    DWORD getPortTiming();
 
     CtiPort& setDevicePreload(LONG id);
     CtiPort& resetDevicePreload(LONG id);
@@ -323,6 +325,7 @@ private:
     map< LONG, int >            _queuedWork;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
+    DWORD                       _entryMsecTime;     // The time to get one entry off the queue in Msecs.
 
     mutable short               _simulated;
     bool                        _sharingStatus;     // This is set to true if we are portsharing on this port.
