@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2006/12/12 21:42:10 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2007/01/22 21:35:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,6 +79,7 @@ CtiPILExecutorFactory   ExecFactory;
 
 /* Define the return nexus handle */
 DLLEXPORT CtiLocalConnect PilToPorter; //Pil handles this one
+DLLEXPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
 static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
@@ -1571,7 +1572,14 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if(execList.size() == 0)
+    if(parse.isKeyValid("system") && pReq->DeviceId() == 0)
+    {
+        //This message is a system request for porter, send it to the porter system thread, not a device.
+        PorterSystemMessageQueue.putQueue(pReq);
+        pReq = NULL;
+    }
+
+    if(execList.size() == 0 && pReq != NULL)
     {
         execList.push_back( pReq );
         pReq = NULL;

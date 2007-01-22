@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.103 $
-* DATE         :  $Date: 2006/12/28 20:59:06 $
+* REVISION     :  $Revision: 1.104 $
+* DATE         :  $Date: 2007/01/22 21:35:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,6 +133,7 @@
 #include "drp.h"
 #include "thread_monitor.h"
 #include "CtiLocalConnect.h"
+#include "systemmsgthread.h"
 
 #include "perform.h"
 #include "das08.h"
@@ -229,6 +230,9 @@ PointDeviceMapping PointToDeviceMap;
 //These form the connection between Pil and Porter
 extern DLLIMPORT CtiLocalConnect PilToPorter; //Pil handles this one
 CtiLocalConnect PorterToPil; //Porter handles this one
+extern DLLIMPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
+
+Cti::Porter::SystemMsgThread _sysMsgThread(&PorterSystemMessageQueue);
 
 RWThreadFunction _connThread;
 RWThreadFunction _dispThread;
@@ -960,6 +964,14 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             _vconfThread = rwMakeThreadFunction( VConfigThread, (void*)NULL );
             _vconfThread.start();
         }
+    }
+
+    /* Check if we need to start the versacom config thread */
+   // if( !((gConfigParms.getValueAsString("PORTER_START_SYSMSGTHREAD")).empty()) && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_SYSMSGTHREAD").c_str())))
+    {
+        _sysMsgThread.setDeviceManager(&DeviceManager);
+        _sysMsgThread.setPortManager(&PortManager);
+        _sysMsgThread.start();
     }
 
     if( (WorkReportFrequencyInSeconds = gConfigParms.getValueAsULong("PORTER_WORK_COUNT_TIME", 60)) <= 0 )
