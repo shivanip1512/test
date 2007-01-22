@@ -60,6 +60,12 @@ typedef struct _QUEUEENT
 
 typedef QUEUEENT *PQUEUEENT;
 
+typedef struct
+{
+    long Count;
+    long Priority;
+} REQUESTSTATUS;
+
 /* Define the queue structure */
 typedef struct
 {
@@ -68,8 +74,11 @@ typedef struct
    HANDLE WaitArray[2];
    QUEUEENT *First;
    QUEUEENT *Last[MAXPRIORITY + 1];
+   ULONG NumElements[MAXPRIORITY + 1];
    ULONG Element;
    ULONG Elements;
+   std::map<long, REQUESTSTATUS> RequestInfo;
+
 } QUEUESTRUCT;
 
 typedef QUEUESTRUCT *PQUEUESTRUCT;
@@ -106,7 +115,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle);
 
 IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement = true);
 
-IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE QueueHandle,
+/*IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE QueueHandle,
                                PVOID CompareData,
                                ULONG CompareDataSize,
                                ULONG CompareDataOffset,
@@ -114,7 +123,8 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE QueueHandle,
                                PULONG   DataSize,
                                PPVOID Data,
                                PULONG Element,
-                               PBYTE  Priority);
+                               PBYTE  Priority,
+                               PPVOID Stupid);*/
 
 IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                               void *ptr,
@@ -123,6 +133,10 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
 
 IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(void*, void*));
 
+IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &NumberFound, ULONG TopPriority = MAXPRIORITY, INT Count = 0);
 
+IM_EX_CTIBASE INT GetIndividualRequestStartPos(HCTIQUEUE QueueHandle, ULONG RequestID, UINT &StartPos);
+
+IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG RequestID, UINT &Count, UINT &Priority);
 
 #endif /* QUEUE_H */
