@@ -51,7 +51,10 @@ import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.EsubEditorRole;
+import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxAbstractLine;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -506,8 +509,20 @@ public class Editor extends JPanel {
 
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			}
+                // Make sure to shutdown properly so dispatch is not left with a vagrant connect for a while.
+                // Ugly cast.  We want to call disconnect though so that our shutdown message gets
+                // written out.
+                ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+                if ( conn != null && conn.isValid() ) {  // free up Dispatchs resources     
+                    Command comm = new Command();
+                    comm.setPriority(15);               
+                    comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
+                    conn.write( comm );
+                    conn.disconnect();
+                }
+            
+                System.exit(0);
+            }
 		});
 		
 		SplashWindow splash = new SplashWindow(frame, CtiUtilities.CTISMALL_GIF,"Loading " + CtiUtilities.getApplicationName() + "...",	new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
@@ -602,7 +617,7 @@ public class Editor extends JPanel {
 	 * Creation date: (12/12/2001 3:28:20 PM)
 	 * @return int
 	 */
-	int saveOption() {
+	 int saveOption() {
 
 		int result = 0;
 		if (getDrawing().isModified()) {

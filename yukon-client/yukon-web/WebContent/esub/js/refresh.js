@@ -16,7 +16,8 @@ var graphRefreshRate = 360 * 1000;
 var pointRefreshRate  = 15 * 1000; 
 var tableRefreshRate  = 15 * 1000; 
 var alarmAudioCheckRate = 5 * 1000;
-var blinkerRefreshRate = 600;
+var blinkerRefreshRate = 15 * 1000;
+var blinkerRate = 600;
 
 var allDynamicBlinkers = new Array();
 var allDynamicTextElem = new Array();
@@ -95,6 +96,7 @@ function refresh(evt) {
 	setInterval('updateAllGraphs()', graphRefreshRate); 
 	setInterval('updateAllTables()', tableRefreshRate);
 	setInterval('updateAllBlinkers()', blinkerRefreshRate);
+	setInterval('blinkAllBlinkers()', blinkerRate);
 	setInterval('checkAlarmAudio(allAlarmDeviceIds, allAlarmPointIds, allAlarmAlarmCategoryIds)', alarmAudioCheckRate);
 } //end refresh
 
@@ -128,7 +130,13 @@ function updateAllBlinkers() {
 	for(i = 0; i < allDynamicBlinkers.length; i++) {
 		updateBlinker(allDynamicBlinkers[i]);
 	}
-} //end updateGraphs
+} //end updateAllBlinkers
+
+function blinkAllBlinkers(){
+	for(i = 0; i < allDynamicBlinkers.length; i++) {
+		blinkBlinker(allDynamicBlinkers[i]);
+	}
+} // end blinkAllBlinkers
 
 function updateAllTables() {
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
@@ -228,6 +236,23 @@ function updateAlarmsTable(node,url) {
 	} // end f2
 } // end updateAlarmsTable
 
+function blinkBlinker(node){
+	var isBlinking = node.getAttribute('isBlinking');
+	if(isBlinking == "yes"){
+		var displayState = node.getAttribute('displayState');
+		if ( displayState == "none" ) {
+			node.getStyle().setProperty('display', 'inline');
+			node.setAttribute('displayState', 'inline');
+		}else {
+			node.getStyle().setProperty('display', 'none');
+			node.setAttribute('displayState', 'none');
+		}
+	}else{
+		node.getStyle().setProperty('display', 'inline');
+		node.setAttribute('displayState', 'inline');
+	}
+}
+
 //  Check every svg element that can blink and toggles its blink value
 function updateBlinker(node){
 	var blink = node.getAttribute('blink');
@@ -237,55 +262,50 @@ function updateBlinker(node){
 		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + blinkPointID + '&dattrib=4096';
         getURL(url, bfn);
 	}else if(blink == "1"){
-		var displayState = node.getAttribute('displayState');
-		if ( displayState == "none" ) {
-			node.getStyle().setProperty('display', 'inline');
-			node.setAttribute('displayState', 'inline');
-		}else {
-			node.getStyle().setProperty('display', 'none');
-			node.setAttribute('displayState', 'none');
-		}
+		node.setAttribute('isBlinking', 'yes');
 	}else {
-			node.getStyle().setProperty('display', 'inline');
-			node.setAttribute('displayState', 'inline');
+		node.setAttribute('isBlinking', 'no');
 	 }
 	
 	function bfn(obj) {
 		if(obj.content) {
             var value = obj.content;
             var blink = node.getAttribute('blink'+trim(value));
-			var displayState = node.getAttribute('displayState');
             if(blink > 0){
-            	if( displayState == "inline") {
-            	   	node.getStyle().setProperty('display', 'none');
-            	   	node.setAttribute('displayState' , 'none');
-            	}else {
-            		node.getStyle().setProperty('display', 'inline');
-	           	   	node.setAttribute('displayState' , 'inline');
-            	}
+            	node.setAttribute('isBlinking', 'yes');
             }else {
-            	node.getStyle().setProperty('display', 'inline');
-            	node.setAttribute('displayState', 'inline');
+            	node.setAttribute('isBlinking', 'no');
             }
         }
     }
 }// end updateAllBlinkers
 
 function updateNode(node) {
-	var colorPointID = node.getAttribute('colorid');
-	var currentStatePointID = node.getAttribute('currentstateid');
-	if(colorPointID > 0){
-        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
-        getURL(url, cfn);
+
+	if (node.getAttribute('colorid')) {
+
+		var colorPointID = node.getAttribute('colorid');
+		if(colorPointID > 0){
+	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
+	        getURL(url, cfn);
+	    }
     }
     
-    if(currentStatePointID > 0){
-        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
-        getURL(url, tfn);
-    }else { 
-    	if (node.getAttribute('dattrib')) {
-	    
-			url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
+    if (node.getAttribute('currentstateid')) {
+    	
+	    var currentStatePointID = node.getAttribute('currentstateid');
+	    if(currentStatePointID > 0){
+	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
+	        getURL(url, tfn);
+	    }else { 
+	    	if (node.getAttribute('dattrib')) {
+		    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
+				getURL(url, fn);
+			}
+		}
+	}else{
+		if (node.getAttribute('dattrib')) {
+	    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
 			getURL(url, fn);
 		}
 	}
@@ -329,7 +349,6 @@ function updateImage(node) {
 	function fn(obj) {
 		if(obj.content) {
 			var value = obj.content;
-            //alert(value);
 			var imageName = node.getAttribute('image'+trim(value));			
 			node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
 		}

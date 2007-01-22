@@ -46,6 +46,7 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setLinkTo(LxSaveUtils.readString(in));   
                     elem.setControlEnabled(LxSaveUtils.readBoolean(in));
                 }
+                break;
                 
                 case 3: {
                     elem.setPointID(LxSaveUtils.readInt(in));

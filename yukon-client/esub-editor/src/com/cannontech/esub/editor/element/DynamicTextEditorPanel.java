@@ -629,8 +629,10 @@ public Object getValue(Object o) {
     
     if(attStr.equals(ATTRIBUTE_CURRENT_STATE)) {
         dynamicText.setPoint(getTextPointPanel().getPointSelectionPanel().getSelectedPoint());
+        dynamicText.setCurrentStateID(getTextPointPanel().getPointSelectionPanel().getSelectedPoint().getLiteID());
     }else {
         dynamicText.setPoint( getPointSelectionPropertyPanel().getPointSelectionPanel().getSelectedPoint());
+        dynamicText.setCurrentStateID(-1);
     }
 	return dynamicText;
 }

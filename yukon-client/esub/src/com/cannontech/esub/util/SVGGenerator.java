@@ -302,7 +302,7 @@ public class SVGGenerator {
             }
         }
         textElem.setAttributeNS(null, "colorid", Integer.toString(text.getColorPointID()));
-        textElem.setAttributeNS(null, "currentstateid", Integer.toString(text.getPointID()));
+        textElem.setAttributeNS(null, "currentstateid", Integer.toString(text.getCurrentStateID()));
 		return textElem;					
 	}
 
@@ -398,7 +398,14 @@ public class SVGGenerator {
                 lineElem.setAttributeNS(null, "blink" + i, blinkString);
             }
         }
-        
+        String isBlinking = "no";
+        if(blink > 0) {
+            if(line.getBlinkPointID() > 0) {
+                isBlinking = "no";
+            }else {
+                isBlinking = "yes";
+            }
+        }
         String lineColorString = ((Color)line.getPaint()).getRed() + "," + ((Color)line.getPaint()).getGreen() +"," + ((Color)line.getPaint()).getBlue();
         lineElem.setAttributeNS(null,"lineColor", lineColorString);
         lineElem.setAttributeNS(null, "colorid", Integer.toString(line.getColorPointID()));
@@ -406,6 +413,7 @@ public class SVGGenerator {
         lineElem.setAttributeNS(null, "arrowid", Integer.toString(line.getArrowPointID()));
         lineElem.setAttributeNS(null, "opacityid", Integer.toString(line.getOpacityPointID()));
         lineElem.setAttributeNS(null, "blinkid", Integer.toString(line.getBlinkPointID()));
+        lineElem.setAttributeNS(null, "isBlinking", isBlinking);
         lineElem.setAttributeNS(null, "displayState", "inline");
         return lineElem;		
 	}

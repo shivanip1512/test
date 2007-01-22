@@ -48,6 +48,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     private boolean controlEnabled = false;
     private int colorPointID = -1;
     private int controlPointID = -1;
+    private int currentStateID = -1;
     private Map customColorMap = new HashMap(13);
     private Map customTextMap = new HashMap(13);
     private LiteState currentColorState;
@@ -145,6 +146,14 @@ public boolean getControlEnabled()
 public void setControlEnabled(boolean value)
 {
     controlEnabled = value;
+}
+
+public int getCurrentStateID(){
+    return currentStateID;
+}
+
+public void setCurrentStateID(int pointID) {
+    currentStateID = pointID;
 }
 
 /**
