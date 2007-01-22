@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.202 $
-* DATE         :  $Date: 2007/01/08 21:56:29 $
+* REVISION     :  $Revision: 1.203 $
+* DATE         :  $Date: 2007/01/22 21:36:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -403,10 +403,7 @@ VOID PortThread(void *pid)
                 continue;
             }
 
-            if( profiling )
-            {
-                ticks = GetTickCount();
-            }
+            ticks = GetTickCount();
 
             Port->setPortCommunicating();
             try
@@ -424,10 +421,9 @@ VOID PortThread(void *pid)
 
             Port->addDeviceQueuedWork( Device->getID(), Device->queuedWorkCount() );
 
+            ticks = GetTickCount() - ticks;
             if( profiling )
             {
-                ticks = GetTickCount() - ticks;
-
                 if( ticks > 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -435,7 +431,7 @@ VOID PortThread(void *pid)
                 }
             }
 
-            Port->setPortCommunicating(false);
+            Port->setPortCommunicating(false, ticks);
 
             //  if the device needs to schedule more work
             if( Device->hasPreloadWork() )
