@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2006/11/28 16:20:41 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2007/01/22 20:24:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,7 +75,7 @@ CtiConnection* NotificationConnection = 0;
 RWThread MessageThr;
 
 // Seconds from 1970, updated every time we hear from porter
-unsigned long gLastReturnMessageReceived = 0;
+CtiTime gLastReturnMessageReceived(0UL);
 
 // Used to distinguish unique requests/responses to/from pil
 unsigned char gUserMessageID = 0;
@@ -92,7 +92,7 @@ void _MessageThrFunc()
             if( in != 0 )
             {
                 // update global message received timestamp
-                gLastReturnMessageReceived = ::time(NULL);              
+                gLastReturnMessageReceived = gLastReturnMessageReceived.now();              
 
                 boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
 
@@ -1496,7 +1496,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
 
-    long start = ::time(NULL);
+    CtiTime start;
     
     // Some structures to sort the responses
     PILReturnMap device_map;
@@ -1545,7 +1545,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         // The downside to this is if we are frequently scanning some device, macs
         // will potentially never time anything out - this should be considered a short
         // term fix.
-        long now = ::time(NULL);
+        CtiTime now;
         if( (now > gLastReturnMessageReceived + timeout) &&
             (now > start + timeout) )
         {
