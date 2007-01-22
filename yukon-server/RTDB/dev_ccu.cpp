@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/01/22 21:30:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -231,6 +231,29 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     return(NORMAL);
 }
 
+bool CtiDeviceCCU::hasQueuedWork() const
+{
+    if( getType() == TYPE_CCU711 && queuedWorkCount != 0 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+INT CtiDeviceCCU::queuedWorkCount() const
+{
+    INT workCount = 0;
+    if( getType() == TYPE_CCU711 && _trxInfo != NULL )
+    {
+        CtiTransmitter711Info *p711Info =  (CtiTransmitter711Info *)_trxInfo;
+        workCount = p711Info->QueueHandle->Elements;
+    }
+
+    return workCount;
+}
 
 /* Routine to decode returned CCU message and update database */
 INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
