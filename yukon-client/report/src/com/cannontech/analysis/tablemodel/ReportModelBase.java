@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ColumnProperties;
@@ -562,7 +563,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 					int [] idsArray = new int[paramArray.length];
 					for (int i = 0; i < paramArray.length; i++)
 					{
-						idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
+						if(StringUtils.isNotBlank(paramArray[i]))
+							idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
 					}
 					setPaoIDs(idsArray);
 				}
