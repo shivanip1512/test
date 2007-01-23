@@ -1,7 +1,6 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -27,13 +25,14 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.esub.element.DrawingElement;
+import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.LineElement;
 
-public class LineBlinkPointPanel extends DataInputPanel implements ActionListener, TreeSelectionListener {
-    private javax.swing.JPanel pointPanel = null;
+public class BlinkPointPanel extends DataInputPanel implements ActionListener, TreeSelectionListener {
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel pointSelectionPanel = null;
-    private LineElement lineElement;
+    private DrawingElement elem;
     private HashMap map = new HashMap();
     private JButton okButton;
     private JLabel rawStateLabel;
@@ -68,7 +67,7 @@ public class LineBlinkPointPanel extends DataInputPanel implements ActionListene
 /**
  * ArrowPointPanel constructor comment.
  */
-public LineBlinkPointPanel() {
+public BlinkPointPanel() {
     super();
     initialize();
 }
@@ -297,9 +296,14 @@ public Object getValue(Object o) {
     if ( getPointSelectionPanel().getSelectedPoint() == null) {
         JOptionPane.showMessageDialog(this, "Please select a point from the device tree.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
     }
-    lineElement.setBlinkPointID(getPointSelectionPanel().getSelectedPoint().getLiteID());
-    lineElement.setCustomBlinkMap(map);
-    return lineElement;
+    if( o instanceof LineElement) {
+        ((LineElement)elem).setBlinkPointID(getPointSelectionPanel().getSelectedPoint().getLiteID());
+        ((LineElement)elem).setCustomBlinkMap(map);
+    }else if ( o instanceof DynamicText) {
+        ((DynamicText)elem).setBlinkPointID(getPointSelectionPanel().getSelectedPoint().getLiteID());
+        ((DynamicText)elem).setCustomBlinkMap(map);
+    }
+    return elem;
 }
 
 /**
@@ -408,17 +412,32 @@ public boolean isInputValid() {
 @SuppressWarnings("unchecked")
 public void setValue(Object o) 
 {
-    lineElement = (LineElement) o;
-    map = new HashMap( lineElement.getCustomBlinkMap());
-
-    getPointSelectionPanel().refresh();
-
-    // Set selected point 
-    int lpid = lineElement.getBlinkPointID();
-    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpid);
-    if( lp != null )
-    {  // this is usually not null since the default pointid is 7 ?
-        getPointSelectionPanel().selectPoint(lp);
+    if(o instanceof LineElement) {
+        elem = (LineElement) o;
+        map = new HashMap( ((LineElement)elem).getCustomBlinkMap() );
+    
+        getPointSelectionPanel().refresh();
+    
+        // Set selected point 
+        int lpid = ((LineElement)elem).getBlinkPointID();
+        LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpid);
+        if( lp != null )
+        {  // this is usually not null since the default pointid is 7 ?
+            getPointSelectionPanel().selectPoint(lp);
+        }
+    }else if( o instanceof DynamicText) {
+        elem = (DynamicText) o;
+        map = new HashMap( ((DynamicText)elem).getCustomBlinkMap());
+    
+        getPointSelectionPanel().refresh();
+    
+        // Set selected point 
+        int lpid = ((DynamicText)elem).getBlinkPointID();
+        LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpid);
+        if( lp != null )
+        {  // this is usually not null since the default pointid is 7 ?
+            getPointSelectionPanel().selectPoint(lp);
+        }
     }
 }
 /**
@@ -728,7 +747,7 @@ public JButton getOkButton()
 
 public JCheckBox getBlinkCheckBox0() {
     if( blinkCheckBox0 == null ){
-        blinkCheckBox0 = new JCheckBox("Line will blink");
+        blinkCheckBox0 = new JCheckBox("Blink");
         blinkCheckBox0.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox0.setPreferredSize(new Dimension( 100, 24));
     }
@@ -737,7 +756,7 @@ public JCheckBox getBlinkCheckBox0() {
 
 public JCheckBox getBlinkCheckBox1() {
     if( blinkCheckBox1 == null ){
-        blinkCheckBox1 = new JCheckBox("Line will blink");
+        blinkCheckBox1 = new JCheckBox("Blink");
         blinkCheckBox1.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox1.setPreferredSize(new Dimension( 100, 24));
     }
@@ -746,7 +765,7 @@ public JCheckBox getBlinkCheckBox1() {
 
 public JCheckBox getBlinkCheckBox2() {
     if( blinkCheckBox2 == null ){
-        blinkCheckBox2 = new JCheckBox("Line will blink");
+        blinkCheckBox2 = new JCheckBox("Blink");
         blinkCheckBox2.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox2.setPreferredSize(new Dimension( 100, 24));
     }
@@ -755,7 +774,7 @@ public JCheckBox getBlinkCheckBox2() {
 
 public JCheckBox getBlinkCheckBox3() {
     if( blinkCheckBox3 == null ){
-        blinkCheckBox3 = new JCheckBox("Line will blink");
+        blinkCheckBox3 = new JCheckBox("Blink");
         blinkCheckBox3.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox3.setPreferredSize(new Dimension( 100, 24));
     }
@@ -764,7 +783,7 @@ public JCheckBox getBlinkCheckBox3() {
 
 public JCheckBox getBlinkCheckBox4() {
     if( blinkCheckBox4 == null ){
-        blinkCheckBox4 = new JCheckBox("Line will blink");
+        blinkCheckBox4 = new JCheckBox("Blink");
         blinkCheckBox4.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox4.setPreferredSize(new Dimension( 100, 24));
     }
@@ -773,7 +792,7 @@ public JCheckBox getBlinkCheckBox4() {
 
 public JCheckBox getBlinkCheckBox5() {
     if( blinkCheckBox5 == null ){
-        blinkCheckBox5 = new JCheckBox("Line will blink");
+        blinkCheckBox5 = new JCheckBox("Blink");
         blinkCheckBox5.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox5.setPreferredSize(new Dimension( 100, 24));
     }
@@ -782,7 +801,7 @@ public JCheckBox getBlinkCheckBox5() {
 
 public JCheckBox getBlinkCheckBox6() {
     if( blinkCheckBox6 == null ){
-        blinkCheckBox6 = new JCheckBox("Line will blink");
+        blinkCheckBox6 = new JCheckBox("Blink");
         blinkCheckBox6.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox6.setPreferredSize(new Dimension( 100, 24));
     }
@@ -791,7 +810,7 @@ public JCheckBox getBlinkCheckBox6() {
 
 public JCheckBox getBlinkCheckBox7() {
     if( blinkCheckBox7 == null ){
-        blinkCheckBox7 = new JCheckBox("Line will blink");
+        blinkCheckBox7 = new JCheckBox("Blink");
         blinkCheckBox7.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox7.setPreferredSize(new Dimension( 100, 24));
     }
@@ -800,7 +819,7 @@ public JCheckBox getBlinkCheckBox7() {
 
 public JCheckBox getBlinkCheckBox8() {
     if( blinkCheckBox8 == null ){
-        blinkCheckBox8 = new JCheckBox("Line will blink");
+        blinkCheckBox8 = new JCheckBox("Blink");
         blinkCheckBox8.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox8.setPreferredSize(new Dimension( 100, 24));
     }
@@ -809,7 +828,7 @@ public JCheckBox getBlinkCheckBox8() {
 
 public JCheckBox getBlinkCheckBox9() {
     if( blinkCheckBox9 == null ){
-        blinkCheckBox9 = new JCheckBox("Line will blink");
+        blinkCheckBox9 = new JCheckBox("Blink");
         blinkCheckBox9.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox9.setPreferredSize(new Dimension( 100, 24));
     }
@@ -818,7 +837,7 @@ public JCheckBox getBlinkCheckBox9() {
 
 public JCheckBox getBlinkCheckBox10() {
     if( blinkCheckBox10 == null ){
-        blinkCheckBox10 = new JCheckBox("Line will blink");
+        blinkCheckBox10 = new JCheckBox("Blink");
         blinkCheckBox10.setMinimumSize(new Dimension ( 100, 24));
         blinkCheckBox10.setPreferredSize(new Dimension( 100, 24));
     }

@@ -41,6 +41,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private int displayAttribs = 0x00;
     private Color color = DEFAULT_COLOR;
     private String text = "";
+    private int blink = 0;
 	private transient Drawing drawing = null;
 	private String linkTo = null;
 	private Properties props = new Properties();
@@ -48,9 +49,11 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     private boolean controlEnabled = false;
     private int colorPointID = -1;
     private int controlPointID = -1;
+    private int blinkPointID = -1;
     private int currentStateID = -1;
     private Map customColorMap = new HashMap(13);
     private Map customTextMap = new HashMap(13);
+    private Map customBlinkMap = new HashMap(13);
     private LiteState currentColorState;
     private LiteState currentTextState;
     private HashMap oldColorMap = new HashMap(11);
@@ -123,12 +126,28 @@ public void setCustomTextMap(Map m) {
     customTextMap = m;
 }
 
+public Map getCustomBlinkMap() {
+    return customBlinkMap;
+}
+
+public void setCustomBlinkMap(Map m) {
+    customBlinkMap = m;
+}
+
 public int getColorPointID(){
     return colorPointID;
 }
 
 public void setColorPointID(int pointID) {
     colorPointID = pointID;
+}
+
+public int getBlinkPointID(){
+    return blinkPointID;
+}
+
+public void setBlinkPointID(int pointID) {
+    blinkPointID = pointID;
 }
 
 public int getControlPointID(){
@@ -154,6 +173,14 @@ public int getCurrentStateID(){
 
 public void setCurrentStateID(int pointID) {
     currentStateID = pointID;
+}
+
+public int getTextBlink(){
+    return blink;
+}
+
+public void setTextBlink(int b) {
+    blink = b;
 }
 
 /**
@@ -465,4 +492,28 @@ public void saveAsJLX(OutputStream out) throws IOException
 	public String getElementID() {
 		return ELEMENT_ID;
 	}
+    
+    @SuppressWarnings("unchecked")
+    public List getBlinks() {
+        List textBlinks = new ArrayList(6);
+        LitePoint point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
+        if(point == null) {
+            return textBlinks;
+        }
+        
+        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+        List states = lsg.getStatesList();
+        for(int i = 0; i < states.size(); i++) {
+            Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
+            Integer blink; 
+            if(blinkObj != null) {
+                blink =blinkObj;
+            } 
+            else {
+                blink = new Integer(0);
+            }
+            textBlinks.add(blink);
+        }
+        return textBlinks;
+    }
 }

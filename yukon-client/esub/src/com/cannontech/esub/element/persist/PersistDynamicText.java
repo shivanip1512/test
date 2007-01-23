@@ -3,6 +3,7 @@ package com.cannontech.esub.element.persist;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicText;
@@ -56,6 +57,12 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setColorPointID(LxSaveUtils.readInt(in));
                     elem.setCustomColorMap(PersistUtils.readIntColorMap(in));
                     elem.setCustomTextMap(PersistUtils.readIntStringMap(in));
+                    int blink = LxSaveUtils.readInt(in);
+                    int blinkPointID = LxSaveUtils.readInt(in);
+                    Map customBlinkMap = PersistUtils.readIntIntMap(in);
+                    elem.setTextBlink(blink);
+                    elem.setBlinkPointID(blinkPointID);
+                    elem.setCustomBlinkMap(customBlinkMap);
                 }
                 break;
 				
@@ -78,6 +85,9 @@ public class PersistDynamicText extends BasePersistElement {
             LxSaveUtils.writeInt(out, elem.getColorPointID());
             PersistUtils.writeIntColorMap(out, elem.getCustomColorMap());
             PersistUtils.writeIntStringMap(out, elem.getCustomTextMap());
+            LxSaveUtils.writeInt(out, elem.getTextBlink());
+            LxSaveUtils.writeInt(out, elem.getBlinkPointID());
+            PersistUtils.writeIntIntMap(out, elem.getCustomBlinkMap());
 	}
 
 }

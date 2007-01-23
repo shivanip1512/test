@@ -246,7 +246,7 @@ public class SVGGenerator {
 		
 		int x = (int) Math.round(text.getBaseLinePoint1().getX());
 		int y = (int) Math.round(text.getBaseLinePoint1().getY());
-		
+        int blink = text.getTextBlink();
 		LxAbstractStyle style = text.getStyle();
 		
 		Color fillColor = (Color) style.getPaint();
@@ -301,8 +301,32 @@ public class SVGGenerator {
                 textElem.setAttributeNS(null, "string" + i, textString);
             }
         }
+        
+        if(text.getBlinkPointID() > 0) {
+            
+            List blinks = text.getBlinks();
+            for(int i = 0; i < blinks.size(); i++) {
+                
+                String blinkString = ((Integer)blinks.get(i)).toString();
+                textElem.setAttributeNS(null, "blink" + i, blinkString);
+            }
+        }
+        String isBlinking = "no";
+        if(blink > 0) {
+            if(text.getBlinkPointID() > 0) {
+                isBlinking = "no";
+            }else {
+                isBlinking = "yes";
+            }
+        }
+        
         textElem.setAttributeNS(null, "colorid", Integer.toString(text.getColorPointID()));
         textElem.setAttributeNS(null, "currentstateid", Integer.toString(text.getCurrentStateID()));
+        textElem.setAttributeNS(null, "blink", Integer.toString(blink));
+        textElem.setAttributeNS(null, "blinkid", Integer.toString(text.getBlinkPointID()));
+        textElem.setAttributeNS(null, "isBlinking", isBlinking);
+        textElem.setAttributeNS(null, "displayState", "inline");
+        
 		return textElem;					
 	}
 

@@ -56,7 +56,8 @@ function refresh(evt) {
 	{		
 		var elemID = dynText.item(i).getAttribute('elementID');
     	if(elemID == dynamicTextID) {  
-    		allDynamicTextElem.push(dynText.item(i));  
+    		allDynamicTextElem.push(dynText.item(i));
+            allDynamicBlinkers.push(dynText.item(i));
 		}
 		
 		if(elemID == alarmTextID) {
@@ -133,7 +134,10 @@ function updateAllBlinkers() {
 } //end updateAllBlinkers
 
 function blinkAllBlinkers(){
+	//alert('size ' + allDynamicBlinkers.length);
 	for(i = 0; i < allDynamicBlinkers.length; i++) {
+		//alert('got here');
+		//alert('node ' + blinkBlinker(allDynamicBlinkers[i]));
 		blinkBlinker(allDynamicBlinkers[i]);
 	}
 } // end blinkAllBlinkers
@@ -237,6 +241,8 @@ function updateAlarmsTable(node,url) {
 } // end updateAlarmsTable
 
 function blinkBlinker(node){
+//	alert("node: " +node);
+//	alert("isBlinking" + node.getAttribute('isBlinking'));
 	var isBlinking = node.getAttribute('isBlinking');
 	if(isBlinking == "yes"){
 		var displayState = node.getAttribute('displayState');

@@ -51,6 +51,7 @@ public class DynamicTextEditorPanel extends DataInputPanel implements TreeSelect
 	private JColorChooser colorChooser;
 	private PointSelectionPropertyPanel pointSelectionPropertyPanel = null;
     private PointSelectionPropertyPanel enableControlPointPanel = null;
+    private BlinkPointPanel blinkPointPanel = null;
 	private JButton ivjColorButton = null;
 	private JLabel ivjColorLabel = null;
 	private JComboBox ivjFontComboBox = null;
@@ -66,9 +67,12 @@ public class DynamicTextEditorPanel extends DataInputPanel implements TreeSelect
 	private JLabel ivjDisplayAttributesLabel = null;
     private JCheckBox controlCheckBox;
     private JCheckBox colorPointCheckBox;
+    private JCheckBox blinkCheckBox;
+    private JCheckBox blinkPointCheckBox;
     private JButton colorPointButton;
     private JButton textPointButton;
     private JButton enableControlPointButton;
+    private JButton blinkPointButton;
     private JDialog pointPanelDialog;
     private TextColorPointPanel textColorPointPanel = null;
     private TextPointPanel textPointPanel = null;
@@ -76,6 +80,8 @@ public class DynamicTextEditorPanel extends DataInputPanel implements TreeSelect
     private JLabel currentStatePointLabel;
     private JLabel enableControlPointLabel;
     private JLabel enableControlLabel;
+    private JLabel blinkLabel;
+    private JLabel blinkPointLabel;
 
 /**
  * DynamicTextInputPanel constructor comment.
@@ -83,6 +89,23 @@ public class DynamicTextEditorPanel extends DataInputPanel implements TreeSelect
 public DynamicTextEditorPanel() {
 	super();
 	initialize();
+}
+
+private javax.swing.JButton getBlinkPointButton() {
+    if (blinkPointButton == null) {
+        try {
+            blinkPointButton = new javax.swing.JButton();
+            blinkPointButton.setName("BlinkPointButton");
+            blinkPointButton.setText("Point");
+            blinkPointButton.setEnabled(false);
+            blinkPointButton.setMaximumSize(new java.awt.Dimension(65, 22));
+            blinkPointButton.setPreferredSize(new java.awt.Dimension(65, 22));
+            blinkPointButton.setMinimumSize(new java.awt.Dimension(65, 22));
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return blinkPointButton;
 }
 
 /**
@@ -120,6 +143,38 @@ private javax.swing.JCheckBox getColorPointCheckBox() {
         }
     }
     return colorPointCheckBox;
+}
+
+private javax.swing.JCheckBox getBlinkPointCheckBox() {
+    if (blinkPointCheckBox == null) {
+        try {
+            blinkPointCheckBox = new javax.swing.JCheckBox();
+            blinkPointCheckBox.setName("BlinkPointCheckBox");
+            blinkPointCheckBox.setText("Point Driven:");
+            blinkPointCheckBox.setMaximumSize(new java.awt.Dimension(90, 22));
+            blinkPointCheckBox.setPreferredSize(new java.awt.Dimension(90, 22));
+            blinkPointCheckBox.setMinimumSize(new java.awt.Dimension(90, 22));
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return blinkPointCheckBox;
+}
+
+private javax.swing.JCheckBox getBlinkCheckBox() {
+    if (blinkCheckBox == null) {
+        try {
+            blinkCheckBox = new javax.swing.JCheckBox();
+            blinkCheckBox.setName("BlinkCheckBox");
+            blinkCheckBox.setText("Blink");
+            blinkCheckBox.setMaximumSize(new java.awt.Dimension(65, 22));
+            blinkCheckBox.setPreferredSize(new java.awt.Dimension(65, 22));
+            blinkCheckBox.setMinimumSize(new java.awt.Dimension(65, 22));
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return blinkCheckBox;
 }
 
 /**
@@ -315,6 +370,21 @@ private javax.swing.JLabel getColorPointLabel() {
     return colorPointLabel;
 }
 
+private javax.swing.JLabel getBlinkPointLabel() {
+    if (blinkPointLabel == null) {
+        try {
+            blinkPointLabel = new javax.swing.JLabel();
+            blinkPointLabel.setName("BlinkPointLabel");
+            blinkPointLabel.setText("None Chosen");
+            blinkPointLabel.setForeground(java.awt.Color.RED);
+            blinkPointLabel.setEnabled(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return blinkPointLabel;
+}
+
 private javax.swing.JLabel getEnableControlPointLabel() {
     if (enableControlPointLabel == null) {
         try {
@@ -341,6 +411,19 @@ private javax.swing.JLabel getEnableControlLabel() {
         }
     }
     return enableControlLabel;
+}
+
+private javax.swing.JLabel getBlinkLabel() {
+    if (blinkLabel == null) {
+        try {
+            blinkLabel = new javax.swing.JLabel();
+            blinkLabel.setName("BlinkLabel");
+            blinkLabel.setText("Blink:");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return blinkLabel;
 }
 
 /**
@@ -392,7 +475,7 @@ private javax.swing.JPanel getJPanel1() {
 		try {
 			ivjJPanel1 = new javax.swing.JPanel();
 			ivjJPanel1.setName("JPanel1");
-			ivjJPanel1.setPreferredSize(new java.awt.Dimension(405, 120));
+			ivjJPanel1.setPreferredSize(new java.awt.Dimension(405, 220));
 			ivjJPanel1.setLayout(new java.awt.GridBagLayout());
 
 			java.awt.GridBagConstraints constraintsFontLabel = new java.awt.GridBagConstraints();
@@ -456,13 +539,13 @@ private javax.swing.JPanel getJPanel1() {
             getJPanel1().add(getColorPointButton(), constraintsColorPointButton);
 
 			java.awt.GridBagConstraints constraintsDisplayAttributesLabel = new java.awt.GridBagConstraints();
-			constraintsDisplayAttributesLabel.gridx = 0; constraintsDisplayAttributesLabel.gridy = 3;
+			constraintsDisplayAttributesLabel.gridx = 0; constraintsDisplayAttributesLabel.gridy = 4;
             constraintsDisplayAttributesLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsDisplayAttributesLabel.insets = new java.awt.Insets(0, 0, 4, 0);
 			getJPanel1().add(getDisplayAttributesLabel(), constraintsDisplayAttributesLabel);
 
 			java.awt.GridBagConstraints constraintsDisplayAttributesComboBox = new java.awt.GridBagConstraints();
-			constraintsDisplayAttributesComboBox.gridx = 1; constraintsDisplayAttributesComboBox.gridy = 3;
+			constraintsDisplayAttributesComboBox.gridx = 1; constraintsDisplayAttributesComboBox.gridy = 4;
 			constraintsDisplayAttributesComboBox.gridwidth = 2;
             constraintsDisplayAttributesComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsDisplayAttributesComboBox.weightx = 1.0;
@@ -470,33 +553,64 @@ private javax.swing.JPanel getJPanel1() {
 			getJPanel1().add(getDisplayAttributesComboBox(), constraintsDisplayAttributesComboBox);
             
             java.awt.GridBagConstraints constraintsCurrentStatePointButton = new java.awt.GridBagConstraints();
-            constraintsCurrentStatePointButton.gridx = 3; constraintsCurrentStatePointButton.gridy = 3;
+            constraintsCurrentStatePointButton.gridx = 3; constraintsCurrentStatePointButton.gridy = 4;
             constraintsCurrentStatePointButton.gridwidth = 3;
             constraintsCurrentStatePointButton.anchor = java.awt.GridBagConstraints.EAST;
             constraintsCurrentStatePointButton.insets = new java.awt.Insets(0, 4, 4, 0);
             getJPanel1().add(getTextPointButton(), constraintsCurrentStatePointButton);
             
+            java.awt.GridBagConstraints constraintsBlinklLabel = new java.awt.GridBagConstraints();
+            constraintsBlinklLabel.gridx = 0; constraintsBlinklLabel.gridy = 2;
+            constraintsBlinklLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsBlinklLabel.insets = new java.awt.Insets(0, 0, 4, 0);
+            getJPanel1().add(getBlinkLabel(), constraintsBlinklLabel);
+            
+            java.awt.GridBagConstraints constraintsBlinkCheckBox = new java.awt.GridBagConstraints();
+            constraintsBlinkCheckBox.gridx = 1; constraintsBlinkCheckBox.gridy = 2;
+            constraintsBlinkCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsBlinkCheckBox.insets = new java.awt.Insets(0, 0, 4, 0);
+            getJPanel1().add(getBlinkCheckBox(), constraintsBlinkCheckBox);
+            
+            java.awt.GridBagConstraints constraintsBlinkPointCheckBox = new java.awt.GridBagConstraints();
+            constraintsBlinkPointCheckBox.gridx = 2; constraintsBlinkPointCheckBox.gridy = 2;
+            constraintsBlinkPointCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsBlinkPointCheckBox.insets = new java.awt.Insets(0, 0, 4, 0);
+            getJPanel1().add(getBlinkPointCheckBox(), constraintsBlinkPointCheckBox);
+            
+            java.awt.GridBagConstraints constraintsBlinkPointlLabel = new java.awt.GridBagConstraints();
+            constraintsBlinkPointlLabel.gridx = 3; constraintsBlinkPointlLabel.gridy = 2;
+            constraintsBlinkPointlLabel.gridwidth = 2;
+            constraintsBlinkPointlLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsBlinkPointlLabel.insets = new java.awt.Insets(0, 0, 4, 0);
+            getJPanel1().add(getBlinkPointLabel(), constraintsBlinkPointlLabel);
+            
+            java.awt.GridBagConstraints constraintsBlinkPointButton = new java.awt.GridBagConstraints();
+            constraintsBlinkPointButton.gridx = 5; constraintsBlinkPointButton.gridy = 2;
+            constraintsBlinkPointButton.anchor = java.awt.GridBagConstraints.EAST;
+            constraintsBlinkPointButton.insets = new java.awt.Insets(0, 4, 4, 0);
+            getJPanel1().add(getBlinkPointButton(), constraintsBlinkPointButton);
+            
             java.awt.GridBagConstraints constraintsEnableControlLabel = new java.awt.GridBagConstraints();
-            constraintsEnableControlLabel.gridx = 0; constraintsEnableControlLabel.gridy = 2;
+            constraintsEnableControlLabel.gridx = 0; constraintsEnableControlLabel.gridy = 3;
             constraintsEnableControlLabel.anchor = java.awt.GridBagConstraints.WEST;
             constraintsEnableControlLabel.insets = new java.awt.Insets(0, 0, 4, 0);
             getJPanel1().add(getEnableControlLabel(), constraintsEnableControlLabel);
             
             java.awt.GridBagConstraints constraintsControlCheckBox = new java.awt.GridBagConstraints();
-            constraintsControlCheckBox.gridx = 2; constraintsControlCheckBox.gridy = 2;
+            constraintsControlCheckBox.gridx = 2; constraintsControlCheckBox.gridy = 3;
             constraintsControlCheckBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsControlCheckBox.insets = new java.awt.Insets(0, 0, 4, 0);
             getJPanel1().add(getControlCheckBox(), constraintsControlCheckBox);
             
             java.awt.GridBagConstraints constraintsEnableControPointlLabel = new java.awt.GridBagConstraints();
-            constraintsEnableControPointlLabel.gridx = 3; constraintsEnableControPointlLabel.gridy = 2;
+            constraintsEnableControPointlLabel.gridx = 3; constraintsEnableControPointlLabel.gridy = 3;
             constraintsEnableControPointlLabel.gridwidth = 2;
             constraintsEnableControPointlLabel.anchor = java.awt.GridBagConstraints.WEST;
             constraintsEnableControPointlLabel.insets = new java.awt.Insets(0, 0, 4, 0);
             getJPanel1().add(getEnableControlPointLabel(), constraintsEnableControPointlLabel);
             
             java.awt.GridBagConstraints constraintsEnableControlButton = new java.awt.GridBagConstraints();
-            constraintsEnableControlButton.gridx = 5; constraintsEnableControlButton.gridy = 2;
+            constraintsEnableControlButton.gridx = 5; constraintsEnableControlButton.gridy = 3;
             constraintsEnableControlButton.anchor = java.awt.GridBagConstraints.EAST;
             constraintsEnableControlButton.insets = new java.awt.Insets(0, 4, 4, 0);
             getJPanel1().add(getEnableControlPointButton(), constraintsEnableControlButton);
@@ -634,6 +748,22 @@ public Object getValue(Object o) {
         dynamicText.setPoint( getPointSelectionPropertyPanel().getPointSelectionPanel().getSelectedPoint());
         dynamicText.setCurrentStateID(-1);
     }
+    
+    if( getBlinkCheckBox().isSelected()) {
+        dynamicText.setTextBlink(1);
+    }else {
+        dynamicText.setTextBlink(0);
+    }
+    if(getBlinkPointCheckBox().isSelected()) {
+        if(getBlinkPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
+            CTILogger.error("No opacity point selected");
+            JOptionPane.showMessageDialog(this, "Please select a point for blink or uncheck the point driven checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
+        }
+        dynamicText.setBlinkPointID(getBlinkPointPanel().getPointSelectionPanel().getSelectedPoint().getLiteID());
+    }else {
+        dynamicText.setBlinkPointID(-1);
+    }
+    
 	return dynamicText;
 }
 
@@ -652,7 +782,9 @@ private void handleException(java.lang.Throwable e) {
  */
 private void initConnections() throws java.lang.Exception {
     getControlCheckBox().addActionListener(this);
+    getBlinkPointCheckBox().addActionListener(this);
     getColorButton().addActionListener(this);
+    getBlinkPointButton().addActionListener(this);
     getColorPointButton().addActionListener(this);
     getColorPointCheckBox().addActionListener(this);
     getTextPointButton().addActionListener(this);
@@ -664,6 +796,7 @@ private void initConnections() throws java.lang.Exception {
     getEnableControlPointPanel().getOkButton().addActionListener(this);
     getTextPointPanel().getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
     getPointSelectionPropertyPanel().getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
+    getBlinkPointPanel().getOkButton().addActionListener(this);
 }
 /**
  * Initialize the class.
@@ -671,10 +804,10 @@ private void initConnections() throws java.lang.Exception {
 private void initialize() {
 	try {
 		setName("DynamicTextEditorPanel");
-		setPreferredSize(new java.awt.Dimension(405, 466));
+		setPreferredSize(new java.awt.Dimension(405, 520));
 		setLayout(new java.awt.GridBagLayout());
-		setSize(405, 466);
-		setMinimumSize(new java.awt.Dimension(405, 466));
+		setSize(405, 520);
+		setMinimumSize(new java.awt.Dimension(405, 520));
         this.setBorder(new TitleBorder("Dynamic Text Editor"));
         
 		java.awt.GridBagConstraints constraintsJPanel1 = new java.awt.GridBagConstraints();
@@ -848,6 +981,16 @@ public void setValue(Object o) {
         getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
         getTextColorPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID()));
     }
+    
+    if(dynamicText.getBlinkPointID() < 0) {
+        getBlinkPointCheckBox().setSelected(false);
+        getBlinkPointButton().setEnabled(false);
+    }else {
+        getBlinkPointCheckBox().setSelected(true);
+        getBlinkPointButton().setEnabled(true);
+        getBlinkCheckBox().setEnabled(false);
+        getBlinkPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID()));
+    }
 }
 
 public TextColorPointPanel getTextColorPointPanel() {
@@ -909,29 +1052,45 @@ public void actionPerformed(ActionEvent e) {
             getEnableControlPointButton().setEnabled(false);
             getEnableControlPointLabel().setEnabled(false);
         }
+    }else if (e.getSource() == getBlinkPointCheckBox()) {
+        if(getBlinkPointCheckBox().isSelected()) {
+            getBlinkCheckBox().setEnabled(false);
+            getBlinkPointButton().setEnabled(true);
+            getBlinkPointLabel().setEnabled(true);
+        }else {
+            getBlinkPointButton().setEnabled(false);
+            getBlinkPointLabel().setEnabled(false);
+            getBlinkCheckBox().setEnabled(true);
+        }
     }else if(e.getSource() == getColorPointButton()) {
         pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
         pointPanelDialog.setContentPane(getTextColorPointPanel());
         pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
         getTextColorPointPanel().setValue(dynamicText);
-        pointPanelDialog.show();
+        pointPanelDialog.setVisible(true);
     }else if(e.getSource() == getEnableControlPointButton()) {
         pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
         pointPanelDialog.setContentPane(getEnableControlPointPanel());
         pointPanelDialog.setSize(new java.awt.Dimension(300, 500));
-        pointPanelDialog.show();
+        pointPanelDialog.setVisible(true);
+    }else if(e.getSource() == getBlinkPointButton()) {
+        pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+        pointPanelDialog.setContentPane(getBlinkPointPanel());
+        pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
+        getBlinkPointPanel().setValue(dynamicText);
+        pointPanelDialog.setVisible(true);
     }else if(e.getSource() == getTextPointButton()) {
         if(getDisplayAttributesComboBox().getSelectedItem().toString().equals(ATTRIBUTE_CURRENT_STATE)){
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getTextPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
             getTextPointPanel().setValue(dynamicText);
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         } else {
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getPointSelectionPropertyPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(300, 500));
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         }
     }else if( e.getSource() == getTextColorPointPanel().getOkButton()) {
         getTextColorPointPanel().getValue(dynamicText);
@@ -953,6 +1112,11 @@ public void actionPerformed(ActionEvent e) {
         getEnableControlPointLabel().setText( getEnableControlPointPanel().getPointSelectionPanel().getSelectedPoint().getPointName());
         getEnableControlPointLabel().setForeground(java.awt.Color.BLACK);
         pointPanelDialog.setVisible(false);
+    }else if( e.getSource() == getBlinkPointPanel().getOkButton()) {
+        getBlinkPointPanel().getValue(dynamicText);
+        getBlinkPointLabel().setText( getBlinkPointPanel().getPointSelectionPanel().getSelectedPoint().getPointName());
+        getBlinkPointLabel().setForeground(java.awt.Color.BLACK);
+        pointPanelDialog.setVisible(false);
     }
 }
 
@@ -972,4 +1136,10 @@ private PointSelectionPropertyPanel getEnableControlPointPanel() {
     return enableControlPointPanel;
 }
 
+public BlinkPointPanel getBlinkPointPanel() {
+    if (blinkPointPanel == null) {
+        blinkPointPanel = new BlinkPointPanel();
+    }
+    return blinkPointPanel;
+}
 }

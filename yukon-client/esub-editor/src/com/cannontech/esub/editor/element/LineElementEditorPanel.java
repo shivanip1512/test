@@ -45,7 +45,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
     private LineThicknessPointPanel thicknessPointPanel = null;
     private LineArrowPointPanel arrowPointPanel = null;
     private LineOpacityPointPanel opacityPointPanel = null;
-    private LineBlinkPointPanel blinkPointPanel = null;
+    private BlinkPointPanel blinkPointPanel = null;
     private JColorChooser colorChooser;
     private JDialog pointPanelDialog;
     private PropertyPanel parent;
@@ -623,9 +623,9 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         return opacityPointPanel;
     }
     
-    public LineBlinkPointPanel getBlinkPointPanel() {
+    public BlinkPointPanel getBlinkPointPanel() {
         if (blinkPointPanel == null) {
-            blinkPointPanel = new LineBlinkPointPanel();
+            blinkPointPanel = new BlinkPointPanel();
         }
         return blinkPointPanel;
     }
