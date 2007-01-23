@@ -145,7 +145,11 @@ public class ClientSession {
 		
 	public synchronized boolean establishSession(Frame parent) {
 		boolean success = false;
-		if(MasterConfigHelper.isLocalConfigAvailable()) {
+        if (tryWebStartLogin()) {
+            CTILogger.info("JWS Login succeeded...");
+            success = true;
+            localLogin = false;
+        } else if(MasterConfigHelper.isLocalConfigAvailable()) {
 			CTILogger.info("Attempting local load of database properties...");
 			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
             localLogin = success;
@@ -268,29 +272,24 @@ public class ClientSession {
             } catch (NumberFormatException  e) {
                 jwsPort = 8080;
             }            
-            if (StringUtils.isBlank(jwsHost) || StringUtils.isBlank(jwsUser)) {
+            if (StringUtils.isBlank(jwsHost)) {
+                CTILogger.debug("Skipping JWS login.");
                 return false;
             }
             
-            String localSessionId;
-            if (StringUtils.isBlank(jwsCookies)) {
-                localSessionId = LoginSupport.getSessionID(jwsHost, jwsPort, jwsUser, jwsPassword);
-            } else {
-                localSessionId = jwsCookies;
-            }
-            
             MasterConfigHelper.setRemoteHostAndPort(jwsHost, jwsPort);
-            MasterConfigHelper.setSessionId(localSessionId);
+            MasterConfigHelper.setSessionId(jwsCookies);
             ConfigurationSource config = MasterConfigHelper.getConfiguration();
             PoolManager.setConfigurationSource(config);
             // force load of the application context
             YukonSpringHook.getContext();
 
             //Do not log in the user again
-            LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(jwsUser);
+            LiteYukonUser u = DaoFactory.getAuthDao().login(jwsUser, jwsPassword);                  
             if(u != null) {
                 //score! we found them
-                setSessionInfo(u, localSessionId, jwsHost, jwsPort);
+                CTILogger.debug("Got not null user: " + u);
+                setSessionInfo(u, jwsCookies, jwsHost, jwsPort);
                 
                 return true;
             } else {
@@ -301,7 +300,7 @@ public class ClientSession {
         } catch (Exception e) {
             CTILogger.warn("Couldn't use webstart for login", e);
         } 
-        return false;
+        throw new RuntimeException("Invalid JWS Login");
     }
 	
 	private boolean doRemoteLogin(Frame p) {
@@ -314,6 +313,7 @@ public class ClientSession {
 		try
 		{
 			if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
+                CTILogger.debug("Found session, host, and port. Attempting local login.");
 				// have a session info already lets try it
                 MasterConfigHelper.setRemoteHostAndPort(host, port);
                 MasterConfigHelper.setSessionId(sessionID);
@@ -330,6 +330,7 @@ public class ClientSession {
 				LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);					
 				if(u != null) {
 					//score! we found them
+                    CTILogger.debug("Got not null user: " + u);
 					setSessionInfo(u, sessionID, host, port);
 					return true;
 				}
@@ -342,14 +343,8 @@ public class ClientSession {
 
         // if we get here, we need to release the application context
         YukonSpringHook.shutdownContext();
-        
-		if (tryWebStartLogin()) {
-		    return true;
-        }
-
-		// if we get here, we need to release the application context
-		YukonSpringHook.shutdownContext();
-		
+        		
+        CTILogger.debug("Starting login dialog loop");
 		LoginPanel lp = makeRemoteLoginPanel();
 		while(collectInfo(p, lp)) {
 			try {
@@ -360,6 +355,7 @@ public class ClientSession {
 				continue;
 			}
 			
+            CTILogger.debug("Got a session: " + sessionID);
             try {
                 MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getYukonPort());
                 MasterConfigHelper.setSessionId(sessionID);
@@ -372,6 +368,7 @@ public class ClientSession {
                 //Do not log in the user again
                 LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(lp.getUsername());
                 if(u != null) {
+                    CTILogger.debug("Got not null user: " + u);
                 	//score! we found them
                   	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
                   	
@@ -380,19 +377,18 @@ public class ClientSession {
                 	if(saveInfo) {
                 		prefs.setDefaultUsername(lp.getUsername());
                 		prefs.setDefaultPassword(lp.getPassword());
-                	}
-                	else {
+                	} else {
                 		prefs.setDefaultUsername("");
                 		prefs.setDefaultPassword("");
                 	}
                   	return true;
-                }
-                else {
+                } else {
                 	//ooh, thats bad.
                 	String msg = "Server returned valid session ID but user id: " + lp.getUsername() + " couldn't be found in the local cache.  This is either a bug or a configuration problem.";
                     displayMessage(p, msg, "Error");					
                 }
             } catch (RuntimeException e) {
+                CTILogger.warn("Got an exception during login", e);
                 String msg = "Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding.";
                 displayMessage(p, msg, "Error");
             }
@@ -402,6 +398,7 @@ public class ClientSession {
 	}
 	
 	private void setSessionInfo(LiteYukonUser u, String sessionID, String host, int port) {
+        CTILogger.debug("Setting session: user=" + u + ", sessionID=" + sessionID + ", host=" + host + ", port=" + port);
 		this.user = u;
 		this.sessionID = sessionID;
 		this.host = host;
