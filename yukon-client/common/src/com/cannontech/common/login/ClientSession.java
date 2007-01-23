@@ -145,11 +145,7 @@ public class ClientSession {
 		
 	public synchronized boolean establishSession(Frame parent) {
 		boolean success = false;
-        if (tryWebStartLogin()) {
-            CTILogger.info("JWS Login succeeded...");
-            success = true;
-            localLogin = false;
-        } else if(MasterConfigHelper.isLocalConfigAvailable()) {
+		if(MasterConfigHelper.isLocalConfigAvailable()) {
 			CTILogger.info("Attempting local load of database properties...");
 			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
             localLogin = success;
@@ -260,49 +256,6 @@ public class ClientSession {
 		return false;
 	}
     
-    private boolean tryWebStartLogin() {
-        try {
-            String jwsUser = System.getProperty("yukon.jws.user");
-            String jwsPassword = System.getProperty("yukon.jws.password");
-            String jwsCookies = System.getProperty("yukon.jws.cookies");
-            String jwsHost = System.getProperty("yukon.jws.host");
-            int jwsPort;
-            try {
-                jwsPort = Integer.parseInt(System.getProperty("yukon.jws.port"));
-            } catch (NumberFormatException  e) {
-                jwsPort = 8080;
-            }            
-            if (StringUtils.isBlank(jwsHost)) {
-                CTILogger.debug("Skipping JWS login.");
-                return false;
-            }
-            
-            MasterConfigHelper.setRemoteHostAndPort(jwsHost, jwsPort);
-            MasterConfigHelper.setSessionId(jwsCookies);
-            ConfigurationSource config = MasterConfigHelper.getConfiguration();
-            PoolManager.setConfigurationSource(config);
-            // force load of the application context
-            YukonSpringHook.getContext();
-
-            //Do not log in the user again
-            LiteYukonUser u = DaoFactory.getAuthDao().login(jwsUser, jwsPassword);                  
-            if(u != null) {
-                //score! we found them
-                CTILogger.debug("Got not null user: " + u);
-                setSessionInfo(u, jwsCookies, jwsHost, jwsPort);
-                
-                return true;
-            } else {
-                //ooh, thats bad.
-                CTILogger.info("Server returned valid session ID but user \"" + jwsUser + "\" couldn't be found in the local cache. Aborting JWS Login");                   
-            }
-            return true;
-        } catch (Exception e) {
-            CTILogger.warn("Couldn't use webstart for login", e);
-        } 
-        throw new RuntimeException("Invalid JWS Login");
-    }
-	
 	private boolean doRemoteLogin(Frame p) {
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		
