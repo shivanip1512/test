@@ -858,23 +858,25 @@ public class Multispeak implements MessageListener {
                                 
 //                                  Find a valid Template!
                                 String templateName = "*Default Template";
-                                ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
-                                for (int j = 0; j < eItems.length; j++) {
-                                    ExtensionsItem eItem = eItems[j];
-                                    String extName = eItem.getExtName();
-                                    if ( extName.equalsIgnoreCase("AMRMeterType"))
-                                        templateName = eItem.getExtValue();
+                                if( mspMeter.getExtensionsList() != null) {
+	                                ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
+	                                for (int j = 0; j < eItems.length; j++) {
+	                                    ExtensionsItem eItem = eItems[j];
+	                                    String extName = eItem.getExtName();
+	                                    if ( extName.equalsIgnoreCase("AMRMeterType"))
+	                                        templateName = eItem.getExtValue();
+	                                }
+	/*                                    if (templateName == null) { //Template NOT provided!
+	                                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, "Error: MeterNumber(" + meterNo + ")- AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.");
+	                                        errorObjects.add(err);
+	                                        logMSPActivity("MeterAddNotification",
+	                                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.", 
+	                                                       mspVendor.getCompanyName());
+	                                                                        
+	                                        //TODO Need to use "default" template if possible
+	                                    } 
+	*/
                                 }
-/*                                    if (templateName == null) { //Template NOT provided!
-                                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, "Error: MeterNumber(" + meterNo + ")- AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.");
-                                        errorObjects.add(err);
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.", 
-                                                       mspVendor.getCompanyName());
-                                                                        
-                                        //TODO Need to use "default" template if possible
-                                    } 
-*/
                                 //Find template object in Yukon
                                 LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
                                 if( liteYukonPaobjectTemplate == null){ 
@@ -1005,24 +1007,26 @@ public class Multispeak implements MessageListener {
                 if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                     //Find a valid Template!
                 	String templateName = "*Default Template";
-                    ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
-                    for (int j = 0; j < eItems.length; j++) {
-                        ExtensionsItem eItem = eItems[j];
-                        String extName = eItem.getExtName();
-                        if ( extName.equalsIgnoreCase("AMRMeterType"))
-                            templateName = eItem.getExtValue();
-                    }
-                    /*if (templateName == null) { //Template NOT provided!
-                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                         "Error: MeterNumber(" + meterNo + ") - AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.",
-                                                                         "Meter");
-                        errorObjects.add(err);
-                        logMSPActivity("MeterAddNotification",
-                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.",
-                                       mspVendor.getCompanyName());
-                                                        
-                        //TODO Need to use "default" template if possible
-                    } */
+                	if( mspMeter.getExtensionsList() != null) {
+	                    ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
+	                    for (int j = 0; j < eItems.length; j++) {
+	                        ExtensionsItem eItem = eItems[j];
+	                        String extName = eItem.getExtName();
+	                        if ( extName.equalsIgnoreCase("AMRMeterType"))
+	                            templateName = eItem.getExtValue();
+	                    }
+	                    /*if (templateName == null) { //Template NOT provided!
+	                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+	                                                                         "Error: MeterNumber(" + meterNo + ") - AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.",
+	                                                                         "Meter");
+	                        errorObjects.add(err);
+	                        logMSPActivity("MeterAddNotification",
+	                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.",
+	                                       mspVendor.getCompanyName());
+	                                                        
+	                        //TODO Need to use "default" template if possible
+	                    } */
+                	}
                     LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
                     if( liteYukonPaobjectTemplate == null){ 
                         ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
