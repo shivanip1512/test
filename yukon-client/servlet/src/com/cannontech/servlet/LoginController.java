@@ -239,6 +239,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 
 private static void initSession(LiteYukonUser user, HttpSession session) throws TransactionException {
 	session.setAttribute(YUKON_USER, user);
+    CTILogger.info("Created session " + session.getId() + " for " + user);
 }
 
 /**
