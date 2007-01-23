@@ -14,13 +14,18 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.MDC;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 
 public class ErrorHelperFilter  implements Filter {
 
@@ -105,6 +110,15 @@ public class ErrorHelperFilter  implements Filter {
             return;
         }
 		try {
+            HttpServletRequest hReq = (HttpServletRequest)request;
+            HttpSession session = hReq.getSession(false);
+            if (session != null) {
+                LiteYukonUser yukonUser = ServletUtil.getYukonUser(session);
+                if (yukonUser != null) {
+                    MDC.put("yukonuser", yukonUser);
+                }
+            }
+            MDC.put("path", hReq.getRequestURI());
 			chain.doFilter(request, response);
 		} catch (Error e) {
 			Throwable rc = CtiUtilities.getRootCause(e);
@@ -130,7 +144,10 @@ public class ErrorHelperFilter  implements Filter {
 			} else {
 				throw new ServletException(t);
 			}
-		}
+		} finally {
+		    MDC.remove("yukonuser");
+            MDC.remove("path");
+        }
 		
 	}
 
