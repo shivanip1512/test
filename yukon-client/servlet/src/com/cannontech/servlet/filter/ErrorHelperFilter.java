@@ -105,7 +105,7 @@ public class ErrorHelperFilter  implements Filter {
             Throwable rootCause = null;
             rootCause = CtiUtilities.getRootCause(startupException);
             servletContext.setAttribute(SERVLET_STARTUP_ERROR_ROOT_MESSAGE, rootCause.getMessage());
-            RequestDispatcher requestDispatcher = request.getRequestDispatcher("startupError.jsp");
+            RequestDispatcher requestDispatcher = request.getRequestDispatcher("/startupError.jsp");
             requestDispatcher.forward(request, response);
             return;
         }
