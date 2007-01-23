@@ -40,8 +40,8 @@ public class JnlpController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("application/x-java-jnlp-file");
-        
-        
+        response.setHeader("Cache-Control", "private");
+
         Document doc = new Document();
         Element jnlpElem = new Element("jnlp");
         doc.addContent(jnlpElem);
