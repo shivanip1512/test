@@ -269,4 +269,63 @@
    <module name="blank">
     <skin name="standard"/>
   </module>
+
+   <module name="operations">
+    <skin name="standard"/>
+    <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
+  </module>
+
+   <module name="commander">
+    <skin name="standard"/>
+    <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
+    
+    <toplinks>
+      <option name="Devices">
+        <sublinks>
+          <option name="MCT">
+            <link>SelectDevice.jsp?SortBy=1004</link>
+          </option>
+          <option name="IED">
+            <link>SelectDevice.jsp?SortBy=1002</link>
+          </option>
+          <option name="RTU">
+            <link>SelectDevice.jsp?SortBy=1001</link>
+          </option>
+          <option name="Transmitter">
+            <link>SelectDevice.jsp?SortBy=1000</link>
+          </option>
+        </sublinks>
+      </option>
+      <option name="Load Management">
+        <sublinks>
+          <option name="Group">
+            <link>SelectDevice.jsp?SortBy=1005</link>
+          </option>
+          <option name="Expresscom">
+            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
+            <requireProperty value="CommanderRole.EXPRESSCOM_SERIAL_MODEL"/>
+          </option>
+          <option name="Versacom">
+            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
+            <requireProperty value="CommanderRole.VERSACOM_SERIAL_MODEL"/>
+          </option>
+          <option name="DCU-205 Serial">
+            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
+            <requireProperty value="CommanderRole.DCU_SA205_SERIAL_MODEL"/>
+          </option>
+          <option name="DCU-205 Serial">
+            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
+            <requireProperty value="CommanderRole.DCU_SA305_SERIAL_MODEL"/>
+          </option>
+        </sublinks>
+      </option>
+      <option name="Cap Control">
+        <sublinks>
+          <option name="Cap Control">
+            <link>SelectDevice.jsp?SortBy=4</link>
+          </option>
+        </sublinks>
+      </option>
+    </toplinks>
+  </module>
 </mainmenu>

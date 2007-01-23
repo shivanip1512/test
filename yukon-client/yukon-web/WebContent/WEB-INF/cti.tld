@@ -60,7 +60,12 @@
   	<tag-class>com.cannontech.web.taglib.CheckRole</tag-class>
   	<attribute>
   		<name>roleid</name>
-  		<required>true</required>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  	<attribute>
+  		<name>role</name>
+  		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>  
@@ -80,7 +85,12 @@
   	<tag-class>com.cannontech.web.taglib.CheckProperty</tag-class>
   	<attribute>
   		<name>propertyid</name>
-  		<required>true</required>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  	<attribute>
+  		<name>property</name>
+  		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>
@@ -100,7 +110,12 @@
   	<tag-class>com.cannontech.web.taglib.CheckMultiRole</tag-class>
   	<attribute>
   		<name>roleid</name>
-  		<required>true</required>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  	<attribute>
+  		<name>roles</name>
+  		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>
   </tag>
@@ -146,7 +161,12 @@
   	<tag-class>com.cannontech.web.taglib.IsPropertyTrue</tag-class>
   	<attribute>
   		<name>propertyid</name>
-  		<required>true</required>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  	<attribute>
+  		<name>property</name>
+  		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>
   </tag>
@@ -280,4 +300,20 @@
     </attribute>
   </tag>
   
+  <function>
+    <name>equalsIgnoreCase</name>
+    <function-class>com.cannontech.common.util.StringUtils</function-class>
+    <function-signature>
+        boolean equalsIgnoreCase(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <name>constantValue</name>
+    <function-class>com.cannontech.util.ReflectivePropertySearcher</function-class>
+    <function-signature>
+        Object getObjectForFQN(java.lang.String)
+    </function-signature>
+  </function>
+    
 </taglib>
