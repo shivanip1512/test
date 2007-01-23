@@ -57,7 +57,7 @@
         <property name="appDescription" value="Allows users to add, modify, or remove database items in the Yukon database."/>
         <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
         <property name="appMainClassJar" value="dbeditor.jar"/>
-        <property name="appIcon" value="/WebConfig/yukon/Icons/dbEditorIcon64.gif" />
+        <property name="appIcon" value="/WebConfig/yukon/Icons/DatabaseEditor.gif" />
         <property name="requiredRole" value="DBEditorRole.ROLEID" />
     </bean>
     
@@ -67,7 +67,7 @@
         <property name="appDescription" value="Allows users to view real-time data in tabular format."/>
         <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
         <property name="appMainClassJar" value="tdc.jar"/>
-        <property name="appIcon" value="/WebConfig/yukon/Icons/tdcIcon64.gif" />
+        <property name="appIcon" value="/WebConfig/yukon/Icons/TDC.gif" />
         <property name="requiredRole" value="TDCRole.ROLEID" />
     </bean>
     
@@ -76,8 +76,8 @@
         <property name="appTitle" value="Yukon® Trending"/>
         <property name="appDescription" value="Allows users to view real-time data in graphical format."/>
         <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
-        <property name="appMainClassJar" value="yc.jar"/>
-        <property name="appIcon" value="/WebConfig/yukon/Icons/GraphIcon64.gif" />
+        <property name="appMainClassJar" value="graph.jar"/>
+        <property name="appIcon" value="/WebConfig/yukon/Icons/Trending.gif" />
         <property name="requiredRole" value="TrendingRole.ROLEID" />
     </bean>
     
@@ -87,7 +87,7 @@
         <property name="appDescription" value="Allows users to create, modify, and save Esubstation drawings."/>
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
-        <property name="appIcon" value="/WebConfig/yukon/Icons/esubEditorIcon64.gif" />
+        <property name="appIcon" value="/WebConfig/yukon/Icons/Esubstation.gif" />
         <property name="requiredRole" value="EsubEditorRole.ROLEID" />
     </bean>
     
@@ -97,7 +97,7 @@
         <property name="appDescription" value="Allows users to send commands to field devices."/>
         <property name="appMainClass" value="com.cannontech.yc.gui.YukonCommander"/>
         <property name="appMainClassJar" value="yc.jar"/>
-        <property name="appIcon" value="/WebConfig/yukon/Icons/esubEditorIcon64.gif" />
+        <property name="appIcon" value="/WebConfig/yukon/Icons/Commander.gif" />
         <property name="requiredRole" value="CommanderRole.ROLEID" />
     </bean>
     
