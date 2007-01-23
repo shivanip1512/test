@@ -50,19 +50,19 @@ public class JnlpController extends AbstractController {
         String url = request.getRequestURL().toString();
         String codebase = url.substring(0, url.lastIndexOf("/"));
         jnlpElem.setAttribute("codebase", codebase);
-        jnlpElem.setAttribute("href", url);
+        //jnlpElem.setAttribute("href", url);
         
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
         infoElem.addContent(new Element("title").setText(appTitle));
         infoElem.addContent(new Element("vendor").setText("Cannon Technologies"));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
-        infoElem.addContent(new Element("description").setText("Yukon client application to edit the Yukon database"));
+        infoElem.addContent(new Element("description").setText(appDescription));
         String safeIconUrl = ServletUtil.createSafeUrl(request, appIcon);
         infoElem.addContent(new Element("icon").setAttribute("href", safeIconUrl));
-        String safeSplashUrl = ServletUtil.createSafeUrl(request, "/install/images/cannonlogo.gif");
+        String safeSplashUrl = ServletUtil.createSafeUrl(request, "/WebConfig/yukon/ApplicationLoading.gif");
         infoElem.addContent(new Element("icon").setAttribute("kind", "splash").setAttribute("href", safeSplashUrl));
-        infoElem.addContent(new Element("offline-allowed"));
+        //infoElem.addContent(new Element("offline-allowed"));
         
         Element securityElem = new Element("security");
         jnlpElem.addContent(securityElem);
@@ -70,8 +70,10 @@ public class JnlpController extends AbstractController {
         
         Element resourcesElem = new Element("resources");
         jnlpElem.addContent(resourcesElem);
-        resourcesElem.addContent(new Element("j2se").setAttribute("href", "http://java.sun.com/products/autodl/j2se").setAttribute("version", "1.5+"));        
-        resourcesElem.addContent(new Element("j2se").setAttribute("version", "1.5+"));
+        Element j2seElem = new Element("j2se");
+        j2seElem.setAttribute("href", "http://java.sun.com/products/autodl/j2se");
+        j2seElem.setAttribute("version", "1.5+");
+        resourcesElem.addContent(j2seElem);        
         
         // add main class jar
         Element mainJarElem = new Element("jar");
