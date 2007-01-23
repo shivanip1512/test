@@ -7,6 +7,7 @@ import java.net.URL;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
+import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
@@ -16,7 +17,8 @@ import com.cannontech.spring.SimpleSessionHttpInvokerRequestExecutor;
 public class MasterConfigHelper {
     static private File masterCfgLocation;
     private static String urlBase = null;
-    private static String sessionId;
+    //private static String sessionId;
+    private static SimpleHttpInvokerRequestExecutor requestExecutor = new SimpleHttpInvokerRequestExecutor();
     
     static {
         masterCfgLocation = new File(CtiUtilities.getYukonBase(), "Server/Config/master.cfg");
@@ -58,15 +60,12 @@ public class MasterConfigHelper {
     }
     
     static public ConfigurationSource getRemoteConfiguration() {
-        if (urlBase == null || sessionId == null) {
+        if (urlBase == null) {
             CTILogger.warn("urlBase=" + urlBase);
-            CTILogger.warn("sessionId=" + sessionId);
             
             throw new BadConfigurationException("remoteBaseUrl or sessionId not set");
         }
         HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
-        SimpleSessionHttpInvokerRequestExecutor requestExecutor = new SimpleSessionHttpInvokerRequestExecutor();
-        requestExecutor.setSessionId(sessionId);
         interceptor.setHttpInvokerRequestExecutor(requestExecutor);
         String url = urlBase + "/remote/MasterConfig";
         interceptor.setServiceUrl(url);
@@ -95,8 +94,14 @@ public class MasterConfigHelper {
     }
     
     static public void setSessionId(String sessionId) {
-        MasterConfigHelper.sessionId = sessionId;
-        
+        //MasterConfigHelper.sessionId = sessionId;
+        if (sessionId == null) {
+            requestExecutor = new SimpleHttpInvokerRequestExecutor();
+        } else {
+            SimpleSessionHttpInvokerRequestExecutor executor = new SimpleSessionHttpInvokerRequestExecutor();
+            executor.setSessionId(sessionId);
+            requestExecutor = executor;
+        }
     }
     
 }
