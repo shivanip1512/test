@@ -331,6 +331,9 @@ public final class MultispeakDaoImpl implements MultispeakDao
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
                 uniqueKey = "PAONAME"; 
 
+            if( lastReceived == null)
+            	lastReceived = "";
+
             String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE " +
                          " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " + 
                          YukonPAObject.TABLE_NAME + " pao, " +
@@ -352,6 +355,9 @@ public final class MultispeakDaoImpl implements MultispeakDao
             String uniqueKey = "METERNUMBER";
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
                 uniqueKey = "PAONAME"; 
+            
+            if( lastReceived == null)
+            	lastReceived = "";
 
             String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
             			 " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
