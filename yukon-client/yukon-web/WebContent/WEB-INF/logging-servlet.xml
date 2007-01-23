@@ -30,7 +30,7 @@
           class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
           <property name="urlMap">
                <map>
-                    <entry key="/index">
+                    <entry key="/">
                          <ref bean="logMenuController" />
                     </entry>
                     <entry key="/view/*">
