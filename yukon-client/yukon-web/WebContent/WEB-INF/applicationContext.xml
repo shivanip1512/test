@@ -16,5 +16,7 @@
       <property name="timer" ref="globalScheduledExecutor"/>
     </bean>
     <bean id="timerTaskInitializer" class="com.cannontech.servlet.TimerTaskInitializer"/>
+    
+    <bean id="checkLoginIntercepter" class="com.cannontech.web.util.CheckLoginIntercepter"/>
   
 </beans>
