@@ -13,6 +13,7 @@
             <value>
               /*.jar=jarJnlpController
               /java=javaInstall
+              /auto=ieAutoController
               /=jwsMenuController
             </value>
         </property>
@@ -28,6 +29,9 @@
     
     <bean id="javaInstall" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName" value="javaInstall"/>
+    </bean>
+    
+    <bean id="ieAutoController" class="com.cannontech.web.jws.AutoDownloadController">
     </bean>
     
     <bean id="jwsMenuController" class="com.cannontech.web.jws.JwsMenuController">
