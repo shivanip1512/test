@@ -7,13 +7,13 @@
 <c:forEach items="${jnlpList}" var="jnlp">
 <tr>
 <td>
-<a href="auto?app=${jnlp.path}">
+<a href="${jnlp.path}">
   <img src="<c:url value="${jnlp.appIcon}" />" border="0">
 </a> 
 </td>
 
 <td>
-<a href="auto?app=${jnlp.path}">
+<a href="${jnlp.path}">
   ${jnlp.appTitle}
 </a>
 <br>
