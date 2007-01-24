@@ -186,7 +186,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardware entries deleted successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
+					"<span class='ErrorMsg'>" + numFailure + " hardware entries failed (listed below).<br>" +
 					"If a hardware is assigned to a customer account, you must remove it from the account before deleting it.</span><br>";
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);

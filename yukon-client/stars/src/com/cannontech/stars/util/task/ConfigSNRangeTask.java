@@ -69,10 +69,10 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 					return "The serial numbers " + snRange[1] + " to " + snRange[2] + " have been configured successfully.";
 				}
 				else
-					return numSuccess + " hardwares have been configured successfully.";
+					return numSuccess + " devices have been configured successfully.";
 			}
 			else
-				return numSuccess + " of " + numToBeConfigured + " hardwares have been configured.";
+				return numSuccess + " of " + numToBeConfigured + " devices have been configured.";
 		}
 		else {
 			if (status == STATUS_FINISHED && numFailure == 0) {
@@ -257,7 +257,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		
 		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " hardwares " +
+			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " devices " +
 					((configNow)? "sent out" : "scheduled") + " successfully.</span><br>";
 			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed (listed below).</span><br>";
 			if (errorMsg != null)

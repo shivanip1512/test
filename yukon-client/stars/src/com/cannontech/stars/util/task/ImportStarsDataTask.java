@@ -622,9 +622,9 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		if (invFieldsCnt > 0) {
 			if (msg.length() > 0) msg += NEW_LINE;
 			if (numInvAdded + numNoDeviceName + numDeviceNameNotFound  == invFieldsCnt)
-				msg += numInvAdded + " hardwares imported successfully";
+				msg += numInvAdded + " hardware entries imported successfully";
 			else
-				msg += numInvAdded + " of " + invFieldsCnt + " hardwares imported";
+				msg += numInvAdded + " of " + invFieldsCnt + " hardware entries imported";
 			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)";
 		}
 		if (appFieldsCnt > 0) {
