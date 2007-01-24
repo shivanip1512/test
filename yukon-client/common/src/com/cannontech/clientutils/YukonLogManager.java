@@ -115,11 +115,11 @@ public class YukonLogManager {
             getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
             return;
         }
-            // if that worked, setup YukonRemoteAppender
-            YukonRemoteAppender.setHostName(hostname);
-            YukonRemoteAppender.setPortNumber(Integer.toString(port));
-            YukonRemoteAppender.configureLogger();
-            getMyLogger().info("The remote logging config file was found under: " + path);
+        // if that worked, setup YukonRemoteAppender
+        YukonRemoteAppender.setHostName(hostname);
+        YukonRemoteAppender.setPortNumber(Integer.toString(port));
+        YukonRemoteAppender.configureLogger();
+        getMyLogger().info("The remote logging config file was found under: " + path);
     }
     
     
