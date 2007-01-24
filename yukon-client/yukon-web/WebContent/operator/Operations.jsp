@@ -343,6 +343,9 @@
 	            	<a href="../msp_setup.jsp">Multispeak Setup</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
+            <tags:sectionLink>
+            	<a href="/logging/">View Logs</a>
+            </tags:sectionLink>
 	</tags:operationSection>
 	
 </cti:checkRole>
