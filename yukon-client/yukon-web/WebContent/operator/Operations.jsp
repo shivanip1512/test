@@ -179,6 +179,8 @@
 		YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
 		
 		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
+		invSelectionList = new ArrayList<StarsSelectionListEntry>();
+		
 		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
 			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_METER_NO 
