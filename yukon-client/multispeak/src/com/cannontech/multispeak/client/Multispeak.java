@@ -1225,8 +1225,10 @@ public class Multispeak implements MessageListener {
             LiteYukonPAObject liteYukonPaobject = null;
             
             //Find a liteYukonPaobject 
-            
             if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
+            	//Do nothing...today anyway.
+            }
+            else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
                 paoName = mspServiceLocation.getObjectID();
                 liteYukonPaobject = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(paoName);
             }
