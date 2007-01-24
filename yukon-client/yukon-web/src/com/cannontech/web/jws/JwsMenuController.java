@@ -23,13 +23,22 @@ import com.cannontech.web.menu.OptionPropertyChecker;
 
 
 public class JwsMenuController extends AbstractController implements InitializingBean {
-    List<JnlpController> jnlpList = new ArrayList<JnlpController>();
-    Map<JnlpController, OptionPropertyChecker> checkerMap = new HashMap<JnlpController, OptionPropertyChecker>();
+    private List<JnlpController> jnlpList = new ArrayList<JnlpController>();
+    private Map<JnlpController, OptionPropertyChecker> checkerMap = new HashMap<JnlpController, OptionPropertyChecker>();
+    private String view = "startpage";
+
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        this.view = view;
+    }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                  HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("startpage");
+        ModelAndView mav = new ModelAndView(view);
         
         CheckUserPredicate predicate = new CheckUserPredicate(ServletUtil.getYukonUser(request.getSession()));
         Iterator filteredList = IteratorUtils.filteredIterator(jnlpList.iterator(), predicate);

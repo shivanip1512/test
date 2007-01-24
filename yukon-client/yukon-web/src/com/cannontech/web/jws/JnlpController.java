@@ -54,7 +54,7 @@ public class JnlpController extends AbstractController {
         
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
-        infoElem.addContent(new Element("title").setText(appTitle));
+        infoElem.addContent(new Element("title").setText("Yukon® " + appTitle));
         infoElem.addContent(new Element("vendor").setText("Cannon Technologies"));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(appDescription));
