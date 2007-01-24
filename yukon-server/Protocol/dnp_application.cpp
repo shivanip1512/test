@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/10/24 16:14:01 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2007/01/24 22:33:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@ void Application::setCommand( FunctionCode fc )
     _retryState = Output;
     _comm_errors = 0;
 
-    //  this is the only place where _iin is cleared
+    //  this and initUnsolicited() are the only places where _iin is cleared
     _iin.raw = 0;
 }
 
@@ -97,6 +97,9 @@ void Application::initUnsolicited( void )
     _ioState    = Input;
     _retryState = Input;
     _comm_errors = 0;
+
+    //  this and setCommand() are the only places where _iin is cleared
+    _iin.raw = 0;
 }
 
 
