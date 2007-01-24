@@ -1,4 +1,16 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("General.jsp"); return; } %>
+<%
+	ArrayList enrolledHwIDs = new ArrayList();
+	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+		StarsAppliance app = appliances.getStarsAppliance(i);
+		if (app.getProgramID() > 0 && app.getInventoryID() > 0) {
+			Integer invID = new Integer(app.getInventoryID());
+			if (!enrolledHwIDs.contains(invID))
+				enrolledHwIDs.add(invID);
+		}
+	}
+%>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -7,15 +19,21 @@
 <link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
-<!--
+
 function confirmSubmit(form) { //v1.0
-	if (form.StartDate.value == "" || form.EndDate.value == "") {
-		alert("The start and end date cannot be empty");
+	if (form.StartDate.value == "") {
+		alert("The start date cannot be empty");
 		return false;
 	}
+	
+	<% if (enrolledHwIDs.size() > 1) { %>
+		form.attributes["action"].value = "OptOutChoice.jsp";
+	<% } %>
+		return true;
+
 	return confirm('Are you sure you would like to temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> all programs?');
 }
-//-->
+
 </script>
 <script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/calendar.js">
 </script>

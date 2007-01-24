@@ -3,8 +3,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function prepareSubmit(form) {
 	var checkboxes = document.getElementsByName("InvID");
@@ -39,30 +39,31 @@ function prepareSubmit(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-			<% String pageName = "OptOut.jsp"; %>
+			<% String pageName = "OptOutChoice.jsp"; %>
         	<%@ include file="include/Nav.jspf" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT); %>
-              <%@ include file="include/InfoSearchBar.jspf" %>
+              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_OPT_OUT);%>
+              <%@ include file="include/InfoBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
-                  <td align="center" class="MainText">Please select the hardware you want to <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>"/>.</td>
+                  <td align="center" class="MainText">Please select the hardware(s) 
+                    you want to <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/>.</td>
                 </tr>
               </table>
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return prepareSubmit(this);">
 			    <input type="hidden" name="action" value="OptOutProgram">
 				<input type="hidden" name="StartDate" value="<%= request.getParameter("StartDate") %>">
 				<input type="hidden" name="Duration" value="<%= request.getParameter("Duration") %>">
-			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp">
-			    <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Consumer/OptOut.jsp">
+			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/General.jsp">
+			    <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>user/ConsumerStat/stat/OptOut.jsp">
 			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 <% if (exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0) { %>
 			    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
-			    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/OptForm.jsp">
+			    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/OptForm.jsp">
 <% } %>
                 <table width="70%" border="1" cellspacing="0" cellpadding="3">
                   <tr align="center">
@@ -71,11 +72,10 @@ function prepareSubmit(form) {
                     <td class="HeaderCell" width="60%">Program(s) Assigned</td>
                   </tr>
                   <%
-	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
-		StarsInventory inventory = inventories.getStarsInventory(i);
+	for (int i = 0; i < optOutChoices.getStarsInventoryCount(); i++) {
+		StarsInventory inventory = optOutChoices.getStarsInventory(i);
 		if (inventory.getLMHardware() == null) continue;
 		
-		int invProgCount = 0;
 		ArrayList assignedProgs = new ArrayList();
 		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
 			StarsAppliance app = appliances.getStarsAppliance(j);
@@ -85,12 +85,8 @@ function prepareSubmit(form) {
 				prog[1] = (app.getLoadNumber() > 0)? String.valueOf(app.getLoadNumber()) : "(N/A)";
 				assignedProgs.add(prog);
 			}
-			else {
-				invProgCount++;
-			}
 		}
 		
-		if (invProgCount >= appliances.getStarsApplianceCount()) continue;
 		String label = inventory.getDeviceLabel();
 		if (label.equals("")) label = inventory.getLMHardware().getManufacturerSerialNumber();
 %>
@@ -134,7 +130,7 @@ function prepareSubmit(form) {
               <p>&nbsp;</p>
             </div>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

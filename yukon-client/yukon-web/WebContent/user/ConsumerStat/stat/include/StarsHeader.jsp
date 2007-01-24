@@ -105,6 +105,7 @@
 	StarsLMPrograms programs = null;
 	StarsLMProgramHistory programHistory = null;
 	StarsInventories thermostats = null;
+	StarsInventories optOutChoices = null;
 	StarsSavedThermostatSchedules thermSchedules = null;
 	StarsAppliances appliances = null;
 	StarsUser userLogin = null;
@@ -131,6 +132,7 @@
 		programs = accountInfo.getStarsLMPrograms();
 		programHistory = programs.getStarsLMProgramHistory();
 		
+		optOutChoices = accountInfo.getStarsInventories();
 		thermostats = new StarsInventories();
 		StarsInventories inventories = accountInfo.getStarsInventories();
 		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
