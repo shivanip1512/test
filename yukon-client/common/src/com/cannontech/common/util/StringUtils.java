@@ -102,5 +102,19 @@ public final class StringUtils {
     public static String toStringList(Object... args) {
         return org.apache.commons.lang.StringUtils.join(args, ",");
     }
+    
+    /**
+     * Wrapper method for use with jstl
+     * @param string1 - String to compare
+     * @param string2 - String to compare
+     * @return True if equalsIgnoreCase is true
+     */
+    public static boolean equalsIgnoreCase(String string1, String string2){
+        if(string1 == null){
+            return string2 == null;
+        }
+        
+        return string1.equalsIgnoreCase(string2);
+    }
 
 }
