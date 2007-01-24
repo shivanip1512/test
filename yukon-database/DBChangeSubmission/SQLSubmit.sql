@@ -18,3 +18,8 @@ update point set stategroupid = (select stategroupid from stategroup where name 
 paobjectid in (select paobjectid from yukonpaobject where type like 'CBC 702%') and pointtype = 'Status' and pointname like 'Control Mode%';
 go
 /*************** END JULIE ADDITIONS *********************/
+
+/*************** JULIE ADDITIONS: corrected dnp point definitions for cbc uv and ov op counts **************************/
+update point set pointoffset = 2 where pointname like 'UV op count%';
+update point set pointoffset = 3 where pointname like 'OV op count%';
+/*************** END JULIE ADDITIONS *********************/
