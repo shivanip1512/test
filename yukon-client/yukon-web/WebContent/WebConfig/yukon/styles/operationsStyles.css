@@ -101,6 +101,21 @@ div.boxedLink {
 	font-size: 12px;
 }
 
+div.boxedLink a:active {
+    text-decoration: none;
+    color: #000000;
+}
+
+div.boxedLink a:visited {
+    text-decoration: none;
+    color: #000000;
+}
+
+div.boxedLink a:link {
+    text-decoration: none;
+    color: #000000;
+}
+
 .sectionForm {
 	float: right;
 	margin-right: 15px;
