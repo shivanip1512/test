@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/01/18 18:21:10 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/01/24 22:40:07 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -169,6 +169,8 @@ void UDPInterface::run( void )
     if( _inbound->isRunning() )
     {
         _inbound->interrupt(CtiThread::SHUTDOWN);
+
+        _inbound->join();
     }
 
     //  delete the device records
@@ -281,7 +283,7 @@ bool UDPInterface::getOutMessages( unsigned wait )
 
             if( !vg_list.empty() || !ret_list.empty() )
             {
-                if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Cti::Porter::UDPInterface::getOutMessages - !vg_list.empty() || !ret_list.empty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -319,7 +321,7 @@ bool UDPInterface::getOutMessages( unsigned wait )
     {
         _port->incQueueSubmittal(1, CtiTime());
 
-        if( entries && gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        if( entries && gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Cti::Porter::UDPInterface::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -344,7 +346,7 @@ bool UDPInterface::getOutMessages( unsigned wait )
 
                 if( dr && dr->device )
                 {
-                    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cti::Porter::UDPInterface::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -356,7 +358,7 @@ bool UDPInterface::getOutMessages( unsigned wait )
                 }
                 else
                 {
-                    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cti::Porter::UDPInterface::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -389,7 +391,7 @@ bool UDPInterface::getPackets( int wait )
         //  read from the inbound packet queue
         while( _packet_queue.size() )
         {
-            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - grabbing packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -439,10 +441,10 @@ bool UDPInterface::getPackets( int wait )
                         boost::shared_ptr<CtiDeviceBase> dev_base;
 
                         //  we didn't have this device in the mapping table, so look it up
-                        if( (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), master_address, slave_address, TYPE_DNPRTU)) ||
-                            (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), master_address, slave_address, TYPECBC7020)) )
+                        if( (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPE_DNPRTU)) ||
+                            (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPECBC7020)) )
                         {
-                            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - inserting device \"" << dev_base->getName() << "\" in list " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -460,7 +462,7 @@ bool UDPInterface::getPackets( int wait )
                             _devices.insert(make_pair(dr->device->getID(), dr));
                             _addresses.insert(make_pair(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()), dr));
                         }
-                        else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                        else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - can't find DNP master/slave (" << master_address << "/" << slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -473,7 +475,7 @@ bool UDPInterface::getPackets( int wait )
                         if( dr->ip   != p->ip ||
                             dr->port != p->port )
                         {
-                            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -491,13 +493,13 @@ bool UDPInterface::getPackets( int wait )
                         p = 0;
                     }
                 }
-                else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-            else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - read " << p->len << " bytes, not enough for a full DNP header - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -580,7 +582,7 @@ void UDPInterface::generateOutbounds( void )
 
                 if( dr->work.xfer.getOutCount() > 0 )
                 {
-                    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cti::Porter::UDPInterface::generateOutbound - sending packet to "
@@ -604,7 +606,7 @@ void UDPInterface::generateOutbounds( void )
 
                     if( SOCKET_ERROR == sendto(_udp_socket, (char *)dr->work.xfer.getOutBuffer(), dr->work.xfer.getOutCount(), 0, (sockaddr *)&to, sizeof(to)) )
                     {
-                        if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Cti::Porter::UDPInterface::generateOutbound - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -647,7 +649,7 @@ void UDPInterface::traceOutbound( device_record *dr, int socket_status, list< Ct
 
     //  set bright cyan for the info message
     trace.setBrightCyan();
-    msg  = "  P: " + CtiNumStr(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0)).spad(3) + " / UDP";
+    msg  = "  P: " + CtiNumStr(_port->getPortID()).spad(3) + " / UDP port " + CtiNumStr(_port->getIPPort()).spad(5);
     msg += " (" + CtiNumStr((dr->ip >> 24) & 0xff) + "."
                 + CtiNumStr((dr->ip >> 16) & 0xff) + "."
                 + CtiNumStr((dr->ip >>  8) & 0xff) + "."
@@ -703,7 +705,7 @@ void UDPInterface::processInbounds( void )
                 {
                     if( dr->work.timeout < CtiTime::now().seconds() )
                     {
-                        if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -719,7 +721,7 @@ void UDPInterface::processInbounds( void )
                         {
                             if( p->len - p->used < dr->work.xfer.getInCountExpected() )
                             {
-                                if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                                if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -771,7 +773,7 @@ void UDPInterface::processInbounds( void )
                 }
             }
         }
-        else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -793,11 +795,11 @@ void UDPInterface::traceInbound( unsigned long ip, unsigned short port, int stat
 
     //  set bright cyan for the info message
     trace.setBrightCyan();
-    msg  = "  P: " + CtiNumStr(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0)).spad(3) + " / UDP";
+    msg  = "  P: " + CtiNumStr(_port->getPortID()).spad(3) + " / UDP port " + CtiNumStr(_port->getIPPort()).spad(5);
     msg += " (" + CtiNumStr((ip >> 24) & 0xff) + "."
                 + CtiNumStr((ip >> 16) & 0xff) + "."
                 + CtiNumStr((ip >>  8) & 0xff) + "."
-                + CtiNumStr((ip >>  0) & 0xff) + ":" + CtiNumStr(port) + ")";
+                + CtiNumStr((ip >>  0) & 0xff) + ":" + CtiNumStr(port).spad(5) + ")";
 
     trace.setTrace(msg);
     trace.setEnd(false);
@@ -898,7 +900,7 @@ void UDPInterface::sendResults( void )
                 dr->work.outbound.pop();
             }
         }
-        else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Cti::Porter::UDPInterface::sendResults - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -961,9 +963,9 @@ void UDPInterface::tickleSelf( void )
 
     loopback.sin_family           = AF_INET;
     loopback.sin_addr.S_un.S_addr = htonl(INADDR_LOOPBACK);
-    loopback.sin_port             = htons(gConfigParms.getValueAsInt("PORTER_DNPUDPInterface", 5500));
+    loopback.sin_port             = htons(_port->getIPPort());
 
-    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::UDP::UDPInterface::tickleSelf - tickling UDPInterface::inbound " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -972,7 +974,7 @@ void UDPInterface::tickleSelf( void )
     //  tickle the inbound thread
     if( SOCKET_ERROR == sendto(_udp_socket, tickle_packet, strlen(tickle_packet), 0, (sockaddr *)&loopback, sizeof(loopback)) )
     {
-        if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Cti::Porter::UDP::UDPInterface::tickleSelf - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1032,7 +1034,7 @@ void UDPInterface::Inbound::run()
         {
             if( !memcmp(recv_buf, UDPInterface::tickle_packet, recv_len) )
             {
-                if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Cti::Porter::UDPInterface::InboundThread - received tickle packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1055,7 +1057,7 @@ void UDPInterface::Inbound::run()
             p->data = CTIDBG_new unsigned char[recv_len];
             memcpy(p->data, recv_buf, recv_len);
 
-            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -1078,7 +1080,7 @@ void UDPInterface::Inbound::run()
         }
         else
         {
-            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Cti::Porter::UDPInterface::InboundThread - **** Checkpoint - unable to allocate packet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1141,7 +1143,7 @@ void UDPInterface::applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevi
             dr->ip   = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP);
             dr->port = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port);
 
-            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Cti::Porter::UDPInterface::applyGetUDPInfo - loading device \""
