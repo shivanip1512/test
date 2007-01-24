@@ -263,7 +263,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
                 pointComboBox = new javax.swing.JComboBox();
                 pointComboBox.setName("JComboBoxPointBase");
                 pointComboBox.setEnabled( false );
-                pointComboBox.setMinimumSize(new Dimension( 150, 20));
+                pointComboBox.setMinimumSize(new Dimension( 225, 20));
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -281,7 +281,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
                 typeComboBox = new javax.swing.JComboBox();
                 typeComboBox.setName("JComboBoxType");
                 
-                typeComboBox.setMinimumSize(new Dimension( 150, 20));
+                typeComboBox.setMinimumSize(new Dimension( 225, 20));
                 typeComboBox.setEditable(true);
                 
                 CICustomerPointType[] names = CICustomerPointType.values();
@@ -361,7 +361,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
             try {
                 deviceComboBox = new javax.swing.JComboBox();
                 deviceComboBox.setName("JComboDeviceBase");
-                deviceComboBox.setMinimumSize(new Dimension( 150, 20));
+                deviceComboBox.setMinimumSize(new Dimension( 225, 20));
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -381,7 +381,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
                 textFieldLabel = new javax.swing.JTextField();
                 textFieldLabel.setName("JTextFieldBaseLabel");
                 textFieldLabel.setText("Demand");
-                textFieldLabel.setMinimumSize(new Dimension( 150, 20));
+                textFieldLabel.setMinimumSize(new Dimension( 225, 20));
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
