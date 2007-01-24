@@ -26,7 +26,7 @@
 </div> <!-- Content -->
 
 <div id="CopyRight">
-Copyright &copy; 2002-2006, 
+Copyright &copy; 2002-2007, 
   Cannon Technologies. All rights reserved.
 </div>
 
