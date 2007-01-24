@@ -7,6 +7,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
  * Attempts to matche a roleid with the LiteYukonUser in the current session.
@@ -45,6 +46,14 @@ public class CheckRole extends BodyTagSupport {
 	public void setRoleid(int roleid) {
 		this.roleid = roleid;
 	}
+    
+	/**
+	 * Sets the roleid by searching for the role.
+	 * @param roleid The roleid to set
+	 */
+    public void setRole(String role){
+        this.setRoleid(ReflectivePropertySearcher.getRoleProperty().getIntForName(role));
+    }
 
 	/**
 	 * Fix for JRun3.1 tags

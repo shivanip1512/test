@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.Validate;
-
 public class ReflectivePropertySearcher {
     private List<String> searchPath;
     private Map<String, String> nameLookupCache = new TreeMap<String, String>();
-    private static Map<String, Integer> valueLookupCache = new TreeMap<String, Integer>();
+    private static Map<String, Object> valueLookupCache = new TreeMap<String, Object>();
     private static ReflectivePropertySearcher standardInstance = null;
     
     private ReflectivePropertySearcher(List<String> searchPath) {
@@ -86,22 +84,42 @@ public class ReflectivePropertySearcher {
      *   more detail, usually a reflection problem)
      */
     public static synchronized int getIntForFQN(String fqn) {
-        Validate.notEmpty(fqn, "No value was supplied for the property checker.");
+        Object result = getObjectForFQN(fqn);
+        if(result instanceof Integer){
+            return ((Integer)result).intValue();
+        } else {
+            throw new IllegalArgumentException(fqn + " is not an int.");
+        }
+    }
+
+    /**
+     * Uses reflection to look up the value of a fully qualified constant. For instance,
+     *   getObjectForFQN("com.cannontech.whatever.SomeClass.SOMEFIELD")
+     * might return
+     *   VALUE.
+     * The field should be declared to be "final static" and must have been initialized
+     * before this method is called (so, it should be initialized when the class is loaded).
+     * @param fqn a package, class name, and integer field name all separated by periods
+     * @return the value
+     * @throws IllegalArgumentException if the fqn isn't valid (see nested cause for
+     *   more detail, usually a reflection problem)
+     */
+    public static synchronized Object getObjectForFQN(String fqn) {
         if (valueLookupCache.containsKey(fqn)) {
             return valueLookupCache.get(fqn);
         }
         int lastDot = fqn.lastIndexOf(".");
         String className = fqn.substring(0, lastDot);
-        String intName = fqn.substring(lastDot + 1);
+        String fieldName = fqn.substring(lastDot + 1);
         try {
             Class theClass = Class.forName(className);
-            Field intField = theClass.getField(intName);
-            int result = intField.getInt(null);
+            Field field = theClass.getField(fieldName);
+            Object result = field.get(null);
             valueLookupCache.put(fqn, result);
             return result;
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to find integer value of " 
-                                               + intName + " in class " + className
+            throw new IllegalArgumentException("Unable to find value of " 
+                                               + fieldName + " in class " + className
                                                + ": " + e.getMessage());
         }
     }

@@ -7,6 +7,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
  * Attempts to matche a roleid with the LiteYukonUser in the current session.
@@ -60,5 +61,13 @@ public class CheckProperty extends BodyTagSupport {
 	public void setPropertyid(int propertyid) {
 		this.propertyid = propertyid;
 	}
+    
+	/**
+	 * Sets the propertyid by searching for the property
+	 * @param property The property to set
+	 */
+    public void setProperty(String property){
+        this.setPropertyid(ReflectivePropertySearcher.getRoleProperty().getIntForName(property));
+    }
 
 }

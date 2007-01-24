@@ -5,8 +5,11 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
  * Checks two or more roleids against the LiteYukonUser in the session
@@ -57,11 +60,29 @@ public class CheckMultiRole extends BodyTagSupport {
 			throw new JspException(e.getMessage());
 		}
 	}
+    
+    /**
+     * Splits the string and sets the roleid
+     * @param roles - Comma separated list of role names
+     */
+    public void setRoles(String roles) {
+
+        String[] roleArray = roles.split("\\s*,\\s*");
+
+        Integer[] roleIntArray = new Integer[roleArray.length];
+        int count = 0;
+        for (String roleName : roleArray) {
+            roleIntArray[count++] = ReflectivePropertySearcher.getRoleProperty()
+                                                              .getIntForName(roleName);
+        }
+
+        this.setRoleid(StringUtils.join(roleIntArray, ","));
+    }
 	
 	/**
-	 * Returns the roleid.
-	 * @return int
-	 */
+     * Returns the roleid.
+     * @return int
+     */
 	public String getRoleid() {
 		return roleid;
 	}
