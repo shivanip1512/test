@@ -111,6 +111,11 @@
 
 </cti:checkMultiRole>
 
+<!-- Client Launcher section -->
+<cti:checkProperty property="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED">
+    <c:import url="/jws/opspage"/>
+</cti:checkProperty>
+
 <!-- Load Response section -->
 <cti:checkMultiRole roles="DirectLoadcontrolRole.ROLEID,DirectCurtailmentRole.ROLEID,EnergyBuybackRole.ROLEID,OddsForControlRole.ROLEID">
 
