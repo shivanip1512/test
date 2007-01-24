@@ -50,7 +50,7 @@ function prepareSubmit(form) {
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
-                  <td align="center" class="MainText">Please select the hardware(s) 
+                  <td align="center" class="MainText">Please select the hardware 
                     you want to <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/>.</td>
                 </tr>
               </table>
