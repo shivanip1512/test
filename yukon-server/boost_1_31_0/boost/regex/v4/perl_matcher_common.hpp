@@ -82,7 +82,7 @@ void perl_matcher<BidiIterator, Allocator, traits, Allocator2>::estimate_max_sta
    if(dist > (difference_type)(lim / states))
       max_state_count = lim;
    else
-      max_state_count = 1000 + states * dist;
+      max_state_count = 100000 + states * dist;
 }
 template <class BidiIterator, class Allocator, class traits, class Allocator2>
 void perl_matcher<BidiIterator, Allocator, traits, Allocator2>::estimate_max_state_count(void*)
@@ -205,10 +205,10 @@ bool perl_matcher<BidiIterator, Allocator, traits, Allocator2>::find_imp()
    else
    {
       // start again:
-      search_base = position = (*m_presult)[0].second;
+      search_base = position = m_result[0].second;
       // If last match was null and match_not_null was not set then increment
       // our start position, otherwise we go into an infinite loop:
-      if(((m_match_flags & match_not_null) == 0) && (m_presult->length() == 0))
+      if(((m_match_flags & match_not_null) == 0) && (m_result.length() == 0))
       {
          if(position == last)
             return false;

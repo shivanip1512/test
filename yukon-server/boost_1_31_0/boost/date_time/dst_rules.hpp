@@ -6,7 +6,7 @@
  * Boost Software License, Version 1.0. (See accompanying
  * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland 
- * $Date: 2005/08/12 19:54:19 $
+ * $Date: 2007/01/24 22:21:01 $
  */
 
 /*! @file dst_rules.hpp
@@ -217,21 +217,33 @@ namespace boost {
 
       static date_type local_dst_start_day(year_type year)
       {
-        typedef typename dst_traits::start_rule_functor start_rule;
-        start_rule start(dst_traits::start_day(), 
-                         dst_traits::start_month());
+        if( year >=  year_type(2007) ){
+            typedef typename dst_traits::start_rule_functor2007 start_rule;
+            start_rule start(dst_traits::start_day(), 
+                             dst_traits::start_month2007());
+        }else{
+            typedef typename dst_traits::start_rule_functor start_rule;
+            start_rule start(dst_traits::start_day(), 
+                             dst_traits::start_month());
+        }
         return start.get_date(year);      
       }
 
       static date_type local_dst_end_day(year_type year)
       {
-        typedef typename dst_traits::end_rule_functor end_rule;
-        end_rule end(dst_traits::end_day(), 
-                     dst_traits::end_month());
+          if( year >=  year_type(2007) ){
+            typedef typename dst_traits::end_rule_functor2007 end_rule;
+            end_rule end(dst_traits::end_day(), 
+                         dst_traits::end_month2007() );          
+
+          }else{
+            typedef typename dst_traits::end_rule_functor end_rule;
+            end_rule end(dst_traits::end_day(), 
+                         dst_traits::end_month());
+          }
+
         return end.get_date(year);      
       }
-
-
     };
 
     //! Depricated: Class to calculate dst boundaries for US time zones
@@ -250,6 +262,7 @@ namespace boost {
       typedef typename date_type::calendar_type calendar_type;
       typedef date_time::last_kday_of_month<date_type> lkday;
       typedef date_time::first_kday_of_month<date_type> fkday;
+      typedef date_time::nth_kday_of_month<date_type> nkday;
       typedef dst_calculator<date_type, time_duration_type> dstcalc;
 
       //! Calculates if the given local time is dst or not
@@ -281,16 +294,28 @@ namespace boost {
 
       static date_type local_dst_start_day(year_type year)
       {
-        //first sunday in april
-        fkday fsia(Sunday, gregorian::Apr);
-        return fsia.get_date(year);      
+        if (year >= year_type(2007)) {
+          //second sunday in march
+          nkday ssim(nkday::second, Sunday, gregorian::Mar);
+          return ssim.get_date(year);      
+        } else {
+          //first sunday in april
+          fkday fsia(Sunday, gregorian::Apr);
+          return fsia.get_date(year);      
+        }   
       }
 
       static date_type local_dst_end_day(year_type year)
       {
-        //last sunday in october
-        lkday lsio(Sunday, gregorian::Oct);
-        return lsio.get_date(year);
+        if (year >= year_type(2007)) {
+          //first sunday in november
+          fkday fsin(Sunday, gregorian::Nov);
+          return fsin.get_date(year);      
+        } else {
+          //last sunday in october
+          lkday lsio(Sunday, gregorian::Oct);
+          return lsio.get_date(year);
+        }
       }
 
       static time_duration_type dst_offset()
@@ -302,8 +327,6 @@ namespace boost {
       {
         return time_duration_type(0,dst_start_offset_minutes,0);
       }
-
-
     };
 
     //! Used for local time adjustments in places that don't use dst

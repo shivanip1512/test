@@ -6,7 +6,7 @@
  * Boost Software License, Version 1.0. (See accompanying
  * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland 
- * $Date: 2004/05/17 21:12:06 $
+ * $Date: 2007/01/24 22:21:01 $
  */
 
 #include "boost/date_time/dst_rules.hpp"
@@ -55,12 +55,18 @@ namespace boost {
      {
        typedef typename date_type::day_of_week_type day_of_week_type;
        typedef typename date_type::month_type month_type;
+
        typedef date_time::first_kday_of_month<date_type> start_rule_functor;
+       typedef date_time::nth_kday_of_month<date_type> start_rule_functor2007;
        typedef date_time::last_kday_of_month<date_type> end_rule_functor;
+       typedef date_time::first_kday_of_month<date_type> end_rule_functor2007;
+
        static day_of_week_type start_day() {return Sunday;}
        static month_type start_month() {return Apr;}
+       static month_type start_month2007() {return Mar;}
        static day_of_week_type end_day() {return Sunday;}
        static month_type end_month() {return Oct;}
+       static month_type end_month2007() {return Nov;}
        static int dst_start_offset_minutes() { return 120;}
        static int dst_end_offset_minutes() { return 120; }
        static int dst_shift_length_minutes() { return 60; }
