@@ -206,7 +206,7 @@ public class CBCDisplay
                 }
                 else if( subBus.getRecentlyControlledFlag().booleanValue() )
                 {
-                    state = _getSubBusPendingState( subBus );
+                    state = getSubBusPendingState( subBus );
                     
                     if( state == null )
                     {
@@ -348,7 +348,7 @@ public class CBCDisplay
 	 * @param subBus
 	 * @return
 	 */
-	private boolean isDualBusEnabled(SubBus subBus) {
+	public boolean isDualBusEnabled(SubBus subBus) {
 		DBPersistent pao =	PAOFactory.createPAObject(subBus.getCcId().intValue());
 		Connection conn = null;		
 		
@@ -380,7 +380,7 @@ public class CBCDisplay
      * Discovers if the given SubBus is in any Pending state
      *
      */
-    private String _getSubBusPendingState( SubBus subBus ) 
+    public String getSubBusPendingState( SubBus subBus ) 
     {
         for( int i = 0; i < subBus.getCcFeeders().size(); i++ )
         {
@@ -409,7 +409,7 @@ public class CBCDisplay
      * Discovers if the given Feeder is in any Pending state
      *
      */
-    private String _getFeederPendingState( Feeder feeder )
+    public String getFeederPendingState( Feeder feeder )
     {
         int size = feeder.getCcCapBanks().size();
         for( int j = 0; j < size; j++ )
@@ -454,7 +454,7 @@ public class CBCDisplay
                 }
                 else if( feeder.getRecentlyControlledFlag().booleanValue() )
                 {
-                    state = _getFeederPendingState( feeder );
+                    state = getFeederPendingState( feeder );
                     
                     if( state == null )
                     {
