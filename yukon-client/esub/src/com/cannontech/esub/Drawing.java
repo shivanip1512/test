@@ -9,10 +9,10 @@ import java.io.Serializable;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.esub.svg.ESubSVGGenerator;
+import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.ImageExporter;
-import com.cannontech.esub.util.SVGGenerator;
-import com.cannontech.esub.util.SVGOptions;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
@@ -81,7 +81,8 @@ public class Drawing implements Serializable {
 				writeJLX(fileName);
 				writeSVG(fileName);
 				writeHTML(fileName);
-				writeImages(new File(fileName).getParent());
+				String parent = new File(fileName).getParent();
+                writeImages(parent);
 				break;
 			}
 			catch(Exception e) {
@@ -126,7 +127,7 @@ public class Drawing implements Serializable {
 				svgOptions.setEditEnabled(false);
 				svgOptions.setScriptingEnabled(false);
 				svgOptions.setStaticSVG(true);
-		        SVGGenerator gen2 = new SVGGenerator();
+                ESubSVGGenerator gen2 = new ESubSVGGenerator();
 		        FileWriter fw = new FileWriter(svgFileName);
 		
 		        gen2.generate(fw, this);
