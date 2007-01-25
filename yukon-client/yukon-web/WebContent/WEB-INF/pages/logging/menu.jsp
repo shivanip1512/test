@@ -7,22 +7,11 @@
 
 <!-- Display and link to the local log files -->
 <b><c:out value="Local Log Files"/></b><br>
-<ul>
+<ul style="font-size: 10px">
 <c:forEach var="file" items="${localLogList}">
 <li>
-<a href="<c:out value="view/${file}"/>"><c:out value="${file}"/></a>
-<a href="<c:out value="download/${file}" />"> (Download)</a>
-</li>
-</c:forEach>
-</ul>
-
-<!-- Display and link to the remote log files  -->
-<b><c:out value="Remote Log Files"/></b><br>
-<ul>
-<c:forEach var="file" items="${remoteLogList}">
-<li>
-<a href="<c:out value="view/${file}"/>"><c:out value="${file}"/></a>    
-<a href="<c:out value="download/${file}"/>"> (Download)</a>
+${file}: <a href="view/${file}">view</a> |
+<a href="download/${file}">download</a>
 </li>
 </c:forEach>
 </ul>
