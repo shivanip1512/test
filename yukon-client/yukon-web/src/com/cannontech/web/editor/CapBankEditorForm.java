@@ -469,11 +469,26 @@ private List unassignedPoints = null;
         }
         
         public Integer getCtlPaoID () {
-            return capBank.getCapBank().getControlDeviceID();
+            Integer controlDeviceID;
+            try
+            {
+                controlDeviceID = capBank.getCapBank().getControlDeviceID();
+            }
+            catch(NullPointerException npe) {
+                controlDeviceID = 0;
+            }
+            return controlDeviceID;
         }
 
         public Integer getCtlPointID () {
-            return capBank.getCapBank().getControlPointID();
+            Integer controlPointID;
+            try{
+                controlPointID = capBank.getCapBank().getControlPointID();    
+            }            
+            catch (NullPointerException npe) {
+                controlPointID = 0;
+            }
+            return controlPointID;
         }
 
     public void ctlPointChanged (ValueChangeEvent vce) {
