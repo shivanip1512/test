@@ -1459,7 +1459,7 @@ public void setValue(Object o)
 
 	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( getJComboBoxShedTime(), r.getShedTime().intValue() );
 
-	getJComboBoxNumGroups().setSelectedItem( r.getNumberOfGroups() );
+	getJComboBoxNumGroups().setSelectedIndex( r.getNumberOfGroups() );
 
 	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
 			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), r.getSendRate().intValue() );
