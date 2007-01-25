@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2007/01/11 21:58:23 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2007/01/25 21:06:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -301,19 +301,6 @@ bool CtiMCServer::init()
         dout << CtiTime() << " An error occured retrieving schedules from the database." << endl;
         status = false;
     }
-
-    string newDir = "\\Yukon\\Server\\Export\\MACS";
-    string templateDir = "\\Yukon\\Server\\Export";
-    char * yukonBaseDir = getenv("YUKON_BASE");
-    if( yukonBaseDir )
-    {
-        newDir = yukonBaseDir;
-        newDir += "\\Server\\Export\\MACS";
-        templateDir = yukonBaseDir;
-        templateDir += "\\Server\\Export";
-    }
-    
-    CreateDirectoryEx( templateDir.c_str(), newDir.c_str(), NULL);
 
     /* Set up our events */
     CtiTime now = stripSeconds(CtiTime::now());
