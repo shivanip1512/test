@@ -66,21 +66,19 @@ public class RemoteLoggerImpl implements RemoteLogger {
      */
     protected AppenderSkeleton getAppender(String applicationName, String clientId) {
         
-        String CLIENT_ID = applicationName+clientId;
+        String fileName = applicationName + "[" + clientId + "]";
         
         //get the file path based on yukonbase for this system
-        String fileName = CtiUtilities.getYukonBase() + "/Server/Log/" + applicationName+clientId + ".log";
         String directory = CtiUtilities.getYukonBase() + "/Server/Log/";
         
         //see if the appender for this clientId already exists
-        if (appenderIPAddresses.containsKey(CLIENT_ID)) {
-            dailyRollingFileAppender = appenderIPAddresses.get(CLIENT_ID);
+        if (appenderIPAddresses.containsKey(fileName)) {
+            dailyRollingFileAppender = appenderIPAddresses.get(fileName);
         } else {
             // one doesn't exist so create an appender and put it in the map
             //Use DatedFileAppender to take over the actual appending, rollover, and timing issues
-            dailyRollingFileAppender = new DatedFileAppender(directory, CLIENT_ID + "_", ".log");
-            dailyRollingFileAppender.setName("dailyRollingFileAppender");
-            dailyRollingFileAppender.setFile(fileName);
+            dailyRollingFileAppender = new DatedFileAppender(directory, fileName, ".log");
+            dailyRollingFileAppender.setName(fileName + "-appender");
             
             //The layout for the log file:
             Layout layout = new PatternLayout(conversionPattern);
@@ -90,7 +88,7 @@ public class RemoteLoggerImpl implements RemoteLogger {
             dailyRollingFileAppender.activateOptions();
             
             //add this appender to the map
-            appenderIPAddresses.put(applicationName+clientId, dailyRollingFileAppender);
+            appenderIPAddresses.put(fileName, dailyRollingFileAppender);
         }
         
         return dailyRollingFileAppender;
