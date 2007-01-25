@@ -145,7 +145,9 @@ private void generateOnelineHtml(String absPath) {
 public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 {
 	HttpSession session = req.getSession( false );
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+	if (session != null)
+    {
+    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
     String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
     if (session != null) {
@@ -176,6 +178,8 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     //always forward the client to the specified URL if present
     if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+
+    }
 }
 
 private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOException {
