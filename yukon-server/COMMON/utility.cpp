@@ -363,7 +363,7 @@ INT SystemLogIdGen()
 
 INT PAOIdGen()
 {
-    static RWMutexLock mux;
+    /*static RWMutexLock mux;
     static const CHAR sql[] = "SELECT MAX(PAOBJECTID) FROM YUKONPAOBJECT";
     INT id = 0;
 
@@ -383,7 +383,8 @@ INT PAOIdGen()
         cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return ++id;
+    return ++id;*/
+    return SynchronizedIdGen("paobjectid", 1);
 }
 
 
@@ -451,6 +452,49 @@ INT CCEventSeqIdGen()
     return(++id);
 }
 
+// Reserve <count> values for the sequence named <name>
+INT SynchronizedIdGen(string name, int count)
+{
+    int status = NORMAL;
+    INT last = 0;
+
+    if(count > 0 && name.length() > 1)
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        // In this case, we poke at the PAO table
+        RWDBConnection conn = getConnection();
+        RWDBDatabase db = getDatabase();
+    
+        RWDBTable yukonSequenceTable = getDatabase().table("sequencenumber");
+        RWDBUpdater updater = yukonSequenceTable.updater();
+    
+        updater.where( yukonSequenceTable["sequencename"] == name.c_str() );
+        updater << yukonSequenceTable["lastvalue"].assign( yukonSequenceTable["lastvalue"] + count );
+    
+        status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
+    
+        if(status == NORMAL)
+        {
+            RWDBSelector selector = db.selector();
+            selector << yukonSequenceTable["lastvalue"];
+            selector.where( yukonSequenceTable["sequencename"] == name.c_str() );
+    
+            RWDBReader rdr = selector.reader(conn);
+    
+            if(rdr() && rdr.isValid())
+            {
+                rdr >> last;
+            }
+            else
+            {
+                RWMutexLock::LockGuard  guard(coutMux);
+                cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return(last);
+}
 
 /* Routine to calculate time a VHF shed will take */
 INT VCUTime (OUTMESS *OutMessage, PULONG Seconds)

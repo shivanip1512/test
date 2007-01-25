@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/01/15 21:17:40 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/01/25 21:04:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ IM_EX_CTIBASE INT SystemLogIdGen();
 IM_EX_CTIBASE INT CCEventLogIdGen();
 IM_EX_CTIBASE INT CCEventSeqIdGen();
 IM_EX_CTIBASE INT PAOIdGen();
+IM_EX_CTIBASE INT SynchronizedIdGen(string name, int count);
 IM_EX_CTIBASE INT VCUTime (CtiOutMessage *, PULONG);
 IM_EX_CTIBASE BOOL isFileTooBig(const string& fileName, DWORD thisBig = 0x00500000);
 IM_EX_CTIBASE BOOL InEchoToOut(const INMESS *In, CtiOutMessage *Out);
