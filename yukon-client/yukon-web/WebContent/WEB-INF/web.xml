@@ -219,11 +219,6 @@
         <servlet-class>com.cannontech.servlet.LoginController</servlet-class>
     </servlet>
     <servlet>
-        <description>Returns a set of db.properties to clients</description>
-        <servlet-name>DBPropertiesServlet</servlet-name>
-        <servlet-class>com.cannontech.servlet.DBPropertiesServlet</servlet-class>
-    </servlet>
-    <servlet>
         <description>Returns an xml config file for log4j logging</description>
         <servlet-name>LoggingServlet</servlet-name>
         <servlet-class>com.cannontech.servlet.LoggingServlet</servlet-class>
@@ -528,10 +523,6 @@
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name> 
         <url-pattern>/servlet/LoginController</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DBPropertiesServlet</servlet-name> 
-        <url-pattern>/servlet/DBPropertiesServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoggingServlet</servlet-name> 
