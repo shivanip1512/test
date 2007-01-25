@@ -369,14 +369,23 @@ public class ClientSession {
 	}
 		
 	private LoginPanel makeRemoteLoginPanel() {
-			LoginPrefs prefs = LoginPrefs.getInstance();
-			return  new LoginPanel(prefs.getCurrentYukonHost(),
-									prefs.getAvailableYukonHosts(),
-									prefs.getCurrentYukonPort(),
-									prefs.getDefaultUsername(),
-									prefs.getDefaultPassword(),
-									prefs.getDefaultRememberPassword(), false);
-		}
+	    LoginPrefs prefs = LoginPrefs.getInstance();
+	    String hostToUse = prefs.getCurrentYukonHost();
+	    int portToUse = prefs.getCurrentYukonPort();
+	    String jwsHost = System.getProperty("yukon.jws.host");
+	    String jwsPort = System.getProperty("yukon.jws.port");
+	    if (StringUtils.isNotBlank(jwsHost) && StringUtils.isNotBlank(jwsPort)) {
+	        portToUse = Integer.parseInt(jwsPort);
+	        hostToUse = jwsHost;
+	    }
+
+	    return  new LoginPanel(hostToUse,
+	                           prefs.getAvailableYukonHosts(),
+	                           portToUse,
+	                           prefs.getDefaultUsername(),
+	                           prefs.getDefaultPassword(),
+	                           prefs.getDefaultRememberPassword(), false);
+	}
 		
 	private boolean collectInfo(Frame parent, LoginPanel lp) {
 	    return LoginFrame.showLogin(parent, lp);
