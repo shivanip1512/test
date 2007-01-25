@@ -11,14 +11,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.esub.util.SVGOptions;
+import com.cannontech.esub.svg.ESubSVGGenerator;
+import com.cannontech.esub.svg.ISVGGenerator;
+import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;
+import com.cannontech.util.ParamUtil;
 
 /**
  * Description Here
@@ -31,13 +36,15 @@ public class SVGGenerator extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		resp.setContentType("image/svg+xml");
+		
+        
+        resp.setContentType("image/svg+xml");
 		
 		ServletContext sc = getServletContext();
 		String uri = req.getRequestURI();
 		String conPath = req.getContextPath();
 
-		String jlxPath= uri.replaceFirst(conPath, "");
+        String jlxPath= uri.replaceFirst(conPath, "");
 		jlxPath = sc.getRealPath(jlxPath);
 
 		//Assume this ends with .svg or .svgz		
@@ -62,7 +69,7 @@ public class SVGGenerator extends HttpServlet {
 		try {
 			Drawing d = new Drawing();
 			d.load(jlxPath);
-		 
+			
 			//Check if this user has access to this drawing!	
 			LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 			DrawingMetaElement metaElem = d.getMetaElement();
@@ -82,15 +89,15 @@ public class SVGGenerator extends HttpServlet {
 				svgOptions.setEditEnabled(canEdit);
 				svgOptions.setControlEnabled(canControl);
 				svgOptions.setAudioEnabled(true); // TODO set to role property value
-				
-				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator(svgOptions);				
-				gen.generate(w, d);	
+				ISVGGenerator gen = new ESubSVGGenerator (svgOptions);
+                gen.generate(w, d);	
 			}
 		}
 		catch(Exception e ) {
 			CTILogger.error("Error generating svg", e);
 		}
 	}
+
 
 	public void init(ServletConfig cfg) throws ServletException {		
 		super.init(cfg);

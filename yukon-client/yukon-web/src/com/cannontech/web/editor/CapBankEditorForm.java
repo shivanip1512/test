@@ -456,9 +456,15 @@ private List unassignedPoints = null;
          }
 		
         public String getCtlPointName () {
+            try{
             Integer pointID = capBank.getCapBank().getControlPointID();
             if (pointID != null && pointID.intValue() > 0)
                 return DaoFactory.getPointDao().getLitePoint(pointID).getPointName();
+            }
+            catch(NullPointerException npe)
+            {
+                CTILogger.info(npe.getMessage());
+            }
             return "";
         }
         

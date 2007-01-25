@@ -18,8 +18,8 @@ import org.w3c.dom.svg.SVGDocument;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
-import com.cannontech.esub.util.SVGGenerator;
-import com.cannontech.esub.util.SVGOptions;
+import com.cannontech.esub.svg.ESubSVGGenerator;
+import com.cannontech.esub.svg.SVGOptions;
 
 /**
  * Writes out a svg representation of all the alarms for
@@ -99,7 +99,7 @@ public class AlarmsTableGenerator extends HttpServlet {
                                 options.setEditEnabled(true);
                                 options.setAudioEnabled(audioEnabled);
                                 
-                                SVGGenerator svgGen = new SVGGenerator(options);
+                                ESubSVGGenerator svgGen = new ESubSVGGenerator(options);
 
                                 Element alarmTableElement = svgGen.createAlarmsTable(document, cat);
                                 alarmTableElement.setAttributeNS(null,"elementID", cat.getElementID());

@@ -37,7 +37,8 @@ public class EmbedSVGJSServlet extends HttpServlet {
 		int height = Integer.parseInt(req.getParameter("height"));
 		
 		Writer w = resp.getWriter();
-		w.write("document.write('<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"" + width + "\" height=\"" + height + "\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />')");
+		String html = "document.write('<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"" + width + "\" height=\"" + height + "\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />')";
+        w.write(html);
 		
 	}
 

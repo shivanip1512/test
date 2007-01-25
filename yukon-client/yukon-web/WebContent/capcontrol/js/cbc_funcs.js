@@ -294,7 +294,7 @@ function processMenuReq()
         response = req.responseText;
 
         overlib(
-            response, FULLHTML, STICKY, MOUSEOFF, FIXX, 425, FIXY, 225);
+            response, FULLHTML, STICKY, MOUSEOFF, FIXX, 225, FIXY, 225);
 
         //always do this
         freeReq( manMsgID );        
@@ -724,7 +724,7 @@ function pause(numberMillis) {
 function initFilter(parent_td, parent_table, column_filter_index) {
         var unique_options_list = new Array;
         var rows = parent_table.getElementsByTagName ('tr');     
-        var html = "<select id='parent_fdr_slct' onchange='applyFilter(this, capBankTable, 1);'>";
+        var html = "<select id='parent_fdr_slct' onchange='applyFilter(this, capBankTable, "+column_filter_index+");'>";
         html +=    "<option> All Feeders </option>"; 
         parent_td.innerText = "Parent Feeder";
         parent_td.innerHTML = "";
@@ -763,8 +763,8 @@ if (Number.NaN != ret) {
         }
 return false;
 }
-//only works 
-function showOneLine () {
+//old method that goes to retrieve the static SVG file
+function showStaticOneLine () {
 
    var elemSubs = document.getElementsByName('cti_chkbxSubs');
    var validElems = new Array();
@@ -782,10 +782,32 @@ function showOneLine () {
             var subName = document.getElementById (anc_id).innerText;
             subName = subName.removeLeadTrailSpace();
             var url = "/capcontrol/oneline/" + subName + ".html";
-            //openConfirmWin (url);
-            //post (url);
-            //var url = "/capcontrol/oneline/" + subName + ".html";
-            window.open (url, "_blank", "width=900,height=900,scrollbars=1,resizable=1,top=20,left=200");
+            window.location.href = url;
+            }
+         else {
+            alert ("Couldn't open window - URL invalid");
+            return;         
+         }
+   }
+}
+function showOneLine () {
+
+   var elemSubs = document.getElementsByName('cti_chkbxSubs');
+   var validElems = new Array();
+   getValidChecks( elemSubs, validElems );
+   if ( validElems.length <= 0 ) {
+        alert('Select Substation To View');
+        return;
+        }
+    else {      
+        if (validElems.length > 1)
+            alert ("You can only copy 1 item at a time"); 
+         var anc_id = 'anc_' + validElems[0].getAttribute('value');        
+         //there is an id for the sub name
+         if (document.getElementById (anc_id)) {
+            id = anc_id.split('_')[1];
+            url = "/capcontrol/oneline/OnelineCBCServlet?id=" + id;
+            post(url);
             }
          else {
             alert ("Couldn't open window - URL invalid");

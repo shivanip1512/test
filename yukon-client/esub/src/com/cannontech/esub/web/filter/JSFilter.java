@@ -10,6 +10,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Forwards all request for any file matching this filter
  * the /js directory
@@ -50,12 +52,23 @@ public class JSFilter implements Filter {
 		if( jsPath.startsWith("/esub/js/") ) {					
 			chain.doFilter(req,resp);		
 		}
-		else {
-			jsPath = jsPath.substring(jsPath.lastIndexOf("/"));
-			config.getServletContext().getRequestDispatcher("/esub/js" + jsPath).forward(req, resp);
-		}
-			
-	}
+        else
+		if (jsPath.startsWith("/capcontrol/oneline/"))
+        {
+              
+            jsPath = StringUtils.replace(jsPath, "/capcontrol/oneline/", "/JavaScript/");  
+            config.getServletContext().getRequestDispatcher(jsPath).forward(req, resp);
+            
+        }      
+            
+        else 
+            {
+    			jsPath = jsPath.substring(jsPath.lastIndexOf("/"));
+    			String finalPath = "/esub/js" + jsPath;
+                config.getServletContext().getRequestDispatcher(finalPath).forward(req, resp);
+            }
+   
+    }
 
 	/**
 	 * @see javax.servlet.Filter#destroy()

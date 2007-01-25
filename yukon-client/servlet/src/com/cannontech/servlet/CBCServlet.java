@@ -16,10 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
-import com.cannontech.cbc.web.OneLineSubs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
@@ -67,16 +67,11 @@ public class CBCServlet extends ErrorAwareInitializingServlet
 public void destroy() 
 {
 	// clean up
-	shutDownCBCOneLine();
     shutDownCBCCache(); 
     super.destroy();
 }
 
-private void shutDownCBCOneLine() {
-    OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
-    oneLine.stop();
-	getServletContext().removeAttribute(CBC_ONE_LINE);
-}
+
 
 private void shutDownCBCCache() {
     CBCClientConnection defCapControlConn = (CBCClientConnection) ConnPool.getInstance().getDefCapControlConn();
@@ -86,15 +81,6 @@ private void shutDownCBCCache() {
 
 
 
-private OneLineSubs getOneLineSubs () {
-	OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
-	if (oneLine == null) {
-    	oneLine = new OneLineSubs();
-		getServletContext().setAttribute(CBC_ONE_LINE, oneLine);
-		
-	}
-	return (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
-}
 
 /**
  * Creates a cache if one is not alread created
@@ -126,11 +112,17 @@ public void doInit(ServletConfig config) throws ServletException
 {
 	// Call the getters to init our objects in the context
 	getCapControlCache();
-	//start one line service
-	OneLineSubs oneLine = getOneLineSubs();
+	//create first set of html files for all subs
     String absPath = config.getServletContext().getRealPath(CBCWebUtils.ONE_LINE_DIR);
-    oneLine.setDirBase(absPath);    
-	oneLine.start();
+    generateOnelineHtml(absPath);
+    
+}
+
+private void generateOnelineHtml(String absPath) {
+    OnelineCBCBroker oneLine = new OnelineCBCBroker();
+    oneLine.setDirBase(absPath);
+    oneLine.setStaticMode(true);
+    oneLine.start();
 }	
 
 

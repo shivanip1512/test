@@ -364,7 +364,7 @@ public class Util {
 					//Drawing drawing = new Drawing();
 					CTILogger.info(f.getCanonicalPath() + " -> " + outDir.getCanonicalPath());
 					drawing.load(f.getCanonicalPath());
-					DrawingUpdater updater = new DrawingUpdater(drawing);
+					ESubDrawingUpdater updater = new ESubDrawingUpdater(drawing);
 					updater.setUpdateGraphs(true);
 					updater.updateDrawing();
 					drawing.exportAs(outDir.getCanonicalPath() + File.separatorChar + f.getName());

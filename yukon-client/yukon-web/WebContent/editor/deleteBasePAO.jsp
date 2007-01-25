@@ -8,7 +8,7 @@
 <f:verbatim>
 <script type="text/JavaScript">
  
-addLockButtonForButtonGroup("buttons", 5);
+addLockButtonForButtonGroup("buttons");
  
 </script>
 </f:verbatim>

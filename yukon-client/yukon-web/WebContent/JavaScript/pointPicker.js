@@ -19,7 +19,8 @@ var pointPicker_context = '';
 
 function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping, context) {
     // store server root context
-    pointPicker_context = context;
+    if (context != null)
+    	pointPicker_context = context;
     // store constraint away
     pointPicker_criteria = criteria;
     // parse extraMapping

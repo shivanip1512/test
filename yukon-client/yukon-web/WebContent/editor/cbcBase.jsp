@@ -132,7 +132,7 @@ addLockButtonForButtonGroup("foot_buttons");
 
 
                 <f:facet name="footer">
-                    <x:panelGroup id="buttons" forceId="true">
+                    <x:panelGroup id="foot_buttons" forceId="true">
                         <f:verbatim><br/></f:verbatim>
                         <x:commandButton id="submit_button1" value="Submit" action="#{capControlForm.update}" 
                         styleClass="stdButton" title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank']}"/>

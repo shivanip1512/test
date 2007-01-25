@@ -1,6 +1,27 @@
 /*Please be kind and keep things cleanly organized.  Add new entries to the end and use /**********************/
 /*to split your new additions from those already there.  Thanks!
 */
+/*
+changes for the progress oneline phase 2
+elliot
+*/
+/*start oneline progress fla*/
+INSERT INTO StateGroup VALUES( 4, '1LNSUBSTATE', 'Status' );
+INSERT INTO StateGroup VALUES( 5, '1LNVERIFY', 'Status' );
+
+
+
+INSERT INTO State VALUES( 5, 0, 'Verify All', 2, 6 , 0);
+INSERT INTO State VALUES( 5, 1, 'Verify Stop', 6, 6 , 0);
+
+
+INSERT INTO State VALUES( 4, 0, 'Enable', 5, 6 , 0);
+INSERT INTO State VALUES( 4, 1, 'Disable',9, 6 , 0);
+INSERT INTO State VALUES( 4, 2, 'Pending',7, 6 , 0);
+INSERT INTO State VALUES( 4, 3, 'Alt - Enabled', 2, 6 , 0);
+/*end oneline progress fla*/
+/***********************************************************************************/
+
 
 /*************** JULIE ADDITIONS: added 2 new state groups for points off of 2 way cbc's. Customer complaints about interpretting open/closed for point values.******/
 insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1 , 'TrueFalse', 'Status' from stategroup;

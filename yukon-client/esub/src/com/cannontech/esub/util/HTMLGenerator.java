@@ -22,7 +22,7 @@ public class HTMLGenerator {
 	private static final String footer = 
 	"</html>\n";
 	
-	private static final String script = "<script type=\"text/JavaScript\" src=\"PopupWindow.js\"></script>" +
+	private  String script = "<script type=\"text/JavaScript\" src=\"PopupWindow.js\"></script>" +
 											"<script type=\"text/JavaScript\" src=\"AnchorPosition.js\"></script>" +
 											"<script type=\"text/JavaScript\" src=\"Calendar1-82.js\"></script>" +
 											"<script type=\"text/JavaScript\" src=\"updateGraph.js\"></script>" +
@@ -60,7 +60,7 @@ public class HTMLGenerator {
 		w.write("<DIV ID=\"controlrequest\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>");		
 		
 		if(!genOptions.isStaticHTML()) {
-			w.write(script);
+			w.write(getScript());
 		}
 		w.write("<A NAME=\"popupanchor\" ID=\"popupanchor\"> </A>");
 		w.write("<script src='embedSVGControl.js?svgfile=" + svgFile + "&width=" + width + "&height=" + height + "'></script>");
@@ -74,4 +74,14 @@ public class HTMLGenerator {
 	public void setGenOptions(HTMLOptions genOptions) {
 		this.genOptions = genOptions;
 	}
+
+    public  String getScript() {
+        return script;
+    }
+
+    public  void setScript(String script) {
+       this.script = script;
+    }
+
+   
 } 

@@ -8,7 +8,7 @@ package com.cannontech.esub.util;
  * Used during svg generation.
  * @author aaron
   */
-class JS {
+public class JS {
 	static final String JS =
 	"var selectedRect = null;\n" +
 	"function underLine(elem) {\n" +
@@ -63,6 +63,8 @@ class JS {
 	"function _onload(evt) {\n" +
 	"   CGUI.init();" +
 	"   buildGUI();";
+   // + "   initCC();";
+    
 	
 	private static final String onLoadFooter = 
 	"   refresh(evt);" +

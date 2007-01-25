@@ -1,4 +1,4 @@
-package com.cannontech.esub.util;
+package com.cannontech.esub.svg;
 
 import java.awt.Color;
 /**

@@ -44,25 +44,19 @@ import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.editor.element.ElementEditorFactory;
 import com.cannontech.esub.editor.element.LineElementEditor;
-import com.cannontech.esub.editor.element.LineElementEditorPanel;
-import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.LineElement;
-import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.esub.util.ESubDrawingUpdater;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.EsubEditorRole;
 import com.cannontech.yukon.conns.ConnPool;
-import com.loox.jloox.LxAbstractLine;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
-import com.loox.jloox.LxLine;
 import com.loox.jloox.LxMouseAdapter;
 import com.loox.jloox.LxMouseEvent;
 import com.loox.jloox.LxMouseListener;
-import com.loox.jloox.LxMouseMotionListener;
 import com.loox.jloox.LxView;
 
 /**
@@ -84,7 +78,7 @@ public class Editor extends JPanel {
 	
 	// timer to update the drawing
 	private Timer drawingUpdateTimer;
-	private DrawingUpdater drawingUpdater;
+	private ESubDrawingUpdater drawingUpdater;
 	
 	// JDialog to re-use
 	private JDialog propertyDialog;
@@ -744,7 +738,7 @@ public class Editor extends JPanel {
 	}
 	
 	private void startUpdating() {
-		drawingUpdater = new DrawingUpdater();	
+		drawingUpdater = new ESubDrawingUpdater();	
 		drawingUpdater.setUpdateGraphs(true);
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdateTimer = new Timer();

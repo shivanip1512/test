@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.util.UpdateUtil;
 
 /**
@@ -48,12 +49,16 @@ public class DynamicTextServlet extends HttpServlet {
 		String idStr = req.getParameter(POINT_ID_KEY);
 		String displayAttribStr = req.getParameter(DISPLAY_ATTRIBUTE_KEY);
 				
-		int id = Integer.parseInt(idStr);
-		int dattrib = Integer.parseInt(displayAttribStr);
-		
-		Writer writer = resp.getWriter();		
-		writer.write(UpdateUtil.getDynamicTextString(id, dattrib));
-		writer.flush();
+		try{
+            int id = Integer.parseInt(idStr);
+    		int dattrib = Integer.parseInt(displayAttribStr);
+            Writer writer = resp.getWriter();       
+            writer.write(UpdateUtil.getDynamicTextString(id, dattrib));
+            writer.flush();
+            }
+        catch (NumberFormatException nfe) {
+            CTILogger.info("Dynamic Text Servlet Caught number format exception : "  + nfe.getMessage());
+        }
 	}
 
 	/**

@@ -5,7 +5,7 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
-import com.cannontech.cbc.web.OneLineSubs;
+import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.jmx.CTIBaseDynMBean;
 
 /**
@@ -16,7 +16,7 @@ import com.cannontech.jmx.CTIBaseDynMBean;
  */
 public class DynamicCBCOneLine extends CTIBaseDynMBean
 {
-	private OneLineSubs oneLine = null;
+	private OnelineCBCBroker oneLine = null;
 
 
 	/**
@@ -26,7 +26,7 @@ public class DynamicCBCOneLine extends CTIBaseDynMBean
 	{
 		super();
 		
-		oneLine = new OneLineSubs();		
+		oneLine = new OnelineCBCBroker();		
 		initialize();		
 	}
 

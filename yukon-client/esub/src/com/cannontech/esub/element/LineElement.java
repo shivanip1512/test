@@ -1,8 +1,6 @@
 package com.cannontech.esub.element;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
 import java.awt.Shape;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,13 +15,10 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistLineElement;
-import com.cannontech.esub.util.SVGGenerator;
-import com.cannontech.esub.util.Util;
+import com.cannontech.esub.svg.BaseSVGGenerator;
 import com.loox.jloox.LxAbstractLine;
-import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxArrowElement;
 
 /**
@@ -184,7 +179,8 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
             }
             setLineArrow(arrow.intValue());
             Shape[] s = getShape();
-            String dString = SVGGenerator.getPathString(s, getCenterX(), getCenterY());
+            String dString = BaseSVGGenerator.getPathString(s, getCenterX(), getCenterY());
+
             lineArrows.add(dString);
         }
         setLineArrow(originalArrowInt);

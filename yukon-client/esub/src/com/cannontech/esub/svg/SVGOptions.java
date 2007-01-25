@@ -1,7 +1,7 @@
 /*
  * Created on Jul 15, 2003
   */
-package com.cannontech.esub.util;
+package com.cannontech.esub.svg;
 
 
 /**
