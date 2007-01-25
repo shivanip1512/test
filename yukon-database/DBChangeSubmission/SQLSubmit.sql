@@ -44,3 +44,23 @@ go
 update point set pointoffset = 2 where pointname like 'UV op count%';
 update point set pointoffset = 3 where pointname like 'OV op count%';
 /*************** END JULIE ADDITIONS *********************/
+
+
+/*************** tmack ADDITIONS: new table for MACS **************************/
+create table MeterReadLog (
+   MeterReadLogID       numeric              not null,
+   DeviceID             numeric              not null,
+   RequestID            numeric              not null,
+   Timestamp            datetime             not null,
+   StatusCode           numeric              not null
+);
+go
+
+alter table MeterReadLog
+   add constraint PK_METERREADLOG primary key  (MeterReadLogID);
+go
+
+insert into sequencenumber values (1,'MeterReadLog');
+/*************** END tmack ADDITIONS *********************/
+
+

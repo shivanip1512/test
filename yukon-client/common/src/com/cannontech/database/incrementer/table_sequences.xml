@@ -47,5 +47,8 @@
       <sequence name="activityLogId">
         <table name="ActivityLog" identitycolumn="ACTIVITYLOGID" initsequence="true"/>
       </sequence>
+      <sequence name="MeterReadLog">
+        <table name="MeterReadLog" identitycolumn="MeterReadLogId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
