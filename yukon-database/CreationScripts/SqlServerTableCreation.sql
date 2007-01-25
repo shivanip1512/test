@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/8/2006 10:30:24 AM                        */
+/* Created on:     1/25/2007 5:45:29 PM                         */
 /*==============================================================*/
 
 
@@ -2035,6 +2035,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('METERREADLOG')
+            and   type = 'U')
+   drop table METERREADLOG
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('MSPInterface')
             and   type = 'U')
    drop table MSPInterface
@@ -2705,7 +2713,6 @@ insert into billingfileformats values(21, 'SIMPLE_TOU');
 insert into billingfileformats values(22, 'EXTENDED_TOU');
 insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
 insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
-
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key  (FormatID)
 go
@@ -5469,7 +5476,6 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-498, -124, 'VersacomSerial', 19, 'N', -1)
 INSERT INTO DEVICETYPECOMMAND VALUES (-499, -125, 'VersacomSerial', 20, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-500, -126, 'VersacomSerial', 21, 'N', -1);
 
-
 INSERT INTO DEVICETYPECOMMAND VALUES (-501, -34, 'CCU-721', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-502, -35, 'CCU-721', 2, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-503, -36, 'CCU-721', 3, 'Y', -1);
@@ -7399,6 +7405,24 @@ go
 
 
 /*==============================================================*/
+/* Table: METERREADLOG                                          */
+/*==============================================================*/
+create table METERREADLOG (
+   MeterReadLogID       numeric              not null,
+   DeviceID             numeric              not null,
+   RequestID            numeric              not null,
+   TIMESTAMP            datetime             not null,
+   STATUSCODE           numeric              not null
+)
+go
+
+
+alter table METERREADLOG
+   add constraint PK_METERREADLOG primary key  (MeterReadLogID)
+go
+
+
+/*==============================================================*/
 /* Table: MSPInterface                                          */
 /*==============================================================*/
 create table MSPInterface (
@@ -8038,6 +8062,16 @@ INSERT INTO State VALUES( 3, 4, 'OpenFail', 4, 6 , 0);
 INSERT INTO State VALUES( 3, 5, 'CloseFail', 5, 6 , 0);
 INSERT INTO State VALUES( 3, 6, 'OpenPending', 7, 6 , 0);
 INSERT INTO State VALUES( 3, 7, 'ClosePending', 8, 6 , 0);
+INSERT INTO State VALUES( 4, 0, 'False', 0, 6, 0);
+INSERT INTO State VALUES( 4, 1, 'True', 1, 6, 0);
+INSERT INTO State VALUES( 5, 0, 'Remote', 0, 6, 0);
+INSERT INTO State VALUES( 5, 1, 'Local', 1, 6, 0);
+INSERT INTO State VALUES( 6, 0, 'Enable', 5, 6 , 0);
+INSERT INTO State VALUES( 6, 1, 'Disable',9, 6 , 0);
+INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
+INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
+INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
+INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
 
 alter table STATE
    add constraint PK_STATE primary key  (STATEGROUPID, RAWSTATE)
@@ -8074,7 +8108,10 @@ INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System' );
 INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES( 2, 'ThreeStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status' );
-
+INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status' );
+INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
+INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
+INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
 alter table STATEGROUP
    add constraint SYS_C0013128 primary key  (STATEGROUPID)
 go
@@ -8167,6 +8204,7 @@ create table SequenceNumber (
 go
 
 
+insert into sequencenumber values (1,'MeterReadLog');
 alter table SequenceNumber
    add constraint PK_SEQUENCENUMBER primary key  (SequenceName)
 go

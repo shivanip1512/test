@@ -56,9 +56,6 @@ go
 sp_rename 'Substation.RouteID', 'LMRouteID', 'COLUMN';
 go
 
-/*==============================================================*/
-/* Table: SubstationToRouteMapping                              */
-/*==============================================================*/
 create table SubstationToRouteMapping (
    SubstationID		numeric              not null,
    RouteID              numeric              not null,
@@ -115,9 +112,6 @@ go
 alter table ImportFail alter column FailType varchar(64) not null;
 go
 
-/*==============================================================*/
-/* Table: ImportPendingComm                                     */
-/*==============================================================*/
 create table ImportPendingComm (
    DeviceID	       	   	numeric		    	 not null,
    Address             	varchar(64)          not null,
@@ -149,9 +143,6 @@ insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group'
 insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'false', 'Allow access to the Java Web Start Launcher for client applications.');
 go
 
-/*==============================================================*/
-/* Table: TemplateDisplay                                       */
-/*==============================================================*/
 create table TemplateDisplay (
    DisplayNum           numeric              not null,
    TemplateNum          numeric              not null
@@ -263,6 +254,40 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430IN', 10, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430IN', 11, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430IN', 12, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430IN', 13, 'Y', -1);
+
+insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1 , '1LNSUBSTATE', 'Status' from stategroup;
+go
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 0, 'Enable', 5, 6, 0 from stategroup where name = '1LNSUBSTATE';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 1, 'Disable', 9, 6, 0 from stategroup where name = '1LNSUBSTATE';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 2, 'Pending', 7, 6, 0 from stategroup where name = '1LNSUBSTATE';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 3, 'Alt - Enabled', 2, 6, 0 from stategroup where name = '1LNSUBSTATE';
+go
+
+insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1 , '1LNVERIFY', 'Status' from stategroup;
+go
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 0, 'Verify All', 2, 6, 0 from stategroup where name = 'LNVERIFY';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 1, 'Verify Stop', 6, 6, 0 from stategroup where name = 'LNVERIFY';
+go
+
+update point set pointoffset = 2 where pointname like 'UV op count%';
+update point set pointoffset = 3 where pointname like 'OV op count%';
+go
+
+create table MeterReadLog (
+   MeterReadLogID       numeric              not null,
+   DeviceID             numeric              not null,
+   RequestID            numeric              not null,
+   Timestamp            datetime             not null,
+   StatusCode           numeric              not null
+);
+go
+
+alter table MeterReadLog
+   add constraint PK_METERREADLOG primary key  (MeterReadLogID);
+go
+
+insert into sequencenumber values (1,'MeterReadLog');
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

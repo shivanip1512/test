@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/8/2006 11:22:14 AM                        */
+/* Created on:     1/25/2007 5:44:04 PM                         */
 /*==============================================================*/
 
 
@@ -488,6 +488,8 @@ drop table MCTConfig cascade constraints;
 
 drop table MCTConfigMapping cascade constraints;
 
+drop table METERREADLOG cascade constraints;
+
 drop table MSPInterface cascade constraints;
 
 drop table MSPVendor cascade constraints;
@@ -800,7 +802,6 @@ insert into billingfileformats values(21, 'SIMPLE_TOU');
 insert into billingfileformats values(22, 'EXTENDED_TOU');
 insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
 insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
-
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key (FormatID);
 
@@ -4743,6 +4744,20 @@ alter table MCTConfigMapping
    add constraint PK_MCTCONFIGMAPPING primary key (MctID, ConfigID);
 
 /*==============================================================*/
+/* Table: METERREADLOG                                          */
+/*==============================================================*/
+create table METERREADLOG  (
+   MeterReadLogID       NUMBER                          not null,
+   DeviceID             NUMBER                          not null,
+   RequestID            NUMBER                          not null,
+   TIMESTAMP            DATE                            not null,
+   STATUSCODE           NUMBER                          not null
+);
+
+alter table METERREADLOG
+   add constraint PK_METERREADLOG primary key (MeterReadLogID);
+
+/*==============================================================*/
 /* Table: MSPInterface                                          */
 /*==============================================================*/
 create table MSPInterface  (
@@ -5260,6 +5275,16 @@ INSERT INTO State VALUES( 3, 4, 'OpenFail', 4, 6 , 0);
 INSERT INTO State VALUES( 3, 5, 'CloseFail', 5, 6 , 0);
 INSERT INTO State VALUES( 3, 6, 'OpenPending', 7, 6 , 0);
 INSERT INTO State VALUES( 3, 7, 'ClosePending', 8, 6 , 0);
+INSERT INTO State VALUES( 4, 0, 'False', 0, 6, 0);
+INSERT INTO State VALUES( 4, 1, 'True', 1, 6, 0);
+INSERT INTO State VALUES( 5, 0, 'Remote', 0, 6, 0);
+INSERT INTO State VALUES( 5, 1, 'Local', 1, 6, 0);
+INSERT INTO State VALUES( 6, 0, 'Enable', 5, 6 , 0);
+INSERT INTO State VALUES( 6, 1, 'Disable',9, 6 , 0);
+INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
+INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
+INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
+INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
 
 alter table STATE
    add constraint PK_STATE primary key (STATEGROUPID, RAWSTATE);
@@ -5290,7 +5315,10 @@ INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System' );
 INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES( 2, 'ThreeStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status' );
-
+INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status' );
+INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
+INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
+INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
 alter table STATEGROUP
    add constraint SYS_C0013128 primary key (STATEGROUPID);
 
@@ -5363,6 +5391,7 @@ create table SequenceNumber  (
    SequenceName         VARCHAR2(20)                    not null
 );
 
+insert into sequencenumber values (1,'MeterReadLog');
 alter table SequenceNumber
    add constraint PK_SEQUENCENUMBER primary key (SequenceName);
 
