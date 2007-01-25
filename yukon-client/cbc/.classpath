@@ -20,5 +20,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/third-party/batik.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
