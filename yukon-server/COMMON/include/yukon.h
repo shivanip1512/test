@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2007/01/17 16:08:43 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/01/25 21:05:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -287,6 +287,8 @@ enum YukonError_t
     ErrorQueuePurged,           // Queue purged to clean memory.
 
     ErrorDeviceIPUnknown,
+
+    ErrorMACSTimeout,
 
     FinalError
 };

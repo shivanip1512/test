@@ -216,6 +216,8 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorQueuePurged,     "Queue purged to limit memory usage",               ERRTYPESYSTEM, " N/A"},
     { ErrorDeviceIPUnknown, "Device has not reported in, outbound IP unknown",  ERRTYPESYSTEM, " N/A"},
 
+    { ErrorMACSTimeout,     "MACS timed out on this message",               ERRTYPESYSTEM, " N/A"},
+
     { CtiInvalidRequest,    "Invalid/Incomplete Request",                   ERRTYPESYSTEM, " N/A"},
     { UnknownError,         "Unknown Error",                                ERRTYPESYSTEM, " N/A"},
 
