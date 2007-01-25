@@ -10,7 +10,7 @@ public class PortSettings extends DBPersistent
 {
 	private Integer portID = null;
 	private Integer baudRate = new Integer(1200);
-	private Integer cdWait = new Integer(1000);
+	private Integer cdWait = new Integer(0);
 	private String  lineSettings = "8N1";
 
 /**
