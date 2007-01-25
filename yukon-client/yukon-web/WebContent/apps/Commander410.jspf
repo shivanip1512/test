@@ -129,8 +129,8 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-                <td height="95%"  bgcolor="888888" class="tableHeader">Energy</td>
-                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
+                <td height="95%"  bgcolor="#888888" class="tableHeader">Energy</td>
+                <td height="95%" bgcolor="#888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
                 onMouseOver="window.status='Read Energy (from the meter)';return true;"
                 onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
@@ -138,7 +138,7 @@ function setCommand(cmd)
               <tr> 
                 <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
-                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                  <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
                       <td width="20%" class="columnHeader">Current</td>
                       <td width="35%"class="main" align="center"> 
@@ -166,7 +166,7 @@ function setCommand(cmd)
                         </div>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">Previous</td>
                       <td class="main" align="center"> 
                         <%
@@ -222,8 +222,8 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-                <td height="95%"  bgcolor="888888" class="tableHeader">Demand</td>
-                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
+                <td height="95%"  bgcolor="#888888" class="tableHeader">Demand</td>
+                <td height="95%" bgcolor="#888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
               onMouseOver="window.status='Read Demand and Peak Demand (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
@@ -231,7 +231,7 @@ function setCommand(cmd)
               <tr> 
                 <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
-                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                  <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
                       <td width="20%" class="columnHeader">Last Interval</td>
                       <td width="35%"class="main" align="center"> 
@@ -256,7 +256,7 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">Peak</td>
                       <td class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 11, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
@@ -300,8 +300,8 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-                <td height="95%"  bgcolor="888888" class="tableHeader">Voltage</td>
-                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue voltage & getvalue demand');disableAllButtons()" id="readVoltageID" name="readVoltage"
+                <td height="95%"  bgcolor="#888888" class="tableHeader">Voltage</td>
+                <td height="95%" bgcolor="#888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue voltage & getvalue demand');disableAllButtons()" id="readVoltageID" name="readVoltage"
               onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
@@ -309,7 +309,7 @@ function setCommand(cmd)
               <tr> 
                 <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
-                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                  <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
                       <td width="20%" class="columnHeader">Last Interval</td>
                       <td width="35%"class="main" align="center"> 
@@ -334,7 +334,7 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">Minimum</td>
                       <td class="main" align="center"> 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
@@ -402,8 +402,8 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-                <td height="95%"  bgcolor="888888" class="tableHeader">Outage</td>
-                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
+                <td height="95%"  bgcolor="#888888" class="tableHeader">Outage</td>
+                <td height="95%" bgcolor="#888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
               onMouseOver="window.status='Read Current Blink Count, Last 6 Outages (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
@@ -411,7 +411,7 @@ function setCommand(cmd)
               <tr> 
                 <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
-                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                  <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
                       <td width="20%" class="columnHeader">Blink Count</td>
                       <td width="35%"class="main" align="center"> 
@@ -436,13 +436,13 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="main">&nbsp; 
                     </tr>
                     <tr> 
                       <td class="columnHeader">History (Last 6)</td>
-                      <td colspan="2" class="main">1.&nbsp;&nbsp; 
+                      <td colspan="2" class="mainLeft">1.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_1);%>
                         <%if( pointData != null){%>
                         <%=pointData.getStr()%> 
@@ -451,9 +451,9 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
-                      <td colspan="2" class="main">2.&nbsp;&nbsp; 
+                      <td colspan="2" class="mainLeft">2.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_2);%>
                         <%if( pointData != null){%>
                         <%=pointData.getStr()%> 
@@ -464,7 +464,7 @@ function setCommand(cmd)
                     </tr>
                     <tr> 
                       <td class="columnHeader">&nbsp;</td>
-                      <td colspan="2" class="main">3.&nbsp;&nbsp; 
+                      <td colspan="2" class="mainLeft">3.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_3);%>
                         <%if( pointData != null){%>
                         <%=pointData.getStr()%> 
@@ -473,9 +473,9 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
-                      <td colspan="2" class="main">4.&nbsp;&nbsp; 
+                      <td colspan="2" class="mainLeft">4.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_4);%>
                         <%if( pointData != null){%>
                         <%=pointData.getStr()%> 
@@ -486,7 +486,7 @@ function setCommand(cmd)
                     </tr>
                     <tr> 
                       <td class="columnHeader">&nbsp;</td>
-                      <td colspan="2" class="main">5.&nbsp;&nbsp; 
+                      <td colspan="2" class="mainLeft">5.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_5);%>
                         <%if( pointData != null){%>
                         <%=pointData.getStr()%> 
@@ -495,9 +495,9 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                     </tr>
-                    <tr bgcolor="EEEEEE"> 
+                    <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
-                      <td colspan="2" class="main">6.&nbsp;&nbsp; 
+                      <td colspan="2" class="mainLeft">6.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_6);%>
                         <%if( pointData != null){%>
                         <%=pointData.getStr()%> 
@@ -530,8 +530,8 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-                <td height="95%"  bgcolor="888888" class="tableHeader">Disconnect</td>
-                <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
+                <td height="95%"  bgcolor="#888888" class="tableHeader">Disconnect</td>
+                <td height="95%" bgcolor="#888888" class="crumbs" align="right" style="font-weight:bold">
                 <a class="Link3" href="javascript:setCommand('control connect');disableAllButtons()" id="controlConnID" name="controlConn"
                   onMouseOver="window.status='Control Connect';return true;"
                   onMouseOut="window.status='';return true;">Connect</a>
@@ -548,7 +548,7 @@ function setCommand(cmd)
               <tr> 
                 <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
-                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                  <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
                       <td width="20%" class="columnHeader">Status</td>
                       <td width="35%"class="main" align="center"> 
@@ -591,8 +591,8 @@ function setCommand(cmd)
 			<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="30"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="30"></td>
-                <td height="95%"  bgcolor="888888" class="tableHeader">TOU Schedule</td>
-                <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
+                <td height="95%"  bgcolor="#888888" class="tableHeader">TOU Schedule</td>
+                <td height="95%" bgcolor="#888888" class="crumbs" align="right" style="font-weight:bold">
                   <select name="scheduleID" id="scheduleID">
                      <%for (int i = 0; i < scheds.size(); i++)
                      {
@@ -630,7 +630,7 @@ function setCommand(cmd)
                 } else {
                   gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
                 }%>
-                <td align="center"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
+                <td class="bottomLink"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
               </tr> 
               <tr>
                 <%
@@ -639,7 +639,7 @@ function setCommand(cmd)
                   } else {
                     gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
                   }%>
-                  <td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
+                  <td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
               </tr>               
             </table>
           </td>

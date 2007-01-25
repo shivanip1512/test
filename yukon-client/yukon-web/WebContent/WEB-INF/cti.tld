@@ -315,5 +315,29 @@
         Object getObjectForFQN(java.lang.String)
     </function-signature>
   </function>
+
+  <function>
+    <name>isDeviceSortByGroup</name>
+    <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
+    <function-signature>
+        boolean isDeviceSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
+    </function-signature>
+  </function>
+
+  <function>
+    <name>isLoadManagementSortByGroup</name>
+    <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
+    <function-signature>
+        boolean isLoadManagementSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
+    </function-signature>
+  </function>
+
+  <function>
+    <name>isCapControlSortByGroup</name>
+    <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
+    <function-signature>
+        boolean isCapControlSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
+    </function-signature>
+  </function>
     
 </taglib>

@@ -1,0 +1,102 @@
+div.searchForm {
+	padding-top: 20px;
+}
+
+div.formHeader {
+	padding-bottom: 10px;
+	text-align: center;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+div.formSection {
+	padding-top: 10px;
+}
+
+div.filterCancel {
+	margin: 20px 45%;
+}
+
+span.filterButtons {
+	margin-left: 40px;
+}
+
+span.smallText {
+	font-size: 12px;
+}
+
+span.selection {
+	padding-left: 10px;
+}
+
+div.commandInclude {
+	width: 60%;
+	float: left;
+}
+
+div.sideMenu {
+	padding: 10px 10px;
+	background-color: #069;
+	width: 12%;
+	float: left;
+}
+
+div.sideMenuSectionHeader {  
+	margin-top: 30px;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 16px; 
+	font-weight: bold;
+	color: #FFF; 
+	font-style: italic;
+}
+
+span.sideMenuText {  
+	color: #FFF;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 10px;
+}
+
+span.sideMenuTextDisabled {  
+	color: #ccc;
+	margin-left: 15px;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 10px
+}
+
+span.sideMenuTextSelected {  
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 10px;  
+	color: #FFF;
+}
+
+div.sideMenuLink {
+	margin-left: 15px;
+}
+
+div.sideMenuDevice {
+	display: inline;
+	margin-left: 15px;
+}
+
+div.titleHeader {  
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	color: #000000; 
+	font-weight:bold
+}
+
+div.subTitleHeader {  
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 11px; 
+	color: #000000; 
+	font-weight:bold
+}
+
+.bottomLink {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 11px; 
+	color: #000000; 
+}

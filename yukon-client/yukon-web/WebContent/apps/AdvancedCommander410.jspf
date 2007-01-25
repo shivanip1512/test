@@ -138,18 +138,14 @@ function disableAllButtons()
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 					    <tr> 
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-						  <td height="19" bgcolor="888888" class="tableHeader"> 
-						    <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-							  <tr> 
-		                        <td class="tableHeader"">Profile Peak Summary Reports</td>
-							  </tr>					
-						    </table>
+						  <td height="19" bgcolor="#888888" class="tableHeader"> 
+						  	Profile Peak Summary Reports
 						  </td>
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
 					    </tr>
                         <tr> 
-                          <td height="30" bgcolor="888888" ></td>
-                          <td height="30" bgcolor="888888" class="tableHeader"> 
+                          <td height="30" bgcolor="#888888" ></td>
+                          <td height="30" bgcolor="#888888" class="tableHeader"> 
                   			<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
                     		  <tr> 
                       			<td class="main">
@@ -168,7 +164,7 @@ function disableAllButtons()
                       			<td class="columnHeader">Days:
                         		  <input type="text" size="1" id="numDaysID" name="numDays" value="5">
                       			</td>
-					  			<td class="main" valign="bottom" align="right"> 
+					  			<td valign="bottom" align="right"> 
 								<a href="javascript:submitCommand('PeakReport',<%= channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="Link3" id="PRChannel1ID"
 										onMouseOver="window.status='Read (from the meter) the selected Profile Peak Report for Channel 1';return true;"
 										onMouseOut="window.status='';return true;"><%= channel_1Str%></a><br>
@@ -176,18 +172,12 @@ function disableAllButtons()
                     		  </tr>
                   			</table>
                 		  </td>
-                		  <td height="30" bgcolor="888888" ></td>
+                		  <td height="30" bgcolor="#888888" ></td>
               			</tr>
               			<tr> 
                 		  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
 						  <td> 
-						    <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
-							  <tr> 
-							    <td> 
-								  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
-								  </table>
-							    </td>
-							  </tr>
+						    <table width="100%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
 							  <tr colspan="3"> 
 							    <td class="columnHeader">Profile Peak Report - <%= channel_1Str %></td>
 							  </tr>
@@ -200,7 +190,7 @@ function disableAllButtons()
 										while( endIndex > 0)
 										{%>
 							  <tr> 
-							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
+							    <td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
 								<%
 									tempStr = tempStr.substring(endIndex+1);
 									endIndex = tempStr.indexOf("\n");
@@ -211,7 +201,7 @@ function disableAllButtons()
 							<%}
 									} else {%>
 							  <tr> 
-							    <td class="main">---</td>
+							    <td class="mainLeft">---</td>
 							  </tr>
 							<%}%>
 							  <tr> 
@@ -229,7 +219,7 @@ function disableAllButtons()
 								while( endIndex > 0)
 								{%>
 							  <tr> 
-							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
+							    <td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
 									<%
 									tempStr = tempStr.substring(endIndex+1);
 									endIndex = tempStr.indexOf("\n");
@@ -240,7 +230,7 @@ function disableAllButtons()
 							    <%}
 							  } else {%>
 							  <tr> 
-							    <td class="main">---</td>
+							    <td class="mainLeft">---</td>
 							  </tr>
 							  <%}%>
 						    </table>
@@ -271,18 +261,14 @@ function disableAllButtons()
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 						<tr> 
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-						  <td height="19" bgcolor="888888" class="tableHeader">
-							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-						      <tr>
-							    <td class="tableHeader"">Profile Data Collection</td>
-							  </tr>
-							</table>
+						  <td height="19" bgcolor="#888888" class="tableHeader">
+							Profile Data Collection
 						  </td>
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>		  
 						</tr>
 						<tr> 
-                          <td height="30" bgcolor="888888" ></td>
-                          <td height="30" bgcolor="888888" class="tableHeader"> 
+                          <td height="30" bgcolor="#888888" ></td>
+                          <td height="30" bgcolor="#888888" class="tableHeader"> 
 							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 							  <tr>
 							    <td class="columnHeader">Date: 
@@ -315,7 +301,7 @@ function disableAllButtons()
 								<%}%>			  
 								  </select>
 								</td>
-								<td class="main" valign="bottom" align="right"> 
+								<td valign="bottom" align="right"> 
 								  <a href="javascript:submitCommand('DataCollection', <%=channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="Link3" id="DCChannel1ID"
   										onMouseOver="window.status='Read (from the meter) and Archive (to the database) the Profile data for Channel 1';return true;"
 										onMouseOut="window.status='';return true;"><%= channel_1Str %></a><br>
@@ -326,12 +312,12 @@ function disableAllButtons()
 							  </tr>
 							</table>
                 		  </td>
-                		  <td height="30" bgcolor="888888" ></td>
+                		  <td height="30" bgcolor="#888888" ></td>
               			</tr>						
 						<tr>
 						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
 						  <td>
-							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
 							  <tr colspan="3"> 
 							    <td class="columnHeader">Recent Profile Data Collection - <%= channel_1Str%></td>
 							  </tr>
@@ -345,7 +331,7 @@ function disableAllButtons()
 								while( endIndex > 0)
 								{%>
 							  <tr>
-							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>>
+							    <td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>>
 									<%=tempStr.substring(beginIndex, endIndex)%>
 									<%
 									tempStr = tempStr.substring(endIndex+1);
@@ -357,7 +343,7 @@ function disableAllButtons()
 								<%}
 	 						} else {%>
 						  	  <tr>
-							    <td class="main">---</td>
+							    <td class="mainLeft">---</td>
   							  </tr>
 							<%}%>
 							  <tr> 
@@ -375,7 +361,7 @@ function disableAllButtons()
 								while( endIndex > 0)
 								{%>
 							  <tr>
-							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>>
+							    <td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>>
 									<%=tempStr.substring(beginIndex, endIndex)%>
 									<%
 									tempStr = tempStr.substring(endIndex+1);
@@ -387,7 +373,7 @@ function disableAllButtons()
 								<%}
 	 						} else {%>
 						  	  <tr>
-							    <td class="main">---</td>
+							    <td class="mainLeft">---</td>
   							  </tr>
   							<%}%>
 							  <tr> 
@@ -413,18 +399,14 @@ function disableAllButtons()
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 						<tr> 
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-						  <td height="19" bgcolor="888888" class="tableHeader">
-							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-						      <tr>
-							    <td class="tableHeader"">Profile Archived Data Display</td>
-							  </tr>
-							</table>
+						  <td height="19" bgcolor="#888888" class="tableHeader">
+							Profile Archived Data Display
 						  </td>
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>		  
 						</tr>
 						<tr> 
-                          <td height="30" bgcolor="888888" ></td>
-                          <td height="30" bgcolor="888888" class="tableHeader"> 
+                          <td height="30" bgcolor="#888888" ></td>
+                          <td height="30" bgcolor="#888888" class="tableHeader"> 
 							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 							  <tr>
 								<td class="columnHeader" align="right">Date 
@@ -433,7 +415,7 @@ function disableAllButtons()
 									onMouseOver="window.status='Date Calendar';return true;"
 									onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
 								</td>
-								<td width="40%" class="main" valign="bottom" align="right"> 
+								<td width="40%" valign="bottom" align="right"> 
 								  <a href="javascript:submitCommand('LoadRPHData', <%= channel_1ID%>, -1);" style="font-weight:bold;height:20px" class="Link3" id="LoadRPH1ID"
   										onMouseOver="window.status='Retrieve (from the database) the archived data values for Channel 1';return true;"
 										onMouseOut="window.status='';return true;"><%= channel_1Str %></a><br>
@@ -444,27 +426,27 @@ function disableAllButtons()
 							  </tr>
 							</table>
                 		  </td>
-                		  <td height="30" bgcolor="888888" ></td>
+                		  <td height="30" bgcolor="#888888" ></td>
               			</tr>
 						<tr>
 						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
 						  <td>
-							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">	    
+							<table width="100%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">	    
 							  <tr> 
 							    <td> 						  
                                   <table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
 							  		<tr>
 							  		  <td colspan="4"> 
-										<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+										<table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#ffffff" align="center">
 										  <tr>
 										    <td colspan="4" class="columnHeader" align="center"><%=liteYukonPao.getPaoName()%> - <%=(YC_BEAN.getPointID() == PointTypes.SYS_PID_SYSTEM?"Undefined Point":DaoFactory.getPointDao().getPointName(YC_BEAN.getPointID()))%>
 						        			</td>										
 										  </tr>
 								  		  <tr> 
-											<td width="25%" class="columnHeader" align="center" bgcolor="EEEEEE">Timestamp</td>
-											<td width="25%" class="columnHeader" align="center" bgcolor="EEEEEE">Value</td>
-											<td width="25%" class="columnHeader" align="center" bgcolor="EEEEEE">Timestamp</td>
-											<td width="25%" class="columnHeader" align="center" bgcolor="EEEEEE">Value</td>
+											<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Timestamp</td>
+											<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Value</td>
+											<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Timestamp</td>
+											<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Value</td>
 								  		  </tr>
 										    <%java.util.Vector lrphVector = YC_BEAN.getCurrentRPHVector();
 											if( lrphVector != null && !lrphVector.isEmpty()){
@@ -485,7 +467,7 @@ function disableAllButtons()
 												{
 												  lrph = (LiteRawPointHistory)lrphVector.get(i);
 												  %>
-												  <tr <%=!(i%2==0)? "bgcolor='EEEEEE'":""%>> 
+												  <tr <%=!(i%2==0)? "bgcolor='#EEEEEE'":""%>> 
 													<td width="25%" align="center" class="main"><%=dateTimeFormat.format(new java.util.Date(lrph.getTimeStamp()))%> 
 													</td>
 													<td width="25%" align="center" class="main"><%=df.format(lrph.getValue())%> 
@@ -533,7 +515,7 @@ function disableAllButtons()
 				        } else {
 				          gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
 				        }%>
-		   			  	  <td align="center"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
+		   			  	  <td class="bottomLink"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
 					    </tr>	
 		                <tr>
 					  	<%if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
@@ -542,7 +524,7 @@ function disableAllButtons()
 				          gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
 				        }
 		   				if ((lp || manual ) && isMCT410) {%>
-						  <td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410Custom</a></td>
+						  <td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410Custom</a></td>
 					  <%}%>
 			            </tr>			          
 					  </table>								  

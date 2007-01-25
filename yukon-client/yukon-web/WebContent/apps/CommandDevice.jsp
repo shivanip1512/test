@@ -33,8 +33,8 @@
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 <jsp:setProperty name="YC_BEAN" property="userID" value="<%= lYukonUser.getUserID()%>"/>
-<%-- Grab the search criteria --%>
 
+<%-- Grab the search criteria --%>
 <%
 	PointData pointData = null;
 
@@ -47,9 +47,7 @@
             session.removeAttribute("CustomerDetail"); //delete this for now, we'll figure out a way to store per meter later
             session.removeAttribute("ServLocDetail"); //delete this for now, we'll figure out a way to store per meter later
         }
-	}
-	else
-	{
+	} else {
 		deviceID = YC_BEAN.getDeviceID();
 	}
 
@@ -59,18 +57,15 @@
         liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 	
 	boolean manual = false;
-	if( request.getParameter("manual") != null)
-	{	//Force going to the Commander page instead of a page based on the DeviceType
+	if( request.getParameter("manual") != null) {	//Force going to the Commander page instead of a page based on the DeviceType
 		manual = true;
 	}
 	boolean lp = false;
-	if( request.getParameter("lp") != null)
-	{	//Force going to the Load Profile
+	if( request.getParameter("lp") != null) {	//Force going to the Load Profile
 		lp = true;
 	}
 	boolean isMCT410 = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType());
-	if( !isMCT410 )
-	{	//MUST BE Manual...force it
+	if( !isMCT410 ) {	//MUST BE Manual...force it
 		manual = true;
 	}
 		
@@ -80,363 +75,392 @@
 	if( request.getParameter("xcom") != null){
 		serialNum = request.getParameter("xcom");
 		serialType = "xcom";
-	}
-	else if( request.getParameter("vcom") != null){
+	} else if( request.getParameter("vcom") != null){
 		serialNum = request.getParameter("vcom");
 		serialType = "vcom";
-	}
-	else if( request.getParameter("sa205") != null){
+	} else if( request.getParameter("sa205") != null){
 		serialNum = request.getParameter("sa205");
 		serialType = "sa205";
-	}
-	else if( request.getParameter("sa305") != null){
+	} else if( request.getParameter("sa305") != null){
 		serialNum = request.getParameter("sa305");
 		serialType = "sa305";
 	}
 %>
-<html>
-<head>
-<title>Energy Services Operations Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<link rel="stylesheet" href="../WebConfig/yukon/Base.css" type="text/css">
-<SCRIPT  LANGUAGE="JavaScript" SRC="../JavaScript/calendar.js"></SCRIPT>
-<SCRIPT language="JavaScript">
-function setMspCommand(cmd)
-{
-    document.mspCommandForm.command.value = cmd;
-    document.mspCommandForm.submit();
-}
-</SCRIPT>
-</head>
-<body class="Background" leftmargin="0" topmargin="0">
-<table width="760" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td>
-	  <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-		<tr> 
-		  <td width="102" height="102" background="../WebConfig/yukon/MeterImage.jpg">&nbsp;</td>
-		  <td valign="bottom" height="102"> 
-			<table width="657" cellspacing="0"  cellpadding="0" border="0">
-			  <tr> 
-               	<td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
-			  </tr>
-			  <tr>
-				<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commander&nbsp;&nbsp;</td>
-				<td width="253" valign="middle">&nbsp;</td>
-				<td width="58" valign="middle">
-                  <div align="center"><span class="MainText"><a href="../operator/Operations.jsp" class="Link3">Home</a></span></div>
-				</td>
-				<td width="57" valign="middle"> 
-				  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-				</td>
-			  </tr>
-			</table>
-		  </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-	    </tr>
-	  </table>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
-        <tr> 
-          <td width="102" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
-        </tr>
-        <tr> 
-          <td  valign="top" width="101"> 
-          	<%--"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID--%>
-            <% String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;%>
-            <%if( manual) redirect = redirect + "&manual";%>
-            <%if( lp ) redirect = redirect + "&lp";%>
-            <% String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;%>
-            <% String pageName = "CommandDevice.jsp?deviceID=" + deviceID;%>
-            <% if( serialType.length() > 0 )
-            {
-            	redirect = redirect + "&" + serialType + "=" + serialNum;
-            	referrer = referrer + "&" + serialType + "=" + serialNum;
-            	pageName = pageName + "&" + serialType + "=" + serialNum;
-            }
-            %>
-			<table width="101" border="0" cellspacing="0" cellpadding="5">
-			  <tr> 
-			    <td> 
-			      <div align="left">
-				    <span class="NavHeader">Go To...</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-					  <tr>
-					  	<% String link = "";
-					  	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-		              	  link =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
-		              	} else {
-		              	  link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
-		                }
-   					  	if (manual ){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>Manual</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='<%=link%>' class='Link2'><span class='NavText'>Manual</span></a></td>
-						<%}%>						
-			          </tr>	
- 					  <tr>
-					  	<% 
-					  	  if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-		              	    link =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
-		              	  } else {
-		              	    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
-		                  }
-   					  	  if (! (lp || manual) ){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>MCT410 Custom</span></td>
-						  <%} else if (isMCT410){%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='<%=link%>' class='Link2'><span class='NavText'>MCT410 Custom</span></a></td> 
-						  <%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1;color: #CCCCCC"><span class='NavText'>MCT410 Custom</span></td>
-						  <%}%>
-			          </tr>			          
-			          <tr>
-					  	<%
-					  	  if (request.getParameter("InvNo") != null) {	//we came from the Customer Account page
-	                	    link = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
-              			  } else {
-						    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
-                          }
-					  	  if (lp) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>MCT410 Profile</span></td>
-						  <%} else if (isMCT410){%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='<%=link%>' class='Link2'><span class='NavText'>MCT410 Profile</span></a></td>
-						  <%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1;color: #CCCCCC"><span class='NavText'>MCT410 Profile</span></td>
-						  <%}%>
-			          </tr>
-  					  <tr><td height="10"></td></tr>
-			          <tr>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>Select Device</span></a></td>
-			          </tr>
-  					  <tr><td height="10"></td></tr>
-			        </table>
-			      </div>
-			    </td>
-			  </tr>
-			  <tr> 
-			    <td> 
-			      <div align="left">
-				    <span class="NavHeader">Devices</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
-			          {
-			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
-			          	LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
-			          	if( CommandDeviceBean.isDeviceSortByGroup(lPao) )
-			          	{%>
-			          <tr>
-					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="3"></td></tr>
-			          <% } }%>
-					  <tr><td height="25"></td></tr>
-			        </table>			      
-				    <span class="NavHeader">Load Management</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
-			          {
-			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
-			          	LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
-			          	if( CommandDeviceBean.isLoadManagementSortByGroup(lPao) )
-			          	{%>
-			          <tr>
-					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="3"></td></tr>
-			          <% } }%>
-					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
- 					  <tr>
-					  	<% if (serialType.equals("sa205") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>DCU-205 Serial</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205' class='Link2'><span class='NavText'>DCU-205 Serial</span></a></td>
-						<%}%>						
-			          </tr>
-  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA205_SERIAL); 
-  					  if(serialNumbers != null)
-  					  {
-  			            for (int i = 0; i < serialNumbers.size(); i++)
-  			            {
-			          	  String sn = (String)serialNumbers.get(i);%>
-			          <tr>
-					  	<% if (serialType.equals("sa205") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
-						<%}%>						
-			          </tr>
-			          <%}
-			          }%>
-  					  <tr><td height="5"></td></tr>
-					  </cti:checkProperty>
-					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
-					  <tr>
-					  	<% if (serialType.equals("sa305") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>DCU-305 Serial</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305' class='Link2'><span class='NavText'>DCU-305 Serial</span></a></td>
-						<%}%>						
-			          </tr>
-  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA305_SERIAL); 
-  					  if(serialNumbers != null)
-  					  {
-  			            for (int i = 0; i < serialNumbers.size(); i++)
-  			            {
-			          	  String sn = (String)serialNumbers.get(i);%>
-			          <tr>
-					  	<% if (serialType.equals("sa305") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
-						<%}%>						
-			          </tr>
-			          <%}
-			          }%>
-  					  <tr><td height="5"></td></tr>
-					  </cti:checkProperty>
-					  <cti:checkProperty propertyid="<%= CommanderRole.EXPRESSCOM_SERIAL_MODEL %>">
-			          <tr> 
-					  	<% if (serialType.equals("xcom") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>Expresscom Serial</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom' class='Link2'><span class='NavText'>Expresscom Serial</span></a></td>
-						<%}%>						
-			          </tr>
-  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL); 
-  					  if(serialNumbers != null)
-  					  {
-  			            for (int i = 0; i < serialNumbers.size(); i++)
-  			            {
-			          	  String sn = (String)serialNumbers.get(i);%>
-			          <tr>
-					  	<% if (serialType.equals("xcom") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
-						<%}%>						
-			          </tr>
-			          <%}
-			          }%>
-  					  <tr><td height="5"></td></tr>
-  					  </cti:checkProperty>
-  					  <cti:checkProperty propertyid="<%= CommanderRole.VERSACOM_SERIAL_MODEL %>">
-			          <tr> 
-					  	<% if (serialType.equals("vcom") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'>Versacom Serial</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom' class='Link2'><span class='NavText'>Versacom Serial</span></a></td>
-						<%}%>						
-			          </tr>
-  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_VERSACOM_SERIAL); 
-  					  if(serialNumbers != null)
-  					  {
-  			            for (int i = 0; i < serialNumbers.size(); i++)
-  			            {
-			          	  String sn = (String)serialNumbers.get(i);%>
-			          <tr>
-					  	<% if (serialType.equals("vcom") && sn.equals( serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
-						<%}%>						
-			          </tr>
-			          <%}
-			          }%>
-					  <tr><td height="25"></td></tr>
-					  </cti:checkProperty>
-			        </table>
-				    <span class="NavHeader">Cap Control</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
-			          {
-			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
-			          	LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
-			          	if( CommandDeviceBean.isCapControlSortByGroup(lPao) )
-			          	{%>
-			          <tr>
-					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="3"></td></tr>
-			          <% } }%>
-			        </table>
-			      </div>
-			    </td>
-			  </tr>
-			</table>
-          </td>
-          <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-<%
-			if( lp )
-			{%>
-				<%@ include file="AdvancedCommander410.jspf"%>
-			<%}
-			else if (isMCT410 && !manual)
-			{
-			%>
-				<%@ include file="Commander410.jspf"%>
-			<%}
-			else
-			{%>
-	 			<%@ include file="Commander.jspf"%>
-			<%}%>
+
+<cti:standardPage title="Energy Services Operations Center" module="commander">
+	<cti:standardMenu/>
+
+	<script  language="JavaScript" src="../JavaScript/calendar.js"></script>
+	<script language="JavaScript">
+		function setMspCommand(cmd)
+		{
+		    document.mspCommandForm.command.value = cmd;
+		    document.mspCommandForm.submit();
+		}
+	</script>
+	
+<% 
+	//"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID
+    String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;
+    if(manual) {
+    	redirect = redirect + "&manual";
+    }
+    if(lp) {
+    	redirect = redirect + "&lp";
+    }
+    String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;
+    String pageName = "CommandDevice.jsp?deviceID=" + deviceID;
+    if( serialType.length() > 0 ) {
+    	redirect = redirect + "&" + serialType + "=" + serialNum;
+    	referrer = referrer + "&" + serialType + "=" + serialNum;
+    	pageName = pageName + "&" + serialType + "=" + serialNum;
+    }
+%>
+	
+	<c:set var="manual" scope="page" value="<%=manual%>"/>
+	<c:set var="lp" scope="page" value="<%=lp%>"/>
+	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
+	<c:set var="isMCT410" scope="page" value="<%=isMCT410%>"/>
+	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
+	
+	<div class="mainFull">
+	
+		<!-- Side menu -->
+		<div class="sideMenu">
+			<div class="sideMenuSectionHeader">Go To...</div>
 			
-          <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-        </tr>
-      </table>
-    </td>
-	</tr>
-</table>
-<br>
-</body>
-</html>
+			<!-- Manual side menu section -->
+			<c:choose>
+				<c:when test="${manual}">
+					<div>
+						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+						<span class="sideMenuTextSelected">Manual</span>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<c:choose>
+						<c:when test="${!empty param.InvNo}">
+							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&manual&command=null"/> 
+						</c:when>
+						<c:otherwise>
+							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&manual&command=null"/> 
+						</c:otherwise>
+					</c:choose>
+					<div class="sideMenuLink">
+						<a href="${link}" class="Link2">
+							<span class="sideMenuText">Manual</span>
+						</a>
+					</div>
+				</c:otherwise>
+			</c:choose>
+
+			<!-- MCT410 Custom side menu section -->
+			<c:choose>
+				<c:when test="${!(lp || manual)}">
+					<div>
+						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+						<span class="sideMenuTextSelected">MCT410 Custom</span>
+					</div>
+				</c:when>
+				<c:when test="${isMCT410}">
+					<c:choose>
+						<c:when test="${!empty param.InvNo}">
+							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&command=null"/> 
+						</c:when>
+						<c:otherwise>
+							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&command=null"/> 
+						</c:otherwise>
+					</c:choose>
+					<div class="sideMenuLink">
+						<a href="${link}" class="Link2">
+							<span class="sideMenuText">MCT410 Custom</span>
+						</a>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div>
+						<span class="sideMenuTextDisabled">MCT410 Custom</span>
+					</div>
+				</c:otherwise>
+			</c:choose>
+			<!-- MCT410 Profile side menu section -->
+			<c:choose>
+				<c:when test="${lp}">
+					<div>
+						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+						<span class="sideMenuTextSelected">MCT410 Profile</span>
+					</div>
+				</c:when>
+				<c:when test="${isMCT410}">
+					<c:choose>
+						<c:when test="${!empty param.InvNo}">
+							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&lp"/> 
+						</c:when>
+						<c:otherwise>
+							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&lp"/> 
+						</c:otherwise>
+					</c:choose>
+					<div class="sideMenuLink">
+						<a href="${link}" class="Link2">
+							<span class="sideMenuText">MCT410 Profile</span>
+						</a>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div>
+						<span class="sideMenuTextDisabled">MCT410 Profile</span>
+					</div>
+				</c:otherwise>
+			</c:choose>
+			
+			<!-- Select Device link -->
+			<div class="sideMenuLink">
+				<a href="SelectDevice.jsp" class="Link2">
+					<span class="sideMenuText">Select Device</span>
+				</a>
+			</div>
+		
+			<!-- Devices side menu section -->
+			<div class="sideMenuSectionHeader">Devices</div>
+			
+			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
+				<c:if test="${cti:isDeviceSortByGroup(device)}">
+					<c:choose>
+						<c:when test="${deviceId == device.yukonID}">
+							<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+							<span class="sideMenuTextSelected">${device.paoName}</span>
+						</c:when>
+						<c:otherwise>
+							<div class="sideMenuDevice">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link2">
+									<span class="sideMenuText">${device.paoName}</span>
+								</a>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+				<br/>
+			</c:forEach>
+		
+			<!-- Load Management menu section -->
+			<div class="sideMenuSectionHeader">Load Management</div>
+			
+			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
+				<c:if test="${cti:isLoadManagementSortByGroup(device)}">
+					<c:choose>
+						<c:when test="${deviceId == device.yukonID}">
+							<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+							<span class="sideMenuTextSelected">${device.paoName}</span>
+						</c:when>
+						<c:otherwise>
+							<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link2">
+								<span class="sideMenuText">${device.paoName}</span>
+							</a>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+			</c:forEach>
+			
+			<!-- DCU-205 Serial section -->
+			<cti:checkProperty property="CommanderRole.DCU_SA205_SERIAL_MODEL">
+				<c:choose>
+					<c:when test="${serialType == 'sa205'}">
+						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+						<span class="sideMenuTextSelected">DCU-205 Serial</span>
+					</c:when>
+					<c:otherwise>
+						<a href="CommandDevice.jsp?deviceID=${device.yukonID}&manual&sa205" class="Link2">
+							<span class="sideMenuText">DCU-205 Serial</span>
+						</a>
+					</c:otherwise>
+				</c:choose>
+<%
+	serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA205_SERIAL); 
+  	if(serialNumbers != null) {
+		for (int i = 0; i < serialNumbers.size(); i++) {
+			String sn = (String)serialNumbers.get(i);
+			if (serialType.equals("sa205") && sn.equals(serialNum)) {
+%>
+				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+				<span class="sideMenuTextSelected"><%=sn%></span>
+<%
+			} else {
+%>
+				<div class="sideMenuLink">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205=<%=sn%>" class="Link2">
+						<span class="sideMenuText"><%=sn%></span>
+					</a>
+				</div>
+<%				
+			}
+		}
+	}
+%>
+			</cti:checkProperty>
+			
+			<!-- DCU-305 Serial section -->
+			<cti:checkProperty property="CommanderRole.DCU_SA305_SERIAL_MODEL">
+				<c:choose>
+					<c:when test="${serialType == 'sa305'}">
+						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+						<span class="sideMenuTextSelected">DCU-305 Serial</span>
+					</c:when>
+					<c:otherwise>
+						<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>}&manual&sa305" class="Link2">
+							<span class="sideMenuText">DCU-305 Serial</span>
+						</a>
+					</c:otherwise>
+				</c:choose>
+		
+<%
+	serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA305_SERIAL); 
+  	if(serialNumbers != null) {
+  		for (int i = 0; i < serialNumbers.size(); i++) {
+			String sn = (String)serialNumbers.get(i);
+			if (serialType.equals("sa305") && sn.equals(serialNum)) {
+%>
+				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+				<span class="sideMenuTextSelected"><%=sn%></span>
+<%
+			} else {
+%>
+				<div class="sideMenuLink">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305=<%=sn%>" class="Link2">
+						<span class="sideMenuText"><%=sn%></span>
+					</a>
+				</div>
+<%				
+			}
+		}
+	}
+%>
+			</cti:checkProperty>
+				
+			<!-- Expresscom Serial section -->
+			<cti:checkProperty property="CommanderRole.EXPRESSCOM_SERIAL_MODEL">
+<% 
+	if (serialType.equals("xcom") ) {
+%>
+				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+				<span class="sideMenuTextSelected">Expresscom Serial</span>
+<%
+	} else {
+%>
+				<div class="sideMenuLink">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom" class="Link2">
+			        	<span class="sideMenuText">Expresscom Serial</span>
+			        </a>
+			    </div>
+<%
+	}
+	serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL); 
+	if(serialNumbers != null) {
+  		for (int i = 0; i < serialNumbers.size(); i++) {
+			String sn = (String)serialNumbers.get(i);
+			if (serialType.equals("xcom") && sn.equals(serialNum)) {
+%>
+				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+				<span class="sideMenuTextSelected"><%=sn%></span>
+<%
+			} else {
+%>
+				<div class="sideMenuLink">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom=<%=sn%>" class="Link2">
+						<span class="sideMenuText"><%=sn%></span>
+					</a>
+				</div>
+<%
+			}
+		}
+	}
+%>
+			</cti:checkProperty>
+		
+			<!-- Versacom Serial section -->
+			<cti:checkProperty property="CommanderRole.VERSACOM_SERIAL_MODEL">
+		
+<% 
+	if (serialType.equals("vcom") ) {
+%>
+				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+				<span class="sideMenuTextSelected">Versacom Serial</span>
+<%
+	} else {
+%>
+				<div class="sideMenuLink">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom" class="Link2">
+			        	<span class="sideMenuText">Versacom Serial</span>
+			        </a>
+			    </div>
+<%
+	}
+	serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_VERSACOM_SERIAL); 
+  	if(serialNumbers != null) {
+  		for (int i = 0; i < serialNumbers.size(); i++) {
+			String sn = (String)serialNumbers.get(i);
+			if (serialType.equals("vcom") && sn.equals( serialNum)) {
+%>
+				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+				<span class="sideMenuTextSelected"><%=sn%></span>
+<%
+			} else {
+%>
+				<div class="sideMenuLink">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom=<%=sn%>" class="Link2">
+			        	<span class="sideMenuText"><%=sn%></span>
+			        </a>
+			    </div>
+<%
+			}
+		}
+	}
+%>
+			</cti:checkProperty>
+		
+			<!-- Cap Control menu section -->
+			<div class="sideMenuSectionHeader">Cap Control</div>
+			
+			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
+				<c:if test="${cti:isCapControlSortByGroup(device)}">
+					<c:choose>
+						<c:when test="${deviceId == device.yukonID}">
+							<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
+							<span class="sideMenuTextSelected">${device.paoName}</span>
+						</c:when>
+						<c:otherwise>
+							<div class="sideMenuLink">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link2">
+									<span class="sideMenuText">${device.paoName}</span>
+								</a>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+				<br/>
+			</c:forEach>
+			
+		</div>
+	
+	
+		<div class="commandInclude">
+		<table>
+			<tr>
+			<c:choose>
+				<c:when test="${lp}">
+					<%@ include file="AdvancedCommander410.jspf"%>
+				</c:when>
+				<c:when test="${isMCT410 && !manual}">
+					<%@ include file="Commander410.jspf"%>
+				</c:when>
+				<c:otherwise>
+					<%@ include file="Commander.jspf"%>
+				</c:otherwise>
+			</c:choose>
+			</tr>
+		</table>
+		</div>
+	</div>
+	
+	<div style="clear:both"></div>
+	
+</cti:standardPage>

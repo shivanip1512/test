@@ -270,14 +270,20 @@
     <skin name="standard"/>
   </module>
 
-   <module name="operations">
+  <module name="operations">
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
   </module>
 
-   <module name="commander">
+  <module name="commander">
     <skin name="standard"/>
-    <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
+    <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
+    <css file="/WebConfig/yukon/Base.css"/>
+  </module>
+
+   <module name="commanderSelect">
+    <skin name="standard"/>
+    <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     
     <toplinks>
       <option name="Devices">

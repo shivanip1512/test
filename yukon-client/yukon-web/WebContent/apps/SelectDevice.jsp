@@ -1,14 +1,11 @@
 <%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory"%> 
-<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
-<%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>
+
 <%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
-<%@ page import="com.cannontech.database.data.device.CarrierBase"%>
-<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
-<%@ page import="com.cannontech.database.data.pao.DeviceClasses"%>
-<%@ page import="com.cannontech.roles.application.CommanderRole"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
+
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="commandDeviceBean" property="page" param="page_"/>
 <jsp:setProperty name="commandDeviceBean" property="pageSize" param="pageSize"/>
@@ -17,407 +14,220 @@
 <jsp:setProperty name="commandDeviceBean" property="orderBy" param="OrderBy"/>
 <jsp:setProperty name="commandDeviceBean" property="orderDir" param="OrderDir"/>
 <jsp:setProperty name="commandDeviceBean" property="sortBy" param="SortBy"/>
-<%--<jsp:setProperty name="commandDeviceBean" property="deviceClass" param="DeviceClass"/>--%>
-<%--<jsp:setProperty name="commandDeviceBean" property="collGroup" param="CollGroup"/>--%>
 <jsp:setProperty name="commandDeviceBean" property="searchBy" param="SearchBy"/>
 <jsp:setProperty name="commandDeviceBean" property="userID" value="<%=lYukonUser.getUserID()%>"/>
 <jsp:setProperty name="commandDeviceBean" property="searchValue" param="SearchValue"/>
 <jsp:setProperty name="commandDeviceBean" property="clear" param="Clear"/>
 
-<%if( request.getParameter("SearchValue") != null && request.getParameter("SearchValue").length() <= 0)
-	commandDeviceBean.setSearchValue("");
+<%
+	if( request.getParameter("SearchValue") != null && request.getParameter("SearchValue").length() <= 0) {
+		commandDeviceBean.setSearchValue("");
+	}
 
-int currentSortBy = commandDeviceBean.getSortBy();
-if( request.getParameter("SortBy") != null)
-	currentSortBy = Integer.valueOf(request.getParameter("SortBy")).intValue();
+	int currentSortBy = commandDeviceBean.getSortBy();
+	if( request.getParameter("SortBy") != null) {
+		currentSortBy = Integer.valueOf(request.getParameter("SortBy")).intValue();
+	}
 %>
-<html>
-<head>
-<title>Energy Services Operations Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<script language="JavaScript">
-function changeFilter(filterBy) {
-	document.getElementById("DivRoute").style.display = (filterBy == <%= CommandDeviceBean.ROUTE_FILTER %>)? "" : "none";
-	document.getElementById("DivCommChannel").style.display = (filterBy == <%= CommandDeviceBean.COMM_CHANNEL_FILTER %>)? "" : "none";
-	document.getElementById("DivCollectionGroup").style.display = (filterBy == <%= CommandDeviceBean.COLLECTION_GROUP_FILTER%>)? "" : "none";
-    document.getElementById("DivCBCType").style.display = (filterBy == <%= CommandDeviceBean.CBC_TYPE_FILTER%>)? "" : "none";
-}
 
-function init() {
-	var form = document.MForm;
-	changeFilter(form.FilterBy.value);
-}
 
-function showAll(form) {
-	form.Clear.value = "true";
-	form.submit();
-}
-
-function setFilterValue(form){
-	if(document.getElementById("DivRoute").style.display == "")
-		form.FilterValue.value = form.RouteFilterValue.value;
-	else if(document.getElementById("DivCommChannel").style.display == "")
-		form.FilterValue.value = form.CommChannelFilterValue.value;
-	else if( document.getElementById("DivCollectionGroup").style.display == "")
-		form.FilterValue.value = form.CollGroupFilterValue.value;
-    else if( document.getElementById("DivCBCType").style.display == "")
-        form.FilterValue.value = form.CBCTypeFilterValue.value;        
-	form.submit();
-}
-</script>
-</head>
-
-<body class="Background" leftmargin="0" topmargin="0" onload="init()">
-<table width="760" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-	<td> 
-	  <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-		<tr> 
-		  <td width="102" height="102" background="../WebConfig/yukon/MeterImage.jpg">&nbsp;</td>
-		  <td valign="bottom" height="102"> 
-			<table width="657" cellspacing="0"  cellpadding="0" border="0">
-			  <tr> 
-               	<td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
-			  </tr>
-			  <tr>
-				<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commander&nbsp;&nbsp;</td>
-				<td width="253" valign="middle">&nbsp;</td>
-				<td width="58" valign="middle">
-                  <div align="center"><span class="MainText"><a href="../operator/Operations.jsp" class="Link3">Home</a></span></div>
-				</td>
-				<td width="57" valign="middle"> 
-				  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-				</td>
-			  </tr>
-			</table>
-		  </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-	    </tr>
-	  </table>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
-        <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
-        </tr>
-        <tr> 
-          <td  valign="top" width="101"> 
-            <% String pageName = "SelectDevice.jsp"; %>
-			<table width="101" border="0" cellspacing="0" cellpadding="5">
-			  <tr> 
-			    <td> 
-			      <div align="left">
-   			        <span class="NavHeader">Devices</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <tr>
-					  	<% if( currentSortBy == DeviceClasses.CARRIER){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1;font-weight:bold"><span class='Nav' style="font-weight:bold; font-size: 10px">MCT</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.CARRIER%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">MCT</span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="10"></td></tr>
-			          <tr>
-					  	<% if( currentSortBy == DeviceClasses.IED){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_IED%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.IED%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_IED%></span></a></td>
-						<%}%>						
-			          </tr>			          
-					  <tr><td height="10"></td></tr>
-			          <tr>
-					  	<% if( currentSortBy == DeviceClasses.RTU){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_RTU%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.RTU%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_RTU%></span></a></td>
-						<%}%>						
-			          </tr>			          
-					  <tr><td height="10"></td></tr>
-			          <tr>
-					  	<% if( currentSortBy == DeviceClasses.TRANSMITTER){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_TRANSMITTER%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.TRANSMITTER%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_TRANSMITTER%></span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="20"></td></tr>
-					</table>
-					<span class="NavHeader">Load Management</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <tr>
-					  	<% if( currentSortBy == DeviceClasses.GROUP){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.GROUP%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="10"></td></tr>
-					  <cti:checkProperty propertyid="<%= CommanderRole.EXPRESSCOM_SERIAL_MODEL %>">
-			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.EXPRESSCOM_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Expresscom</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">Expresscom</span></a></td>
-						<%}%>						
-			          </tr>			          
-					  <tr><td height="10"></td></tr>
-					  </cti:checkProperty>
-					  <cti:checkProperty propertyid="<%= CommanderRole.VERSACOM_SERIAL_MODEL %>">
-			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.VERSACOM_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Versacom</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">Versacom</span></a></td>
-						<%}%>						
-			          </tr>	
-					  <tr><td height="10"></td></tr>
-					  </cti:checkProperty>
-					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
-			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.DCU_SA205_SERIAL_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">DCU-205 Serial</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">DCU-205 Serial</span></a></td>
-						<%}%>						
-			          </tr>			          
-					  <tr><td height="10"></td></tr>
-					  </cti:checkProperty>
-					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
-			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.DCU_SA305_SERIAL_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">DCU-305 Serial</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">DCU-305 Serial</span></a></td>
-						<%}%>						
-			          </tr>			          
-					  <tr><td height="10"></td></tr>
-					  </cti:checkProperty>
-					</table>
-					<span class="NavHeader">Cap Control</span>
-			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <tr>
-					  	<% if( currentSortBy == PAOGroups.CLASS_CAPCONTROL){%>
-			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=PAOGroups.STRING_CAT_CAPCONTROL%></span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=PAOGroups.CLASS_CAPCONTROL%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=PAOGroups.STRING_CAT_CAPCONTROL%></span></a></td>
-						<%}%>						
-			          </tr>
-					  <tr><td height="10"></td></tr>
-					</table>
-			      </div>
-			    </td>
-			  </tr>
-			</table>
-          </td>            
-          <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
-          <div align="center"> 
-              <% String header = "COMMAND - Device Selection"; %>
-              <table width="100%" border="0" cellpadding = "5">
-                <tr> 
-                  <td width="50%" valign = "top" align = "left">&nbsp;</td>
-                  <td align = "right" width="50%">
-				  <form name="SearchForm" method="POST" action="">
-				  <span class="TitleHeader">
-					<select name="SearchBy">
-					  <%String[] searchStrings = commandDeviceBean.getSearchByStrings();
-					   for (int i = 0; i < searchStrings.length; i++){%>
-					  <option value="<%=i%>"  <% if (commandDeviceBean.getSearchBy() == i) out.print("selected"); %>><%=searchStrings[i]%></option>
-					  <%}%>
+<cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
+	<cti:standardMenu/>
+	
+	<script language="JavaScript">
+	
+		<!-- onLoad, call init() --> 
+		Event.observe(window, 'load', function(){init();});
+		
+		function changeFilter(filterBy) {
+			document.getElementById("DivRoute").style.display = (filterBy == <%= CommandDeviceBean.ROUTE_FILTER %>)? "" : "none";
+			document.getElementById("DivCommChannel").style.display = (filterBy == <%= CommandDeviceBean.COMM_CHANNEL_FILTER %>)? "" : "none";
+			document.getElementById("DivCollectionGroup").style.display = (filterBy == <%= CommandDeviceBean.COLLECTION_GROUP_FILTER%>)? "" : "none";
+		    document.getElementById("DivCBCType").style.display = (filterBy == <%= CommandDeviceBean.CBC_TYPE_FILTER%>)? "" : "none";
+		}
+		
+		function init() {
+			var form = document.MForm;
+			changeFilter(form.FilterBy.value);
+		}
+		
+		function showAll(form) {
+			form.Clear.value = "true";
+			form.submit();
+		}
+		
+		function setFilterValue(form){
+			if(document.getElementById("DivRoute").style.display == "")
+				form.FilterValue.value = form.RouteFilterValue.value;
+			else if(document.getElementById("DivCommChannel").style.display == "")
+				form.FilterValue.value = form.CommChannelFilterValue.value;
+			else if( document.getElementById("DivCollectionGroup").style.display == "")
+				form.FilterValue.value = form.CollGroupFilterValue.value;
+		    else if( document.getElementById("DivCBCType").style.display == "")
+		        form.FilterValue.value = form.CBCTypeFilterValue.value;        
+			form.submit();
+		}
+	</script>
+	
+	<div class="mainFull">
+		
+		<div class="formHeader">COMMAND - Device Selection</div>
+	
+		<!-- Order / Filter by form -->
+		<form name="MForm" method="post" action="">
+			<input type="hidden" name="page" value="1">
+			<input type="hidden" name="Clear" value="false">
+	   		<input type="hidden" name="FilterValue" value="">
+	
+			<!-- Order by section -->
+			<div class="formSection">
+		        <span class="smallText">Order by:<span>
+		        <span class="selection">
+					<select name="OrderBy">
+						<c:set var="count" scope="page" value="0" />
+						<c:forEach items="${commandDeviceBean.orderByStrings}" var="entry">
+							<option value="${count}" ${commandDeviceBean.orderBy == count ? 'selected' : ''}>${entry}</option>
+							<c:set var="count" scope="page" value="${count + 1}" />
+						</c:forEach>
 					</select>
-					<input type="text" name="SearchValue" size = "14" value="<%=commandDeviceBean.getSearchValue()%>">
-					<input type="submit" name="Submit" value="Search" >
-					</span>
-            		</form>					
-				  </td>
-                </tr>
-              </table>
-              <table width="100%" border="0" cellspacing="0" cellpadding="3">
-                <tr> 
-                  <td align="center" class="TitleHeader"><%= header %></td>
-                </tr>
-              </table>
-              <form name="MForm" method="post" action="">
-			    <input type="hidden" name="page" value="1">
-			    <input type="hidden" name="Clear" value="false">
-   			    <input type="hidden" name="FilterValue" value="">
-
-                <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td width="75%"> 
-                      <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
-                        <tr> 
-                          <td width="15%"> 
-                            <div align="right">Order by:</div>
-                          </td>
-                          <td width="35%"> 
-                            <select name="OrderBy">
-                            <% 
-							String [] columns = commandDeviceBean.getOrderByStrings();
-                            for (int i = 0; i < columns.length; i++)
-                            {%>
-                              <option value="<%=i%>"  <% if (commandDeviceBean.getOrderBy() == i) out.print("selected"); %>><%=columns[i]%></option>
-                          <%}%>
-                            </select>
-                          </td>
-                          <td width="50%"> 
-                            <select name="OrderDir">
-                              <option value="<%= CommandDeviceBean.ORDER_DIR_ASCENDING %>" <% if (commandDeviceBean.getOrderDir() == CommandDeviceBean.ORDER_DIR_ASCENDING) out.print("selected"); %>>Ascending</option>
-                              <option value="<%= CommandDeviceBean.ORDER_DIR_DESCENDING %>" <% if (commandDeviceBean.getOrderDir() == CommandDeviceBean.ORDER_DIR_DESCENDING) out.print("selected"); %>>Descending</option>
-                            </select>
-                          </td>
-                        </tr>
-                        <tr valign="top"> 
-                          <td width="15%">
-						    <% if (currentSortBy == DeviceClasses.IED || 
-							    currentSortBy == DeviceClasses.RTU ||
-							    currentSortBy == DeviceClasses.CARRIER ||
-							    currentSortBy == DeviceClasses.TRANSMITTER ||
-                                currentSortBy == PAOGroups.CAT_CAPCONTROL){%>
-                            <div align="right">Filter by:</div>
-                            <%}%>
-                          </td>
-                          <td width="35%"> 
-  						    <% if (currentSortBy == DeviceClasses.CARRIER){%>
-                            <select name="FilterBy" onChange="changeFilter(this.value)">
-	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
-                              <option value="<%=CommandDeviceBean.ROUTE_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.ROUTE_FILTER) ?  "selected" : ""%>>Route</option>
-                              <option value="<%=CommandDeviceBean.COLLECTION_GROUP_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COLLECTION_GROUP_FILTER) ?  "selected" : ""%>>Collection Group</option>
-                            </select>
-						    <%} else if (currentSortBy == DeviceClasses.IED || currentSortBy == DeviceClasses.RTU){%>
-                            <select name="FilterBy" onChange="changeFilter(this.value)">
-	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
-                              <option value="<%=CommandDeviceBean.COMM_CHANNEL_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COMM_CHANNEL_FILTER) ?  "selected" : ""%>>Comm Channel</option>
-                              <option value="<%=CommandDeviceBean.COLLECTION_GROUP_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COLLECTION_GROUP_FILTER) ?  "selected" : ""%>>Collection Group</option>
-                            </select>
-						    <%} else if (currentSortBy == DeviceClasses.TRANSMITTER){%>
-                            <select name="FilterBy" onChange="changeFilter(this.value)">
-	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
-                              <option value="<%=CommandDeviceBean.COMM_CHANNEL_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COMM_CHANNEL_FILTER) ?  "selected" : ""%>>Comm Channel</option>
-                            </select>
-                            <%} else if (currentSortBy == PAOGroups.CAT_CAPCONTROL){%>
-                            <select name="FilterBy" onChange="changeFilter(this.value)">
-                              <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
-                              <option value="<%=CommandDeviceBean.CBC_TYPE_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.CBC_TYPE_FILTER) ?  "selected" : ""%>>CBC Type</option>
-                            </select> 
-	                         <%} else {%>
-			    			<input type="hidden" name="FilterBy" value="<%=CommandDeviceBean.NO_FILTER%>">
-	                         <%}%>
-                          </td>
-                          <td width="50%"> 
-                            <div id="DivRoute" style="display:none"> 
-                              <select name="RouteFilterValue">
-                              <% for (int i = 0; i < commandDeviceBean.getValidRoutes().size(); i++)
-                              {
-                              	int id = ((Integer)commandDeviceBean.getValidRoutes().get(i)).intValue();
-                              	%>
-                                 <option value="<%=id%>" <%=(commandDeviceBean.getFilterValue().length() > 0 && commandDeviceBean.getFilterValue().equals(String.valueOf( id)) ? "selected" :"")%>><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></option>
-                            <%}%>
-                              </select>
-                            </div>
-                            <div id="DivCommChannel" style="display:none"> 
-                              <select name="CommChannelFilterValue">
-                              <% for (int i = 0; i < commandDeviceBean.getValidCommChannels().size(); i++)
-                              {
-                              	int id = ((Integer)commandDeviceBean.getValidCommChannels().get(i)).intValue();
-                              	%>
-                                 <option value="<%=id%>" <%=(commandDeviceBean.getFilterValue().length() > 0 && commandDeviceBean.getFilterValue().equals(String.valueOf( id)) ? "selected" :"")%>><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></option>
-                            <%}%>
-                              </select>
-                            </div>
-                            <div id="DivCollectionGroup" style="display:none"> 
-                              <select name="CollGroupFilterValue">
-                              <% for (int i = 0; i < commandDeviceBean.getValidCollGroups().size(); i++)
-                              {
-                              	String val = (String)commandDeviceBean.getValidCollGroups().get(i);
-                              	%>
-                                <option value="<%=val%>" <%=(commandDeviceBean.getFilterValue().equalsIgnoreCase(val) ? "selected" :"")%>><%=val%></option>
-                                <%}%>
-                              </select>
-                            </div>
-                            <div id="DivCBCType" style="display:none"> 
-                              <select name="CBCTypeFilterValue">
-                              <% for (int i = 0; i < commandDeviceBean.getValidCBCTypes().size(); i++)
-                              {
-                                String val = (String)commandDeviceBean.getValidCBCTypes().get(i);
-                                %>
-                                <option value="<%=val%>" <%=(commandDeviceBean.getFilterValue().equalsIgnoreCase(val) ? "selected" :"")%>><%=val%></option>
-                                <%}%>
-                              </select>
-                            </div>                            
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td width="25%"> 
-                      <input type="submit" name="Submit" value="Show" onClick="setFilterValue(this.form);">
-                      <% if (true) { %>
-                      <input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
-                      <% } %>
-                    </td>
-                  </tr>
-                </table>
-              </form>
-<!--			  <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
-                <tr>
-                  <td align="center">Click on an item to select it for sending commands.</td>
-                </tr>
-              </table>
--->
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  <br>
-              <form name='DeviceForm' method='post' action="<%= request.getContextPath() %>/servlet/CommanderServlet">
-		        <input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-        		<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-                <input type='hidden' name='action' value='SelectDevice'>
-                
-                <%=commandDeviceBean.getDeviceTableHTML()%>
+				</span>
+		        <span class="selection">
+					<select name="OrderDir">
+						<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_ASCENDING')}" ${commandDeviceBean.orderDir == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_ASCENDING') ? 'selected' : ''}>Ascending</option>
+			            <option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_DESCENDING')}" ${commandDeviceBean.orderDir == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_DESCENDING') ? 'selected' : ''}>Descending</option>
+			        </select>
+				</span>
+			</div>
 				
-                <br>
-                <table width='200' border='0' cellspacing='0' cellpadding='3'>
-                  <tr> 
-                    <td align='center'>
-                      <input type='button' name='Cancel' value='Cancel' onclick='location.href="../operator/Operations.jsp"'>
-                    </td>
-                  </tr>
-                </table>
-              <p>&nbsp;</p>
-              </form>
-            </div>
-          </td>
-          <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-		</tr>
-      </table>
-    </td>
-  </tr>
-</table>
-<br>
-</body>
-</html>
+			<!-- Filter by section -->
+			<div class="formSection">
+				<c:set var="currentSortBy" scope="page" value="<%=currentSortBy%>" />
+				<c:if test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.IED') ||
+							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.RTU') ||
+							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.CARRIER') ||
+							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER') ||
+							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL')}">
+						
+						<span class="smallText">Filter by:<span>
+				</c:if>
+			
+				<!-- Filter by drop down -->
+			
+				<!-- See if any filters are selected -->
+				<c:set var="noSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" />
+				<c:set var="routeSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ROUTE_FILTER')}" />
+				<c:set var="collectionGroupSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COLLECTION_GROUP_FILTER')}" />
+				<c:set var="commChannelSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" />
+				<c:set var="cbcSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.CBC_TYPE_FILTER')}" />
+				
+				<c:choose>
+					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.CARRIER')}">
+						<!-- Carrier options -->
+					    <select name="FilterBy" onChange="changeFilter(this.value)">
+					    	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
+					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ROUTE_FILTER')}" ${routeSelected ? 'selected' : ''}>Route</option>
+					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COLLECTION_GROUP_FILTER')}" ${collectionGroupSelected ? 'selected' : ''}>Collection Group</option>
+				        </select>
+				    </c:when>
+					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.IED') ||
+									  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.RTU')}">
+						<!-- IED/RTU options -->
+				        <select name="FilterBy" onChange="changeFilter(this.value)">
+				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
+				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}>Comm Channel</option>
+				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COLLECTION_GROUP_FILTER')}" ${collectionGroupSelected ? 'selected' : ''}>Collection Group</option>
+				        </select>
+				    </c:when>
+					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER')}">
+						<!-- Transmitter options -->
+					    <select name="FilterBy" onChange="changeFilter(this.value)">
+				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
+				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}>Comm Channel</option>
+					    </select>
+				    </c:when>
+					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL')}">
+						<!-- Cap Control options -->
+					    <select name="FilterBy" onChange="changeFilter(this.value)">
+				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
+					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.CBC_TYPE_FILTER')}" ${cbcSelected ?  'selected' : ''}>CBC Type</option>
+					    </select> 
+				    </c:when>
+				    <c:otherwise>
+						<!-- No Filter by -->
+						<input type="hidden" name="FilterBy" value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}">
+				    </c:otherwise>
+			    </c:choose>
+			                    
+			    <!-- Route filter by drop down -->      
+			    <span id="DivRoute" style="display:none"> 
+			    	<select name="RouteFilterValue">
+			      		<c:forEach items="${commandDeviceBean.validRoutes}" var="route">
+			      			<option value="${route.yukonID}" ${commandDeviceBean.filterValue == route ? 'selected' : ''}>${route.paoName}</option>
+			      		</c:forEach>
+			      	</select>
+			    </span>
+			    <!-- Comm Channel filter by drop down -->      
+			    <span id="DivCommChannel" style="display:none">
+			    	<select name="CommChannelFilterValue">
+			      		<c:forEach items="${commandDeviceBean.validCommChannels}" var="channel">
+			      			<option value="${channel.yukonID}" ${commandDeviceBean.filterValue == channel ? 'selected' : ''}>${channel.paoName}</option>
+			      		</c:forEach>
+			      </select>
+			    </span>
+			    <!-- Collection Group filter by drop down -->      
+			    <span id="DivCollectionGroup" style="display:none"> 
+			   		<select name="CollGroupFilterValue">
+			      		<c:forEach items="${commandDeviceBean.validCollGroups}" var="group">
+			      			<option value="${group}" ${commandDeviceBean.filterValue == group ? 'selected' : ''}>${group}</option>
+			      		</c:forEach>
+			      	</select>
+			    </span>
+			    <!-- CBC filter by drop down -->      
+			    <span id="DivCBCType" style="display:none"> 
+			   		<select name="CBCTypeFilterValue">
+			      		<c:forEach items="${commandDeviceBean.validCBCTypes}" var="type">
+			      			<option value="${type}" ${commandDeviceBean.filterValue == type ? 'selected' : ''}>${type}</option>
+			      		</c:forEach>
+			      	</select>
+			    </span>   
+			    <span class="filterButtons">
+					<input type="submit" name="Submit" value="Show" onClick="setFilterValue(this.form);">
+					<input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
+				</span>
+				
+				<!-- Search form -->
+				<div class="searchForm">
+					<span class="smallText">Find specific device:<span>
+					<form name="SearchForm" method="POST" action="">
+						<select name="SearchBy">
+							<c:set var="count" scope="page" value="0" />
+							<c:forEach items="${commandDeviceBean.searchByStrings}" var="entry">
+								<option value="${count}" ${commandDeviceBean.orderBy == count ? 'selected' : ''}>${entry}</option>
+								<c:set var="count" scope="page" value="${count + 1}" />
+							</c:forEach>
+						</select>
+						<input type="text" name="SearchValue" size="14" value="${commandDeviceBean.searchValue}">
+						<input type="submit" name="Submit" value="Search" >
+					</form>			
+				
+				</div>
+			</div>
+		</form>
+		
+		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+	  	<br>
+	  	<form name='DeviceForm' method='post' action="<c:url value="/servlet/SOAPClient"/>">
+	    	<input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+			<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+	    	<input type='hidden' name='action' value='SelectDevice'>
+	    
+		    ${commandDeviceBean.deviceTableHTML}
+		
+			<div class="filterCancel">
+				<input type='button' name='Cancel' value='Cancel' onclick='location.href="../operator/Operations.jsp"'>
+			</div>
+	  	</form>
+	
+	</div>
+
+</cti:standardPage>

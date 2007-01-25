@@ -162,10 +162,10 @@ public class CommandDeviceBean
 	private int searchBy = DEVICE_NAME_SEARCH_BY;
 	private String searchValue = "";
     
-	//List of <int(routes)> values
-	public ArrayList validRoutes = null;
+	//List of <route> values
+	public List<LiteYukonPAObject> validRoutes = null;
 	//List of <int(commChannels)> values
-	public ArrayList validCommChannels = null;
+	public List<LiteYukonPAObject> validCommChannels = null;
 	//List of <String, (collectionGroup)> values
 	public ArrayList validCollGroups = null;
     //List of <int(CBC Types)> values
@@ -878,33 +878,33 @@ public class CommandDeviceBean
 		if (getOrderDir() == ORDER_DIR_DESCENDING) Collections.reverse(getDeviceList());       
 	}
 
-	public ArrayList getValidRoutes()
+	public List<LiteYukonPAObject> getValidRoutes()
 	{
 		if (validRoutes == null)
 		{
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			List routes = cache.getAllRoutes();
-			validRoutes= new ArrayList();
+			validRoutes= new ArrayList<LiteYukonPAObject>();
 			for (int i = 0; i < routes.size(); i++)
 			{
 				LiteYukonPAObject lPao = (LiteYukonPAObject)routes.get(i);
-				validRoutes.add(new Integer(lPao.getYukonID()));
+				validRoutes.add(lPao);
 			}
 		}
 		return validRoutes;
 	}
 
-	public ArrayList getValidCommChannels()
+	public List<LiteYukonPAObject> getValidCommChannels()
 	{
 		if (validCommChannels == null)
 		{
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			List ports = cache.getAllPorts();
-			validCommChannels = new ArrayList();
+			validCommChannels = new ArrayList<LiteYukonPAObject>();
 			for (int i = 0; i < ports.size(); i++)
 			{
 				LiteYukonPAObject lPao = (LiteYukonPAObject)ports.get(i);
-				validCommChannels.add(new Integer(lPao.getYukonID()));
+				validCommChannels.add(lPao);
 			}
 		}
 		return validCommChannels;

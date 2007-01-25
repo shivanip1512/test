@@ -66,9 +66,13 @@ form {
   	height: 102px;
 }
 
-.main {
+div.main {
 	margin-left: 60px;
 	width: 75%;
+}
+
+div.mainFull {
+	width: 100%;
 }
 
 div.sectionHeader {
@@ -134,26 +138,4 @@ div.headerText {
 	color: #006699;
 }
 
-div.searchForm {
-	float: right;
-}
 
-div.formHeader {
-	padding-top: 50px;
-	padding-bottom: 30px;
-	text-align: center;
-	font-size: 14px;
-	font-weight: bold;
-}
-
-div.formSection {
-	padding-top: 10px;
-}
-
-span.smallText {
-	font-size: 12px;
-}
-
-span.selection {
-	padding-left: 10px;
-}

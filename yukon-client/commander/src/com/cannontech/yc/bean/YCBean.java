@@ -7,11 +7,13 @@
 package com.cannontech.yc.bean;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
@@ -1055,5 +1058,16 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     {
         this.userID = userID;
         setLogUserName(DaoFactory.getYukonUserDao().getLiteYukonUser(userID).getUsername());
+    }
+    
+    public List<LiteYukonPAObject> getLiteDevices(){
+        List<LiteYukonPAObject> deviceList = new ArrayList<LiteYukonPAObject>();
+        
+        PaoDao paoDao = DaoFactory.getPaoDao();
+        for(Object deviceId : this.getDeviceIDs()){
+            deviceList.add(paoDao.getLiteYukonPAO((Integer)deviceId));
+        }
+        
+        return deviceList;
     }
 }
