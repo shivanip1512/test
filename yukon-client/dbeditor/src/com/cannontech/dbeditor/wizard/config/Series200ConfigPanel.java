@@ -173,28 +173,38 @@ public void equalsJButton1_ActionPerformed(java.awt.event.ActionEvent actionEven
 	Double mpValue = new Double(getMpTextField().getText());
 	Double khValue = new Double(getKhTextField().getText());
 	String result = new Double(mpValue.doubleValue() * khValue.doubleValue()).toString();
-	
-	if(result.substring(result.indexOf(".") + 1).length() > 2)
-	{
-		Integer temp = new Integer(result.substring(result.indexOf(".") + 3, result.indexOf(".") + 4));
-		Integer use = new Integer(result.substring(result.indexOf(".") + 1, result.indexOf(".") + 3));
-		if(temp.intValue() >= 5)
-		{
-			use = new Integer(use.intValue() + 1);
-			getKeTextField().setText(result.substring(0, result.indexOf(".") + 1) + use.toString());
-		}
-		else
-			getKeTextField().setText(result.substring(0, result.indexOf(".") + 1) + use.toString());
-	} 
-	
-	getMpTextField().setVisible(false);
-	getMpLabel().setVisible(false);
-	getKhLabel().setVisible(false);
-	getKhTextField().setVisible(false);
-	getTimesLabel().setVisible(false);
-	getEqualsJButton1().setVisible(false);
-	getRecalculateJButton().setVisible(true);
-	fireInputUpdate();
+    double resultDouble = new Double(result).doubleValue();
+    if(resultDouble <10.0) {
+    	if(result.substring(result.indexOf(".") + 1).length() > 2)
+    	{
+    		Integer temp = new Integer(result.substring(result.indexOf(".") + 3, result.indexOf(".") + 4));
+    		Integer use = new Integer(result.substring(result.indexOf(".") + 1, result.indexOf(".") + 3));
+    		if(temp.intValue() >= 5)
+    		{
+    			use = new Integer(use.intValue() + 1);
+    			getKeTextField().setText(result.substring(0, result.indexOf(".") + 1) + use.toString());
+    		}
+    		else
+    			getKeTextField().setText(result.substring(0, result.indexOf(".") + 1) + use.toString());
+    	} else {
+            getKeTextField().setText(result);
+        }
+    	
+    	getMpTextField().setVisible(false);
+    	getMpLabel().setVisible(false);
+    	getKhLabel().setVisible(false);
+    	getKhTextField().setVisible(false);
+    	getTimesLabel().setVisible(false);
+    	getEqualsJButton1().setVisible(false);
+    	getRecalculateJButton().setVisible(true);
+    	fireInputUpdate();
+    }else {
+        javax.swing.JOptionPane.showMessageDialog( this, 
+                                                "The final value must be less than 10.0 for a 200 series MCT.", 
+                                                "Input Error", 
+                                                javax.swing.JOptionPane.WARNING_MESSAGE );
+        getKeTextField().setText("");
+    }
 return;
 }
 /**
