@@ -32,7 +32,7 @@ public class LogDownloadController extends LogController {
     * @return null
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setContentType("application/x-download");
+        response.setContentType("text/plain");
         
         //get the log file from request using 
         //base class method getLogFile()
