@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/01/22 20:24:43 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2007/01/25 21:07:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1502,6 +1502,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     PILReturnMap device_map;
     PILReturnMap good_map;
     PILReturnMap bad_map;
+    std::deque<CtiTableMeterReadLog> resultQueue;
 
     RWCollectable* msg = NULL;
     bool status;
@@ -1516,7 +1517,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             {
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
-                HandleReturnMessage(ret_msg, good_map, bad_map, device_map);
+                HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
 
                 // have we received everything expected?
                 if( device_map.size() == 0 )
@@ -1587,30 +1588,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
     }
 
-    char* name = Tcl_GetVar(interp, "ScriptName", 0 );
-    FILE* errFile;
-    string filename, header, footer;
-
-    filename = "\\Yukon\\Server\\Export\\MACS\\";
-    char * yukonBaseDir = getenv("YUKON_BASE");
-    if( yukonBaseDir )
-    {
-        filename = yukonBaseDir;
-        filename += "\\Server\\Export\\MACS\\";
-    }
-    name == NULL ? filename.append("default") : filename.append(name);
-    filename.append(".xml");
-
-    header.append("<?xml version=\"1.0\"?>\n");
-    header.append("<?xml-stylesheet type=\"text/xsl\" href=\"MACS error.xsl\"?>\n");
-    header.append("<MACS>\n");
-    footer.append("</MACS>\n");
-    errFile = fopen((const char*) filename.c_str(), "w");
-    if(errFile != NULL)
-    {
-        fwrite(header.c_str(), sizeof(char), header.length(), errFile);
-    }
-
     for( m_iter = bad_map.begin();
          m_iter != bad_map.end();
          m_iter++ )
@@ -1620,14 +1597,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
         Tcl_ListObjAppendElement(interp, status_list,
         Tcl_NewIntObj(m_iter->second->Status()));
-        WriteFailToFile(errFile, m_iter->second->Status(), dev_name);
         delete m_iter->second;
-    }
-
-    if(errFile != NULL)
-    {
-        fwrite(footer.c_str(), sizeof(char), footer.length(), errFile);
-        fclose(errFile);
     }
 
     // any device id's left in this set must have timed out
@@ -1637,6 +1607,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
              m_iter != device_map.end();
              m_iter++ )
         {
+            CtiTableMeterReadLog result(0, m_iter->first, m_iter->second->UserMessageId(), ErrorMACSTimeout, m_iter->second->getMessageTime());
+            resultQueue.push_back(result);
             GetDeviceName(m_iter->first,dev_name);
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
@@ -1645,6 +1617,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             delete m_iter->second;
         }
     }
+
+    WriteResultsToDatabase(resultQueue);
 
     //Remove the queue from the InQueueStore
     {
@@ -1662,11 +1636,12 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 void HandleMessage(RWCollectable* msg,
            PILReturnMap& good_map,
            PILReturnMap& bad_map,
-           PILReturnMap& device_map )
+           PILReturnMap& device_map,
+           std::deque<CtiTableMeterReadLog>& resultQueue )
 {
     if( msg->isA() == MSG_PCRETURN )
     {
-        HandleReturnMessage( (CtiReturnMsg*) msg, good_map, bad_map, device_map);
+        HandleReturnMessage( (CtiReturnMsg*) msg, good_map, bad_map, device_map, resultQueue);
     }
     if( msg->isA() == MSG_MULTI )
     {
@@ -1674,7 +1649,7 @@ void HandleMessage(RWCollectable* msg,
 
         for( unsigned i = 0; i < multi_msg->getData( ).size( ); i++ )
         {
-            HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map);
+            HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map, resultQueue);
         }
     }
     else
@@ -1688,7 +1663,8 @@ void HandleMessage(RWCollectable* msg,
 void HandleReturnMessage(CtiReturnMsg* msg,
              PILReturnMap& good_map,
              PILReturnMap& bad_map,
-             PILReturnMap& device_map )
+             PILReturnMap& device_map,
+             std::deque<CtiTableMeterReadLog>& resultQueue )
 {
     long dev_id = msg->DeviceId();
 
@@ -1707,9 +1683,16 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         else if( msg->ExpectMore() )
         {
       device_map.insert(PILReturnMap::value_type(dev_id, msg));
+            if( msg->Status() != NORMAL )
+            {
+                CtiTableMeterReadLog result(0, msg->DeviceId(), msg->UserMessageId(), msg->Status(), msg->getMessageTime());
+                resultQueue.push_back(result);
+            }
         }
         else
         {
+            CtiTableMeterReadLog result(0, msg->DeviceId(), msg->UserMessageId(), msg->Status(), msg->getMessageTime());
+            resultQueue.push_back(result);
       PILReturnMap::iterator pos;
             if( msg->Status() == 0 )
             {
@@ -2057,4 +2040,49 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     }
     CloseHandle(pi.hProcess);
     return TCL_OK;
+}
+
+//Warning, this function clears the Queue. This is done so the function can be called anytime.
+//It is in no way thread safe.
+int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue)
+{
+    int retVal = NORMAL;
+    int endVal = 0;
+
+    endVal = SynchronizedIdGen("MeterReadLog", resultQueue.size());
+
+    if( endVal > 0 )
+    {
+        string connstr("meterlog");
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        conn.beginTransaction(connstr.c_str());
+
+        std::deque<CtiTableMeterReadLog>::iterator iter = resultQueue.begin();
+        int i = endVal - resultQueue.size() + 1;
+        try
+        {
+            for(; iter != resultQueue.end() && i <= endVal; )
+            {
+                iter->setLogID(i);
+                iter->Insert(conn);
+                iter++;
+                i++;
+
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        conn.commitTransaction(connstr.c_str());
+        resultQueue.clear();
+    }
+
+    return retVal;
 }

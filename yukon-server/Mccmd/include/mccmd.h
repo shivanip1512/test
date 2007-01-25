@@ -22,7 +22,7 @@
 #include <functional>
 #include <iostream>
 #include <set>
-
+#include <queue>
 
 
 #include <rw/collect.h>
@@ -39,6 +39,7 @@
 #include "logger.h"
 #include "ctdpcptrq.h"
 #include "dllBase.h"
+#include "tbl_meterreadlog.h"
 
 #define DEFAULT_ONE_WAY_TIMEOUT 0
 #define DEFAULT_TWO_WAY_TIMEOUT 900
@@ -144,12 +145,15 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 static void HandleReturnMessage(CtiReturnMsg* msg,
                 PILReturnMap& good_map,
                 PILReturnMap& bad_map,
-                PILReturnMap& device_map);
+                PILReturnMap& device_map,
+                std::deque<CtiTableMeterReadLog>& queueStatus);
 
 static void HandleMessage(RWCollectable* msg,
               PILReturnMap& good_map,
               PILReturnMap& bad_map,
               PILReturnMap& device_map);
+
+static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue);
 
 /* Retrieves the id of a notification group given its name */
 static long GetNotificationGroupID( const string& name );
