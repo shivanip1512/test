@@ -44,7 +44,7 @@ config_device.obj \
 config_resolvers.obj \
 config_parts_mct.obj \
 config_parts_cbc.obj \
-config_parts_fmu.obj \
+
 
 CTIPROGS=\
 cticonfig.dll
