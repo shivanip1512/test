@@ -42,7 +42,7 @@
             <xsl:value-of select="." />
           </h2>
           <xsl:for-each select="key('list', .)">
-            <xsl:sort />
+            <xsl:sort select="./displayName/@value"/>
             <h3>
               <xsl:value-of select="./displayName/@value" />
             </h3>
