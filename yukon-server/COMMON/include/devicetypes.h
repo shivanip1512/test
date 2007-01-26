@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/10/05 16:59:56 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2007/01/26 19:56:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,6 +120,7 @@
 
 #define TYPE_RTC                             1910
 #define TYPE_RTM                             1911
+#define TYPE_FMU                             1912
 #define TYPE_SERIESVRTU                      1915
 #define TYPE_SERIESVLMIRTU                   1920
 #define TYPE_MODBUS                          1930

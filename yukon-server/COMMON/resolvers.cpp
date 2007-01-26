@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2006/10/05 17:00:45 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2007/01/26 19:56:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -677,6 +677,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
        nRet = TYPE_FOREIGNPORTER;
     }
+    else if(rwsTemp == "fmu")
+    {
+        nRet = TYPE_FMU;
+    }
     else
     {
         {
@@ -1151,6 +1155,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPECBC7020:
         case TYPE_RTC:
         case TYPE_RTM:
+        case TYPE_FMU:
         case TYPE_PAGING_RECEIVER:
         case TYPE_FOREIGNPORTER:
         {
@@ -1629,6 +1634,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             break;
         }
     case TYPE_RTM:
+    case TYPE_FMU:
     case TYPE_SIXNET:
         {
             slaveAddress = atoi(str.c_str());

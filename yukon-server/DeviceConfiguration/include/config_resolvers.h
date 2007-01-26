@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_resolvers.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/10/19 15:56:26 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/01/26 19:56:14 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,12 @@ enum CtiConfig_type
     ConfigTypeCBCAddressing,
     ConfigTypeCBC_DNP,
     ConfigTypeCBC_UDP,
-    
+
+    ConfigTypeFMUAttachedDevice,
+    ConfigTypeFMUBluetooth,
+    ConfigTypeFMUDataLog,
+    ConfigTypeFMUDataTransferPort,
+    ConfigTypeFMUMonitorPort,
 
     ConfigTypeMax
 };

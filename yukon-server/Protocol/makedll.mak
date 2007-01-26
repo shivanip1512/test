@@ -133,6 +133,9 @@ prot_transdata.obj \
 $(TRANSDATAOBJS) \
 prot_ymodem.obj \
 dll_prot.obj \
+fmu_application.obj \
+fmu_datalink.obj \
+prot_fmu.obj \
 
 
 PROTLIBS=\

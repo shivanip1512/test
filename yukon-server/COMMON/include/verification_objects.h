@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/10/16 17:38:10 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/01/26 19:56:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -81,6 +81,8 @@ public:
         Protocol_SA305,
         Protocol_SADigital,
         Protocol_SNPP,
+        Protocol_Versacom,
+        Protocol_Expresscom
     };
 
     enum Type

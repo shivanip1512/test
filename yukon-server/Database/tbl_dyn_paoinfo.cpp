@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/08/08 13:36:09 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/01/26 19:56:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,6 +136,29 @@ const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_type          = "m
 const string CtiTableDynamicPaoInfo::_key_udp_ip   = "udp ip";
 const string CtiTableDynamicPaoInfo::_key_udp_port = "udp port";
 
+const string CtiTableDynamicPaoInfo::_key_fmu_softspec_lsb                  ="fmu sspec lsb";
+const string CtiTableDynamicPaoInfo::_key_fmu_softspec_msb                  ="fmu sspec msb";     
+const string CtiTableDynamicPaoInfo::_key_fmu_revision                      ="fmu revision";  
+const string CtiTableDynamicPaoInfo::_key_fmu_datatransfer_comms_type       ="fmu data transfer comms type";
+const string CtiTableDynamicPaoInfo::_key_fmu_serial_no                     ="fmu serial no";               
+const string CtiTableDynamicPaoInfo::_key_fmu_valid_message_type            ="fmu valid message type";      
+const string CtiTableDynamicPaoInfo::_key_fmu_monitor_comms_type            ="fmu monitor comms type";       
+const string CtiTableDynamicPaoInfo::_key_fmu_attached_device_baud          ="fmu attached device baud";         
+const string CtiTableDynamicPaoInfo::_key_fmu_attached_device_protocol      ="fmu attached device protocol";      
+const string CtiTableDynamicPaoInfo::_key_fmu_attached_device_rssi_address  ="fmu attached device rssi address";
+const string CtiTableDynamicPaoInfo::_key_fmu_attached_device_flex_code_set ="fmu attached device flex code set";       
+const string CtiTableDynamicPaoInfo::_key_fmu_bluetooth_settings            ="fmu bluetooth settings";     
+const string CtiTableDynamicPaoInfo::_key_fmu_bluetooth_pin                 ="fmu bluetooth pin";   
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_buffer_wrapped        ="fmu datalog buffer wrapped";     
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_index                 ="fmu datalog index";    
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_max_index             ="fmu datalog max index";     
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_entries               ="fmu datalog entries";    
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_number_unreported     ="fmu datalog number unreported";     
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_start_index           ="fmu datalog start index";     
+const string CtiTableDynamicPaoInfo::_key_fmu_datalog_last_reported_index   ="fmu datalog last reported index";      
+const string CtiTableDynamicPaoInfo::_key_fmu_datatransfer_port_select_comm_config ="fmu data transfer port select comm config";
+const string CtiTableDynamicPaoInfo::_key_fmu_monitor_port_select_comm_config      ="fmu monitor port select comm config";     
+
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
 
@@ -251,6 +274,29 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_UDP_IP,   &_key_udp_ip));
     retval.insert(make_pair(Key_UDP_Port, &_key_udp_port));
 
+    retval.insert(make_pair(Key_FMU_SoftSpecLSB,                     &_key_fmu_softspec_lsb));                   
+    retval.insert(make_pair(Key_FMU_SoftSpecMSB,                     &_key_fmu_softspec_msb));                   
+    retval.insert(make_pair(Key_FMU_Revision,                        &_key_fmu_revision));                       
+    retval.insert(make_pair(Key_FMU_DataTransferCommsType,           &_key_fmu_datatransfer_comms_type));        
+    retval.insert(make_pair(Key_FMU_SerialNo,                        &_key_fmu_serial_no));                      
+    retval.insert(make_pair(Key_FMU_ValidMessageType,                &_key_fmu_valid_message_type));             
+    retval.insert(make_pair(Key_FMU_MonitorCommsType,                &_key_fmu_monitor_comms_type));             
+    retval.insert(make_pair(Key_FMU_AttachedDeviceBaud,              &_key_fmu_attached_device_baud));           
+    retval.insert(make_pair(Key_FMU_AttachedDeviceProtocol,          &_key_fmu_attached_device_protocol));       
+    retval.insert(make_pair(Key_FMU_AttachedDeviceRSSIAddress,       &_key_fmu_attached_device_rssi_address));   
+    retval.insert(make_pair(Key_FMU_AttachedDeviceFlexCodeSet,       &_key_fmu_attached_device_flex_code_set));  
+    retval.insert(make_pair(Key_FMU_BluetoothSettings,               &_key_fmu_bluetooth_settings));             
+    retval.insert(make_pair(Key_FMU_BluetoothPin,                    &_key_fmu_bluetooth_pin));                  
+    retval.insert(make_pair(Key_FMU_DataLogBufferWrapped,            &_key_fmu_datalog_buffer_wrapped));         
+    retval.insert(make_pair(Key_FMU_DataLogIndex,                    &_key_fmu_datalog_index));                 
+    retval.insert(make_pair(Key_FMU_DataLogMaxIndex,                 &_key_fmu_datalog_max_index));              
+    retval.insert(make_pair(Key_FMU_DataLogEntries,                  &_key_fmu_datalog_entries));                
+    retval.insert(make_pair(Key_FMU_DataLogNumberUnreported,         &_key_fmu_datalog_number_unreported));      
+    retval.insert(make_pair(Key_FMU_DataLogStartIndex,               &_key_fmu_datalog_start_index));            
+    retval.insert(make_pair(Key_FMU_DataLogLastReportedIndex,        &_key_fmu_datalog_last_reported_index));    
+    retval.insert(make_pair(Key_FMU_DataTransferPortSelectCommConfig,&_key_fmu_datatransfer_port_select_comm_config));
+    retval.insert(make_pair(Key_FMU_MonitorPortSelectCommConfig,     &_key_fmu_monitor_port_select_comm_config));     
+    
     return retval;
 }
 

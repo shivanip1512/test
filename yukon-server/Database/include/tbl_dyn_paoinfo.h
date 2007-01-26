@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/08/08 13:36:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/01/26 19:56:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,6 +127,29 @@ public:
 
         Key_UDP_IP,
         Key_UDP_Port,
+
+        Key_FMU_SoftSpecLSB,
+        Key_FMU_SoftSpecMSB,
+        Key_FMU_Revision,
+        Key_FMU_DataTransferCommsType,
+        Key_FMU_SerialNo,
+        Key_FMU_ValidMessageType,
+        Key_FMU_MonitorCommsType,
+        Key_FMU_AttachedDeviceBaud,
+        Key_FMU_AttachedDeviceProtocol,
+        Key_FMU_AttachedDeviceRSSIAddress,
+        Key_FMU_AttachedDeviceFlexCodeSet,
+        Key_FMU_BluetoothSettings,
+        Key_FMU_BluetoothPin,
+        Key_FMU_DataLogBufferWrapped,
+        Key_FMU_DataLogIndex,
+        Key_FMU_DataLogMaxIndex,
+        Key_FMU_DataLogEntries,
+        Key_FMU_DataLogNumberUnreported,
+        Key_FMU_DataLogStartIndex,
+        Key_FMU_DataLogLastReportedIndex,
+        Key_FMU_DataTransferPortSelectCommConfig,
+        Key_FMU_MonitorPortSelectCommConfig
         //  make sure to add any new enum values to the string map
     };
 
@@ -239,6 +262,29 @@ protected:
 
     static const string _key_udp_ip;
     static const string _key_udp_port;
+
+    static const string _key_fmu_softspec_lsb;
+    static const string _key_fmu_softspec_msb;                  
+    static const string _key_fmu_revision;                      
+    static const string _key_fmu_datatransfer_comms_type;       
+    static const string _key_fmu_serial_no;                     
+    static const string _key_fmu_valid_message_type;            
+    static const string _key_fmu_monitor_comms_type;            
+    static const string _key_fmu_attached_device_baud;          
+    static const string _key_fmu_attached_device_protocol;      
+    static const string _key_fmu_attached_device_rssi_address;  
+    static const string _key_fmu_attached_device_flex_code_set;
+    static const string _key_fmu_bluetooth_settings;            
+    static const string _key_fmu_bluetooth_pin;                 
+    static const string _key_fmu_datalog_buffer_wrapped;        
+    static const string _key_fmu_datalog_index;                
+    static const string _key_fmu_datalog_max_index;             
+    static const string _key_fmu_datalog_entries;               
+    static const string _key_fmu_datalog_number_unreported;     
+    static const string _key_fmu_datalog_start_index;           
+    static const string _key_fmu_datalog_last_reported_index;      
+    static const string _key_fmu_datatransfer_port_select_comm_config;
+    static const string _key_fmu_monitor_port_select_comm_config;     
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;

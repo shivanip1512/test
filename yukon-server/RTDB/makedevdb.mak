@@ -124,6 +124,7 @@ dev_kv2.obj \
 dev_sentinel.obj \
 dev_mark_v.obj \
 dev_foreignporter.obj \
+dev_fmu.obj \
 
 
 

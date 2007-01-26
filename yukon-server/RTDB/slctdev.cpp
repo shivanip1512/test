@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/10/05 16:58:08 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2007/01/26 19:56:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,6 +87,7 @@
 #include "rte_xcu.h"
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
+#include "dev_fmu.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -270,6 +271,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         case TYPE_RTC:                  NewDevice = CTIDBG_new CtiDeviceRTC;            break;
 
         case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
+        case TYPE_FMU:                  NewDevice = CTIDBG_new CtiDeviceFMU;            break;
 
         case TYPE_ENERGYPRO:
         {

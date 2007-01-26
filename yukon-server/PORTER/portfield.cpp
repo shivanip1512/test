@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.203 $
-* DATE         :  $Date: 2007/01/22 21:36:16 $
+* REVISION     :  $Revision: 1.204 $
+* DATE         :  $Date: 2007/01/26 19:56:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,6 +82,7 @@
 #include "dev_tnpp.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
+#include "dev_fmu.h"
 #include "dev_wctp.h"
 #include "routes.h"
 #include "porter.h"
@@ -1366,6 +1367,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
                     case TYPE_FOREIGNPORTER:
+                    case TYPE_FMU:
                     case TYPE_CCU721:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
@@ -2232,6 +2234,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
+                    case TYPE_FMU:
                     case TYPE_CCU721:
                         break;
                     case TYPE_CCU700:
