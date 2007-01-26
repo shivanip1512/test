@@ -248,6 +248,9 @@ alter table METERREADLOG
 
 insert into sequencenumber values (1,'MeterReadLog');
 
+alter table RawPointHistory drop constraint FK_RawPt_Point;
+alter table SystemLog drop constraint SYS_C0013408;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
