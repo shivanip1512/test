@@ -18,6 +18,14 @@ form {
   	height: 102px;
 }
 
+#ClientLauncherLogo {
+	float: left;
+  	background-image: url(../Keyboard.jpg);
+  	background-repeat: no-repeat;
+  	width: 102px;
+  	height: 102px;
+}
+
 #LoadResponseLogo {
 	float: left;
   	background-image: url(../LoadImage.jpg);
