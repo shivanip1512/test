@@ -214,9 +214,10 @@ table.resizeRoundTable td.top {
 
 /* used for "CSS" Icons in the clearbits folder */
 img.cssicon, input.cssicon {
-  background-color: #f00;
+  background-color: #888;
   background-image: url(../Icons/clearbits/bg_rounded.gif);
   background-repeat: no-repeat;
   border: none;
+  vertical-align: middle;
 }
 
