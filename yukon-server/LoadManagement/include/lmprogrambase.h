@@ -198,6 +198,7 @@ private:
     CtiTime _startedcontrolling;
     CtiTime _lastcontrolsent;
     BOOL _manualcontrolreceivedflag;
+    LONG _lastsentstate;
 
     std::vector<CtiLMProgramControlWindow*> _lmprogramcontrolwindows;
 

@@ -34,16 +34,19 @@ using std::transform;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase::CtiLMProgramBase()
+CtiLMProgramBase::CtiLMProgramBase() :
+_lastsentstate(-1)
 {
 }
 
-CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr)
+CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr) :
+_lastsentstate(-1)
 {
     restore(rdr);
 }
 
-CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
+CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog) :
+_lastsentstate(-1)
 {
     operator=(lmprog);
 }
@@ -1053,11 +1056,16 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
             getProgramState() == CtiLMProgramBase::FullyActiveState ||
             getProgramState() == CtiLMProgramBase::ManualActiveState )
         {//controlling
-            multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEONE,NormalQuality,StatusPointType));
+            if( _lastsentstate != STATEONE )
+            {
+                multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEONE,NormalQuality,StatusPointType));
+                _lastsentstate = STATEONE;
+            }
         }
-        else
+        else if( _lastsentstate != STATEZERO )
         {//not controlling
             multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
+            _lastsentstate = STATEZERO;
         }
     }
 }
