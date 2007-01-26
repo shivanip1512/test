@@ -89,7 +89,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value='${LAST_ACCOUNT_SEARCH_VALUE}'>
-					<img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick="Javascript:document.custSearchForm.submit();"> 
+					<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif" onClick="Javascript:document.custSearchForm.submit();"> 
 				</div>
 			</form>
 		</div>
@@ -224,7 +224,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value="${LAST_INVENTORY_SEARCH_VALUE}">
-					<img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onclick="Javascript:document.invSearchForm.submit();" >
+					<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif" width="23" height="20" onclick="Javascript:document.invSearchForm.submit();" >
 				</div>
 			</form>
 		</div>
@@ -273,7 +273,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value="${LAST_SERVICE_SEARCH_VALUE}">
-					<img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick="Javascript:document.soSearchForm.submit();" >
+					<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif" width="23" height="20" onClick="Javascript:document.soSearchForm.submit();" >
 				</div>
 			</form>
 		</div>
