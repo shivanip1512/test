@@ -12,7 +12,7 @@ using std::string;
 FDRWabash * wabashInterface;
 
 const char * FDRWabash::KEY_DB_RELOAD = "FDR_WABASH_DB_RELOAD_RATE";
-const char * FDRWabash::KEY_INITIAL_LOAD = "FDR_WABASH_WRITE_INITAL_LOAD";
+const char * FDRWabash::KEY_INITIAL_LOAD = "FDR_WABASH_WRITE_INITIAL_LOAD";
 
 FDRWabash::FDRWabash()
 : CtiFDRInterface(string("WABASH"))
