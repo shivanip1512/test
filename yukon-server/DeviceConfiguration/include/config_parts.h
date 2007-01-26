@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/01/26 19:56:14 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/01/26 21:55:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -380,49 +380,6 @@ enum CBC_UDP
 
 }//namespace CBC
 
-namespace FMU
-{
-enum FMUAttachedDevice
-{ 
-    FMUAttachedDeviceInvalid = 0,
-    Baud,
-    Protocol,
-    RSSI,
-    FlexCodeSet
-};
-enum FMUBluetooth
-{
-    FMUBluetoothInvalid = 0,
-    Settings,
-    PIN
-};
-enum FMUDataLog
-{
-    FMUDataLogInvalid = 0,
-    BufferWrapped,
-    Index,
-    MaxIndex,
-    Entries,
-    NumberUnreported,
-    StartIndex,
-    LastReportedIndex
-};   
-enum FMUDataTransferPort
-{
-    FMUDataTransferPortInvalid = 0,
-    DataCommsType,
-    DataSelectCommConfig
-};
-enum FMUMonitorPort
-{
-    FMUMonitorPortInvalid = 0,
-    MonCommsType,
-    MonSelectCommConfig
-};
-
-}//namespace FMU
-
-
 template <class T>
 class IM_EX_CONFIG ConfigurationPart : public Base
 {
@@ -474,11 +431,6 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCDataLogging>
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCAddressing>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBC_DNP>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBC_UDP>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<FMU::FMUAttachedDevice>;  
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<FMU::FMUBluetooth>;       
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<FMU::FMUDataLog>;         
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<FMU::FMUDataTransferPort>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<FMU::FMUMonitorPort>;     
 
 
 /*template <class T>
@@ -612,12 +564,6 @@ typedef shared_ptr< ConfigurationPart<CBC::CBCDataLogging> >         CBCDataLogg
 typedef shared_ptr< ConfigurationPart<CBC::CBCAddressing> >          CBCAddressingSPtr;
 typedef shared_ptr< ConfigurationPart<CBC::CBC_DNP> >                CBC_DNPSPtr;
 typedef shared_ptr< ConfigurationPart<CBC::CBC_UDP> >                CBC_UDPSPtr;
-
-typedef shared_ptr< ConfigurationPart<FMU::FMUAttachedDevice> >      FMUAttachedDeviceSPtr;
-typedef shared_ptr< ConfigurationPart<FMU::FMUBluetooth> >           FMUBluetoothSPtr;
-typedef shared_ptr< ConfigurationPart<FMU::FMUDataLog> >             FMUDataLogSPtr;
-typedef shared_ptr< ConfigurationPart<FMU::FMUDataTransferPort> >    FMUDataTransferPortSPtr;
-typedef shared_ptr< ConfigurationPart<FMU::FMUMonitorPort> >         FMUMonitorPortSPtr;
 
 #endif
 
