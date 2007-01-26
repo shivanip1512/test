@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/25/2007 5:44:04 PM                         */
+/* Created on:     1/26/2007 3:51:32 PM                         */
 /*==============================================================*/
 
 
@@ -9185,10 +9185,6 @@ alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
       references CommPort (PORTID);
 
-alter table RAWPOINTHISTORY
-   add constraint FK_RawPt_Point foreign key (POINTID)
-      references POINT (POINTID);
-
 alter table RepeaterRoute
    add constraint SYS_C0013269 foreign key (ROUTEID)
       references Route (RouteID);
@@ -9212,10 +9208,6 @@ alter table STATE
 alter table STATE
    add constraint SYS_C0013342 foreign key (STATEGROUPID)
       references STATEGROUP (STATEGROUPID);
-
-alter table SYSTEMLOG
-   add constraint SYS_C0013408 foreign key (POINTID)
-      references POINT (POINTID);
 
 alter table TEMPLATECOLUMNS
    add constraint SYS_C0013429 foreign key (TEMPLATENUM)

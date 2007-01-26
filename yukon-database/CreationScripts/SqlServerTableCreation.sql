@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/25/2007 5:45:29 PM                         */
+/* Created on:     1/26/2007 3:50:18 PM                         */
 /*==============================================================*/
 
 
@@ -12678,12 +12678,6 @@ alter table PortTiming
 go
 
 
-alter table RAWPOINTHISTORY
-   add constraint FK_RawPt_Point foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
 alter table RepeaterRoute
    add constraint SYS_C0013269 foreign key (ROUTEID)
       references Route (RouteID)
@@ -12717,12 +12711,6 @@ go
 alter table STATE
    add constraint SYS_C0013342 foreign key (STATEGROUPID)
       references STATEGROUP (STATEGROUPID)
-go
-
-
-alter table SYSTEMLOG
-   add constraint SYS_C0013408 foreign key (POINTID)
-      references POINT (POINTID)
 go
 
 
