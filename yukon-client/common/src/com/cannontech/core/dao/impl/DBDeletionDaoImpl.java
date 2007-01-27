@@ -324,13 +324,13 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		
 	   if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) )
 	   {
-	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This point has archived historical data that will be lost if removed.") );
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This point has archived historical data.") );
 	      return STATUS_CONFIRM;
 	   }
 	   
 	   if( com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
 	   {
-	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This point has system log data that will be lost if removed.") );
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This point has system log data.") );
 	      return STATUS_CONFIRM;
 	   }
 	

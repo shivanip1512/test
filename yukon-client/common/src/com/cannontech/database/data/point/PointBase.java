@@ -89,8 +89,6 @@ public void delete() throws java.sql.SQLException
 	if (!isPartialDelete)
 	{
 		getPointAlarming().delete();
-		delete(RawPointHistory.TABLE_NAME, "PointID", getPoint().getPointID());
-		delete(SystemLog.TABLE_NAME, "PointID", getPoint().getPointID());
 		getPoint().delete();
 	}
 
