@@ -519,7 +519,7 @@ private boolean createDeleteString(int pointID, String nodeName, StringBuffer me
 	Integer ptID = new Integer( pointID );
 
 	if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) || com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
-		message.append("\nThis Point has historical data that will be lost if removed.");
+		message.append("\nThis Point has historical data.");
 
 	if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
 	{
