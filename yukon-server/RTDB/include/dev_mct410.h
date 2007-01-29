@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/12/27 06:12:05 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2007/01/29 23:47:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,7 +186,7 @@ protected:
         FuncRead_LPStatusLen      =   12,
 
         FuncRead_DisconnectConfigPos = 0xfe,
-        FuncRead_DisconnectConfigLen =    9,
+        FuncRead_DisconnectConfigLen =   11,
 
         FuncRead_DisconnectStatusPos = 0xfe,
         FuncRead_DisconnectStatusLen =    1,
