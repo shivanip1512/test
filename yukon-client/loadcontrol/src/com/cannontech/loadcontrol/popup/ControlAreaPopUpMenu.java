@@ -5,7 +5,10 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import java.awt.Dimension;
+
 import javax.swing.JOptionPane;
+import javax.swing.plaf.DimensionUIResource;
 
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.util.CtiUtilities;
@@ -255,7 +258,9 @@ private void showProgramAblementPanel( final int cmd )
 		
 	d.setModal(true);
 	d.setContentPane(panel);
-	d.setSize(300,250);
+	d.setSize(300,400);
+    panel.setMinimumSize(new Dimension(300,300));
+    panel.setPreferredSize(new Dimension(300,300));
 	d.pack();
 	d.setLocationRelativeTo(this);
 
