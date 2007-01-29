@@ -150,7 +150,6 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
     String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
-    if (session != null) {
     	//handle any commands that a client may want to send to the CBC server
         Integer areaIndex = ParamUtil.getInteger(req, "areaIndex", -1);
     	//be sure we have a valid user and that user has the rights to control
@@ -174,7 +173,6 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     		CTILogger.warn( "CBC Command servlet was hit, but NO action was taken" );
     	
 
-    }
     //always forward the client to the specified URL if present
     if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
