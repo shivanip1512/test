@@ -1974,14 +1974,16 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                              " [0-9]+" \
                              " [0-9]+");
     boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
-    boost::regex  re_multiplier("mult(iplier)? kyz *[123] [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
+    boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
     boost::regex  re_group_address("group (enable|disable)");
     boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     boost::regex  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
-    boost::regex  re_loadlimit("load limit " + str_num + " "
-                               + str_num);
+
+    boost::regex  re_loadlimit("load limit " + str_floatnum + " " + str_num);
+    boost::regex  re_cycle("cycle " + str_num + " " + str_num);
+
     boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
     boost::regex  re_channel("channel " + str_num + " (ied|2-wire|3-wire|none)( input " + str_num + ")?( multiplier " + str_floatnum + ")?");
 
@@ -2037,8 +2039,17 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 cmdtok();  //  go past "load"
                 cmdtok();  //  go past "limit"
 
-                _cmd["disconnect demand threshold"]        = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["disconnect demand threshold"]         = CtiParseValue(atof(cmdtok().c_str()));
                 _cmd["disconnect load limit connect delay"] = CtiParseValue(atoi(cmdtok().c_str()));
+            }
+
+            if(!(token = CmdStr.match(re_cycle)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "cycle"
+
+                _cmd["disconnect cycle disconnect minutes"] = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["disconnect cycle connect minutes"]    = CtiParseValue(atoi(cmdtok().c_str()));
             }
         }
         if(CmdStr.contains(" group"))
