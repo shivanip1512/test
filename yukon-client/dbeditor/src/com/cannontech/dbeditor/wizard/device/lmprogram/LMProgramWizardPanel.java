@@ -176,44 +176,15 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 {
 	if( currentInputPanel == null )
 	{
-		getLmProgramTypePanel().setFirstFocus();
-        return getLmProgramTypePanel();
-	}
-	else if( currentInputPanel == getLmProgramTypePanel() )
-	{
-		getLmProgramBasePanel().setIsAWizardOp(true);
-		getLmProgramBasePanel().getJLabelActualProgType().setText(PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()));
-		if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM )
-			getLmProgramBasePanel().setTriggerThresholdVisible(true);
-		else
-			getLmProgramBasePanel().setTriggerThresholdVisible(false);
-		getLmProgramBasePanel().setFirstFocus();
+        getLmProgramBasePanel().setIsAWizardOp(true);
+        getLmProgramBasePanel().getJLabelActualProgType().setText(PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()));
+        getLmProgramBasePanel().setTriggerThresholdVisible(true);
+        getLmProgramBasePanel().setFirstFocus();
         return getLmProgramBasePanel();
-	}
-	else if( currentInputPanel == getLmProgramBasePanel() )
+    } else if( currentInputPanel == getLmProgramBasePanel() )
 	{
-		if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_CURTAIL_PROGRAM )
-        {
-            getLmProgramCurtailmentPanel().setFirstFocus();
-            return getLmProgramCurtailmentPanel();
-        }
-		else if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM )
-        {
             getLmProgramDirectPanel().setFirstFocus();
             return getLmProgramDirectPanel();
-        }
-		else if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
-        {
-            getLmProgramEnergyExchangePanel().setFirstFocus();
-            return getLmProgramEnergyExchangePanel();
-        }
-					
-	}
-	//Curtailment program begin
-	else if( currentInputPanel == getLmProgramCurtailmentPanel() )
-	{
-		getLmProgramCurtailListPanel().setFirstFocus();
-        return getLmProgramCurtailListPanel();
 	}
 	// Direct program begin
 	else if( currentInputPanel == getLmProgramDirectPanel() )
@@ -234,13 +205,6 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	    getLmProgramDirectCustomerListPanel().setFirstFocus();
         return getLmProgramDirectCustomerListPanel();
 	}
-	//EExchange program begin
-	else if( currentInputPanel == getLmProgramEnergyExchangePanel() )
-	{
-		getLmProgramEnergyExchangeCustomerListPanel().setFirstFocus();
-        return getLmProgramEnergyExchangeCustomerListPanel();
-	}
-	
 	return null;
 }
 /**
@@ -251,8 +215,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	//we dont use the getters for each panel here since this call creates new instances of each
-	return ( currentPanel == lmProgramDirectNotifGroupListPanel
-				|| currentPanel == lmProgramCurtailListPanel
-				|| currentPanel == lmProgramEnergyExchangeCustomerListPanel );
+	return ( currentPanel == lmProgramDirectNotifGroupListPanel);
+//				|| currentPanel == lmProgramCurtailListPanel
+//				|| currentPanel == lmProgramEnergyExchangeCustomerListPanel );
 }
 }

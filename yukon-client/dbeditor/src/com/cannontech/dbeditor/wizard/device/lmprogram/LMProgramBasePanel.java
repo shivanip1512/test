@@ -8,10 +8,12 @@ import java.util.Collections;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -671,8 +673,12 @@ private javax.swing.JTextField getJTextFieldTriggerOffset() {
  */
 public Object getValue(Object o) 
 {
-	LMProgramBase program = (LMProgramBase)o;
-
+    LMProgramBase  program;
+	if (isAWizardOp) {
+        program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_DIRECT_PROGRAM );
+    }else {
+        program = (LMProgramBase)o;
+    }
 	program.setName( getJTextFieldName().getText() );
 	program.getProgram().setControlType( getJComboBoxOperationalState().getSelectedItem().toString() );
 	
@@ -681,7 +687,7 @@ public Object getValue(Object o)
 
 	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
 	{
-		LMProgramDirect prog = (LMProgramDirect)o;
+		LMProgramDirect prog = (LMProgramDirect)program;
 		if(getJTextFieldTriggerOffset().getText().length() > 0)
 			prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
 
@@ -689,7 +695,7 @@ public Object getValue(Object o)
 			prog.getDirectProgram().setRestoreOffset(new Double(getJTextFieldOffset().getText()));
 	}
 
-	return o;
+	return program;
 }
 /**
  * Called whenever the part throws an exception.
@@ -796,29 +802,29 @@ public void setIsAWizardOp(boolean wizard)
 public void setValue(Object o) 
 {
 	LMProgramBase program = (LMProgramBase)o;
-
-	getJTextFieldName().setText( program.getPAOName() );
-	getJComboBoxOperationalState().setSelectedItem( program.getProgram().getControlType().toString() );
-
-	getJLabelProgramType().setVisible( true );
-	getJLabelActualProgType().setVisible( true );
-	getJLabelActualProgType().setText( program.getPAOType() );
-
-	for( int i = 0; i < getJComboBoxConstraint().getItemCount(); i++ )
-		if( ((com.cannontech.database.data.lite.LiteLMConstraint)getJComboBoxConstraint().getItemAt(i)).getConstraintID()
-			== program.getProgram().getConstraintID().intValue() )
-			{
-				getJComboBoxConstraint().setSelectedIndex(i);
-				break;
-			}
-			
-	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
-	{
-		getJPanelTriggerThreshold().setVisible(true);
-		getJTextFieldTriggerOffset().setText(((LMProgramDirect)program).getDirectProgram().getTriggerOffset().toString());
-		getJTextFieldOffset().setText(((LMProgramDirect)program).getDirectProgram().getRestoreOffset().toString());
-	}
-
+	if(!isAWizardOp) {
+    	getJTextFieldName().setText( program.getPAOName() );
+    	getJComboBoxOperationalState().setSelectedItem( program.getProgram().getControlType().toString() );
+    
+    	getJLabelProgramType().setVisible( true );
+    	getJLabelActualProgType().setVisible( true );
+    	getJLabelActualProgType().setText( program.getPAOType() );
+    
+    	for( int i = 0; i < getJComboBoxConstraint().getItemCount(); i++ )
+    		if( ((com.cannontech.database.data.lite.LiteLMConstraint)getJComboBoxConstraint().getItemAt(i)).getConstraintID()
+    			== program.getProgram().getConstraintID().intValue() )
+    			{
+    				getJComboBoxConstraint().setSelectedIndex(i);
+    				break;
+    			}
+    			
+    	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
+    	{
+    		getJPanelTriggerThreshold().setVisible(true);
+    		getJTextFieldTriggerOffset().setText(((LMProgramDirect)program).getDirectProgram().getTriggerOffset().toString());
+    		getJTextFieldOffset().setText(((LMProgramDirect)program).getDirectProgram().getRestoreOffset().toString());
+    	}
+    }
 }
 
 public void setFirstFocus() 
