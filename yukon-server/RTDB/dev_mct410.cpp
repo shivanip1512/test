@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.118 $
-* DATE         :  $Date: 2007/01/18 18:56:05 $
+* REVISION     :  $Revision: 1.119 $
+* DATE         :  $Date: 2007/01/29 23:58:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -971,6 +971,69 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
         found = true;
     }
+    else if( parse.isKeyValid("disconnect") )
+    {
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        OutMessage->Sequence = Emetcon::PutConfig_Disconnect;
+
+        long   tmpaddress = _disconnectAddress & 0x3fffff;  //  make sure it's only 22 bits
+        int    connect_delay, dynamic_demand_threshold;
+        float  demand_threshold;
+
+        //  default to no load limit
+        demand_threshold = parse.getdValue("disconnect demand threshold",         0.0);
+        //  default to a 5 minute connect delay
+        connect_delay    = parse.getiValue("disconnect load limit connect delay", 5);
+
+        if( (dynamic_demand_threshold = makeDynamicDemand(demand_threshold)) < 0
+            ||  connect_delay > 10 )
+        {
+            found = false;
+
+            errRet->setResultString("Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
+            errRet->setStatus(NoMethod);
+            retList.push_back(errRet);
+
+            errRet = 0;
+        }
+        else
+        {
+            OutMessage->Buffer.BSt.Message[0] = (tmpaddress >> 16) & 0xff;
+            OutMessage->Buffer.BSt.Message[1] = (tmpaddress >>  8) & 0xff;
+            OutMessage->Buffer.BSt.Message[2] =  tmpaddress        & 0xff;
+
+            OutMessage->Buffer.BSt.Message[3] = (dynamic_demand_threshold >> 8) & 0xff;
+            OutMessage->Buffer.BSt.Message[4] =  dynamic_demand_threshold       & 0xff;
+
+            OutMessage->Buffer.BSt.Message[5] = connect_delay & 0xff;
+
+            int connect_minutes    = parse.getiValue("disconnect cycle connect minutes",    -1),
+                disconnect_minutes = parse.getiValue("disconnect cycle disconnect minutes", -1);
+
+            //  optional parameters
+            if( connect_minutes < 0 && disconnect_minutes < 0 )
+            {
+                OutMessage->Buffer.BSt.Length -= 2;
+            }
+            else if( disconnect_minutes <  5 || connect_minutes <  5 ||
+                     disconnect_minutes > 60 || connect_minutes > 60 )
+            {
+                found = false;
+
+                errRet->setResultString("Invalid disconnect cycle parameters (" + CtiNumStr(disconnect_minutes) + ", " + CtiNumStr(connect_minutes) + ")");
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet);
+
+                errRet = 0;
+            }
+            else
+            {
+                OutMessage->Buffer.BSt.Message[6] = disconnect_minutes & 0xff;
+                OutMessage->Buffer.BSt.Message[7] = connect_minutes    & 0xff;
+            }
+        }
+    }
     else
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
@@ -1137,7 +1200,13 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    if( parse.isKeyValid("address_unique") )
+    if(parse.isKeyValid("disconnect"))
+    {
+        found = getOperation(Emetcon::GetConfig_Disconnect, OutMessage->Buffer.BSt);
+
+        OutMessage->Sequence = Emetcon::GetConfig_Disconnect;
+    }
+    else if( parse.isKeyValid("address_unique") )
     {
         found = true;
 
@@ -1349,7 +1418,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                         OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
-                        OutMessage->Buffer.BSt.Length     = revision >= SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
+                        OutMessage->Buffer.BSt.Length     = revision >= SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen : FuncRead_DisconnectConfigLen - 2;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -2635,6 +2704,21 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
         resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
 
         resultStr += "Disconnect load limit count: " + CtiNumStr(DSt->Message[8]) + string("\n");
+
+        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )
+        {
+            //  include the cycle information
+
+            if( DSt->Message[9] || DSt->Message[10] )
+            {
+                resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(DSt->Message[9])  + string("\n");
+                resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(DSt->Message[10]) + string("\n");
+            }
+            else
+            {
+                resultStr += "Cycling mode inactive\n";
+            }
+        }
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString(resultStr);
