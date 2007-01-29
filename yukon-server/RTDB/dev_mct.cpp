@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.109 $
-* DATE         :  $Date: 2006/12/27 05:43:42 $
+* REVISION     :  $Revision: 1.110 $
+* DATE         :  $Date: 2007/01/29 23:38:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2094,11 +2094,6 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         function = Emetcon::GetConfig_Options;
         found    = getOperation(function, OutMessage->Buffer.BSt);
     }
-    else if(parse.isKeyValid("disconnect"))
-    {
-        function = Emetcon::GetConfig_Disconnect;
-        found    = getOperation(function, OutMessage->Buffer.BSt);
-    }
     else if(parse.isKeyValid("address_group"))
     {
         function = Emetcon::GetConfig_GroupAddress;
@@ -2283,49 +2278,6 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         OutMessage->Buffer.BSt.Message[0] = 0xf8 |  0x04;  //  make sure the 0x04 bit is set
-    }
-    else if( parse.isKeyValid("disconnect") )
-    {
-        function = Emetcon::PutConfig_Disconnect;
-        found = getOperation(function, OutMessage->Buffer.BSt);
-
-        if( getType() == TYPEMCT410 )
-        {
-            long tmpaddress = _disconnectAddress & 0x3fffff;  //  make sure it's only 22 bits
-            int  demand_threshold = 0,  //  default to no load limit
-                 connect_delay    = 5;  //  default to a 5 minute connect delay
-
-            if( parse.isKeyValid("disconnect demand threshold") &&
-                parse.isKeyValid("disconnect load limit connect delay") )
-            {
-                demand_threshold = parse.getiValue("disconnect demand threshold");
-                connect_delay    = parse.getiValue("disconnect load limit connect delay");
-
-                if( demand_threshold < 0 || demand_threshold > 0xffff ||
-                    connect_delay    < 0 || connect_delay    > 0x00ff )
-                {
-                    found = false;
-
-                    if( errRet )
-                    {
-                        errRet->setResultString("Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
-                        errRet->setStatus(NoMethod);
-                        retList.push_back(errRet);
-
-                        errRet = NULL;
-                    }
-                }
-            }
-
-            OutMessage->Buffer.BSt.Message[0] = (tmpaddress >> 16) & 0xff;
-            OutMessage->Buffer.BSt.Message[1] = (tmpaddress >>  8) & 0xff;
-            OutMessage->Buffer.BSt.Message[2] =  tmpaddress        & 0xff;
-
-            OutMessage->Buffer.BSt.Message[3] = (demand_threshold >> 8) & 0xff;
-            OutMessage->Buffer.BSt.Message[4] =  demand_threshold       & 0xff;
-
-            OutMessage->Buffer.BSt.Message[5] = connect_delay & 0xff;
-        }
     }
     else if( parse.isKeyValid("groupaddress_enable") )
     {
