@@ -611,7 +611,7 @@ public final class YukonCRSIntegrator
                                 liteHardInvBase.setCurrentStateID(lmHardwareBase.getInventoryBase().getCurrentStateID().intValue());
 				       			
 				       			//Log the inventory (lmHardwarebase) state change.
-				       			EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());
+				       			EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue(), null);
 
 				       			//Add a config to the queue to deactivate the switch
 				               	SwitchCommand switchCommand = new SwitchCommandQueue.SwitchCommand();
