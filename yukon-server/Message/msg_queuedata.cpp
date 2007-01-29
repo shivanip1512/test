@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/22 21:39:32 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/01/29 21:10:26 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 
 
-RWDEFINE_COLLECTABLE( CtiQueueDataMsg, MSG_POINTDATA );
+RWDEFINE_COLLECTABLE( CtiQueueDataMsg, MSG_QUEUEDATA );
 
 CtiQueueDataMsg::CtiQueueDataMsg(
                                 long       id,
