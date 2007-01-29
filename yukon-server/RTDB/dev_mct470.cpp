@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2007/01/17 22:24:04 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2007/01/29 17:18:58 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3911,7 +3911,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                         case 0x20:  //  Alpha A1
                         case 0x30:  //  Alpha Power Plus
-                            rate = (DSt->Message[4] >> 2) & 0x07;
+                            rate = (DSt->Message[4] >> 2) & 0x03;
                             resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate).c_str() + "\n";
                             break;
 
