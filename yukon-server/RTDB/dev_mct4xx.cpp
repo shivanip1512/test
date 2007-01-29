@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2007/01/18 18:51:39 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2007/01/29 23:41:58 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -443,6 +443,57 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getLoadProfileData(unsigned channel
 
     return pi;
 }
+
+
+int CtiDeviceMCT4xx::makeDynamicDemand(double input) const
+{
+    /*
+    Bits   Resolution            Range
+    13-12
+    00     100   WHr   40,100.0 WHr - 400,000.0 WHr
+    01      10   WHr    4,010.0 WHr -  40,000.0  WHr
+    10       1   WHr      401.0 WHr -   4,000.0  WHr
+    11       0.1 WHr        0.0 WHr -     400.0  WHr
+    */
+
+    int output;
+    int resolution;
+    float divisor;
+
+    if( input > 40950.0 || input < 0.0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - input = " << input << " in CtiDeviceMCT4xx::makeDynamicDemand() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        output = -1;
+    }
+    else if( input < 0.05 )
+    {
+        output = 0;
+    }
+    else
+    {
+        if(      input <=   400.0 )     {   divisor =   0.1;    resolution = 0x3;   }
+        else if( input <=  4000.0 )     {   divisor =   1.0;    resolution = 0x2;   }
+        else if( input <= 40000.0 )     {   divisor =  10.0;    resolution = 0x1;   }
+        else                            {   divisor = 100.0;    resolution = 0x0;   }
+
+        output = input / divisor;
+
+        if( fmod( input, divisor ) >= (divisor / 2.0) )
+        {
+            output++;
+        }
+
+        output &= resolution << 12;
+    }
+
+    return output;
+}
+
+
 
 
 //  timestamp == 0UL means current time

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/12/26 15:52:04 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/01/29 23:41:58 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -246,6 +246,8 @@ protected:
 
     unsigned char crc8(const unsigned char *buf, unsigned int len) const;
     point_info getData(unsigned char *buf, int len, ValueType vt=ValueType_Demand) const;
+
+    int makeDynamicDemand(double input) const;
 
     string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
     string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;
