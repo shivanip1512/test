@@ -169,7 +169,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				energyCompany.addInventory( liteHw );
 				
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, liteHw.getInventoryID());
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, liteHw.getInventoryID(), session);
                 numSuccess++;
 			}
 			catch (com.cannontech.database.TransactionException e) {

@@ -1,15 +1,22 @@
 package com.cannontech.stars.util;
 
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.database.data.stars.event.EventBase;
 import com.cannontech.database.data.stars.event.EventInventory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
+import com.cannontech.stars.web.StarsYukonUser;
 
 
 public class EventUtils 
@@ -18,9 +25,28 @@ public class EventUtils
     public static final String EVENT_CATEGORY_INVENTORY = "Inventory";
     public static final String EVENT_CATEGORY_WORKORDER = "WorkOrder";
         
-    public static EventBase logSTARSEvent(int userID, String sysCategory, int actionID, int objectID)
+    public static EventBase logSTARSEvent(int userID, String sysCategory, int actionID, int objectID, HttpSession session)
     {
-    	return logSTARSEvent(userID, sysCategory, actionID, objectID, new Date());
+        /*
+         * New logging requirements from Xcel indicate that we need to track the parent login in case 
+         * this was from an internal login through the member management interface.
+         */
+        if(session != null) {
+            Pair p = (Pair) session.getAttribute(LoginController.SAVED_YUKON_USERS);
+            if (p != null) {
+                Properties oldContext = (Properties) p.getFirst();
+                Enumeration attNames = oldContext.propertyNames();
+                while (attNames.hasMoreElements()) {
+                    String attName = (String) attNames.nextElement();
+                    if(attName.compareTo( ServletUtils.ATT_STARS_YUKON_USER ) == 0) {
+                        userID = ((StarsYukonUser) oldContext.get(attName)).getUserID();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return logSTARSEvent(userID, sysCategory, actionID, objectID, new Date());
     }
 
     public static EventBase logSTARSEvent(int userID, String sysCategory, int actionID, int objectID, Date eventDate)

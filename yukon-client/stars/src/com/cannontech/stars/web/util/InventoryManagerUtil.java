@@ -193,7 +193,7 @@ public class InventoryManagerUtil {
                     session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             
             if(req.getParameter("oldStateID") != null && Integer.parseInt(req.getParameter("oldStateID")) != devStat.getEntryID())
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStat.getEntryID(), starsInv.getInventoryID());
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStat.getEntryID(), starsInv.getInventoryID(), session);
         }
         
         /*

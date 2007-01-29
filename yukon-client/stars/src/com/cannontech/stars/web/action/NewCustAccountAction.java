@@ -323,7 +323,7 @@ public class NewCustAccountAction implements ActionBase {
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account created successfully" );
 			respOper.setStarsSuccess( success );
-            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, liteAcctInfo.getAccountID());
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, liteAcctInfo.getAccountID(), session);
             			
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}

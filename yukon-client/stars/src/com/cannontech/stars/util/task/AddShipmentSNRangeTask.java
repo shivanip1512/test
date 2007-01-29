@@ -119,7 +119,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				energyCompany.addInventory( liteHw );
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID());
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID(), session);
                 
                 if(warehouseID.intValue() > 0)
                 {

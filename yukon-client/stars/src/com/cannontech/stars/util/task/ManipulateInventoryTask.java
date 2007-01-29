@@ -225,7 +225,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                         }
                     }
                     if( stateChanged )
-                        EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, invDB.getCurrentStateID().intValue(), invDB.getInventoryID().intValue());
+                        EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, invDB.getCurrentStateID().intValue(), invDB.getInventoryID().intValue(), session);
                         /*DBChangeMsg dbChangeMessage = new DBChangeMsg(
                                 workOrderBase.getWorkOrderBase().getOrderID(),
                                 DBChangeMsg.,

@@ -223,7 +223,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			success.setDescription( "Customer account updated successfully" );
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Customer account updated successfully" );
                         
-            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, updateAccount.getAccountID());
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, updateAccount.getAccountID(), session);
             
 			respOper.setStarsSuccess( success );
 			return SOAPUtil.buildSOAPMessage( respOper );

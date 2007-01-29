@@ -338,7 +338,7 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
                         lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
                         
                         //Log the inventory (lmHardwarebase) state change.
-                        EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());
+                        EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue(), null);
 
                         //Add a config to the queue to deactivate the switch
                         SwitchCommand switchCommand = new SwitchCommandQueue.SwitchCommand();
