@@ -49,30 +49,33 @@
 
 	<tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
 		<tags:sectionLink>
-        	<a href='Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&Wizard=true</cti:checkProperty>'>New Account</a>
+        	<a href="Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&Wizard=true</cti:checkProperty>">New Account</a>
         </tags:sectionLink>
 
 		<c:set var="importID" scope="page">
 			<cti:getProperty property="ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT"/>
 		</c:set>
-		<c:if test="${pageScope.importID != '(none)'}">
-			<c:if test="${cti:equalsIgnoreCase(pageScope.importID, 'STARS')}">
+		<c:choose>
+			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'STARS')}">
 				<c:set var="importUri" scope="page" value="ImportSTARS.jsp"/>
 				<c:set var="importLabel" scope="page" value="Import STARS"/>
-			</c:if> 
-			<c:if test="${cti:equalsIgnoreCase(pageScope.importID, 'DSM')}">
+			</c:when> 
+			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'DSM')}">
 				<c:set var="importUri" scope="page" value="ImportDSM.jsp"/>
 				<c:set var="importLabel" scope="page" value="Import DSM"/>
-			</c:if> 
-			<c:if test="${cti:equalsIgnoreCase(pageScope.importID, 'upload')}">
+			</c:when> 
+			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'upload')}">
 				<c:set var="importUri" scope="page" value="GenericUpload.jsp"/>
 				<c:set var="importLabel" scope="page" value="Upload File"/>
-			</c:if> 
-
-			<tags:sectionLink>
-	        	<a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
-	        </tags:sectionLink>
-		</c:if> 
+			</c:when>
+			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'true')}">
+				<c:set var="importUri" scope="page" value="ImportAccount.jsp"/>
+				<c:set var="importLabel" scope="page" value="Import Account"/>
+				<tags:sectionLink>
+		        	<a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
+		        </tags:sectionLink>
+			</c:when>
+		</c:choose>
 		
 		<!-- Customer search form -->
 		<div class="sectionForm">
@@ -191,17 +194,25 @@
 			}
 		}
 	}
+
+	String hardwarePage = "Hardware/Inventory.jsp";
+	if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+		((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { 
+		hardwarePage = "Hardware/Filter.jsp";
+
+	}
 %>
 
 <c:set var="lastInvOption" scope="page" value="<%=lastInvOption%>" />
 <c:set var="invSearchByList" scope="page" value="<%=invSelectionList%>" />
+<c:set var="hardwarePage" scope="page" value="<%=hardwarePage%>" />	
 
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
 
 	<tags:operationSection sectionName="Hardware Inventory" sectionImageName="HardwareInventoryLogo">
     	<cti:checkProperty property="InventoryRole.INVENTORY_SHOW_ALL"> 
         	<tags:sectionLink>
-            	<a href="Hardware/Inventory.jsp">Inventory</a>
+            	<a href="${hardwarePage}">Inventory</a>
             </tags:sectionLink>
         </cti:checkProperty>
         <tags:sectionLink>
@@ -217,8 +228,8 @@
 				<div>
 					<select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
 						<c:if test="${pageScope.selectionListTable != null}">
-							<c:forEach items="${pageScope.searchByList}" var="entry">
-								<option value="${entry.entryID}" >${entry.content}</option>
+							<c:forEach items="${pageScope.invSearchByList}" var="entry">
+								<option value="${entry.yukonDefID}" >${entry.content}</option>
 							</c:forEach>
 						</c:if>
 					</select>
@@ -236,11 +247,19 @@
 
 <%
 	Integer lastSrvcOption = null;
-	StarsCustSelectionList srvcSearchByList = null;
+	List<StarsSelectionListEntry> srvcSearchByList = null;
 
 	if (selectionListTable != null) {
+
 		lastSrvcOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION);
-		srvcSearchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
+
+		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
+		srvcSearchByList = new ArrayList<StarsSelectionListEntry>();
+		
+		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+			srvcSearchByList.add(entry);
+		}
 	}
 %>
 
@@ -266,8 +285,8 @@
 				<div>
 					<select name="SearchBy" onchange="document.soSearchForm.SearchValue.value=''">
 						<c:if test="${pageScope.selectionListTable != null}">
-							<c:forEach items="${pageScope.searchByList}" var="entry">
-								<option value="${entry.entryID}" >${entry.content}</option>
+							<c:forEach items="${pageScope.srvcSearchByList}" var="entry">
+								<option value="${entry.yukonDefID}" >${entry.content}</option>
 							</c:forEach>
 						</c:if>
 					</select>
