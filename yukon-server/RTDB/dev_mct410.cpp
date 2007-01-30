@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.120 $
-* DATE         :  $Date: 2007/01/30 00:08:53 $
+* REVISION     :  $Revision: 1.121 $
+* DATE         :  $Date: 2007/01/30 01:17:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -986,7 +986,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         //  default to a 5 minute connect delay
         connect_delay    = parse.getiValue("disconnect load limit connect delay", 5);
 
-        //  adjust for the demand interval
+        //  make it Wh units
+        demand_threshold *= 1000.0;
+
         demand_threshold /= 3600 / getDemandInterval();
 
         if( (dynamic_demand_threshold = makeDynamicDemand(demand_threshold)) < 0
@@ -2699,13 +2701,19 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         //  adjust for the demand interval
         pi.value *= 3600 / getDemandInterval();
+        //  adjust for the 0.1 kWh factor of getData()
+        pi.value /= 10.0;
 
         resultStr += "Disconnect demand threshold: ";
 
-        if( pi.value )  resultStr += CtiNumStr(pi.value);
-        else            resultStr += "disabled";
-
-        resultStr += "\n";
+        if( pi.value )
+        {
+            resultStr += CtiNumStr(pi.value) + string(" kW\n");
+        }
+        else
+        {
+            resultStr += "disabled\n";
+        }
 
         resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
 
