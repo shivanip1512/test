@@ -33,7 +33,7 @@
 
 /* -----  Custom CSS classes ------- */
 .primeBGColor {
-	background-color: #006699;
+	background-color: #003399;
 }
 
 .primeColor {
@@ -55,7 +55,7 @@
 
 a.tableCell:active, a.tableCell:visited, a.tableCell:link, a.tableCell:hover,
 a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCell:link, a.altTableCell:hover {
-	color: #006699;
+	color: #003399;
 }
 
 .altTableCell {
@@ -163,7 +163,7 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .optSelect {
 	text-decoration: none;
-	background-color: #006699;
+	background-color: #003399;
 	border: 1px #666699;
 	cursor:pointer;
 	width: 120px;

@@ -10,7 +10,7 @@ a.menuLink:active {
 
 .submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link,
 a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
-	color: #006699;
+	color: #003399;
 }
 
 .submenuLink {
@@ -198,11 +198,11 @@ legend, .legendLikeLabel{
 	background-color: #E7EFF7;
 	font-weight: bold;
 	border: solid;
-	border-color: #006699;
+	border-color: #003399;
 }
 
 .primeBGColor {
-	background-color: #006699;
+	background-color: #003399;
 	height: 23px;
 	width: 100%;
 }
@@ -223,7 +223,7 @@ legend, .legendLikeLabel{
 .cellEditing {
 	border-width: 1px;
 	border-style: solid;
-	border-color: #006699;
+	border-color: #003399;
 	background-color: #E7EFF7;
 	font-weight: bold;
 	padding-left: 3px;
