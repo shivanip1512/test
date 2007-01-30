@@ -33,7 +33,7 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
         columnData.add(new ColumnDataField("Event #", "eventNumber"));
         columnData.add(new ColumnDataField("Start Date", "startDate"));
         columnData.add(new ColumnDataField("Notification Time", "notificationDate"));
-        columnData.add(new ColumnDataField("Stop Time", "notificationDate"));
+        columnData.add(new ColumnDataField("Stop Time", "stopDate"));
         columnData.add(new ColumnDataField("Duration (hours)", "durationHours"));
         columnData.add(new ColumnDataField("Type", "type"));
     }
