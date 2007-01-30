@@ -131,7 +131,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 					workOrderBase = (WorkOrderBase)Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
 					if( isStatusChanged)
 					{
-		           		EventWorkOrder eventWorkOrder  = (EventWorkOrder)EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue(), eventDate);
+		           		EventWorkOrder eventWorkOrder  = (EventWorkOrder)EventUtils.logSTARSDatedEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue(), eventDate);
 		           		workOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
     					
     					if ( VersionTools.crsPtjIntegrationExists())

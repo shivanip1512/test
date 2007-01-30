@@ -236,7 +236,7 @@ public class CreateServiceRequestAction implements ActionBase {
         
 		//New event!
 		Date eventTimestamp = createOrder.getDateReported();
-        EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue(), eventTimestamp);
+        EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSDatedEvent(userID, EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue(), eventTimestamp);
        	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
 
        	if (VersionTools.crsPtjIntegrationExists())

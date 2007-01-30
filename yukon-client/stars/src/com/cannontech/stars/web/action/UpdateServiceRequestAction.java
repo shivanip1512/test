@@ -133,7 +133,7 @@ public class UpdateServiceRequestAction implements ActionBase {
         	if( liteOrder.getCurrentStateID() != updateOrder.getCurrentState().getEntryID())
 			{	//New event!
 				Date eventTimestamp = updateOrder.getDateReported();
-	            EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, updateOrder.getCurrentState().getEntryID(), updateOrder.getOrderID(), eventTimestamp);
+	            EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSDatedEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, updateOrder.getCurrentState().getEntryID(), updateOrder.getOrderID(), eventTimestamp);
 	           	order.getEventWorkOrders().add(0, eventWorkOrder);
 //TODO if serviceCompany changes, change state?
 	           	if (VersionTools.crsPtjIntegrationExists())
