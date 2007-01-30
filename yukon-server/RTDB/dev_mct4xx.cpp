@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2007/01/29 23:41:58 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2007/01/30 00:58:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -487,7 +487,7 @@ int CtiDeviceMCT4xx::makeDynamicDemand(double input) const
             output++;
         }
 
-        output &= resolution << 12;
+        output |= resolution << 12;
     }
 
     return output;
