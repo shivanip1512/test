@@ -5,22 +5,29 @@ import java.util.List;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventAccount;
 
 
-public class AccountBean 
-{
+public class AccountBean {
+    private LiteStarsEnergyCompany energyCompany = null;
     private String currentCommercialType;
     private YukonSelectionList customerTypes;
     private int currentAccount;
     private List<EventAccount> currentEvents;
             
-    public YukonSelectionList getCustomerTypes()
-    {
-        if(customerTypes == null)
-        {
+    public LiteStarsEnergyCompany getEnergyCompany() {
+        return energyCompany;
+    }
+    
+    public void setEnergyCompany(LiteStarsEnergyCompany company) {
+        energyCompany = company;
+    }
+    
+    public YukonSelectionList getCustomerTypes() {
+        if(customerTypes == null) {
             customerTypes = new YukonSelectionList();
-            customerTypes = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
+            customerTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
         }
         
         return customerTypes;

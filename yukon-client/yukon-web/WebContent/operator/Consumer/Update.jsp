@@ -1,4 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.xml.serialize.StarsSelectionListEntry" %>
 <jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
@@ -149,6 +149,9 @@ function setCommercial() {
 			<% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			</div>
 			
+			<%pageContext.setAttribute("liteEC",liteEC);%>
+			<c:set target="${accountBean}" property="energyCompany" value="${liteEC}" />
+	
 			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			<input type="hidden" name="action" value="UpdateCustAccount">
 			<input type="hidden" name="DisableReceivers" value="false">

@@ -1531,8 +1531,10 @@ public class StarsLiteFactory {
 		starsAccount.setCustomerID( liteAccount.getCustomerID() );
 		starsAccount.setAccountNumber( StarsUtils.forceNotNull(liteAccount.getAccountNumber()) );
 		starsAccount.setIsCommercial( liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI );
-		if (liteCustomer instanceof LiteCICustomer)
+		if (liteCustomer instanceof LiteCICustomer) {
 			starsAccount.setCompany( ((LiteCICustomer)liteCustomer).getCompanyName() );
+            starsAccount.setCICustomerType( ((LiteCICustomer)liteCustomer).getCICustType() );
+        }
 		else
 			starsAccount.setCompany( "" );
 		starsAccount.setAccountNotes( StarsUtils.forceNotNull(liteAccount.getAccountNotes()) );
