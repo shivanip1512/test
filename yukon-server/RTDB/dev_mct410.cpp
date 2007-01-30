@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2007/01/29 23:58:51 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2007/01/30 00:08:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -985,6 +985,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         demand_threshold = parse.getdValue("disconnect demand threshold",         0.0);
         //  default to a 5 minute connect delay
         connect_delay    = parse.getiValue("disconnect load limit connect delay", 5);
+
+        //  adjust for the demand interval
+        demand_threshold /= 3600 / getDemandInterval();
 
         if( (dynamic_demand_threshold = makeDynamicDemand(demand_threshold)) < 0
             ||  connect_delay > 10 )
@@ -2693,6 +2696,9 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
         resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + string("\n");
 
         point_info pi = getData(DSt->Message + 5, 2);
+
+        //  adjust for the demand interval
+        pi.value *= 3600 / getDemandInterval();
 
         resultStr += "Disconnect demand threshold: ";
 
