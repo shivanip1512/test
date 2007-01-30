@@ -8,11 +8,14 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/26 19:56:13 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/01/30 18:16:25 $
 *
 * HISTORY      :
 * $Log: dev_fmu.cpp,v $
+* Revision 1.2  2007/01/30 18:16:25  jrichter
+* A little bit cleaned up...
+*
 * Revision 1.1  2007/01/26 19:56:13  jrichter
 * FMU stuff for jess....
 *
@@ -448,7 +451,7 @@ int CtiDeviceFMU::generate(CtiXfer &xfer)
         {
             xfer.setOutCount(0);
 
-            if( _code_len )
+            if( _code_len ) //set for data.
             {
                 xfer.setInBuffer(_inbound + 8);
                 xfer.setInCountExpected(_code_len);
@@ -456,7 +459,7 @@ int CtiDeviceFMU::generate(CtiXfer &xfer)
 
                 _code_len = 0;
             }
-            else
+            else  //set for header
             {
                 xfer.setInBuffer(_inbound);
                 xfer.setInCountExpected(8);

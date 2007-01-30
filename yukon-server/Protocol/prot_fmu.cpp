@@ -7,11 +7,14 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/26 19:56:14 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/01/30 18:16:26 $
 *
 * HISTORY      :
 * $Log: prot_fmu.cpp,v $
+* Revision 1.2  2007/01/30 18:16:26  jrichter
+* A little bit cleaned up...
+*
 * Revision 1.1  2007/01/26 19:56:14  jrichter
 * FMU stuff for jess....
 *
@@ -71,18 +74,6 @@ CtiProtocolFMU& CtiProtocolFMU::operator=(const CtiProtocolFMU& aRef)
 
 
 
-INT CtiProtocolFMU::parseCommand(CtiCommandParser &parse)
-{
-    INT status = NORMAL;
-
-    *_fmuMsgs = parse.getCommand();
-
-    
-
-    
-    return status;
-}
-
 
 string CtiProtocolFMU::asString(const CtiSAData &sa)
 {
@@ -118,16 +109,6 @@ CtiFMUApplication &CtiProtocolFMU::getApplicationLayer( void )
 {
    return _fmuAppLayer;
 }
-
-/*int CtiProtocolFMU::buildCmdRequest(UCHAR *abuf, INT *buflen, UINT32 address, BYTE sequence)
-{
-    int retVal = NORMAL;
-    USHORT cmd = 0x08;
-    BYTE *optionalData = NULL;
-
-    retVal =  generate(abuf, buflen, address, sequence, cmd, optionalData);
-    return retVal;
-} */
 
 
 int CtiProtocolFMU::generate(UCHAR *abuf, INT& buflen, UINT32 address, BYTE sequence, USHORT cmd, BYTE *optionalData)
@@ -338,12 +319,11 @@ int CtiProtocolFMU::decodeHeader( CtiXfer &xfer, int status )
 
     if(  xfer.getInBuffer()[0] == FMU_STP  )//&& ( getExpectedBytes() > 1 ) )
     {
-        _packetBytesReceived = xfer.getInCountActual();
         memcpy(_currentPacket, xfer.getInBuffer(), _packetBytesReceived);
-        setAddress((UINT32) _currentPacket[1]);
-        setSequence(_currentPacket[5]);
-        setCmd(_currentPacket[6]);
-        setDataLen(_currentPacket[7]);
+        setAddress((UINT32) xfer.getInBuffer()[1]);
+        setSequence(xfer.getInBuffer()[5]);
+        setCmd(xfer.getInBuffer()[6]);
+        setDataLen(xfer.getInBuffer()[7]);
         retVal = NORMAL;
     } 
     return retVal;
@@ -352,31 +332,15 @@ int CtiProtocolFMU::decodeHeader( CtiXfer &xfer, int status )
 int CtiProtocolFMU::decodeData( CtiXfer &xfer, int status )
 {
     int retVal = NOTNORMAL;
-    UINT32 address;
-    BYTE seq;
-    BYTE cmd;
-    BYTE dataLen;
+
     _packetBytesReceived = xfer.getInCountActual();
 
-    
-    /*try
-    {
-
-        bool  done = false;
-
-        done = getApplicationLayer().decode( xfer, status );
-    } */
-    memcpy(_currentPacket, xfer.getInBuffer(), _packetBytesReceived);
+    memcpy(_currentPacket + 8, xfer.getInBuffer(), _packetBytesReceived);
     if(  _currentPacket[0] == FMU_STP  )//&& ( getExpectedBytes() > 1 ) )
     {
-        UINT32 address = _currentPacket[1];
-        BYTE seq = _currentPacket[5];
-        BYTE cmd = _currentPacket[6];
-        BYTE dataLen = _currentPacket[7];
-        UINT16 crc =_currentPacket[8 + dataLen];
         if (isCRCvalid())
         {
-            switch (cmd) 
+            switch (getCmd()) 
             {
                 case ack:
                 case nak:
@@ -396,7 +360,7 @@ int CtiProtocolFMU::decodeData( CtiXfer &xfer, int status )
                 case dataReqRsp:
                 {
 
-                    if (getStartOfMessageFlag(seq))// && !getEndOfMessageFlag()) 
+                    if (getStartOfMessageFlag(getSequence()))// && !getEndOfMessageFlag()) 
                     {   
                         if (_fmuMsgs != NULL) 
                         {
@@ -418,10 +382,10 @@ int CtiProtocolFMU::decodeData( CtiXfer &xfer, int status )
                     } */
                     //extract msgs from data portion..
                     {
-                        memcpy(_fmuMsgs + _currentDataOffset, (void*)_currentPacket[8], dataLen);
-                        _currentDataOffset += dataLen;
+                        memcpy(_fmuMsgs + _currentDataOffset, (void*)_currentPacket[8], getDataLen());
+                        _currentDataOffset += getDataLen();
 
-                        if (getEndOfMessageFlag(seq)) 
+                        if (getEndOfMessageFlag(getSequence())) 
                         {
                             _expectMore = false;
                         }

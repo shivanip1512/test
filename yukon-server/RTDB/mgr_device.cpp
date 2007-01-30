@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2006/07/12 22:03:01 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2007/01/30 18:16:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@
 #include "dev_repeater.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
+#include "dev_fmu.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
 #include "dev_tnpp.h"
@@ -1200,6 +1201,42 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load  CBC Devices" << endl;
+                    }
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for FMU Devices" << endl;
+                        }
+                        CtiDeviceFMU().getSQL( db, keyTable, selector );
+                        selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("FMU") && selector.where() );   // Need to attach a few conditions!
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        refreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for FMU Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load  RTC Devices" << endl;
                     }
 
                     start = start.now();
