@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/01/24 22:40:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/01/30 22:17:17 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -420,15 +420,18 @@ bool UDPInterface::getPackets( int wait )
         if( p )
         {
             //  this is where we'd add any other protocols in the future - right now, this is very DNP-centric
-            const int DNPHeaderLength = 10;
+            const int DNPHeaderLength   = 10,
+                      GPUFFHeaderLength = 11;
 
-            if( p->len >= DNPHeaderLength )
+            if( p->len >= DNPHeaderLength
+                  && p->data[0] == 0x05
+                  && p->data[1] == 0x64 )
             {
                 unsigned short header_crc = p->data[8] | (p->data[9] << 8);
                 unsigned short crc = Protocol::DNP::Datalink::crc(p->data, DNPHeaderLength - 2);
 
                 //  check the framing bytes
-                if( p->data[0] == 0x05 && p->data[1] == 0x64 && crc == header_crc )
+                if( crc == header_crc )
                 {
                     unsigned short slave_address  = p->data[6] | (p->data[7] << 8);
                     unsigned short master_address = p->data[4] | (p->data[5] << 8);
@@ -499,10 +502,82 @@ bool UDPInterface::getPackets( int wait )
                     dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
+            else if( p->len >= GPUFFHeaderLength
+                       && p->data[0] == 0xa5
+                       && p->data[1] == 0x96 )
+            {
+                //  a5 96 len[lsb msb] devt[lsb msb] devr ser[lsb .. .. msb] pkg[n]
+
+                unsigned len, devt, devr, ser, crc;
+
+                len  = p->data[2] | (p->data[3] << 8);
+                devt = p->data[4] | (p->data[5] << 8);
+                devr = p->data[6];
+                ser  = p->data[7] | (p->data[8]  <<  8)
+                                  | (p->data[9]  << 16)
+                                  | (p->data[10] << 24);
+
+                if( p->len < len + 4 )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - incoming packet from "
+                             << ((p->ip >> 24) & 0xff) << "."
+                             << ((p->ip >> 16) & 0xff) << "."
+                             << ((p->ip >>  8) & 0xff) << "."
+                             << ((p->ip >>  0) & 0xff) << ":" << p->port
+                             << " is too small (" << p->len << " < " << len << " + 4) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - incoming packet from "
+                             << ((p->ip >> 24) & 0xff) << "."
+                             << ((p->ip >> 16) & 0xff) << "."
+                             << ((p->ip >>  8) & 0xff) << "."
+                             << ((p->ip >>  0) & 0xff) << ":" << p->port << ": " << endl;
+
+                        dout << "LEN  : " << len << endl;
+                        dout << "DEVT : " << devt << endl;
+                        dout << "DEVR : " << devr << endl;
+                        dout << "SER  : " << ser << endl;
+                        dout << "PKG  : ";
+
+                        for( int xx = 0; xx < len - 7; xx++ )
+                        {
+                            dout << CtiNumStr(p->data[11+xx]).hex().zpad(2).toString() << " ";
+                        }
+
+                        dout << endl;
+
+                        int pointid = gConfigParms.getValueAsInt("SERIAL_" + CtiNumStr(ser) + "_POINTID", 0);
+
+                        if( pointid )
+                        {
+                            CtiReturnMsg    *vgMsg = CTIDBG_new CtiReturnMsg(0);
+
+                            CtiPointDataMsg *pdm   = CTIDBG_new CtiPointDataMsg(pointid, p->data[11] - 1);
+
+                            vgMsg->PointData().push_back(pdm);
+
+                            VanGoghConnection.WriteConnQue(vgMsg);
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - no pointid for serial " << ser << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }
+                }
+            }
             else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - read " << p->len << " bytes, not enough for a full DNP header - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets() - packet doesn't match any known protocol - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
