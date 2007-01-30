@@ -1,6 +1,10 @@
 package com.cannontech.servlet;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,12 +16,14 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.cbc.oneline.CapControlDrawingUpdater;
 import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.oneline.CapControlSVGGenerator;
+import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
 public class OnelineCBCServlet extends HttpServlet {
@@ -45,8 +51,8 @@ public class OnelineCBCServlet extends HttpServlet {
         util.setDirBase(absPath);
         String subName = subBusMsg.getCcName();
         String dirAndFileExt = util.createFileName(subName);
-        CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(800,
-                                                                          1200);
+        Dimension d = OnelineUtil.getDrawingDimension(subBusMsg);
+        CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
         emptyCanvas.createDrawing(subBusMsg,
                                   CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
 
@@ -55,6 +61,10 @@ public class OnelineCBCServlet extends HttpServlet {
         resp.sendRedirect(subName + ".html");
 
     }
+
+
+
+
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

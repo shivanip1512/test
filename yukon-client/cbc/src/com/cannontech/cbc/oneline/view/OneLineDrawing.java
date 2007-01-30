@@ -20,6 +20,7 @@ public class OneLineDrawing {
     private OnelineSub sub = null;
     private List<OnelineFeeder> feeders = new ArrayList<OnelineFeeder>(0);
     private List<OnelineCap> caps = new ArrayList<OnelineCap>(0);
+    private OnelineLogos logos = null;
 
     public OneLineDrawing(OneLineParams p) {
         drawing = new Drawing();
@@ -47,7 +48,7 @@ public class OneLineDrawing {
     }
 
     public void addLogos() {
-        OnelineLogos logos = new OnelineLogos();
+        logos = new OnelineLogos();
         logos.addDrawing(this);
 
     }
@@ -84,6 +85,10 @@ public class OneLineDrawing {
         OnelineFeeder onelineFeeder = new OnelineFeeder(subBus);
         onelineFeeder.addDrawing(this);
         feeders.add(onelineFeeder);
+    }
+
+    public OnelineLogos getLogos() {
+        return logos;
     }
 
 

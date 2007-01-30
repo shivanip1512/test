@@ -54,7 +54,7 @@ public class HTMLGenerator {
 	 * Generate an html file for a given svg file, use this if you don't want to 
 	 * load the drawing before generating the html.
 	 */
-	private void generate(Writer w, String svgFile, int width, int height) throws IOException {
+	public void generate(Writer w, String svgFile, int width, int height) throws IOException {
 		w.write(header);
 		w.write("<DIV ID=\"graphsettings\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;width:300px;height:175px;\"></DIV>");
 		w.write("<DIV ID=\"controlrequest\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>");		

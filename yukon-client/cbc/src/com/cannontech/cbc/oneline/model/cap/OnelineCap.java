@@ -1,22 +1,19 @@
 package com.cannontech.cbc.oneline.model.cap;
 
-import java.util.Vector;
-
 import com.cannontech.cbc.oneline.model.OnelineObject;
+import com.cannontech.cbc.oneline.model.UpdatableTextList;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.impl.PaoDaoImpl;
-import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
-import com.cannontech.esub.util.ESubDrawingUpdater;
+import com.cannontech.esub.element.StaticText;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
+import com.loox.jloox.LxAbstractText;
+import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
@@ -28,11 +25,10 @@ public class OnelineCap implements OnelineObject {
     public static final String NONE = "X.gif";
 
     public static final String NAME_PREFIX = "CapBank_";
-    
-    //private static final Font DEFAULT_FONT = new java.awt.Font("arial",
-    //                                                           java.awt.Font.BOLD,
-    //                                                           12);
-    //private static String DEF_CONTROLS_HOME = "../capcontrols.jsp";
+
+    // private static final Font DEFAULT_FONT = new java.awt.Font("arial",
+    // java.awt.Font.BOLD,
+    // 12);
 
     public OneLineDrawing drawing = null;
     private SubBus subBusMsg = null;
@@ -41,168 +37,102 @@ public class OnelineCap implements OnelineObject {
     private String name;
 
     private CapControlPanel controlPanel;
-
     private int currFdrIndex;
+    private StateImage stateImage;
+    private UpdatableTextList bankSize = new UpdatableTextList();
+    private UpdatableTextList opcount = new UpdatableTextList();
 
     public void draw() {
 
         currFdrIndex = drawing.getFeeders().size() - 1;
         OnelineFeeder f = drawing.getFeeders().get(currFdrIndex);
-        double lineLength = OnelineFeeder.LINE_LENGTH;
-        double nameOffset = f.getFeederName().getX() + f.getFeederName()
-                                                        .getWidth();
+        double nameX = f.getFeederName().getX();
+        int nameWidth = OnelineUtil.getFeederOffset(f.getFeederName().getText());
+        double nameOffset = nameX + nameWidth;
         int twenty = 20;
-        double remainLength = lineLength - (nameOffset + (twenty * 2));
 
-        Vector feederVector = subBusMsg.getCcFeeders();
-        Feeder currentFeeder = (Feeder) feederVector.get(currFdrIndex);
-        Vector caps = currentFeeder.getCcCapBanks();
+        stateImage = new StateImage();
+        Feeder feeder = (Feeder) subBusMsg.getCcFeeders().get(currFdrIndex);
+        CapBankDevice cap = (CapBankDevice) feeder.getCcCapBanks()
+                                                  .get(currentCapIdx);
+        stateImage.setPointID(cap.getStatusPointID().intValue());
+        double imgWidth = OnelineUtil.CAP_IMG_WIDTH;
+        double initialCapXPos = nameOffset + twenty;
+        double imgXPos = initialCapXPos + (OnelineUtil.PXLS_PER_CAPBANK * currentCapIdx);
+        stateImage.setX(imgXPos);
+        stateImage.setName(getName());
+        double xImgYPos = f.getFeederLn().getY() - imgWidth / 2;
+        stateImage.setCenterY(xImgYPos);
 
-        StateImage xImage = new StateImage();
-        //xImage.setYukonImage(NONE);
         StaticImage capacImg = new StaticImage();
         capacImg.setYukonImage(CAPACITOR);
 
         StaticImage grdImg = new StaticImage();
         grdImg.setYukonImage(GROUND);
 
-        double imgWidth = OnelineUtil.CAP_IMG_WIDTH;
-        int capNum = caps.size();
-        int numOfSpacesBtwCaps = capNum - 1;
-        double btwCapLength = (remainLength - (capNum * imgWidth)) / (numOfSpacesBtwCaps);
-        double initialCapXPos = nameOffset + twenty;
-        double imgXPos = initialCapXPos + ((btwCapLength + imgWidth) * currentCapIdx);
-        Feeder feeder = (Feeder )subBusMsg.getCcFeeders().get(currFdrIndex);
-        CapBankDevice cap = (CapBankDevice) feeder.getCcCapBanks().get(currentCapIdx);
-        
-        xImage.setPointID(cap.getStatusPointID().intValue());
-
-        xImage.setX(imgXPos);
         capacImg.setX(imgXPos);
         grdImg.setX(imgXPos);
 
-        double xImgYPos = f.getFeederLn().getY() - imgWidth / 2;
-        xImage.setCenterY(xImgYPos);
         double capImgYPos = xImgYPos + imgWidth;
         capacImg.setY(capImgYPos);
         double grdImgYPos = capImgYPos + imgWidth;
         grdImg.setY(grdImgYPos);
 
-        xImage.setName(getName());
-
         LxGraph graph = drawing.getDrawing().getLxGraph();
-        graph.add(xImage);
+        graph.add(stateImage);
         graph.add(capacImg);
         graph.add(grdImg);
 
-        /*
-         if (feederVector.size() == 1) {
-         feederSpacing = 0.0;
-         }
+        addBankSize(graph);
+        addOpcount(graph);
+    }
 
-         double feederPosition = (layoutParams.getFeederHorzLineStart() + (feederSpacing * currFdrIndex));
-         double capBankNameHorzOffset = layoutParams.getWidth() / 68.2666;
-         double capBankNameVertOffset = layoutParams.getHeight() / 160;
-         Vector capBankVector = currentFeeder.getCcCapBanks();
-         if (capBankVector.size() > 1) {// make sure we don't try to divide by
-         // zero
-         double capBanksStart = layoutParams.getFeederVertLineStart() + (layoutParams.getHeight() / 5.7143);
-         double capBankSpacing = (layoutParams.getFeederVertLineStop() - capBanksStart) / (capBankVector.size() - 1);
+    private void addBankSize(LxGraph graph) {
 
-         double capBankPosition = capBanksStart + (capBankSpacing * j);
-         CapBankDevice currentCapBank = (CapBankDevice) capBankVector.get(j);
+        String strLabel = "Bank Size: ";
+        StaticText label = OnelineUtil.createTextElement(strLabel,
+                                                   OnelineUtil.getStartPoint(getStateImage()),
+                                                   new Integer ((int)getStateImage().getWidth() + 25),
+                                                   new Integer ((int)getStateImage().getHeight() + 20));
 
-         LineElement capacitorAndGroundLine = new LineElement();
-         capacitorAndGroundLine.setPoint1(feederPosition, capBankPosition);
-         capacitorAndGroundLine.setPoint2(feederPosition - (layoutParams.getWidth() / 34.1333),
-         capBankPosition);
-         capacitorAndGroundLine.setLineColor(Color.YELLOW);
-         graph.add(capacitorAndGroundLine);
+        StaticText size = OnelineUtil.createTextElement(getStreamable().getBankSize() + "",
+                                                       OnelineUtil.getStartPoint(label),
+                                                       new Integer((int) label.getWidth() + 10),
+                                                       null);
+        size.setName("CapStat_" + getStreamable().getCcId() + "_SIZE");
+        graph.add(label);
+        graph.add(size);
+        bankSize.setFirstElement(label);
+        bankSize.setLastElement(size);
+    }
+    private void addOpcount(LxGraph graph) {
+        String strLabel = "Opcount: ";
+        LxAbstractText firstElement = getBankSize().getFirstElement();
+        StaticText label = OnelineUtil.createTextElement(strLabel,
+                                                   OnelineUtil.getStartPoint(firstElement),
+                                                   null,
+                                                   new Integer ((int)getBankSize().getFirstElement().getHeight() + 10));
 
-         StaticImage capacitorImage = new StaticImage();
-         capacitorImage.setYukonImage("Capacitor.gif");
-         capacitorImage.setCenter(feederPosition - (layoutParams.getWidth() / 34.1333),
-         capBankPosition + (layoutParams.getHeight() / 80));
-         graph.add(capacitorImage);
+        StaticText cnt = OnelineUtil.createTextElement(getStreamable().getTotalOperations() + "",
+                                                       OnelineUtil.getStartPoint(label),
+                                                       new Integer((int) label.getWidth() + 10),
+                                                       null);
+        cnt.setName("CapStat_" + getStreamable().getCcId() + "_CNT");
+        graph.add(label);
+        graph.add(cnt);
+        opcount.setFirstElement(label);
+        opcount.setLastElement(cnt);
+    }
 
-         StaticImage groundImage = new StaticImage();
-         groundImage.setYukonImage("Ground.gif");
-         groundImage.setCenter(feederPosition - (layoutParams.getWidth() / 34.1333),
-         capBankPosition + (layoutParams.getHeight() / 26.6666));
-         graph.add(groundImage);
 
-         StateImage stateImage = new StateImage();
 
-         stateImage.setPointID(currentCapBank.getStatusPointID().intValue());
-         graph.add(stateImage);
-         updater.updateDrawing();
-         stateImage.setCenter(feederPosition, capBankPosition);
-         stateImage.setLinkTo(DEF_CONTROLS_HOME + "?paoID=" + currentCapBank.getCcId() + "&lastSubID=" + subBusMsg.getCcId() + "&controlType=" + CapControlWebAnnex.CMD_CAPBANK + "&redirectURL=" + fileName);
-         StaticText capBankNameString = new StaticText();
-         capBankNameString.setX(feederPosition + capBankNameHorzOffset);
-         capBankNameString.setY(capBankPosition - capBankNameVertOffset - (layoutParams.getHeight() / 80));
-         capBankNameString.setFont(DEFAULT_FONT);
-         capBankNameString.setPaint(Color.LIGHT_GRAY);
-         capBankNameString.setText(currentCapBank.getCcName());
-         graph.add(capBankNameString);
+    public UpdatableTextList getOpcount() {
 
-         StaticText capBankSizeString = new StaticText();
-         capBankSizeString.setX(feederPosition + capBankNameHorzOffset);
-         capBankSizeString.setY(capBankPosition + capBankNameVertOffset);
-         capBankSizeString.setFont(DEFAULT_FONT);
-         capBankSizeString.setPaint(Color.LIGHT_GRAY);
-         capBankSizeString.setText("Size: " + Integer.toString(currentCapBank.getBankSize()
-         .intValue()) + " KVAR");
-         graph.add(capBankSizeString);
-         } else if (capBankVector.size() == 1) {
-         double capBankPosition = layoutParams.getFeederVertLineStop();
-         CapBankDevice currentCapBank = (CapBankDevice) capBankVector.get(0);
+        return opcount;
+    }
 
-         LineElement capacitorAndGroundLine = new LineElement();
-         capacitorAndGroundLine.setPoint1(feederPosition, capBankPosition);
-         capacitorAndGroundLine.setPoint2(feederPosition - (layoutParams.getWidth() / 34.1333),
-         capBankPosition);
-         capacitorAndGroundLine.setLineColor(Color.YELLOW);
-         graph.add(capacitorAndGroundLine);
-
-         StaticImage capacitorImage = new StaticImage();
-         capacitorImage.setYukonImage("Capacitor.gif");
-         capacitorImage.setCenter(feederPosition - (layoutParams.getWidth() / 34.1333),
-         capBankPosition + (layoutParams.getHeight() / 80));
-         graph.add(capacitorImage);
-
-         StaticImage groundImage = new StaticImage();
-         groundImage.setYukonImage("Ground.gif");
-         groundImage.setCenter(feederPosition - (layoutParams.getWidth() / 34.1333),
-         capBankPosition + (layoutParams.getHeight() / 26.666));
-         graph.add(groundImage);
-
-         StateImage stateImage = new StateImage();
-         stateImage.setPointID(currentCapBank.getStatusPointID().intValue());
-         graph.add(stateImage);
-         updater.updateDrawing();
-         stateImage.setCenter(feederPosition, capBankPosition);
-         stateImage.setLinkTo(DEF_CONTROLS_HOME + "?paoID=" + currentCapBank.getCcId() + "&lastSubID=" + subBusMsg.getCcId() + "&controlType=" + CapControlWebAnnex.CMD_CAPBANK + "&redirectURL=" + fileName);
-
-         StaticText capBankNameString = new StaticText();
-         capBankNameString.setX(feederPosition + capBankNameHorzOffset);
-         capBankNameString.setY(capBankPosition - capBankNameVertOffset - (layoutParams.getHeight() / 80));
-         capBankNameString.setFont(DEFAULT_FONT);
-         capBankNameString.setPaint(Color.LIGHT_GRAY);
-         capBankNameString.setText(currentCapBank.getCcName());
-         graph.add(capBankNameString);
-
-         StaticText capBankSizeString = new StaticText();
-         capBankSizeString.setX(feederPosition + capBankNameHorzOffset);
-         capBankSizeString.setY(capBankPosition + capBankNameVertOffset);
-         capBankSizeString.setFont(DEFAULT_FONT);
-         capBankSizeString.setPaint(Color.LIGHT_GRAY);
-         capBankSizeString.setText("Size: " + Integer.toString(currentCapBank.getBankSize()
-         .intValue()) + " KVAR");
-         graph.add(capBankSizeString);
-         }
-         */
-
+    public UpdatableTextList getBankSize() {
+        return bankSize;
     }
 
     public OnelineCap(SubBus subBusMessage) {
@@ -277,7 +207,13 @@ public class OnelineCap implements OnelineObject {
 
     public CapBankDevice getStreamable() {
         Feeder feeder = (Feeder) subBusMsg.getCcFeeders().get(currFdrIndex);
-        CapBankDevice cap = (CapBankDevice) feeder.getCcCapBanks().get(currentCapIdx);
-        return cap; 
+        CapBankDevice cap = (CapBankDevice) feeder.getCcCapBanks()
+                                                  .get(currentCapIdx);
+        return cap;
     }
+
+    public LxComponent getStateImage() {
+        return stateImage;
+    }
+
 }

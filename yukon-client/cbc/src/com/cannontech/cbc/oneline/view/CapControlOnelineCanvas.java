@@ -5,6 +5,7 @@
  */
 package com.cannontech.cbc.oneline.view;
 
+import java.awt.Dimension;
 import java.util.Vector;
 
 import com.cannontech.cbc.oneline.OneLineParams;
@@ -24,6 +25,12 @@ public class CapControlOnelineCanvas {
 
     
     public CapControlOnelineCanvas () {
+    }
+   
+    public CapControlOnelineCanvas (Dimension d)
+    {
+        drawingHeight = (int) d.getHeight();
+        drawingWidth = (int) d.getWidth();
     }
     public CapControlOnelineCanvas(int h, int w) {
         drawingHeight = h;

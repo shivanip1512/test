@@ -1,3 +1,4 @@
+
 var CTL_PNL_LOCK = false;
 var CAP_CONTROL_PANEL = "CapControlPanel";
 var FEEDER_CONTROL_PANEL = "FeederControlPanel";
@@ -138,10 +139,41 @@ function updateSub(xml) {
 	updateImages(SUB_IMAGES, xml);
 	updateDynamicTextElements(SUB_CONTROL_PANEL, xml);
 	updateDynamicLineElements("Sub", xml);
+	updateStats("SubStat", xml, false);
 }
 function updateFeeders(xml) {
 	updateDynamicTextElements(FEEDER_CONTROL_PANEL, xml);
 	updateDynamicLineElements("OnelineFeeder", xml);
+	updateStats("FeederStat", xml, true);
+}
+function updateStats(prefix, xml, updPairs) {
+	var textEls = document.getElementsByTagName("text");
+	for (var i = 0; i < textEls.length; i++) {
+		textEl = textEls.item(i);
+		var id = textEl.getAttribute("id");
+		if (textEl.getAttribute("id").split("_")[0] == prefix) {
+			xmlDynamicEls = xml.getElementsByTagName("text");
+			for (var j = 0; j < xmlDynamicEls.length; j++) {
+				xmlText = xmlDynamicEls.item(j);
+				xmlID = xmlText.getAttribute("id");
+				if ((xmlID == id) && (i == j)) {
+					textEl.getFirstChild().setData(xmlText.text);
+					//id the stats are in pairs, i.e - "KVAR  1.0 / 7.0"
+					//1.0 - we already updated
+					//7.0 - will update if updPairs is true
+					if (updPairs)
+					{
+						pair = textEls.item(i + 2);
+						xmlPair = xmlDynamicEls.item(i + 2);
+						pair.getFirstChild().setData(xmlPair.text);
+						j = j + 2;
+						i = i + 2;
+					}
+				}
+				
+			}
+		}
+	}
 }
 function updateCaps(xml) {
 	var images = document.getElementsByTagName("image");
@@ -153,6 +185,7 @@ function updateCaps(xml) {
 		}
 	}
 	updateDynamicTextElements(CAP_CONTROL_PANEL, xml);
+	updateStats("CapStat", xml, false);
 }
 function getSubId() {
 	var textArr = window.document.getElementsByTagName("text");

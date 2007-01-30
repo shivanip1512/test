@@ -9,9 +9,11 @@ import com.cannontech.esub.element.StaticImage;
 import com.loox.jloox.LxGraph;
 
 public class OnelineLogos {
-    
+
     private Drawing drawing;
     private OneLineParams layoutParams;
+    private StaticImage ccLogo;
+    private StaticImage yukonLogo;
 
     public OnelineLogos() {
         super();
@@ -20,31 +22,38 @@ public class OnelineLogos {
     public void addDrawing(OneLineDrawing old) {
         drawing = old.getDrawing();
         layoutParams = old.getLayoutParams();
-        init();
+        draw();
     }
 
-    private void init() {
+    private void draw() {
         LxGraph graph = drawing.getLxGraph();
-       
+
         DrawingMetaElement me = drawing.getMetaElement();
         me.setDrawingWidth(layoutParams.getWidth());
         me.setDrawingHeight(layoutParams.getHeight());
 
-        StaticImage staticImage1 = new StaticImage();
-        staticImage1.setYukonImage(OnelineUtil.CAP_CONTROL_LOGO);
-        staticImage1.setX(layoutParams.getWidth() / 51.2);
-        staticImage1.setY(layoutParams.getHeight() / 40.0);
-        graph.add(staticImage1);
-
-        StaticImage staticImage2 = new StaticImage();
-        staticImage2.setYukonImage(OnelineUtil.YUKON_LOGO_WHITE);
-        staticImage2.setX((staticImage1.getX() + staticImage1.getWidth()) + layoutParams.getWidth()/3);
-        staticImage2.setY(staticImage1.getY());
-        graph.add(staticImage2);
+        graph.add(getCcLogo());
+        graph.add(getYukonLogo());
     }
 
+    public StaticImage getYukonLogo() {
+        if (yukonLogo == null) {
+            yukonLogo = new StaticImage();
+            yukonLogo.setYukonImage(OnelineUtil.YUKON_LOGO_WHITE);
+            yukonLogo.setX(layoutParams.getWidth() - yukonLogo.getWidth());
+            yukonLogo.setY(ccLogo.getY());
+        }
+        return yukonLogo;
+    }
 
-
-
+    public StaticImage getCcLogo() {
+        if (ccLogo == null) {
+            ccLogo = new StaticImage();
+            ccLogo.setYukonImage(OnelineUtil.CAP_CONTROL_LOGO);
+            ccLogo.setX(layoutParams.getWidth() / 51.2);
+            ccLogo.setY(layoutParams.getHeight() / 40.0);
+        }
+        return ccLogo;
+    }
 
 }
