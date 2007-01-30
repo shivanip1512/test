@@ -265,8 +265,8 @@ go
 
 insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1 , '1LNVERIFY', 'Status' from stategroup;
 go
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 0, 'Verify All', 2, 6, 0 from stategroup where name = 'LNVERIFY';
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 1, 'Verify Stop', 6, 6, 0 from stategroup where name = 'LNVERIFY';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 0, 'Verify All', 2, 6, 0 from stategroup where name = '1LNVERIFY';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 1, 'Verify Stop', 6, 6, 0 from stategroup where name = '1LNVERIFY';
 go
 
 update point set pointoffset = 2 where pointname like 'UV op count%';
