@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.*;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.roles.yukon.SystemRole;
@@ -40,14 +40,10 @@ public class NotificationServer implements Runnable, NotificationServerMBean
     private NotifMsgHandler _msgHandler;
 
     private OutputHandlerHelper _outputHelper;
-
+    
+    private RoleDao roleDao;
 
 	public NotificationServer() {
-		setBindAddress(
-                DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
-        
-        setPort( Integer.parseInt(
-                DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT) ) );        
 	}
 
 	public int getBacklog() {
@@ -96,8 +92,11 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 	 */
 	public void start() {
         try {
+            setBindAddress(roleDao.getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
+            setPort(Integer.parseInt(roleDao.getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT)));        
+            
             server = new ServerSocket(getPort(), getBacklog(), null);
-         
+
             // start output handlers
             _outputHelper.startup();
 
@@ -216,6 +215,10 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 
     public void setOutputHelper(OutputHandlerHelper outputHelper) {
         _outputHelper = outputHelper;
+    }
+
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
 
 }

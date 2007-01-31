@@ -6,6 +6,7 @@
   <bean id="notificationServer" class="com.cannontech.notif.server.NotificationServer">
     <property name="msgHandler" ref="notificationMessageHandler"/>
     <property name="outputHelper" ref="notificationOutputHandlerHelper"/>
+    <property name="roleDao" ref="roleDao"/>
   </bean>
   
   <bean id="notificationOutputHandlerHelper" class="com.cannontech.notif.outputs.OutputHandlerHelper">
