@@ -53,13 +53,13 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         log.debug("Processing message for repId=" + repId + ": " + message);
         
         Date toi = message.getTimestampOfIntercept();
-        if (message.isStatusEventSupervisoryTransBit() && message.getLastEvent().isPopulated()) {
+        if (!message.isStatusEventSupervisoryTransBit() && message.getLastEvent().isPopulated()) {
             boolean fault = message.getLastEvent().isFaultDetected();
             long millis = toi.getTime() - message.getLastEvent().getSecondsSinceEvent() * 1000;
             Date eventDate = new Date(millis);
             faultGenerator.writePointDataMessage(repId, fault, eventDate);
         } else {
-            log.info("Got status message without supervisory bit set.");
+            log.info("Got status message with supervisory bit set.");
         }
         
         boolean no60 = message.isStatusNo60HzOrUnderLineCurrent();
