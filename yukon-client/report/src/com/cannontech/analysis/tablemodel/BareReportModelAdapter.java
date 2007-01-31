@@ -2,7 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import com.cannontech.analysis.ColumnProperties;
 
-public class BareReportModelAdapter extends ReportModelBase {
+public final class BareReportModelAdapter extends ReportModelBase {
 
     private final BareReportModel model;
     private final ReportModelLayout layout;
