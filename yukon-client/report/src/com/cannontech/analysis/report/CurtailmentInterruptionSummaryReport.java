@@ -2,8 +2,9 @@ package com.cannontech.analysis.report;
 
 import java.text.DateFormat;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
+import org.jfree.report.ElementAlignment;
 import org.jfree.report.JFreeReportBoot;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -17,19 +18,18 @@ import com.cannontech.analysis.tablemodel.CurtailmentInterruptionSummaryModel;
  *  
  * @author snebben
  */
-public class CurtailmentInterruptionSummaryReport extends BareModelYukonReportBase {
+public class CurtailmentInterruptionSummaryReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData(0, 160),
-        new ColumnLayoutData(1, 60, "#0.0#"),
+        new ColumnLayoutData(1, 60, "#0.0#"), 
         new ColumnLayoutData(2, 60, "#0.0#"),
         new ColumnLayoutData(3, 60, "#0.0#"),
-        new ColumnLayoutData(4, 60, "#,###"),
-        new ColumnLayoutData(5, 60, "#,###"),
+        new ColumnLayoutData(4, 60, "#,###", ElementAlignment.RIGHT),
+        new ColumnLayoutData(5, 60, "#,###", ElementAlignment.RIGHT),
         new ColumnLayoutData(6, 60, "#0.00#"),
-        new ColumnLayoutData(7, 60, "#,###"),
-        new ColumnLayoutData(8, 60, "#,###"),
+        new ColumnLayoutData(7, 60, "#,###", ElementAlignment.RIGHT),
+        new ColumnLayoutData(8, 60, "#,###", ElementAlignment.RIGHT),
     };
-    
     
     public CurtailmentInterruptionSummaryReport() {
         this(new CurtailmentInterruptionSummaryModel());
@@ -58,8 +58,8 @@ public class CurtailmentInterruptionSummaryReport extends BareModelYukonReportBa
     }
     
     @Override
-    protected Iterator<ColumnLayoutData> getBodyColumns() {
-        return Arrays.asList(bodyColumns).iterator();
+    protected List<ColumnLayoutData> getBodyColumns() {
+        return Arrays.asList(bodyColumns);
     }
     
 }

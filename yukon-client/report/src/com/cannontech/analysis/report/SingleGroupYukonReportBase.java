@@ -21,7 +21,7 @@ import com.cannontech.analysis.tablemodel.BareReportModel;
  * Overriding classes only need to indicate which column to group over, which columns 
  * are in the body, their order, and their widths.
  */
-public abstract class SingleGroupYukonReportBase extends BareModelYukonReportBase {
+public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
 
     public SingleGroupYukonReportBase(BareReportModel bareModel) {
         super(bareModel);
@@ -56,7 +56,7 @@ public abstract class SingleGroupYukonReportBase extends BareModelYukonReportBas
         
         header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 20));
         
-        Iterator<ColumnLayoutData> bodyColumns = getBodyColumns();
+        Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
         while (bodyColumns.hasNext()) {
             Integer i = bodyColumns.next().modelIndex;
             

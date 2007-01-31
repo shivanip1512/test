@@ -2,7 +2,7 @@ package com.cannontech.analysis.report;
 
 import java.text.DateFormat;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
 import org.jfree.report.JFreeReportBoot;
 
@@ -30,8 +30,8 @@ public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
     }
 
     @Override
-    protected Iterator<ColumnLayoutData> getBodyColumns() {
-        return Arrays.asList(bodyColumns).iterator();
+    protected List<ColumnLayoutData> getBodyColumns() {
+        return Arrays.asList(bodyColumns);
     }
 
     /**

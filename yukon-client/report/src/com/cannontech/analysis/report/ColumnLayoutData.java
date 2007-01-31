@@ -1,5 +1,7 @@
 package com.cannontech.analysis.report;
 
+import org.jfree.report.ElementAlignment;
+
 /**
  * This is used to specify the layout data for a column. The model index
  * must be indicated because instances of these class could occur in any 
@@ -14,19 +16,21 @@ public class ColumnLayoutData {
     public final Integer modelIndex;
     public final Integer width;
     public final String format;
+    public final ElementAlignment horizontalAlignment;
 
     public ColumnLayoutData(Integer modelIndex, Integer width) {
-        super();
-        this.modelIndex = modelIndex;
-        this.width = width;
-        this.format = null;
+        this(modelIndex, width, null);
     }
 
     public ColumnLayoutData(Integer modelIndex, Integer width, String format) {
-        super();
+        this(modelIndex, width, format, null);
+    }
+    
+    public ColumnLayoutData(Integer modelIndex, Integer width, String format, ElementAlignment horizontalAlignment) {
         this.modelIndex = modelIndex;
         this.width = width;
         this.format = format;
+        this.horizontalAlignment = horizontalAlignment;
     }
     
 }
