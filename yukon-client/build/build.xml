@@ -177,6 +177,9 @@
     	</antcall>
     </target>
 
+    <target name="sensus-jms" depends="build">
+    	<ant dir="${yukon.base}/sensus-jms" target="build"/>
+    </target>
 
 	<!-- Special build function that can build one module with its dependencies -->
     <target name="singlebuild" if="filename">
