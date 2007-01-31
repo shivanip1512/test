@@ -3,15 +3,16 @@
 
 <beans>
   <!-- Pooled Connection Factory -->
-  <bean id="sensusJmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
-    <property name="connectionFactory">
-      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL">
-          <value>tcp://s1.139.usamr.amdswireless.com:61616</value>
-        </property>
-      </bean>
+  <bean id="sensusJmsFactoryPool" class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="connectionFactory" ref="sensusJmsFactory"/>
+  </bean>
+
+  <bean id="sensusJmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL">
+      <value>tcp://s1.139.usamr.amdswireless.com:61616</value>
     </property>
   </bean>
+
 
   <!-- Spring JMS Template -->
   <bean id="sensusJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
@@ -70,7 +71,7 @@
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
       <property name="yukonDeviceLookup" ref="deviceLookup"/>
       <property name="bindingKeyRegEx" value="^CPS.*"/>
-      <property name="faultGenerator" ref="faulStatusGenerator"/>
+      <property name="faultGenerator" ref="faultStatusGenerator"/>
       <property name="latGenerator" ref="latitudeGenerator"/>
       <property name="longGenerator" ref="longitudeGenerator"/>
       <property name="batteryVoltageGenerator" ref="batteryVoltageGenerator"/>
@@ -83,9 +84,10 @@
     <property name="yukonDeviceLookup" ref="deviceLookup"/>
     <property name="dispatchConnection" ref="dispatchConnection"/>
     <property name="pointDao" ref="pointDao"/>
+    <property name="cachePoints" value="false"/>
   </bean>
   
-  <bean id="faulStatusGenerator" parent="abstractPointDataGenerator">
+  <bean id="faultStatusGenerator" parent="abstractPointDataGenerator">
     <property name="offset" value="1"/>
     <property name="type" value="0"/> <!-- Status -->
   </bean>
@@ -102,7 +104,7 @@
   
   <bean id="no60HzUnderGenerator" parent="abstractPointDataGenerator">
     <property name="offset" value="2"/>
-    <property name="type" value="0"/>  <!-- Analog -->
+    <property name="type" value="0"/>  <!-- Status -->
   </bean>
   
   <bean id="batteryVoltageGenerator" parent="abstractPointDataGenerator">
@@ -117,7 +119,7 @@
   
   <bean id="batteryLowGenerator" parent="abstractPointDataGenerator">
     <property name="offset" value="4"/>
-    <property name="type" value="0"/>  <!-- Analog -->
+    <property name="type" value="0"/>  <!-- Status -->
   </bean>
   
 
