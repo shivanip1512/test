@@ -10,7 +10,6 @@ import com.cannontech.analysis.controller.CurtailmentEventSummaryController;
 import com.cannontech.analysis.controller.CurtailmentInterruptionSummaryController;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.controller.ReportControllerAdapter;
-import com.cannontech.analysis.report.BareModelYukonReportBase;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
