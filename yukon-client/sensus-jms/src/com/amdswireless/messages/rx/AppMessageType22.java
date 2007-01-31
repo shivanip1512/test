@@ -245,7 +245,7 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
             .append("appSeq", getAppSeq())
             .append("statusNo60HzOrUnderLineCurrent", statusNo60HzOrUnderLineCurrent)
             .append("statusLatchedFault", statusLatchedFault)
-            .append("statusEventSupervisoryTransBit", statusEventTransBit)
+            .append("statusEventTransBit", statusEventTransBit)
             .append("currentDeviceTemperature", currentDeviceTemperature)
             .append("currentBatteryVoltage", currentBatteryVoltage)
             .append("lastTxTemperature", lastTxTemperature)
