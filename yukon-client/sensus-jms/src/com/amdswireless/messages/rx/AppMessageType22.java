@@ -49,7 +49,7 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
 
     private boolean statusNo60HzOrUnderLineCurrent;
     private boolean statusLatchedFault;
-    private boolean statusEventSupervisoryTransBit;
+    private boolean statusEventTransBit;
     private int currentDeviceTemperature;
     private float currentBatteryVoltage;
     private int lastTxTemperature;
@@ -137,7 +137,7 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
 
         statusNo60HzOrUnderLineCurrent = (msg[0 + offset] & 0x2) == 0x2;
         statusLatchedFault = (msg[0 + offset] & 0x4) == 0x4;
-        statusEventSupervisoryTransBit = (msg[0 + offset] & 0x80) == 0x80;
+        statusEventTransBit = (msg[0 + offset] & 0x80) == 0x80;
         byte tempByte = 0;
         tempByte |= msg[1 + offset]; // put bits in a signed type
         currentDeviceTemperature = tempByte; // allow sign extension to occur
@@ -219,8 +219,8 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
         return secondHistoricalEvent;
     }
 
-    public boolean isStatusEventSupervisoryTransBit() {
-        return statusEventSupervisoryTransBit;
+    public boolean isStatusEventTransBit() {
+        return statusEventTransBit;
     }
 
     public boolean isStatusLatchedFault() {
@@ -245,14 +245,14 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
             .append("appSeq", getAppSeq())
             .append("statusNo60HzOrUnderLineCurrent", statusNo60HzOrUnderLineCurrent)
             .append("statusLatchedFault", statusLatchedFault)
-            .append("statusEventSupervisoryTransBit", statusEventSupervisoryTransBit)
+            .append("statusEventSupervisoryTransBit", statusEventTransBit)
             .append("currentDeviceTemperature", currentDeviceTemperature)
             .append("currentBatteryVoltage", currentBatteryVoltage)
             .append("lastTxTemperature", lastTxTemperature)
             .append("lastTxBatteryVoltage", lastTxBatteryVoltage)
             .append("lastEvent", lastEvent)
             .append("firstHistoricalEvent", firstHistoricalEvent)
-            .append("thirdHistoricalEvent", secondHistoricalEvent)
+            .append("secondHistoricalEvent", secondHistoricalEvent)
             .append("thirdHistoricalEvent", thirdHistoricalEvent);
         return creator.toString();
     }
