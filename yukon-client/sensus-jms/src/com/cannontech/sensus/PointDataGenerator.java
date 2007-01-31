@@ -22,28 +22,30 @@ public class PointDataGenerator implements PointValueUpdater {
     private PointDao pointDao;
     private int type;
     private int offset;
+    private boolean cachePoints = true;
     private boolean invertStatus = false;
-    private Map<Integer, LitePoint> repIdToPoint = new HashMap<Integer, LitePoint>();
-    private Map<Integer, Double> repIdToMult = new HashMap<Integer, Double>();
+    private Map<Integer, PointHolder> repIdToPoint = new HashMap<Integer, PointHolder>();
+    
+    private class PointHolder {
+        LitePoint point = null;
+        double multiplier = 1;
+    }
     
     public void writePointDataMessage(int repId, double rawValue, Date time) {
-        LitePoint point = getFaultStatusPoint(repId);
-        if (point == null) {
+        PointHolder holder = getPointForRepId(repId);
+        if (holder == null) {
             return;
         }
         PointData pointData = new PointData();
-        pointData.setId(point.getPointID());
+        pointData.setId(holder.point.getPointID());
         pointData.setQuality(PointQualities.NORMAL_QUALITY);
         pointData.setType(type);
         double value = rawValue;
-        Double multiplier = repIdToMult.get(repId);
-        if (multiplier != null) {
-            value = value * multiplier;
-        }
+        value *= holder.multiplier;
         pointData.setValue(value);
 
         pointData.setTime(time);
-        log.info("Updating " + point + " with value=" + value);
+        log.info("Updating " + holder.point + " with value=" + value);
         dispatchConnection.write(pointData);
     }
 
@@ -55,11 +57,15 @@ public class PointDataGenerator implements PointValueUpdater {
         this.yukonDeviceLookup = yukonDeviceLookup;
     }
     
-    private LitePoint getFaultStatusPoint(int repId) {
-        LitePoint point = repIdToPoint.get(repId);
-        if (point != null) {
-            return point;
+    private PointHolder getPointForRepId(int repId) {
+        PointHolder holder;
+        if (cachePoints) {
+            holder = repIdToPoint.get(new Integer(repId));
+            if (holder != null) {
+                return holder;
+            }
         }
+        holder = new PointHolder();
         // find status point
         LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);
         if (device == null) {
@@ -69,21 +75,24 @@ public class PointDataGenerator implements PointValueUpdater {
         int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getLiteID(), 
                                                                      offset, 
                                                                      type);
-        point = pointDao.getLitePoint(pointId);
+        LitePoint point = pointDao.getLitePoint(pointId);
         if (point == null) {
             log.warn("Unable to find point. DeviceId=" + device.getLiteID() 
                      + ", offset=" + offset + ", type=" + type);
-        } else {
-            log.info("Mapping id to point: " + point);
-            repIdToPoint.put(repId, point);
+            return null;
         }
+        log.debug("Got " + point + " from dao for device=" + device + ", offset=" + offset + ", type=" + type);
         
+        holder.point = point;
         try {
-            double multiplier = pointDao.getPointMultiplier(pointId);
-            repIdToMult.put(repId, multiplier);
+            holder.multiplier = pointDao.getPointMultiplier(pointId);
         } catch (DataAccessException e) {
         }
-        return point;
+
+        if (cachePoints) {
+            repIdToPoint.put(new Integer(repId), holder);
+        }
+        return holder;
     }
 
     public void setDispatchConnection(IServerConnection dispatchConnection) {
@@ -104,6 +113,14 @@ public class PointDataGenerator implements PointValueUpdater {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public boolean isCachePoints() {
+        return cachePoints;
+    }
+
+    public void setCachePoints(boolean cachePoints) {
+        this.cachePoints = cachePoints;
     }
 
 
