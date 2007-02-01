@@ -24,6 +24,8 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.web.navigation.CtiNavObject;
 
 public class LoginController extends javax.servlet.http.HttpServlet {
 	
@@ -285,6 +287,11 @@ public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession se
 		CTILogger.error( e.getMessage(), e );
 	}
 	
+    CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+    if(nav == null) nav = new CtiNavObject();
+    nav.setInternalLogin(true);
+    session.setAttribute(ServletUtils.NAVIGATE, nav);  
+    
 	return user;
 }
 

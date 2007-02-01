@@ -22,6 +22,7 @@ public class CtiNavObject
 	 * It is used to aid in member management for Energy Company Administration.
 	 */
 	private boolean memberECAdmin;
+    private boolean internalLogin = false;
     
     private Stack history;
 	
@@ -118,6 +119,14 @@ public class CtiNavObject
         if (history == null)
             history = new Stack();
         return history;
+    }
+
+    public boolean isInternalLogin() {
+        return internalLogin;
+    }
+
+    public void setInternalLogin(boolean internalLogin) {
+        this.internalLogin = internalLogin;
     }
 
 }

@@ -874,6 +874,16 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( InventoryManagerUtil.STARS_INVENTORY_OPERATION, operation );
 			redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 		}
+        
+        /*
+         * This is used when inventory is deleted, but was linked to from outside the member's inventory page, i.e 
+         * the parent energy company inventory list.  Need to first logout of the member to return
+         * to the parent list.
+         */
+        CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+        if(nav.isInternalLogin() && ! nav.isMemberECAdmin()) {
+            redirect = req.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT";
+        }
 	}
 	
 	/**

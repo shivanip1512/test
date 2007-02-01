@@ -31,11 +31,15 @@
 
             String src = request.getParameter("src");
             String referer = "";
-
+			String pageName = "Inventory.jsp";
+			if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+				((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { 
+				pageName = "Filter.jsp";	
+			}
             if (src == null) {
                 referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
                 if (referer == null)
-                    referer = "Inventory.jsp";
+                    referer = pageName;
                 if (referer.indexOf("ResultSet.jsp") >= 0)
                     src = "ResultSet";
                 else
