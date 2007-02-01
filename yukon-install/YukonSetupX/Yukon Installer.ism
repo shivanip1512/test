@@ -481,7 +481,6 @@
 		<row><td>j2ee.jar</td><td>Common Bin</td><td>j2ee.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\j2ee.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jar.exe1</td><td>Yukon Web Deployment</td><td>jar.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\jar.exe</td><td>1</td><td>NewSubFolder4</td></row>
 		<row><td>java.dll1</td><td>Yukon Web Deployment</td><td>java.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\java.dll</td><td>1</td><td>NewSubFolder4</td></row>
-		<row><td>jcchart401k.jar</td><td>Common Bin</td><td>jcchart401K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcchart401K.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jcfield401k.jar</td><td>Common Bin</td><td>jcfield401K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcfield401K.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jcommon.jar</td><td>Common Bin</td><td>jcommon.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcommon.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jcpagelayout450k.jar</td><td>Common Bin</td><td>jcpagelayout450K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcpagelayout450K.jar</td><td>1</td><td>NewSubFolder85</td></row>
