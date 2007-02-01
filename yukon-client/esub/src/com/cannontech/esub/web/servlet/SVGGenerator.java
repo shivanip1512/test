@@ -43,10 +43,10 @@ public class SVGGenerator extends HttpServlet {
 		ServletContext sc = getServletContext();
 		String uri = req.getRequestURI();
 		String conPath = req.getContextPath();
-
+        
         String jlxPath= uri.replaceFirst(conPath, "");
 		jlxPath = sc.getRealPath(jlxPath);
-
+        jlxPath = StringUtils.remove(jlxPath, "\\svgGenerator");
 		//Assume this ends with .svg or .svgz		
 		if(jlxPath.toLowerCase().endsWith(".svg")) {
 			jlxPath = jlxPath.substring(0, jlxPath.length()-4) + ".jlx";

@@ -10,6 +10,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 public class SVGFilter implements Filter {
 
     private FilterConfig config;
@@ -45,10 +47,10 @@ public class SVGFilter implements Filter {
         }
 
         else if (jsPath.startsWith("/esub/")){
-            String esubSVGGenerator = "/esub/svgGenerator/";
+            jsPath = StringUtils.replace(jsPath, "/esub/", "/esub/svgGenerator/");
             config.getServletContext()
-                  .getRequestDispatcher(esubSVGGenerator)
-                  .forward(req, resp);
+                  .getRequestDispatcher(jsPath).
+                  forward(req, resp);
 
         }
 
