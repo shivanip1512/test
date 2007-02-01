@@ -28,6 +28,7 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -319,6 +320,8 @@ public class UpdateContactsAction implements ActionBase {
 			respOper.setStarsUpdateContactsResponse( resp );
 			ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Contact information updated successfully" );
+            
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, liteAcctInfo.getAccountID(), session);
             
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}

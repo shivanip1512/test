@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -21,6 +22,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -386,6 +388,9 @@ public class UpdateApplianceAction implements ActionBase {
 			success.setDescription("Appliance information updated successfully");
             
 			respOper.setStarsSuccess( success );
+            
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, liteAcctInfo.getAccountID(), session);
+            
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {

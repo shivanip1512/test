@@ -25,6 +25,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -369,6 +370,8 @@ public class CreateApplianceAction implements ActionBase {
 			StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
 			resp.setStarsAppliance( StarsLiteFactory.createStarsAppliance(liteApp, energyCompany) );
 			respOper.setStarsCreateApplianceResponse( resp );
+            
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, liteAcctInfo.getAccountID(), session);
             
 			SOAPMessage respMsg = SOAPUtil.buildSOAPMessage( respOper );
 			return respMsg;

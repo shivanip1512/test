@@ -30,6 +30,7 @@ import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -266,6 +267,9 @@ public class ProgramSignUpAction implements ActionBase {
 			resp.setDescription( desc );
 			
 			respOper.setStarsProgramSignUpResponse( resp );
+            
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, liteAcctInfo.getAccountID(), session);
+            
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {

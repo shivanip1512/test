@@ -5,12 +5,14 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteCustomerResidence;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -149,6 +151,9 @@ public class UpdateResidenceInfoAction implements ActionBase {
             StarsUpdateResidenceInformation updateResInfo = reqOper.getStarsUpdateResidenceInformation();
             
             updateResidenceInformation( updateResInfo, liteAcctInfo );
+            
+            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, liteAcctInfo.getAccountID(), session);
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Residential information updated successfully" );
