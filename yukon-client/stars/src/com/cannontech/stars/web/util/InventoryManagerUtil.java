@@ -136,16 +136,7 @@ public class InventoryManagerUtil {
 		if (req.getParameter("InstallNotes") != null)
 			starsInv.setInstallationNotes( req.getParameter("InstallNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 		
-        /*
-		String recvDateStr = req.getParameter("ReceiveDate");
-		if (recvDateStr != null && recvDateStr.length() > 0) {
-			Date recvDate = ServletUtil.parseDateStringLiberally( recvDateStr, energyCompany.getDefaultTimeZone() );
-			if (recvDate == null)
-				throw new WebClientException("Invalid receive date format '" + recvDateStr + "', the date should be in the form of 'mm/dd/yy'");
-			starsInv.setReceiveDate( recvDate );
-		}
-		
-		String instDateStr = req.getParameter("InstallDate");
+		String instDateStr = req.getParameter("fieldInstallDate");
 		if (instDateStr != null && instDateStr.length() > 0) {
 			Date instDate = ServletUtil.parseDateStringLiberally( instDateStr, energyCompany.getDefaultTimeZone() );
 			if (instDate == null)
@@ -153,14 +144,22 @@ public class InventoryManagerUtil {
 			starsInv.setInstallDate( instDate );
 		}
 		
-		String remvDateStr = req.getParameter("RemoveDate");
+        String recvDateStr = req.getParameter("fieldReceiveDate");
+        if (recvDateStr != null && recvDateStr.length() > 0) {
+            Date recvDate = ServletUtil.parseDateStringLiberally( recvDateStr, energyCompany.getDefaultTimeZone() );
+            if (recvDate == null)
+                throw new WebClientException("Invalid receive date format '" + recvDateStr + "', the date should be in the form of 'mm/dd/yy'");
+            starsInv.setReceiveDate( recvDate );
+        }
+        
+		String remvDateStr = req.getParameter("fieldRemoveDate");
 		if (remvDateStr != null && remvDateStr.length() > 0) {
 			Date remvDate = ServletUtil.parseDateStringLiberally( remvDateStr, energyCompany.getDefaultTimeZone() );
 			if (remvDate == null)
 				throw new WebClientException("Invalid remove date format '" + remvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setRemoveDate( remvDate );
 		}
-		*/
+        
 		if (req.getParameter("Voltage") != null) {
 			Voltage volt = new Voltage();
 			volt.setEntryID( Integer.parseInt(req.getParameter("Voltage")) );

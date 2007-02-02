@@ -4,7 +4,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
-<%@ page import="com.cannontech.database.db.stars.hardware.Warehouse" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
@@ -73,6 +72,7 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
+<script language="JavaScript" src="../../JavaScript/calendar.js"></script>
 <script language="JavaScript">
 function deleteHardware(form) {
 <% if (liteInv.getAccountID() > 0) { %>
@@ -276,6 +276,42 @@ function revealLog() {
                                 </td>
                               </tr>
                               <tr> 
+				                <td width="88" class="TableCell"> 
+				                  	<div align="right">Field Install Date:</div>
+				                </td>
+				                <td width="210"> 
+				                  <input id="fieldInstallDate" type="text" name="fieldInstallDate" maxlength="30" size="24" value='<c:out value="${detailBean.fieldInstallDate}"/>' onchange="setContentChanged(true)">
+				   				  	<a href="javascript:openCalendar(document.getElementById('fieldInstallDate'))"
+										onMouseOver="window.status='Field Install Calendar';return true;"
+										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+			                        </a>
+				                </td>
+				          	  </tr>
+				          	  <tr> 
+				                <td width="88" class="TableCell"> 
+				                  	<div align="right">Field Receive Date:</div>
+				                </td>
+				                <td width="210"> 
+				                  <input id="fieldReceiveDate" type="text" name="fieldReceiveDate" maxlength="30" size="24" value='<c:out value="${detailBean.fieldReceiveDate}"/>' onchange="setContentChanged(true)">
+				   				  	<a href="javascript:openCalendar(document.getElementById('fieldReceiveDate'))"
+										onMouseOver="window.status='Field Receive Calendar';return true;"
+										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+			                        </a>
+				                </td>
+				          	  </tr>
+				          	  <tr> 
+				                <td width="88" class="TableCell"> 
+				                  	<div align="right">Field Remove Date:</div>
+				                </td>
+				                <td width="210"> 
+				                  <input id="fieldRemoveDate" type="text" name="fieldRemoveDate" maxlength="30" size="24" value='<c:out value="${detailBean.fieldRemoveDate}"/>' onchange="setContentChanged(true)">
+				   				  	<a href="javascript:openCalendar(document.getElementById('fieldRemoveDate'))"
+										onMouseOver="window.status='Field Remove Calendar';return true;"
+										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+			                        </a>
+				                </td>
+				          	  </tr>
+                              <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Notes:</div>
                                 </td>
@@ -316,7 +352,7 @@ function revealLog() {
                                             </select>
                                         </td>
                                     </tr>
-                                    <tr> 
+                                    <!-- <tr> 
                                         <td width="88" class="TableCell"> 
                                           <div align="right">Date Installed:</div>
                                         </td>
@@ -339,7 +375,7 @@ function revealLog() {
                                         <td width="210"> 
                                             <c:out value="${detailBean.currentRemoveDate}"/>
                                         </td>
-                                    </tr>
+                                    </tr>-->
                                     <tr> 
                                         <td width="88" class="TableCell"> 
                                             <div align="right">Status History:</div>

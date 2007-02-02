@@ -35,6 +35,9 @@ public class InventoryDetailBean
     private String currentInstallDate;
     private String currentReceiveDate;
     private String currentRemoveDate;
+    private String currentFieldInstallDate;
+    private String currentFieldReceiveDate;
+    private String currentFieldRemoveDate;
     
     public LiteStarsEnergyCompany getEnergyCompany()
     {
@@ -200,5 +203,25 @@ public class InventoryDetailBean
         this.currentInventoryID = currentInventoryID;
         currentInventory = energyCompany.getInventory( currentInventoryID, true );
     }
-
+    
+    public String getFieldInstallDate() {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentFieldInstallDate = datePart.format(new Date(currentInventory.getInstallDate()));
+        if(currentFieldInstallDate.endsWith("1969")) currentFieldInstallDate = "";
+        return currentFieldInstallDate;
+    }
+    
+    public String getFieldReceiveDate() {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentFieldReceiveDate = datePart.format(new Date(currentInventory.getReceiveDate()));
+        if(currentFieldReceiveDate.endsWith("1969")) currentFieldReceiveDate = "";
+        return currentFieldReceiveDate;
+    }
+    
+    public String getFieldRemoveDate() {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentFieldRemoveDate = datePart.format(new Date(currentInventory.getRemoveDate()));
+        if(currentFieldRemoveDate.endsWith("1969")) currentFieldRemoveDate = "";
+        return currentFieldRemoveDate;
+    }
 }
