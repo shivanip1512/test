@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.roles.yukon.SystemRole"%>
@@ -33,71 +34,63 @@ p.write(
 	"<b>Status code:</b> " + status_code.toString() +
 	"<br><b>Message</b>: " + message.toString() +
 	"<br><b>Error type</b>: " + error_type.toString() +
-	"<br><b>Request URI</b>: " + request_uri.toString() +
-	"<hr>");		
+	"<br><b>Request URI</b>: " + request_uri.toString());		
     ServletUtil.printNiceHtmlStackTrace(throwable, p);
 %>
 
 <html>
 <head>
 <title>Yukon Error Page</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="<c:url value="/WebConfig/yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="<c:url value="/WebConfig/yukon/StandardStyles.css"/>" type="text/css">
+
+<style type="text/css">
+
+  body {
+    background: #eee;
+  }
+  #error {
+    background: white;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    padding: 20px;
+    text-align: center;
+    border: solid 2px #888;
+  }
+  
+  #errorMain {
+    font-weight: bold;
+    font-size: 150%;
+  }
+  
+  #stackTrace {
+    text-align: left;
+    font-size: 11px;
+  }
+  
+</style>
 
 <script type="text/javascript" src="<c:url value="/JavaScript/prototype.js"/>"></script>
 <script type="text/javascript">
-<!--
-function showElem( chkBox ) {
+function showStack( chkBox ) {
 	var elem = $('stackTrace');
-	elem.style.display = (chkBox.checked ? 'block' : 'none')
+	elem.style.display = 'block';
+    $('showMore').style.display = 'none';
 
 }
-Event.observe(window, 'load', function(){showElem($('stTraceChk'));});
-//-->
 </script>
 
 </head>
 
-<body class="Background" text="#000000" leftmargin="0" topmargin="0">
-<br>
-<table width="60%" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
-  <tr> 
-    <td align = "center" height="51" valign = "bottom"><img src="<%=request.getContextPath()%><%= logo %>">
-      <table width="100%" border="0" height="43">
-        <tr> 
-          <td align = "center"><span class="TableCell"><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#999999"><b><font face="Arial, Helvetica, sans-serif" color="#666666" size="4">
-          An error occured while processing your request</font></b></font> </span></td>
-        </tr>
-        
-		<tr> 
-		    <td align = "center"><span class="TableCell"><b><font size="4">
-		    Try to execute your request again.</font></b></span>
-			</td>
-		</tr>
-        
-      </table>
-      
-    </td>
-  </tr>
-
-	<tr><td>
-		<label><input type="checkbox" id="stTraceChk" onclick="showElem( this );"/>
-		<b>Detailed information</b></label>
-	</td></tr>
-
-  <tr>
-    <td valign = "top" class="MainText">
-    <div style="display: none" id="stackTrace">
+<body>
+<div id="error">
+<div id="errorImg"><img src="<%=request.getContextPath()%><%= logo %>"></div>
+<div id="errorMain">An error occured while processing your request</div>
+<div id="errorSub">Try to execute your request again.</div>
+<div id="showMore"><a href="javascript:showStack()">Detailed information</a></div>
+<div style="display: none" id="stackTrace">
     <%=sw.getBuffer().toString()%>
-    </div>
-    </td>
-  </tr>  
-
-
-</table>
-<br>
-<div align="center" class="TableCell1">
-  <img src="<%=request.getContextPath()%>/YukonLogo.gif" width="139" height="29">
 </div>
 </body>
 
