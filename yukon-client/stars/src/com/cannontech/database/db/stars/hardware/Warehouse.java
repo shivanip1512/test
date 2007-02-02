@@ -368,4 +368,30 @@ public static Warehouse getWarehouseFromInventoryID(int invenID)
     
     return myHouse;
 }
+
+public static List<Integer> getAllInventoryNotInAWarehouse()
+{
+    List<Integer> inventory = new ArrayList<Integer>();
+    
+    SqlStatement stmt = new SqlStatement("SELECT INVENTORYID FROM " + LMHardwareBase.TABLE_NAME + " WHERE INVENTORYID NOT IN (SELECT INVENTORYID FROM " + MAPPING_TABLE_NAME + ")", CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                inventory.add((new Integer(stmt.getRow(i)[0].toString())));
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return inventory;
+}
 }

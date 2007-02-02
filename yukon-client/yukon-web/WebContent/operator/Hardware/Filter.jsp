@@ -73,6 +73,7 @@
 	                    </div>
 	                    <div id='<c:out value="${filterServiceCompany}"/>' style="display:none" > 
 	                    	<select id='<c:out value="${filterServiceCompany}"/>1' name='<c:out value="${filterServiceCompany}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <option value='0'> <c:out value="${filterBean.noneString}"/> </option>
 	                            <c:forEach var="serviceCompany" items="${filterBean.availableServiceCompanies}">
 									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
 								</c:forEach>
@@ -80,6 +81,7 @@
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceStatus}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceStatus}"/>1' name='<c:out value="${filterDeviceStatus}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                    		<option value='0'> <c:out value="${filterBean.noneString}"/> </option>
 	                            <c:forEach var="deviceStatusEntry" items="${filterBean.availableDeviceStates.yukonListEntries}">
 									<option value='<c:out value="${deviceStatusEntry.entryID}"/>'> <c:out value="${deviceStatusEntry.entryText}"/> </option>
 								</c:forEach>
@@ -106,6 +108,7 @@
 	                    </div>
 	                   	<div id='<c:out value="${filterDeviceWarehouse}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceWarehouse}"/>1' name='<c:out value="${filterDeviceWarehouse}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                    		<option value='0'> <c:out value="${filterBean.noneString}"/> </option>
 	                            <c:forEach var="warehouse" items="${filterBean.availableWarehouses}">
 									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.warehouseName}"/> </option>
 								</c:forEach>

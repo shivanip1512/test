@@ -486,9 +486,13 @@ public class InventoryBean {
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
                 {
                     List<Integer> warehousedInventory  = new ArrayList<Integer>();
-                    /*If there is already zero hardware, by bother the db at all?*/
-                    if(hardwares.size() > 0)
-                        warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
+                    /*If there is already zero hardware, why bother the db at all?*/
+                    if(hardwares.size() > 0) {
+                        if(specificFilterID == 0)
+                            warehousedInventory = Warehouse.getAllInventoryNotInAWarehouse();
+                        else
+                            warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
+                    }
                     
                     for (int i = 0; i < hardwares.size(); i++) 
                     {

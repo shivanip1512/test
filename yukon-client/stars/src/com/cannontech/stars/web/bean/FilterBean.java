@@ -9,6 +9,7 @@ import java.util.List;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,6 +43,8 @@ public class FilterBean
     private ArrayList assignedFilters = new ArrayList();
     private YukonListEntry defaultFilterSelection;
     private String filterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
+    
+    private String noneString = CtiUtilities.STRING_NONE;
 
 	private class CodeComparator implements Comparator, Serializable
 	{
@@ -108,8 +111,9 @@ public class FilterBean
     
     public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
-        if(availableServiceCompanies == null)
+        if(availableServiceCompanies == null) {
             availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
+        }
         return availableServiceCompanies;
     }
 
@@ -216,6 +220,10 @@ public class FilterBean
         }
 		return availableCustomerTypes;
 	}
+
+    public String getNoneString() {
+        return noneString;
+    }
     
     
 }

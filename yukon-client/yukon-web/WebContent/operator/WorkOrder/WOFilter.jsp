@@ -63,6 +63,7 @@
 	            	<td width="240"> 
 	                    <div id='<c:out value="${filterServiceCompany}"/>' style="display:none" > 
 	                    	<select id='<c:out value="${filterServiceCompany}"/>1' name='<c:out value="${filterServiceCompany}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                    		<option value='0'> <c:out value="${filterBean.noneString}"/> </option>
 	                            <c:forEach var="serviceCompany" items="${filterBean.availableServiceCompanies}">
 									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
 								</c:forEach>
@@ -84,6 +85,7 @@
 	                    </div>
 	                    <div id='<c:out value="${filterServiceStatus}"/>' style="display:true"> 
 	                    	<select id='<c:out value="${filterServiceStatus}"/>1' name='<c:out value="${filterServiceStatus}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <option value='0'> <c:out value="${filterBean.noneString}"/> </option>
 	                            <c:forEach var="serviceStatus" items="${filterBean.availableServiceStatuses.yukonListEntries}">
 									<option value='<c:out value="${serviceStatus.entryID}"/>'> <c:out value="${serviceStatus.entryText}"/> </option>
 								</c:forEach>
