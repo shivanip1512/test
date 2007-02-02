@@ -91,6 +91,9 @@ public class WorkOrderModel extends ReportModelBase {
 
 	public final static int WORK_DESC_COLUMN = 29;
 	public final static int ACTION_TAKEN_COLUMN = 30;
+    
+    public final static int DEVICE_STATUS_COLUMN = 31;
+    public final static int DEBTOR_NUM_COLUMN = 32;
 
 	public final static int HEADER_START_INDEX = ORDER_NO_COLUMN;
 	public final static int HEADER_END_INDEX = ACCOUNT_NOTES_COLUMN; 
@@ -110,6 +113,8 @@ public class WorkOrderModel extends ReportModelBase {
 	public final static String SERVICE_COMPANY_STRING = "Srv. Company";
 	public final static String WORK_DESC_STRING = "Work Description";
 	public final static String ACTION_TAKEN_STRING = "Action Taken";
+    public final static String DEVICE_STATUS_STRING = "Device Status";
+    public final static String DEBTOR_NUM_STRING = "Debtor Number";
 	
 	public final static String ACCOUNT_NO_STRING = "Account Number";
 	public final static String NAME_STRING = "Name";
@@ -117,7 +122,7 @@ public class WorkOrderModel extends ReportModelBase {
 	public final static String PHONE_HOME_STRING = "Home Phone";
 	public final static String PHONE_WORK_STRING = "Work Phone";
 	public final static String PHONE_CONTACT_STRING = "Contact Phone";
-    public final static String PRESENCE_REQUIRED_STRING = "";
+    public final static String PRESENCE_REQUIRED_STRING = "Presence Required";
 	public final static String ADDRESS1_STRING = "Address";
 	public final static String ADDRESS2_STRING = "Address ";
 	public final static String CITY_STATE_STRING = "City State";
@@ -660,7 +665,7 @@ public class WorkOrderModel extends ReportModelBase {
 					if (sc != null)
 						return sc.getCompanyName();
 					else
-						return CtiUtilities.STRING_NONE;
+						return "";
 				case WORK_DESC_COLUMN:
 					return lOrder.getDescription();
 				case ACTION_TAKEN_COLUMN:
@@ -669,7 +674,7 @@ public class WorkOrderModel extends ReportModelBase {
 					if (lAcctInfo != null)
 						return lAcctInfo.getCustomerAccount().getAccountNumber();
 					else
-						return null;
+						return "";
 				case CONSUMPTION_TYPE_COLUMN:
                     if (lAcctInfo != null){
                         if( lAcctInfo.getCustomer() instanceof LiteCICustomer)
@@ -685,38 +690,38 @@ public class WorkOrderModel extends ReportModelBase {
 					if (liteContact != null)
 						return liteContact.getContLastName()+ ", "+ liteContact.getContFirstName();
 					else
-						return null;
+						return "";
 				case PHONE_HOME_COLUMN:
 					if (liteContact != null)
 						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
 					else
-						return null;
+						return "";
 				case PHONE_WORK_COLUMN:
 					if (liteContact != null)
 						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
 					else
-						return null;
+						return "";
 				case PHONE_CONTACT_COLUMN:
 					if (liteContact != null)
 						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE);
 					else
-						return null;
+						return "";
                 case PRESENCE_REQUIRED_COLUMN:
                     if (lAcctInfo != null) { 
                         if( lAcctInfo.getAccountSite().getCustAtHome().equalsIgnoreCase("Y"))
                             return "* Appointment Required";
                     }
-                    return null;
+                    return "";
 				case ADDRESS1_COLUMN:
 					if (liteAddress != null)
 						return (liteAddress.getLocationAddress1().equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : liteAddress.getLocationAddress1());
 					else
-						return null;
+						return "";
 				case ADDRESS2_COLUMN:
 					if (liteAddress != null)
                         return (liteAddress.getLocationAddress2().equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : liteAddress.getLocationAddress2());
 					else
-						return null;					
+						return "";					
 				case CITY_STATE_COLUMN:
 					if (liteAddress != null)
 						return liteAddress.getCityName()+ ", " + liteAddress.getStateCode();
@@ -728,17 +733,18 @@ public class WorkOrderModel extends ReportModelBase {
                     else
                         return "";                    
 				case COMPANY_NAME_COLUMN:
-					if (lAcctInfo != null && lAcctInfo.getCustomer() instanceof LiteCICustomer)
+					if (lAcctInfo != null && lAcctInfo.getCustomer() instanceof LiteCICustomer 
+                            && ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName() == null)
 						return ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName();
 					else
-						return null;
+						return "";
 				case ADDTL_ORDER_NO_COLUMN:
 					return lOrder.getAdditionalOrderNumber();
 				case MAP_NO_COLUMN:
 					if (lAcctInfo != null)
 						return lAcctInfo.getAccountSite().getSiteNumber();
 					else
-						return null;
+						return "";
 				case METER_NO_COLUMN:
 					//Try to get the meter Number from the description.  (For Xcel PMSI, integration puts the meter number in the description field as below.
            			int beginIndex = lOrder.getDescription().indexOf("Meter Number: ");	//"Meter Number: " is hardcoded in the creation of the PTJ using CRSIntegrator
@@ -767,14 +773,14 @@ public class WorkOrderModel extends ReportModelBase {
 					if (lAcctInfo != null)
 						return lAcctInfo.getCustomerAccount().getAccountNotes();
 					else
-						return null;
+						return "";
 				case SERIAL_NO_COLUMN:
 					if (liteInvBase != null )
 					{
-						if( liteInvBase instanceof LiteStarsLMHardware)
+						if( liteInvBase instanceof LiteStarsLMHardware )
 							return ((LiteStarsLMHardware)liteInvBase).getManufacturerSerialNumber();
 					}
-					return null;
+					return "";
 				case METER_NO_TO_SERIAL_COLUMN:
 					if( liteInvBase != null)
 					{
@@ -783,7 +789,7 @@ public class WorkOrderModel extends ReportModelBase {
                         String meterNumber = getInventoryMeterNumber(liteInvBase);
 						return (meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : meterNumber);
 					}
-					return null;
+					return "";
 				case DEVICE_TYPE_COLUMN:
 					if (liteInvBase != null)
 					{
@@ -792,22 +798,32 @@ public class WorkOrderModel extends ReportModelBase {
 						else if( liteInvBase instanceof LiteMeterHardwareBase)
 							return DaoFactory.getYukonListDao().getYukonListEntry(liteInvBase.getCategoryID()).getEntryText();
 					}
-					return null;
+					return "";
 				case INSTALL_DATE_COLUMN:
 					if (liteInvBase != null)
 						return ServletUtils.formatDate( new Date(liteInvBase.getInstallDate()), dateFormatter );
 					else
-						return null;
+						return "";
 				case INSTALL_COMPANY_COLUMN:
 					if (liteInvBase != null) {
 						LiteServiceCompany ic = ec.getServiceCompany( liteInvBase.getInstallationCompanyID() );
 						if (ic != null)
 							return ic.getCompanyName();
 						else
-							return CtiUtilities.STRING_NONE;
+							return "";
 					}
-					else
-						return null;
+                    else
+                        return "";
+                case DEVICE_STATUS_COLUMN:
+                    if (liteInvBase != null) {
+                        return DaoFactory.getYukonListDao().getYukonListEntry(liteInvBase.getCurrentStateID()).getEntryText();
+                    }
+                    return "";
+                case DEBTOR_NUM_COLUMN:
+                    if (lAcctInfo != null && lAcctInfo.getCustomer() != null)
+                        return lAcctInfo.getCustomer().getCustomerNumber();
+                    else
+                        return "";
 			}
 		}
 		
@@ -856,7 +872,9 @@ public class WorkOrderModel extends ReportModelBase {
 				INSTALL_COMPANY_STRING,
 				//FOOTER
 				WORK_DESC_STRING,
-				ACTION_TAKEN_STRING
+				ACTION_TAKEN_STRING,
+                DEVICE_STATUS_STRING,
+                DEBTOR_NUM_STRING
 			};
 		}
 		
@@ -930,6 +948,8 @@ public class WorkOrderModel extends ReportModelBase {
 				//FOOTER
 				new ColumnProperties(_home, (colHeight*1), _wholeWidth, null),		//WORK_DESC_STRING,
 				new ColumnProperties(_home, (colHeight*5), _wholeWidth, null),		//ACTION_TAKEN_STRING,
+                new ColumnProperties(_home, (colHeight*11), _wholeWidth, null),     //DEVICE_STATUS_STRING,
+                new ColumnProperties(_home, (colHeight*11), _wholeWidth, null),     //DEBTOR_NUM_STRING,
 			};				
 		}
 		
