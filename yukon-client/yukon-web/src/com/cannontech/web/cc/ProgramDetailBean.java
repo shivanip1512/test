@@ -72,6 +72,7 @@ public class ProgramDetailBean {
         
         programParameters = Collections.emptyList();
         assignedGroups = Collections.emptyList();
+        assignedNotificationGroups = Collections.emptyList();
         
         
         return "create";
@@ -153,7 +154,7 @@ public class ProgramDetailBean {
     public String saveNew() {
         doSave();
         updateData();
-        return "programList";
+        return "programDetail";
     }
     
     public String apply() {
