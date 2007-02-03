@@ -371,6 +371,20 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 							String durStr = tempResult.substring(forIdx+1).trim();
 							if(!durStr.equalsIgnoreCase("(unknown duration)"))
 							{
+//								Only one of the daysIdx will be greater than -1, use that index
+								int daysIdx = tempResult.indexOf("days,");
+								if( daysIdx < 0) {
+									daysIdx = tempResult.indexOf("day,");
+									if( daysIdx > -1)
+										daysIdx += 4;
+								}
+								else
+									daysIdx += 5;
+									
+								if( daysIdx >= 0 ) {
+									durStr = tempResult.substring(daysIdx+1).trim();				
+								}
+								
 								double HH = Long.valueOf(durStr.substring(0, 2)).doubleValue() * 3600d;
 								double mm = Long.valueOf(durStr.substring(3, 5)).doubleValue() * 60d;
 								double ss = Long.valueOf(durStr.substring(6, 8)).doubleValue();
