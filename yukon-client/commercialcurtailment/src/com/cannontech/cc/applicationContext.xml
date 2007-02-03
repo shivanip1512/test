@@ -168,6 +168,7 @@
   <bean id="programDao" class="com.cannontech.cc.daohibe.ProgramDaoImpl" parent="yukonHibeDao">
     <property name="programGroupDao" ref="availableProgramGroupDao"/>
     <property name="programParameterDao" ref="programParameterDao"/>
+    <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
   </bean>
   <bean id="programTypeDao" class="com.cannontech.cc.daohibe.ProgramTypeDaoImpl" parent="yukonHibeDao"/>
   <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao">

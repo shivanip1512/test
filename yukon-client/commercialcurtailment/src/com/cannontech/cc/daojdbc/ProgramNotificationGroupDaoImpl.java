@@ -81,6 +81,15 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
         deleteSql.append("and CCurtProgramId = ", program.getId());
         getJdbcTemplate().execute(deleteSql.toString());
     }
+    
+    public void deleteForProgram(Program program) {
+        Object[] args = new Object[] {program.getId()};
+        SqlStatementBuilder query = new SqlStatementBuilder();
+        query.append("delete from", PROGRAM_NOTIF_GROUP_TABLENAME);
+        query.append("where CCurtProgramId = ?");
+        
+        getJdbcTemplate().update(query.toString(), args);
+    }
 
     public void setNotificationGroupDao(NotificationGroupDao notificationGroupDao) {
         this.notificationGroupDao = notificationGroupDao;

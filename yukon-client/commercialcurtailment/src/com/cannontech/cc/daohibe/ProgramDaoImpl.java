@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cc.dao.ProgramDao;
+import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramType;
 import com.cannontech.hibernate.YukonBaseHibernateDao;
@@ -14,6 +15,7 @@ import com.cannontech.hibernate.YukonBaseHibernateDao;
 public class ProgramDaoImpl extends YukonBaseHibernateDao implements ProgramDao {
     ProgramParameterDaoImpl programParameterDao;
     AvailableProgramGroupDaoImpl programGroupDao;
+    ProgramNotificationGroupDao programNotificationGroupDao;
 
     public ProgramDaoImpl() {
         super();
@@ -41,6 +43,8 @@ public class ProgramDaoImpl extends YukonBaseHibernateDao implements ProgramDao 
         getHibernateTemplate().lock(object, LockMode.NONE);
         programGroupDao.deleteFor(object);
         programParameterDao.deleteAllForProgram(object);
+        programNotificationGroupDao.deleteForProgram(object);
+        
         getHibernateTemplate().delete(object);
     }
 
@@ -55,6 +59,11 @@ public class ProgramDaoImpl extends YukonBaseHibernateDao implements ProgramDao 
 
     public void setProgramParameterDao(ProgramParameterDaoImpl programParameterDao) {
         this.programParameterDao = programParameterDao;
+    }
+
+    public void setProgramNotificationGroupDao(
+            ProgramNotificationGroupDao programNotificationGroupDao) {
+        this.programNotificationGroupDao = programNotificationGroupDao;
     }
 
 }
