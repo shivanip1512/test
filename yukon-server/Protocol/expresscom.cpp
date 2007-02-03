@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/10/13 20:34:15 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/02/03 00:44:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,6 +230,7 @@ INT CtiProtocolExpresscom::signalTest(BYTE test)
     case stIncrementProp:
     case stIncrementPropAndTurnOnLight:
     case stFlashRSSI:
+    case stOutputStatBody:
     case stPing:
         {
             _message.push_back( mtSignalTest );
@@ -570,7 +571,7 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
  *  BYTE delta_S_f);
  *
  */
-INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f, bool hold)
+INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f, bool hold, bool bumpFlag, BYTE stage)
 {
     INT status = NoError;
 
@@ -579,7 +580,11 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
 
     bool twobytetimes = false;
 
-    _message.push_back( mtThermostatSetpointControl );
+    if (bumpFlag)
+        _message.push_back( mtThermostatSetpointBump );
+    else
+        _message.push_back( mtThermostatSetpointControl );
+
     size_t flagposhi = _message.size();
     _message.push_back(flaghi);
     size_t flagposlo = _message.size();
@@ -663,9 +668,15 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
     _message[flagposhi] = flaghi;
     _message[flagposlo] = flaglo;
 
+    if (bumpFlag)
+        _message.push_back(stage);  //stage is hex minutes into control.
+
     incrementMessageCount();
     return status;
 }
+
+
+
 
 
 INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE data)
@@ -819,6 +830,29 @@ INT CtiProtocolExpresscom::data(string str)
     }
 
     return data(raw, i);
+}
+
+INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, string str)
+{
+    INT status = NoError;
+    BYTE flags;
+    BYTE msgBlock[124];
+    INT i = 0;
+
+    msgBlock[0] = priority;
+    flags = (hourFlag & 0x01) | (deleteFlag & 0x02) | (clearFlag & 0x04);
+    msgBlock[1] = flags;
+    msgBlock[2] = timePeriod;
+
+    while (i < str.length() && i < 121) 
+    {
+        msgBlock[i+3] = str.data()[i];
+        i++;
+    }
+    
+    status = data(msgBlock, i, 0x02, 0x0 );
+    return status;
+
 }
 
 INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, BYTE targetPort)
@@ -1118,6 +1152,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     else if(parse.isKeyValid("xcsetpoint"))
     {
         bool hold = ( parse.getiValue("xcholdtemp", 0) ? true : false);
+        bool bump = ( parse.getiValue("xcbump", 0) ? true : false);
 
         double totalcontroltime = (parse.getiValue("xctb", 0) + parse.getiValue("xctc", 0) + parse.getdValue("xctd", 0) + parse.getiValue("xcte", 0) + parse.getiValue("xctf", 0)) * 60.0;
 
@@ -1137,7 +1172,9 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
                                    parse.getiValue("xcte", 0),
                                    parse.getiValue("xctf", 0),
                                    parse.getiValue("xcdsf", 0),
-                                   hold);
+                                   hold, 
+                                   bump,
+                                   parse.getiValue("xcstage", 0x00));
     }
     else if(parse.isKeyValid("xcflip"))
     {
@@ -1269,21 +1306,58 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     if(parse.isKeyValid("xcsetstate"))
     {
         BYTE fanstate = (BYTE)parse.getiValue("xcfanstate", 0);
-        BYTE sysstate = (BYTE)parse.getiValue("xcsysstate", 0);;
+        BYTE sysstate = (BYTE)parse.getiValue("xcsysstate", 0);
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
         bool restore = parse.isKeyValid("xcrunprog") ? true : false;
         bool temporary = parse.isKeyValid("xcholdprog") ? false : true;
-
-        thermostatSetState( relaymask,
-                            temporary,
-                            restore,
-                            parse.getiValue("xctimeout", -1),
-                            parse.getiValue("xcsettemp", -1),
-                            fanstate,
-                            sysstate,
-                            delay);
+        
+        if(parse.isKeyValid("xctwosetpoints"))
+        {
+            thermostatSetStateTwoSetpoint( relaymask,
+                                           temporary,
+                                           restore,
+                                           parse.getiValue("xctimeout", -1),
+                                           parse.getiValue("xcsetcooltemp", -1),
+                                           parse.getiValue("xcsetheattemp", -1),
+                                           fanstate,
+                                           sysstate,
+                                           delay);
+        }
+        else
+        {
+            thermostatSetState( relaymask,
+                                temporary,
+                                restore,
+                                parse.getiValue("xctimeout", -1),
+                                parse.getiValue("xcsettemp", -1),
+                                fanstate,
+                                sysstate,
+                                delay);
+        }
     }
+    else if(parse.isKeyValid("xcutilusage"))
+    {
+        status = updateUtilityUsage( parse );
+    }
+    else if(parse.isKeyValid("xccontractor"))
+    {
+        //bool enable = parse.getiValue("xcmode", 0) ? true : false;
 
+        status = disableContractorMode( parse.getiValue("xcmode", 0) );
+    }
+    else if (parse.isKeyValid("xcutilinfo")) 
+    {
+        status = updateUtilityInformation(parse.getiValue("xcutilchan", 0),
+                                          parse.getsValue("xcparametername"),
+                                          parse.getsValue("xcparameterunit"),
+                                          parse.getsValue("xccurrency"),
+                                          parse.getiValue("xcpresentusage", -1),
+                                          parse.getiValue("xcpastusage", -1),
+                                          parse.getiValue("xcpresentcharge", -1),
+                                          parse.getiValue("xcpastcharge", -1) );
+       
+    }
+    
     if(parse.isKeyValid("ovuv"))
     {
         BYTE action = 0x01;
@@ -1318,6 +1392,134 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse, CtiOutMess
 
     return status;
 }
+
+INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
+{
+    INT status = NoError;
+    INT numChans = parse.getiValue("xcnumutilchans", 0);
+    _message.push_back( mtUpdateUtilityUsage );
+    _message.push_back( numChans );
+
+    for (int chanIndex = 0; chanIndex < numChans; chanIndex++)
+    {
+        string chan("xcchan_" + CtiNumStr(chanIndex));
+        string chanValue("xcchanvalue_" + CtiNumStr(chanIndex));
+
+        USHORT chanNum = parse.getiValue(chan, 0);
+        ULONG chanVal = parse.getdValue(chanValue, 0);
+
+        _message.push_back(HIBYTE(chanNum));
+        _message.push_back(LOBYTE(chanNum));
+
+        _message.push_back( LOBYTE(HIWORD(chanVal)) );
+        _message.push_back( HIBYTE(LOWORD(chanVal)) );
+        _message.push_back( LOBYTE(LOWORD(chanVal)) );
+
+    }
+    incrementMessageCount();
+
+    return status;
+}
+
+INT CtiProtocolExpresscom::disableContractorMode(bool enableFlag)
+{
+    INT status = NoError;
+
+    _message.push_back( mtDisableContractorMode );
+    _message.push_back( enableFlag );
+
+    incrementMessageCount();
+
+    return status;
+}
+
+INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, CtiString name, string unit, string currency, SHORT presentusage, 
+                                                     SHORT pastusage, SHORT presentcharge, SHORT pastcharge)
+{
+    INT status = NoError;
+    BYTE config = 0x00;
+    BYTE utilFlags = 0x00;
+
+    _message.push_back( mtUtilityInformation );
+    _message.push_back( chan );
+    
+    size_t configpos = _message.size();
+    _message.push_back(config);
+    size_t utilflagpos = _message.size();
+    _message.push_back(utilFlags);
+    
+    if(!name.empty())
+    {
+        config |= 0x02;
+        
+        for (int i = 0; i < 16; i++) //limit of 16 bytes.
+        {
+            if (i < name.length())
+                _message.push_back(name.data()[i] );
+            else
+                _message.push_back( 0x00 );
+        }
+    }
+    if(!unit.empty())
+    {
+        config |= 0x04;
+        for (int i = 0; i < 16; i++) //limit of 16 bytes.
+        {
+            if (i < unit.length())
+                _message.push_back(unit.data()[i] );
+            else
+                _message.push_back( 0x00 );
+        }
+    }
+    if(!currency.empty())
+    {
+        config |= 0x08;
+        for (int i = 0; i < 16; i++) //limit of 16 bytes.
+        {
+            if (i < currency.length())
+                _message.push_back(currency.data()[i] );
+            else
+                _message.push_back( 0x00 );
+        }
+    }
+
+    if (presentusage > 0) 
+    {
+        config |= 0x01;
+        utilFlags |= 0x01;
+        _message.push_back(HIBYTE(presentusage));
+        _message.push_back(LOBYTE(presentusage));
+    }
+    if (pastusage > 0) 
+    {
+        config |= 0x01;
+        utilFlags |= 0x02;
+        _message.push_back(HIBYTE(pastusage));
+        _message.push_back(LOBYTE(pastusage));
+    }
+    if (presentcharge > 0) 
+    {
+        config |= 0x01;
+        utilFlags |= 0x04;
+        _message.push_back(HIBYTE(presentcharge));
+        _message.push_back(LOBYTE(presentcharge));
+    }
+    if (pastcharge > 0) 
+    {
+        config |= 0x01;
+        utilFlags |= 0x08;
+        _message.push_back(HIBYTE(pastcharge));
+        _message.push_back(LOBYTE(pastcharge));
+    }
+
+    _message[configpos] = config;
+    _message[utilflagpos] = utilFlags;
+
+    incrementMessageCount();
+
+    return status;
+}
+
 
 INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
 {
@@ -1523,6 +1725,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
             flaglo = ( _celsiusMode ? 0x20 : 0x00) | (load & 0x0f);                  // Pick up the load designator;
 
             _message.push_back( mtThermostatSetState );
+
             size_t flagposhi = _message.size();
             _message.push_back(flaghi);
             size_t flagposlo = _message.size();
@@ -1560,6 +1763,93 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
                 flaglo |= 0x10;         // Temp setpoint included.
                 _message.push_back(LOBYTE(setpoint));
             }
+            
+            if(delay > 0)
+            {
+                flaglo |= 0x40;
+                _message.push_back(HIBYTE(delay));
+                _message.push_back(LOBYTE(delay));
+            }
+
+            _message[flagposhi] = flaghi;
+            _message[flagposlo] = flaglo;
+
+            incrementMessageCount();
+        }
+
+        if(!loadMask && load == 0) break;
+    }
+
+    return status;
+}
+
+INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool temporary, bool restore, int timeout_min, int setcoolpoint, int setheatpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
+{
+    INT status = NoError;
+    BYTE flaghi;
+    BYTE flaglo;
+    BYTE load;
+
+    for(load = 0; load < 16; load++)
+    {
+        if((!loadMask && load == 0) || loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        {
+            flaghi = ( (temporary ? 0x80 : 0x00) | (fanstate & 0x03) | (sysstate & 0x1c) | (restore ? 0x20 : 0x00));
+            flaglo = ( _celsiusMode ? 0x20 : 0x00) | (load & 0x0f);                  // Pick up the load designator;
+
+            _message.push_back( mtThermostatSetStateTwoSetpoint );
+            size_t flagposhi = _message.size();
+            _message.push_back(flaghi);
+            size_t flagposlo = _message.size();
+            _message.push_back(flaglo);
+
+            if(timeout_min > 0)
+            {
+                BYTE timeout;
+
+                flaghi |= 0x40;         // Timeout included.
+
+                if(timeout_min > 255)
+                {
+                    flaglo |= 0x80;                         // Control time is in hours!
+
+                    if(timeout_min / 60 > 255)
+                    {
+                        timeout = 255;
+                    }
+                    else
+                    {
+                        timeout = LOBYTE(timeout_min / 60);     // This is now in integer hours
+                    }
+                }
+                else
+                {
+                    timeout = LOBYTE(timeout_min);
+                }
+
+                _message.push_back(timeout);
+            }
+
+            if(setcoolpoint > 0)
+            {
+                flaglo |= 0x10;         // Temp setpoint included.
+                _message.push_back(LOBYTE(setcoolpoint));
+                if (setheatpoint > 0) 
+                {
+                    _message.push_back(LOBYTE(setheatpoint));
+                }
+                else
+                {
+                    _message.push_back(LOBYTE(0xFF));  //setpointheat = 0xff, no change.
+                }
+                
+            }
+            else if(setheatpoint > 0)
+            {
+                flaglo |= 0x10;         // Temp setpoint included.
+                _message.push_back(LOBYTE(0xFF)); //setpointcool = 0xff, no change.
+                _message.push_back(LOBYTE(setheatpoint));
+            }
 
             if(delay > 0)
             {
@@ -1579,6 +1869,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
 
     return status;
 }
+
 
 INT CtiProtocolExpresscom::priority(BYTE priority)
 {
@@ -1641,7 +1932,7 @@ BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)// messageNum is a 1
             {
                 retVal = 0;
             }
-            sprintf(byte, "%1X", (retVal>>(4*(1-pos%2)))&0x0F);
+            ::sprintf(byte, "%1X", (retVal>>(4*(1-pos%2)))&0x0F);
             retVal = byte[0];
         }
         else

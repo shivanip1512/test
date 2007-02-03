@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/10/13 20:34:15 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/02/03 00:44:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "cmdparse.h"
 #include "dllbase.h"
 #include "ctitime.h"
+#include "ctistring.h"
 
 #ifdef _WINDOWS
     #include <windows.h>
@@ -62,23 +63,29 @@ public:
 
     typedef enum
     {
-        mtReserved                  = 0x00,
-        mtSync                      = 0x01,
-        mtTimeSync                  = 0x02,
-        mtPriority                  = 0x03,
-        mtSignalTest                = 0x05,
-        mtTimedLoadControl          = 0x08,
-        mtRestoreLoadControl        = 0x09,
-        mtCycleLoadControl          = 0x0a,
-        mtThermostatSetpointControl = 0x0b,
-        mtThermostatLoadControl     = 0x0c,
-        mtThermostatSetState        = 0x0d,
-        mtConfiguration             = 0x10,
-        mtMaintenance               = 0x14,
-        mtService                   = 0x15,
-        mtTemporaryService          = 0x16,
-        mtData                      = 0x1d,
-        mtCapcontrol                = 0x20
+        mtReserved                       = 0x00,
+        mtSync                           = 0x01,
+        mtTimeSync                       = 0x02,
+        mtPriority                       = 0x03,
+        mtSignalTest                     = 0x05,
+        mtTimedLoadControl               = 0x08,
+        mtRestoreLoadControl             = 0x09,
+        mtCycleLoadControl               = 0x0a,
+        mtThermostatSetpointControl      = 0x0b,
+        mtThermostatLoadControl          = 0x0c,
+        mtThermostatSetState             = 0x0d,
+        mtUpdateUtilityUsage             = 0x0f,
+        mtConfiguration                  = 0x10,
+        mtThermostatSetStateTwoSetpoint  = 0x11,
+        mtMaintenance                    = 0x14,
+        mtService                        = 0x15,
+        mtTemporaryService               = 0x16,
+        mtThermostatSetpointBump         = 0x1b,
+        mtData                           = 0x1d,
+        mtCapcontrol                     = 0x20,
+        mtDisplayMessages                = 0x5D,
+        mtDisableContractorMode          = 0x5E,
+        mtUtilityInformation             = 0x5F
 
     } CtiExpresscomMessageType_t;
 
@@ -186,8 +193,13 @@ private:
      *  BYTE delta_S_f);
      *
      */
-    INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false);
+    INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false, bool bumpFlag = false, BYTE stage = 0x00);
+    INT thermostatSetStateTwoSetpoint(UINT loadMask = 0x01, bool temporary = true, bool restore = false, int timeout_min = 0, int setcoolpoint = -1, int setheatpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
+    INT updateUtilityUsage(CtiCommandParser &parse);
+    INT updateUtilityInformation( BYTE chan, CtiString name, string unit, string currency, SHORT presentusage, SHORT pastusage, SHORT presentcharge, SHORT pastcharge);
+    INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, string str);
+    INT disableContractorMode(bool enableFlag);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
     INT rawconfiguration(string str);
     INT rawmaintenance(string str);
@@ -225,6 +237,7 @@ public:
         stIncrementProp                 = 0x01,
         stIncrementPropAndTurnOnLight   = 0x02,
         stFlashRSSI                     = 0x03,
+        stOutputStatBody                = 0x04,
         stPing                          = 0x80
 
     } CtiExpresscomSignalTest;

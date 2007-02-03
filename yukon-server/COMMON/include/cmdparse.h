@@ -73,7 +73,7 @@ private:
 
     void    doParseControlSA  (const string &CmdStr);
     void    doParsePutConfigSA(const string &CmdStr);
-
+    void    doParsePutConfigUtilityUsage(const string &_CmdStr);
     void    doParsePutConfigThermostatSchedule(const string &CmdStr);
 
     INT     convertTimeInputToSeconds(const string& inStr) const;

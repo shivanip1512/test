@@ -1018,7 +1018,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 _cmd["latch_relays"] = CtiParseValue(latch_relays.data());
             }
         }
-
+        
         if(CmdStr.contains(" sbo_selectonly"))          // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["sbo_selectonly"] = CtiParseValue(TRUE);
@@ -4082,6 +4082,11 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         {
             _cmd["xcholdtemp"] = CtiParseValue( TRUE );
         }
+        if(CmdStr.contains(" bump"))
+        {
+            _cmd["xcbump"] = CtiParseValue( TRUE );
+        }
+
 
         if(!(temp = CmdStr.match(" min " + str_num)).empty())
         {
@@ -4190,6 +4195,14 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
                 }
             }
         }
+        if(!(temp = CmdStr.match(" stage " + str_num)).empty())
+        {
+            if(!(valStr = temp.match(re_num)).empty())
+            {
+                iValue = atoi(valStr.c_str());
+                _cmd["xcstage"] = CtiParseValue( iValue );
+            }
+        }
 
         _actionItems.push_back("SETPOINT");
     }
@@ -4268,7 +4281,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     if(CmdStr.contains(" setstate"))
     {
         _cmd["xcsetstate"] = CtiParseValue( TRUE );
-
         if( !isKeyValid("relaymask") )
         {
             _cmd["relaymask"] = CtiParseValue( 0x01 );
@@ -4284,61 +4296,125 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xcholdprog"] = CtiParseValue( TRUE );
         }
 
-        if(!(temp = CmdStr.match(" fan (on|off|auto)")).empty())
-        {
-            if(temp.contains("on"))
-            {
-                _cmd["xcfanstate"] = CtiParseValue( 0x03 );
-            }
-            else if(temp.contains("auto"))
-            {
-                _cmd["xcfanstate"] = CtiParseValue( 0x02 );
-            }
-            else if(temp.contains("off"))
-            {
-                _cmd["xcfanstate"] = CtiParseValue( 0x01 );
-            }
-        }
-
-        if(!(temp = CmdStr.match(" system (auto|off|heat|cool|emheat)")).empty())
-        {
-            if(temp.contains(" off"))
-            {
-                _cmd["xcsysstate"] = CtiParseValue( 0x04 );
-            }
-            else if(temp.contains(" heat"))
-            {
-                _cmd["xcsysstate"] = CtiParseValue( 0x08 );
-            }
-            else if(temp.contains(" cool"))
-            {
-                _cmd["xcsysstate"] = CtiParseValue( 0x0c );
-            }
-            else if(temp.contains(" emheat"))
-            {
-                _cmd["xcsysstate"] = CtiParseValue( 0x10 );
-            }
-            else if(temp.contains(" auto"))
-            {
-                _cmd["xcsysstate"] = CtiParseValue( 0x80 );     // Only valid for EPRO stats!
-            }
-        }
-
-        if(!(temp = CmdStr.match(" temp " + str_num)).empty())
-        {
-            if(!(valStr = temp.match(re_num)).empty())
-            {
-                iValue = atoi(valStr.c_str());
-                _cmd["xcsettemp"] = CtiParseValue( iValue );
-            }
-        }
-
         if(!(temp = CmdStr.match(" timeout " + str_num)).empty())         // assume minutes input.
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
                 iValue = atoi(valStr.c_str());
                 _cmd["xctimeout"] = CtiParseValue( iValue );            // In minutes
+            }
+        }
+
+        if(!(temp = CmdStr.match(" (cooltemp|heattemp)")).empty())
+        {
+            _cmd["xctwosetpoints"] = CtiParseValue( TRUE );
+            
+            if(!(temp = CmdStr.match(" fan (on|circulate|auto)")).empty())
+            {
+                if(temp.contains("on"))
+                {
+                    _cmd["xcfanstate"] = CtiParseValue( 0x03 );
+                }
+                else if(temp.contains("auto"))
+                {
+                    _cmd["xcfanstate"] = CtiParseValue( 0x02 );
+                }
+                else if(temp.contains("circulate"))
+                {
+                    _cmd["xcfanstate"] = CtiParseValue( 0x01 );
+                }
+            }
+
+            if(!(temp = CmdStr.match(" system (auto|off|heat|cool|emheat)")).empty())
+            {
+                if(temp.contains(" off"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x04 );
+                }
+                else if(temp.contains(" heat"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x08 );
+                }
+                else if(temp.contains(" cool"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x0c );
+                }
+                else if(temp.contains(" emheat"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x10 );
+                }
+                else if(temp.contains(" auto"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x1c );     
+                }
+            }
+
+            if(!(temp = CmdStr.match(" cooltemp " + str_num)).empty())
+            {
+                if(!(valStr = temp.match(re_num)).empty())
+                {
+                    iValue = atoi(valStr.c_str());
+                    _cmd["xcsetcooltemp"] = CtiParseValue( iValue );
+                }
+            }
+            if(!(temp = CmdStr.match(" heattemp " + str_num)).empty())
+            {
+                if(!(valStr = temp.match(re_num)).empty())
+                {
+                    iValue = atoi(valStr.c_str());
+                    _cmd["xcsetheattemp"] = CtiParseValue( iValue );
+                }
+            }
+        }
+        else 
+        {
+            if(!(temp = CmdStr.match(" fan (on|off|auto)")).empty())
+            {
+                if(temp.contains("on"))
+                {
+                    _cmd["xcfanstate"] = CtiParseValue( 0x03 );
+                }
+                else if(temp.contains("auto"))
+                {
+                    _cmd["xcfanstate"] = CtiParseValue( 0x02 );
+                }
+                else if(temp.contains("off"))
+                {
+                    _cmd["xcfanstate"] = CtiParseValue( 0x01 );
+                }
+            }
+
+            if(!(temp = CmdStr.match(" system (auto|off|heat|cool|emheat)")).empty())
+            {
+                if(temp.contains(" off"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x04 );
+                }
+                else if(temp.contains(" heat"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x08 );
+                }
+                else if(temp.contains(" cool"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x0c );
+                }
+                else if(temp.contains(" emheat"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x10 );
+                }
+                else if(temp.contains(" auto"))
+                {
+                    _cmd["xcsysstate"] = CtiParseValue( 0x80 );     // Only valid for EPRO stats!
+                }
+            }
+
+            if(!(temp = CmdStr.match(" temp " + str_num)).empty())
+            {
+                if(!(valStr = temp.match(re_num)).empty())
+                {
+                    iValue = atoi(valStr.c_str());
+                    _cmd["xcsettemp"] = CtiParseValue( iValue );
+                }
             }
         }
     }
@@ -4612,6 +4688,93 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     else if(CmdStr.contains(" cbc"))
     {
         doParsePutConfigCBC(CmdStr);
+    }
+    else if(CmdStr.contains("utility usage"))
+    {
+        _cmd["xcutilusage"] = TRUE;
+        doParsePutConfigUtilityUsage(CmdStr);
+    }
+    else if(!(token = CmdStr.match(" contractor[ =]+((ena(ble)?)|(dis(able)?))")).empty())
+    {
+        _cmd["xccontractor"] = TRUE;
+        if (token.contains("ena")) 
+        {
+            _cmd["xcmode"] = CtiParseValue( TRUE );
+        }
+        else
+        {
+            _cmd["xcmode"] = CtiParseValue( FALSE );
+        }
+    }
+    else if(CmdStr.contains("utility info"))
+    {
+        _cmd["xcutilinfo"] = TRUE;
+
+        if(!(token = CmdStr.match("chan " + str_num)).empty())
+        {
+            str = token.match(re_num);
+            int chan = atoi(str.c_str());
+
+            _cmd["xcutilchan"] = CtiParseValue( chan );
+        }
+        boost::regex re_name   ("select name "        + str_quoted_token);
+
+        if(!(token = CmdStr.match("name " + str_quoted_token)).empty())
+        {
+            if(!(str = token.match(str_quoted_token)).empty())
+            {
+                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+                _cmd["xcparametername"] = CtiParseValue( str );
+            }
+        }
+        if(!(token = CmdStr.match("unit "+ str_quoted_token)).empty())
+        {
+            if(!(str = token.match(str_quoted_token)).empty())
+            {
+                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+                _cmd["xcparameterunit"] = CtiParseValue( str );
+            }
+        }
+        if(!(token = CmdStr.match("currency " + str_quoted_token)).empty())
+        {
+            if(!(str = token.match(str_quoted_token)).empty())
+            {
+                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+                _cmd["xccurrency"] = CtiParseValue( str );
+            }
+        }
+        if (CmdStr.contains(" present ") || CmdStr.contains(" past ")) 
+        {
+            _cmd["xcutilflags"] = CtiParseValue( TRUE );
+            if(!(token = CmdStr.match(" present usage " + str_num)).empty())
+            {
+                str = token.match(re_num);
+                int usage = atoi(str.c_str());
+
+                _cmd["xcpresentusage"] = CtiParseValue( usage );
+            }
+            if(!(token = CmdStr.match(" past usage " + str_num)).empty())
+            {
+                str = token.match(re_num);
+                int usage = atoi(str.c_str());
+
+                _cmd["xcpastusage"] = CtiParseValue( usage );
+            }
+            if(!(token = CmdStr.match(" present charge " + str_num)).empty())
+            {
+                str = token.match(re_num);
+                int charge = atoi(str.c_str());
+
+                _cmd["xcpresentcharge"] = CtiParseValue( charge );
+            }
+            if(!(token = CmdStr.match(" past charge " + str_num)).empty())
+            {
+                str = token.match(re_num);
+                int charge = atoi(str.c_str());
+
+                _cmd["xcpastcharge"] = CtiParseValue( charge );
+            }
+        }
     }
 }
 
@@ -5335,6 +5498,63 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             }
         }
     }
+}
+
+void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
+{
+    CtiString CmdStr(_CmdStr);
+    CtiString   str;
+    CtiString   temp;
+    CtiString   valStr;
+    CtiString   token;
+    INT ch;
+    float val;
+    int chanIndex = 0;
+
+    CtiTokenizer   tok(CmdStr);
+    {
+        //putconfig utility usage chanNum:chanVal, chanNum:chanVal, chanNum:chanVal
+        token = tok(",");
+        while(!token.empty())
+        {
+            ch  = 0x0;
+            val = 0x0;
+
+            CtiTokenizer   tok1(token);   //chanNum:chanVal, chanNum:chanVal
+            temp = tok1(":");
+            if(!(str = temp.match(re_num)).empty())
+            {
+                ch = atoi(str.c_str());
+            }
+
+            temp = tok1(":"); 
+            if(!(valStr = temp.match(boost::regex("\\-?[0-9]+\\.?[0-9]+?"))).empty() ||
+               !(valStr = temp.match(re_num)).empty())
+            {
+                val = atof(valStr.c_str());
+            }
+            
+
+            CtiString chan("xcchan_" + CtiNumStr(chanIndex));
+            CtiString chanValue("xcchanvalue_" + CtiNumStr(chanIndex));
+       
+            _cmd[chan]        = CtiParseValue(ch);
+            _cmd[chanValue]   = CtiParseValue(val);
+#if 0
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << chan << " " << (int)ch << endl;
+                dout << chanValue << " " << (float)val << endl;
+            }
+#endif
+            chanIndex++;
+            token = tok(",");
+
+        }
+        _cmd["xcnumutilchans"] = CtiParseValue(chanIndex);
+    }
+
+
 }
 
 CtiCommandParser& CtiCommandParser::parseAsString(const string str)

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/10/13 20:34:29 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2007/02/03 00:44:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -237,7 +237,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
     for(j = 0; j < Versacom.entries(); j++)
     {
         OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
-        memset((void*)NewOutMessage->Buffer.OutMessage, 0, sizeof(NewOutMessage->Buffer.OutMessage));
+        ::memset((void*)NewOutMessage->Buffer.OutMessage, 0, sizeof(NewOutMessage->Buffer.OutMessage));
 
         if(NewOutMessage != NULL)
         {
