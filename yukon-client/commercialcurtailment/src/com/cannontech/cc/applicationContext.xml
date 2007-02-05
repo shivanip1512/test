@@ -207,5 +207,7 @@
       <property name="pointTypeLookup" ref="customerPointTypeLookup" />
       <property name="pointDao" ref="pointDao" />
       <property name="pointAccessDao" ref="simplePointAccessDao" />
+      <property name="deviceDao" ref="deviceDao" />
+      <property name="dbPersistentDao" ref="dbPersistentDao" />
   </bean>
 </beans>
