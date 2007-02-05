@@ -43,6 +43,7 @@ import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -71,6 +72,7 @@ import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 public class GraphClient extends JPanel implements DBChangeLiteListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
@@ -2056,7 +2058,8 @@ private void initializeSwingComponents()
 	trendDataAutoUpdater = new TrendDataAutoUpdater();
 	trendDataAutoUpdater.start();
 
-	DefaultDatabaseCache.getInstance().addDBChangeLiteListener(this);	
+    AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+    dataSource.addDBChangeLiteListener(this);
 
 	if( getTrendProperties().getViewType() != GraphRenderers.TABULAR &&
 		getTrendProperties().getViewType() != GraphRenderers.SUMMARY )	//not tabular or summary

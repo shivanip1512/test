@@ -14,8 +14,6 @@ import com.cannontech.yukon.IYukon;
  */
 public abstract class YukonResourceBase implements IYukon
 {	
-   protected IDatabaseCache dbCache = null;
-   protected ITimedDatabaseCache timedDBCache = null;
    protected IDBPersistent dbPersistent = null;
    protected ISQLStatement sqlStatement = null;
 

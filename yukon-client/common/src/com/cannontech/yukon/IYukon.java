@@ -13,9 +13,5 @@ public interface IYukon
 	
    public IDBPersistent getDBPersistent();
 
-   public IDatabaseCache getDBCache();
-   
-   public ITimedDatabaseCache getTimedDBCache();
-
    public ISQLStatement getSQLStatement();
 }

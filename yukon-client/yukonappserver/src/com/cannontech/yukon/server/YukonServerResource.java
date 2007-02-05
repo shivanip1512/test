@@ -25,9 +25,7 @@ public class YukonServerResource extends YukonResourceBase
          * do not use other resources during construction
          * 
          * */
-        dbCache = new com.cannontech.ejb.DatabaseCacheBean();
         dbPersistent = new com.cannontech.ejb.DBPersistentBean();
-        timedDBCache = new com.cannontech.ejb.TimedDatabaseCacheBean();
         sqlStatement = new com.cannontech.ejb.SqlStatementBean();
     }
 
@@ -43,25 +41,6 @@ public class YukonServerResource extends YukonResourceBase
    public IDBPersistent getDBPersistent()
    {
       return dbPersistent;
-   }
-
-
-
-   // ---------------------------------------------------------------------------------
-   //  START of the IDatabase implementation
-   // ---------------------------------------------------------------------------------   
-   public IDatabaseCache getDBCache()
-   {
-      return dbCache;
-   }
-
-
-   // ---------------------------------------------------------------------------------
-   //  START of the ITimedDatabase implementation
-   // ---------------------------------------------------------------------------------   
-   public ITimedDatabaseCache getTimedDBCache()
-   {
-      return timedDBCache;
    }
 
 

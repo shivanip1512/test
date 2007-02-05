@@ -14,6 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -35,6 +36,7 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -80,7 +82,8 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	private Hashtable lmCtrlHists = null;
 		
 	private void init() {		
-		DefaultDatabaseCache.getInstance().addDBChangeLiteListener(this);
+        AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+        dataSource.addDBChangeLiteListener(this);
 	}
 	
 	private void releaseAllCache() {

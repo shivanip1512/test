@@ -22,8 +22,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
  */
 public interface IDatabaseCache
 {
-	public void addDBChangeLiteListener(DBChangeLiteListener listener);
-    public void addDBChangeListener(DBChangeListener listener);
 	public DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType);
 	public java.util.List getAllAlarmCategories();
 	public java.util.List getAllYukonImages();

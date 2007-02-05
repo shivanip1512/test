@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
@@ -20,6 +21,7 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebGraphRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -384,7 +386,9 @@ public class WebGraph implements Runnable
 				}
 			}			
 		};
-		DefaultDatabaseCache.getInstance().addDBChangeLiteListener( dbChangeListener );
+		
+        AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+        dataSource.addDBChangeLiteListener(dbChangeListener);
 		
 		strtThread = new Thread( this, "WebGraph" );
 		strtThread.start();
