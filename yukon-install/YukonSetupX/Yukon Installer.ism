@@ -717,7 +717,7 @@
 		<col def="S0">IncludeFiles</col>
 		<col def="S0">ExcludeFiles</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>Help</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Help</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\newhelp</td><td>1</td><td>*.chm</td><td/><td>2</td></row>
 		<row><td>JRE 1.5</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT5SERVICEI_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 	</table>
