@@ -1,6 +1,12 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 
 /**
  * A starter ABC for using the BareReportModel. This class introduces some
@@ -12,13 +18,13 @@ import java.util.List;
  * ColumnDataField class is useful.
  */
 public abstract class BareReportModelBase<T> implements BareReportModel {
+    private List<Field> columnData = null;
+    private Logger log = YukonLogManager.getLogger(this.getClass());
 
     public BareReportModelBase() {
         super();
     }
     
-    protected abstract List<ColumnData> getColumnData();
-
     /**
      * @param rowIndex
      * @return an object that is assignable to the class returned by getRowClass()
@@ -27,7 +33,19 @@ public abstract class BareReportModelBase<T> implements BareReportModel {
     abstract protected Class<T> getRowClass();
     
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return getColumnData().get(columnIndex).getColumnValue(getRow(rowIndex));
+        T row = getRow(rowIndex);
+        Field field = getColumnData().get(columnIndex);
+        Object object;
+        try {
+            object = field.get(row);
+        } catch (IllegalArgumentException e) {
+            log.warn("Couldn't get value for (" + rowIndex + "," + columnIndex + ")", e);
+            return null;
+        } catch (IllegalAccessException e) {
+            log.warn("Couldn't get value for (" + rowIndex + "," + columnIndex + ")", e);
+            return null;
+        }
+        return object;
     }
 
     public int getColumnCount() {
@@ -35,11 +53,26 @@ public abstract class BareReportModelBase<T> implements BareReportModel {
     }
 
     public String getColumnName(int columnIndex) {
-        return getColumnData().get(columnIndex).getColumnName();
+        Field field = getColumnData().get(columnIndex);
+        return field.getName();
     }
 
     public Class<?> getColumnClass(int columnIndex) {
-        return getColumnData().get(columnIndex).getColumnType(getRowClass());
+        Field field = getColumnData().get(columnIndex);
+        if (field.getType().isPrimitive()) {
+            throw new IllegalArgumentException("Using primitive types in the model is not supported: " + field.getDeclaringClass());
+        }
+        return field.getType();
+    }
+    
+    private List<Field> getColumnData() {
+        if (columnData == null) {
+            Class<T> rowClass = getRowClass();
+            Field[] declaredFields = rowClass.getDeclaredFields();
+
+            columnData = Arrays.asList(declaredFields);
+        }
+        return columnData;
     }
 
 }

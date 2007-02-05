@@ -52,6 +52,11 @@ public final class BareReportModelAdapter extends ReportModelBase {
     }
     
     @Override
+    public String getColumnName(int column) {
+        return model.getColumnName(column);
+    }
+    
+    @Override
     public int getColumnCount() {
         return model.getColumnCount();
     }
@@ -62,6 +67,11 @@ public final class BareReportModelAdapter extends ReportModelBase {
             columnClasses[i] = model.getColumnClass(i);
         }
         return columnClasses;
+    }
+    
+    @Override
+    public Class<?> getColumnClass(int column) {
+        return model.getColumnClass(column);
     }
 
     public ColumnProperties[] getColumnProperties() {

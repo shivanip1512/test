@@ -7,26 +7,39 @@ import java.util.List;
 import org.jfree.report.JFreeReportBoot;
 
 import com.cannontech.analysis.ReportFuncs;
+import com.cannontech.analysis.function.AggregateFooterFieldFactory;
+import com.cannontech.analysis.function.LabelFooterFieldFactory;
+import com.cannontech.analysis.function.SumFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CurtailmentEventSummaryModel;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData(1, 50),
-        new ColumnLayoutData(3, 140),
-        new ColumnLayoutData(2, 140),
-        new ColumnLayoutData(4, 140),
-        new ColumnLayoutData(5, 90),
-        new ColumnLayoutData(6, 150),
+        new ColumnLayoutData("Event #", "eventNumber", 50),
+        new ColumnLayoutData("Notification Time", "notificationDate", 140),
+        new ColumnLayoutData("Start Date", "startDate", 140),
+        new ColumnLayoutData("Stop Time", "stopDate", 140),
+        new ColumnLayoutData("Duration (hours)", "durationHours", 90),
+        new ColumnLayoutData("Type", "type", 150),
+    };
+    private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
+        new LabelFooterFieldFactory(bodyColumns[0], "Total"),
+        new SumFooterFieldFactory(bodyColumns[4]),
     };
     
     public CurtailmentEventSummaryReport(BareReportModel bareModel) {
         super(bareModel);
     }
+    
+    @Override
+    protected List<? extends AggregateFooterFieldFactory> getFooterColumns() {
+        return Arrays.asList(footerColumns);
+    }
 
     @Override
     protected ColumnLayoutData getGroupFieldData() {
-        return new ColumnLayoutData(0, 140);
+        return new ColumnLayoutData("Customer Name", "customerName", 140);
     }
 
     @Override
@@ -43,6 +56,7 @@ public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
         // initialize JFreeReport
         JFreeReportBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
+        YukonSpringHook.getContext("com.cannontech.context.web");
         
         CurtailmentEventSummaryModel model = new CurtailmentEventSummaryModel();
         YukonReportBase rmReport = new CurtailmentEventSummaryReport(model);

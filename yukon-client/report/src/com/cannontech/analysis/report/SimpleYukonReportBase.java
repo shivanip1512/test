@@ -2,7 +2,11 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D.Float;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +18,20 @@ import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
+import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
+import org.jfree.report.elementfactory.NumberFieldElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
+import org.jfree.report.elementfactory.TextElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
+import org.jfree.report.function.Expression;
+import org.jfree.report.function.ExpressionCollection;
+import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
+import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.BareReportModelAdapter;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
@@ -35,12 +47,13 @@ import com.cannontech.analysis.tablemodel.ReportModelLayout;
 public abstract class SimpleYukonReportBase extends YukonReportBase {
     private final ReportModelBase model;
 
-    protected Map<Integer,ColumnProperties> columnProperties = new HashMap<Integer, ColumnProperties>();
+    protected Map<ColumnLayoutData,Point2D> columnProperties = new HashMap<ColumnLayoutData, Point2D>();
+    protected Map<String,Integer> columIndexLookup = new HashMap<String, Integer>();
 
     public SimpleYukonReportBase(BareReportModel bareModel) {
         model = new BareReportModelAdapter(bareModel, new ReportModelLayout() {
             public ColumnProperties getColumnProperties(int i) {
-                return columnProperties.get(i);
+                throw new UnsupportedOperationException();
             }
         });
         setModel(model);
@@ -54,35 +67,97 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         }
         this.model = new ReportModelDelegate(model, new ReportModelLayout() {
             public ColumnProperties getColumnProperties(int i) {
-                return columnProperties.get(i);
+                throw new UnsupportedOperationException();
             }
         });
         setModel(model);
         
         initializeColumns();
     }
-    
+
     protected void initializeColumns() {
         Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
         int accumulativeWidth = 0;
         while (bodyColumns.hasNext()) {
             ColumnLayoutData data = bodyColumns.next();
-            int width = data.width;
-            ColumnProperties p = new ColumnProperties(accumulativeWidth, 1, width, null);
-            p.setValueFormat(data.format);
-            columnProperties.put(data.modelIndex, p);
-            accumulativeWidth += width;
+            int width = data.getWidth();
+            Float position = new Point2D.Float(accumulativeWidth, 1);
+            columnProperties.put(data, position);
+            accumulativeWidth += width + getExtraFieldSpacing();
         }
+        
+        buildColumnIndexLookup();
     }
-
+    
     protected abstract List<ColumnLayoutData> getBodyColumns();
-    protected void decorateColumn(TextFieldElementFactory factory, Integer column) {
+    protected List<? extends AggregateFooterFieldFactory> getFooterColumns() {
         // extending classes can choose to implement
+        return Collections.emptyList();
     }
-
+    protected int getExtraFieldSpacing() {
+        return 0;
+    }
+    
+    
     protected ItemBand createItemBand() {
         ItemBand items = ReportFactory.createItemBandDefault();
         
+        applyBackgroundColor(items);
+        
+        Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
+        while (bodyColumns.hasNext()) {
+            ColumnLayoutData layoutData = bodyColumns.next();
+            TextFieldElementFactory factory;
+            int modelIndex = columIndexLookup.get(layoutData.getFieldName());
+            Class<?> columnClass = getModel().getColumnClass(modelIndex);
+            if (Number.class.isAssignableFrom(columnClass)) {
+                NumberFieldElementFactory numFactory = new NumberFieldElementFactory();
+                numFactory.setFormatString(layoutData.getFormat());
+                factory = numFactory;
+            } else if (Date.class.isAssignableFrom(columnClass)) {
+                DateFieldElementFactory dateFactory = new DateFieldElementFactory();
+                dateFactory.setVerticalAlignment(ElementAlignment.BOTTOM);
+                dateFactory.setFormatString(layoutData.getFormat());
+                factory = dateFactory;
+            } else {
+                // make it a text field on all other occasions.
+                factory = new TextFieldElementFactory();
+            }
+            
+            applyFieldProperties(factory, layoutData);
+            factory.setName(layoutData.getColumnName());
+            factory.setFieldname(layoutData.getFieldName());
+            
+            items.addElement(factory.createElement());
+        }
+        
+        return items;
+    }
+    
+    private void applyElementProperties(TextElementFactory factory, ColumnLayoutData layoutData) {
+        Point2D point2D = columnProperties.get(layoutData);
+        factory.setAbsolutePosition(point2D);
+        factory.setMinimumSize(new FloatDimension(layoutData.getWidth(), 12));
+        factory.setDynamicHeight(Boolean.TRUE);
+        factory.setHorizontalAlignment(ElementAlignment.LEFT);
+        factory.setVerticalAlignment(ElementAlignment.MIDDLE);
+        if (layoutData.getHorizontalAlignment() != null) {
+            factory.setHorizontalAlignment(layoutData.getHorizontalAlignment());
+        }
+        
+    }
+
+    private void applyFieldProperties(TextFieldElementFactory factory, ColumnLayoutData layoutData) {
+        applyElementProperties(factory, layoutData);
+        factory.setNullString("  ---  ");
+    }
+
+    protected void applyLabelProperties(LabelElementFactory labelFactory, ColumnLayoutData layoutData) {
+        applyElementProperties(labelFactory, layoutData);
+        labelFactory.setBold(true);
+    }
+    
+    private void applyBackgroundColor(ItemBand items) {
         if ( showBackgroundColor ) {
             items.addElement(StaticShapeElementFactory.createRectangleShapeElement
                 ("background", Color.decode("#DFDFDF"), new BasicStroke(0),
@@ -92,45 +167,57 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             items.addElement(StaticShapeElementFactory.createHorizontalLine
                 ("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
         }
-        
-        Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
-        while (bodyColumns.hasNext()) {
-            ColumnLayoutData layoutData = bodyColumns.next();
-            Integer i = layoutData.modelIndex;
-            
-            TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-            if (layoutData.horizontalAlignment != null) {
-                factory.setHorizontalAlignment(layoutData.horizontalAlignment);
-            }
-            decorateColumn(factory, i);
-            items.addElement(factory.createElement());
-        }
-        
-        return items;
     }
     
 
     protected Group createSingleGroup() {
         final Group collHdgGroup = new Group();
-        collHdgGroup.setName("Column Heading");
+        collHdgGroup.setName(getSingleGroupName());
     
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
-        LabelElementFactory factory;
-
-        Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
-        while (bodyColumns.hasNext()) {
-            Integer i = bodyColumns.next().modelIndex;
-            factory = ReportFactory.createGroupLabelElementDefault(model, i);
-            header.addElement(factory.createElement());
-        }
-    
+        createGroupLabels(header);
         header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
         collHdgGroup.setHeader(header);
     
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
+        createFooterFields(footer);
         collHdgGroup.setFooter(footer);
 
         return collHdgGroup;
+    }
+    
+    protected void createFooterFields(GroupFooter footer) {
+        List<? extends AggregateFooterFieldFactory> totalColumns = getFooterColumns();
+        for (AggregateFooterFieldFactory factory : totalColumns) {
+            TextElementFactory elementFactory = factory.createElementFactory();
+            applyElementProperties(elementFactory, factory.getSourceColumn());
+            footer.addElement(elementFactory.createElement());
+        }
+    }
+
+    protected String getSingleGroupName() {
+        return "Column Heading";
+    }
+
+    protected void createGroupLabels(GroupHeader header) {
+        Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
+        while (bodyColumns.hasNext()) {
+            ColumnLayoutData layoutData = bodyColumns.next();
+            LabelElementFactory labelFactory = new LabelElementFactory();
+            labelFactory.setText(layoutData.getColumnName());
+            applyLabelProperties(labelFactory, layoutData);
+            labelFactory.setName(layoutData.getColumnName() + ReportFactory.NAME_GROUP_LABEL_ELEMENT);
+            
+            header.addElement(labelFactory.createElement());
+        }
+    }
+
+    private void buildColumnIndexLookup() {
+        int columnCount = model.getColumnCount();
+        for (int i = 0; i < columnCount; i++) {
+            String columnName = model.getColumnName(i);
+            columIndexLookup.put(columnName, i);
+        }
     }
 
     protected GroupList createGroups() {
@@ -138,4 +225,18 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
       list.add(createSingleGroup());
       return list;
     }
+    
+    @Override
+    protected ExpressionCollection getExpressions() throws FunctionInitializeException {
+        ExpressionCollection expressionCollection = super.getExpressions();
+        List<? extends AggregateFooterFieldFactory> totalColumns = getFooterColumns();
+        for (AggregateFooterFieldFactory factory : totalColumns) {
+            Expression expression = factory.createExpression(getSingleGroupName());
+            if (expression != null) {
+                expressionCollection.add(expression);
+            }
+        }
+        return expressionCollection;
+    }
+
 }

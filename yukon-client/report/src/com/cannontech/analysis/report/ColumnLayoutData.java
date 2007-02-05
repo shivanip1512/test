@@ -13,24 +13,85 @@ import org.jfree.report.ElementAlignment;
  */
 public class ColumnLayoutData {
 
-    public final Integer modelIndex;
-    public final Integer width;
-    public final String format;
-    public final ElementAlignment horizontalAlignment;
+    private final String columnName;
+    private final String fieldName;
+    private final Integer width;
+    private String format = null;
+    private ElementAlignment horizontalAlignment = null;
 
-    public ColumnLayoutData(Integer modelIndex, Integer width) {
-        this(modelIndex, width, null);
+    public ColumnLayoutData(String columnName, String fieldName, Integer width) {
+        this.columnName = columnName;
+        this.fieldName = fieldName;
+        this.width = width;
     }
 
-    public ColumnLayoutData(Integer modelIndex, Integer width, String format) {
-        this(modelIndex, width, format, null);
+    public ColumnLayoutData(String columnName, Integer width) {
+        this.columnName = columnName;
+        this.fieldName= columnName;
+        this.width = width;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public ColumnLayoutData setFormat(String format) {
+        this.format = format;
+        return this;
+    }
+
+    public ElementAlignment getHorizontalAlignment() {
+        return horizontalAlignment;
+    }
+
+    public ColumnLayoutData setHorizontalAlignment(ElementAlignment horizontalAlignment) {
+        this.horizontalAlignment = horizontalAlignment;
+        return this;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + ((columnName == null) ? 0 : columnName.hashCode());
+        result = PRIME * result + ((fieldName == null) ? 0 : fieldName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ColumnLayoutData other = (ColumnLayoutData) obj;
+        if (columnName == null) {
+            if (other.columnName != null)
+                return false;
+        } else if (!columnName.equals(other.columnName))
+            return false;
+        if (fieldName == null) {
+            if (other.fieldName != null)
+                return false;
+        } else if (!fieldName.equals(other.fieldName))
+            return false;
+        return true;
     }
     
-    public ColumnLayoutData(Integer modelIndex, Integer width, String format, ElementAlignment horizontalAlignment) {
-        this.modelIndex = modelIndex;
-        this.width = width;
-        this.format = format;
-        this.horizontalAlignment = horizontalAlignment;
-    }
+
     
 }

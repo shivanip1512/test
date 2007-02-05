@@ -8,8 +8,12 @@ import org.jfree.report.ElementAlignment;
 import org.jfree.report.JFreeReportBoot;
 
 import com.cannontech.analysis.ReportFuncs;
+import com.cannontech.analysis.function.AggregateFooterFieldFactory;
+import com.cannontech.analysis.function.LabelFooterFieldFactory;
+import com.cannontech.analysis.function.SumFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CurtailmentInterruptionSummaryModel;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Mar 26, 2004
@@ -20,15 +24,20 @@ import com.cannontech.analysis.tablemodel.CurtailmentInterruptionSummaryModel;
  */
 public class CurtailmentInterruptionSummaryReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData(0, 160),
-        new ColumnLayoutData(1, 60, "#0.0#"), 
-        new ColumnLayoutData(2, 60, "#0.0#"),
-        new ColumnLayoutData(3, 60, "#0.0#"),
-        new ColumnLayoutData(4, 60, "#,###", ElementAlignment.RIGHT),
-        new ColumnLayoutData(5, 60, "#,###", ElementAlignment.RIGHT),
-        new ColumnLayoutData(6, 60, "#0.00#"),
-        new ColumnLayoutData(7, 60, "#,###", ElementAlignment.RIGHT),
-        new ColumnLayoutData(8, 60, "#,###", ElementAlignment.RIGHT),
+        new ColumnLayoutData("Customer Name", "customername", 160),
+        new ColumnLayoutData("Contract Hours", "interruptHoursContract", 60).setFormat("#0.0#"), 
+        new ColumnLayoutData("Remaining Hours", "interruptHoursRemaining", 60).setFormat("#0.0#"),
+        new ColumnLayoutData("Used Hours", "interruptHoursUsed", 40).setFormat("#0.0#"),
+        new ColumnLayoutData("CIL", "cil", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Notice (mins)", "noticeMinutes", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Adv. Election $/kW", "advancedElectionPricePerkW", 60).setFormat("#0.00#"),
+        new ColumnLayoutData("Adv. Election kW", "advancedElectionkW", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("CFD", "cfd", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+    };
+    private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
+        new LabelFooterFieldFactory(bodyColumns[0], "Total"),
+        new SumFooterFieldFactory(bodyColumns[4]),
+        new SumFooterFieldFactory(bodyColumns[8]),
     };
     
     public CurtailmentInterruptionSummaryReport() {
@@ -39,6 +48,17 @@ public class CurtailmentInterruptionSummaryReport extends SimpleYukonReportBase 
         super(model);
     }
     
+    @Override
+    protected List<? extends AggregateFooterFieldFactory> getFooterColumns() {
+        return Arrays.asList(footerColumns);
+    }
+    
+    @Override
+    public int getExtraFieldSpacing() {
+        return 15;
+    }
+
+    
     /**
      * Runs this report and shows a preview dialog.
      * @param args the arguments (ignored).
@@ -48,6 +68,7 @@ public class CurtailmentInterruptionSummaryReport extends SimpleYukonReportBase 
         // initialize JFreeReport
         JFreeReportBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
+        YukonSpringHook.getContext("com.cannontech.context.web");
         
         CurtailmentInterruptionSummaryModel model = new CurtailmentInterruptionSummaryModel();
         YukonReportBase rmReport = new CurtailmentInterruptionSummaryReport(model);

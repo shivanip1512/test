@@ -27,18 +27,6 @@ public class CurtailmentInterruptionSummaryModel extends BareReportModelBase<Cur
     
     private static final List<ColumnData> columnData = new ArrayList<ColumnData>();
 
-    static {
-        columnData.add(new ColumnDataField("Customer Name", "customername"));
-        columnData.add(new ColumnDataField("Contract Hours", "interruptHoursContract"));
-        columnData.add(new ColumnDataField("Remaining Hours", "interruptHoursRemaining"));
-        columnData.add(new ColumnDataField("Used Hours", "interruptHoursUsed"));
-        columnData.add(new ColumnDataField("CIL", "cil"));
-        columnData.add(new ColumnDataField("Notice (mins)", "noticeMinutes"));
-        columnData.add(new ColumnDataField("Adv. Election $/kW", "advancedElectionPricePerkW"));
-        columnData.add(new ColumnDataField("Adv. Election kW", "advancedElectionkW"));
-        columnData.add(new ColumnDataField("CFD", "cfd"));
-    }
-    
     public CurtailmentInterruptionSummaryModel() {
     }
     
@@ -96,12 +84,12 @@ public class CurtailmentInterruptionSummaryModel extends BareReportModelBase<Cur
                 row.advancedElectionPricePerkW = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.AdvBuyThrough$);
                 row.advancedElectionkW = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.AdvBuyThroughKw);
                 row.cfd = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.ContractFrmDmd);
+                data.add(row);
             } catch (Exception e) {
                 // not sure what to do here???
                 CTILogger.error("Unable to generate row of report for " + customerStub, e);
             }
             
-            data.add(row);
         }
     }
 

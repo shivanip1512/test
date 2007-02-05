@@ -26,23 +26,7 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
     
     private List<ModelRow> data = Collections.emptyList();
     
-    private static final List<ColumnData> columnData = new ArrayList<ColumnData>();
-
-    static {
-        columnData.add(new ColumnDataField("Customer Name", "customerName"));
-        columnData.add(new ColumnDataField("Event #", "eventNumber"));
-        columnData.add(new ColumnDataField("Start Date", "startDate"));
-        columnData.add(new ColumnDataField("Notification Time", "notificationDate"));
-        columnData.add(new ColumnDataField("Stop Time", "stopDate"));
-        columnData.add(new ColumnDataField("Duration (hours)", "durationHours"));
-        columnData.add(new ColumnDataField("Type", "type"));
-    }
-    
     public CurtailmentEventSummaryModel() {
-    }
-    
-    public List<ColumnData> getColumnData() {
-        return columnData;
     }
     
     static public class ModelRow {
