@@ -29,6 +29,7 @@ import javax.swing.tree.TreePath;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, ItemListener
 {
@@ -42,10 +43,6 @@ public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSe
 	//Stores the current selection for each treeModel
 	private java.util.Hashtable selectedItems = new java.util.Hashtable();
 
-	//The currently selected item
-	private Object selectedItem = null;
-	//private LiteBaseTreeModel selectedModel = null;
-	
 	//List of item listeners
 	protected Vector itemListeners = new Vector();
 	//flag to indicate that the most recent selection was not acceptable
@@ -56,20 +53,6 @@ public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSe
 	private static OkCancelDialog dialog = null;
 	
 
-	private static java.util.Comparator nodeComparator = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2)
-		{
-			int thisVal = ((com.cannontech.database.data.lite.LitePoint)o1).getPaobjectID();
-			int anotherVal = ((com.cannontech.database.data.lite.LitePoint)o2).getPaobjectID();
-			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
-		}
-		public boolean equals(Object obj)
-		{
-			return false;
-		}
-	};
-	
 /**
  * TreeViewPanel constructor comment.
  */
@@ -499,26 +482,6 @@ public void removeTreeSelectionListener(TreeSelectionListener l) {
 	getTree().removeTreeSelectionListener(l);
 }
 /**
- * This method will search all of the available tree models to find a match
- * to str and then select that Object.
- * @param str java.lang.String
- */
-private boolean searchByString(String str)
-{
-	if( str == null )
-	{
-		getTree().getSelectionModel().setSelectionPath( null );
-		return true;
-	} 
-	
-	TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-	
-	if( searchForString( str, rootPath ) )
-		return true;
-		
-	return false;	
-}
-/**
  * This method was created in VisualAge.
  * @return boolean
  * @param val java.lang.Object
@@ -555,52 +518,6 @@ public boolean searchFirstLevelString(String val)
 			return true;
 
 	return false;
-}
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param val java.lang.Object
- */
-private boolean searchForString(String val, TreePath path) 
-{
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-
-	val = val.toLowerCase();
-	
-	//if( node.getUserObject().toString().toLowerCase().equals( val ) )
-	if( node.getUserObject().toString().toLowerCase().indexOf(val) >= 0
-		 && node != getCurrentTreeModel().getRoot() )
-	{
-		getTree().getSelectionModel().setSelectionPath( path );
-		getTree().scrollPathToVisible( path );
-		return true;
-	}
-	else
-	if( node.getChildCount() == 0 )
-	{
-		return false;
-	}
-	else
-	{
-		for( int i = 0; i < node.getChildCount(); i++ )
-		{
-			Object nextPathObjs[] = new Object[path.getPath().length +1];
-
-			System.arraycopy( path.getPath(), 0, nextPathObjs, 0, path.getPath().length );
-
-			nextPathObjs[path.getPath().length] = node.getChildAt(i);
-			
-			TreePath nextPath = new TreePath(nextPathObjs);
-			
-			if( searchForString( val, nextPath) )
-				return true;
-
-		}
-
-		return false;
-	}
-	
-		
 }
 /**
  * This method will search all of the available tree models to find a match
@@ -747,47 +664,6 @@ public void selectObject(com.cannontech.database.db.DBPersistent obj) {
  * @return boolean
  * @param val java.lang.Object
  */
-private boolean selectObject(Object val, TreePath path) {
-
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-
-	if( node.getUserObject().equals( val ) )
-	{
-		getTree().getSelectionModel().setSelectionPath( path );
-		getTree().scrollPathToVisible( path );
-		return true;
-	}
-	else
-	if( node.getChildCount() == 0 )
-	{
-		return false;
-	}
-	else
-	{
-		for( int i = 0; i < node.getChildCount(); i++ )
-		{
-			Object nextPathObjs[] = new Object[path.getPath().length +1];
-
-			System.arraycopy( path.getPath(), 0, nextPathObjs, 0, path.getPath().length );
-
-			nextPathObjs[path.getPath().length] = node.getChildAt(i);
-			
-			TreePath nextPath = new TreePath(nextPathObjs);
-			
-			if( selectObject( val, nextPath) )
-				return true;	
-		}
-
-		return false;
-	}
-	
-		
-}
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param val java.lang.Object
- */
 private boolean selectString(String val, TreePath path) {
 
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
@@ -881,8 +757,6 @@ public boolean treeObjectInsert( LiteBase lb )
 	if( lb == null )
 		return false;
 	
-	LiteBaseTreeModel model = getCurrentTreeModel();
-
 	return getCurrentTreeModel().insertTreeObject( lb );
 }
 /**
@@ -924,4 +798,22 @@ public void treeWillExpand(TreeExpansionEvent event)
 public void undoLastSelection(boolean val) {
 	this.undoLastSelection = val;
 }
+
+
+    /**
+     * Method to update the tree model based on a db change msg
+     * @param msg - DBChange
+     * @param object - Lite Base that was modified
+     */
+    public void processDBChange(int changeType, LiteBase liteBase) {
+    
+        if (changeType == DBChangeMsg.CHANGE_TYPE_ADD) {
+            this.treeObjectInsert(liteBase);
+        } else if (changeType == DBChangeMsg.CHANGE_TYPE_DELETE) {
+            this.treeObjectDelete(liteBase);
+        } else if (changeType == DBChangeMsg.CHANGE_TYPE_UPDATE) {
+            this.treeObjectUpdated(liteBase);
+        } else
+            throw new IllegalArgumentException("Unrecognized CHANGE_TYPE:  " + changeType);
+    }
 }

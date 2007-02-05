@@ -52,6 +52,7 @@ import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceBase;
@@ -2112,11 +2113,9 @@ private void initConnections()
 	getTreeNodePopupMenu().addPopupMenuListener( this );
 	getTreeNodePopupMenu().addPopUpEventListener( this );
 
-
-	//tell the cache we want to listen for DBChangeMessages
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeLiteListener(this);
-
-	
+    AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+    dataSource.addDBChangeLiteListener(this);
+    
 	// add the mouselistener for the JTree
 	MouseListener ml = new MouseAdapter()
 	{
@@ -3119,35 +3118,17 @@ private boolean updateDBPersistent(com.cannontech.database.db.DBPersistent objec
 	return true;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 11:29:42 AM)
- * @param lBase com.cannontech.database.data.lite.LiteBase
- * @param changeType int
- */
-private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, int changeType) 
-{
-	if( changeType == DBChangeMsg.CHANGE_TYPE_ADD )
-	{
-		getTreeViewPanel().treeObjectInsert( lBase );
-	}
-	else if( changeType == DBChangeMsg.CHANGE_TYPE_DELETE )
-	{
-		getTreeViewPanel().treeObjectDelete( lBase );
-	}
-	else if( changeType == DBChangeMsg.CHANGE_TYPE_UPDATE )
-	{
-		getTreeViewPanel().treeObjectUpdated( lBase );
-	}
-	else
-		throw new IllegalArgumentException("Unrecognized CHANGE_TYPE for " +
-				DBChangeMsg.class.getName() +
-				", CHANGE_TYPE received = " + changeType );
-	
-   
-   //have the try 'ask' for Focus
-   getTreeViewPanel().getTree().requestFocus();
-}
+    /**
+     * Helper method to update the tree 
+     * @param lBase - LiteBase that has changed
+     * @param changeType - Type of DBChange
+     */
+    private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, int changeType) {
+        getTreeViewPanel().processDBChange(changeType, lBase);
+       
+       //have the try 'ask' for Focus
+       getTreeViewPanel().getTree().requestFocus();
+    }
 
 /**
  * This method was created by Cannon Technologies Inc.
