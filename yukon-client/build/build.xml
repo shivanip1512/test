@@ -101,7 +101,6 @@
         <ant dir="${services}" target="${dotarget}"/>
         <ant dir="${yukon-web}" target="${dotarget}"/>
     </target>
-
 	
     <target name="deploy">
 	    <ear destfile="${yukon.lib}/yukon.ear" appxml="${yukon.lib}/META-INF/application.xml">
