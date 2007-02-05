@@ -18,4 +18,5 @@ Class-Path: ./
  ejb3-persistence.jar 
  lucene-core-2.0.0.jar 
  log4j-1.2.14.jar 
- castor-xml.jar
+ castor-xml.jar 
+ jta.jar 

@@ -19,7 +19,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/elemental-construction-set/ecs-1.4.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" kind="lib" path="/third-party/jdom.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
 	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
@@ -37,5 +37,6 @@
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jta.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
