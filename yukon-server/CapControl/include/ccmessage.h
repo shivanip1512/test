@@ -95,7 +95,9 @@ public:
         CONFIRM_SUB, //20
         CONFIRM_AREA, //21
         ENABLE_AREA,  //22
-        DISABLE_AREA  //23
+        DISABLE_AREA,  //23
+        SCAN_2WAY_DEVICE,  //24
+        FLIP_7010_CAPBANK  //25
        // DISABLE_SUBSTATION_BUS_VERIFICATION//20
     };
 

@@ -84,6 +84,8 @@ private:
     void ConfirmArea();
     void EnableArea();
     void DisableArea();
+    void Scan2WayDevice();
+    void Flip7010Device();
 
     CtiCCCommand* _command;
 };

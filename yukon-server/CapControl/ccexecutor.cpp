@@ -136,8 +136,13 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::DISABLE_AREA:
         DisableArea();
         break;
-
-    
+    case CtiCCCommand::SCAN_2WAY_DEVICE:
+        Scan2WayDevice();
+        break;
+    case CtiCCCommand::FLIP_7010_CAPBANK:
+        Flip7010Device();
+        break;
+        
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1572,6 +1577,344 @@ void CtiCCCommandExecutor::DisableArea()
     }
 }
 
+/*---------------------------------------------------------------------------
+    Scan2WayDevice
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::Scan2WayDevice()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    LONG bankID = _command->getId();
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    CtiCCFeederPtr currentFeeder = NULL;
+
+    CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankID);
+    if (currentCapBank != NULL)
+    {   long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPAOId());
+        if (subBusId != NULL)
+        {
+            currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
+            if (currentSubstationBus != NULL)
+            {
+                long feederId = store->findFeederIDbyCapBankID(currentCapBank->getPAOId());
+                if (feederId != NULL)
+                {
+                    currentFeeder = store->findFeederByPAObjectID(feederId);
+                }
+            }
+        }
+
+        if (currentSubstationBus != NULL && currentFeeder != NULL)
+        {
+            if (currentCapBank->getControlDeviceId() > 0 &&
+                stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702")) 
+            {
+
+                CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
+
+                if(pAltRate)
+                {
+                    pAltRate->insert(-1);                       // token, not yet used.
+                    pAltRate->insert( currentCapBank->getControlDeviceId() );       // Device to poke.
+
+                    pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
+
+                    pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
+
+                    CtiCapController::getInstance()->sendMessageToDispatch(pAltRate);
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Requesting scans at the alternate scan rate for " << currentCapBank->getPAOName() << endl;
+                    }
+                }
+
+                string text = string("Manual Scan 2-Way CBC attached to CapBank: ");
+                text += currentCapBank->getPAOName();
+                string additional = string("CBC: ");
+                CHAR devID[20];
+                additional += string (ltoa(currentCapBank->getControlDeviceId(),devID,10));
+
+                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+
+            }
+
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - CapBank Not attached to Feeder/Sub.  Cannot Scan Control Device " << endl;
+            }
+        }
+  
+
+    }
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+  
+}
+
+/*---------------------------------------------------------------------------
+    Scan2WayDevice
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::Flip7010Device()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    LONG bankID = _command->getId();
+    BOOL found = FALSE;
+    BOOL savedBusRecentlyControlledFlag = FALSE;
+    BOOL savedFeederRecentlyControlledFlag = FALSE;
+    CtiTime savedBusLastOperationTime = gInvalidCtiTime;
+    CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec updatedSubs;
+
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                if( bankID == currentCapBank->getControlDeviceId() )
+                {
+                    found = TRUE;
+                    if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 7010")) 
+                    {
+                    
+                        updatedSubs.push_back(currentSubstationBus);
+
+                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
+                        {    
+                            savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                            savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
+                            savedBusLastOperationTime = currentSubstationBus->getLastOperationTime();
+                            savedFeederLastOperationTime = currentFeeder->getLastOperationTime();
+                            currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                            currentFeeder->setRecentlyControlledFlag(FALSE);
+                            controlID = currentCapBank->getControlDeviceId();
+                            currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastOperationTime(CtiTime());
+                            currentFeeder->setLastOperationTime(CtiTime());
+
+                            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable||
+                                currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
+                                currentCapBank->getControlStatus() == CtiCCCapBank::Open ) 
+                            {
+                                currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
+                            }
+                            else
+                            {
+                                currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
+                            }
+                            currentSubstationBus->figureEstimatedVarLoadPointValue();
+                            currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
+                            currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
+                            currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
+                            currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                            currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
+                            if( currentCapBank->getStatusPointId() > 0 )
+                            {
+                                char tempchar[80] = "";
+                                char tempchar1[80] = "";
+                                string additional("Sub: ");
+                                additional += currentSubstationBus->getPAOName();
+                                if (_LOG_MAPID_INFO) 
+                                {
+                                    additional += " MapID: ";
+                                    additional += currentSubstationBus->getMapLocationId();
+                                    additional += " (";
+                                    additional += currentSubstationBus->getPAODescription();
+                                    additional += ")";
+                                }
+                                additional += string("  Feeder: ");
+                                additional += currentFeeder->getPAOName();
+                                if (_LOG_MAPID_INFO) 
+                                {
+                                    additional += " MapID: ";
+                                    additional += currentFeeder->getMapLocationId();
+                                    additional += " (";
+                                    additional += currentFeeder->getPAODescription();
+                                    additional += ")";
+                                }
+                                string text("Manual Flip Sent, Sub VarLoad = ");
+                                _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
+                                text += tempchar;
+                                text += string(" Feeder VarLoad = ");
+                                _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
+                                text += tempchar1;
+                                pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                                ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+                                if( !savedBusRecentlyControlledFlag ||
+                                    (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
+                                {
+                                    pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                    ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+                                    currentCapBank->setLastStatusChangeTime(CtiTime());
+
+                                    ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+                                }
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                                              << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                            }
+
+                            if( currentCapBank->getOperationAnalogPointId() > 0 )
+                            {
+                                pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
+
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, 0, currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
+                            }
+
+
+                            BOOL confirmImmediately = FALSE;
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            {
+                                if( savedFeederRecentlyControlledFlag ||
+                                    ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
+                                {
+                                    confirmImmediately = TRUE;
+                                }
+                                if( _IGNORE_NOT_NORMAL_FLAG &&
+                                    currentFeeder->getCurrentVarPointQuality() != NormalQuality )
+                                {
+                                    confirmImmediately = TRUE;
+                                }
+                            }
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
+                                     !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            {
+                                if( savedBusRecentlyControlledFlag ||
+                                    ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                                {
+                                    confirmImmediately = TRUE;
+                                }
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
+                                    _IGNORE_NOT_NORMAL_FLAG &&
+                                    currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
+                                {
+                                    confirmImmediately = TRUE;
+                                }
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
+                                    _IGNORE_NOT_NORMAL_FLAG &&
+                                    currentFeeder->getCurrentVarPointQuality() != NormalQuality )
+                                {
+                                    confirmImmediately = TRUE;
+                                }
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                            }
+
+                            if( !confirmImmediately && !currentSubstationBus->isBusPerformingVerification())
+                            {
+                                currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                currentFeeder->setRecentlyControlledFlag(TRUE);
+                            }
+                            else if (confirmImmediately)
+                            {
+                                doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            if (currentSubstationBus->getVerificationFlag())
+                            {                                              
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                                             <<".  Cannot perform Flip on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                            }
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - CBC Not 7010 Device Type.  Flip command not supported " << endl;
+                    }
+
+                }
+            }
+            if( found )
+            {
+                break;
+            }
+        }
+        if( found )
+        {
+            break;
+        }
+    }
+
+    if( controlID > 0 )
+    {
+        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control flip");
+        reqMsg->setSOE(5);
+        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        if (eventMulti->getCount() >0)
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        if (updatedSubs.size() > 0) 
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
+            executor->Execute();
+            delete executor;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+    }
+}
 
 /*---------------------------------------------------------------------------
     ConfirmOpen
