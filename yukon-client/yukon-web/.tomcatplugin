@@ -52,9 +52,9 @@
         <webClassPathEntry>/third-party/commons-lang-2.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-pool-1.3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/dom4j.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/ecs-1.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejb3-persistence.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/elemental-construction-set/ecs-1.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/hibernate-annotations.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/hibernate3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>
