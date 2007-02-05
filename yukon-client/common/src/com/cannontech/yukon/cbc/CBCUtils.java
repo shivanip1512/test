@@ -16,9 +16,11 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
@@ -265,5 +267,16 @@ public final class CBCUtils
 		}		
 		return new SubSnapshotParams();
 	}
-
+    
+    public static Integer getStateGroupIDByGroupName(String groupName) {
+        LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+        for (int i = 0; i < allStateGroups.length; i++) {
+            LiteStateGroup group = allStateGroups[i];
+            if (group.getStateGroupName().equalsIgnoreCase(groupName)) {
+                return new Integer(group.getStateGroupID());
+            }
+        }
+        return null;
+        
+    }
 }

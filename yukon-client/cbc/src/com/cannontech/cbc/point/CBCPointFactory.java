@@ -13,7 +13,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.AccumPointParams;
 import com.cannontech.database.data.point.AccumulatorPoint;
-import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.AnalogPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
@@ -23,15 +22,20 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.StatusPointParams;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.yukon.cbc.CBCUtils;
 
 
 
 
 public class CBCPointFactory{
-    
+    public static final String GRP_TRUE_FALSE = "TrueFalse";
+    public static final String GRP_REMOTE_LOCAL = "RemoteLocal";
+    private static Integer DEFAULT_STATUS_GRPID = new Integer (StateGroupUtils.STATEGROUP_TWO_STATE_STATUS);
+   
     
     private static final PointParams[] PAO_POINT_PARAMS = {
       new AnalogPointParams(1.0, 1, "Estimated Var Load", PointUnits.UOMID_VARS),
@@ -73,8 +77,8 @@ public class CBCPointFactory{
         new AnalogPointParams(0.1, 10, "Temperature", PointUnits.UOMID_TEMP_F),      
         //accumulator
         new AccumPointParams(1.0, 1, "Total op count", PointUnits.UOMID_COUNTS),
-        new AccumPointParams(1.0, 2, "OV op count", PointUnits.UOMID_COUNTS),
-        new AccumPointParams(1.0, 3, "UV op count", PointUnits.UOMID_COUNTS)
+        new AccumPointParams(1.0, 2, "UV op count", PointUnits.UOMID_COUNTS),
+        new AccumPointParams(1.0, 3, "OV op count", PointUnits.UOMID_COUNTS)
       
    };
 
@@ -89,7 +93,7 @@ public class CBCPointFactory{
         MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
         
         Integer paoId = deviceCBC.getPAObjectID();
-             switch (PAOGroups.getDeviceType(((YukonPAObject) deviceCBC).getPAOType())) {
+             switch (PAOGroups.getDeviceType(deviceCBC.getPAOType())) {
 
              case PAOGroups.CBC_7020:
              case PAOGroups.CBC_7022:
@@ -113,44 +117,43 @@ public class CBCPointFactory{
 
         List pointList = new ArrayList();
         for (int i = 0; i < CBC_POINT_PROTOTYPES.length; i++) {
-            PointParams array_element = CBC_POINT_PROTOTYPES[i];
-            PointBase point = PointFactory.createPoint(array_element.getType());
-			switch (array_element.getType()) {
+            PointParams param = CBC_POINT_PROTOTYPES[i];
+            PointBase point = PointFactory.createPoint(param.getType());
+			switch (param.getType()) {
             case PointTypes.STATUS_POINT:            	
-            	point = (StatusPoint) PointFactory.createNewPoint(point.getPoint()
+            	point = PointFactory.createNewPoint(point.getPoint()
                                                                        .getPointID(),
                                                                   PointTypes.STATUS_POINT,
-                                                                  array_element.getName(),
+                                                                  param.getName(),
                                                                   paoId,
-                                                                  new Integer (array_element.getOffset()));
-                point.getPoint()
-                     .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-                PointStatus pointStatus = ((PointStatus)((StatusPoint)point).getPointStatus());
-                int controlType = ((StatusPointParams)array_element).getControlType();
+                                                                  new Integer (param.getOffset()));
+                setGrpForStatusPoint(param, point);
+                PointStatus pointStatus = (((StatusPoint)point).getPointStatus());
+                int controlType = ((StatusPointParams)param).getControlType();
                 pointStatus.setControlType(PointTypes.getType(controlType));                
                 break;
             case PointTypes.ANALOG_POINT:
-                point = (AnalogPoint) PointFactory.createPoint(PointTypes.ANALOG_POINT);
-                point = (AnalogPoint) PointFactory.createAnalogPoint(array_element.getName(),
+                point = PointFactory.createPoint(PointTypes.ANALOG_POINT);
+                point = PointFactory.createAnalogPoint(param.getName(),
                                                                      paoId,
                                                                      point.getPoint()
                                                                           .getPointID(),
-                                                                     array_element.getOffset(),
-                                                                     ((AnalogPointParams) array_element).getUofm(),
-                                                                     ((AnalogPointParams) array_element).getMult());
+                                                                     param.getOffset(),
+                                                                     ((AnalogPointParams) param).getUofm(),
+                                                                     ((AnalogPointParams) param).getMult());
                 
                 break;
 
             case PointTypes.PULSE_ACCUMULATOR_POINT:
 
-                point = (AccumulatorPoint) PointFactory.createPoint(PointTypes.PULSE_ACCUMULATOR_POINT);
-                point = (AccumulatorPoint) PointFactory.createPulseAccumPoint(array_element.getName(),
+                point = PointFactory.createPoint(PointTypes.PULSE_ACCUMULATOR_POINT);
+                point = PointFactory.createPulseAccumPoint(param.getName(),
                                                                               paoId,
                                                                               point.getPoint()
                                                                                    .getPointID(),
-                                                                              array_element.getOffset(),
-                                                                              ((AccumPointParams) array_element).getUofm(),
-                                                                              ((AccumPointParams) array_element).getMult());
+                                                                              param.getOffset(),
+                                                                              ((AccumPointParams) param).getUofm(),
+                                                                              ((AccumPointParams) param).getMult());
 
                 
                 PointUnit punit = new PointUnit(point.getPoint().getPointID(),new Integer (PointUnits.UOMID_COUNTS), 
@@ -167,6 +170,25 @@ public class CBCPointFactory{
 
         return pointList;
 
+    }
+
+    /**
+     * @param param
+     * @param p
+     */
+    private static void setGrpForStatusPoint(PointParams param, PointBase p) {
+        Integer statusGrpID = null;
+        int offset = param.getOffset();
+        Point point = p.getPoint();
+        if (offset == 1) {
+            statusGrpID = DEFAULT_STATUS_GRPID;
+        } else if (offset == 3) {
+            statusGrpID = CBCUtils.getStateGroupIDByGroupName(GRP_REMOTE_LOCAL);
+        } else {
+            statusGrpID = CBCUtils.getStateGroupIDByGroupName(GRP_TRUE_FALSE);
+        }
+        statusGrpID = (statusGrpID == null) ? DEFAULT_STATUS_GRPID : statusGrpID;
+        point.setStateGroupID(statusGrpID);
     }
 
     public static SmartMultiDBPersistent createPointsForPAO(DBPersistent dbObj)   {
