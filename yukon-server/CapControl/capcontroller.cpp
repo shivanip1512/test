@@ -2232,7 +2232,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             found = TRUE;
                             //break;
                         }
-                        else if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") ) 
+                        else if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
                         {
                             CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))

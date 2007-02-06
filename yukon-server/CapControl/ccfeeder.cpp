@@ -2749,7 +2749,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            CtiLockGuard<CtiLogger> logger_guard(dout);
                            dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                        }
-                       if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE &&
+                       if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                            currentCapBank->getVCtrlIndex() == 1)            
                        {
                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
@@ -2864,7 +2864,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            CtiLockGuard<CtiLogger> logger_guard(dout);
                            dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                        }
-                       if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE &&
+                       if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                            currentCapBank->getVCtrlIndex() == 1)            
                        {
                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Close);
@@ -3228,7 +3228,7 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                          //check capbank reclose delay here...
                         DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         int control =  CtiCCCapBank::Close;
-                        if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") &&
+                        if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
                             _USE_FLIP_FLAG == TRUE )
                         {
                             control = 4; //flip
@@ -3241,7 +3241,7 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                 {
                     DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                     int control =  CtiCCCapBank::Open;
-                    if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") &&
+                    if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
                         _USE_FLIP_FLAG == TRUE )
                     {
                         control = 4; //flip
