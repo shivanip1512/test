@@ -94,12 +94,12 @@
           <ant dir="${tools}" target="${dotarget}" />
           <ant dir="${commercialcurtailment}" target="${dotarget}"/>
 
-        <ant dir="${multispeak}" target="${dotarget}"/>
-        <ant dir="${report}" target="${dotarget}"/>        
-		<ant dir="${servlet}" target="${dotarget}"/>
-        <ant dir="${notification}" target="${dotarget}"/>
-        <ant dir="${services}" target="${dotarget}"/>
-        <ant dir="${yukon-web}" target="${dotarget}"/>
+          <ant dir="${multispeak}" target="${dotarget}"/>
+          <ant dir="${report}" target="${dotarget}"/>        
+  	  <ant dir="${servlet}" target="${dotarget}"/>
+          <ant dir="${notification}" target="${dotarget}"/>
+          <ant dir="${services}" target="${dotarget}"/>
+          <ant dir="${yukon-web}" target="${dotarget}"/>
     </target>
 	
     <target name="deploy">
