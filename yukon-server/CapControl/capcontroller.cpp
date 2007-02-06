@@ -2228,7 +2228,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-                            currentCapBank->setTotalOperations((LONG)value);
+                            //JULIE: BGE fix for status change time setting to old date on disabled banks.
+                            if (!currentCapBank->getDisableFlag()) 
+                            {
+                                currentCapBank->setTotalOperations((LONG)value);
+                            }
                             found = TRUE;
                             //break;
                         }
