@@ -201,15 +201,7 @@ if(nvResult = 1) then */
 LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
 	//SprintfBox (SEVERE, "DEBUG: Command Line Contents", "%s", szCmdLine + szCmdLine2 + szCmdLine3);     
 //endif;
-  
-//Add this service to the YUKON GROUP so it shows up in TDC
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonWebApplicationService";
-szName = "Group";
-szValue = "YUKON GROUP";
-nSize = -1; 
-RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );  
-  
+
 //start the Tomcat service
 szCmdLine = 'start "Yukon Web Application Service"';
 LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
