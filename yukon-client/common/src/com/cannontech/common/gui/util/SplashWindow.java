@@ -6,8 +6,10 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
@@ -22,6 +24,7 @@ import com.cannontech.common.util.CtiUtilities;
  {
    private Image splashImage;   
    private int imgWidth, imgHeight;
+   private int padding = 15;
   
    private FontMetrics fontMetrics;
    
@@ -33,11 +36,14 @@ import com.cannontech.common.util.CtiUtilities;
    private String displayText = " ";
    private Color textColor;
 
-   public SplashWindow(Frame f, String imgName  ) 
-   {
-		super( (f == null ? new JFrame() : f) );
-		initialize( f, SplashWindow.class.getResource(imgName),
-                "Loading...", new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );
+   public static SplashWindow createYukonSplash(Frame frame) {
+       return new SplashWindow(frame,
+                        CtiUtilities.CTISMALL_GIF,
+                        "Loading " + CtiUtilities.getApplicationName() + "...",
+                        new Font("dialog", Font.BOLD, 14 ), 
+                        Color.black, 
+                        Color.blue, 
+                        2);
    }
    
 	public SplashWindow(Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
@@ -163,18 +169,19 @@ import com.cannontech.common.util.CtiUtilities;
 		}	
 	}
 
-   public void paint(Graphics g) {
-	 g.drawImage(splashImage, borderSize, borderSize,
-	   imgWidth, imgHeight, this);
+	public void paint(Graphics g) {
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	    g.setColor(Color.white);
+	    g.fillRect(borderSize, borderSize, getWidth() - (2 * borderSize), getHeight() - ( 2 * borderSize));
+	    g.drawImage(splashImage, borderSize + padding, borderSize + padding,
+	                imgWidth, imgHeight, this);
 
-	 g.setColor(Color.white);
-	 g.fillRect( borderSize, imgHeight+(borderSize),
-		 imgWidth, getHeight() - ( 2 * borderSize + imgHeight));
-
-	 g.setColor(textColor);
-	 g.drawString(displayText, (getWidth() / 2) - (fontMetrics.stringWidth(displayText)/2),
-		 				       imgHeight+(borderSize) + fontMetrics.getHeight() );
-	 }
+	    g.setColor(textColor);
+	    g.drawString(displayText, (getWidth() / 2) - (fontMetrics.stringWidth(displayText)/2),
+	                 imgHeight + borderSize + 2*padding + fontMetrics.getHeight() );
+	}
  
 	/**
 	 * Insert the method's description here.
@@ -192,8 +199,8 @@ import com.cannontech.common.util.CtiUtilities;
 
 	 int stringHeight = fontMetrics.getHeight();
 	 
-	 int w = imgWidth + (borderSize * 2);
-	 int h = imgHeight + (borderSize * 2) + (int) (stringHeight * 1.5 );
+	 int w = imgWidth + (borderSize * 2) + (padding * 2);
+	 int h = imgHeight + (borderSize * 2) + (padding * 2) + (int) (stringHeight * 1.5 );
 	 int x = (screenSize.width - w) /2;
 	 int y = (screenSize.height - h) /2;
 	 setBounds(x, y, w, h);
