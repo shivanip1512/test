@@ -6,8 +6,6 @@ package com.cannontech.graph;
  * @author: 
  */
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
@@ -46,7 +44,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DBChangeLiteListener;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -2094,7 +2091,7 @@ public static void main(String[] args)
 		mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 		mainFrame.setTitle("Yukon Trending");
         
-        SplashWindow splash = new SplashWindow( mainFrame, CtiUtilities.CTISMALL_GIF, "Loading " + CtiUtilities.getApplicationName() + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+        SplashWindow.createYukonSplash(mainFrame);
         
 		ClientSession session = ClientSession.getInstance(); 
 		if(!session.establishSession(mainFrame))

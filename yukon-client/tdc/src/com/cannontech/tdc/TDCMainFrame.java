@@ -4,10 +4,8 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:51:54 AM)
  * @author: 
  */
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.net.URL;
@@ -4167,12 +4165,7 @@ public static void main(final java.lang.String[] args)
         CTILogger.info("TDC starting...");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
-		SplashWindow splash = new SplashWindow(
-			null,
-			CtiUtilities.CTISMALL_GIF,
-			"Loading " + CtiUtilities.getApplicationName() + "...",
-			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
-		
+		SplashWindow splash = SplashWindow.createYukonSplash(null);
 		
 		CTILogger.info("Syntax for optional parameters is as follows:");
 		CTILogger.info("   TDCMainFrame view=<value> display=<value>");

@@ -1,9 +1,7 @@
 package com.cannontech.dbeditor;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -28,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
@@ -2200,14 +2199,8 @@ public static void main(String[] args) {
         CTILogger.info("DBEditor starting...");
 
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
-		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );
-		SplashWindow splash = new SplashWindow(
-			f,
-			CtiUtilities.CTISMALL_GIF,
-			"Loading " + CtiUtilities.getApplicationName() + "...",
-			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
-		
-
+		f.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
+        SplashWindow.createYukonSplash(f);
 		
 		//Set the width and height 85% of max
 		java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();	
