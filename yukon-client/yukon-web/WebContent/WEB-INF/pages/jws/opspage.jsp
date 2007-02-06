@@ -8,4 +8,7 @@
             <a href="/jws/${jnlp.path}">${jnlp.appTitle}</a>
         </tags:sectionLink>
     </c:forEach>
+    <tags:sectionLink>
+      <a href="http://www.java.com/getjava/">Install Java</a>
+    </tags:sectionLink>
 </tags:operationSection>
