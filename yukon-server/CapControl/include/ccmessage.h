@@ -98,7 +98,6 @@ public:
         DISABLE_AREA,  //23
         SCAN_2WAY_DEVICE,  //24
         FLIP_7010_CAPBANK  //25
-       // DISABLE_SUBSTATION_BUS_VERIFICATION//20
     };
 
     CtiCCCommand(LONG command);
@@ -204,9 +203,12 @@ public:
 
     virtual ~CtiCCEventLogMsg();
 
-    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, string text, string userName ) : 
+    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
+                     string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0, 
+                     string ipAddress = string("(N/A)") ) : 
         _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _subId(subId),
-        _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName) { }; //provided for polymorphic persitence only
+        _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
+        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress) { }; //provided for polymorphic persitence only
 
     LONG getLogId() const { return _logId; };
     CtiTime getTimeStamp() const { return _timeStamp; };
@@ -218,6 +220,11 @@ public:
     LONG getValue() const { return _value; };
     string getText() const { return _text; };
     string getUserName() const { return _userName; };
+    DOUBLE getKvarBefore() const { return _kvarBefore; };
+    DOUBLE getKvarAfter() const { return _kvarAfter; };
+    DOUBLE getKvarChange() const { return _kvarChange; };
+    string getIpAddress() const { return _ipAddress; };
+
 
     void setLogId(LONG id) { _logId = id; return;};
 
@@ -241,9 +248,13 @@ private:
     LONG _value;
     string _text;
     string _userName;
+    DOUBLE _kvarBefore;
+    DOUBLE _kvarAfter;
+    DOUBLE _kvarChange;
+    string _ipAddress;
     
 };
-
+    
 
 class CtiPAOScheduleMsg : public CtiCCMessage
 {

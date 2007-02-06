@@ -379,7 +379,11 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
          >> _seqId
          >> _value
          >> _text
-         >> _userName;
+         >> _userName
+         >> _kvarBefore
+         >> _kvarAfter
+         >> _kvarChange
+         >> _ipAddress;
 
       return;
 }
@@ -402,7 +406,11 @@ void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
          << _seqId    
          << _value    
          << _text     
-         << _userName;
+         << _userName
+         << _kvarBefore
+         << _kvarAfter 
+         << _kvarChange
+         << _ipAddress;
 
     return;
 }
@@ -414,16 +422,20 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
 {
     if( this != &right )
     {
-        _logId     = right._logId;    
-        _timeStamp = right._timeStamp;
-        _pointId   = right._pointId;  
-        _subId     = right._subId;    
-        _feederId  = right._feederId; 
-        _eventType = right._eventType;
-        _seqId     = right._seqId;    
-        _value     = right._value;    
-        _text      = right._text;     
-        _userName  = right._userName;
+        _logId      = right._logId;    
+        _timeStamp  = right._timeStamp;
+        _pointId    = right._pointId;  
+        _subId      = right._subId;    
+        _feederId   = right._feederId; 
+        _eventType  = right._eventType;
+        _seqId      = right._seqId;    
+        _value      = right._value;    
+        _text       = right._text;     
+        _userName   = right._userName;
+        _kvarBefore = right._kvarBefore;
+        _kvarAfter  = right._kvarAfter; 
+        _kvarChange = right._kvarChange;
+        _ipAddress  = right._ipAddress; 
 
     }
 

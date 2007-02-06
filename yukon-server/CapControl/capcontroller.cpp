@@ -2490,46 +2490,7 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, const string& tex
                       << text << " Additional Info: " << additional << endl;
     }
 
-    /*BOOL found = FALSE;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
-
-    for(int i=0;i<ccSubstationBuses.size();i++)
-    {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-
-        if( !found )
-        {
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(int j=0;j<ccFeeders.size();j++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(int k=0;k<ccCapBanks.entries();k++)
-                {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-
-                    if( currentCapBank->getStatusPointId() == pointID )
-                    {
-                        if( currentCapBank->getTagsControlStatus() != (LONG)tags )
-                        {
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        }
-                        currentCapBank->setTagsControlStatus((LONG)tags);
-                        found = TRUE;
-                        break;
-                    }
-                }
-            }
-        }
-        else if( found )
-        {
-            break;
-        }
-    }*/
 
     return;
 }

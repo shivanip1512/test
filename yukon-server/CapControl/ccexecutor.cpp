@@ -687,6 +687,8 @@ void CtiCCCommandExecutor::EnableCapBank()
                         {
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,_command->getUser(), TAG_POINT_FORCE_UPDATE));
+
                             INT seqId = CCEventSeqIdGen();
                             currentSubstationBus->setEventSequence(seqId);
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
@@ -698,6 +700,10 @@ void CtiCCCommandExecutor::EnableCapBank()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
 
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                        }
+                        if( currentCapBank->getOperationAnalogPointId() > 0 )
+                        {
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,StatusPointType,_command->getUser(), TAG_POINT_FORCE_UPDATE));
                         }
                     }
                     else
@@ -1062,6 +1068,21 @@ void CtiCCCommandExecutor::OpenCapBank()
                             text += tempchar1;
                             pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
+                            DOUBLE kvarBefore, kvarAfter, kvarChange;
+                            if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            {
+                                kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
+                                kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
+                                kvarChange = 0;
+                            }
+                            else
+                            {
+                                kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
+                                kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
+                                kvarChange = 0;
+                            }
+                            
                             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
                                 (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
@@ -1070,7 +1091,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, "(none)"));
                             }
                         }
                         else
@@ -1298,13 +1319,28 @@ void CtiCCCommandExecutor::CloseCapBank()
                                 (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                             {
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                DOUBLE kvarBefore, kvarAfter, kvarChange;
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                {
+                                    kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
+                                    kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
+                                    kvarChange = 0;
+                                }
+                                else
+                                {
+                                    kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
+                                    kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
+                                    kvarChange = 0;
+                                }
+                            
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
 
 
                                 INT seqId = CCEventSeqIdGen();
                                 currentSubstationBus->setEventSequence(seqId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, "(none)"));
                             }
                         }
                         else
@@ -1546,6 +1582,7 @@ void CtiCCCommandExecutor::DisableArea()
             currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
             if (!stringCompareIgnoreCase(currentSubstationBus->getPAODescription(),areaName))
             {
+                if (!currentSubstationBus->getDisableFlag() )//&& !currentSubstationBus->getReEnableBusFlag()) 
                 {
                     currentSubstationBus->setDisableFlag(TRUE);
                     currentSubstationBus->setReEnableBusFlag(TRUE);
@@ -3729,6 +3766,13 @@ void CtiCCPointDataMsgExecutor::Execute()
                     }
                     else if( currentCapBank->getOperationAnalogPointId() == pointID )
                     {
+                        if (currentCapBank->getDisableFlag()) 
+                        {
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            currentCapBank->setTotalOperations((LONG) value);
+                            currentCapBank->setCurrentDailyOperations((LONG) value);
+                            currentCapBank->setLastStatusChangeTime(timestamp);
+                        }
                         found = TRUE;
                         break;
                     }

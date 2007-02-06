@@ -2692,7 +2692,11 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
                          << msg->getSeqId()
                          << msg->getValue()
                          << msg->getText()
-                         << msg->getUserName();
+                     << msg->getUserName()
+                     << msg->getKvarBefore()  
+                     << msg->getKvarAfter()   
+                     << msg->getKvarChange()  
+                     << msg->getIpAddress();
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -4775,7 +4779,14 @@ BOOL CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
             while (iter != _orphanedCapBanks.end())
             {
                 if (*iter == capBankId)
+                {
+                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " Cap " <<capBankId<<" is on Orphan list. "<< endl;
+                    }
                     return TRUE;
+                }
                 else
                     iter++;
             }
@@ -5214,6 +5225,11 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     {
                         if (reloadTemp.action == ChangeTypeUpdate)
                         {
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                            {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " Reload Cap "<< reloadTemp.objectId<<" because of ChangeTypeUpdate message " << endl;
+                            }
                             //reloadCapBankFromDatabase(reloadTemp.objectId);
                             reloadCapBankFromDatabase(reloadTemp.objectId, &_paobject_capbank_map, &_paobject_feeder_map,
                                                       &_paobject_subbus_map, &_pointid_capbank_map, &_capbank_subbus_map,
@@ -5230,11 +5246,36 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 long subId = findSubBusIDbyCapBankID(reloadTemp.objectId);
                                  if (subId != NULL) 
                                  {
-
+                                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                     {
+                                          CtiLockGuard<CtiLogger> logger_guard(dout);
+                                          dout << CtiTime() << " Update Cap was found on sub " << endl;
+                                     }
                                      CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(subId);
                                      if (tempSub != NULL)
                                      {
+                                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                         {
+                                              CtiLockGuard<CtiLogger> logger_guard(dout);
+                                              dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" modified "<< endl;
+                                         }
                                          modifiedSubsList.push_back(tempSub);
+                                     }
+                                     else
+                                     {
+                                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                         {
+                                              CtiLockGuard<CtiLogger> logger_guard(dout);
+                                              dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" NOT modified "<< endl;
+                                         }
+                                     }
+                                 }
+                                 else
+                                 {
+                                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                     {
+                                          CtiLockGuard<CtiLogger> logger_guard(dout);
+                                          dout << CtiTime() << "  Update Cap NOT found on sub  "<< endl;
                                      }
                                  }
                              }
@@ -5244,11 +5285,36 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             long subId = findSubBusIDbyCapBankID(reloadTemp.objectId);
                             if (subId != NULL) 
                             {
-
+                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " Delete Cap "<<reloadTemp.objectId <<" was found on sub " << endl;
+                                }
                                 CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(subId);
                                 if (tempSub != NULL)
                                 {
+                                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                    {
+                                         CtiLockGuard<CtiLogger> logger_guard(dout);
+                                         dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" modified "<< endl;
+                                    }
                                     modifiedSubsList.push_back(tempSub);
+                                }
+                                else
+                                {
+                                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                    {
+                                         CtiLockGuard<CtiLogger> logger_guard(dout);
+                                         dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" NOT modified "<< endl;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " Delete Cap was NOT found on sub " << endl;
                                 }
                             }
 
