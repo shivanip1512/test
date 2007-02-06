@@ -182,8 +182,8 @@
 
 	<!-- Special build function that can build one module with its dependencies -->
     <target name="singlebuild" if="filename">
-	   	<ant dir="${third-party}" target="${dotarget}" />
-	   	<ant dir="${common}" target="${dotarget}" />
+	   <ant dir="${third-party}" target="${dotarget}" />
+	   <ant dir="${common}" target="${dotarget}" />
         <ant dir="${filename}" target="${dotarget}"/>
     </target>
 
