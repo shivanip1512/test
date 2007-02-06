@@ -1,10 +1,8 @@
 package com.cannontech.esub.editor;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -14,9 +12,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Timer;
 
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -68,6 +66,7 @@ public class Editor extends JPanel {
 	
 	private static final String APPLICATION_NAME = "Esubstation Editor";
 	private static final Dimension defaultSize = new Dimension(800, 600);
+    public static final URL ESUBEDITOR_GIF = Editor.class.getResource("/esubEditorIcon.gif");
     final PropertyPanel lineEditor;
 	// the drawing to edit
 	// Synchronize on the drawing to stop any updates
@@ -519,11 +518,10 @@ public class Editor extends JPanel {
             }
 		});
 		
-		SplashWindow splash = new SplashWindow(frame, CtiUtilities.CTISMALL_GIF,"Loading " + CtiUtilities.getApplicationName() + "...",	new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+		SplashWindow.createYukonSplash(frame);
 	
 		frame.setSize(defaultSize);
-		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
-		frame.setIconImage(icon.getImage());
+		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_GIF));
 
 		ClientSession session = ClientSession.getInstance(); 
 		if(!session.establishSession(frame)) {
