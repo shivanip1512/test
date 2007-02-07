@@ -4,6 +4,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
+import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
 import com.cannontech.common.util.CtiUtilities;
 
@@ -55,6 +56,8 @@ public class YukonRemoteAppender extends AppenderSkeleton {
      */
     public static void configureLogger() {
         HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
+        SimpleHttpInvokerRequestExecutor requestExecutor = new SimpleHttpInvokerRequestExecutor();
+        interceptor.setHttpInvokerRequestExecutor(requestExecutor);
         interceptor.setServiceUrl("http://" + hostName + ":" + portNumber + "/remote/RemoteLogger");
         remoteLogger = (RemoteLogger) ProxyFactory.getProxy(RemoteLogger.class, interceptor);
         applicationName = CtiUtilities.getApplicationName();
