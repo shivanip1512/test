@@ -405,31 +405,31 @@ public void runImport(List<ImportData> imps) {
 				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pao);			    
 				pao = (YukonPAObject)t.execute();
 
-				if( !pao.getPaoName().equals(name)) {
-					pao.setPaoName(name);
-					t = Transaction.createTransaction(Transaction.UPDATE, pao);
-					pao = (YukonPAObject)t.execute();
-				}
+                if( !pao.getPaoName().equals(name) && !StringUtils.isBlank(name)) {
+                    pao.setPaoName(name);
+                    t = Transaction.createTransaction(Transaction.UPDATE, pao);
+                    pao = (YukonPAObject)t.execute();
+                }
         
-				//update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
-				DeviceMeterGroup dmg = new DeviceMeterGroup();
-				dmg.setDeviceID(updateDeviceID);
-				t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
-				dmg = (DeviceMeterGroup)t.execute();
+                //update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
+                DeviceMeterGroup dmg = new DeviceMeterGroup();
+                dmg.setDeviceID(updateDeviceID);
+                t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
+                dmg = (DeviceMeterGroup)t.execute();
         
-				if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
-						!dmg.getTestCollectionGroup().equals(altGrp) || !dmg.getBillingGroup().equals(billGrp)) {
-					if(meterNumber.length() > 0)
-					    dmg.setMeterNumber(meterNumber);
-                    if(collectionGrp.length() > 0)
+                if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
+                        !dmg.getTestCollectionGroup().equals(altGrp) || !dmg.getBillingGroup().equals(billGrp)) {
+                    if(!StringUtils.isBlank(meterNumber))
+                        dmg.setMeterNumber(meterNumber);
+                    if(!StringUtils.isBlank(collectionGrp))
                         dmg.setCollectionGroup(collectionGrp);
-					if(altGrp.length() > 0)
-					    dmg.setTestCollectionGroup(altGrp);
-                    if(billGrp.length() > 0)
+                    if(!StringUtils.isBlank(altGrp))
+                        dmg.setTestCollectionGroup(altGrp);
+                    if(!StringUtils.isBlank(billGrp))
                         dmg.setBillingGroup(billGrp);
-					t = Transaction.createTransaction( Transaction.UPDATE, dmg);
-					dmg = (DeviceMeterGroup)t.execute();
-				}
+                    t = Transaction.createTransaction( Transaction.UPDATE, dmg);
+                    dmg = (DeviceMeterGroup)t.execute();
+                }
         
 				//update the deviceRoutes table if the routeID has changed.
 				if(routeID.intValue() != -12) {
