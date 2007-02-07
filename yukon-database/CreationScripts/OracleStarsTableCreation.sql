@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/8/2006 11:23:36 AM                        */
+/* Created on:     2/7/2007 1:36:12 PM                          */
 /*==============================================================*/
 
 
@@ -1794,7 +1794,7 @@ alter table SiteInformation
       references Substation (SubstationID);
 
 alter table Substation
-   add constraint FK_Sub_Rt foreign key (LMRouteID)
+   add constraint FK_SUBSTATI_FK_SUB_RT_ROUTE foreign key (LMRouteID)
       references Route (RouteID);
 
 alter table SubstationToRouteMapping

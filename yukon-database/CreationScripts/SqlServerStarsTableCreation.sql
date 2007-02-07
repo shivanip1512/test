@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/7/2006 5:13:43 PM                         */
+/* Created on:     2/7/2007 2:14:29 PM                          */
 /*==============================================================*/
 
 
@@ -1703,7 +1703,7 @@ go
 create table MeterHardwareBase (
    InventoryID          numeric              not null,
    MeterNumber          varchar(30)          not null,
-   MeterTypeID          numeric              not null
+   MeterTypeID          numeric              null
 )
 go
 
@@ -2803,8 +2803,8 @@ go
 
 
 alter table Substation
-   add constraint FK_Sub_Rt foreign key (RouteID)
-      references Route (LMRouteID)
+   add constraint FK_SUBSTATI_FK_SUB_RT_ROUTE foreign key (LMRouteID)
+      references Route (RouteID)
 go
 
 
