@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/01/30 22:17:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/02/07 18:03:44 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -491,6 +491,9 @@ bool UDPInterface::getPackets( int wait )
                             dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
                         }
 
+                        //  sends IP and port as pointdata messages
+                        sendDeviceInfo(dr);
+
                         dr->work.inbound.push(p);
 
                         p = 0;
@@ -592,6 +595,38 @@ bool UDPInterface::getPackets( int wait )
     }
 
     return packet_read;
+}
+
+
+void UDPInterface::sendDeviceInfo( device_record *dr ) const
+{
+    CtiReturnMsg    *vgMsg = CTIDBG_new CtiReturnMsg(0);
+    CtiPointDataMsg *pdm;
+    CtiPointSPtr     point;
+
+    if( dr && dr->device )
+    {
+        if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_IPAddress, AnalogPointType) )
+        {
+            pdm = CTIDBG_new CtiPointDataMsg(point->getID(), dr->ip);
+            vgMsg->PointData().push_back(pdm);
+        }
+
+        if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_Port, AnalogPointType) )
+        {
+            pdm = CTIDBG_new CtiPointDataMsg(point->getID(), dr->port);
+            vgMsg->PointData().push_back(pdm);
+        }
+
+        if( !vgMsg->PointData().empty() )
+        {
+            VanGoghConnection.WriteConnQue(vgMsg);
+        }
+        else
+        {
+            delete vgMsg;
+        }
+    }
 }
 
 

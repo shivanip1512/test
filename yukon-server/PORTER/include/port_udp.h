@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/01/08 20:06:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/02/07 18:03:44 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,8 +116,9 @@ protected:
     static void delete_dr_id_map_value( dr_id_map::value_type map_entry );
 
     void generateOutbounds( void );
+    void sendDeviceInfo   ( device_record *dr ) const;
     void processInbounds  ( void );
-    void sendResults     ( void );
+    void sendResults      ( void );
 
     void traceOutbound   ( device_record *dr, int socket_status, list< CtiMessage * > &trace_list );
     void traceInbound    ( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, list< CtiMessage * > &trace_list, CtiDeviceSPtr device=CtiDeviceSPtr() );
