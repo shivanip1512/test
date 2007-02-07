@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/26/2007 3:51:32 PM                         */
+/* Created on:     2/6/2007 6:32:05 PM                          */
 /*==============================================================*/
 
 
@@ -908,7 +908,11 @@ create table CCEventLog  (
    SeqID                NUMBER                          not null,
    Value                NUMBER                          not null,
    Text                 VARCHAR2(120)                   not null,
-   UserName             VARCHAR2(64)                    not null
+   UserName             VARCHAR2(64)                    not null,
+   KVARBefore           FLOAT                           not null,
+   KVARAfter            FLOAT                           not null,
+   KVARChange           FLOAT                           not null,
+   AdditionalInfo       VARCHAR2(20)                    not null
 );
 
 alter table CCEventLog
@@ -3739,7 +3743,7 @@ insert into fdrinterface values (20, 'BEPC','Send','f');
 insert into FDRInterface values (21, 'PI','Receive', 't' );
 insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
 insert into FDRInterface values (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
-
+insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key (InterfaceID);
 
@@ -3798,6 +3802,9 @@ insert into FDRInterfaceOption values(23, 'Category', 1, 'Combo', 'PSEUDO,REAL,C
 insert into FDRInterfaceOption values(23, 'Remote', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(23, 'Point', 3, 'Text', '(none)' );
 insert into FDRInterfaceOption values(23, 'Destination/Source', 4, 'Text', '(none)' );
+insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\\yukon\\server\\export\\' );
+insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key (InterfaceID, Ordering);
 

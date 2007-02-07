@@ -251,6 +251,29 @@ insert into sequencenumber values (1,'MeterReadLog');
 alter table RawPointHistory drop constraint FK_RawPt_Point;
 alter table SystemLog drop constraint SYS_C0013408;
 
+/* @error ignore-begin */
+alter table cceventlog add kvarBefore float;
+update cceventlog set kvarBefore = 0.0;
+alter table cceventlog modify kvarBefore float not null;
+
+alter table cceventlog add kvarAfter float;
+update cceventlog set kvarAfter = 0.0;
+alter table cceventlog modify kvarAfter float not null;
+
+alter table cceventlog add kvarChange float;
+update cceventlog set kvarChange = 0.0;
+alter table cceventlog modify kvarChange float not null;
+
+alter table cceventlog add additionalInfo varchar2(20);
+update cceventlog set additionalInfo = '(none)';
+alter table cceventlog modify additionalInfo varchar2(20) not null;
+/* @error ignore-end */
+
+insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
+insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\\yukon\\server\\export\\' );
+insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

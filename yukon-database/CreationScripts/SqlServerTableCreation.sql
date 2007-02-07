@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/26/2007 3:50:18 PM                         */
+/* Created on:     2/6/2007 6:33:54 PM                          */
 /*==============================================================*/
 
 
@@ -2843,7 +2843,11 @@ create table CCEventLog (
    SeqID                numeric              not null,
    Value                numeric              not null,
    Text                 varchar(120)         not null,
-   UserName             varchar(64)          not null
+   UserName             varchar(64)          not null,
+   KVARBefore           float                not null,
+   KVARAfter            float                not null,
+   KVARChange           float                not null,
+   AdditionalInfo       varchar(20)          not null
 )
 go
 
@@ -6156,7 +6160,7 @@ insert into fdrinterface values (20, 'BEPC','Send','f');
 insert into FDRInterface values (21, 'PI','Receive', 't' );
 insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
 insert into FDRInterface values (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
-
+insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
@@ -6219,6 +6223,9 @@ insert into FDRInterfaceOption values(23, 'Category', 1, 'Combo', 'PSEUDO,REAL,C
 insert into FDRInterfaceOption values(23, 'Remote', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(23, 'Point', 3, 'Text', '(none)' );
 insert into FDRInterfaceOption values(23, 'Destination/Source', 4, 'Text', '(none)' );
+insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\\yukon\\server\\export\\' );
+insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
 go
