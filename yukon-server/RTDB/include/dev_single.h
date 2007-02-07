@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/09/23 13:04:28 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/02/07 18:02:33 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,12 @@ public:
         ScanException,
         ScanMeterRead,
         ScanDataValid
+    };
+
+    enum PointOffsets
+    {
+        PointOffset_Analog_IPAddress = 20001,
+        PointOffset_Analog_Port      = 20002,
     };
 
     struct channelWithID  //  This is used for tracking return messages to commander based on channel and id
@@ -257,10 +263,6 @@ public:
 };
 
 
-#ifdef VSLICK_TAG_WORKAROUND
-typedef CtiDeviceSingle *CtiDeviceSingleSPtr;
-#else
 typedef shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
-#endif
 
 #endif // #ifndef __DEV_SINGLE_H__
