@@ -102,6 +102,10 @@ public:
     LONG getAnalogInput1() const;    
     LONG getTemperatureId() const;   
     LONG getTemperature() const;      
+    LONG getUDPIpAddressId() const;
+    ULONG getUDPIpAddress() const;
+    LONG getUDPPortNumberId() const;
+    LONG getUDPPortNumber() const;
     LONG getTotalOpCountId() const;  
     LONG getTotalOpCount() const;    
     LONG getOvCountId() const;       
@@ -166,6 +170,10 @@ public:
     CtiCCTwoWayPoints& setAnalogInput1(LONG value);    
     CtiCCTwoWayPoints& setTemperatureId(LONG pointId);
     CtiCCTwoWayPoints& setTemperature(LONG value);    
+    CtiCCTwoWayPoints& setUDPIpAddressId(LONG pointId);
+    CtiCCTwoWayPoints& setUDPIpAddress(ULONG value);
+    CtiCCTwoWayPoints& setUDPPortNumberId(LONG pointId);
+    CtiCCTwoWayPoints& setUDPPortNumber(LONG value);
     CtiCCTwoWayPoints& setTotalOpCountId(LONG pointId);
     CtiCCTwoWayPoints& setTotalOpCount(LONG value);    
     CtiCCTwoWayPoints& setOvCountId(LONG pointId);
@@ -263,6 +271,11 @@ private:
     LONG _analogInput1;
     LONG _temperatureId;
     LONG _temperature;
+    LONG _udpIpAddressId;
+    ULONG _udpIpAddress;
+    LONG _udpPortNumberId;
+    LONG _udpPortNumber;
+
      
     LONG _totalOpCountId;
     LONG _totalOpCount;

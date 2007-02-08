@@ -1839,7 +1839,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
         }
         else
         {
@@ -1914,7 +1914,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
         }
         else
         {
@@ -1983,7 +1983,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
         }
         else
         {
@@ -2054,7 +2054,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
         }
         else
         {
@@ -2664,7 +2664,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                 currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", varValueBeforeControl, currentVarLoadPointValue, change));
+                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress()));
                 
             }
             else

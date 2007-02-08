@@ -81,6 +81,8 @@ public:
     BOOL getVerificationDoneFlag() const;
     BOOL getRetryOpenFailedFlag() const;
     BOOL getRetryCloseFailedFlag() const;
+    LONG getUDPPort() const;
+    const string& getIpAddress() const;
 
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
@@ -128,6 +130,8 @@ public:
     CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
     CtiCCCapBank& setRetryOpenFailedFlag(BOOL retryOpenFailedFlag);
     CtiCCCapBank& setRetryCloseFailedFlag(BOOL retryCloseFailedFlag);
+    CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value);
+    CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -231,6 +235,8 @@ private:
     BOOL _retryOpenFailedFlag;
     BOOL _retryCloseFailedFlag;
     CtiCCTwoWayPoints *_twoWayPoints;
+    string _ipAddress;
+    LONG _udpPortNumber;
 
     
     //don't stream

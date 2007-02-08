@@ -72,6 +72,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
     _DSTActive = 0;                 
     _neutralLockoutId = 0;          
     _neutralLockout = 0;  
+
     _voltageId = 0;      
     _voltage = 0;        
     _highVoltageId = 0;  
@@ -83,7 +84,11 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
     _analogInput1Id = 0; 
     _analogInput1 = 0;   
     _temperatureId = 0;  
-    _temperature = 0;    
+    _temperature = 0; 
+    _udpIpAddressId = 0;          
+    _udpIpAddress = 0;  
+    _udpPortNumberId = 0;          
+    _udpPortNumber = 0;  
                      
     _totalOpCountId = 0; 
     _totalOpCount = 0;   
@@ -296,8 +301,23 @@ LONG CtiCCTwoWayPoints::getNeutralLockoutId() const
 LONG CtiCCTwoWayPoints::getNeutralLockout() const
 {
     return _neutralLockout;
-}  
-
+} 
+LONG CtiCCTwoWayPoints::getUDPIpAddressId() const
+{
+    return _udpIpAddressId;
+}
+ULONG CtiCCTwoWayPoints::getUDPIpAddress() const
+{
+    return _udpIpAddress;
+}
+LONG CtiCCTwoWayPoints::getUDPPortNumberId() const
+{
+    return _udpPortNumberId;
+}
+LONG CtiCCTwoWayPoints::getUDPPortNumber() const
+{
+    return _udpPortNumber;
+}
 LONG CtiCCTwoWayPoints::getVoltageId() const
 {
     return _voltageId;
@@ -806,6 +826,46 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralLockout(LONG value)
     return *this;
 }
 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddressId(LONG pointId)
+{
+    if (pointId != _udpIpAddressId)
+    {
+        _dirty = TRUE;
+    }
+    _udpIpAddressId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddress(ULONG value) 
+{
+    if (value != _udpIpAddress)
+    {
+        _dirty = TRUE;
+    }
+    _udpIpAddress = value;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPPortNumberId(LONG pointId)
+{
+    if (pointId != _udpPortNumberId)
+    {
+        _dirty = TRUE;
+    }
+    _udpPortNumberId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPPortNumber(LONG value) 
+{
+    if (value != _udpPortNumber)
+    {
+        _dirty = TRUE;
+    }
+    _udpPortNumber = value;
+    return *this;
+}
+
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setVoltageId(LONG pointId)
 {
     if (pointId != _voltageId)
@@ -1135,6 +1195,8 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                     retVal = TRUE;
                     break;
                 }
+
+
                 default:
                     break;
                
@@ -1182,6 +1244,21 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                      retVal = TRUE;
                      break;                           
                  }
+
+                 case 20000:
+                 {
+                     setUDPIpAddressId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+              
+                 case 20001:
+                 {
+                     setUDPPortNumberId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+
                  default:
                     break;
             }
@@ -1198,17 +1275,17 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                     retVal = TRUE;
                     break;                                   
                 }                                                
-                case 2:                                          
-                {    
-                    setOvCountId(pointId);
-                    retVal = TRUE;
-                    break;                                          
-                }                   
-                case 3:                                         
+                case 2:                                         
                 {    
                     setUvCountId(pointId);                                
                     retVal = TRUE;
                     break;                                     
+                }
+                case 3:                                          
+                {    
+                    setOvCountId(pointId);
+                    retVal = TRUE;
+                    break;                                          
                 }
                 default:
                     break;
@@ -1374,6 +1451,15 @@ BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value)
         setTemperature(value);
         retVal = TRUE;
     }
+    else if ( getUDPIpAddressId() == pointID ) 
+    {
+        setUDPIpAddress(value);
+        retVal = TRUE;
+    }else if ( getUDPPortNumberId() == pointID ) 
+    {
+        setUDPPortNumber(value);
+        retVal = TRUE;
+    }
     
     return retVal;
 }
@@ -1494,8 +1580,14 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToMsg(CtiCommandMsg *pointA
     {
         pointAddMsg->insert(getNeutralLockoutId());
     }
-
-
+    if ( getUDPIpAddressId() > 0 ) 
+    {
+        pointAddMsg->insert(getUDPIpAddressId());
+    }
+    if ( getUDPPortNumberId() > 0 ) 
+    {
+        pointAddMsg->insert(getUDPPortNumberId());
+    }
     if ( getVoltageId()  > 0 ) 
     {
         pointAddMsg->insert(getVoltageId());
@@ -1601,8 +1693,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _DSTActive = right._DSTActive;                
         _neutralLockoutId = right._neutralLockoutId;         
         _neutralLockout = right._neutralLockout; 
-
-
+        
         _voltageId = right._voltageId;
         _voltage = right._voltage;
         _highVoltageId = right._highVoltageId;
@@ -1615,6 +1706,10 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _analogInput1 = right._analogInput1;
         _temperatureId = right._temperatureId;
         _temperature = right._temperature;
+        _udpIpAddressId = right._udpIpAddressId;         
+        _udpIpAddress = right._udpIpAddress; 
+        _udpPortNumberId = right._udpPortNumberId;         
+        _udpPortNumber = right._udpPortNumber; 
 
         _totalOpCountId = right._totalOpCountId;
         _totalOpCount = right._totalOpCount;

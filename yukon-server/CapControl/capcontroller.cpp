@@ -1025,55 +1025,6 @@ void CtiCapController::processCCEventMsgs()
             }
         };
 
-        /*RWCollectable* ccEventMsg = NULL;
-        
-        for (;;)
-        {
-        
-            tempTime.now();
-            while(_ccEventMsgQueue.canRead())
-            {
-                try
-                {   
-                    ccEventMsg = _ccEventMsgQueue.read();
-                    try
-                    {
-                        if( ccEventMsg != NULL )
-                        {
-                            try
-                            {
-                                //write to ccEventLog
-                                //store->InsertCCEventLogInDB(ccEventMsg);
-                                
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-
-                            delete ccEventMsg;
-                        }
-                        if (CtiTime::now().seconds() - tempTime.seconds() <= 1) 
-                        {
-                            break;
-                        }
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-            };
-            Sleep(5000);
-        }  */
-
     }
     catch(...)
     {
@@ -1082,7 +1033,6 @@ void CtiCapController::processCCEventMsgs()
     }
 
 }
-
 
 /*---------------------------------------------------------------------------
     getDispatchConnection
@@ -1560,6 +1510,11 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
                         else if (dbChange->getDatabase() == ChangePAODb && !(stringCompareIgnoreCase(dbChange->getObjectType(),"cap bank")))
                         {
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                            {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
+                            }
                             objType = CtiCCSubstationBusStore::CapBank;
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
@@ -1608,12 +1563,28 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                    resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
                                    resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) ) 
                         {
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                            {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " cbc DB change message received for cbc: "<<dbChange->getId() << endl;
+                            }
                             long capBankId = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID(dbChange->getId());
                             if (capBankId != NULL) 
                             {
+                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " cbc attached to cap: "<<capBankId << endl;
+                                }
+
                                 CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
                                 objType = CtiCCSubstationBusStore::CapBank;
                                 changeId = cap->getPAOId();
+                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " Cap "<<cap->getPAOName() <<" was found on sub " << endl;
+                                }
                             }
                         }
                         else if (objType == CtiCCSubstationBusStore::Unknown)
@@ -1621,7 +1592,13 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
-
+                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);
+                             dout << CtiTime() << " RELOAD INFO: changeID: "<<changeId << endl;
+                             dout << CtiTime() << "            changeType: "<<dbChange->getTypeOfChange() << endl;
+                             dout << CtiTime() << "               objType: "<<objType << endl;
+                        }
                         CC_DBRELOAD_INFO reloadInfo = {changeId, dbChange->getTypeOfChange(), objType};
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
@@ -2249,6 +2226,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             }
                             else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value))
                             {
+                                if (twoWayPts->getUDPIpAddressId() > 0) 
+                                {
+                                    currentCapBank->setIpAddress(twoWayPts->getUDPIpAddress());
+                                }
+                                if (twoWayPts->getUDPPortNumberId() > 0) 
+                                {
+                                    currentCapBank->setUDPPort(twoWayPts->getUDPPortNumber());
+                                }
                                 if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -29,6 +29,7 @@ extern BOOL _USE_FLIP_FLAG;
 
 RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
+
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -155,6 +156,21 @@ const string& CtiCCCapBank::getPAODescription() const
 {
     return _paodescription;
 }
+
+/*---------------------------------------------------------------------------
+    getIPAddress
+
+    Returns the pao description of the cap bank
+---------------------------------------------------------------------------*/
+const string& CtiCCCapBank::getIpAddress() const
+{
+    return _ipAddress;
+}
+LONG CtiCCCapBank::getUDPPort() const
+{
+    return _udpPortNumber;
+}
+
 
 /*---------------------------------------------------------------------------
     getDisableFlag
@@ -854,7 +870,38 @@ CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
 }
 
 
+CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
+{
+    _ipAddress = "(none)";
+    if (value > 0) 
+    {
+        char tempchar[4];
+        BYTE temp;
+        temp = (value >> 24) & 0xFF;
+        _ipAddress = itoa(temp,tempchar,10);
+        _ipAddress += ".";
+        temp = (value >> 16) & 0xFF;
+        _ipAddress += itoa(temp,tempchar,10);
+        _ipAddress += ".";
+        temp = (value >> 8 ) & 0xFF;
+        _ipAddress += itoa(temp,tempchar,10);
+        _ipAddress += ".";
+        temp = (value & 0xFF);
+        _ipAddress += itoa(temp,tempchar,10);
+    }
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
+{
+    if (_udpPortNumber != value)
+    {
+        _dirty = TRUE;
+    }
+    _udpPortNumber = value;
 
+    return *this;
+
+}
 
 
 BOOL CtiCCCapBank::updateVerificationState(void)
@@ -1397,6 +1444,9 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _retryOpenFailedFlag = right._retryOpenFailedFlag;
         _retryCloseFailedFlag = right._retryCloseFailedFlag;           
 
+        _ipAddress = right._ipAddress;
+        _udpPortNumber = right._udpPortNumber;
+
     }
     return *this;
 }
@@ -1475,6 +1525,9 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setRetryCloseFailedFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
+
+    setIpAddress(0);
+    setUDPPort(0);
     
 
     _insertDynamicDataFlag = TRUE;
