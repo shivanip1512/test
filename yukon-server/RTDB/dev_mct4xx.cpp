@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2007/01/30 00:58:48 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2007/02/09 20:26:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -747,7 +747,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 //  note that this code assumes that the current century is 20xx - this will need to change in 2100
                 if( year < 100 )    year += 2000;
 
-                if( year > 2099 )
+                if( year > 2099 || year < 2000 )
                 {
                     if( errRet )
                     {
