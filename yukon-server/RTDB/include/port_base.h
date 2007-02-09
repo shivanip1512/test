@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2007/01/22 21:32:35 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2007/02/09 20:54:48 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,11 +43,7 @@ using std::iostream;
 
 #define DEFAULT_QUEUE_GRIPE_POINT 50
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiPort * CtiPortSPtr;
-#else
 typedef shared_ptr< CtiPort > CtiPortSPtr;
-#endif
 
 
 typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);

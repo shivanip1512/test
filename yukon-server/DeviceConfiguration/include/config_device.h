@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:44 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/02/09 20:57:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ private:
 
     BasePointerMap _baseConfigurations;
 public:
-        
+
     CtiConfigDevice();
     ~CtiConfigDevice();
     BaseSPtr getConfigFromType(CtiConfig_type type);
@@ -47,11 +47,7 @@ public:
     string getAllOutputStrings();//Returns strings from every base configuration
 };
 
-#ifdef VSLICK_TAG_WORKAROUND
-typedef CtiConfigDevice * CtiConfigDeviceSPtr;
-#else
 typedef shared_ptr< CtiConfigDevice > CtiConfigDeviceSPtr;
-#endif
 
 }
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/01/26 21:55:09 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/02/09 20:57:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -506,36 +506,6 @@ bool ConfigurationPart<T>::setProtectedValueWithKey(const string &value, int key
 
 
 
-#ifdef VSLICK_TAG_WORKAROUND
-typedef ConfigurationPart<MCT::MCTAddressing> *          MCTAddressingSPtr;
-typedef ConfigurationPart<MCT::MCT_TOU> *                MCT_TOU_SPtr;
-typedef ConfigurationPart<MCT::MCT_TOU_Rate_Schedule> *  MCT_TOU_Rate_ScheduleSPtr;
-typedef ConfigurationPart<MCT::MCT_DST> *                MCT_DST_SPtr;
-typedef ConfigurationPart<MCT::MCTVThreshold> *          MCTVThresholdSPtr;
-typedef ConfigurationPart<MCT::MCTOptions> *             MCTOptionsSPtr;
-typedef ConfigurationPart<MCT::MCTDemandLoadProfile> *   MCTDemandLoadProfileSPtr;
-typedef ConfigurationPart<MCT::MCTDisconnect> *          MCTDisconnectSPtr;
-typedef ConfigurationPart<MCT::MCTLongLoadProfile> *     MCTLongLoadProfileSPtr;
-typedef ConfigurationPart<MCT::MCTHoliday> *             MCTHolidaySPtr;
-typedef ConfigurationPart<MCT::MCTLoadProfileChannels> * MCTLoadProfileChannelsSPtr;
-typedef ConfigurationPart<MCT::MCTRelays> *              MCTRelaysSPtr;
-typedef ConfigurationPart<MCT::MCTPrecannedTable> *      MCTPrecannedTableSPtr;
-typedef ConfigurationPart<MCT::MCTSystemOptions> *       MCTSystemOptionsSPtr;
-typedef ConfigurationPart<MCT::MCTCentron> *             MCTCentronSPtr;
-typedef ConfigurationPart<MCT::MCT_DNP> *                MCT_DNP_SPtr;
-
-typedef ConfigurationPart<CBC::CBCVoltage> *             CBCVoltageSPtr;
-typedef ConfigurationPart<CBC::CBCCommsLost> *           CBCCommsLostSPtr;
-typedef ConfigurationPart<CBC::CBCNeutralCurrent> *      CBCNeutralCurrentSPtr;
-typedef ConfigurationPart<CBC::CBCFaultDetection> *      CBCFaultDetectionSPtr;
-typedef ConfigurationPart<CBC::CBCSeason1TimeAndTemp> *  CBCSeason1TimeAndTempSPtr;
-typedef ConfigurationPart<CBC::CBCSeason2TimeAndTemp> *  CBCSeason2TimeAndTempSPtr;
-typedef ConfigurationPart<CBC::CBCControlTimes> *        CBCControlTimesSPtr;
-typedef ConfigurationPart<CBC::CBCDataLogging> *         CBCDataLoggingSPtr;
-typedef ConfigurationPart<CBC::CBCAddressing> *          CBCAddressingSPtr;
-typedef ConfigurationPart<CBC::CBC_DNP> *                CBC_DNPSPtr;
-typedef ConfigurationPart<CBC::CBC_UDP> *                CBC_UDPSPtr;
-#else
 typedef shared_ptr< ConfigurationPart<MCT::MCTAddressing> >          MCTAddressingSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCT_TOU> >                MCT_TOU_SPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCT_TOU_Rate_Schedule> >  MCT_TOU_Rate_ScheduleSPtr;
@@ -565,8 +535,6 @@ typedef shared_ptr< ConfigurationPart<CBC::CBCAddressing> >          CBCAddressi
 typedef shared_ptr< ConfigurationPart<CBC::CBC_DNP> >                CBC_DNPSPtr;
 typedef shared_ptr< ConfigurationPart<CBC::CBC_UDP> >                CBC_UDPSPtr;
 
-#endif
-
 }//Config
 }//Cti
 
@@ -575,14 +543,14 @@ typedef shared_ptr< ConfigurationPart<CBC::CBC_UDP> >                CBC_UDPSPtr
 
 //**********************************
 // To add a new config part:
-// 
+//
 //      First add the proper enum to config_parts.h.
 //      Add the proper EXTERN_CONFIG pre declaration above.
 //      Add the proper smart pointer tags above.
 //      Add the GetResolvedKey and GetType functions
 //      To config_parts_mct or a similar file.
 //      If a new file is created, add it to the makefile.
-//      
+//
 //      Add the new object to config_resolvers.h/.cpp
 //      Add the new type to the create object list in mgr_config.cpp
 //      If working with DynamicPAOInfo, add objects there.

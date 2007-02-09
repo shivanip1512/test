@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_accum.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/26 14:18:23 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/02/09 20:54:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,10 +164,6 @@ public:
 
 };
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiPointAccumulator * CtiPointAccumulatorSPtr;
-#else
 typedef shared_ptr< CtiPointAccumulator > CtiPointAccumulatorSPtr;
-#endif
 
 #endif // #ifndef __PT_ACCUM_H__

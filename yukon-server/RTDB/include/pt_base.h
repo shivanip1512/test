@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/07/06 09:30:32 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/02/09 20:54:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,11 +153,7 @@ public:
 
 typedef CtiPointBase CtiPoint;
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiPointBase * CtiPointSPtr;
-#else
 typedef shared_ptr< CtiPointBase > CtiPointSPtr;
-#endif
 
 
 #endif // #ifndef __PT_BASE_H__

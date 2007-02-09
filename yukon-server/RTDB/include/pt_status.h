@@ -2,8 +2,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/02/09 20:53:50 $
 *
 */
 #ifndef __PT_STATUS_H__
@@ -50,11 +50,7 @@ public:
 
 typedef CtiPointStatus CtiPointCalculatedStatus;
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiPointStatus * CtiPointStatusSPtr;
-#else
 typedef shared_ptr< CtiPointStatus > CtiPointStatusSPtr;
-#endif
 
 
 #endif // #ifndef __PT_STATUS_H__

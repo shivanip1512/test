@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/disable_entry.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/02/10 17:15:11 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/02/09 20:56:01 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,11 +71,7 @@ public:
     DisableList *getControllingIDList();
 };
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiDisabledEntry * CtiDisabledEntrySPtr;
-#else
 typedef shared_ptr< CtiDisabledEntry > CtiDisabledEntrySPtr;
-#endif
 
 
 #endif // #ifndef __DISABLE_ENTRY_H__

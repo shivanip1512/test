@@ -8,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/02/09 20:56:14 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.11  2007/02/09 20:56:14  mfisher
+* removed VSLICK_TAG_WORKAROUND #define - tagging problem was fixed in Slick 11
+*
 * Revision 1.10  2006/09/21 21:31:37  mfisher
 * privatized Inherited typedef
 *
@@ -68,11 +71,7 @@ using boost::shared_ptr;
 
 class CtiDeviceExclusion;
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiDeviceExclusion * CtiExclusionSPtr;
-#else
 typedef shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
-#endif
 
 class IM_EX_DEVDB CtiDeviceExclusion
 {

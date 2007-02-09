@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/07/27 18:38:17 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2007/02/09 20:52:21 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -133,10 +133,6 @@ namespace std
 };
 
 
-#ifdef VSLICK_TAG_WORKAROUND
-typedef CtiThreadRegData * CtiThreadRegDataSPtr;
-#else
 typedef shared_ptr< CtiThreadRegData > CtiThreadRegDataSPtr;
-#endif
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__

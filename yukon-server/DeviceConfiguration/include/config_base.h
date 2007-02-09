@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/07/06 20:33:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/02/09 20:57:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,11 +55,7 @@ public:
 
 
 
-#ifdef VSLICK_TAG_WORKAROUND
-typedef Base * BaseSPtr;
-#else
 typedef shared_ptr< Base > BaseSPtr;
-#endif
 
 }
 }

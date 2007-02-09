@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/02/09 20:53:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,11 +139,7 @@ inline bool CtiRouteBase::processAdditionalRoutes( INMESS *InMessage ) const { r
 typedef CtiRouteBase CtiRoute;
 
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiRouteBase * CtiRouteSPtr;
-#else
 typedef shared_ptr< CtiRouteBase > CtiRouteSPtr;
-#endif
 
 
 #endif // #ifndef __RTE_BASE_H__

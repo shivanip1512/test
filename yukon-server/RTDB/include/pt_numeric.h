@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/09/08 20:19:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/02/09 20:53:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,11 +109,7 @@ public:
 typedef CtiPointNumeric    CtiPointPseudoAnalog;
 typedef CtiPointNumeric    CtiPointCalculated;
 
-#if VSLICK_TAG_WORKAROUND
-typedef CtiPointNumeric * CtiPointNumericSPtr;
-#else
 typedef shared_ptr< CtiPointNumeric > CtiPointNumericSPtr;
-#endif
 
 #endif // #ifndef __PT_NUMERIC_H__
 
