@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/04/13 19:40:02 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/02/09 17:08:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -434,7 +434,8 @@ void CtiPortShareIP::outThread()
                     }
                     else
                     {
-                        InMessage.InLength += (2 + PREIDLEN);
+                        // No need to add this on - we already have the proper length for the message
+                        // InMessage.InLength += (2 + PREIDLEN);
                     }
 
                     //  Go ahead and send it on over
