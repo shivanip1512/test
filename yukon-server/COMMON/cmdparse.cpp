@@ -1018,7 +1018,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 _cmd["latch_relays"] = CtiParseValue(latch_relays.data());
             }
         }
-        
+
         if(CmdStr.contains(" sbo_selectonly"))          // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["sbo_selectonly"] = CtiParseValue(TRUE);
@@ -1557,6 +1557,8 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         }
         if(CmdStr.contains(" centron"))
         {
+            _cmd["centron"] = CtiParseValue(true);
+
             if(!(token = CmdStr.match(re_centron)).empty())
             {
                 CtiTokenizer cmdtok(token);
@@ -1979,7 +1981,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
     boost::regex  re_group_address("group (enable|disable)");
     boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    boost::regex  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
+    boost::regex  re_centron_config("centron( ratio [0-9]+)?( display ([0-9]x[0-9]+)?( test [0-9]+s?)?( errors)?)?");
+    boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     boost::regex  re_loadlimit("load limit " + str_floatnum + " " + str_num);
     boost::regex  re_cycle("cycle " + str_num + " " + str_num);
@@ -2148,24 +2151,57 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         }
         if(CmdStr.contains(" centron"))
         {
-            if(!(token = CmdStr.match(re_centron)).empty())
+            CtiString temp;
+
+            if(!(token = CmdStr.match(re_centron_config)).empty())
             {
                 CtiTokenizer cmdtok(token);
 
-                CtiString temp;
-
+                cmdtok();  //  move past "centron"
                 temp = cmdtok();
-                temp = cmdtok();  //  move past "centron"
 
                 if( !temp.compareTo("ratio") )
                 {
-                    _cmd["centron_ratio"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str() ));
+                    _cmd["centron_ratio"] = CtiParseValue(atoi(cmdtok().c_str()));
+
+                    temp = cmdtok();
                 }
-                if( !temp.compareTo("reading") )
+
+                if( !temp.compareTo("display") )
                 {
-                    _cmd["centron_reading_forward"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str()));
-                    _cmd["centron_reading_reverse"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str()));
+                    temp = cmdtok();
+
+                    //  is it the display resolution configuration?
+                    if( std::isdigit(temp[0]) )
+                    {
+                        _cmd["centron_display"] = CtiParseValue(temp);
+
+                        temp = cmdtok();
+                    }
+                    if( !temp.compareTo("test") )
+                    {
+                        _cmd["centron_test_duration"] = CtiParseValue(atoi(cmdtok().c_str()));
+
+                        temp = cmdtok();
+                    }
+                    if( !temp.compareTo("errors") )
+                    {
+                        cmdtok();  //  move past "display"
+                        _cmd["centron_error_display"] = CtiParseValue(true);
+
+                        temp = cmdtok();
+                    }
                 }
+            }
+            if(!(token = CmdStr.match(re_centron_reading)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+
+                temp = cmdtok();  //  move past "centron"
+                temp = cmdtok();  //  move past "reading"
+
+                _cmd["centron_reading_forward"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str()));
+                _cmd["centron_reading_reverse"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str()));
             }
         }
         if(CmdStr.contains(" armc"))
@@ -4308,7 +4344,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         if(!(temp = CmdStr.match(" (cooltemp|heattemp)")).empty())
         {
             _cmd["xctwosetpoints"] = CtiParseValue( TRUE );
-            
+
             if(!(temp = CmdStr.match(" fan (on|circulate|auto)")).empty())
             {
                 if(temp.contains("on"))
@@ -4345,7 +4381,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 }
                 else if(temp.contains(" auto"))
                 {
-                    _cmd["xcsysstate"] = CtiParseValue( 0x1c );     
+                    _cmd["xcsysstate"] = CtiParseValue( 0x1c );
                 }
             }
 
@@ -4366,7 +4402,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 }
             }
         }
-        else 
+        else
         {
             if(!(temp = CmdStr.match(" fan (on|off|auto)")).empty())
             {
@@ -4697,7 +4733,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     else if(!(token = CmdStr.match(" contractor[ =]+((ena(ble)?)|(dis(able)?))")).empty())
     {
         _cmd["xccontractor"] = TRUE;
-        if (token.contains("ena")) 
+        if (token.contains("ena"))
         {
             _cmd["xcmode"] = CtiParseValue( TRUE );
         }
@@ -4743,7 +4779,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xccurrency"] = CtiParseValue( str );
             }
         }
-        if (CmdStr.contains(" present ") || CmdStr.contains(" past ")) 
+        if (CmdStr.contains(" present ") || CmdStr.contains(" past "))
         {
             _cmd["xcutilflags"] = CtiParseValue( TRUE );
             if(!(token = CmdStr.match(" present usage " + str_num)).empty())
@@ -5527,17 +5563,17 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
                 ch = atoi(str.c_str());
             }
 
-            temp = tok1(":"); 
+            temp = tok1(":");
             if(!(valStr = temp.match(boost::regex("\\-?[0-9]+\\.?[0-9]+?"))).empty() ||
                !(valStr = temp.match(re_num)).empty())
             {
                 val = atof(valStr.c_str());
             }
-            
+
 
             CtiString chan("xcchan_" + CtiNumStr(chanIndex));
             CtiString chanValue("xcchanvalue_" + CtiNumStr(chanIndex));
-       
+
             _cmd[chan]        = CtiParseValue(ch);
             _cmd[chanValue]   = CtiParseValue(val);
 #if 0
