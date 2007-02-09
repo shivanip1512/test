@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2007/02/09 20:43:18 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2007/02/09 21:30:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1918,6 +1918,11 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
                 insertPointDataReport(PulseAccumulatorPointType, i + 1,
                                       ReturnMsg, pi, point_name, pointTime, 0.1, tags);
+
+                if( pi.quality == InvalidQuality )
+                {
+                    status = NOTNORMAL;
+                }
             }
         }
 
