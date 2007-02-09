@@ -1,6 +1,7 @@
 /******************************************/
-/**** Oracle 9.2 DBupdates             ****/
+/**** SQLServer 2000 DBupdates         ****/
 /******************************************/
+
 alter table cceventlog add kvarBefore float;
 go
 update cceventlog set kvarBefore = 0.0;
