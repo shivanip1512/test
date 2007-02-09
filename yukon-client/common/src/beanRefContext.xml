@@ -12,6 +12,7 @@
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/core/service/applicationContext.xml</value>
+         <value>com/cannontech/core/authorization/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/multispeak/client/applicationContext.xml</value>
@@ -30,6 +31,7 @@
      <constructor-arg>
        <list>
          <value>com/cannontech/mainContext.xml</value>
+		 <value>com/cannontech/core/authorization/applicationContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/core/service/applicationContext.xml</value>

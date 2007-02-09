@@ -69,6 +69,36 @@
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>  
+
+  <tag>
+  	<name>checkDeviceAuthorization</name>
+  	<tag-class>com.cannontech.web.taglib.CheckDeviceAuthorization</tag-class>
+  	<attribute>
+  		<name>device</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  	<attribute>
+  		<name>permission</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  </tag>  
+
+  <tag>
+  	<name>checkCommandAuthorization</name>
+  	<tag-class>com.cannontech.web.taglib.CheckCommandAuthorization</tag-class>
+  	<attribute>
+  		<name>device</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  	<attribute>
+  		<name>command</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  </tag>  
   
   <tag>
   	<name>checkNoRole</name>

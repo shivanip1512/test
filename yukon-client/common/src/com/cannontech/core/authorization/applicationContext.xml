@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+
+    <description>Yukon Device Authorization Services</description>
+    
+	<bean id="loadManagementDeviceCheck" class="com.cannontech.core.authorization.support.DeviceCheckCategoryClass">
+		<property name="category"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_LOADCONTROL" /></property>
+		<property name="paoClass"><util:constant static-field="com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT" /></property>
+	</bean>
+	<bean id="capControlDeviceCheck" class="com.cannontech.core.authorization.support.DeviceCheckCategoryClass">
+		<property name="category"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE" /></property>
+		<property name="paoClass"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL" /></property>
+	</bean>
+	<bean id="otherDeviceCheck" class="com.cannontech.core.authorization.support.DeviceCheckDefault">
+		<property name="excludeList">
+			<list>
+				<ref bean="capControlDeviceCheck"/>
+				<ref bean="loadManagementDeviceCheck"/>
+			</list>
+		</property>
+	</bean>
+
+    <bean id="deviceAuthorizationService" class="com.cannontech.core.authorization.service.PaoAuthorizationServiceImpl" >
+        <property name="authorizationList">
+        	<list>
+        		<!-- Load Management device permissions -->
+        		
+			    <!-- Config to check if a user has permission for a GET_COMMAND on a load management device
+			    	 based on their READ_LM_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="loadManagementDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.READ_LM_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="GET_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission for a PUT_COMMAND on a load management device
+			    	 based on their WRITE_TO_LM_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="loadManagementDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.WRITE_TO_LM_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="PUT_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on a load management device
+			    	 based on their CONTROL_LM_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="loadManagementDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_LM_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="CONTROL_COMMAND"/>
+			    </bean>
+
+        		<!-- Cap Control device permissions -->
+        		
+			    <!-- Config to check if a user has permission for a GET_COMMAND on a cap control device
+			    	 based on their READ_CAP_CONTROL_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="capControlDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.READ_CAP_CONTROL_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="GET_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission for a PUT_COMMAND on a cap control device
+			    	 based on their WRITE_TO_CAP_CONTROL_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="capControlDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.WRITE_TO_CAP_CONTROL_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="PUT_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on a cap control device
+			    	 based on their CONTROL_CAP_CONTROL_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="capControlDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_CAP_CONTROL_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="CONTROL_COMMAND"/>
+			    </bean>
+			    
+			    <!-- Other device permissions -->
+
+			    <!-- Config to check if a user has permission for a GET_COMMAND on any device
+					 (not LM or cap control) based on their READ_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="otherDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.READ_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="GET_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission for a PUT_COMMAND on any device
+			    	 (not LM or cap control) based on their WRITE_TO_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="otherDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.WRITE_TO_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="PUT_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on any device
+			    	 (not LM or cap control) based on their CONTROL_DEVICE role property -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck" ref="otherDeviceCheck" />
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_DEVICE"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="CONTROL_COMMAND"/>
+			    </bean>
+
+			    <!-- Catch all for unkown commands.  If a command is not known, the EXECUTE_COMMAND
+			         role property will be checked to determine command authorization  -->
+			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
+			    	<property name="deviceCheck">
+			    		<bean class="com.cannontech.core.authorization.support.DeviceCheckDefault" />
+			    	</property>
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.EXECUTE_COMMAND"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    	<property name="permission" value="OTHER_COMMAND"/>
+			    </bean>
+			    
+			    
+			    <!-- Catch all - checks a given role property to determine authorization -->
+			    <bean class="com.cannontech.core.authorization.support.RoleAuthorization">
+			    	<property name="roleCheck">
+			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    			<constructor-arg>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.EXECUTE_COMMAND"/>
+			    			</constructor-arg>
+			    		</bean>
+			    	</property>
+			    </bean>
+		    </list>
+	    </property>
+	</bean>
+	
+	<bean id="commandAuthorizationService" class="com.cannontech.core.authorization.service.CommandAuthorizationServiceImpl">
+		<property name="deviceAuthService" ref="deviceAuthorizationService" />
+		<property name="converter">
+			<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter">
+				<property name="commandPermissionList">
+					<list>
+						<!-- Command string to permission mappings  -->
+						<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+							<property name="commandStringStart" value="get" />
+							<property name="permission" value="GET_COMMAND" />
+						</bean>
+						<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+							<property name="commandStringStart" value="put" />
+							<property name="permission" value="PUT_COMMAND" />
+						</bean>
+						<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+							<property name="commandStringStart" value="control" />
+							<property name="permission" value="CONTROL_COMMAND" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+    
+</beans>

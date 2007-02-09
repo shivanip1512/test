@@ -66,6 +66,22 @@ public abstract class OptionPropertyChecker {
     }
     
     /**
+     * Create an OptionPropertyChecker that will return true if the
+     * user has the indicated role property and it is set to true.
+     * @param property to base the OptionPropertyChecker on
+     * @return an OptionPropertyChecker
+     */
+    public static OptionPropertyChecker createPropertyChecker(final int propertyId) {
+        
+        OptionPropertyChecker checker = new OptionPropertyChecker() {
+            public boolean check(LiteYukonUser user) {
+                return getBooleanForRoleProperty(propertyId, user);
+            };
+        };
+        return checker;
+    }
+    
+    /**
      * Create an OptionPropertyChecker that will return false if the
      * user has the indicated role property and it is set to true.
      * @param property to base the OptionPropertyChecker on
