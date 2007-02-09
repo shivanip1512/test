@@ -51,12 +51,14 @@
 
 
 /* EMETCON structure */
+/*
 typedef struct _EMETCON {
     USHORT GroupLevel;
     USHORT GroupNumber;
     USHORT GoldNumber;
     USHORT Load;
 } EMETCON;
+*/
 
 /* Ripple structure */
 typedef struct _RIPPLES {
@@ -94,7 +96,7 @@ typedef struct _GROUP {
     CHAR RouteName[STANDNAMLEN];
     CHAR ConfigName[STANDNAMLEN];
     USHORT Protocol;
-    EMETCON Emetcon;
+//    EMETCON Emetcon;
     RIPPLES Ripple;
     VERSACOMM VersaComm;
     REMS100 Rems100;
