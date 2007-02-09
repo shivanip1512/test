@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2007/01/29 23:47:26 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2007/02/09 20:00:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,6 +71,9 @@ protected:
 
         Memory_CentronParametersPos = 0x0f,
         Memory_CentronParametersLen =    1,
+
+        Memory_CentronConfigPos     = 0x0f,  //  this combines the Parameters and Multiplier read;
+        Memory_CentronConfigLen     =   11,  //    it may be less reliable on noisy circuits, since it requires 3 D words
 
         Memory_CentronMultiplierPos = 0x19,
         Memory_CentronMultiplierLen =    1,
@@ -231,6 +234,8 @@ protected:
 
     void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
     void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+
+    void returnErrorMessage( int retval, const CtiOutMessage *om, list< CtiMessage* > &retList, const string &error ) const;
 
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
