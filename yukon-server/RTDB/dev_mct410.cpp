@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.122 $
-* DATE         :  $Date: 2007/02/09 20:01:59 $
+* REVISION     :  $Revision: 1.123 $
+* DATE         :  $Date: 2007/02/09 20:43:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1022,7 +1022,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("disconnect") )
     {
-        found = getOperation(function, OutMessage->Buffer.BSt);
+        found = getOperation(Emetcon::PutConfig_Disconnect, OutMessage->Buffer.BSt);
 
         OutMessage->Sequence = Emetcon::PutConfig_Disconnect;
 
@@ -1068,8 +1068,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             {
                 OutMessage->Buffer.BSt.Length -= 2;
             }
-            else if( disconnect_minutes <  5 || connect_minutes <  5 ||
-                     disconnect_minutes > 60 || connect_minutes > 60 )
+            else if( (disconnect_minutes && connect_minutes)
+                     && (disconnect_minutes <  5 || connect_minutes <  5 ||
+                         disconnect_minutes > 60 || connect_minutes > 60) )
             {
                 found = false;
                 nRet  = BADPARAM;
