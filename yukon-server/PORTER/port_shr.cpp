@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/04/13 19:40:01 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/02/12 18:19:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@
 #include "port_shr.h"
 #include "tcpsup.h"
 #include "CTICALLS.H"
+#include "cparms.h"
 
 CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _sequenceFailReported(false),
@@ -47,6 +48,16 @@ CtiPortSPtr CtiPortShare::getPort()
    return _port;
 }
 
+string CtiPortShare::getIDString() const
+{
+    return string("Port Share \"" + _port->getName() + "\" (" + CtiNumStr(_port->getPortID()) + ")");
+}
+
+
+unsigned CtiPortShare::getDebugLevel( unsigned mask )
+{
+    return gConfigParms.getValueAsULong("DEBUG_PORT_SHARE", 0, 16) & mask;
+}
 
 
 UINT CtiPortShare::getRequestCount() const

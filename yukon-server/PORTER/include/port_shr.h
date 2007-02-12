@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/04/13 19:36:41 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/02/12 18:19:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,10 @@ protected:
 
    virtual void inThread( void ) = 0;
    virtual void outThread( void ) = 0;
+
+   string getIDString() const;
+
+   unsigned getDebugLevel(unsigned mask=0xffffffff);
 
    // additional thread states
    enum
