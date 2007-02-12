@@ -5,7 +5,7 @@
 /********** New role properties for commands ************/
 insert into yukonroleproperty values (-10306, -103, 'Read device', 'true', 'Allow the ability to read values from a device')
 insert into yukonroleproperty values (-10307, -103, 'Write to device', 'true', 'Allow the ability to write values to a device')
-insert into yukonroleproperty values (-10308, -103, 'Control connect/disconnect', 'true', 'Allow the ability to connect/disconnect a device')
+insert into yukonroleproperty values (-10308, -103, 'Control device', 'true', 'Allow the ability to control a device')
 
 insert into yukonroleproperty values (-10309, -103, 'Read LM device', 'true', 'Allow the ability to read values from an LM device')
 insert into yukonroleproperty values (-10310, -103, 'Write to LM device', 'true', 'Allow the ability to write values to an LM device')
