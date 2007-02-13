@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2007/02/13 16:50:40 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2007/02/13 19:09:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4599,7 +4599,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
                 pointname  = "Status point ";
                 pointname += CtiNumStr(binaryoffset+i);
 
-                pi.value = (buffer[0] >> i) & 0x01;
+                pi.value = (buffer[0] >> (i+1)) & 0x01;
 
                 insertPointDataReport(StatusPointType, binaryoffset + i,
                                       ReturnMsg, pi, pointname);
