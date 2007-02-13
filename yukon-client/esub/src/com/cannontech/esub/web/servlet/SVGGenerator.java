@@ -76,7 +76,7 @@ public class SVGGenerator extends HttpServlet {
 			
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
-			if( DaoFactory.getAuthDao().checkRole(user, metaElem.getRoleID()) != null &&	
+			if( DaoFactory.getAuthDao().getRole(user, metaElem.getRoleID()) != null &&	
 				(DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) ||
 				 DaoFactory.getAuthDao().checkRoleProperty(user, EsubDrawingsRole.VIEW))) {				
 							

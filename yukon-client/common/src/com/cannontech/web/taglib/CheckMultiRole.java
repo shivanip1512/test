@@ -36,7 +36,7 @@ public class CheckMultiRole extends BodyTagSupport {
 		while (st.hasMoreTokens()) {
 			try {
 				int rid = Integer.parseInt( st.nextToken() );
-				if (DaoFactory.getAuthDao().checkRole(user, rid) != null) return EVAL_BODY_INCLUDE;
+				if (DaoFactory.getAuthDao().getRole(user, rid) != null) return EVAL_BODY_INCLUDE;
 			}
 			catch (NumberFormatException e) {
 				throw new JspException( e.getMessage() );

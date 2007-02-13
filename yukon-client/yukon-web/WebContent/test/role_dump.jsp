@@ -22,7 +22,7 @@
 	for(Iterator i = allRoles.iterator(); i.hasNext();) {
 		LiteYukonRole r = (LiteYukonRole) i.next();
 		System.out.println("h1");
-		r = DaoFactory.getAuthDao().checkRole(user, r.getRoleID());
+		r = DaoFactory.getAuthDao().getRole(user, r.getRoleID());
 		if(r != null) {
 			out.println("roleid: " + r.getRoleID() + "&nbsp&nbsp&nbspname: " + r.getRoleName() + "<br>");
 			List roleProps = DaoFactory.getAuthDao().getRoleProperties(r);

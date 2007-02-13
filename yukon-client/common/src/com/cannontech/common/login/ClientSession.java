@@ -80,7 +80,7 @@ public class ClientSession {
 	 * @return
 	 */
 	public boolean checkRole(int roleid) {
-		return DaoFactory.getAuthDao().checkRole(getUser(), roleid) != null;
+		return DaoFactory.getAuthDao().getRole(getUser(), roleid) != null;
 	}
 	
 	/**

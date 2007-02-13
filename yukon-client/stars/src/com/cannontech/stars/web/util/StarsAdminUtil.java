@@ -1340,7 +1340,7 @@ public class StarsAdminUtil {
 			listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
 				energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
 			
-			if (DaoFactory.getAuthDao().checkRole(user.getYukonUser(), OddsForControlRole.ROLEID) != null)
+			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), OddsForControlRole.ROLEID) != null)
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 			
@@ -1438,7 +1438,7 @@ public class StarsAdminUtil {
 				}
 			}
 			
-			if (DaoFactory.getAuthDao().checkRole(user.getYukonUser(), InventoryRole.ROLEID) != null ||
+			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), InventoryRole.ROLEID) != null ||
 				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
 				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE))
 			{
@@ -1456,7 +1456,7 @@ public class StarsAdminUtil {
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
 			}
 			
-			if (DaoFactory.getAuthDao().checkRole(user.getYukonUser(), WorkOrderRole.ROLEID) != null ||
+			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), WorkOrderRole.ROLEID) != null ||
 				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
 			{
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE,
@@ -1490,7 +1490,7 @@ public class StarsAdminUtil {
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE) );
 			}
 			
-			if (DaoFactory.getAuthDao().checkRole(user.getYukonUser(), InventoryRole.ROLEID) != null) {
+			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), InventoryRole.ROLEID) != null) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY) );
 				if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), InventoryRole.INVENTORY_SHOW_ALL)) {
@@ -1501,7 +1501,7 @@ public class StarsAdminUtil {
 				}
 			}
 			
-			if (DaoFactory.getAuthDao().checkRole(user.getYukonUser(), WorkOrderRole.ROLEID) != null) {
+			if (DaoFactory.getAuthDao().getRole(user.getYukonUser(), WorkOrderRole.ROLEID) != null) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY) );
 				if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), WorkOrderRole.WORK_ORDER_SHOW_ALL)) {

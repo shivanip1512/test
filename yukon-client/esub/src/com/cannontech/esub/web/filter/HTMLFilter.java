@@ -77,7 +77,7 @@ public class HTMLFilter implements Filter {
 		 
 			//Check if this user has access to this drawing!	
 			LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
-			if( DaoFactory.getAuthDao().checkRole(user, d.getMetaElement().getRoleID()) != null) {
+			if( DaoFactory.getAuthDao().getRole(user, d.getMetaElement().getRoleID()) != null) {
 				htmlGenerator.generate(hres.getWriter(), d);
 			}
 		}

@@ -25,7 +25,7 @@ public class CheckNoRole extends BodyTagSupport {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 			
-		return (user != null && DaoFactory.getAuthDao().checkRole(user,roleid) == null) ?
+		return (user != null && DaoFactory.getAuthDao().getRole(user,roleid) == null) ?
 					EVAL_BODY_INCLUDE :
 					SKIP_BODY;			
 	}

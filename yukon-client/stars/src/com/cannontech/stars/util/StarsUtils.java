@@ -296,6 +296,6 @@ public class StarsUtils {
 	}
 
 	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return DaoFactory.getAuthDao().checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
+		return DaoFactory.getAuthDao().getRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 }

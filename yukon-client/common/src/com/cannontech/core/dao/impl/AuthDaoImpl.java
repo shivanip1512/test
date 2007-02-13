@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
@@ -87,13 +89,17 @@ public class AuthDaoImpl implements AuthDao {
 	 * complex map within map structures for every single user when all we really
 	 * need is one.
 	 */
-	public LiteYukonRole checkRole(LiteYukonUser user, int roleID) 
+	public LiteYukonRole getRole(LiteYukonUser user, int roleID) 
 	{
 		synchronized(databaseCache) 
 		{
 			return databaseCache.getARole(user, roleID);
 		}
 	}
+    
+    public boolean checkRole(LiteYukonUser user, int roleId) {
+        return getRole(user, roleId) != null;
+    }
 	
 	
 	/*
@@ -340,11 +346,19 @@ public class AuthDaoImpl implements AuthDao {
 	public boolean isAdminUser(String username_)
 	{
 		LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(username_);
-		if ( liteUser != null && liteUser.getUserID() == UserUtils.USER_ADMIN_ID )
-			return true;
-		return false;
+		return isAdminUser(liteUser);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.cannontech.core.dao.AuthDao#isAdminUser(java.lang.String)
+	 */
+	public boolean isAdminUser(LiteYukonUser user)
+	{
+	    if ( user != null && user.getUserID() == UserUtils.USER_ADMIN_ID )
+	        return true;
+	    return false;
+	}
+	
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.AuthDao#userHasAccessPAO(com.cannontech.database.data.lite.LiteYukonUser, int)
      */
@@ -488,19 +502,55 @@ public class AuthDaoImpl implements AuthDao {
 			return paoIDs != null && paoIDs.length > 0;
 		}
 	}
+    
+	public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId)
+	throws NotAuthorizedException {
+	    boolean b = checkRoleProperty(user, rolePropertyId);
+	    if (b) {
+	        throw NotAuthorizedException.falseProperty(user, rolePropertyId);
+	    }
+	}
 
+	public void verifyRole(LiteYukonUser user, int roleId)
+	throws NotAuthorizedException {
+	    boolean b = checkRole(user, roleId);
+	    if (!b) {
+	        throw NotAuthorizedException.falseProperty(user, roleId);
+	    }
+	}
+
+	public void verifyTrueProperty(LiteYukonUser user, int rolePropertyId)
+	throws NotAuthorizedException {
+	    boolean b = checkRoleProperty(user, rolePropertyId);
+	    if (!b) {
+	        throw NotAuthorizedException.trueProperty(user, rolePropertyId);
+	    }
+	}
+    
+    public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException {
+        boolean b = isAdminUser(user);
+        if (!b) {
+            throw NotAuthorizedException.adminUser(user);
+        }
+    }
+
+
+    @Required
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
     }
 
+    @Required
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
 
+    @Required
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
 
+    @Required
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
     }

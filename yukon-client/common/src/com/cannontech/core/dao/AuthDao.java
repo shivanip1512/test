@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -28,26 +29,17 @@ public interface AuthDao {
      * @param roleID
      * @return LiteYukonRole
      */
-    /*This was changed to bypass the huge memory overhead in caching several
-     * complex map within map structures for every single user when all we really
-     * need is one.
-     */
-    public LiteYukonRole checkRole(LiteYukonUser user, int roleID);
+    public LiteYukonRole getRole(LiteYukonUser user, int roleID);
 
-    /*
-     public LiteYukonRole checkRole(LiteYukonUser user, int roleID) {		
-     DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-     synchronized(cache) {
-     Map lookupMap = cache.getYukonUserRoleIDLookupMap(user.getLiteID());
-     Map roleMap = (Map) lookupMap.get(user);
-     if(roleMap != null) {
-     LiteYukonRole role= (LiteYukonRole) roleMap.get(new Integer(roleID));
-     return role;
-     }
-     }			
-     return null;		
-     }
+
+    /**
+     * Returns true if the given user has the given role.
+     * @param user
+     * @param rolePropertyID
+     * @return boolean
      */
+    public boolean checkRole(LiteYukonUser user, int roleId);
+    
     /**
      * Returns true if the given user has a true value for the given property
      * @param user
@@ -75,10 +67,6 @@ public interface AuthDao {
      * @param roleProperty
      * @return String
      */
-    /*This was changed to bypass the huge memory overhead in caching several
-     * complex map within map structures for every single user when all we really
-     * need is one return value straight from the db.
-     */
     public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID);
 
     /**
@@ -91,33 +79,6 @@ public interface AuthDao {
      */
     public String getRolePropertyValue(int userID, int rolePropertyID);
 
-    /*
-     public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID, String defaultValue) {
-     DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-     synchronized(cache) {
-     Map lookupMap = cache.getYukonUserRolePropertyIDLookupMap();
-     Map propMap = (Map) lookupMap.get(user);
-     if(propMap != null) {
-     Pair p = (Pair) propMap.get(new Integer(rolePropertyID));
-     if(p != null) {
-     return (String) p.second;
-     }
-     }	
-     }
-     //If the defaultValue is null, attempt to use the default value from the roleProperty
-     // Returning a null value could cause some serious exceptions.
-     // By returning the default value from the property, we should be able to continue on
-     //  with life better when new properties have been added to a Role but may not have 
-     //  successfully updated all existing login groups with the new properties. 
-     if(defaultValue == null)
-     {
-     LiteYukonRoleProperty prop = getRoleProperty(rolePropertyID);
-     CTILogger.warn("Unknown RoleProperty(" + rolePropertyID + ") '" + prop.getKeyName() + "' for user " + user + ".  Default value from DB will be used.");
-     return prop == null ? defaultValue : prop.getDefaultValue();	
-     }
-     return defaultValue;	
-     }
-     */
     /**
      * Returns the value for a given group and role property.
      * If no value is found then defaultValue is returned for convenience.
@@ -178,6 +139,13 @@ public interface AuthDao {
     public boolean isAdminUser(String username_);
 
     /**
+     * Return true if username_ is the admin user.
+     * @param username_
+     * @return
+     */
+    public boolean isAdminUser(LiteYukonUser user);
+
+    /**
      * Return true if the use has access to the given PAOid.
      * By default, the given user has access to ALL PAOS (backwards compatability)
      * 
@@ -222,5 +190,11 @@ public interface AuthDao {
      * @return boolean
      */
     public boolean hasPAOAccess(LiteYukonUser user);
+    
+    public void verifyRole(LiteYukonUser user, int roleId) throws NotAuthorizedException;
+    public void verifyTrueProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
+    public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
+    public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
+
 
 }
