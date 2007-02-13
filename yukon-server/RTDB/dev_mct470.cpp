@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2007/01/29 17:18:58 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2007/02/13 16:50:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3823,7 +3823,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
         }
 
-        ReturnMsg->setResultString(resultString);
+        ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
         decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
