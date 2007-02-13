@@ -4,7 +4,7 @@
  <beans>
 <!-- The application context files that are loaded by tomcat -->
    <bean id="com.cannontech.context.web" 
-        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
@@ -26,7 +26,7 @@
     
 <!-- These are loaded by the standalone swing clients -->
     <bean id="com.cannontech.context.client" 
-        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
@@ -41,7 +41,7 @@
    </bean>
    
    <bean id="com.cannontech.context.services" 
-        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
