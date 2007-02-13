@@ -47,7 +47,7 @@ public class AuthDump {
 		Iterator i = allUsers.iterator();
 		while(i.hasNext()) {
 			LiteYukonUser u = (LiteYukonUser) i.next();
-			System.out.println("userid: " + u.getUserID() + "  username: " + u.getUsername() + "  password: " + u.getPassword());
+			System.out.println("userid: " + u.getUserID() + "  username: " + u.getUsername());
 		}
 		
 		System.out.println("\nGroups:");
@@ -80,7 +80,7 @@ public class AuthDump {
 		i = allUsers.iterator();
 		while(i.hasNext()){
 			LiteYukonUser u = (LiteYukonUser) i.next();
-			System.out.println("userid: " + u.getUserID() + "  username: " + u.getUsername() + "  password: " + u.getPassword());
+			System.out.println("userid: " + u.getUserID() + "  username: " + u.getUsername());
 			
 			List gList = (List) ugMap.get(u);
 			Iterator gIter = gList.iterator();
@@ -98,7 +98,7 @@ public class AuthDump {
 	    	while(i2.hasNext()) {
 	    		LiteYukonRole role = (LiteYukonRole) i2.next();
     		
-    			LiteYukonRole r2 = DaoFactory.getAuthDao().checkRole(user,role.getRoleID());
+    			LiteYukonRole r2 = DaoFactory.getAuthDao().getRole(user,role.getRoleID());
     			if(r2 != null) {
     				System.out.println("userid: " + user.getUserID() + "  username: " + user.getUsername() + " has roleid: " + r2.getRoleID() + " name: " + r2.getRoleName() + " category: " + r2.getCategory() );	    			
     				
@@ -122,7 +122,7 @@ public class AuthDump {
 	    	System.out.println("yukon/yukon failed to login");
 	    }
 	    
-	    if(DaoFactory.getAuthDao().checkRole(yukonUser, DBEditorRole.ROLEID) != null) {
+	    if(DaoFactory.getAuthDao().getRole(yukonUser, DBEditorRole.ROLEID) != null) {
 	    	System.out.println("yukon/yukon has database editor role");
 	    	if(DaoFactory.getAuthDao().checkRoleProperty(yukonUser, DBEditorRole.POINT_ID_EDIT)) {
 	    		System.out.println("yukon/yukon has property database editor point id edit is true, value is:"  + DaoFactory.getAuthDao().getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
