@@ -1,7 +1,6 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.menu.CommonModuleBuilder;
@@ -41,8 +43,8 @@ public class StandardPageTag extends BodyTagSupport {
     
     private String title = "";
     private String htmlLevel = HTML_TRANSITIONAL;
-    private List cssFiles;
-    private List scriptFiles;
+    private List<String> cssFiles;
+    private List<String> scriptFiles;
     private String module = "";
     private String breadCrumbData = "";
     private boolean debugMode = false;
@@ -76,8 +78,8 @@ public class StandardPageTag extends BodyTagSupport {
             }
         }
         
-        cssFiles = new ArrayList();
-        scriptFiles = new ArrayList();
+        cssFiles = new ArrayList<String>();
+        scriptFiles = new ArrayList<String>();
          return EVAL_BODY_BUFFERED;
     }
     
@@ -178,8 +180,9 @@ public class StandardPageTag extends BodyTagSupport {
                 (CommonModuleBuilder) pageContext.getAttribute(menuBuilderName,
                                                              PageContext.APPLICATION_SCOPE);
             if (menuBuilder == null || debugMode ) {
-                URL menuConfigFile = pageContext.getServletContext().getResource("/WEB-INF/module_config.xml");
-                menuBuilder = new CommonModuleBuilder(menuConfigFile);
+                ApplicationContext applicationContext = 
+                    WebApplicationContextUtils.getRequiredWebApplicationContext(pageContext.getServletContext());
+                menuBuilder = (CommonModuleBuilder) applicationContext.getBean("menuBuilder");
                 pageContext.setAttribute(menuBuilderName,
                                          menuBuilder,
                                          PageContext.APPLICATION_SCOPE);
