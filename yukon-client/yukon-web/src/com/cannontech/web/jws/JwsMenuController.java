@@ -2,7 +2,6 @@ package com.cannontech.web.jws;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +17,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.menu.OptionPropertyChecker;
 
 
 public class JwsMenuController extends AbstractController implements InitializingBean {
     private List<JnlpController> jnlpList = new ArrayList<JnlpController>();
-    private Map<JnlpController, OptionPropertyChecker> checkerMap = new HashMap<JnlpController, OptionPropertyChecker>();
     private String view = "startpage";
 
     public String getView() {
@@ -40,7 +38,7 @@ public class JwsMenuController extends AbstractController implements Initializin
                                                  HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView(view);
         
-        CheckUserPredicate predicate = new CheckUserPredicate(ServletUtil.getYukonUser(request.getSession()));
+        CheckUserPredicate predicate = new CheckUserPredicate(ServletUtil.getYukonUser(request));
         Iterator filteredList = IteratorUtils.filteredIterator(jnlpList.iterator(), predicate);
         
         mav.addObject("jnlpList", filteredList);
@@ -53,8 +51,6 @@ public class JwsMenuController extends AbstractController implements Initializin
         Collection jnlpBeans = beansOfType.values();
         for (Object object : jnlpBeans) {
             JnlpController jnlpController = (JnlpController) object;
-            OptionPropertyChecker checker = OptionPropertyChecker.createRoleChecker(jnlpController.getRequiredRole());
-            checkerMap.put(jnlpController, checker);
             jnlpList.add(jnlpController);
         }
     }
@@ -68,7 +64,8 @@ public class JwsMenuController extends AbstractController implements Initializin
             if (!(o instanceof JnlpController)) {
                 return false;
             }
-            OptionPropertyChecker checker = checkerMap.get(o);
+            JnlpController jnlpController = (JnlpController) o;
+            UserChecker checker = jnlpController.getUserChecker();
             return checker.check(user);
         }
     }

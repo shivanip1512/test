@@ -68,7 +68,11 @@
         <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
         <property name="appMainClassJar" value="dbeditor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/DatabaseEditor64.gif" />
-        <property name="requiredRole" value="DBEditorRole.ROLEID" />
+        <property name="userChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+            <constructor-arg value="DBEditorRole.ROLEID"/>
+          </bean>
+        </property>
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
@@ -78,7 +82,11 @@
         <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
         <property name="appMainClassJar" value="tdc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/TDC64.gif" />
-        <property name="requiredRole" value="TDCRole.ROLEID" />
+        <property name="userChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+            <constructor-arg value="TDCRole.ROLEID"/>
+          </bean>
+        </property>
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
@@ -88,7 +96,11 @@
         <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
         <property name="appMainClassJar" value="graph.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphTrending64.gif" />
-        <property name="requiredRole" value="TrendingRole.ROLEID" />
+        <property name="userChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+            <constructor-arg value="TrendingRole.ROLEID"/>
+          </bean>
+        </property>
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
@@ -98,7 +110,11 @@
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Esubstation64.gif" />
-        <property name="requiredRole" value="EsubEditorRole.ROLEID" />
+        <property name="userChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+            <constructor-arg value="EsubEditorRole.ROLEID"/>
+          </bean>
+        </property>
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
@@ -108,7 +124,11 @@
         <property name="appMainClass" value="com.cannontech.yc.gui.YukonCommander"/>
         <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Commander64.gif" />
-        <property name="requiredRole" value="CommanderRole.ROLEID" />
+        <property name="userChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+            <constructor-arg value="CommanderRole.ROLEID"/>
+          </bean>
+        </property>
     </bean>
     
     <!--  This controller handles piping the JARs back to the JWS client. -->

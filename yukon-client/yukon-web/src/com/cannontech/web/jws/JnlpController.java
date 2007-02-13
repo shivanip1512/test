@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
 
 public class JnlpController extends AbstractController {
@@ -29,7 +30,7 @@ public class JnlpController extends AbstractController {
     private String appMainClassJar;
     private String appIcon;
     private String path;
-    private String requiredRole;
+    private UserChecker userChecker;
     private Set<String> excludedJars = Collections.emptySet();
     
     public JnlpController() {
@@ -108,11 +109,6 @@ public class JnlpController extends AbstractController {
             userPropElem.setAttribute("name", "yukon.jws.user");
             userPropElem.setAttribute("value", user.getUsername());
             resourcesElem.addContent(userPropElem);
-            
-            Element passwordPropElem = new Element("property");
-            passwordPropElem.setAttribute("name", "yukon.jws.password");
-            passwordPropElem.setAttribute("value", user.getPassword());
-            resourcesElem.addContent(passwordPropElem);
         }
         
         String cookies = request.getHeader("Cookie");
@@ -187,14 +183,6 @@ public class JnlpController extends AbstractController {
         this.appIcon = appIcon;
     }
 
-    public String getRequiredRole() {
-        return requiredRole;
-    }
-
-    public void setRequiredRole(String requiredRole) {
-        this.requiredRole = requiredRole;
-    }
-
     public void setExcludedJars(Set<String> excludedJars) {
         this.excludedJars = excludedJars;
     }
@@ -205,6 +193,14 @@ public class JnlpController extends AbstractController {
 
     public String getAppDescription() {
         return appDescription;
+    }
+
+    public UserChecker getUserChecker() {
+        return userChecker;
+    }
+
+    public void setUserChecker(UserChecker userChecker) {
+        this.userChecker = userChecker;
     }
 
 

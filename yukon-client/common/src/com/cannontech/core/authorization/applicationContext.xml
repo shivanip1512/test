@@ -36,7 +36,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="loadManagementDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.READ_LM_DEVICE"/>
 			    			</constructor-arg>
@@ -49,7 +49,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="loadManagementDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.WRITE_TO_LM_DEVICE"/>
 			    			</constructor-arg>
@@ -62,7 +62,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="loadManagementDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_LM_DEVICE"/>
 			    			</constructor-arg>
@@ -78,7 +78,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="capControlDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.READ_CAP_CONTROL_DEVICE"/>
 			    			</constructor-arg>
@@ -91,7 +91,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="capControlDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.WRITE_TO_CAP_CONTROL_DEVICE"/>
 			    			</constructor-arg>
@@ -104,7 +104,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="capControlDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_CAP_CONTROL_DEVICE"/>
 			    			</constructor-arg>
@@ -120,7 +120,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="otherDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.READ_DEVICE"/>
 			    			</constructor-arg>
@@ -133,7 +133,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="otherDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.WRITE_TO_DEVICE"/>
 			    			</constructor-arg>
@@ -146,7 +146,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <bean class="com.cannontech.core.authorization.support.DevicePermissionRoleAuthorization">
 			    	<property name="deviceCheck" ref="otherDeviceCheck" />
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_DEVICE"/>
 			    			</constructor-arg>
@@ -162,7 +162,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    		<bean class="com.cannontech.core.authorization.support.DeviceCheckDefault" />
 			    	</property>
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.EXECUTE_COMMAND"/>
 			    			</constructor-arg>
@@ -175,7 +175,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    <!-- Catch all - checks a given role property to determine authorization -->
 			    <bean class="com.cannontech.core.authorization.support.RoleAuthorization">
 			    	<property name="roleCheck">
-			    		<bean class="com.cannontech.web.menu.OptionPropertyChecker" factory-method="createPropertyChecker">
+			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
 			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.EXECUTE_COMMAND"/>
 			    			</constructor-arg>

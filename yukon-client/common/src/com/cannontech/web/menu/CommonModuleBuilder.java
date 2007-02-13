@@ -1,6 +1,5 @@
 package com.cannontech.web.menu;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +10,12 @@ import org.apache.commons.lang.Validate;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.springframework.core.io.Resource;
+
+import com.cannontech.user.checker.AggregateUserChecker;
+import com.cannontech.user.checker.NullUserChecker;
+import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
+import com.cannontech.user.checker.UserChecker;
 
 /**
  * The purpose of this class is to parse the module_config.xml file (although
@@ -19,17 +24,19 @@ import org.jdom.input.SAXBuilder;
  * ever need to understand the module_config.xml file.
  */
 public class CommonModuleBuilder implements ModuleBuilder {
-    private Map moduleMap = new TreeMap();
-    private List quickLinkList = new ArrayList(5);
+    private RolePropertyUserCheckerFactory userCheckerFactory;
+    private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
+    private List<SimpleMenuOption> quickLinkList = new ArrayList<SimpleMenuOption>(5);
+    private final Resource moduleConfigFile;
     
-    public CommonModuleBuilder(URL moduleConfigFile) throws CommonMenuException {
-        processConfigFile(moduleConfigFile);
+    public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
+        this.moduleConfigFile = moduleConfigFile;
     }
     
-    private void processConfigFile(URL configFile) throws CommonMenuException {
+    public void processConfigFile() throws CommonMenuException {
         try {
             SAXBuilder builder = new SAXBuilder();
-            Document configDoc = builder.build(configFile);
+            Document configDoc = builder.build(moduleConfigFile.getInputStream());
             processQuickLinks(configDoc);
             processModules(configDoc);
             
@@ -45,7 +52,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         for (Iterator iter = linkList.iterator(); iter.hasNext();) {
             Element optionElem = (Element) iter.next();
             SimpleMenuOption menuOption = createSimpleMenuOption(optionElem);
-            OptionPropertyChecker checker = getCheckerForElement(optionElem);
+            UserChecker checker = getCheckerForElement(optionElem);
             
             menuOption.setPropertyChecker(checker);
             quickLinkList.add(menuOption);
@@ -74,7 +81,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             for (Iterator iterator = topOptions.iterator(); iterator.hasNext();) {
                 Element topOptionElement = (Element) iterator.next();
                 BaseMenuOption topLevelOption = processTopOption(topOptionElement);
-                OptionPropertyChecker checker = getCheckerForElement(topOptionElement);
+                UserChecker checker = getCheckerForElement(topOptionElement);
                 
                 topLevelOption.setPropertyChecker(checker);
                 menuBase.addTopLevelOption(topLevelOption);
@@ -100,7 +107,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             Element scriptElement = (Element) iter.next();
             moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
         }
-        OptionPropertyChecker checkerForElement = getCheckerForElement(moduleElement);
+        UserChecker checkerForElement = getCheckerForElement(moduleElement);
         moduleBase.setModuleChecker(checkerForElement);
         
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
@@ -129,7 +136,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
                 if (subLevelOption == null) {
                     throw new CommonMenuException("Illegal value found under: " + topOptionName);
                 }
-                OptionPropertyChecker checker = getCheckerForElement(subElement);
+                UserChecker checker = getCheckerForElement(subElement);
                 
                 subLevelOption.setPropertyChecker(checker);
                 topLevelOptionTemp.addSubLevelOption(subLevelOption);
@@ -169,19 +176,19 @@ public class CommonModuleBuilder implements ModuleBuilder {
         return subLevelOption;
     }
 
-    private OptionPropertyChecker getCheckerForElement(Element topOptionElement) {
-        List<OptionPropertyChecker> checkers = new ArrayList<OptionPropertyChecker>(1);
+    private UserChecker getCheckerForElement(Element topOptionElement) {
+        List<UserChecker> checkers = new ArrayList<UserChecker>(1);
         List children = topOptionElement.getChildren();
         for (Iterator iter = children.iterator(); iter.hasNext();) {
             Element child = (Element) iter.next();
-            OptionPropertyChecker checker  = null;
+            UserChecker checker  = null;
             String prop = child.getAttributeValue("value");
             if (child.getName().equals("requireProperty")) {
-                checker = OptionPropertyChecker.createPropertyChecker(prop);
+                checker = userCheckerFactory.createPropertyChecker(prop);
             } else if (child.getName().equals("requireFalseProperty")) {
-                checker = OptionPropertyChecker.createFalsePropertyChecker(prop);
+                checker = userCheckerFactory.createFalsePropertyChecker(prop);
             } else if (child.getName().equals("requireRole")) {
-                checker = OptionPropertyChecker.createRoleChecker(prop);
+                checker = userCheckerFactory.createRoleChecker(prop);
             }
             
             if (checker != null) {
@@ -189,19 +196,24 @@ public class CommonModuleBuilder implements ModuleBuilder {
             }
         }
         if (checkers.isEmpty()) {
-            return OptionPropertyChecker.createNullChecker();
+            return new NullUserChecker();
         } else if (checkers.size() == 1){
             // not needed, but saves a little memory and processing time
             return checkers.get(0);
         } else {
-            return OptionPropertyChecker.createAggregateChecker(checkers);
+            return new AggregateUserChecker(checkers);
         }
     }
     
     public ModuleBase getModuleBase(String moduleName) {
-        ModuleBase moduleBase = (ModuleBase) moduleMap.get(moduleName);
+        ModuleBase moduleBase = moduleMap.get(moduleName);
         Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check menu_structure.xml).");
         return moduleBase;
+    }
+
+    public void setUserCheckerFactory(
+            RolePropertyUserCheckerFactory userCheckerFactory) {
+        this.userCheckerFactory = userCheckerFactory;
     }
     
 }

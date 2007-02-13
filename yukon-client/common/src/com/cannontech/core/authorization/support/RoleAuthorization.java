@@ -2,7 +2,7 @@ package com.cannontech.core.authorization.support;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.menu.OptionPropertyChecker;
+import com.cannontech.user.checker.UserChecker;
 
 /**
  * Authorization implementation which ignores the device and permission and just
@@ -10,9 +10,9 @@ import com.cannontech.web.menu.OptionPropertyChecker;
  */
 public class RoleAuthorization implements DeviceAuthorization {
 
-    private OptionPropertyChecker roleCheck = null;
+    private UserChecker roleCheck = null;
 
-    public void setRoleCheck(OptionPropertyChecker roleCheck) {
+    public void setRoleCheck(UserChecker roleCheck) {
         this.roleCheck = roleCheck;
     }
 

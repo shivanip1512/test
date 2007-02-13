@@ -2,7 +2,7 @@ package com.cannontech.core.authorization.support;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.menu.OptionPropertyChecker;
+import com.cannontech.user.checker.UserChecker;
 
 /**
  * Class which determines if a permission is allowed.
@@ -10,7 +10,7 @@ import com.cannontech.web.menu.OptionPropertyChecker;
 public class DevicePermissionRoleAuthorization implements DeviceAuthorization {
 
     private DeviceCheck deviceCheck = null;
-    private OptionPropertyChecker roleCheck = null;
+    private UserChecker roleCheck = null;
     private PaoPermission permission = null;
 
     public void setPermission(PaoPermission permission) {
@@ -21,7 +21,7 @@ public class DevicePermissionRoleAuthorization implements DeviceAuthorization {
         this.deviceCheck = deviceCheck;
     }
 
-    public void setRoleCheck(OptionPropertyChecker roleCheck) {
+    public void setRoleCheck(UserChecker roleCheck) {
         this.roleCheck = roleCheck;
     }
 

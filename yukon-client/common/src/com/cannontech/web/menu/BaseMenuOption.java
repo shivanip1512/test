@@ -1,9 +1,11 @@
 package com.cannontech.web.menu;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.NullUserChecker;
+import com.cannontech.user.checker.UserChecker;
 
 public abstract class BaseMenuOption {
-    private OptionPropertyChecker propertyChecker = OptionPropertyChecker.createNullChecker();
+    private UserChecker propertyChecker = new NullUserChecker();
     private OptionNameFactory nameFactory = OptionNameFactory.createPlain("");
     
     public BaseMenuOption(OptionNameFactory nameFactory) {
@@ -15,7 +17,7 @@ public abstract class BaseMenuOption {
         super();
     }
 
-    public void setPropertyChecker(OptionPropertyChecker propertyChecker) {
+    public void setPropertyChecker(UserChecker propertyChecker) {
         this.propertyChecker = propertyChecker;
     }
 

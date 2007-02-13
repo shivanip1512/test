@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.collections.iterators.FilterIterator;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.UserChecker;
 
 /**
  * Represents the logical base of the menu for a given module. The main components are
@@ -25,7 +26,7 @@ public class ModuleBase {
     private List scriptFiles = new LinkedList();
     private String skin;
     private MenuBase menuBase;
-    private OptionPropertyChecker authorizationChecker;
+    private UserChecker authorizationChecker;
     
     public ModuleBase(String moduleName) {
         this.moduleName = moduleName;
@@ -111,7 +112,7 @@ public class ModuleBase {
         scriptFiles.add(scriptFile);
     }
 
-    public void setModuleChecker(OptionPropertyChecker authorizationChecker) {
+    public void setModuleChecker(UserChecker authorizationChecker) {
         this.authorizationChecker = authorizationChecker;
     }
 }
