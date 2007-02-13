@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerPointData;
@@ -42,10 +43,12 @@ public class CustomerPointTypeHelper {
     private DeviceDao deviceDao;
     private DBPersistentDao dbPersistentDao;
 
+    @Required
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
 
+    @Required
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
@@ -179,18 +182,22 @@ public class CustomerPointTypeHelper {
         return yukonPAObject;
     }
     
+    @Required
     public void setPointTypeLookup(CustomerPointTypeLookup pointTypeLookup) {
         this.pointTypeLookup = pointTypeLookup;
     }
 
+    @Required
     public void setCustomerStubDao(CustomerStubDao customerStubDao) {
         this.customerStubDao = customerStubDao;
     }
 
+    @Required
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
     }
 
+    @Required
     public void setPointAccessDao(SimplePointAccessDao pointAccessDao) {
         this.pointAccessDao = pointAccessDao;
     }

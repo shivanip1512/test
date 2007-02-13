@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -103,6 +104,7 @@ public class CustomerPointTypeLookup {
     }
 
     
+    @Required
     public void setApplicablePointLookup(Map<String, Set<String>> applicablePointEnums) {
         applicablePointLookup = new TreeMap<String, Set<CICustomerPointType>>();
         for (String key : applicablePointEnums.keySet()) {
@@ -115,6 +117,7 @@ public class CustomerPointTypeLookup {
         }
     }
 
+    @Required
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
     }
