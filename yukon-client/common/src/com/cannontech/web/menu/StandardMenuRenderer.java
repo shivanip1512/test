@@ -37,7 +37,7 @@ import com.cannontech.util.ServletUtil;
  */
 public class StandardMenuRenderer implements MenuRenderer {
     private final ModuleBase moduleBase;
-    private List subMenuParents = new ArrayList(4);
+    private List<TopLevelOption> subMenuParents = new ArrayList<TopLevelOption>(4);
     private String SEPERATOR = "  ";
     private String breadCrumbs;
     private final HttpServletRequest httpServletRequest;
@@ -134,8 +134,8 @@ public class StandardMenuRenderer implements MenuRenderer {
     private Div buildSubMenus() {
         Div subDiv = new Div();
         subDiv.setPrettyPrint(true);
-        for (Iterator iter = subMenuParents.iterator(); iter.hasNext();) {
-            TopLevelOption optionParent = (TopLevelOption) iter.next();
+        for (Iterator<TopLevelOption> iter = subMenuParents.iterator(); iter.hasNext();) {
+            TopLevelOption optionParent = iter.next();
             Div thisMenu = new Div();
             thisMenu.setID(generateIdForString(optionParent.getLinkName(yukonUser)));
             thisMenu.setStyle("display: none;");
@@ -162,7 +162,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         right.setPrettyPrint(true);
         right.setClass("stdhdr_rightSide");
         if (features.showModuleSelection) {
-            right.addElement(new Span("Module:").setClass("stdhdr_menu"));
+            right.addElement(new Span("Module: ").setClass("stdhdr_menu"));
             Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
             Select select = new Select();
             select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
