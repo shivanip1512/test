@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet href="document.xsl" type="text/xsl"?>
+<!--
+     Generated using Quadralay WebWorks Publisher Standard Edition 8.0.5337.0 from template XML+XSL.
+     Last updated on 02/01/07 14:16:43.
+-->
+
+<wp:Document xmlns:wp='http://webworks.com/publisher/xml/schema'>
+  <wp:Title>
+    Table of Contents
+  </wp:Title>
+  <wp:Logo>
+    <wp:Image wp:href="images/cannonlogo.gif" wp:width="216" wp:height="63" wp:alt="Cannon Technologies"/>
+  </wp:Logo>
+  <wp:Navbar>
+    <wp:TOC>
+      <wp:Image wp:href="images/tocx.gif" wp:border="0" wp:alt="Table of Contents" />
+    </wp:TOC>
+    <wp:Prev>
+      <wp:Image wp:href="images/prevx.gif" wp:border="0" wp:alt="Previous" />
+    </wp:Prev>
+    <wp:Next>
+      <wp:GotoLink wp:href="CapControl-1-1.xml">
+        <wp:Image wp:href="images/next.gif" wp:border="0" wp:alt="Next" />
+      </wp:GotoLink>
+    </wp:Next>
+    <wp:Index>
+      <wp:GotoLink wp:href="IX.xml">
+        <wp:Image wp:href="images/index.gif" wp:border="0" wp:alt="Index" />
+      </wp:GotoLink>
+    </wp:Index>
+  </wp:Navbar>
+  <wp:ContactInfo>
+    <wp:Item>
+      <wp:GotoLink wp:href="http://www.cannontech.com/">
+      </wp:GotoLink>
+    </wp:Item>
+    <wp:Item>
+      Cannon Technologies
+    </wp:Item>
+    <wp:Item>
+      Voice: (763) 595-7777
+    </wp:Item>
+    <wp:Item>
+      Fax: (763) 543-7777
+    </wp:Item>
+    <wp:Item>
+      <wp:GotoLink wp:href="mailto:sales@cannontech.com">
+        sales@cannontech.com
+      </wp:GotoLink>
+    </wp:Item> 
+  </wp:ContactInfo>
+
+  <wp:InlineTitle>
+    <TOCTitle wp:type="para" wp:class="TOCTitle" wp:style="display: block;">
+      Table of Contents
+    </TOCTitle>
+  </wp:InlineTitle>
+  <wp:Content>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1124104">Using Web Based Capacitor Control</wp:GotoLink>
+    </TOC1>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129227">Substation Bus Areas</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1138151">Substation Bus Area System Commands</wp:GotoLink>
+    </TOC2>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130753">Substation Buses</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1133177">Substation Bus System Commands</wp:GotoLink>
+    </TOC2>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1123895">Substation Bus, Feeders, and Capacitor Banks</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135343">Feeder Information</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135300">Feeder System Commands</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131041">Cap Bank Information</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135517">Temporarily Moving a Cap Bank</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135537">Moving a Cap Bank Back</wp:GotoLink>
+    </TOC3>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135515">Cap Bank Field Commands</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1123991">Cap Bank System Commands</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      
+    </TOC3>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135563">Reset Op Counts</wp:GotoLink>
+    </TOC4>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1133457">Viewing Reports</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131766">Today kVAr/Watt</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131771">Today PF</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131719">30 Day kVAr/Watt</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131727">30 Day PF</wp:GotoLink>
+    </TOC2>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131317">Viewing Orphaned Devices</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131063">Feeders</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131067">Capacitor Banks</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131078">CBCs</wp:GotoLink>
+    </TOC2>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1131276">Viewing Schedules</wp:GotoLink>
+    </TOC1>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136460">Viewing Recent Controls</wp:GotoLink>
+    </TOC1>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135063">Viewing Recent Cap Bank Moves</wp:GotoLink>
+    </TOC1>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1131602">Using Web Based Capacitor Control</wp:GotoLink>
+    </TOC1>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1131533">Yukon Cap Control Database</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1105174">Setting up Capacitor Bank Control</wp:GotoLink>
+    </TOC2>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1116823">Cap Bank Controllers</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1116827">Creating a CBC</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1116849">Editing a CBC</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1123809">General Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1128919">Setup Tab</wp:GotoLink>
+    </TOC3>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1125817">Configuration Area</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1125868">Analog and Status Points Area</wp:GotoLink>
+    </TOC4>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121290">Capacitor Banks</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1077955">Creating a Cap Bank</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1109917">Editing a Cap Bank</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1109927">General Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1110096">Setup Tab</wp:GotoLink>
+    </TOC3>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121782">Cap Bank Info</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121780">Configuration</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121707">Cap Bank Operations</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121705">Controller Configuration</wp:GotoLink>
+    </TOC4>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1125873">Advanced Tab</wp:GotoLink>
+    </TOC3>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1078053">Feeders</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1102157">Creating a Feeder</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1111309">Editing a Feeder</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1111313">General Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1078060">Setup Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1102478">Control Strategy</wp:GotoLink>
+    </TOC3>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1112298">Strategy Detail</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1078076">Strategy Peaks</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1128037">Strategy Operations</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1078084">Peak Operating Days</wp:GotoLink>
+    </TOC4>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1105517">Cap Banks Tab</wp:GotoLink>
+    </TOC3>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1078089">Substation Buses</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1102803">Creating a Substation Bus</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1113818">Editing a Substation Bus</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1113884">General Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1114004">Setup Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1114319">Schedule</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1114586">Control Strategy</wp:GotoLink>
+    </TOC3>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1114101">Strategy Detail</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1114144">Strategy Peaks</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1114183">Strategy Operations</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1129590">Peak Operating Days</wp:GotoLink>
+    </TOC4>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1115045">Feeders Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117505">Advanced Tab</wp:GotoLink>
+    </TOC3>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121975">Alternate Substation Bus</wp:GotoLink>
+    </TOC4>
+    <TOC4 wp:type="para" wp:class="TOC4" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1121867">Disabling a Substation Bus</wp:GotoLink>
+    </TOC4>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117826">Schedules</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117829">Creating a Schedule</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117846">Editing a Schedule</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117978">General Tab</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117998">Schedule</wp:GotoLink>
+    </TOC3>
+    <TOC1 wp:type="para" wp:class="TOC1" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1117811">Cap Control Points</wp:GotoLink>
+    </TOC1>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1122527">Creating a Point</wp:GotoLink>
+    </TOC2>
+    <TOC2 wp:type="para" wp:class="TOC2" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1104270">Editing Points</wp:GotoLink>
+    </TOC2>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1115031">General - Analog</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1104329">General - Status Point</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1104364">Physical Setup - Analog</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1104403">Physical Setup - Status</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1115374">Alarming</wp:GotoLink>
+    </TOC3>
+    <TOC3 wp:type="para" wp:class="TOC3" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-2-1.xml#1115371">Foreign Data</wp:GotoLink>
+    </TOC3>
+  </wp:Content>
+</wp:Document>

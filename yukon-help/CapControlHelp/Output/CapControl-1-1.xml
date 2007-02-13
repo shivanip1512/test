@@ -1,0 +1,996 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet href="document.xsl" type="text/xsl"?>
+<!--
+     Generated using Quadralay WebWorks Publisher Standard Edition 8.0.5337.0 from template XML+XSL.
+     Last updated on 02/01/07 14:16:42.
+-->
+
+<wp:Document xmlns:wp='http://webworks.com/publisher/xml/schema'>
+  <wp:Title>
+    Yukon Web Based Capacitor Control
+  </wp:Title>
+  <wp:Logo>
+    <wp:Image wp:href="images/cannonlogo.gif" wp:width="216" wp:height="63" wp:alt="Cannon Technologies"/>
+  </wp:Logo>
+  <wp:Navbar>
+    <wp:TOC>
+      <wp:GotoLink wp:href="TOC.xml">
+        <wp:Image wp:href="images/toc.gif" wp:border="0" wp:alt="Table of Contents" />
+      </wp:GotoLink>
+    </wp:TOC>
+    <wp:Prev>
+      <wp:GotoLink wp:href="TOC.xml">
+        <wp:Image wp:href="images/prev.gif" wp:border="0" wp:alt="Previous" />
+      </wp:GotoLink>
+    </wp:Prev>
+    <wp:Next>
+      <wp:GotoLink wp:href="CapControl-2-1.xml">
+        <wp:Image wp:href="images/next.gif" wp:border="0" wp:alt="Next" />
+      </wp:GotoLink>
+    </wp:Next>
+    <wp:Index>
+      <wp:GotoLink wp:href="IX.xml">
+        <wp:Image wp:href="images/index.gif" wp:border="0" wp:alt="Index" />
+      </wp:GotoLink>
+    </wp:Index>
+  </wp:Navbar>
+  <wp:ContactInfo>
+    <wp:Item>
+      <wp:GotoLink wp:href="http://www.cannontech.com/">
+      </wp:GotoLink>
+    </wp:Item>
+    <wp:Item>
+      Cannon Technologies
+    </wp:Item>
+    <wp:Item>
+      Voice: (763) 595-7777
+    </wp:Item>
+    <wp:Item>
+      Fax: (763) 543-7777
+    </wp:Item>
+    <wp:Item>
+      <wp:GotoLink wp:href="mailto:sales@cannontech.com">
+        sales@cannontech.com
+      </wp:GotoLink>
+    </wp:Item> 
+  </wp:ContactInfo>
+
+  <wp:Content>
+      <ctChapterTitle wp:type="para" wp:class="Title" wp:id="1124117" wp:style="display: block;">
+    Yukon Web Based Capacitor Control
+  </ctChapterTitle>
+  <noNote wp:type="para" wp:class="Indented1" wp:id="1124118" wp:style="display: block;">
+    NOTE To enable the Cap Bank Control features of Yukon, you must purchase the Cap Control module. For more information about this module, contact a Cannon Technologies sales representative.
+  </noNote>
+  <boBody wp:type="para" wp:class="Body" wp:id="1123798" wp:style="display: block;">
+    Web based capacitor control allows you to access your capacitor control system without having to install a software client on your computer.
+  </boBody>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1124104" wp:style="display: block;">
+    1.1. Using Web Based Capacitor Control
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1123799" wp:style="display: block;">
+    To access the Web based capacitor control client:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1123800" wp:style="display: block;">
+Start Internet Explorer and enter the address of the Yukon Web server.
+  </s1Step1>
+  <ueUserEnter wp:type="preformatted" wp:class="Preformatted" wp:id="1123801" wp:style="display: block;">http://<emEmphasis wp:type="container" wp:style="display: inline; color: #000000;  font-style: italic; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">yukonserver</emEmphasis>:8080/</ueUserEnter>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1123805" wp:style="display: block;">
+Enter a username and password that has privileges to access the Web based capacitor control client.
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1123807" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Submit</boBold> to log into the Web based capacitor control client.
+  </s2Step2>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1129227" wp:style="display: block;">
+    1.2. Substation Bus Areas
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1129228" wp:style="display: block;">
+    The first page that appears after logging in is the Substation Bus Areas page, which displays information about the substation bus areas defined in the system.
+  </boBody>
+  <boBody wp:type="para" wp:class="Body" wp:id="1124978" wp:style="display: block;">
+    The Substation Bus Areas page displays the following information:
+
+    <Table wp:type="table">
+      <TableTitle wp:type="tabletitle">  <ttTableTitle wp:type="para" wp:class="TableTitle" wp:id="1137511" wp:style="display: block;">
+    Table 1.1 <wp wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Substation Bus Area Information</wp>
+  </ttTableTitle>
+</TableTitle>
+      <TableHeading wp:type="tableheading">
+        <TableRow wp:type="tablerow_heading">
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1137482" wp:style="display: block;"> Column </thTableHead> 
+        </TableCell>
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1137484" wp:style="display: block;"> Meaning </thTableHead> 
+        </TableCell>
+
+        </TableRow>
+      </TableHeading>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137486" wp:style="display: block;"> Area Name </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137489" wp:style="display: block;"> Name of the geographical area of the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138076" wp:style="display: block;"> State </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138079" wp:style="display: block;"> Operational status of the substation bus area. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137491" wp:style="display: block;"> Setup </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137494" wp:style="display: block;"> Number of substations with the substation area. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137496" wp:style="display: block;"> Closed kVARs </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137499" wp:style="display: block;"> kVAr reading of closed capacitor banks. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137501" wp:style="display: block;"> Tripped kVARs </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137504" wp:style="display: block;"> kVAr reading of tripped capacitor banks. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137506" wp:style="display: block;"> PFactor / Est. </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1137509" wp:style="display: block;"> PFactor<boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline"> </boBold>is the current power factor on the substation bus.<wp:br/>Est. is an estimate of what the power factor would be if no cap banks were closed. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+    </Table>
+
+  </boBody>
+  <boBody wp:type="para" wp:class="Body" wp:id="1123842" wp:style="display: block;">
+    If you click the <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">+</boBold> next to the name of a substation bus area (e.g. Southern Area), the substation bus(es) within a substation bus area are displayed. In addition, the number of feeders and capacitor banks assigned to each substation bus are displayed.
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1138151" wp:style="display: block;">
+    1.2.1 Substation Bus Area System Commands
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1138153" wp:style="display: block;">
+    System commands can be sent to the Yukon server by placing the mouse cursor over the State value and selecting one of the following commands:
+  </boBody>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1138156" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Confirm Area</boBold> - confirms the status of the selected substation bus area.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1138158" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Disable Area/Enable Area</boBold> - disables or enables the selected substation bus area.
+  </sbuStepBullet>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1130753" wp:style="display: block;">
+    1.3. Substation Buses
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1130754" wp:style="display: block;">
+    To display detailed information about the substation bus(es) within a substation bus area, click on the name of the substation bus area (e.g. Southern Area) to display the Substation Buses In Area page.
+  </boBody>
+  <boBody wp:type="para" wp:class="Body" wp:id="1130589" wp:style="display: block;">
+    The Substation Buses In Area page displays the following information:
+
+    <Table wp:type="table">
+      <TableTitle wp:type="tabletitle">  <ttTableTitle wp:type="para" wp:class="TableTitle" wp:id="1130586" wp:style="display: block;">
+    Table 1.2 Substation Bus Information
+  </ttTableTitle>
+</TableTitle>
+      <TableHeading wp:type="tableheading">
+        <TableRow wp:type="tablerow_heading">
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1130554" wp:style="display: block;"> Column </thTableHead> 
+        </TableCell>
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1130556" wp:style="display: block;"> Meaning </thTableHead> 
+        </TableCell>
+
+        </TableRow>
+      </TableHeading>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133001" wp:style="display: block;"> Sub Name </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134226" wp:style="display: block;"> Name of the substation bus. If a <boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">(V)</boBold> appear next to the name, this means that the substation bus is currently being used in a verification schedule. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130558" wp:style="display: block;"> State </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130560" wp:style="display: block;"> Operational status of the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130562" wp:style="display: block;"> Target </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130564" wp:style="display: block;"> If the control algorithm is kVAr, this is the target VAr range.<wp:br/>If the control algorithm is Power Factor, this is the target power factor.<wp:br/>If the control algorithm is Multi Volt, Volts, or Multi Volt VAr, this is the target voltage range. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130566" wp:style="display: block;"> VAr Load / Est. </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130568" wp:style="display: block;"> <boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">VAr Load</boBold> is the current VAr value on the substation bus. <boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Est.</boBold> is an estimate of what the VAr Load would be if no cap banks were on (closed). </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130570" wp:style="display: block;"> Date/Time </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130572" wp:style="display: block;"> Date and time of the last substation bus data received. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130574" wp:style="display: block;"> PFactor / Est. </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130576" wp:style="display: block;"> <boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">PFactor</boBold> is the current power factor on the substation bus.<wp:br/><boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Est.</boBold> is an estimate of what the power factor would be if no cap banks were on (closed). </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130578" wp:style="display: block;"> Watts/Volts </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130580" wp:style="display: block;"> <boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Watts</boBold> displays the wattage reading of the substation bus.<wp:br/><boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Volts</boBold> displays the voltage reading of the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130582" wp:style="display: block;"> Daily / Max Ops </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1130584" wp:style="display: block;"> <boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Daily</boBold> is the daily total operation count for all of the cap banks on the substation bus.<wp:br/><boBold wp:type="container" wp:style="display: inline; color: #000000; font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Max Ops</boBold> is a user-defined maximum number of cap bank operations. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+    </Table>
+
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1133177" wp:style="display: block;">
+    1.3.1 Substation Bus System Commands
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1138093" wp:style="display: block;">
+    System commands can be sent to the Yukon server by placing the mouse cursor over the State value and selecting one of the following commands:
+  </boBody>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133184" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Confirm Sub</boBold> - confirms the status of the selected substation bus.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133185" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Disable Sub/Enable Sub</boBold> - disables or enables the selected substation bus.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133186" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Reset Op Counts</boBold> - resets the operation count to zero for the cap banks on the selected substation bus.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133731" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Verify All Banks</boBold> - verifies the status of all cap banks on the selected substation bus.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133732" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Verify Failed and Questionable Banks</boBold> - verifies the status of all failed and questionable cap banks on the selected substation bus.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133733" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Verify Failed Banks</boBold> - verifies the status of all failed cap banks on the selected substation bus.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1133734" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Verify Questionable Banks</boBold> - verifies the status of questionable cap banks on the selected substation bus.
+  </sbuStepBullet>
+  <boBody wp:type="para" wp:class="Body" wp:id="1134128" wp:style="display: block;">
+    If a manual verification or a scheduled verification is running, the following command appears in the commands list:
+  </boBody>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1134123" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Verify Stop</boBold> - stops the verification of cap banks on the selected substation bus.
+  </sbuStepBullet>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1123895" wp:style="display: block;">
+    1.4. Substation Bus, Feeders, and Capacitor Banks
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1123896" wp:style="display: block;">
+    To display detailed information about the feeders and capacitor banks assigned to a substation bus, click on the name of a substation bus.
+  </boBody>
+  <boBody wp:type="para" wp:class="Body" wp:id="1123942" wp:style="display: block;">
+    To view additional information about the selected substation bus, click the <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">+</boBold> next to the name of the substation bus.
+  </boBody>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135705" wp:style="display: block;">
+    The following information is displayed:
+
+    <Table wp:type="table">
+      <TableTitle wp:type="tabletitle">  <ttTableTitle wp:type="para" wp:class="TableTitle" wp:id="1134330" wp:style="display: block;">
+    Table 1.3 Substation Bus Information
+  </ttTableTitle>
+</TableTitle>
+      <TableHeading wp:type="tableheading">
+        <TableRow wp:type="tablerow_heading">
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1134294" wp:style="display: block;"> Column </thTableHead> 
+        </TableCell>
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1134296" wp:style="display: block;"> Meaning </thTableHead> 
+        </TableCell>
+
+        </TableRow>
+      </TableHeading>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134298" wp:style="display: block;"> Area </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134300" wp:style="display: block;"> Name of the geographical area of the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134302" wp:style="display: block;"> Control Method </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134304" wp:style="display: block;"> Type of control and control algorithm for the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134306" wp:style="display: block;"> VAr Point </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134308" wp:style="display: block;"> VAr point on the cap control system assigned to the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134310" wp:style="display: block;"> Watt Point </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134370" wp:style="display: block;"> Watt point on the cap control system assigned to the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134314" wp:style="display: block;"> Volt Point </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1134316" wp:style="display: block;"> Voltage point on the cap control system assigned to the substation bus. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+    </Table>
+
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1135343" wp:style="display: block;">
+    1.4.1 Feeder Information
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135348" wp:style="display: block;">
+    The following information is displayed about feeders:
+
+    <Table wp:type="table">
+      <TableTitle wp:type="tabletitle">  <ttTableTitle wp:type="para" wp:class="TableTitle" wp:id="1138058" wp:style="display: block;">
+    Table 1.4 Feeder Information
+  </ttTableTitle>
+</TableTitle>
+      <TableHeading wp:type="tableheading">
+        <TableRow wp:type="tablerow_heading">
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1138014" wp:style="display: block;"> Column </thTableHead> 
+        </TableCell>
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1138016" wp:style="display: block;"> Meaning </thTableHead> 
+        </TableCell>
+
+        </TableRow>
+      </TableHeading>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138018" wp:style="display: block;"> Feeder Name </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138021" wp:style="display: block;"> Name for the feeder. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138023" wp:style="display: block;"> State </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138026" wp:style="display: block;"> Operational status of the feeder. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138028" wp:style="display: block;"> Target </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138031" wp:style="display: block;"> If the control algorithm is kVAr, this is the target VAr range.<wp:br/>If the control algorithm is Power Factor, this is the target power factor.<wp:br/>If the control algorithm is Multi Volt, Volts, or Multi Volt VAr, this is the target voltage range. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138033" wp:style="display: block;"> VAr Load / Est. </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138036" wp:style="display: block;"> VAr Load is the current VAr value on the feeder.<wp:br/>Est. is an estimate of what the VAr Load would be if no cap banks were closed. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138038" wp:style="display: block;"> Date/Time </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138041" wp:style="display: block;"> Date and time of the last feeder data received. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138043" wp:style="display: block;"> PFactor / Est. </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138046" wp:style="display: block;"> PFactor is the current power factor on the feeder.<wp:br/>Est. is an estimate of what the power factor would be if no cap banks were closed. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138048" wp:style="display: block;"> Watts/Volts </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138051" wp:style="display: block;"> Watts and voltage reading of the feeder. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138053" wp:style="display: block;"> Daily / Max Ops </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138055" wp:style="display: block;"> Daily total operation count and maximum allowed operation count for all of the cap banks on the feeder. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+    </Table>
+
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1135300" wp:style="display: block;">
+    1.4.2 Feeder System Commands
+  </h2Heading2>
+  <i1Indent1 wp:type="para" wp:class="Indented1" wp:id="1135229" wp:style="display: block;">
+    System commands can be sent to the Yukon server by placing the mouse cursor over the State value and selecting one of the following commands:
+  </i1Indent1>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1135235" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Disable Feeder/Enable Feeder</boBold> - disables or enables the selected feeder.
+  </sbuStepBullet>
+  <sbuStepBullet wp:type="para" wp:class="SmartList2" wp:bullet="true"  wp:id="1135236" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Reset Op Counts</boBold> - resets the operation count to zero for the cap banks on the selected feeder.
+  </sbuStepBullet>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131041" wp:style="display: block;">
+    1.4.3 Cap Bank Information
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135408" wp:style="display: block;">
+    The following information is displayed about cap banks:
+
+    <Table wp:type="table">
+      <TableTitle wp:type="tabletitle">  <ttTableTitle wp:type="para" wp:class="TableTitle" wp:id="1131038" wp:style="display: block;">
+    Table 1.5 Cap Bank Information
+  </ttTableTitle>
+</TableTitle>
+      <TableHeading wp:type="tableheading">
+        <TableRow wp:type="tablerow_heading">
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1131006" wp:style="display: block;"> Column </thTableHead> 
+        </TableCell>
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1131008" wp:style="display: block;"> Meaning </thTableHead> 
+        </TableCell>
+
+        </TableRow>
+      </TableHeading>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131010" wp:style="display: block;"> CB Name (Order) </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131012" wp:style="display: block;"> Name for the cap bank and the order the cap banks are closed/opened. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131014" wp:style="display: block;"> State </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131016" wp:style="display: block;"> Operational status of the cap bank. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131018" wp:style="display: block;"> Bank Address </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131020" wp:style="display: block;"> Geographical location or street address of the cap bank. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131022" wp:style="display: block;"> Date/Time </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131024" wp:style="display: block;"> Date and time of the last cap bank data received. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131026" wp:style="display: block;"> Bank Size </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131028" wp:style="display: block;"> Size of the cap bank in kVAr. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138070" wp:style="display: block;"> Parent Feeder </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138073" wp:style="display: block;"> Feeder to which the capacitor bank is assigned. </ttTableText> <ttTableText wp:type="para" wp:class="CellBody" wp:id="1138074" wp:style="display: block;"> The cap banks on all of the feeders are displayed by default. To display the cap banks on a single feeder, select the feeder from the drop-down list. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131034" wp:style="display: block;"> Op Count </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1131036" wp:style="display: block;"> Total operation count for the cap bank. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+    </Table>
+
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1135517" wp:style="display: block;">
+    1.4.4 Temporarily Moving a Cap Bank
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135518" wp:style="display: block;">
+    To temporarily move a cap bank from its parent feeder to another feeder:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1135522" wp:style="display: block;">
+Click on the name of the cap bank's current parent feeder to move the cap bank.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1135524" wp:style="display: block;">
+Click the + next to a substation bus to display the feeders assigned to the sub bus.
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1135525" wp:style="display: block;">
+Enter a new control order for the cap bank in the <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">New Control Order</boBold> text box.
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="4."  wp:id="1135529" wp:style="display: block;">
+Click on the name of a feeder to temporarily move the cap bank to that feeder.
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="5."  wp:id="1135531" wp:style="display: block;">
+Click the Close button to close the Cap Bank Temp Move window.
+  </s2Step2>
+  <i1Indent1 wp:type="para" wp:class="Indented1" wp:id="1135532" wp:style="display: block;">
+    After a cap bank has been temporarily moved, the parent feeder for that cap bank appears in orange text.
+  </i1Indent1>
+  <h3Heading3 wp:type="para" wp:class="Heading3" wp:id="1135537" wp:style="display: block;">
+    Moving a Cap Bank Back
+  </h3Heading3>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135538" wp:style="display: block;">
+    To move a cap bank back to its original parent feeder:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1135539" wp:style="display: block;">
+Place the mouse cursor over the name of the parent feeder for the moved cap bank. <wp:br/>The parent feeder's name appears in orange text.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1135543" wp:style="display: block;">
+Click on the <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Temp Move Back</boBold> link to move the cap bank back to its original parent feeder.
+  </s2Step2>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1135515" wp:style="display: block;">
+    1.4.5 Cap Bank Field Commands
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1130880" wp:style="display: block;">
+    To send a field command to a cap bank, place the mouse cursor over the name of the cap bank and select one of the following commands:
+  </boBody>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1123988" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Confirm</boBold> - confirms the status of the cap bank.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1123989" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Open Capacitor </boBold><wp wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: normal; text-decoration: none; text-transform: none; vertical-align: baseline">- opens the capacitor bank.</wp>
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1123990" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Close</boBold> <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Capacitor </boBold>- closes the capacitor bank.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133747" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Enable OV/UV</boBold> - enables Over Voltage/Under Voltage (OV/UV) detection of the capacitor bank.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133748" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Disable OV/UV</boBold> - disables Over Voltage/Under Voltage (OV/UV) detection of the capacitor bank.
+  </buBullet>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1123991" wp:style="display: block;">
+    1.4.6 Cap Bank System Commands
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135853" wp:style="display: block;">
+    System commands can be sent to the Yukon server by placing the mouse cursor over the State value and selecting one of the following commands:
+  </boBody>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1123993" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Disable Cap Bank/Enable Cap Bank</boBold> - disables or enables a cap bank.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1123994" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Reset Op Counts</boBold> - set the operation count to the value entered for the selected cap bank.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133256" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Open</boBold> - sets the cap bank state to opened.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133259" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Close</boBold> - sets the cap bank state to closed.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133262" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">OpenQuestionable</boBold> - sets the cap bank state to opened questionable.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133265" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">CloseQuestionable</boBold> - sets the cap bank state to closed questionable.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133268" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">OpenFail</boBold> - sets the cap bank state to opened failed.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133271" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">CloseFail</boBold> - sets the cap bank state to closed failed.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133274" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">OpenPending</boBold> - sets the cap bank state to opened pending.
+  </buBullet>
+  <buBullet wp:type="para" wp:class="SmartList1" wp:bullet="true"  wp:id="1133277" wp:style="display: block;">
+<boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">ClosePending</boBold> - sets the cap bank state to closed pending.
+  </buBullet>
+  <h4Heading4 wp:type="para" wp:class="Heading4" wp:id="1135563" wp:style="display: block;">
+    Reset Op Counts
+  </h4Heading4>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135567" wp:style="display: block;">
+    To reset the operation count of a Capacitor Bank:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1135571" wp:style="display: block;">
+Place the mouse cursor over the State value of a Cap Bank and select <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Reset Op Counts</boBold>.
+  </s1Step1>
+  <i1Indent1 wp:type="para" wp:class="Indented1" wp:id="1135580" wp:style="display: block;">
+    An Op Count Value column appears to the right of the State column.
+  </i1Indent1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1135588" wp:style="display: block;">
+Enter a new operation count in the <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Op Count Value</boBold> text box.
+  </s2Step2>
+  <i1Indent1 wp:type="para" wp:class="Indented1" wp:id="1135621" wp:style="display: block;">
+    <wp wp:type="container" wp:style="display: inline; color: #000000;  font-style: italic; font-weight: normal; text-decoration: none; text-transform: none; vertical-align: baseline">If the Op Count Value text box is left blank, the operation count will be reset to zero.</wp>
+  </i1Indent1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1135592" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Reset</boBold> to set the operation count to the value in the <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Op Count Value</boBold> text box.
+  </s2Step2>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1133457" wp:style="display: block;">
+    1.5. Viewing Reports
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1131391" wp:style="display: block;">
+    The Web based capacitor control client allows you to view reports of capacitor control data.
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131766" wp:style="display: block;">
+    1.5.1 Today kVAr/Watt
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1131770" wp:style="display: block;">
+    To view a report of today's kVAr and Watt values:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1135107" wp:style="display: block;">
+Select up to three substation buses or feeders that have kVAr and Watt points.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1135108" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Analysis</boBold>. 
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1135109" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Today kVAr/Watt</boBold> to display the report.
+  </s2Step2>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131771" wp:style="display: block;">
+    1.5.2 Today PF
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1132187" wp:style="display: block;">
+    To view a report of today's power factor values:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1132188" wp:style="display: block;">
+Select up to three substation buses or feeders that have power factor points.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1132189" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Analysis</boBold>. 
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1132217" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Today PF</boBold> to display the report.
+  </s2Step2>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131719" wp:style="display: block;">
+    1.5.3 30 Day kVAr/Watt
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1132570" wp:style="display: block;">
+    To view a report of the past 30 day's kVAr and Watt values:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1132571" wp:style="display: block;">
+Select up to three substation buses or feeders that have kVAr and Watt points.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1132572" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Analysis</boBold>. 
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1132578" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">30 Day kVAr/Watt</boBold> to display the report.
+  </s2Step2>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131727" wp:style="display: block;">
+    1.5.4 30 Day PF
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1132582" wp:style="display: block;">
+    To view a report of the past 30 day's power factor values:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1132583" wp:style="display: block;">
+Select up to three substation buses or feeders that have power factor points.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1132584" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Analysis</boBold>. 
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1132594" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">30 Day PF</boBold> to display the report.
+  </s2Step2>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1131317" wp:style="display: block;">
+    1.6. Viewing Orphaned Devices
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1131054" wp:style="display: block;">
+    The Web based capacitor control client allows you to view orphaned devices or devices that have not been assigned to parent devices.
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131063" wp:style="display: block;">
+    1.6.1 Feeders
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1131068" wp:style="display: block;">
+    To view feeders that have not been assigned to a substation bus, click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">View</boBold> and then select <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Orphaned Feeders</boBold>.
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131067" wp:style="display: block;">
+    1.6.2 Capacitor Banks
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1131133" wp:style="display: block;">
+    To view capacitor banks that have not been assigned to a feeder, click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">View</boBold> and then select <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Orphaned CapBanks</boBold>.
+  </boBody>
+  <h2Heading2 wp:type="para" wp:class="Heading2" wp:id="1131078" wp:style="display: block;">
+    1.6.3 CBCs
+  </h2Heading2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1131210" wp:style="display: block;">
+    To view CBCs that have not been assigned to a capacitor bank, click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">View</boBold> and then select <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Orphaned CBCs</boBold>.
+  </boBody>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1131276" wp:style="display: block;">
+    1.7. Viewing Schedules
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1133587" wp:style="display: block;">
+    The Web based capacitor control client allows you to view schedules that can be assigned to substation buses to control when cap bank verification commands are sent.The following information is displayed about schedules:
+
+    <Table wp:type="table">
+      <TableTitle wp:type="tabletitle">  <ttTableTitle wp:type="para" wp:class="TableTitle" wp:id="1133584" wp:style="display: block;">
+    Table 1.6 Cap Bank Information
+  </ttTableTitle>
+</TableTitle>
+      <TableHeading wp:type="tableheading">
+        <TableRow wp:type="tablerow_heading">
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1133552" wp:style="display: block;"> Column </thTableHead> 
+        </TableCell>
+        <TableCell wp:type="tablecell_heading">
+           <thTableHead wp:type="para" wp:class="CellHeading" wp:id="1133554" wp:style="display: block;"> Meaning </thTableHead> 
+        </TableCell>
+
+        </TableRow>
+      </TableHeading>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133556" wp:style="display: block;"> Name </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133558" wp:style="display: block;"> Name of the schedule. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133560" wp:style="display: block;"> Next Run Time </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133562" wp:style="display: block;"> The date and time the schedule will run. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133564" wp:style="display: block;"> Last Run Time </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133566" wp:style="display: block;"> The date and time the schedule last ran. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133568" wp:style="display: block;"> Interval </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133570" wp:style="display: block;"> How often the schedule runs. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133572" wp:style="display: block;"> Disabled </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133574" wp:style="display: block;"> Displays if the schedule is disabled from running. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133576" wp:style="display: block;"> <wp:Image wp:type="image" wp:href="images/Edit.gif" wp:height="23" wp:width="20" wp:border="0" wp:hspace="0" wp:vspace="0"> </wp:Image> (Edit) </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133578" wp:style="display: block;"> To edit a schedule, click the <wp:Image wp:type="image" wp:href="images/Edita.gif" wp:height="24" wp:width="20" wp:border="0" wp:hspace="0" wp:vspace="0"> </wp:Image> (Edit) button. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+      <TableBody wp:type="tablebody">
+        <TableRow wp:type="tablerow_body">
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133580" wp:style="display: block;"> Delete </ttTableText> 
+        </TableCell>
+        <TableCell wp:type="tablecell_body">
+           <ttTableText wp:type="para" wp:class="CellBody" wp:id="1133582" wp:style="display: block;"> To delete a schedule, click the Delete button. </ttTableText> 
+        </TableCell>
+
+        </TableRow>
+      </TableBody>
+    </Table>
+
+  </boBody>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1136460" wp:style="display: block;">
+    1.8. Viewing Recent Controls
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1136461" wp:style="display: block;">
+    To view a report of the recent controls:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1136462" wp:style="display: block;">
+Select one or more devices for which to view recent controls.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1133663" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">View</boBold>.
+  </s2Step2>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="3."  wp:id="1133535" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Recent Controls</boBold> to display the report.
+  </s2Step2>
+  <h1Heading1 wp:type="para" wp:class="Heading1" wp:id="1135063" wp:style="display: block;">
+    1.9. Viewing Recent Cap Bank Moves
+  </h1Heading1>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135064" wp:style="display: block;">
+    To view a report of the recent cap bank moves:
+  </boBody>
+  <s1Step1 wp:type="para" wp:class="SmartList1" wp:autonum="1."  wp:id="1135066" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">View</boBold>.
+  </s1Step1>
+  <s2Step2 wp:type="para" wp:class="SmartList1" wp:autonum="2."  wp:id="1135891" wp:style="display: block;">
+Click <boBold wp:type="container" wp:style="display: inline; color: #000000;  font-style: normal; font-weight: bold; text-decoration: none; text-transform: none; vertical-align: baseline">Recent Cap Bank Moves</boBold> to display the report.
+  </s2Step2>
+  <boBody wp:type="para" wp:class="Body" wp:id="1135895" wp:style="display: block;">
+    
+  </boBody>
+
+    <wp:PageNotes>
+      
+    </wp:PageNotes>
+  </wp:Content>
+</wp:Document>
