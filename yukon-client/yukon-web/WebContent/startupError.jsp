@@ -30,7 +30,8 @@
 <body>
 <div id="error">
 <div id="errorMain">
-The web server failed to startup. This is almost always related to a database connection problem.
+The web server failed to startup.<br>
+This is almost always related to a database connection problem.
 </div>
 <br><br>
 Please check that the hostname (or IP address), username and password for the database
