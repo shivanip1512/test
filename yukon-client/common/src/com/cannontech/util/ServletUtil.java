@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -1085,10 +1086,23 @@ public static Date roundToMinute(Date toRound) {
 	 */
 	public static LiteYukonUser getYukonUser( HttpSession session )
 	{
-		return
-			(LiteYukonUser)session.getAttribute(ATT_YUKON_USER);
+		return (LiteYukonUser)session.getAttribute(ATT_YUKON_USER);
 	}
 
+	/**
+	 * Returns the current Yukon user object found in the request.
+	 * @throws NotLoggedInException if no session exists
+	 */
+	public static LiteYukonUser getYukonUser(ServletRequest request) throws NotLoggedInException
+	{
+	    HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null) {
+            throw new NotLoggedInException();
+        }
+	    return getYukonUser(session);
+	}
+	
 
 	/**
 	 * Returns the fully qualified URL that was requested
