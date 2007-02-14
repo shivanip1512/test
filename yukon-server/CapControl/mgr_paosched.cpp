@@ -378,8 +378,12 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
                 delete executor;
             }
             break;
-        case 1:
+        case ConfirmSub:
             {
+                CtiCCExecutorFactory f;
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, event->getPAOId()));
+                executor->Execute();
+                delete executor;
             }
             break;
         case 2:
@@ -465,6 +469,11 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
            strategy = StandAloneBanks;
         }
     }
+    else if (findStringIgnoreCase(command,"Confirm Sub"))
+    {
+        retVal = ConfirmSub;
+    }
+    
     return retVal;
 }
 

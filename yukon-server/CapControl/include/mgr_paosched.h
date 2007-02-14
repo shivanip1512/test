@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/05/12 14:51:15 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/02/14 20:54:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ public:
     typedef enum
     {
         CapControlVerification = 0,
+        ConfirmSub = 1,
         SomethingElse
     } CtiPAOScheduleOperation;
 
