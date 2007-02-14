@@ -191,9 +191,14 @@ multimap< long, CtiCCSubstationBusPtr >::iterator CtiCCSubstationBusStore::findS
     multimap< long, CtiCCSubstationBusPtr >::iterator iter = _pointid_subbus_map.lower_bound(point_id);
     subCount = _pointid_subbus_map.count(point_id);
 
-    if (iter != _pointid_subbus_map.end()) 
-        return iter;
-    else
+    if (subCount > 0) 
+    {
+        if (iter != _pointid_subbus_map.end()) 
+            return iter;
+        else
+            return NULL;
+    }
+    else 
         return NULL;
 }
 
@@ -201,8 +206,13 @@ multimap< long, CtiCCFeederPtr >::iterator CtiCCSubstationBusStore::findFeederBy
 {
     multimap< long, CtiCCFeederPtr >::iterator iter = _pointid_feeder_map.lower_bound(point_id);
     feedCount = _pointid_feeder_map.count(point_id);
-    if (iter != _pointid_feeder_map.end()) 
-        return iter;
+    if (feedCount > 0) 
+    {
+        if (iter != _pointid_feeder_map.end()) 
+            return iter;
+        else
+            return NULL;
+    }
     else
         return NULL;
 
@@ -212,8 +222,13 @@ multimap< long, CtiCCCapBankPtr >::iterator CtiCCSubstationBusStore::findCapBank
 {
     multimap< long, CtiCCCapBankPtr >::iterator iter = _pointid_capbank_map.lower_bound(point_id);
     capCount = _pointid_capbank_map.count(point_id);
-    if (iter != _pointid_capbank_map.end()) 
-        return iter;
+    if (capCount > 0)
+    {
+        if (iter != _pointid_capbank_map.end()) 
+            return iter;
+        else
+            return NULL;
+    }
     else
         return NULL;
 
