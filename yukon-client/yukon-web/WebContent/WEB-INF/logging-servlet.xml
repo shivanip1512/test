@@ -6,14 +6,17 @@
 <beans>
     <!-- create a bean for LogMenuController.java -->
     <bean id="logMenuController" class="com.cannontech.web.logging.LogMenuController">
+      <property name="authDao" ref="authDao"/>
     </bean>
     
     <!-- create a bean for LogViewController.java -->
     <bean id="logViewController" class="com.cannontech.web.logging.LogViewController">
+      <property name="authDao" ref="authDao"/>
     </bean>
     
     <!-- create a bean for LogDownloadController.java -->
     <bean id="logDownloadController" class="com.cannontech.web.logging.LogDownloadController">
+      <property name="authDao" ref="authDao"/>
     </bean>
     
     <!-- use jsp page for view -->

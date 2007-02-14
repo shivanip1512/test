@@ -4,14 +4,18 @@ package com.cannontech.web.logging;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.util.ServletUtil;
 
 /**
  * LogMenuController handles the retrieving of log
@@ -21,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author dharrington
  */
 public class LogMenuController extends LogController {
+    private AuthDao authDao;
     
     /**
     * Stores all log filenames from local and remote directories
@@ -31,11 +36,12 @@ public class LogMenuController extends LogController {
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                  HttpServletResponse response) throws Exception {
+        authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
+        
         ModelAndView mav = new ModelAndView("menu");
        
         //lists to hold log file names
         List<String> localLogList = new ArrayList<String>();
-        List<String> remoteLogList = new ArrayList<String>();
                
         //create file filter to only allow log files thru
         FilenameFilter filter = new FilenameFilter() {
@@ -51,18 +57,14 @@ public class LogMenuController extends LogController {
             }
         }
         
-        //extract remote file names and add to a list
-        File[] remoteFiles = getRemoteDir().listFiles(filter);
-        if (!ArrayUtils.isEmpty(remoteFiles)) {
-            for (File logFile : remoteFiles) {
-                remoteLogList.add(logFile.getName());
-            }
-        }
-
-        //add local and remote log lists to model and view
+        //add local list to model
         mav.addObject("localLogList", localLogList);
-        mav.addObject("remoteLogList", remoteLogList);
         
         return mav;
+    }
+    
+    @Required
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 }

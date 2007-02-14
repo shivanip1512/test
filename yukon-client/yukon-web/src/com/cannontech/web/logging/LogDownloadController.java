@@ -10,6 +10,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.util.ServletUtil;
 
 /**
 * LogDownloadController handles the downloading of
@@ -32,11 +34,12 @@ public class LogDownloadController extends LogController {
     * @return null
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         response.setContentType("text/plain");
         
         //get the log file from request using 
         //base class method getLogFile()
-        File logFile = getLogFile(request, response);
+        File logFile = getLogFile(request);
         
         //set response header to the log filename
         response.setHeader("Content-Disposition", "attachment; filename=" + logFile.getName());

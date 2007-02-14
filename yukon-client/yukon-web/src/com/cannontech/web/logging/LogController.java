@@ -2,18 +2,17 @@ package com.cannontech.web.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.AuthDao;
 
 /**
  * LogController acts as an abstract base
@@ -24,19 +23,11 @@ import com.cannontech.common.util.CtiUtilities;
  * @author dharrington
  */
 public abstract class LogController extends AbstractController {
-    
+    protected AuthDao authDao;
     //create a logger for this class
     private Logger logger = YukonLogManager.getLogger(LogController.class);
     //get the local log directory
     private File localDir = new File(CtiUtilities.getYukonBase(), "Server/Log");
-    //get the remote log directory
-    private File remoteDir = new File(CtiUtilities.getYukonBase(), "Server/Log/Remote");
-    
-    /**
-    * handleRequestInternal is inherited from AbstractController and remains abstract here.
-    * It will be overridden in LogXxxControllers
-    */
-    abstract protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
     /**
      * getLogFile returns a log file requested or null if not found.
@@ -44,30 +35,20 @@ public abstract class LogController extends AbstractController {
      * @param response
      * @return The log file requested
      */
-    protected File getLogFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected File getLogFile(HttpServletRequest request) throws IOException {
     
         //get requested url, convert to a file, get the filename
-        String urlString = request.getRequestURL().toString();
-        URL url;
-        try {
-            url = new URL(urlString);
-        } catch (MalformedURLException e) {
-            logger.error("Exception creating url for requested log file", e);
-            return null;
-        }
-        
-        File urlFile = new File(url.toString());
-        String logFileName = urlFile.getName();
+        UrlPathHelper helper = new UrlPathHelper();
+        helper.setUrlDecode(true);
+        String urlString = helper.getRequestUri(request);
+        String logFileName = StringUtils.substringAfterLast(urlString, "/");
   
         // get the file by passing directory and filename
         File localLogFile = new File(getLocalDir(), logFileName);
-        File remoteLogFile = new File(getRemoteDir(), logFileName);
     
         //make sure the file exists before trying to return it
         if (localLogFile.canRead()) {
             return localLogFile;        
-        } else if (remoteLogFile.canRead()) {
-            return remoteLogFile;
         } else {
             logger.error("The following log file does not exist: " + logFileName);
             throw new IOException();
@@ -82,11 +63,7 @@ public abstract class LogController extends AbstractController {
         this.localDir = localDir;
     }
 
-    public File getRemoteDir() {
-        return remoteDir;
-    }
-
-    public void setRemoteDir(File remoteDir) {
-        this.remoteDir = remoteDir;
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 }

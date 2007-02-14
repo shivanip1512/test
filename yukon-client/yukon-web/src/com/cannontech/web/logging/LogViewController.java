@@ -11,6 +11,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.util.ServletUtil;
 
 /**
  * LogViewController handles the retrieving of
@@ -32,9 +34,10 @@ public class LogViewController extends LogController {
     * @return ModelAndView mav
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         
         ModelAndView mav = new ModelAndView("logView");
-        File logFile = getLogFile(request, response);
+        File logFile = getLogFile(request);
         FileReader fr = null;
         fr = new FileReader(logFile);   
             
