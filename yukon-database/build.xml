@@ -5,7 +5,6 @@
         <antcall target="version_db_files"/>
     </target>
 
-
     <target name="init">
         <!-- Test here to see if we are an official build so developers can build locally -->
         <property environment="env"/>
