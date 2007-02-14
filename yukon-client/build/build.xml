@@ -8,13 +8,14 @@
     <target name="targets">
     	<echo message="${yukon.client.home}"/>
         <echo message="The following targets are available"/>
-        <echo message=" build      - perform incremental build"/>
-        <echo message=" clean      - clean the slate"/>
-        <echo message=" all        - do a clean then a build"/>
-        <echo message=" install    - installs a build to your YUKON_HOME directory"/>
-        <echo message=" uninstall  - remove the install at YUKON_HOME"/>        
-        <echo message=" [jar name] - builds only the specified jar"/>
-        <echo message=" sign jars - sign all jars"/>
+        <echo message=" build        - perform incremental build"/>
+        <echo message=" runUnitTests - run all unit tests"/>
+        <echo message=" clean        - clean the slate"/>
+        <echo message=" all          - do a clean then a build"/>
+        <echo message=" install      - installs a build to your YUKON_HOME directory"/>
+        <echo message=" uninstall    - remove the install at YUKON_HOME"/>        
+        <echo message=" [jar name]   - builds only the specified jar"/>
+        <echo message=" sign jars    - sign all jars"/>
     </target>
             
     <target name="all" depends="init, cleanlib">
@@ -35,6 +36,15 @@
         </antcall>
     </target>
 	
+    <target name="runUnitTests" depends="init">
+<!-- All of our build files need this target for this to work
+        <antcall target="callall" inheritAll="true">
+            <param name="dotarget" value="runUnitTests"/>
+        </antcall>
+-->
+        <ant dir="${common}" target="runUnitTests"/>
+    </target>
+
     <target name="init">
         <echo message="JAVA_HOME=${env.JAVA_HOME}"/>
         <echo message="target=${yukon.javac.target}"/>
