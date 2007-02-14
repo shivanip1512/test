@@ -230,12 +230,16 @@ public class LoadGroupModel extends ReportModelBase
 				}
 				if( getPaoIDs()!= null)	//null load groups means ALL groups!
 				{
-					sql.append(" AND LMCH.PAOBJECTID in (" + getPaoIDs()[0] ); 
+					sql.append(" AND (LMCH.PAOBJECTID in (" + getPaoIDs()[0] ); 
 					for (int i = 1; i < getPaoIDs().length; i++)
 					{
 						sql.append(", " + getPaoIDs()[i]+" ");
 					}
 					sql.append(") ");
+					sql.append("OR LMCH.PAOBJECTID IN " +
+							"(SELECT DISTINCT GM.CHILDID " +
+							" FROM " + GenericMacro.TABLE_NAME + " GM " +
+							" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "') ) ");  
 				}
 				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID ");	//, LMCH.StopDateTime");
 				if (!isShowAllActiveRestore())
