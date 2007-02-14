@@ -1100,7 +1100,11 @@ public static Date roundToMinute(Date toRound) {
         if (session == null) {
             throw new NotLoggedInException();
         }
-	    return getYukonUser(session);
+	    LiteYukonUser yukonUser = getYukonUser(session);
+        if (yukonUser == null) {
+            throw new NotLoggedInException();
+        }
+        return yukonUser;
 	}
 	
 
