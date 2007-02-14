@@ -68,7 +68,7 @@ public class CurtailmentInterruptionSummaryReport extends SimpleYukonReportBase 
         // initialize JFreeReport
         JFreeReportBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-        YukonSpringHook.getContext("com.cannontech.context.web");
+        YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);
         
         CurtailmentInterruptionSummaryModel model = new CurtailmentInterruptionSummaryModel();
         YukonReportBase rmReport = new CurtailmentInterruptionSummaryReport(model);

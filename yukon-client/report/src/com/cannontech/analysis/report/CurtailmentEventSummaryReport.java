@@ -56,7 +56,7 @@ public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
         // initialize JFreeReport
         JFreeReportBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-        YukonSpringHook.getContext("com.cannontech.context.web");
+        YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);
         
         CurtailmentEventSummaryModel model = new CurtailmentEventSummaryModel();
         YukonReportBase rmReport = new CurtailmentEventSummaryReport(model);

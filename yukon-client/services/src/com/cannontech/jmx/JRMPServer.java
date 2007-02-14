@@ -102,7 +102,8 @@ public class JRMPServer
             Object service = null;
             if (className.startsWith(beanPrefix)) {
                 String beanName = className.substring(beanPrefix.length());
-                ApplicationContext context = YukonSpringHook.getServicesContext();
+                YukonSpringHook.setDefaultContext(YukonSpringHook.SERVICES_BEAN_FACTORY_KEY);
+                ApplicationContext context = YukonSpringHook.getContext();
                 service = context.getBean(beanName);
                 //server.registerMBean(bean, name);
             } else {
