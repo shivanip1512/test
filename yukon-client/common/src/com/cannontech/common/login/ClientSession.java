@@ -4,6 +4,7 @@
 package com.cannontech.common.login;
 
 import java.awt.Frame;
+import java.net.CookieHandler;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -144,6 +145,9 @@ public class ClientSession {
 		}
 		
 	public synchronized boolean establishSession(Frame parent) {
+        // disable CookieHandler so that weird things don't happen when used with Java Web Start
+        CookieHandler.setDefault(null);
+        
 		boolean success = false;
 		if(MasterConfigHelper.isLocalConfigAvailable()) {
 			CTILogger.info("Attempting local load of database properties...");
