@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.18 $
-*    DATE         :  $Date: 2007/01/10 21:23:19 $
+*    REVISION     :  $Revision: 1.19 $
+*    DATE         :  $Date: 2007/02/15 23:22:08 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.19  2007/02/15 23:22:08  jrichter
+      took out check for sign.
+
       Revision 1.18  2007/01/10 21:23:19  tspar
       Changed the tokenizer so it will keep empty tokens.
 
@@ -345,12 +348,7 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
             }
         case 3:
             {
-                if (!(tempString1.match("^[0-9]")).empty() ||
-                    (!(tempString1.match("^\\+")).empty() || !(tempString1.match("^\\-")).empty() ))
-                {
-                    value = atof(tempString1.c_str());
-                } else
-                    pointValidFlag = false;
+                value = atof(tempString1.c_str());
                 break;
             }
         case 4:
