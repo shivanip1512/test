@@ -21,7 +21,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -36,6 +40,7 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
@@ -50,6 +55,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -136,6 +142,7 @@ public class YC extends Observable implements MessageListener
 	/**TODO - fix this!!*/
 	/**Flag indicating first display type data (for headings)*/
 	private boolean firstTime = true;
+    private LiteYukonUser user = null;
 	
 	public class OutputMessage{
 		public static final int DISPLAY_MESSAGE = 0;	//YC defined text
@@ -638,11 +645,14 @@ public class YC extends Observable implements MessageListener
 	/**
 	 * Set the commmand string
 	 * @param command_ java.lang.String
+	 * @throws PaoAuthorizationException 
 	 */
-	public void setCommandString(String command_)
+	public void setCommandString(String command_) throws PaoAuthorizationException
 	{
 		commandString = command_;
 		setCommands(commandString);
+		
+        checkCommandAuthorization();
 	}
 
 	/**
@@ -674,10 +684,65 @@ public class YC extends Observable implements MessageListener
 		// reset the update to database flag.
 		setUpdateToDB(false);
 	}
+    
+    public void checkCommandAuthorization() throws PaoAuthorizationException{
+        
+        // Check authorization for each command 
+        for (Object commandObj : getExecuteCmdsVector()) {
+
+            String command = (String) commandObj;
+            if(!this.isAllowCommand(command)){
+                throw new PaoAuthorizationException("Unauthorized command", command);
+            }
+        }
+    }
+    
+    public boolean isAllowCommand(String command) {
+        return this.isAllowCommand(command, this.user);
+    }
+    
+    public boolean isAllowCommand(String command, LiteYukonUser user) {
+
+        if (this.deviceID != -1) {
+            // Get the device
+            PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(this.deviceID);
+
+            return this.isAllowCommand(command, user, pao);
+
+        } else if (getModelType() == ModelFactory.TESTCOLLECTIONGROUP
+                || getModelType() == ModelFactory.COLLECTIONGROUP) {
+            return this.isAllowCommand(command, user, new LiteYukonPAObject(-1));
+        } else if (!PAOGroups.STRING_INVALID.equalsIgnoreCase(serialNumber)) {
+            return this.isAllowCommand(command, user, "lmdevice");
+        }
+
+        return false;
+    }
+    
+    public boolean isAllowCommand(String command, LiteYukonUser user, Object object) {
+
+        if (object instanceof LiteYukonPAObject) {
+            PaoCommandAuthorizationService service = (PaoCommandAuthorizationService) YukonSpringHook.getBean("paoCommandAuthorizationService");
+
+            boolean authorized = service.isAuthorized(user, command, (LiteYukonPAObject) object)
+                    || getCommandMode() == YC.CGP_MODE;
+            return authorized;
+
+        } else if (object instanceof String) {
+            LMCommandAuthorizationService service = (LMCommandAuthorizationService) YukonSpringHook.getBean("lmCommandAuthorizationService");
+            boolean authorized = service.isAuthorized(user, command, (String) object)
+                    || getCommandMode() == YC.CGP_MODE;
+            return authorized;
+        }
+
+        return false;
+    }
+    
 	/**
-	 * Set the commandFileName based on the item instance.
-	 * @param item_ Object
-	 */
+     * Set the commandFileName based on the item instance.
+     * @param item_ Object
+     */
 	public void setDeviceType(Object item_)
 	{
 		if( item_ instanceof DeviceBase)					//ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
@@ -758,19 +823,31 @@ public class YC extends Observable implements MessageListener
 		else 
 			serialNumber = serialNumber_.trim();
 	}
+
+    /**
+     * Set the selected treeItem object
+     * @param treeItem_ java.lang.Object
+     */
+    public void setTreeItem(Object treeItem_) {
+        treeItem = treeItem_;
+
+        // Set device id for tree item
+        if (treeItem instanceof LiteYukonPAObject) {
+            LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
+            setDeviceID(liteYukonPao.getYukonID());
+        }
+        // Meter number item in tree selected.
+        else if (treeItem instanceof LiteDeviceMeterNumber) {
+            LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
+            setDeviceID(ldmn.getLiteID());
+        } else {
+            setDeviceID(-1);
+        }
+    }
 	/**
-	 * Set the selected treeItem object
-	 * @param treeItem_ java.lang.Object
-	 */
-	public void setTreeItem(Object treeItem_)
-	{
-		treeItem = treeItem_;
-	}
-	/**
-	 * Set the YCDefualts.
-	 * The default properties for YC setup.
-	 * @param defaults_ com.cannontech.yc.gui.YCDefaults
-	 */
+     * Set the YCDefualts. The default properties for YC setup.
+     * @param defaults_ com.cannontech.yc.gui.YCDefaults
+     */
 	public void setYCDefaults(YCDefaults defaults_)
 	{
 		ycDefaults = defaults_;
@@ -1626,8 +1703,9 @@ public class YC extends Observable implements MessageListener
     {
         return logUserName;
     }
-    public void setLogUserName(String logUserName)
+    public void setLiteUser(LiteYukonUser user)
     {
-        this.logUserName = logUserName;
+        this.user  = user;
+        this.logUserName = user.getUsername();
     }
 }

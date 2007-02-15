@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LitePoint;
@@ -250,14 +251,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					command = "";
 			}
 
-			if( command.length() > 0 )
-			{
-				if( !localBean.isPilConnValid())
-				{
-					localBean.setErrorMsg("Connection to PORTER is not established");
-				}
-				else
-				{
+			if( command.length() > 0 ) {
+				
+			    try {
 					/** Time to wait for return to calling jsp
 					 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
 					String timeOut = req.getParameter("timeOut");
@@ -275,26 +271,34 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					}
 			
 					localBean.setTimeOut(new Integer(timeOut).intValue());
-					localBean.setCommandString(command);
+                        localBean.setCommandString(command);
 					localBean.setErrorMsg("");	//clear out any old error messages
                     
-					localBean.executeCommand();
-		
-					/** Don't return to the jsp until we have the message or we've timed out.*/
-					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning()))
-					{
-						try
-						{
-							Thread.sleep(5000);
-						}
-						catch (InterruptedException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
-				}
+                    if (localBean.isPilConnValid()) {
+                        
+    					localBean.executeCommand();
+    		
+    					/** Don't return to the jsp until we have the message or we've timed out.*/
+    					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning()))
+    					{
+    						try
+    						{
+    							Thread.sleep(5000);
+    						}
+    						catch (InterruptedException e)
+    						{
+    							// TODO Auto-generated catch block
+    							e.printStackTrace();
+    						}
+    					}
+    					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
+                    
+                    } else {
+                        localBean.setErrorMsg("Connection to PORTER is not established");
+                    }
+			    } catch (PaoAuthorizationException e) {
+                    localBean.setErrorMsg("You do not have permission to execute command: " + e.getPermission());
+			    }
 			}
 			
 		}

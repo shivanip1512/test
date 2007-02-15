@@ -139,7 +139,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					
 				getSerialTypeToNumberMap().put(serialType_, serialNumbers);
 			}
-			setErrorMsg("");
 		}
 	}
 
@@ -1071,7 +1070,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     public void setUserID(int userID)
     {
         this.userID = userID;
-        setLogUserName(DaoFactory.getYukonUserDao().getLiteYukonUser(userID).getUsername());
+        setLiteUser(DaoFactory.getYukonUserDao().getLiteYukonUser(userID));
     }
     
     public List<LiteYukonPAObject> getLiteDevices(){

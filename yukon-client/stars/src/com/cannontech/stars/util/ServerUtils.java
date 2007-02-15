@@ -1,6 +1,7 @@
 package com.cannontech.stars.util;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -29,9 +30,6 @@ public class ServerUtils {
 
     public static final int ADDRESSING_GROUP_NOT_FOUND = -999999;
     
-	// Increment this for every message
-	private static long userMessageIDCounter = 1;
-	
 	// Directory for all the temporary files
     private static final String STARS_TEMP_DIR = "stars_temp";
     
@@ -76,10 +74,14 @@ public class ServerUtils {
 		
 		YC yc = getYC();
 		synchronized (yc) {
-			yc.setYCDefaults( ycDefaults );
-			yc.setRouteID( routeID );
-			yc.setCommandString( command );
-			yc.handleSerialNumber();
+		    try {
+    			yc.setYCDefaults( ycDefaults );
+    			yc.setRouteID( routeID );
+                    yc.setCommandString( command );
+    			yc.handleSerialNumber();
+			} catch (PaoAuthorizationException e) {
+			    throw new WebClientException("You do not have permission to execute command: " + e.getPermission());
+			}
 		}
 	}
 	
@@ -202,7 +204,6 @@ public class ServerUtils {
     
     public static String getFileWriteSwitchConfigDir()
     {
-        final String fs = System.getProperty( "file.separator" );
         String dirBase = null;
         
         String temp = System.getProperty( SWITCH_BATCH_PATH );

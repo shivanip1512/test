@@ -4,10 +4,6 @@
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 
-<style type="text/css">
-	div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #666; text-align:left; padding: 8px;}
-</style>
-
 <%
 	//set the deviceID of the YC_BEAN
 	YC_BEAN.setDeviceID(deviceID);
@@ -55,107 +51,113 @@
     }
 %>
 
-<div class="titleHeader"> 
-	CONTROL COMMANDS
-</div>
-<div class="subTitleHeader">
-	<%=name%>
-</div>
 
 <%@ include file="MspCISDetail.jspf"%>
 
-
-<td width="657" valign="top" bgcolor="#FFFFFF"> 
-<% 
-	if (errorMsg != null) {
-		out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
-	}
-%>
-		<table width="600" border="0" cellspacing="0" cellpadding="3" >
-        	<tr> 
-            	<td class="SubtitleHeader" align="right">Type:</td>
-                <td class="tableCell" colspan="2"><%=YC_BEAN.getDeviceType()%></td>
-            </tr>
-            <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
-            	<input type="hidden" name="deviceID" value="<%=deviceID%>">
-                <input type="hidden" name="timeOut" value="8000">
-                <%--The jsp wrapping this page needs to tell us "redirect"s value --%>
-                <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
-                <input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
-
+	<div class="titleHeader"> 
+		CONTROL COMMANDS
+	</div>
+	
+	<div class="subTitleHeader">
+		<%=name%>
+	</div>
+	
+	<div class="errorMsg">
+<% if (errorMsg != null) { %>
+		<%=errorMsg %><br />
+<% } %>
+<% if (YC_BEAN.getErrorMsg().length() > 0 ) { %>
+	 	<%=YC_BEAN.getErrorMsg() %><br />
+<% } %>
+	</div>
+	
+	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
+		<input type="hidden" name="deviceID" value="<%=deviceID%>">
+	    <input type="hidden" name="timeOut" value="8000">
+	    <%--The jsp wrapping this page needs to tell us "redirect"s value --%>
+	    <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
+	    <input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
+					
+		<table align="center">
+	    	<tr> 
+	          	<td class="SubtitleHeader" align="right">Type:</td>
+	              <td class="tableCell" colspan="2"><%=YC_BEAN.getDeviceType()%></td>
+	        </tr>
+		
 <% 
 	if( serialType.length() > 0) {
 %>
-				<tr> 
-                	<td class="SubtitleHeader" align="right">Serial Number:</td>
-                	<td class="tableCell" colspan="2">
-                  		<input type="text" name="serialNumber" size="20" value="<%=serialNum%>">
-                	</td>
-              	</tr>
-              	<tr> 
-	                <td class="SubtitleHeader" height="2" align="right">Route:</td>
-	                <td class="tableCell" colspan="2" height="2"> 
-                  		<select id="routeID" name="routeID">
-                    		<OPTION VALUE="-1">Select a Route
+			<tr> 
+               	<td class="SubtitleHeader" align="right">Serial Number:</td>
+               	<td class="tableCell" colspan="2">
+                	<input type="text" name="serialNumber" size="20" value="<%=serialNum%>">
+               	</td>
+			</tr>
+            <tr> 
+                <td class="SubtitleHeader" height="2" align="right">Route:</td>
+                <td class="tableCell" colspan="2" height="2"> 
+                	<select id="routeID" name="routeID">
+                   		<option VALUE="-1">Select a Route
 <%
 		LiteYukonPAObject[] validRoutes = YC_BEAN.getValidRoutes();
-        for (int i = 0; i < validRoutes.length; i++) {
+		for (int i = 0; i < validRoutes.length; i++) {
 %>
-							<OPTION VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonID()%>" <%=YC_BEAN.getRouteID()==((LiteYukonPAObject)validRoutes[i]).getYukonID() ? "selected" : ""%>><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
+						<option VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonID()%>" <%=YC_BEAN.getRouteID()==((LiteYukonPAObject)validRoutes[i]).getYukonID() ? "selected" : ""%>><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
 <%
 		}
 %>
-						</select>
-                	</td>
-              	</tr>
+					</select>
+               	</td>
+			</tr>
 <%
 	}
 %>
-              	<tr> 
-                	<td class="SubtitleHeader" align="right">Common Commands:</td>
-                	<td class="tableCell" colspan="2">
-                  		<select name="commonCommand" onChange="loadCommand()" onInit="loadCommand()">
-                    		<OPTION value="">Select a Command</option>                
+			<tr> 
+	        	<td class="SubtitleHeader" align="right">Common Commands:</td>
+	            <td class="tableCell" colspan="2">
+	            	<select name="commonCommand" onChange="loadCommand()" onInit="loadCommand()">
+	                	<option value="">Select a Command</option>                
 <%
+	Object commandObject = liteYukonPao;
+	if(serialType.length() > 0){
+		commandObject = serialType;
+	}
+
+
 	String tempCommand = YC_BEAN.getCommandString().replaceAll("noqueue", "").trim();
     for (int i = 0; i < YC_BEAN.getLiteDeviceTypeCommandsVector().size(); i++) {
 		LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)YC_BEAN.getLiteDeviceTypeCommandsVector().get(i);
 		LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
-        if( ldtc.isVisible() ) {
+		String commandString = lc.getCommand();
+        if( ldtc.isVisible() && YC_BEAN.isAllowCommand(commandString, lYukonUser, commandObject)) {
 %>
-							<option value='<%=lc.getCommand()%>' <%=(lc.getCommand().equalsIgnoreCase(tempCommand))? "selected":""%> ><%=lc.getLabel()%></option>
+						<option value='<%=commandString%>' <%=(commandString.equalsIgnoreCase(tempCommand))? "selected":""%> ><%=lc.getLabel()%></option>
 <%
 		}
 	}
 %>
-						</select>
-                	</td>
-              	</tr>
-              	<tr> 
-                	<td class="SubtitleHeader" align="right">Execute Command:</td>
-                	<td class="tableCell">
-                  		<input type="text" name="command" size="40" value="<%=YC_BEAN.getCommandString()%>">
-                	</td>
-                	<td>
-                  		<input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
-                	</td>
-              	</tr>
-              	<tr> 
-                	<td class="SubtitleHeader" colspan="3" valign="top">&nbsp;</td>
-              	</tr>
-              	<tr> 
-	                <td align="center" colspan="3">
-	                	<div class="scroll">
-	                    	<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
-	                  	</div>
-	                  	<input type="submit" name="clearText" value="Clear Results">
-	                  	<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
-                	</td>
-              	</tr>              
-              	<tr>
-              		<td colspan="3">
-              			<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">              
-              				<tr> 
+					</select>
+				</td>
+			</tr>
+	        <tr> 
+	        	<td class="SubtitleHeader" align="right">Execute Command:</td>
+	            <td class="tableCell">
+	            	<input type="text" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="<%=YC_BEAN.getCommandString()%>">
+	            </td>
+	            <td>
+	            	<input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
+	            </td>
+			</tr>
+		</table>
+	
+    	<div class="scroll">
+        	<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
+        </div>
+        
+        <input type="submit" name="clearText" value="Clear Results">
+        <input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
+	</form>
+	
 <% 
 	String gotoLink = "";
 	if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
@@ -165,13 +167,11 @@
 	}
     if (isMCT410) {
 %>
-								<td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Custom</a></td>
+	<div class="bottomLink">
+		<a href="<%= gotoLink%>" name="advCommander410"  class="Link1">Commander: MCT410 Custom</a>
+	</div>
 <%
 	}
-%>
-							</tr>                   
-              				<tr>
-<%
 	if (request.getParameter("InvNo") != null) {  //we came from the Customer Account page
     		gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
 	} else {
@@ -179,15 +179,10 @@
 	}
 	if (isMCT410 ) {
 %>
-								<td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
+	<div class="bottomLink">
+		<a href="<%= gotoLink%>" name="advCommander410"  class="Link1">Commander: MCT410 Profile</a>
+	</div>
 <%
 	}
 %>
-							</tr>               
-						</table>
-              		</td>
-              	</tr>
-            </form>
-		</table>
-	</div>
-</td>
+

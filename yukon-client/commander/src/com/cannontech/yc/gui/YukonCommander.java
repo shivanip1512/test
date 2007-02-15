@@ -40,6 +40,7 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeLiteListener;
@@ -211,11 +212,14 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			String commandString = DaoFactory.getCommandDao().loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if( commandString != null)	//null is a cancel from prompt
 			{
-				setCommand(commandString);
-				if( isValidSetup() )
-				{
-					getCommandPanel().enter(getCommand());
-					getYC().executeCommand();
+				try {
+                    setCommand(commandString);
+    				if( isValidSetup() ) {
+    					getCommandPanel().enter(getCommand());
+    					getYC().executeCommand();
+    				}
+				} catch (PaoAuthorizationException e) {
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
 				}
 			}
 		}
@@ -291,13 +295,16 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			Object value = javax.swing.JOptionPane.showInputDialog(this, "Load Group Template", "Select the Addressing Template to Install", javax.swing.JOptionPane.QUESTION_MESSAGE, icon, selections, null);
 			if( value != null )//OK selected	
 			{
-				setCommand("putconfig template \'"+ value.toString()+"\'");
-				if( isValidSetup() )
-				{
-					getCommandPanel().enter(getCommand());
-					getYC().executeCommand();
-				}
-				
+                try {
+    				setCommand("putconfig template \'"+ value.toString()+"\'");
+    				if( isValidSetup() )
+    				{
+    					getCommandPanel().enter(getCommand());
+    					getYC().executeCommand();
+    				}
+                } catch (PaoAuthorizationException e) {
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                }
 			}
 		}
 		else if( event.getSource() == getYCCommandMenu().locateRoute )
@@ -316,20 +323,27 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
 			if(lShedule != null && lShedule instanceof LiteTOUSchedule)
 			{
-			    setCommand(getYC().buildTOUScheduleCommand(((LiteTOUSchedule)lShedule).getScheduleID()));
-				if( isValidSetup() )
-					getYC().executeCommand();
-
+                try {
+    			    setCommand(getYC().buildTOUScheduleCommand(((LiteTOUSchedule)lShedule).getScheduleID()));
+    				if( isValidSetup() )
+    					getYC().executeCommand();
+                } catch (PaoAuthorizationException e) {
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                }
 			}
 		}
 		else if ( event.getSource() == getLocateRouteDialog().getLocateButton())
 		{
-			setCommand("loop locateroute");
-			if( isValidSetup() )
-			{
-				getCommandPanel().enter(getCommand());
-				getYC().executeCommand();
-			}
+            try {
+    			setCommand("loop locateroute");
+    			if( isValidSetup() )
+    			{
+    				getCommandPanel().enter(getCommand());
+    				getYC().executeCommand();
+    			}
+            } catch (PaoAuthorizationException e) {
+                update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+            }
 		}
 		else if (event.getSource() == getLocateRouteDialog().getRouteComboBox())
 		{
@@ -1226,6 +1240,10 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         Cursor savedCursor = null;
         try {
 
+            if (DBChangeMsg.CAT_YUKON_USER_GROUP.equals(msg.getCategory())) {
+                this.updateCommandSelection();
+            }
+            
             savedCursor = getRootPane().getCursor();
             getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
             
@@ -1418,12 +1436,16 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			String commandString = DaoFactory.getCommandDao().loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if (commandString != null)	//null is a cancel from prompt
 			{
-				setCommand(commandString);			
-				if( isValidSetup())
-				{
-					getCommandPanel().enter(getCommand());
-					getYC().executeCommand();
-				}
+			    try {
+    				setCommand(commandString);			
+    				if( isValidSetup())
+    				{
+    					getCommandPanel().enter(getCommand());
+    					getYC().executeCommand();
+    				}
+                } catch (PaoAuthorizationException e) {
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                }
 			}
 		}
 		
@@ -1710,8 +1732,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	/**
 	 * Sets the ycClass.command.
 	 * @param newCommand java.lang.String
+	 * @throws PaoAuthorizationException - User does not have authorization for command
 	 */
-	private void setCommand(String newCommand)
+	private void setCommand(String newCommand) throws PaoAuthorizationException
 	{
 		getYC().setCommandString(newCommand);
 	}
@@ -1985,7 +2008,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getYC().getLiteDeviceTypeCommandsVector().get(i);
 			LiteCommand  lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
-			if( ldtc.isVisible() )
+			if( ldtc.isVisible() && yc.isAllowCommand(lc.getCommand()))
 				getCommandPanel().getAvailableCommandsComboBox().addItem( lc.getLabel());
 		}
 	}
@@ -2094,8 +2117,10 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 */
 	public YC getYC()
 	{
-		if (yc == null)
+		if (yc == null){
 			yc = new YC(true);	//load defaults from file
+            yc.setLiteUser(ClientSession.getInstance().getUser());
+        }
 		return yc;
 	}
 

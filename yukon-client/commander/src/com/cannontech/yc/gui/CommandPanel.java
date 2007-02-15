@@ -1,5 +1,11 @@
 package com.cannontech.yc.gui;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
+import com.cannontech.roles.application.CommanderRole;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/5/2001 3:29:19 PM)
@@ -129,6 +135,16 @@ public class CommandPanel extends javax.swing.JPanel
 			try
 			{
 				executeCommandComboBoxTextField = (javax.swing.JTextField) getExecuteCommandComboBox().getEditor().getEditorComponent();
+                
+                // Check property to see if manual commands are allowed
+                LiteYukonRoleProperty liteProp =
+                    DaoFactory.getAuthDao().getRoleProperty(CommanderRole.EXECUTE_MANUAL_COMMAND);
+
+                String val = DaoFactory.getAuthDao().getRolePropertyValue(
+                    ClientSession.getInstance().getUser(),
+                    liteProp.getRolePropertyID() );
+                
+                executeCommandComboBoxTextField.setEditable(Boolean.valueOf(val));
 			}
 			catch (java.lang.Throwable t)
 			{

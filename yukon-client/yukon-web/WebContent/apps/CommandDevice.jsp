@@ -269,9 +269,11 @@
 						<span class="sideMenuTextSelected">DCU-205 Serial</span>
 					</c:when>
 					<c:otherwise>
-						<a href="CommandDevice.jsp?deviceID=${device.yukonID}&manual&sa205" class="Link2">
-							<span class="sideMenuText">DCU-205 Serial</span>
-						</a>
+						<div class="sideMenuLink">					
+							<a href="CommandDevice.jsp?deviceID=${device.yukonID}&manual&sa205" class="Link2">
+								<span class="sideMenuText">DCU-205 Serial</span>
+							</a>
+						</div>
 					</c:otherwise>
 				</c:choose>
 <%
@@ -306,9 +308,11 @@
 						<span class="sideMenuTextSelected">DCU-305 Serial</span>
 					</c:when>
 					<c:otherwise>
-						<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>}&manual&sa305" class="Link2">
-							<span class="sideMenuText">DCU-305 Serial</span>
-						</a>
+						<div class="sideMenuLink">
+							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305" class="Link2">
+								<span class="sideMenuText">DCU-305 Serial</span>
+							</a>
+						</div>
 					</c:otherwise>
 				</c:choose>
 		
@@ -443,8 +447,7 @@
 	
 	
 		<div class="commandInclude">
-		<table>
-			<tr>
+		
 			<c:choose>
 				<c:when test="${lp}">
 					<%@ include file="AdvancedCommander410.jspf"%>
@@ -456,8 +459,7 @@
 					<%@ include file="Commander.jspf"%>
 				</c:otherwise>
 			</c:choose>
-			</tr>
-		</table>
+		
 		</div>
 	</div>
 	
