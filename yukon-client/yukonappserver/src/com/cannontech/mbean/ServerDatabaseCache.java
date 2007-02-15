@@ -348,7 +348,7 @@ public synchronized List<LiteCICustomer> getAllCICustomers() {
         for( int i = 0; i < customerList.size(); i++ ) {
             LiteCustomer aCustomer = customerList.get(i);
             if( aCustomer instanceof LiteCICustomer ) {
-                tempAllCICustomers.add(aCustomer);
+                tempAllCICustomers.add((LiteCICustomer)aCustomer);
             }
         }
         tempAllCICustomers.trimToSize();
