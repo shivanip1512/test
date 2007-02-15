@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -17,10 +17,10 @@ import com.cannontech.database.db.web.EnergyCompanyCustomerList;
 
 public class EnergyCompanyLoader implements Runnable
 {
-   	private ArrayList allCompanies;
+   	private List<LiteEnergyCompany> allCompanies;
 	private String dbAlias = null;
 
-	public EnergyCompanyLoader(ArrayList allCompanies, String dbAlias) {
+	public EnergyCompanyLoader(List<LiteEnergyCompany> allCompanies, String dbAlias) {
    		this.allCompanies = allCompanies;
       	this.dbAlias = dbAlias;      	
    	}
@@ -72,7 +72,7 @@ public class EnergyCompanyLoader implements Runnable
 
 					for( int i = 0; i < allCompanies.size(); i++ )
 					{
-						LiteEnergyCompany company = (LiteEnergyCompany)allCompanies.get(i);
+						LiteEnergyCompany company = allCompanies.get(i);
 						
 						if( company.getEnergyCompanyID() == engID )
 						{

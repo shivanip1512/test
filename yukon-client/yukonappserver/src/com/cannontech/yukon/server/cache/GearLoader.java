@@ -6,6 +6,10 @@
  */
 package com.cannontech.yukon.server.cache;
 
+import java.util.List;
+
+import com.cannontech.database.data.lite.LiteGear;
+
 /**
  * @author jdayton
  *
@@ -14,11 +18,11 @@ package com.cannontech.yukon.server.cache;
  */
 public class GearLoader implements Runnable {
 	private String databaseAlias = null;
-	private java.util.ArrayList allGears = null;
+	private List<LiteGear> allGears = null;
 /**
  * GearLoader constructor comment.
  */
-public GearLoader(java.util.ArrayList gears ,String dbAlias) {
+public GearLoader(List<LiteGear> gears ,String dbAlias) {
 	super();
 	this.allGears = gears ;
 	this.databaseAlias = dbAlias;
@@ -58,8 +62,7 @@ public void run()
 			int ownerID = rset.getInt(4);
 			int gearNumber = rset.getInt(5);
 
-			com.cannontech.database.data.lite.LiteGear gear =
-				new com.cannontech.database.data.lite.LiteGear( gearID );
+			LiteGear gear = new LiteGear( gearID );
 				
 			gear.setGearName(gearName);
 			gear.setGearType(gearType);

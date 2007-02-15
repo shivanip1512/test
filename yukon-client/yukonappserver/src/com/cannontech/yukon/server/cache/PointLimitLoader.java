@@ -1,6 +1,6 @@
 package com.cannontech.yukon.server.cache;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.database.data.lite.LitePointLimit;
 
@@ -12,10 +12,10 @@ public class PointLimitLoader implements Runnable {
 	private static final String sql =
 		"SELECT PointID,LimitNumber,HighLimit,LowLimit,LimitDuration FROM PointLimits";
 
-	private ArrayList allPointLimits = null;
+	private List<LitePointLimit> allPointLimits = null;
 	private String dbAlias = null;
 
-	public PointLimitLoader(ArrayList allPointLimits, String dbAlias) {
+	public PointLimitLoader(List<LitePointLimit> allPointLimits, String dbAlias) {
 		this.allPointLimits = allPointLimits;
 		this.dbAlias = dbAlias;
 	}

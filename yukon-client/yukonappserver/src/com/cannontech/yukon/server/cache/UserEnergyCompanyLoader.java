@@ -23,12 +23,12 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class UserEnergyCompanyLoader implements Runnable
 {
 		
-	private Map allUserEnergyCompanies;
-	private List allUsers;
-	private List allEnergyCompanies;	
+	private Map<LiteYukonUser, LiteEnergyCompany> allUserEnergyCompanies;
+	private List<LiteYukonUser> allUsers;
+	private List<LiteEnergyCompany> allEnergyCompanies;	
 	private String dbAlias = null;
 
-	public UserEnergyCompanyLoader(Map allUserEnergyCompanies, List allUsers, List allEnergyCompanies, String dbAlias) {
+	public UserEnergyCompanyLoader(Map<LiteYukonUser, LiteEnergyCompany> allUserEnergyCompanies, List<LiteYukonUser> allUsers, List<LiteEnergyCompany> allEnergyCompanies, String dbAlias) {
 		this.allUserEnergyCompanies = allUserEnergyCompanies;
 		this.allUsers = allUsers;
 		this.allEnergyCompanies = allEnergyCompanies;
@@ -44,18 +44,18 @@ public class UserEnergyCompanyLoader implements Runnable
    		
    		// build up some hashtables to avoid 
    		// exponential algorithm   		
-   		HashMap userMap = new HashMap(allUsers.size()*2);
-   		HashMap companyMap = new HashMap(allEnergyCompanies.size()*2);
+   		HashMap<Integer, LiteYukonUser> userMap = new HashMap<Integer, LiteYukonUser>(allUsers.size()*2);
+   		HashMap<Integer, LiteEnergyCompany> companyMap = new HashMap<Integer, LiteEnergyCompany>(allEnergyCompanies.size()*2);
    		
-   		Iterator i = allUsers.iterator();
-   		while(i.hasNext()) {   			
-   			LiteYukonUser u = (LiteYukonUser) i.next();
+   		Iterator<LiteYukonUser> userIter = allUsers.iterator();
+   		while(userIter.hasNext()) {   			
+   			LiteYukonUser u = userIter.next();
    			userMap.put(new Integer(u.getUserID()), u);
    		}
    		
-   		i = allEnergyCompanies.iterator();
-   		while(i.hasNext()) {
-   			LiteEnergyCompany c = (LiteEnergyCompany) i.next();
+   		Iterator<LiteEnergyCompany> ecIter = allEnergyCompanies.iterator();
+   		while(ecIter.hasNext()) {
+   			LiteEnergyCompany c = ecIter.next();
    			companyMap.put(new Integer(c.getLiteID()), c);
    		}
    		
@@ -111,14 +111,14 @@ public class UserEnergyCompanyLoader implements Runnable
    
    }
 
-public void populateMap(HashMap userMap, HashMap companyMap, ResultSet rset)
+public void populateMap(HashMap<Integer, LiteYukonUser> userMap, HashMap<Integer, LiteEnergyCompany> companyMap, ResultSet rset)
 	throws SQLException {
 	while(rset.next()) {
 		Integer userID = new Integer(rset.getInt(1));
 		Integer companyID = new Integer(rset.getInt(2));
 		
-		LiteYukonUser user = (LiteYukonUser) userMap.get(userID);
-		LiteEnergyCompany company = (LiteEnergyCompany) companyMap.get(companyID);
+		LiteYukonUser user = userMap.get(userID);
+		LiteEnergyCompany company = companyMap.get(companyID);
 		
 		allUserEnergyCompanies.put(user,company);
 	}   		

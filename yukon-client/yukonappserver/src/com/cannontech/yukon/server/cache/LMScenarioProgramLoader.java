@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
@@ -11,13 +13,13 @@ import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
  */
 public class LMScenarioProgramLoader implements Runnable 
 {
-	private java.util.List allLMScenarioPrograms = null;
+	private List<LiteLMProgScenario> allLMScenarioPrograms = null;
 	private String databaseAlias = null;
 
 /**
  * LMScenarioLoader constructor comment.
  */
-public LMScenarioProgramLoader(java.util.List lmScenarioProgs, String alias) {
+public LMScenarioProgramLoader(List<LiteLMProgScenario> lmScenarioProgs, String alias) {
 	super();
 	allLMScenarioPrograms = lmScenarioProgs;
 	databaseAlias = alias;

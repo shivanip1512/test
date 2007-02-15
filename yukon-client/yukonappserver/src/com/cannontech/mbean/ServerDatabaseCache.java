@@ -17,9 +17,12 @@ import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -27,12 +30,25 @@ import com.cannontech.database.data.lite.LiteDeviceConfiguration;
 import com.cannontech.database.data.lite.LiteDeviceConfigurationCategory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteGear;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.data.lite.LiteHolidaySchedule;
+import com.cannontech.database.data.lite.LiteLMConstraint;
+import com.cannontech.database.data.lite.LiteLMPAOExclusion;
+import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointLimit;
+import com.cannontech.database.data.lite.LiteSeasonSchedule;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteTOUDay;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
+import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -101,89 +117,88 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private CacheDBChangeListener dbChangeListener = null;
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
-	private ArrayList allYukonPAObjects = null;
+	private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
 	//private ArrayList allPoints = null;
-    private ArrayList allSystemPoints = null;
+    private ArrayList<LitePoint> allSystemPoints = null;
 	private List<LiteNotificationGroup> allNotificationGroups = null;
 		
-	private ArrayList allAlarmCategories = null;
-	private ArrayList allContacts = null;
-	private ArrayList allGraphDefinitions = null;
-	private ArrayList allMCTs = null;
-	private ArrayList allHolidaySchedules = null;
-	private ArrayList allBaselines = null;
-	private ArrayList allConfigs = null;
-	private ArrayList allDeviceMeterGroups = null;
-	private ArrayList allDMG_CollectionGroups = null;	//distinct DeviceMeterGroup.collectionGroup
-	private ArrayList allDMG_AlternateGroups = null;	//distinct DeviceMeterGroup.alternateGroup
-	private ArrayList allDMG_BillingGroups = null;	//distinct DeviceMeterGroup.billingGroup
-	private ArrayList allPointLimits = null;
-	private ArrayList allYukonImages = null;
+	private ArrayList<LiteAlarmCategory> allAlarmCategories = null;
+	private ArrayList<LiteContact> allContacts = null;
+	private ArrayList<LiteGraphDefinition> allGraphDefinitions = null;
+	private ArrayList<LiteYukonPAObject> allMCTs = null;
+	private ArrayList<LiteHolidaySchedule> allHolidaySchedules = null;
+	private ArrayList<LiteBaseline> allBaselines = null;
+	private ArrayList<LiteConfig> allConfigs = null;
+	private ArrayList<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
+	private ArrayList<String> allDMG_CollectionGroups = null;	//distinct DeviceMeterGroup.collectionGroup
+	private ArrayList<String> allDMG_AlternateGroups = null;	//distinct DeviceMeterGroup.alternateGroup
+	private ArrayList<String> allDMG_BillingGroups = null;	//distinct DeviceMeterGroup.billingGroup
+	private ArrayList<LitePointLimit> allPointLimits = null;
+	private ArrayList<LiteYukonImage> allYukonImages = null;
 	private List<LiteCICustomer> allCICustomers = null;
 	private List<LiteCustomer> allCustomers = null;
-	private ArrayList allLMProgramConstraints = null;
-	private ArrayList allLMScenarios = null;
-	private ArrayList allLMScenarioProgs = null;
-	private ArrayList allLMPAOExclusions = null;
+	private ArrayList<LiteLMConstraint> allLMProgramConstraints = null;
+	private ArrayList<LiteYukonPAObject> allLMScenarios = null;
+	private ArrayList<LiteLMProgScenario> allLMScenarioProgs = null;
+	private ArrayList<LiteLMPAOExclusion> allLMPAOExclusions = null;
 
-	private ArrayList allTags = null;
-	private ArrayList allSettlementConfigs = null;
-	private Map allSettlementConfigsMap = null;
+	private ArrayList<LiteTag> allTags = null;
+	private ArrayList<LiteSettlementConfig> allSettlementConfigs = null;
+	private Map<Integer, LiteSettlementConfig> allSettlementConfigsMap = null;
 	
-	private ArrayList allSeasonSchedules = null;
-	private ArrayList allGears = null;
+	private ArrayList<LiteSeasonSchedule> allSeasonSchedules = null;
+	private ArrayList<LiteGear> allGears = null;
 	private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
-	private ArrayList allTOUDays = null;
+	private ArrayList<LiteTOUDay> allTOUDays = null;
 	
-	private ArrayList allYukonUsers = null;
-	private ArrayList allYukonRoles = null;
-	private ArrayList allYukonRoleProperties = null;
-	private ArrayList allYukonGroups = null;
+	private ArrayList<LiteYukonUser> allYukonUsers = null;
+	private ArrayList<LiteYukonRole> allYukonRoles = null;
+	private ArrayList<LiteYukonRoleProperty> allYukonRoleProperties = null;
+	private ArrayList<LiteYukonGroup> allYukonGroups = null;
 	
 	private Map allYukonUserRolePropertiesMap = null;
 	private Map allYukonGroupRolePropertiesMap = null;
 	private Map allYukonUserGroupsMap = null;
 	private Map allYukonGroupUsersMap = null;
 		
-	private ArrayList allEnergyCompanies = null;
+	private ArrayList<LiteEnergyCompany> allEnergyCompanies = null;
 	
 	//lists that are created by the joining/parsing of existing lists
-	private ArrayList allGraphTaggedPoints = null; //Points
-	private ArrayList allUnusedCCDevices = null; //PAO
-	private ArrayList allCapControlFeeders = null; //PAO
-	private ArrayList allCapControlSubBuses = null; //PAO	
-	private ArrayList allDevices = null; //PAO
-	private ArrayList allLMPrograms = null; //PAO
-	private ArrayList allLMControlAreas = null;	//PAO
-	private ArrayList allLMGroups = null;//PAO
-	private ArrayList allLoadManagement = null; //PAO
-	private ArrayList allPorts = null; //PAO
-	private ArrayList allRoutes = null; //PAO
+	private ArrayList<LiteYukonPAObject> allUnusedCCDevices = null; //PAO
+	private ArrayList<LiteYukonPAObject> allCapControlFeeders = null; //PAO
+	private ArrayList<LiteYukonPAObject> allCapControlSubBuses = null; //PAO	
+	private ArrayList<LiteYukonPAObject> allDevices = null; //PAO
+	private ArrayList<LiteYukonPAObject> allLMPrograms = null; //PAO
+	private ArrayList<LiteYukonPAObject> allLMControlAreas = null;	//PAO
+	private ArrayList<LiteYukonPAObject> allLMGroups = null;//PAO
+	private ArrayList<LiteYukonPAObject> allLoadManagement = null; //PAO
+	private ArrayList<LiteYukonPAObject> allPorts = null; //PAO
+	private ArrayList<LiteYukonPAObject> allRoutes = null; //PAO
 	
 	
 	//Maps that are created by the joining/parsing of existing lists
 	//private HashMap allPointidMultiplierHashMap = null;
 	//private Map allPointIDOffsetHashMap = null;
 	//private Map allPointsMap = null;
-	private Map allPAOsMap = null;
-	private Map allCustomersMap = null;    
+	private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
+	private Map<Integer, LiteCustomer> allCustomersMap = null;    
 	private Map<Integer, LiteContact> allContactsMap = new HashMap<Integer, LiteContact>();
     
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
-	private Map allUserEnergyCompaniesMap = null;
-	private Map userPaoOwnersMap = null;
+	private Map<LiteYukonUser, LiteEnergyCompany> allUserEnergyCompaniesMap = null;
+	private Map<LiteYukonUser, int[]> userPaoOwnersMap = null;
     
-	private ArrayList allDeviceTypeCommands = null;
-	private ArrayList allCommands = null;
-	private Map allCommandsMap = null;
-	private Map allStateGroupMap = null;
-	private Map allUsersMap = null;
-	private Map allContactNotifsMap = null;
+	private ArrayList<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
+	private ArrayList<LiteCommand> allCommands = null;
+	private Map<Integer, LiteCommand> allCommandsMap = null;
+	private Map<Integer, LiteStateGroup> allStateGroupMap = null;
+	private Map<Integer, LiteYukonUser> allUsersMap = null;
+	private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
 	
 	private Map<Integer, LiteContact> userContactMap = new HashMap<Integer, LiteContact>();
-    private Map userRolePropertyValueMap = null;
-	private Map userRoleMap = null;
+    private Map<MapKeyInts, String> userRolePropertyValueMap = null;
+	private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
 /**
  * ServerDatabaseCache constructor comment.
@@ -227,13 +242,13 @@ public synchronized DBChangeMsg[] createDBChangeMessages( com.cannontech.databas
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllAlarmCategories(){
+public synchronized List<LiteAlarmCategory> getAllAlarmCategories(){
 
 	if( allAlarmCategories != null )
 		return allAlarmCategories;
 	else
 	{
-		allAlarmCategories = new ArrayList();
+		allAlarmCategories = new ArrayList<LiteAlarmCategory>();
 		AlarmCategoryLoader alarmStateLoader = new AlarmCategoryLoader(allAlarmCategories, databaseAlias);
 		alarmStateLoader.run();
 		return allAlarmCategories;
@@ -246,13 +261,13 @@ public synchronized java.util.List getAllAlarmCategories(){
  * com.cannontech.database.data.lite.LiteYukonImage
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllYukonImages()
+public synchronized List<LiteYukonImage> getAllYukonImages()
 {
    if( allYukonImages != null )
 	  return allYukonImages;
    else
    {
-	  allYukonImages = new ArrayList();
+	  allYukonImages = new ArrayList<LiteYukonImage>();
 	  YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
 	  imageLoader.run();
 	  return allYukonImages;
@@ -263,16 +278,16 @@ public synchronized java.util.List getAllYukonImages()
 /**
  *
  */
-public synchronized java.util.List getAllCapControlFeeders() 
+public synchronized List<LiteYukonPAObject> getAllCapControlFeeders() 
 {
 	if( allCapControlFeeders == null )
 	{
-		allCapControlFeeders = new ArrayList( getAllYukonPAObjects().size() / 2 );
+		allCapControlFeeders = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == PAOGroups.CAT_CAPCONTROL
-				 && ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() == PAOGroups.CAP_CONTROL_FEEDER )
+			if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_CAPCONTROL
+				 && getAllYukonPAObjects().get(i).getType() == PAOGroups.CAP_CONTROL_FEEDER )
 				allCapControlFeeders.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -284,16 +299,16 @@ public synchronized java.util.List getAllCapControlFeeders()
 /**
  *
  */
-public synchronized java.util.List getAllCapControlSubBuses() 
+public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses() 
 {
 	if( allCapControlSubBuses == null )
 	{
-		allCapControlSubBuses = new ArrayList( getAllYukonPAObjects().size() / 2 );
+		allCapControlSubBuses = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == PAOGroups.CAT_CAPCONTROL
-				 && ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() == PAOGroups.CAP_CONTROL_SUBBUS )
+			if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_CAPCONTROL
+				 && getAllYukonPAObjects().get(i).getType() == PAOGroups.CAP_CONTROL_SUBBUS )
 				allCapControlSubBuses.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -306,13 +321,13 @@ public synchronized java.util.List getAllCapControlSubBuses()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized List getAllContacts() {
+public synchronized List<LiteContact> getAllContacts() {
     if( allContacts != null && allContactsMap != null && allContactNotifsMap != null) {
         return allContacts;
     } else {
-        allContacts = new ArrayList();        
+        allContacts = new ArrayList<LiteContact>();        
         allContactsMap.clear();
-        allContactNotifsMap = new HashMap();
+        allContactNotifsMap = new HashMap<Integer, LiteContactNotification>();
         
         ContactLoader contactLoader =
             new ContactLoader(allContacts, allContactsMap, allContactNotifsMap, databaseAlias);
@@ -327,13 +342,13 @@ public synchronized List getAllContacts() {
  */
 public synchronized List<LiteCICustomer> getAllCICustomers() {
     if( allCICustomers == null ) {
-        List customerList = getAllCustomers();
+        List<LiteCustomer> customerList = getAllCustomers();
         ArrayList<LiteCICustomer> tempAllCICustomers = new ArrayList<LiteCICustomer>( customerList.size());
         
         for( int i = 0; i < customerList.size(); i++ ) {
-            LiteCustomer aCustomer = (LiteCustomer) customerList.get(i);
+            LiteCustomer aCustomer = customerList.get(i);
             if( aCustomer instanceof LiteCICustomer ) {
-                tempAllCICustomers.add((LiteCICustomer)aCustomer);
+                tempAllCICustomers.add(aCustomer);
             }
         }
         tempAllCICustomers.trimToSize();
@@ -346,13 +361,13 @@ public synchronized List<LiteCICustomer> getAllCICustomers() {
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllDeviceMeterGroups()
+public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups()
 {
 	if( allDeviceMeterGroups != null )
 		return allDeviceMeterGroups;
 	else
 	{
-		allDeviceMeterGroups = new ArrayList();
+		allDeviceMeterGroups = new ArrayList<LiteDeviceMeterNumber>();
 		DeviceMeterGroupLoader deviceMeterGroupLoader = new DeviceMeterGroupLoader (allDeviceMeterGroups, databaseAlias);
 		deviceMeterGroupLoader.run();
 		return allDeviceMeterGroups;
@@ -360,17 +375,17 @@ public synchronized java.util.List getAllDeviceMeterGroups()
 
 }
 
-public synchronized List getAllDMG_CollectionGroups()
+public synchronized List<String> getAllDMG_CollectionGroups()
 {
 	if (allDMG_CollectionGroups != null)
 		return allDMG_CollectionGroups;
 	else
 	{
-		allDMG_CollectionGroups = new ArrayList();
-		List groups = getAllDeviceMeterGroups();
+		allDMG_CollectionGroups = new ArrayList<String>();
+		List<LiteDeviceMeterNumber> groups = getAllDeviceMeterGroups();
 		for (int i = 0; i < groups.size(); i++)
 		{
-			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)groups.get(i);
+			LiteDeviceMeterNumber ldmn = groups.get(i);
 			if( !allDMG_CollectionGroups.contains(ldmn.getCollGroup()))
 				allDMG_CollectionGroups.add(ldmn.getCollGroup());
 		}
@@ -379,17 +394,17 @@ public synchronized List getAllDMG_CollectionGroups()
 		return allDMG_CollectionGroups;
 	}
 }
-public synchronized List getAllDMG_AlternateGroups()
+public synchronized List<String> getAllDMG_AlternateGroups()
 {
 	if (allDMG_AlternateGroups != null)
 		return allDMG_AlternateGroups;
 	else
 	{
-		allDMG_AlternateGroups = new ArrayList();
-		List groups = getAllDeviceMeterGroups();
+		allDMG_AlternateGroups = new ArrayList<String>();
+		List<LiteDeviceMeterNumber> groups = getAllDeviceMeterGroups();
 		for (int i = 0; i < groups.size(); i++)
 		{
-			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)groups.get(i);
+			LiteDeviceMeterNumber ldmn = groups.get(i);
 			if( !allDMG_AlternateGroups.contains(ldmn.getTestCollGroup()))
 				allDMG_AlternateGroups.add(ldmn.getTestCollGroup());
 		}
@@ -398,17 +413,17 @@ public synchronized List getAllDMG_AlternateGroups()
 	}
 }
 
-public synchronized List getAllDMG_BillingGroups()
+public synchronized List<String> getAllDMG_BillingGroups()
 {
 	if (allDMG_BillingGroups != null)
 		return allDMG_BillingGroups;
 	else
 	{
-		allDMG_BillingGroups = new ArrayList();
-		List groups = getAllDeviceMeterGroups();
+		allDMG_BillingGroups = new ArrayList<String>();
+		List<LiteDeviceMeterNumber> groups = getAllDeviceMeterGroups();
 		for (int i = 0; i < groups.size(); i++)
 		{
-			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)groups.get(i);
+			LiteDeviceMeterNumber ldmn = groups.get(i);
 			if( !allDMG_BillingGroups.contains(ldmn.getBillGroup()))
 				allDMG_BillingGroups.add(ldmn.getBillGroup());
 		}
@@ -421,15 +436,15 @@ public synchronized List getAllDMG_BillingGroups()
  * getAllDevices method comment.
  *
  */
-public synchronized java.util.List getAllDevices() 
+public synchronized List<LiteYukonPAObject> getAllDevices() 
 {
 	if( allDevices == null )
 	{
-		allDevices = new ArrayList( getAllYukonPAObjects().size() );
+		allDevices = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
+			if( getAllYukonPAObjects().get(i).getCategory() 
 				  == PAOGroups.CAT_DEVICE )
 				allDevices.add( getAllYukonPAObjects().get(i) );
 		}
@@ -443,13 +458,13 @@ public synchronized java.util.List getAllDevices()
 /**
  * Get all MCTs
  */
-public synchronized java.util.List getAllMCTs() {
+public synchronized List<LiteYukonPAObject> getAllMCTs() {
 	if (allMCTs == null) {
-		allMCTs = new ArrayList( getAllDevices().size() / 2 );
+		allMCTs = new ArrayList<LiteYukonPAObject>( getAllDevices().size() / 2 );
 		
 		for (int i = 0; i < getAllDevices().size(); i++) {
 			if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(
-					((LiteYukonPAObject) getAllDevices().get(i)).getType() ))
+					getAllDevices().get(i).getType() ))
 				allMCTs.add( getAllDevices().get(i) );
 		}
 		
@@ -463,13 +478,13 @@ public synchronized java.util.List getAllMCTs() {
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllGraphDefinitions()
+public synchronized List<LiteGraphDefinition> getAllGraphDefinitions()
 {
 	if( allGraphDefinitions != null )
 		return allGraphDefinitions;
 	else
 	{
-		allGraphDefinitions = new ArrayList();
+		allGraphDefinitions = new ArrayList<LiteGraphDefinition>();
 		GraphDefinitionLoader graphDefinitionLoader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
 		graphDefinitionLoader.run();
 		return allGraphDefinitions;
@@ -479,14 +494,14 @@ public synchronized java.util.List getAllGraphDefinitions()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllHolidaySchedules()
+public synchronized List<LiteHolidaySchedule> getAllHolidaySchedules()
 {
 
 	if (allHolidaySchedules != null)
 		return allHolidaySchedules;
 	else
 	{
-		allHolidaySchedules = new ArrayList();
+		allHolidaySchedules = new ArrayList<LiteHolidaySchedule>();
 		HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
 		holidayScheduleLoader.run();
 		return allHolidaySchedules;
@@ -497,35 +512,35 @@ public synchronized java.util.List getAllHolidaySchedules()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllBaselines()
+public synchronized List<LiteBaseline> getAllBaselines()
 {
 
 	if (allBaselines != null)
 		return allBaselines;
 	else
 	{
-		allBaselines = new ArrayList();
+		allBaselines = new ArrayList<LiteBaseline>();
 		BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
 		baselineLoader.run();
 		return allBaselines;
 	}
 }
 
-public synchronized java.util.List getAllSeasonSchedules()
+public synchronized List<LiteSeasonSchedule> getAllSeasonSchedules()
 {
 
 	if (allSeasonSchedules != null)
 		return allSeasonSchedules;
 	else
 	{
-		allSeasonSchedules = new ArrayList();
+		allSeasonSchedules = new ArrayList<LiteSeasonSchedule>();
 		SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
 		seasonLoader.run();
 		return allSeasonSchedules;
 	}
 }
 
-public synchronized java.util.List <LiteTOUSchedule> getAllTOUSchedules()
+public synchronized List<LiteTOUSchedule> getAllTOUSchedules()
 {
 
 	if (allTOUSchedules != null)
@@ -539,46 +554,46 @@ public synchronized java.util.List <LiteTOUSchedule> getAllTOUSchedules()
 	}
 }
 
-public synchronized java.util.List getAllTOUDays()
+public synchronized List<LiteTOUDay> getAllTOUDays()
 {
 
 	if (allTOUDays != null)
 		return allTOUDays;
 	else
 	{
-		allTOUDays = new ArrayList();
+		allTOUDays = new ArrayList<LiteTOUDay>();
 		TOUDayLoader dayLoader = new TOUDayLoader(allTOUDays, databaseAlias);
 		dayLoader.run();
 		return allTOUDays;
 	}
 }
 
-public synchronized java.util.List getAllGears()
+public synchronized List<LiteGear> getAllGears()
 {
 
 	if (allGears != null)
 		return allGears;
 	else
 	{
-		allGears = new ArrayList();
+		allGears = new ArrayList<LiteGear>();
 		GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
 		gearLoader.run();
 		return allGears;
 	}
 }
 
-public synchronized List getAllCommands() {
+public synchronized List<LiteCommand> getAllCommands() {
 	if (allCommands== null)
 	{
-		allCommands = new ArrayList();
-		allCommandsMap = new HashMap();
+		allCommands = new ArrayList<LiteCommand>();
+		allCommandsMap = new HashMap<Integer, LiteCommand>();
 		CommandLoader commandLoader = new CommandLoader(allCommands, allCommandsMap, databaseAlias);
 		commandLoader.run();
 	}
 	return allCommands;
 }
 
-public synchronized java.util.Map getAllCommandsMap()
+public synchronized java.util.Map<Integer, LiteCommand> getAllCommandsMap()
 {
 	if( allCommandsMap != null )
 		return allCommandsMap;
@@ -591,40 +606,40 @@ public synchronized java.util.Map getAllCommandsMap()
 	}
 }
 
-public synchronized java.util.List getAllConfigs()
+public synchronized List<LiteConfig> getAllConfigs()
 {
 
 	if (allConfigs != null)
 		return allConfigs;
 	else
 	{
-		allConfigs = new ArrayList();
+		allConfigs = new ArrayList<LiteConfig>();
 		ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
 		configLoader.run();
 		return allConfigs;
 	}
 }
 
-public synchronized java.util.List getAllLMProgramConstraints()
+public synchronized List<LiteLMConstraint> getAllLMProgramConstraints()
 {
 
 	if (allLMProgramConstraints != null)
 		return allLMProgramConstraints;
 	else
 	{
-		allLMProgramConstraints = new ArrayList();
+		allLMProgramConstraints = new ArrayList<LiteLMConstraint>();
 		LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
 		lmConstraintsLoader.run();
 		return allLMProgramConstraints;
 	}
 }
 
-public synchronized java.util.List getAllLMScenarioProgs()
+public synchronized List<LiteLMProgScenario> getAllLMScenarioProgs()
 {
 
 	if( allLMScenarioProgs == null )
 	{
-		allLMScenarioProgs = new ArrayList();
+		allLMScenarioProgs = new ArrayList<LiteLMProgScenario>();
 		LMScenarioProgramLoader ldr = new LMScenarioProgramLoader(allLMScenarioProgs, databaseAlias);
 		ldr.run();
 	}
@@ -632,16 +647,16 @@ public synchronized java.util.List getAllLMScenarioProgs()
 	return allLMScenarioProgs;
 }
 
-public synchronized java.util.List getAllLMScenarios()
+public synchronized List<LiteYukonPAObject> getAllLMScenarios()
 {
 
 	if( allLMScenarios == null )
 	{
-		allLMScenarios = new ArrayList( getAllYukonPAObjects().size() / 2 );
+		allLMScenarios = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() 
+			if( getAllLoadManagement().get(i).getType() 
 				  == PAOGroups.LM_SCENARIO )
 			allLMScenarios.add( getAllLoadManagement().get(i) );
 		}
@@ -652,12 +667,12 @@ public synchronized java.util.List getAllLMScenarios()
 	return allLMScenarios;
 }
 
-public synchronized java.util.List getAllLMPAOExclusions()
+public synchronized List<LiteLMPAOExclusion> getAllLMPAOExclusions()
 {
 
 	if( allLMPAOExclusions == null )
 	{
-		allLMPAOExclusions = new ArrayList();
+		allLMPAOExclusions = new ArrayList<LiteLMPAOExclusion>();
 		LMPAOExclusionLoader ldr = new LMPAOExclusionLoader(allLMPAOExclusions, databaseAlias);
 		ldr.run();
 	}
@@ -668,18 +683,18 @@ public synchronized java.util.List getAllLMPAOExclusions()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllLMPrograms()
+public synchronized List<LiteYukonPAObject> getAllLMPrograms()
 {
 	if( allLMPrograms == null )
 	{
-		//java.util.List allDevices = getAllLoadManagement();
-		allLMPrograms = new ArrayList( getAllLoadManagement().size() / 2 );
+		//List allDevices = getAllLoadManagement();
+		allLMPrograms = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_CURTAIL_PROGRAM
-				 || ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_DIRECT_PROGRAM
-				 || ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
+			if( getAllLoadManagement().get(i).getType() == PAOGroups.LM_CURTAIL_PROGRAM
+				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM
+				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
 				allLMPrograms.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -691,15 +706,15 @@ public synchronized java.util.List getAllLMPrograms()
 /* (non-Javadoc)
  * @see com.cannontech.yukon.IDatabaseCache#getAllLMControlAreas()
  */
-public List getAllLMControlAreas()
+public List<LiteYukonPAObject> getAllLMControlAreas()
 {
 	if( allLMControlAreas == null )
 	{
-		allLMControlAreas = new ArrayList( getAllLoadManagement().size() / 2 );
+		allLMControlAreas = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_CONTROL_AREA )
+			if( getAllLoadManagement().get(i).getType() == PAOGroups.LM_CONTROL_AREA )
 				allLMControlAreas.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -712,15 +727,15 @@ public List getAllLMControlAreas()
 /* (non-Javadoc)
  * @see com.cannontech.yukon.IDatabaseCache#getAllLMGroups()
  */
-public List getAllLMGroups()
+public List<LiteYukonPAObject> getAllLMGroups()
 {
     if( allLMGroups == null )
 	{
-		allLMGroups = new ArrayList( getAllLoadManagement().size() / 2 );
+		allLMGroups = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
 
 		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( DeviceTypesFuncs.isLmGroup( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType()) )
+			if( DeviceTypesFuncs.isLmGroup( getAllLoadManagement().get(i).getType()) )
 				allLMGroups.add( getAllLoadManagement().get(i) );				
 		}
 
@@ -732,16 +747,16 @@ public List getAllLMGroups()
  * getAllLoadManagement method comment.
  *
  */
-public synchronized java.util.List getAllLoadManagement() 
+public synchronized List<LiteYukonPAObject> getAllLoadManagement() 
 {
 	if( allLoadManagement == null )
 	{
-		allLoadManagement = new ArrayList( getAllYukonPAObjects().size() / 2 );
+		allLoadManagement = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getPaoClass() == DeviceClasses.LOADMANAGEMENT ||
-					((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getPaoClass() == DeviceClasses.GROUP )
+			if( getAllYukonPAObjects().get(i).getPaoClass() == DeviceClasses.LOADMANAGEMENT ||
+					getAllYukonPAObjects().get(i).getPaoClass() == DeviceClasses.GROUP )
 				allLoadManagement.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -775,13 +790,13 @@ public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups(
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
-public synchronized java.util.List getAllSystemPoints(){
+public synchronized List<LitePoint> getAllSystemPoints(){
 
     if( allSystemPoints != null )
         return allSystemPoints;
     else
     {
-        allSystemPoints = new ArrayList();
+        allSystemPoints = new ArrayList<LitePoint>();
         //allPointsMap = new HashMap();
         SystemPointLoader systemPointLoader = new SystemPointLoader(allSystemPoints, databaseAlias);
         systemPointLoader.run();
@@ -794,7 +809,7 @@ public synchronized java.util.List getAllSystemPoints(){
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
-public synchronized java.util.Map getAllPAOsMap()
+public synchronized java.util.Map<Integer, LiteYukonPAObject> getAllPAOsMap()
 {
 	if( allPAOsMap != null )
 		return allPAOsMap;
@@ -811,7 +826,7 @@ public synchronized java.util.Map getAllPAOsMap()
  * A map for all LiteYukonUser objects keyed by userid
  * 
  */
-public synchronized java.util.Map getAllUsersMap()
+public synchronized java.util.Map<Integer, LiteYukonUser> getAllUsersMap()
 {
 	if( allUsersMap != null )
 		return allUsersMap;
@@ -824,7 +839,7 @@ public synchronized java.util.Map getAllUsersMap()
 	}
 }
 
-public synchronized java.util.Map getAllContactNotifsMap()
+public synchronized java.util.Map<Integer, LiteContactNotification> getAllContactNotifsMap()
 {
 	if( allContactNotifsMap != null )
 		return allContactNotifsMap;
@@ -842,7 +857,7 @@ public synchronized java.util.Map getAllContactNotifsMap()
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
-public synchronized java.util.Map getAllCustomersMap()
+public synchronized java.util.Map<Integer, LiteCustomer> getAllCustomersMap()
 {
 	if( allCustomersMap != null )
 		return allCustomersMap ;
@@ -856,12 +871,12 @@ public synchronized java.util.Map getAllCustomersMap()
 }
 
 
-public synchronized java.util.List getAllPointLimits() {
+public synchronized List<LitePointLimit> getAllPointLimits() {
 	if( allPointLimits != null ) 
 		return allPointLimits;
 	else
 	{
-		allPointLimits = new ArrayList();
+		allPointLimits = new ArrayList<LitePointLimit>();
 		PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
 		pointLimitLoader.run();
 		return allPointLimits;
@@ -871,15 +886,15 @@ public synchronized java.util.List getAllPointLimits() {
  * getAllPorts method comment.
  *
  */
-public synchronized java.util.List getAllPorts() 
+public synchronized List<LiteYukonPAObject> getAllPorts() 
 {
 	if( allPorts == null )
 	{
-		allPorts = new ArrayList( getAllYukonPAObjects().size() / 2 );
+		allPorts = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
+			if( getAllYukonPAObjects().get(i).getCategory() 
 				 == PAOGroups.CAT_PORT )
 				allPorts.add( getAllYukonPAObjects().get(i) );
 		}
@@ -894,15 +909,15 @@ public synchronized java.util.List getAllPorts()
  * getAllRoutes method comment.
  *
  */
-public synchronized java.util.List getAllRoutes() 
+public synchronized List<LiteYukonPAObject> getAllRoutes() 
 {
 	if( allRoutes == null )
 	{
-		allRoutes = new ArrayList( getAllYukonPAObjects().size() / 2 );
+		allRoutes = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( ((LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == PAOGroups.CAT_ROUTE )
+			if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_ROUTE )
 				allRoutes.add( getAllYukonPAObjects().get(i) );
 		}
 
@@ -916,11 +931,11 @@ public synchronized java.util.List getAllRoutes()
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
-public synchronized Map getAllStateGroupMap()
+public synchronized Map<Integer, LiteStateGroup> getAllStateGroupMap()
 {
 	if( allStateGroupMap == null )
 	{
-		allStateGroupMap = new HashMap();
+		allStateGroupMap = new HashMap<Integer, LiteStateGroup>();
 		StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroupMap);
 		stateGroupLoader.run();
 		return allStateGroupMap;
@@ -929,10 +944,10 @@ public synchronized Map getAllStateGroupMap()
 	return allStateGroupMap;
 }
 
-public synchronized java.util.List getAllTags() {
+public synchronized List<LiteTag> getAllTags() {
 	if(allTags == null)
 	{
-		allTags = new ArrayList();
+		allTags = new ArrayList<LiteTag>();
 		TagLoader tagLoader = new TagLoader(allTags, databaseAlias);
 		tagLoader.run();
 		return allTags;	
@@ -940,18 +955,18 @@ public synchronized java.util.List getAllTags() {
 	return allTags;
 }
 
-public synchronized java.util.List getAllSettlementConfigs() {
+public synchronized List<LiteSettlementConfig> getAllSettlementConfigs() {
 	if(allSettlementConfigs == null)
 	{
-		allSettlementConfigs = new ArrayList();
-		allSettlementConfigsMap = new HashMap();
+		allSettlementConfigs = new ArrayList<LiteSettlementConfig>();
+		allSettlementConfigsMap = new HashMap<Integer, LiteSettlementConfig>();
 		SettlementConfigLoader stlmtCfgLoader = new SettlementConfigLoader(allSettlementConfigs, allSettlementConfigsMap, databaseAlias);
 		stlmtCfgLoader.run();
 	}
 	return allSettlementConfigs;
 }
 
-public synchronized java.util.Map getAllSettlementConfigsMap()
+public synchronized java.util.Map<Integer, LiteSettlementConfig> getAllSettlementConfigsMap()
 {
 	if( allSettlementConfigsMap != null )
 		return allSettlementConfigsMap;
@@ -965,7 +980,7 @@ public synchronized java.util.Map getAllSettlementConfigsMap()
 }
 
 // This cache is derive from the Device cache
-public synchronized java.util.List getAllUnusedCCDevices()
+public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 {
 
 	 if( allUnusedCCDevices != null )
@@ -986,7 +1001,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
-		allUnusedCCDevices = new ArrayList(32);
+		allUnusedCCDevices = new ArrayList<LiteYukonPAObject>(32);
 		
 		try
 		{
@@ -1043,14 +1058,14 @@ public synchronized java.util.List getAllUnusedCCDevices()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllYukonPAObjects()
+public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 {
 	if( allYukonPAObjects != null && allPAOsMap != null)
 		return allYukonPAObjects;
 	else
 	{
-		allYukonPAObjects = new ArrayList();
-		allPAOsMap = new HashMap();
+		allYukonPAObjects = new ArrayList<LiteYukonPAObject>();
+		allPAOsMap = new HashMap<Integer, LiteYukonPAObject>();
 		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap);
 		yukLoader.run();
 		
@@ -1061,9 +1076,9 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
 	 */
-	public synchronized List getAllYukonGroups() {		
+	public synchronized List<LiteYukonGroup> getAllYukonGroups() {		
 		if(allYukonGroups == null) {
-			allYukonGroups = new ArrayList();
+			allYukonGroups = new ArrayList<LiteYukonGroup>();
 			YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
 			l.run();
 		}
@@ -1073,18 +1088,18 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
 	 */
-	public synchronized List getAllYukonRoles() {		
+	public synchronized List<LiteYukonRole> getAllYukonRoles() {		
 		if( allYukonRoles == null) {
-			allYukonRoles = new ArrayList();
+			allYukonRoles = new ArrayList<LiteYukonRole>();
 			YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
 			l.run();
 		}
 		return allYukonRoles;				
 	}
 		
-	public synchronized List getAllYukonRoleProperties() { 
+	public synchronized List<LiteYukonRoleProperty> getAllYukonRoleProperties() { 
 		if( allYukonRoleProperties == null) {
-			allYukonRoleProperties = new ArrayList();
+			allYukonRoleProperties = new ArrayList<LiteYukonRoleProperty>();
 			final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
 			l.run();
 		}
@@ -1093,15 +1108,15 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
 	 */
-	public synchronized List getAllYukonUsers()
+	public synchronized List<LiteYukonUser> getAllYukonUsers()
 	{		
 		if( allYukonUsers != null && allUsersMap != null )
 			return allYukonUsers;
 		else
 		{
-			allYukonUsers = new ArrayList();
-			allUsersMap = new HashMap();
-			YukonUserLoader l = new YukonUserLoader(allYukonUsers, allUsersMap, databaseAlias);
+			allYukonUsers = new ArrayList<LiteYukonUser>();
+			allUsersMap = new HashMap<Integer, LiteYukonUser>();
+			YukonUserLoader l = new YukonUserLoader(allYukonUsers, allUsersMap);
 			l.run();
 			return allYukonUsers;
 		}
@@ -1173,7 +1188,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 * roleIDMap<Integer,LiteYukonRole>
 	 * rolePropertyIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
 	 */
-	private void addRolesAndPropertiesToLookupMap(final Map roleMap, final Map roleIDMap, final Map rolePropertyIDMap) {
+	private void addRolesAndPropertiesToLookupMap(final Map roleMap, final Map<Integer, LiteYukonRole> roleIDMap, final Map<Integer, Pair> rolePropertyIDMap) {
 		Iterator roleIter = roleMap.keySet().iterator();
 		while(roleIter.hasNext()) {
 			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();
@@ -1189,7 +1204,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 * Adds the properties and values in rolePropertyMap<LiteYukonRoleProperty,String>
 	 * into roleIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
 	 * */
-	private void addRolePropertiesToMap(final Map rolePropertyMap, final Map rolePropertyIDMap) {
+	private void addRolePropertiesToMap(final Map rolePropertyMap, final Map<Integer, Pair> rolePropertyIDMap) {
 		Iterator propertyIter = rolePropertyMap.keySet().iterator();
 		while(propertyIter.hasNext()) {
 			LiteYukonRoleProperty property = (LiteYukonRoleProperty) propertyIter.next();
@@ -1201,9 +1216,9 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
-	public synchronized List getAllEnergyCompanies() {
+	public synchronized List<LiteEnergyCompany> getAllEnergyCompanies() {
 		if(allEnergyCompanies == null) {
-			allEnergyCompanies = new ArrayList();
+			allEnergyCompanies = new ArrayList<LiteEnergyCompany>();
 			EnergyCompanyLoader l = new EnergyCompanyLoader(allEnergyCompanies, databaseAlias);
 			l.run();
 		}
@@ -1213,10 +1228,10 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
 	 */
-	public synchronized Map getAllUserEnergyCompanies() {
+	public synchronized Map<LiteYukonUser, LiteEnergyCompany> getAllUserEnergyCompanies() {
 		if(allUserEnergyCompaniesMap == null) {
-			allUserEnergyCompaniesMap = new java.util.HashMap();
-			UserEnergyCompanyLoader l = new UserEnergyCompanyLoader(allUserEnergyCompaniesMap,getAllYukonUsers(), getAllEnergyCompanies(), databaseAlias);
+			allUserEnergyCompaniesMap = new HashMap<LiteYukonUser, LiteEnergyCompany>();
+			UserEnergyCompanyLoader l = new UserEnergyCompanyLoader(allUserEnergyCompaniesMap, getAllYukonUsers(), getAllEnergyCompanies(), databaseAlias);
 			l.run();
 		}
 		return allUserEnergyCompaniesMap;
@@ -1225,9 +1240,9 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
 	 */
-	public synchronized Map getYukonUserPaoOwners() {
+	public synchronized Map<LiteYukonUser, int[]> getYukonUserPaoOwners() {
 		if(userPaoOwnersMap == null) {
-			userPaoOwnersMap = new java.util.HashMap();
+			userPaoOwnersMap = new java.util.HashMap<LiteYukonUser, int[]>();
 			UserPoaOwnerLoader l = new UserPoaOwnerLoader( userPaoOwnersMap, getAllYukonUsers(), databaseAlias);
 			l.run();
 		}
@@ -1238,11 +1253,11 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized List getAllCustomers() {
+	public synchronized List<LiteCustomer> getAllCustomers() {
 	    if (allCustomers == null)
 	    {
-	        allCustomers = new ArrayList();
-	        allCustomersMap = new HashMap();
+	        allCustomers = new ArrayList<LiteCustomer>();
+	        allCustomersMap = new HashMap<Integer, LiteCustomer>();
 	        CustomerLoader custLoader = new CustomerLoader(allCustomers, allCustomersMap, databaseAlias);
 	        custLoader.run();
 	    }
@@ -1254,13 +1269,13 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 * Creation date: (3/14/00 3:19:19 PM)
 	 * @return java.util.Collection
 	 */
-	public synchronized java.util.List getAllDeviceTypeCommands(){
+	public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands(){
 
 		if( allDeviceTypeCommands != null )
 			return allDeviceTypeCommands;
 		else
 		{
-			allDeviceTypeCommands= new ArrayList();
+			allDeviceTypeCommands= new ArrayList<LiteDeviceTypeCommand>();
 			DeviceTypeCommandLoader devTypeCmdLoader = new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
 			devTypeCmdLoader.run();
 			return allDeviceTypeCommands;
@@ -1308,10 +1323,10 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).getAlarmStateID() == id )
+					if( allAlarmCategories.get(i).getAlarmStateID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allAlarmCategories.get(i);
+						lBase = allAlarmCategories.get(i);
 						break;
 					}
 				}
@@ -1327,10 +1342,10 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).getAlarmStateID() == id )
+					if( allAlarmCategories.get(i).getAlarmStateID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allAlarmCategories.get(i);
+						allAlarmCategories.get(i).retrieve(databaseAlias);
+						lBase = allAlarmCategories.get(i);
 						break;
 					}
 				}
@@ -1338,9 +1353,9 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmCategories.get(i)).getAlarmStateID() == id )
+					if( allAlarmCategories.get(i).getAlarmStateID() == id )
 					{
-						lBase = (LiteBase)allAlarmCategories.remove(i);
+						lBase = allAlarmCategories.remove(i);
 						break;
 					}
 				}
@@ -1371,10 +1386,10 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 	  case DBChangeMsg.CHANGE_TYPE_ADD:
 			for(int i=0;i<allYukonImages.size();i++)
 			{
-			   if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+			   if( allYukonImages.get(i).getImageID() == id )
 			   {
 				  alreadyAdded = true;
-				  lBase = (LiteBase)allYukonImages.get(i);
+				  lBase = allYukonImages.get(i);
 				  break;
 			   }
 			}
@@ -1390,10 +1405,10 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 	  case DBChangeMsg.CHANGE_TYPE_UPDATE:
 			for(int i=0;i<allYukonImages.size();i++)
 			{
-			   if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+			   if( allYukonImages.get(i).getImageID() == id )
 			   {
-				  ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).retrieve(databaseAlias);
-				  lBase = (LiteBase)allYukonImages.get(i);
+				  allYukonImages.get(i).retrieve(databaseAlias);
+				  lBase = allYukonImages.get(i);
 				  break;
 			   }
 			}
@@ -1401,9 +1416,9 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 	  case DBChangeMsg.CHANGE_TYPE_DELETE:
 			for(int i=0;i<allYukonImages.size();i++)
 			{
-			   if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+			   if( allYukonImages.get(i).getImageID() == id )
 			   {
-				  lBase = (LiteBase)allYukonImages.remove(i);
+				  lBase = allYukonImages.remove(i);
 				  break;
 			   }
 			}
@@ -1459,9 +1474,9 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
         if (allContacts != null) {
             for (int i=0;i<allContacts.size();i++)
             {
-                if ( ((LiteContact)allContacts.get(i)).getLiteID() == id )
+                if ( allContacts.get(i).getLiteID() == id )
                 {
-                    lBase = (LiteBase)allContacts.remove(i);
+                    lBase = allContacts.remove(i);
                     break;
                 }
             }
@@ -1497,7 +1512,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 
 	if( database == DBChangeMsg.CHANGE_POINT_DB )
 	{
-		allGraphTaggedPoints = null;
+		//allGraphTaggedPoints = null;
 		//allPointsUnits = null;
 		//allPointidMultiplierHashMap = null;
 		//allPointIDOffsetHashMap = null;
@@ -1728,10 +1743,10 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
-					if( ((LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
+					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allDeviceMeterGroups.get(i);
+						lBase = allDeviceMeterGroups.get(i);
 						break;
 					}
 				}
@@ -1746,10 +1761,10 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
-					if( ((LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
+					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
 					{
-						((LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allDeviceMeterGroups.get(i);
+						allDeviceMeterGroups.get(i).retrieve(databaseAlias);
+						lBase = allDeviceMeterGroups.get(i);
 						
 						break;
 					}
@@ -1758,9 +1773,9 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteDeviceMeterNumber)allDeviceMeterGroups.get(i)).getDeviceID() == id )
+					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
 					{
-						lBase = (LiteBase)allDeviceMeterGroups.remove(i);
+						lBase = allDeviceMeterGroups.remove(i);
 						break;
 					}
 				}
@@ -1790,10 +1805,10 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).getGraphDefinitionID() == id )
+					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allGraphDefinitions.get(i);
+						lBase = allGraphDefinitions.get(i);
 						break;
 					}
 				}
@@ -1808,10 +1823,10 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).getGraphDefinitionID() == id )
+					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allGraphDefinitions.get(i);
+						allGraphDefinitions.get(i).retrieve(databaseAlias);
+						lBase = allGraphDefinitions.get(i);
 						break;
 					}
 				}
@@ -1819,9 +1834,9 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteGraphDefinition)allGraphDefinitions.get(i)).getGraphDefinitionID() == id )
+					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
 					{
-						lBase = (LiteBase)allGraphDefinitions.remove(i);
+						lBase = allGraphDefinitions.remove(i);
 						break;
 					}
 				}
@@ -1851,10 +1866,10 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).getHolidayScheduleID() == id )
+					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allHolidaySchedules.get(i);
+						lBase = allHolidaySchedules.get(i);
 						break;
 					}
 				}
@@ -1869,10 +1884,10 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).getHolidayScheduleID() == id )
+					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allHolidaySchedules.get(i);
+						allHolidaySchedules.get(i).retrieve(databaseAlias);
+						lBase = allHolidaySchedules.get(i);
 						break;
 					}
 				}
@@ -1880,9 +1895,9 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)allHolidaySchedules.get(i)).getHolidayScheduleID() == id )
+					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
 					{
-						lBase = (LiteBase)allHolidaySchedules.remove(i);
+						lBase = allHolidaySchedules.remove(i);
 						break;
 					}
 				}
@@ -1908,10 +1923,10 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allDeviceTypeCommands.size();i++)
 				{
-					if( ((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).getDeviceCommandID() == id )
+					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allDeviceTypeCommands.get(i);
+						lBase = allDeviceTypeCommands.get(i);
 						break;
 					}
 				}
@@ -1926,10 +1941,10 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allDeviceTypeCommands.size();i++)
 				{
-					if( ((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).getDeviceCommandID() == id )
+					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
 					{
-						((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allDeviceTypeCommands.get(i);
+						allDeviceTypeCommands.get(i).retrieve(databaseAlias);
+						lBase = allDeviceTypeCommands.get(i);
 						break;
 					}
 				}
@@ -1937,9 +1952,9 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allDeviceTypeCommands.size();i++)
 				{
-					if( ((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).getDeviceCommandID() == id )
+					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
 					{
-						lBase = (LiteBase)allDeviceTypeCommands.remove(i);
+						lBase = allDeviceTypeCommands.remove(i);
 						break;
 					}
 				}
@@ -1967,10 +1982,10 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allBaselines.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).getBaselineID() == id )
+					if( allBaselines.get(i).getBaselineID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allBaselines.get(i);
+						lBase = allBaselines.get(i);
 						break;
 					}
 				}
@@ -1985,10 +2000,10 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allBaselines.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).getBaselineID() == id )
+					if( allBaselines.get(i).getBaselineID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allBaselines.get(i);
+						allBaselines.get(i).retrieve(databaseAlias);
+						lBase = allBaselines.get(i);
 						break;
 					}
 				}
@@ -1996,9 +2011,9 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allBaselines.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).getBaselineID() == id )
+					if( allBaselines.get(i).getBaselineID() == id )
 					{
-						lBase = (LiteBase)allBaselines.remove(i);
+						lBase = allBaselines.remove(i);
 						break;
 					}
 				}
@@ -2025,10 +2040,10 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).getScheduleID() == id )
+					if( allSeasonSchedules.get(i).getScheduleID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allSeasonSchedules.get(i);
+						lBase = allSeasonSchedules.get(i);
 						break;
 					}
 				}
@@ -2043,10 +2058,10 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).getScheduleID() == id )
+					if( allSeasonSchedules.get(i).getScheduleID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allSeasonSchedules.get(i);
+						allSeasonSchedules.get(i).retrieve(databaseAlias);
+						lBase = allSeasonSchedules.get(i);
 						break;
 					}
 				}
@@ -2054,9 +2069,9 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteSeasonSchedule)allSeasonSchedules.get(i)).getScheduleID() == id )
+					if( allSeasonSchedules.get(i).getScheduleID() == id )
 					{
-						lBase = (LiteBase)allSeasonSchedules.remove(i);
+						lBase = allSeasonSchedules.remove(i);
 						break;
 					}
 				}
@@ -2083,10 +2098,10 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allTOUSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).getScheduleID() == id )
+					if( allTOUSchedules.get(i).getScheduleID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allTOUSchedules.get(i);
+						lBase = allTOUSchedules.get(i);
 						break;
 					}
 				}
@@ -2101,10 +2116,10 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allTOUSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).getScheduleID() == id )
+					if( allTOUSchedules.get(i).getScheduleID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allTOUSchedules.get(i);
+						allTOUSchedules.get(i).retrieve(databaseAlias);
+						lBase = allTOUSchedules.get(i);
 						break;
 					}
 				}
@@ -2112,9 +2127,9 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allTOUSchedules.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).getScheduleID() == id )
+					if( allTOUSchedules.get(i).getScheduleID() == id )
 					{
-						lBase = (LiteBase)allTOUSchedules.remove(i);
+						lBase = allTOUSchedules.remove(i);
 						break;
 					}
 				}
@@ -2143,7 +2158,7 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 		
-				lBase = (LiteBase)allCommandsMap.get( new Integer(id) );				
+				lBase = allCommandsMap.get( new Integer(id) );				
 				if( lBase == null )
 				{
 					LiteCommand lc = new LiteCommand(id);
@@ -2157,7 +2172,7 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 		
-				LiteCommand lc = (LiteCommand)allCommandsMap.get( new Integer(id) );				
+				LiteCommand lc = allCommandsMap.get( new Integer(id) );				
 				lc.retrieve( databaseAlias );
 				
 				lBase = lc;
@@ -2167,10 +2182,10 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 
 				for(int i=0;i<allCommands.size();i++)
 				{
-					if( ((LiteCommand)allCommands.get(i)).getCommandID() == id )
+					if( allCommands.get(i).getCommandID() == id )
 					{
 						allCommandsMap.remove( new Integer(id) );
-						lBase = (LiteBase)allCommands.remove(i);
+						lBase = allCommands.remove(i);
 						break;
 					}
 				}
@@ -2217,10 +2232,10 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allConfigs.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).getConfigID() == id )
+					if( allConfigs.get(i).getConfigID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allConfigs.get(i);
+						lBase = allConfigs.get(i);
 						break;
 					}
 				}
@@ -2235,10 +2250,10 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allConfigs.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).getConfigID() == id )
+					if( allConfigs.get(i).getConfigID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allConfigs.get(i);
+						allConfigs.get(i).retrieve(databaseAlias);
+						lBase = allConfigs.get(i);
 						break;
 					}
 				}
@@ -2246,9 +2261,9 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allConfigs.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).getConfigID() == id )
+					if( allConfigs.get(i).getConfigID() == id )
 					{
-						lBase = (LiteBase)allConfigs.remove(i);
+						lBase = allConfigs.remove(i);
 						break;
 					}
 				}
@@ -2275,10 +2290,10 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allTags.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).getTagID() == id )
+					if( allTags.get(i).getTagID() == id )
 					{
 						alreadyAdded = true;
-						lTag = (LiteBase)allTags.get(i);
+						lTag = allTags.get(i);
 						break;
 					}
 				}
@@ -2293,10 +2308,10 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allTags.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).getTagID() == id )
+					if( allTags.get(i).getTagID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).retrieve(databaseAlias);
-						lTag = (LiteBase)allTags.get(i);
+						allTags.get(i).retrieve(databaseAlias);
+						lTag = allTags.get(i);
 						break;
 					}
 				}
@@ -2304,9 +2319,9 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allTags.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).getTagID() == id )
+					if( allTags.get(i).getTagID() == id )
 					{
-						lTag = (LiteBase)allTags.remove(i);
+						lTag = allTags.remove(i);
 						break;
 					}
 				}
@@ -2330,7 +2345,7 @@ private synchronized LiteBase handleSettlementConfigChange( int changeType, int 
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 
-			lBase = (LiteBase)allSettlementConfigsMap.get( new Integer(id));
+			lBase = allSettlementConfigsMap.get( new Integer(id));
 			if( lBase == null)
 			{
 				LiteSettlementConfig lsc = new LiteSettlementConfig(id);
@@ -2344,7 +2359,7 @@ private synchronized LiteBase handleSettlementConfigChange( int changeType, int 
 			
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 			
-			LiteSettlementConfig lsc = (LiteSettlementConfig)allSettlementConfigsMap.get(new Integer(id));
+			LiteSettlementConfig lsc = allSettlementConfigsMap.get(new Integer(id));
 			lsc.retrieve(databaseAlias);
 			lBase = lsc;
 			break;
@@ -2352,10 +2367,10 @@ private synchronized LiteBase handleSettlementConfigChange( int changeType, int 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 			for(int i=0;i<allSettlementConfigs.size();i++)
 			{
-				if( ((LiteSettlementConfig)allSettlementConfigs.get(i)).getConfigID() == id )
+				if( allSettlementConfigs.get(i).getConfigID() == id )
 				{
 					allSettlementConfigsMap.remove( new Integer(id));
-					lBase = (LiteBase)allSettlementConfigs.remove(i);
+					lBase = allSettlementConfigs.remove(i);
 					break;
 				}
 			}
@@ -2381,10 +2396,10 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allLMProgramConstraints.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).getConstraintID() == id )
+					if( allLMProgramConstraints.get(i).getConstraintID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allLMProgramConstraints.get(i);
+						lBase = allLMProgramConstraints.get(i);
 						break;
 					}
 				}
@@ -2399,10 +2414,10 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allLMProgramConstraints.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).getConstraintID() == id )
+					if( allLMProgramConstraints.get(i).getConstraintID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allLMProgramConstraints.get(i);
+						allLMProgramConstraints.get(i).retrieve(databaseAlias);
+						lBase = allLMProgramConstraints.get(i);
 						break;
 					}
 				}
@@ -2410,9 +2425,9 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allLMProgramConstraints.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).getConstraintID() == id )
+					if( allLMProgramConstraints.get(i).getConstraintID() == id )
 					{
-						lBase = (LiteBase)allLMProgramConstraints.remove(i);
+						lBase = allLMProgramConstraints.remove(i);
 						break;
 					}
 				}
@@ -2443,10 +2458,10 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).getNotificationGroupID() == id )
+					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allNotificationGroups.get(i);
+						lBase = allNotificationGroups.get(i);
 						break;
 					}
 				}
@@ -2461,10 +2476,10 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).getNotificationGroupID() == id )
+					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allNotificationGroups.get(i);
+						allNotificationGroups.get(i).retrieve(databaseAlias);
+						lBase = allNotificationGroups.get(i);
 						break;
 					}
 				}
@@ -2472,9 +2487,9 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteNotificationGroup)allNotificationGroups.get(i)).getNotificationGroupID() == id )
+					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
 					{
-						lBase = (LiteBase)allNotificationGroups.remove(i);
+						lBase = allNotificationGroups.remove(i);
 						break;
 					}
 				}
@@ -2529,7 +2544,7 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-			lBase = (LiteBase)allStateGroupMap.get( new Integer(id) );				
+			lBase = allStateGroupMap.get( new Integer(id) );				
 			if( lBase == null )
 			{	
 				LiteStateGroup lsg = new LiteStateGroup(id);
@@ -2540,14 +2555,14 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 			break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-			LiteStateGroup ly = (LiteStateGroup)allStateGroupMap.get( new Integer(id) );				
+			LiteStateGroup ly = allStateGroupMap.get( new Integer(id) );				
 			ly.retrieve( databaseAlias );
 					
 			lBase = ly;
 			break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-			lBase = (LiteBase)allStateGroupMap.remove( new Integer(id) );
+			lBase = allStateGroupMap.remove( new Integer(id) );
 			break;
 
 		default:
@@ -2576,7 +2591,7 @@ private synchronized LiteBase handleCustomerChange( int changeType, int id, Stri
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 
-			lBase = (LiteBase)allCustomersMap.get( new Integer(id));
+			lBase = allCustomersMap.get( new Integer(id));
 			if( lBase == null)
 			{
 				LiteCustomer lc;
@@ -2594,7 +2609,7 @@ private synchronized LiteBase handleCustomerChange( int changeType, int id, Stri
 			
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 			
-			LiteCustomer lc = (LiteCustomer)allCustomersMap.get(new Integer(id));
+			LiteCustomer lc = allCustomersMap.get(new Integer(id));
 			lc.retrieve(databaseAlias);
 			lBase = lc;
 			break;
@@ -2602,10 +2617,10 @@ private synchronized LiteBase handleCustomerChange( int changeType, int id, Stri
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 			for(int i=0;i<allCustomers.size();i++)
 			{
-				if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
+				if( allCustomers.get(i).getCustomerID() == id )
 				{
 					allCustomersMap.remove( new Integer(id));
-					lBase = (LiteBase)allCustomers.remove(i);
+					lBase = allCustomers.remove(i);
 					break;
 				}
 			}
@@ -2636,10 +2651,10 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 			for(int i=0;i<allYukonGroups.size();i++)
 			{
-				if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
+				if( allYukonGroups.get(i).getGroupID() == id )
 				{
 					alreadyAdded = true;
-					lBase = (LiteBase)allYukonGroups.get(i);
+					lBase = allYukonGroups.get(i);
 					break;
 				}
 			}
@@ -2655,10 +2670,10 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 			for(int i=0;i<allYukonGroups.size();i++)
 			{
-				if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
+				if( allYukonGroups.get(i).getGroupID() == id )
 				{
-					((LiteYukonGroup)allYukonGroups.get(i)).retrieve(databaseAlias);
-					lBase = (LiteBase)allYukonGroups.get(i);
+					allYukonGroups.get(i).retrieve(databaseAlias);
+					lBase = allYukonGroups.get(i);
 					break;
 				}
 			}
@@ -2667,9 +2682,9 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 			for(int i=0;i<allYukonGroups.size();i++)
 			{
-				if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
+				if( allYukonGroups.get(i).getGroupID() == id )
 				{
-					lBase = (LiteBase)allYukonGroups.remove(i);
+					lBase = allYukonGroups.remove(i);
 					break;
 				}
 			}
@@ -2702,7 +2717,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-			lBase = (LiteBase)allUsersMap.get( new Integer(id) );				
+			lBase = allUsersMap.get( new Integer(id) );				
 			if( lBase == null )
 			{
 				LiteYukonUser lu = new LiteYukonUser(id);
@@ -2715,7 +2730,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 			break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-			LiteYukonUser lu = (LiteYukonUser)allUsersMap.get( new Integer(id) );				
+			LiteYukonUser lu = allUsersMap.get( new Integer(id) );				
 			lu.retrieve( databaseAlias );
 						
 			lBase = lu;
@@ -2725,10 +2740,10 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 			for(int i=0;i<allYukonUsers.size();i++)
 			{
-				if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
+				if( allYukonUsers.get(i).getUserID() == id )
 				{
 					allUsersMap.remove( new Integer(id) );
-					lBase = (LiteBase)allYukonUsers.remove(i);
+					lBase = allYukonUsers.remove(i);
 					break;
 				}
 			}
@@ -2767,7 +2782,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 
-			lBase = (LiteBase)allPAOsMap.get( new Integer(id) );				
+			lBase = allPAOsMap.get( new Integer(id) );				
 			if( lBase == null )
 			{
 				LiteYukonPAObject ly = new LiteYukonPAObject(id);
@@ -2781,7 +2796,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 
-			LiteYukonPAObject ly = (LiteYukonPAObject)allPAOsMap.get( new Integer(id) );				
+			LiteYukonPAObject ly = allPAOsMap.get( new Integer(id) );				
 			ly.retrieve( databaseAlias );
 					
 			lBase = ly;
@@ -2790,10 +2805,10 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
-					if( ((LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
+					if( allYukonPAObjects.get(i).getYukonID() == id )
 					{
 						allPAOsMap.remove( new Integer(id) );
-						lBase = (LiteBase)allYukonPAObjects.remove(i);
+						lBase = allYukonPAObjects.remove(i);
 						break;
 					}
 				}
@@ -2869,7 +2884,7 @@ public synchronized void releaseAllCache()
 	allEnergyCompanies = null;
     
 	//lists that are created by the joining/parsing of existing lists
-	allGraphTaggedPoints = null; //Points
+	//allGraphTaggedPoints = null; //Points
 	allUnusedCCDevices = null; //PAO
 	allCapControlFeeders = null; //PAO
 	allCapControlSubBuses = null; //PAO   
@@ -3107,9 +3122,9 @@ public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID)
 	LiteYukonRole specifiedRole = null;
 	//check cache for previous grabs
 	if(userRoleMap == null)
-		userRoleMap = new HashMap();
+		userRoleMap = new HashMap<MapKeyInts, LiteYukonRole>();
 	else
-		specifiedRole = (LiteYukonRole) userRoleMap.get(keyInts);
+		specifiedRole = userRoleMap.get(keyInts);
 	
 	//not in cache, go to DB.
 	if(specifiedRole == null && !userRoleMap.containsKey(keyInts))
@@ -3140,9 +3155,9 @@ public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePro
 	String specifiedPropVal = null;
 	//check cache for previous grabs
 	if(userRolePropertyValueMap == null)
-		userRolePropertyValueMap = new HashMap();
+		userRolePropertyValueMap = new HashMap<MapKeyInts, String>();
 	else
-		specifiedPropVal = (String) userRolePropertyValueMap.get(keyInts);
+		specifiedPropVal = userRolePropertyValueMap.get(keyInts);
 	
 	//not in cache, go to DB.
 	if(specifiedPropVal == null)
@@ -3232,7 +3247,7 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
 		getAllContacts();
 	} 
     
-    LiteContactNotification specifiedNotify = (LiteContactNotification) allContactNotifsMap.get(new Integer(contNotifyID));
+    LiteContactNotification specifiedNotify = allContactNotifsMap.get(new Integer(contNotifyID));
 	
     //not in cache, go to DB.
     if(specifiedNotify == null)
@@ -3264,9 +3279,9 @@ public synchronized LiteCustomer getACustomerByCustomerID(int customerID)
     LiteCustomer specifiedCustomer = null;
     //check cache for previous grabs
     if(allCustomersMap == null)
-        allCustomersMap = new HashMap();
+        allCustomersMap = new HashMap<Integer, LiteCustomer>();
     else
-        specifiedCustomer = (LiteCustomer) allCustomersMap.get(new Integer(customerID));
+        specifiedCustomer = allCustomersMap.get(new Integer(customerID));
     
     //not in cache, go to DB.
     if(specifiedCustomer == null)

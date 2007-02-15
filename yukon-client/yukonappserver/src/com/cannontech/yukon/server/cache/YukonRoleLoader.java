@@ -16,10 +16,10 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 public final class YukonRoleLoader implements Runnable
 {
 	private static final String sql = "SELECT RoleID,RoleName,Category,RoleDescription FROM YukonRole";
-   	final private List allRoles;
+   	final private List<LiteYukonRole> allRoles;
 	final private String dbAlias;
 
-	public YukonRoleLoader(final List allRoles, final String dbAlias) {
+	public YukonRoleLoader(List<LiteYukonRole> allRoles, final String dbAlias) {
    		this.allRoles = allRoles;
       	this.dbAlias = dbAlias;      	
    	}

@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.List;
+
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointUnits;
 
@@ -10,13 +12,13 @@ import com.cannontech.database.data.point.PointUnits;
  */
 public class SystemPointLoader implements Runnable 
 {
-    private java.util.ArrayList allPoints = null;
+    private List<LitePoint> allPoints = null;
     private String databaseAlias = null;
 
 /**
  * PointLoader constructor comment.
  */
-public SystemPointLoader(java.util.ArrayList pointArray,  String alias) 
+public SystemPointLoader(List<LitePoint> pointArray,  String alias) 
 {
     super();
     this.allPoints = pointArray;

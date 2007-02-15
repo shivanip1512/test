@@ -5,192 +5,277 @@ import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteBaseline;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteGear;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.data.lite.LiteHolidaySchedule;
+import com.cannontech.database.data.lite.LiteLMConstraint;
+import com.cannontech.database.data.lite.LiteLMPAOExclusion;
+import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointLimit;
+import com.cannontech.database.data.lite.LiteSeasonSchedule;
+import com.cannontech.database.data.lite.LiteSettlementConfig;
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteTOUDay;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
+import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
-/**
- * Interface to Yukon data.
- *
- * @author alauinger
- */
-public interface IDatabaseCache
-{
-	public DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType);
-	public java.util.List getAllAlarmCategories();
-	public java.util.List getAllYukonImages();
-	public java.util.List getAllCapControlFeeders();
-	public java.util.List getAllCapControlSubBuses();
+public interface IDatabaseCache {
 
-	public List<LiteNotificationGroup> getAllContactNotificationGroups();
-	public java.util.List getAllContacts();
+    public DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem,
+                                                int changeType);
 
-	public java.util.List getAllCICustomers();
-	public java.util.List getAllCustomers();
+    public List<LiteAlarmCategory> getAllAlarmCategories();
 
-	public java.util.List getAllDeviceMeterGroups();
-	public java.util.List getAllDMG_CollectionGroups();	//distinct DeviceMeterGroup.CollectionGroups
-	public java.util.List getAllDMG_AlternateGroups();	//distinct DeviceMeterGroup.AlternateGroups
-	public java.util.List getAllDMG_BillingGroups();	//distinct DeviceMeterGroup.BillingGroups
-	public java.util.List getAllDevices();
-	public java.util.List getAllMCTs();
-	public java.util.List getAllGraphDefinitions();
+    public List<LiteYukonImage> getAllYukonImages();
 
-	public java.util.List getAllHolidaySchedules();
-	public java.util.List getAllBaselines();
-	public java.util.List getAllConfigs();
-	public java.util.List getAllLMProgramConstraints();
-	public java.util.List getAllLMScenarios();
-	public java.util.List getAllLMPrograms();
-	public java.util.List getAllLMControlAreas();
-	public java.util.List getAllLMGroups();
-	public java.util.List getAllGears();
-	public java.util.List getAllLoadManagement();
-	public java.util.List getAllLMScenarioProgs();
-	public java.util.List getAllLMPAOExclusions();
-	public java.util.List getAllSeasonSchedules();
-	public java.util.List <LiteTOUSchedule> getAllTOUSchedules();
-	public java.util.List getAllTOUDays();
+    public List<LiteYukonPAObject> getAllCapControlFeeders();
 
-	public java.util.List getAllSystemPoints();
-		
-	//Map<Integer(contactNotifID), LiteContactNotification>
-	public java.util.Map getAllContactNotifsMap();
+    public List<LiteYukonPAObject> getAllCapControlSubBuses();
 
-	public java.util.List getAllPointLimits();
+    public List<LiteContact> getAllContacts();
 
-	public java.util.List getAllPorts();
-	public java.util.List getAllRoutes();
-	
-	//Map<Integer(stateGroupID), LiteStateGroup>
-	public java.util.Map getAllStateGroupMap();
-	
-	public java.util.List getAllSettlementConfigs();
-	//Map<Integer(configID), LiteSettlementConfig>
-	public java.util.Map getAllSettlementConfigsMap();
+    public List<LiteCICustomer> getAllCICustomers();
 
-	public java.util.List getAllTags();
+    public List<LiteDeviceMeterNumber> getAllDeviceMeterGroups();
 
-	public java.util.List getAllYukonUsers();
-	public java.util.List getAllYukonGroups();
-	public java.util.List getAllYukonRoles();
-	public java.util.List getAllYukonRoleProperties();
+    public List<String> getAllDMG_CollectionGroups(); //distinct DeviceMeterGroup.CollectionGroups
 
-	//Map< LiteYukonUser, int[]<paoIDs> > 
-	public Map getYukonUserPaoOwners();
+    public List<String> getAllDMG_AlternateGroups(); //distinct DeviceMeterGroup.AlternateGroups
 
-	//Map<LiteYukonUser,List<LiteYukonGroup>> 
-	public java.util.Map getYukonUserGroupMap();
+    public List<String> getAllDMG_BillingGroups(); //distinct DeviceMeterGroup.BillingGroups
 
-	//Map<LiteYukonGroup,List<LiteYukonUser>>
-	public java.util.Map getYukonGroupUserMap();
+    public List<LiteYukonPAObject> getAllDevices();
 
-	//Map<LiteYukonUser, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>
-	public java.util.Map getYukonUserRolePropertyMap();
+    public List<LiteYukonPAObject> getAllMCTs();
 
-	//Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>> 
-	//public java.util.Map getAllYukonUserRoleMap();
+    public List<LiteGraphDefinition> getAllGraphDefinitions();
 
-	//Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>
-	public java.util.Map getYukonGroupRolePropertyMap();
+    public List<LiteHolidaySchedule> getAllHolidaySchedules();
 
-	//Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>>
-	//public java.util.Map getAllYukonGroupRoleMap();	
+    public List<LiteBaseline> getAllBaselines();
 
-	//Map<LiteYukonUser, Map<Integer(rolepropertyid), Pair<LiteYukonRoleProperty, String(value)>>>
-	//Provided as a means to efficiently obtain a roleproperty and its value
-	//public java.util.Map getYukonUserRolePropertyIDLookupMap(int userid);
+    public List<LiteSeasonSchedule> getAllSeasonSchedules();
 
-	//Map<LiteYukonUser, Map<Integer(roleid), LiteYukonRole>>
-	//Provided as a means to efficiently obtain a role
-	//public java.util.Map getYukonUserRoleIDLookupMap(int userid);
+    public List<LiteTOUSchedule> getAllTOUSchedules();
 
-	//Map<Integer(custID), LiteCustomer>
-	public java.util.Map getAllCustomersMap();
-	
-	//Map<Integer(userID), LiteYukonUser>
-	public java.util.Map getAllUsersMap();
+    public List<LiteTOUDay> getAllTOUDays();
 
-	//Map<LiteYukonUser,Map<Integer(roleid),Pair<LiteYukonRole,String(value)>>
-	//Provided as a means to efficiently obtain a role and its value
-	//   public java.util.Map getAllYukonUserRoleIDLookupMap(); 
+    public List<LiteGear> getAllGears();
 
-	public java.util.List getAllEnergyCompanies();
-	public java.util.Map getAllUserEnergyCompanies();
+    public List<LiteCommand> getAllCommands();
 
-	// This cache is derive from the Device cache
-	public java.util.List getAllUnusedCCDevices();
+    /**
+     * @return Map of commandID to LiteCommand
+     */
+    public Map<Integer,LiteCommand> getAllCommandsMap();
 
-	public java.util.List getAllYukonPAObjects();
+    public List<LiteConfig> getAllConfigs();
 
-	//Map<Integer(paoID), LiteYukonPAObject>
-	public java.util.Map getAllPAOsMap();
+    public List<LiteLMConstraint> getAllLMProgramConstraints();
 
-	public java.util.List getAllDeviceTypeCommands();
-	public java.util.List getAllCommands();
-	//Map<Integer(commandID), LiteCommand>
-	public java.util.Map getAllCommandsMap();
-	
-	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID);
-	public LiteYukonRole getARole(LiteYukonUser user, int roleID);
-    
+    public List<LiteLMProgScenario> getAllLMScenarioProgs();
+
+    public List<LiteYukonPAObject> getAllLMScenarios();
+
+    public List<LiteLMPAOExclusion> getAllLMPAOExclusions();
+
+    public List<LiteYukonPAObject> getAllLMPrograms();
+
+    public List<LiteYukonPAObject> getAllLMControlAreas();
+
+    public List<LiteYukonPAObject> getAllLMGroups();
+
+    public List<LiteYukonPAObject> getAllLoadManagement();
+
+    public List<LiteNotificationGroup> getAllContactNotificationGroups();
+
+    public List<LitePoint> getAllSystemPoints();
+
+    /**
+     * @return Map of paoID to LiteYukonPAObject>
+     */
+    public Map<Integer,LiteYukonPAObject> getAllPAOsMap();
+
+    /**
+     * @return Map of userID to LiteYukonUser
+     */
+    public Map<Integer,LiteYukonUser> getAllUsersMap();
+
+    /**
+     * @return Map of contactNotifID to LiteContactNotification
+     */
+    public Map<Integer,LiteContactNotification> getAllContactNotifsMap();
+
+    /**
+     * @return Map of customerID to LiteCustomer
+     */
+    public Map<Integer,LiteCustomer> getAllCustomersMap();
+
+    public List<LitePointLimit> getAllPointLimits();
+
+    public List<LiteYukonPAObject> getAllPorts();
+
+    public List<LiteYukonPAObject> getAllRoutes();
+
+    /**
+     * @return Map if stateGroupID to LiteStateGroup
+     */
+    public Map<Integer,LiteStateGroup> getAllStateGroupMap();
+
+    public List<LiteTag> getAllTags();
+
+    public List<LiteSettlementConfig> getAllSettlementConfigs();
+
+    /**
+     * @return  Map configID LiteSettlementConfig
+     */
+    public Map<Integer, LiteSettlementConfig> getAllSettlementConfigsMap();
+
+    public List<LiteYukonPAObject> getAllUnusedCCDevices();
+
+    public List<LiteYukonPAObject> getAllYukonPAObjects();
+
+    public List<LiteYukonGroup> getAllYukonGroups();
+
+    public List<LiteYukonRole> getAllYukonRoles();
+
+    public List<LiteYukonRoleProperty> getAllYukonRoleProperties();
+
+    public List<LiteYukonUser> getAllYukonUsers();
+
+    public Map<LiteYukonUser, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonUserRolePropertyMap();
+
+    public Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap();
+
+    public Map<LiteYukonUser,List<LiteYukonGroup>> getYukonUserGroupMap();
+
+    public Map<LiteYukonGroup,List<LiteYukonUser>> getYukonGroupUserMap();
+
+    public List<LiteEnergyCompany> getAllEnergyCompanies();
+
+    public Map<LiteYukonUser, LiteEnergyCompany> getAllUserEnergyCompanies();
+
+    /**
+     * @return  Map of LiteYukonUser to int array of paoIDs 
+     */
+    public Map<LiteYukonUser, int[]> getYukonUserPaoOwners();
+
+    public List<LiteCustomer> getAllCustomers();
+
+    public List<LiteDeviceTypeCommand> getAllDeviceTypeCommands();
+
+    /**
+     *  Returns the LiteBase object that was added, deleted or updated, 
+     *    else null is returned.
+     */
+    public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg);
+
+    public void releaseAllAlarmCategories();
+
+    public void releaseAllCache();
+
+    public void releaseAllContacts();
+
+    public void releaseAllDeviceMeterGroups();
+
+    public void releaseAllYukonImages();
+
+    public void releaseAllGraphDefinitions();
+
+    public void releaseAllHolidaySchedules();
+
+    public void releaseAllBaselines();
+
+    public void releaseAllSeasonSchedules();
+
+    public void releaseAllCommands();
+
+    public void releaseAllTOUSchedules();
+
+    public void releaseAllTOUDays();
+
+    public void releaseAllConfigs();
+
+    public void releaseAllTags();
+
+    public void releaseAllSettlementConfigs();
+
+    public void releaseAllLMProgramConstraints();
+
+    public void releaseAllLMScenarios();
+
+    public void releaseAllLMPAOExclusions();
+
+    public void releaseAllNotificationGroups();
+
+    public void releaseAllCustomers();
+
+    public void releaseAllYukonUsers();
+
+    public void releaseAllStateGroups();
+
+    public void releaseAllYukonPAObjects();
+
+    public void releaseAllDeviceTypeCommands();
+
+    public void removeDBChangeLiteListener(DBChangeLiteListener listener);
+
+    public void removeDBChangeListener(DBChangeListener listener);
+
+    public void setDatabaseAlias(String newAlias);
+
+    public LiteYukonRole getARole(LiteYukonUser user, int roleID);
+
+    public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID);
+
     public LiteContact getAContactByUserID(int userID);
+
     public LiteContact getAContactByContactID(int contactID);
-    public LiteContact[] getContactsByLastName(String lName, boolean partialMatch);
-    public LiteContact[] getContactsByFirstName(String fName, boolean partialMatch);
-    public LiteContact[] getContactsByPhoneNumber(String phoneNumber, boolean partialMatch);
+
+    public LiteContact[] getContactsByLastName(String lastName, boolean partialMatch);
+
+    public LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch);
+
+    public LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch);
+
     public LiteContact getContactsByEmail(String email);
-    public LiteContactNotification getAContactNotifByNotifID(int contNotifyID); 
+
+    public LiteContactNotification getAContactNotifByNotifID(int contNotifyID);
+
     public LiteCustomer getACustomerByContactID(int contactID);
+
     public LiteCustomer getACustomerByCustomerID(int customerID);
 
-	/**
-	 *  Returns the LiteBase object that was added,deleted or updated, 
-	 *    else null is returned.
-	 */
-	public LiteBase handleDBChangeMessage(
-		com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg);
+    public void releaseUserRoleMap();
 
-	public void releaseAllCache();
-	public void releaseAllAlarmCategories();
-	public void releaseAllContacts();
-	public void releaseAllCustomers();
-	public void releaseAllDeviceMeterGroups();
-	public void releaseAllYukonImages();
-	public void releaseAllGraphDefinitions();
-	public void releaseAllHolidaySchedules();
-	public void releaseAllBaselines();
-	public void releaseAllConfigs();
-	public void releaseAllLMProgramConstraints();
-	public void releaseAllLMScenarios();
-	public void releaseAllLMPAOExclusions();
-	public void releaseAllTags();
-	public void releaseAllSettlementConfigs();
-	public void releaseAllSeasonSchedules();
-	public void releaseAllTOUSchedules();
-	public void releaseAllTOUDays();
-	public void releaseAllNotificationGroups();
-	//public void releaseAllPoints();
-	public void releaseAllStateGroups();
-	public void releaseAllYukonPAObjects();
-	public void releaseAllYukonUsers();
-	public void releaseAllDeviceTypeCommands();
-	public void releaseAllCommands();
-	
-	public void releaseUserRolePropertyValueMap();
-	public void releaseUserRoleMap();
+    public void releaseUserRolePropertyValueMap();
+
     public void releaseUserContactMap();
 
-	public void removeDBChangeLiteListener(DBChangeLiteListener listener);
-    public void removeDBChangeListener(DBChangeListener listener);
-	public void setDatabaseAlias(String newAlias);
     public List getDevicesByCommPort(int portId);
+
     public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
 
 }

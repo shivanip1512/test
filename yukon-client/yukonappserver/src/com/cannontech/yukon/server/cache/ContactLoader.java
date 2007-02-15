@@ -1,5 +1,6 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -20,18 +21,18 @@ public class ContactLoader implements Runnable
     private boolean willNeedDynamicLoad = false;
     
     //Map<Integer(contactID), LiteContact>
-    private final Map allContactsMap;
+    private final Map<Integer, LiteContact> allContactsMap;
 
-    private final java.util.ArrayList allContacts;
+    private final List<LiteContact> allContacts;
 	private final String databaseAlias;
 
     //Map<Integer(ContactNotifID), LiteContactNotif>
-    private final Map allContactNotifsMap;
+    private final Map<Integer, LiteContactNotification> allContactNotifsMap;
 	
 	/**
 	 * CustomerContactLoader constructor comment.
 	 */
-	public ContactLoader(java.util.ArrayList customerContactArray, Map contactMap, Map allContactNotifsMap, String alias) {
+	public ContactLoader(List<LiteContact> customerContactArray, Map<Integer, LiteContact> contactMap, Map<Integer, LiteContactNotification> allContactNotifsMap, String alias) {
 		super();
 		this.allContacts = customerContactArray;
         this.allContactsMap = contactMap;
@@ -117,7 +118,7 @@ public class ContactLoader implements Runnable
 
                 // check if the lastContact is still valid
                 if (lastContact == null || lastContact.getContactID() != ln.getContactID()) {
-                    lastContact = (LiteContact)allContactsMap.get( new Integer(ln.getContactID()) );
+                    lastContact = allContactsMap.get( new Integer(ln.getContactID()) );
                     lastContact.setExtended(true);  //This flag will eliminate the automatic "extended" loading.
                 }
                 

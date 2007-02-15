@@ -6,6 +6,10 @@
  */
 package com.cannontech.yukon.server.cache;
 
+import java.util.List;
+
+import com.cannontech.database.data.lite.LiteTOUDay;
+
 /**
  * @author jdayton
  *
@@ -15,11 +19,11 @@ package com.cannontech.yukon.server.cache;
 public class TOUDayLoader implements Runnable {
 	
 	private String databaseAlias = null;
-	private java.util.ArrayList allTOUDays = null;
+	private List<LiteTOUDay> allTOUDays = null;
 /**
  * TOUScheduleLoader constructor comment.
  */
-public TOUDayLoader(java.util.ArrayList touDays ,String dbAlias) {
+public TOUDayLoader(List<LiteTOUDay> touDays ,String dbAlias) {
 	super();
 	this.allTOUDays = touDays ;
 	this.databaseAlias = dbAlias;
@@ -59,8 +63,7 @@ public void run()
 			int dayOffset = rset.getInt(3);
 			int scheduleID = rset.getInt(4);
 
-			com.cannontech.database.data.lite.LiteTOUDay day =
-				new com.cannontech.database.data.lite.LiteTOUDay( dayID, dayName, dayOffset, scheduleID );
+			LiteTOUDay day = new LiteTOUDay( dayID, dayName, dayOffset, scheduleID );
 				
 			if(scheduleID != 0)
 				allTOUDays.add(day);

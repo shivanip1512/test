@@ -29,11 +29,11 @@ import com.cannontech.database.db.user.UserPaoOwner;
 
 public class UserPoaOwnerLoader implements Runnable
 {
-	private Map allUsersToPAObjects;
-	private List allUsers;
+	private Map<LiteYukonUser, int[]> allUsersToPAObjects;
+	private List<LiteYukonUser> allUsers;
 	private String dbAlias = null;
 
-	public UserPoaOwnerLoader(Map allUserToPAOs, List allYukUsers, String dbAlias)
+	public UserPoaOwnerLoader(Map<LiteYukonUser, int[]> allUserToPAOs, List<LiteYukonUser> allYukUsers, String dbAlias)
     {
         if( allYukUsers == null )
             throw new IllegalArgumentException("The List of YukonUsers must be populated");
@@ -51,11 +51,11 @@ public class UserPoaOwnerLoader implements Runnable
 	{
    		long timerStart = System.currentTimeMillis();
 
-        HashMap userMap = new HashMap(allUsers.size()*2);
+        HashMap<Integer, LiteYukonUser> userMap = new HashMap<Integer, LiteYukonUser>(allUsers.size()*2);
 
-        Iterator i = allUsers.iterator();
+        Iterator<LiteYukonUser> i = allUsers.iterator();
         while(i.hasNext()) {
-            LiteYukonUser u = (LiteYukonUser) i.next();
+            LiteYukonUser u = i.next();
             userMap.put(new Integer(u.getUserID()), u);
         }
         
@@ -100,7 +100,7 @@ public class UserPoaOwnerLoader implements Runnable
    
    }
 
-    public void populateMap( Map allUsersMap, ResultSet rset )
+    public void populateMap( Map<Integer, LiteYukonUser> allUsersMap, ResultSet rset )
     	throws SQLException
     {
         Integer lastUserID = null;
@@ -120,7 +120,7 @@ public class UserPoaOwnerLoader implements Runnable
             {
                 if( lastUserID != null )
                     allUsersToPAObjects.put(
-                            (LiteYukonUser)allUsersMap.get(lastUserID),
+                            allUsersMap.get(lastUserID),
                             niv.toArray() );
 
                 niv = new NativeIntVector(32);
@@ -133,7 +133,7 @@ public class UserPoaOwnerLoader implements Runnable
         //add the last set of paoIDs to the array
         if( niv.size() > 0 )
         	allUsersToPAObjects.put(
-                (LiteYukonUser)allUsersMap.get(userID),
+                allUsersMap.get(userID),
                 niv.toArray() );
         
     }

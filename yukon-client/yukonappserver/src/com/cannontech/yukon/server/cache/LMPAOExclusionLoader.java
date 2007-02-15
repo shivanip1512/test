@@ -7,6 +7,8 @@
 package com.cannontech.yukon.server.cache;
 
 
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteLMPAOExclusion;
@@ -20,13 +22,13 @@ import com.cannontech.database.db.pao.PAOExclusion;
  */
 public class LMPAOExclusionLoader implements Runnable 
 {
-	private java.util.List allLMPAOExclusions = null;
+	private List<LiteLMPAOExclusion> allLMPAOExclusions = null;
 	private String databaseAlias = null;
 
 /**
  * LMPAOExclusionLoader constructor comment.
  */
-public LMPAOExclusionLoader(java.util.List lmExclusions, String alias) {
+public LMPAOExclusionLoader(List<LiteLMPAOExclusion> lmExclusions, String alias) {
 	super();
 	allLMPAOExclusions = lmExclusions;
 	databaseAlias = alias;

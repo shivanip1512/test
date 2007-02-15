@@ -18,10 +18,10 @@ public final class YukonRolePropertyLoader implements Runnable
 {
 	private static final String sql = "SELECT RolePropertyID,RoleID,KeyName,DefaultValue,Description FROM YukonRoleProperty";
 
-   	final private List allRoleProperties;
+   	final private List<LiteYukonRoleProperty> allRoleProperties;
 	final private String dbAlias;
 
-	public YukonRolePropertyLoader(final List allRoleProperties, final String dbAlias) {
+	public YukonRolePropertyLoader(List<LiteYukonRoleProperty> allRoleProperties, final String dbAlias) {
    		this.allRoleProperties = allRoleProperties;
       	this.dbAlias = dbAlias;      	
    	}
