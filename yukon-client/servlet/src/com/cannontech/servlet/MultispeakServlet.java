@@ -123,10 +123,10 @@ public class MultispeakServlet extends HttpServlet
 //        load action parameters from req
         String mspService = req.getParameter("actionService");
         String mspEndpoint = req.getParameter("actionEndpoint");
-        int mspPrimaryCIS = 0;
+        int mspPrimaryCIS = mspBean.getPrimaryCIS();
         if (req.getParameter("mspPrimaryCIS") != null)
         	mspPrimaryCIS = Integer.valueOf(req.getParameter("mspPrimaryCIS")).intValue();
-        int mspPaoNameAlias = 0;
+        int mspPaoNameAlias = mspBean.getPaoNameAlias();
         if (req.getParameter("mspPaoNameAlias") != null)
         	mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
         
