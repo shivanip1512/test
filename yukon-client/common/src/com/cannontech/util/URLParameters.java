@@ -11,7 +11,7 @@ import java.util.Map;
  * print them out when needed.
  * The output generated is NOT encoded.
  */
-public class URLParameters extends HashMap
+public class URLParameters extends HashMap<String, String>
 {
 
 	/**
