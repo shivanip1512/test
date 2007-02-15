@@ -8,6 +8,8 @@ import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
@@ -29,6 +31,7 @@ import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -1640,6 +1643,20 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         }
         return rc;
     }
+    
+    public static String getSystemInfoString() {
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
+        out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
+        out.println("USER_COUNTRY: " + SystemUtils.USER_COUNTRY);
+        out.println("OS_ARCH: " + SystemUtils.OS_ARCH);
+        out.println("OS_NAME: " + SystemUtils.OS_NAME);
+        out.println("OS_VERSION: " + SystemUtils.OS_VERSION);
+        out.println("JAVA_HOME: " + SystemUtils.JAVA_HOME);
+        out.println("JAVA_VERSION: " + SystemUtils.JAVA_VERSION);
+        return sw.toString();
+    }
+
 }
 
 

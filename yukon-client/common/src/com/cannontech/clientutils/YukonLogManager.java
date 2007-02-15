@@ -61,11 +61,13 @@ public class YukonLogManager {
         if (url != null){
             DOMConfigurator.configure(url);
             getMyLogger().info("The config file was found on classpath: " + url);
+            dumpDebugInfo();
             return;
         } else if (path.canRead()){
             //update the file if it changes every 3000 milliseconds
             DOMConfigurator.configureAndWatch(path.getAbsolutePath(), 3000);
             getMyLogger().info("The config file was found under " + path);
+            dumpDebugInfo();
             return;
         } else {
             //If all else fails use BasicConfigurator which will append messages to the 
@@ -73,10 +75,18 @@ public class YukonLogManager {
             BasicConfigurator.configure();
             Logger.getRootLogger().setLevel(Level.INFO);
             getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
+            dumpDebugInfo();
             return;
         }   
     }
     
+    private static void dumpDebugInfo() {
+        Logger logger = getLogger("com.cannontech.sysinfo");
+        if (logger.isInfoEnabled()) {
+            logger.info("System info:\n" + CtiUtilities.getSystemInfoString());
+        }
+    }
+
     /**
      * Try not to call this before Log4j is configured.
      * @return
