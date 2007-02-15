@@ -1,7 +1,12 @@
 package com.cannontech.core.authorization.exception;
 
+/**
+ * Thrown when a user tries to perform an operation on a pao that they do not
+ * have permission for.
+ */
 public class PaoAuthorizationException extends Exception {
 
+    // Permission that has been violated
     private String permission = null;
 
     public String getPermission() {

@@ -18,17 +18,19 @@ public interface CommanderRole {
 
     public static final int READ_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 6;
     public static final int WRITE_TO_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 7;
-    public static final int CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 8;
+    public static final int READ_DISCONNECT_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 8;
+    public static final int WRITE_DISCONNECT_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 9;
 
-    public static final int READ_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 9;
-    public static final int WRITE_TO_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 10;
-    public static final int CONTROL_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 11;
+    public static final int READ_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 10;
+    public static final int WRITE_TO_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 11;
+    public static final int CONTROL_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 12;
 
-    public static final int READ_CAP_CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 12;
-    public static final int WRITE_TO_CAP_CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 13;
-    public static final int CONTROL_CAP_CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 14;
+    public static final int READ_CAP_CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 13;
+    public static final int WRITE_TO_CAP_CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 14;
+    public static final int CONTROL_CAP_CONTROL_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 15;
 
-    public static final int EXECUTE_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 15;
+    public static final int EXECUTE_UNKNOWN_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 16;
+    public static final int EXECUTE_MANUAL_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 17;
 	
 //	public static final int LOG_LEVEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE;
 }

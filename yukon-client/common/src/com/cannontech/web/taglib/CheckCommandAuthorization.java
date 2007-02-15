@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.core.authorization.service.CommandAuthorizationService;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
@@ -28,7 +28,7 @@ public class CheckCommandAuthorization extends BodyTagSupport {
 
         LiteYukonUser user = ServletUtil.getYukonUser(pageContext.getSession());
 
-        CommandAuthorizationService service = (CommandAuthorizationService) YukonSpringHook.getBean("commandAuthorizationService");
+        PaoCommandAuthorizationService service = (PaoCommandAuthorizationService) YukonSpringHook.getBean("commandAuthorizationService");
 
         return (service.isAuthorized(user, command, device)) ? EVAL_BODY_INCLUDE : SKIP_BODY;
     }
