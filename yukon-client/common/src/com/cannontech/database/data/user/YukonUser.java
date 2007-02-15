@@ -196,6 +196,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		
 		delete( UserPaoOwner.TABLE_NAME, "UserID", getYukonUser().getUserID());
 		UserPaoOwner ownedByUser = new UserPaoOwner();
+        ownedByUser.setDbConnection(getDbConnection());
 		ownedByUser.addForUser( getYukonUser().getUserID(), getUserOwnedPAOs());
 		
 		//This is not null if this login has been linked to an energy company
