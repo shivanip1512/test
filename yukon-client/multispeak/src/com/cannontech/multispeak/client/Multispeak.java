@@ -1223,25 +1223,36 @@ public class Multispeak implements MessageListener {
             String serviceLocationStr = mspServiceLocation.getObjectID();
             String paoName = null;
             LiteYukonPAObject liteYukonPaobject = null;
+            String logString = "";
             
             //Find a liteYukonPaobject 
             if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-            	//Do nothing...today anyway.
-            }
-            else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
                 paoName = mspServiceLocation.getObjectID();
+                logString = "ServLoc";
+                liteYukonPaobject = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(paoName);
+            }
+            else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
+                paoName = mspServiceLocation.getAccountNumber();
+                logString = "AcctNo";
+                liteYukonPaobject = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(paoName);
+            }
+            else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
+                paoName = mspServiceLocation.getCustID();
+                logString = "CustNo";
                 liteYukonPaobject = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(paoName);
             }
             else { // lookup by meter number
                 //lookup meter by servicelocation
                 String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+                logString = "MeterNo";
 
                 try {
                 	CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
                 	ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
                     if( mspMeters != null && mspMeters.getMeter() != null) {
                         for ( int j = 0; j < mspMeters.getMeter().length; j++){
-                            LiteYukonPAObject tempPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(mspMeters.getMeter(j).getMeterNo());
+                        	paoName = mspMeters.getMeter(j).getMeterNo();
+                            LiteYukonPAObject tempPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(paoName);
                             if( tempPao != null) {
                                 liteYukonPaobject = tempPao;
                                 break;
@@ -1316,7 +1327,7 @@ public class Multispeak implements MessageListener {
                                                                  "ServiceLocation");
                 errorObjects.add(err);
                 logMSPActivity("ServiceLocationChangedNotification",
-                               "ServiceLocation(" + serviceLocationStr + ") - ServiceLocation was NOT found in Yukon",
+                               logString + "(" + paoName + ") - was NOT found in Yukon",
                                mspVendor.getCompanyName());
             }
         }
