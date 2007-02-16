@@ -1,0 +1,299 @@
+Created By          : jotteson
+Created At          : 01/29/07 12:35:11
+Target Name         : odb15d
+Target Location     : C:\roguewavebuild\workspaces\WINNT4\MSVC60\15d\lib
+Build Result        : SUCCESS
+Build Error         : No Error
+Build Description   : C++ library
+Build Profile       : MultiDebugStdLibShared
+Build Options:        
+-     Build Mode    : FullDebug
+-     Threading     : Multi
+-     Linkage       : Shared
+-     Standard Lib  : StdLibYes
+Prepend Build Opts  : 
+Prepend Link Opts   : 
+Postpend Build Opts : 
+Postpend Link Opts  : 
+Build Command(s)    : C:\spm\scripts\rwenv -bC:\spm\utils\mks\win32\bin "rwbuild -m -z   -t15 -d -fC:\spm\scripts\platform\msvc.in -iC:\roguewavebuild\workspaces\WINNT4\MSVC60\15d C:\roguewavebuild\parts\odb0321w/source"
+Part                : source
+Configuration       : MultiDebugStdLibShared-WINNT 4-MSVC 6.0
+Environment         : WINNT 4-MSVC 6.0
+OS                  : WINNT
+OS Version          : 4
+Part Builder        : MSVC
+Part Builder Version: 6.0
+
+---------- Transcript of build ----------
+# Setting environment in which to run "rwbuild -m -z   -t15 -d -fC:/spm/scripts/platform/msvc.in -iC:/roguewavebuild/workspaces/WINNT4/MSVC60/15d C:/roguewavebuild/parts/odb0321w/source"
+# Running "rwbuild -m -z   -t15 -d -fC:/spm/scripts/platform/msvc.in -iC:/roguewavebuild/workspaces/WINNT4/MSVC60/15d C:/roguewavebuild/parts/odb0321w/source"
+
+Please wait just a moment while I initialize myself . . .
+Microsoft C++ compiler
+For this build I will read config.dat
+  from your workspace C:/roguewavebuild/workspaces/WINNT4/MSVC60/15d.
+ 
+Setup Complete.
+RWSHARED = 1
+RWSYMBDEBUG  = 1
+RWDEBUG  = 1
+RWMULTI  = 1
+RWSTDLIB = 1
+ 
+Generating makefiles...
+# Installing C:/roguewavebuild/parts/odb0321w/source/
+   in C:/roguewavebuild/workspaces/WINNT4/MSVC60/15d
+# Making C:/roguewavebuild/parts/odb0321w/source
+  for WINNT/MSVC
+nmake 
+
+Microsoft (R) Program Maintenance Utility   Version 6.00.9782.0
+Copyright (C) Microsoft Corp 1988-1998. All rights reserved.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbcconn.cpp -o odbcconn.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbcconn.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbcursr.cpp -o odbcursr.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbcursr.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbdatev.cpp -o odbdatev.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbdatev.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbdb.cpp -o odbdb.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbdb.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbdel.cpp -o odbdel.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbdel.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbenvh.cpp -o odbenvh.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbenvh.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbhstmt.cpp -o odbhstmt.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbhstmt.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbins.cpp -o odbins.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbins.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbkins.cpp -o odbkins.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbkins.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbkread.cpp -o odbkread.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbkread.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbphras.cpp -o odbphras.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbphras.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbrdr.cpp -o odbrdr.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbrdr.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbres.cpp -o odbres.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbres.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbrestb.cpp -o odbrestb.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbrestb.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbsel.cpp -o odbsel.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbsel.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbsproc.cpp -o odbsproc.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbsproc.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbsqlda.cpp -o odbsqlda.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbsqlda.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbstat.cpp -o odbstat.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbstat.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbstmt.cpp -o odbstmt.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbstmt.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbsysh.cpp -o odbsysh.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbsysh.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbtab.cpp -o odbtab.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbtab.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbupd.cpp -o odbupd.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbupd.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbutils.cpp -o odbutils.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbutils.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl  -I"C:\Program Files\Microsoft Visual Studio\VC98\"\include -I"C:\Program Files\Microsoft Visual Studio\VC98\"/header  -I..\.. -IC:/roguewavebuild/parts/odb0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\odb15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDACCESSDLL   -DRWDLL -D_RWDB_MSVC -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/odb0321w\source\src\odbval.cpp -o odbval.obj
+Command line warning D4024 : unrecognized source file type 'Files\Microsoft', object file assumed
+Command line warning D4027 : source file 'Files\Microsoft' ignored
+Command line warning D4024 : unrecognized source file type 'Visual', object file assumed
+Command line warning D4027 : source file 'Visual' ignored
+Command line warning D4024 : unrecognized source file type 'Studio\VC98"/header', object file assumed
+Command line warning D4027 : source file 'Studio\VC98"/header' ignored
+odbval.cpp
+Compiling windows.h - this should happen just once per project.
+
+	link  /DEBUG /PDB:..\..\lib\odb15d.pdb   /DLL @C:\DOCUME~1\jotteson\LOCALS~1\Temp\nma05188.
+Microsoft (R) Incremental Linker Version 6.00.8447
+Copyright (C) Microsoft Corp 1992-1998. All rights reserved.
+
+/OUT:..\..\lib\odb15d.dll /IMPLIB:..\..\lib\odb15d.lib 
+-LIBPATH:..\..\lib "-LIBPATH:C:\Program Files\Microsoft Visual Studio\VC98\\lib" "-LIBPATH:C:\Program Files\Microsoft Visual Studio\VC98\\lib32" "-LIBPATH:C:\Program Files\Microsoft Visual Studio\VC98\\redist" ..\..\lib\dbt15d.lib ..\..\lib\tls15d.lib odbc32.lib user32.lib odbcconn.obj odbcursr.obj odbdatev.obj odbdb.obj odbdel.obj odbenvh.obj odbhstmt.obj odbins.obj odbkins.obj odbkread.obj odbphras.obj odbrdr.obj odbres.obj odbrestb.obj odbsel.obj odbsproc.obj odbsqlda.obj odbstat.obj odbstmt.obj odbsysh.obj odbtab.obj odbupd.obj odbutils.obj odbval.obj 
+   Creating library ..\..\lib\odb15d.lib and object ..\..\lib\odb15d.exp

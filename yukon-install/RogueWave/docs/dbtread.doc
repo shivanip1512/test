@@ -1,0 +1,417 @@
+
+                             R O G U E   W A V E
+
+                          DBTools.h++ Core Library 
+
+                          Version 3.2.1 November 1999
+
+Rogue Wave Software, Inc.
+5500 Flatiron Parkway
+Boulder, CO  80301
+
+Corporate Office:  (303) 473-9118
+Toll Free:  (800) 487-3217
+Fax:  (303) 447-2568
+sales@roguewave.com
+www.roguewave.com
+
+Technical Support:  (303) 545-3205
+Online Knowledge Base:  support.roguewave.com
+Email:  support@roguewave.com
+
+
+Serving Europe:
+Rogue Wave Software GmbH
++49-6103-59 34-0
+Rogue Wave Software B.V.
++31-20-301 26 26
+Rogue Wave Software S.A.R.L.
++33-1-4196 2626
+Rogue Wave Software-UK.Ltd.
++44-118-988 0224
+Rogue Wave Software S.R.L.
++39-02-3809 3288
+
+There is a list of frequently asked questions (FAQ) on the Rogue Wave WWW site.
+We encourage you to read these if you are a new user of DBTools.h++.
+
+On-line documentation is provided for all DBTools.h++ manuals in the docs/online
+directory. These documents are in HTML format.
+
+This file contains:
+-------------------
+  1. Compiler specific notes
+  2. OS specific notes
+  3. Known difficulties in this release
+  4. Changes from previous release, not documented elsewhere.
+
+
+===========================
+1. Compiler-specific notes:
+---------------------------
+
+                     **************************
+                  ****  Microsoft Visual C++  ****
+                     **************************
+Tutorials built with the Microsoft STL as opposed to the Rogue Wave STL (build 
+types 8 through 15) may crash on exit with several of the access libraries. 
+The problem involves the destruction of fstreams.
+
+On MS-Windows 95 as opposed to Windows-NT the above problem may be seen with 
+Multi-threaded builds.
+
+                     **********************
+                  ****      Borland       ****
+                     **********************
+
+The Borland 5.x Compiler is not compatible with Rogue Wave STL 1.2.4, if you
+are using the STL, you must use the version that comes with the Borland
+Compiler.
+
+The Borland 5.x Compiler will generate compiler errors with the following code
+sample;
+
+     RWDBExpr expr;
+     expr = rwdbNull;
+
+The work around follows;
+
+     RWDBExpr expr;
+     RWDbValueManip vManip = rwdbNull;
+     expr = vManip; 
+     
+ o  Please ignore warning: "Comparing signed and unsigned values".
+
+                     **************************
+                  ****    Sun Workshop 5.0    ****
+                     **************************
+
+DBTools.h++ has been certified using Sun patch #107311-06 of the SunPro 5.0 
+compiler.  With the release of this patch, Rogue Wave can now provide support
+for the entire spectrum of DBTools.h++ client libraries available for Solaris
+2.6 and Solaris 7 operating systems. 
+
+If you are using earlier patch versions of SunPro 5.0, Rogue Wave cannot 
+guarantee support for DBTools.h++.
+
+=====================
+2. OS-specific notes:
+---------------------
+                    **********************
+                 ****       LINUX        ****
+                    **********************
+
+There is a known problem converting an wchar_t string into a multibyte 
+string.  In dbtools the use of RWDBValue::asMBString on a RWDBValue 
+that contains a value of type RWDBValue::WString will produce incorrect
+results.  The source of the problem is in the Linux wctomb() utility 
+used in the Tools.h++ method RWWString::toMultiByte().
+ 
+                    **********************
+                  ****       OS2          ****
+                     **********************
+DBTools.h++ no longer supports OS2.
+ 
+                     ************************
+                  ****       DEC UNIX       ****
+                     ************************
+DBTools.h++ no longer supports DEC OSF/1, only DEC UNIX 
+
+The DEC C++ compiler will produce warnings about nested comments for
+pdsc.h, a DEC header file.
+
+                     ************************
+                  ****   HP-UX 10.x ****
+                     ************************
+HP-UX 9.x is no longer a supported platfrom for DBTools.h++.
+
+The LPATH is only used when linking applications with shared libraries.
+In order to use DBTools.h++ shared libraries, you need to set SHLIB_PATH
+to include the location of the DBTools.h++ shared libraries and database 
+vendor libraries, and turn on link flag -Wl,+s.
+
+During testing, Rogue Wave observed that the libCsup library included with 
+some versions of the HP aCC compiler on HP-UX 10.20 is missing a symbol 
+required for some databases to be used.  The symptom of this problem is an 
+error message similar to the following: 
+
+/usr/lib/dld.sl: Unresolved symbol: __DestructMarkedArray__FPvUiPFv_v (code)
+from ../../lib/libdb20d.sl
+
+followed by failure of the program to connect with the database.  
+If this is occuring, try changing both your LPATH and SHLIB_PATH 
+environment variables to use the directories /usr/lib and /lib BEFORE any 
+other directories.  This will cause the libCsup in your /usr/lib and/or /lib 
+to be used instead of the one shipped with the compiler.  In ksh or sh, 
+you can accomplish this with:
+
+LPATH=/usr/lib:/lib:$LPATH; export LPATH
+SHLIB_PATH=/usr/lib:/lib:$SHLIB_PATH; export SHLIB_PATH
+
+Following this, re-link and re-execute your program in the same environment 
+in which you modified these environment variables.
+
+                     **********************
+                  ****   IBM AIX          ****
+                     **********************
+ IBM AIX is only supported when using Tools.h++ 7.0.2 or later.
+
+ Linking DBTools.h++ will produce duplicate symbol warnings.  This is because
+ we use compile time instantiation for templates instead of link time
+ instantiation.  Link time template instantiation has caused failures to occur
+ in Rogue Wave product test suites which use complex templates.
+
+ AIX4.3 will core dump applications which try to throw exceptions from
+ multi-threaded code.  This has been addressed by IBM with a patch for POSIX
+ threads.  However, a fix for DCE is not expected until version 3.6.4 of the
+ compiler.
+
+ In order to use DBTools.h++ shared libraries, you will need to do
+ the following:
+ 
+   (a) install 5799-QTD P91153 which includes library routines to manipulate
+       shared libraries programmatically, e.g. dlopen(), dlclose(),
+       dlsym() ..etc. You can obtain this PRPQ at no cost through your
+       IBM marketing rep or from IBM Direct @ 800-426-2255. 
+ 
+   (b) set LIBPATH to include the location of the DBTools.h++ shared
+       libraries.
+
+ Notes:
+   (a) The format of names of static libraries is lib<basename><buildtype>sns.a.
+       For example,
+ 
+              libdbt7sns.a   -- DBTools.h++ Core library
+ 
+   (b) The format of names of shared libraries that are loaded
+       automatically by the dynamic loader is lib<basename><buildtype>d.a.
+       For example,
+ 
+              libdbt7d.a   -- DBTools.h++ Core library
+ 
+   (c) The format of names of shared libraries that are loaded
+       programmatically (via dlopen()) is lib<basename><buildtype>s.so, which
+	   is a link to the file built in (b) above.
+       For example,
+ 
+              libora7d.so   -- DBTools.h++ Oracle Access library
+
+                     **********************
+                  ****     IRIX 6.5       ****
+                     **********************
+When building shared libraries on IRIX you may see Warning 85 at link time.
+This warning is listed when two libraries that are being linked in contain
+identical symbols.  The linker allows one definition to pre-empt the other.
+These warnings do not affect the build or the use of the DBTools.h++ core
+library.
+
+
+                    ************************
+                 **** Solaris 7 (SunOS 5.7)****
+                    ************************
+
+Due to the locale libraries shipped with Solaris 7, the t4 tutorial can core
+dump.  This problem occurs when trying to convert an RWDecimalPortable to an
+RWCString.  For further details, refer to Sun's Bug #4197673.
+
+                     **********************
+                  ****   SunOS 4.1.3      ****
+                     **********************
+ In order to use DBtools.h++ shared libraries, you will need to do
+ the following:
+ 
+   (a) use the full path name for the DBTools.h++ access library when passing
+       the library as an argument to RWDBManager::database(. . .)
+ 
+ This action will be necessary to successfully execute the DBTools.h++ 
+ tutorials using shared libraries for this platform.
+
+=====================================
+3. Known difficulties in this release
+-------------------------------------
+As of the shipping date, the following were unresolved:
+
+ID	Description
+--  -----------
+
+5975    The creation of global RWDBDatabase instances is problematic on 
+        virtually all platform due to  static initialization issues and 
+        the order of destruction of static objects.
+
+9445    While creating a table with an String, MBString, or WString column,
+        the column's storage length may be undefined if a user does not
+        specify such explicitly. This could cause some unexpected behavior
+        of a program.
+
+        With several compilers there are warning messages complaining:
+            blob.h, line 41: function "RWDBBlobData::operator new" has no 
+            corresponding operator delete 
+            void* operator new (size_t, void* p);
+        A delete operator is not needed with a placement operator new, as
+        it doesn't allocate from free store.
+
+10067   AIX4.3 will core dump applications which try to throw exceptions from
+        multi-threaded code.  This has been addressed by IBM with a patch for
+        POSIX threads.  However, a fix for DCE is not expected until version
+        3.6.4 of their compiler.
+
+10137   [AIX xlC only]  Linking DBTools.h++ produces duplicate symbol warnings.
+        This is because we use compile time instantiation for templates instead
+        of link time instantiation.  Link time template instantiation has caused
+        failures to occur in Rogue Wave product test suites which use complex
+        templates.
+
+11087   [Standard Library Builds] The file dcmldefs.h contains using directives
+        that introduce members of the std namespace into the global namespace. 
+        This is a problem when introducing names from other namespaces into the
+        global namespace that clash with those found in the std namespace.
+        Be aware that if you include rw/db/db.h or rw/db/decport.h, you will
+        indirectly include rw/db/dcmldefs.h.
+ 
+=================================
+4. Changes from previous release, not documented elsewhere:
+---------------------------------
+3.2.0 -> 3.2.1
+  Maintenance release.
+
+3.1.3 -> 3.1.4
+  Maintenance release.
+  With this version, the names of the database specific access library object modules to link 
+  with your application when using static builds of the libraries have been changed as follows.
+
+	On UNIX: old name: db<xx>lib.o		new name: rw<libtype><buildtype>.o
+	On PC:	old name: db<xx>lib.obj		new name: rw<libtype><buildtype>.obj
+
+	Where xx is the place holder for the first two characters of the access library's 
+	<libtype> variable listed in the online DBTools.h++ Build Guide, section 2.2.2, 
+	Table 6 "Possible values for <libtype>".
+
+3.1.2 -> 3.1.3
+  maintenance release. 
+
+Apr 1999
+--------------
+  o Various minor bug fixes.
+
+  o Various minor performance enhancements.
+
+3.1.0 -> 3.1.1 (February 1999 CD Release)
+--------------
+  o Various minor bug fixes.
+  o Various minor performance enhancements.
+
+3.0.2 -> 3.1.0 (November 1998 CD Release)
+
+Nov 1998
+--------------
+  o transaction control has been opened to user. RWDBConnection::autoCommit 
+    and RWDBDatabase::autoCommit is obsoleced (will not effect transaction 
+    behavior).
+
+3.0.1 -> 3.0.2 (Web Based Release Only)
+
+Oct 1998
+--------------
+  o Various minor bug fixes.
+
+  o Various minor performance enhancements.
+
+  
+3.0.0 -> 3.0.1 (Web Based Release Only)
+
+Aug. 1998
+--------------
+  o Completed bulkcopy classes on that:
+    i. added operator [] with column name into bulk insert so insertion with
+       column list is available.
+   ii. added decimal datatype support into bulk class.
+  iii. added bulk insert into CT-LIB access library.
+
+  o Fixed share library loading potential problem on HP-UX platform.
+
+  o Various minor bug fixes.
+
+  o Various minor performance enhancements.
+
+2.2.1 -> 3.0.0
+
+June 1998
+--------------
+  o Added new tutorial bulkcopy.cpp which demonstrates how to use
+    our new Bulk classes.
+
+  o Added i18n (internationalization) support
+
+  o Added a generic memory leak wrapper RWDBWrapper.  Used internally
+    by DBTools, it is also available for external use.  The header
+    <rw/db/wrapper.h> provides a templatized wrapper class and a wrapper
+    specific to RWDBResultImp.  Using a wrapper:
+
+          #include <rw/db/wrapper.h>
+		   
+          LeakingResourceType *resource;
+          RWDBWrapper <LeakingResourceType> resourceWrapper (resource);
+            ...
+          leakingFunctionCall(*resource);
+            ...
+          resourceWrapper.unwrap();
+
+
+2.2.0 -> 2.2.1
+
+November 1997
+--------------
+
+  o Added section on Multithreading in DBTools to the Users Guide
+
+  o Fixed Primary Key Information retrieval
+ 
+  o Various minor bug fixes
+
+  o Various minor performance enhancements
+
+
+
+2.1.3 -> 2.2.0
+
+August 1997
+--------------
+
+  o Fixed shared library problem on Dec platforms
+ 
+  o Fixed problem with default RWDBJoinExpr
+
+  o RWDBTable::reader() does not produce connections anymore, when 
+    implementation is Memory table or result table.
+
+  o RWDBValue::operator= and copy construtor now test for null-state.
+
+  o To boost Performance, we have also made RWDBDateTime and RWDBSchema copy
+     on write.
+
+
+#==========================================================================
+#
+#  Copyright (c) 1994-1999 Rogue Wave Software, Inc.  All Rights Reserved.
+#
+#  This computer software is owned by Rogue Wave Software, Inc. and is
+#  protected by U.S. copyright laws and other laws and by international
+#  treaties.  This computer software is furnished by Rogue Wave Software,
+#  Inc. pursuant to a written license agreement and may be used, copied,
+#  transmitted, and stored only in accordance with the terms of such
+#  license and with the inclusion of the above copyright notice.  This
+#  computer software or any other copies thereof may not be provided or
+#  otherwise made available to any other person.
+#
+#  U.S. Government Restricted Rights.  This computer software is provided
+#  with Restricted Rights.  Use, duplication, or disclosure by the
+#  Government is subject to restrictions as set forth in subparagraph (c)
+#  (1) (ii) of The Rights in Technical Data and Computer Software clause
+#  at DFARS 252.227-7013 or subparagraphs (c) (1) and (2) of the
+#  Commercial Computer Software – Restricted Rights at 48 CFR 52.227-19,
+#  as applicable.  Manufacturer is Rogue Wave Software, Inc., 5500
+#  Flatiron Parkway, Boulder, Colorado 80301 USA.
+#
+#==========================================================================
+#
+# $Id:

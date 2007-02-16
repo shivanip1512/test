@@ -1,0 +1,1357 @@
+#
+#                     R O G U E   W A V E
+#
+#         T O O L S . H + +    P R O F E S S I O N A L
+#
+#                  C L A S S   L I B R A R Y
+#
+#       Rogue Wave Tools.h++ Professional:  Version 1.2.0
+#
+#                                                        November 1999
+#
+#  Copyright (c) 1998-1999 Rogue Wave Software, Inc.  All Rights Reserved.
+#
+#  This computer software is owned by Rogue Wave Software, Inc. and is
+#  protected by U.S. copyright laws and other laws and by international
+#  treaties.  This computer software is furnished by Rogue Wave Software,
+#  Inc. pursuant to a written license agreement and may be used, copied,
+#  transmitted, and stored only in accordance with the terms of such
+#  license and with the inclusion of the above copyright notice.  This
+#  computer software or any other copies thereof may not be provided or
+#  otherwise made available to any other person.
+#
+#  U.S. Government Restricted Rights.  This computer software is provided
+#  with Restricted Rights.  Use, duplication, or disclosure by the
+#  Government is subject to restrictions as set forth in subparagraph (c)
+#  (1) (ii) of The Rights in Technical Data and Computer Software clause
+#  at DFARS 252.227-7013 or subparagraphs (c) (1) and (2) of the
+#  Commercial Computer Software – Restricted Rights at 48 CFR 52.227-19,
+#  as applicable.  Manufacturer is Rogue Wave Software, Inc., 5500
+#  Flatiron Parkway, Boulder, Colorado 80301 USA.
+#
+#==========================================================================
+#
+ 
+Rogue Wave Software, Inc.
+5500 Flatiron Parkway
+Boulder, CO 80301  USA
+
+sales@roguewave.com
+support@roguewave.com
+http://www.roguewave.com
+
+Corporate Office:  (303)473-9118
+Toll Free:         (800)487-3217
+Main Fax:          (303)473-9137
+Sales Fax:         (303)447-2568
+Tech Support:      (303)545-3205
+
+Serving Europe:
+  Rogue Wave Software GmbH      +49-6103-59 34-0
+  Rogue Wave Software B.V.      +31-20-301 26 26
+  Rogue Wave Software S.A.R.L.  +33-1-4196 2626
+  Rogue Wave Software-UK.Ltd.   +44-118-988 0224
+  Rogue Wave Software S.R.L.    +39-02-3809 3288 
+
+
+===========================================================
+Contents:
+-----------------------------------------------------------
+
+  0.  General comments
+  1.  Change log
+  2.  Documentation notes
+  3.  OS-specific notes
+  4.  Compiler-specific notes
+  5.  ORB-specific notes
+  6.  OBV-specific notes
+  7.  Known difficulties
+  7.  Tools.h++ Professional FAQ
+
+
+===========================================================
+0.  General comments
+-----------------------------------------------------------
+
+o There is another readme file which applies to all products that
+  depend on Tools.h++ (such as Tools.h++ Professional) that should also
+  be read. You may find it at <rw_root>/parts/tls070a<os>/docs/platform.doc 
+  
+o Borland C++ Builder Version 3 Users: If you want to use the VCL, you must read
+  the Borland section in the Compiler-specific notes section. We had
+  trouble with DLLs for this compiler: See the Compiler-specific notes
+  section.
+
+o Borland C++ Builder Version 4 Users: We are only able to provide partial support
+  for this version of Borland's compiler.  The net portion of the product is the
+  only part currently supported. See the Borland section in the Compiler-specific notes section. 
+
+o IONA Orbix Users: If you use the Orbix library with Tools.h++
+  Professional in a Windows environment, you MUST create a special
+  configuration BEFORE you compile any libraries. Please see section
+  5: ORB-specific notes for details. 
+  
+o Each URL mentioned below was correct when this file was created,
+  but the web is fluid. If you find that our information is out of
+  date, please let us know. And if you find a better place to look,
+  we'd love to hear about it!
+
+o Tools.h++ Professional is installed just like other products from
+  Rogue Wave.  For most platforms, you will be able to use the Rogue
+  Wave Software Parts Manager (SPM) to install this product; otherwise,
+  an installation script will do the work.  Please read your SPM
+  documentation for details.
+
+o Don't forget that you can read an online "Build Guide" for Tools.h++
+  Professional.  Use your favorite browser to view the HTML file:
+
+    <installation_directory>/htmldocs/tpr110bd/index.htm
+  
+  A PDF (Adobe Acrobat format) version of the Build Guide for
+  Tools.h++ Professional is also available:
+
+    <installation_directory>/htmldocs/pdf/tpr110bd.pdf
+
+o Building Tools.h++ Professional creates 2, 3, or 4 C++ libraries.  
+  Here we will call them the "net," "int," "obv", and "orb" 
+  libraries.  See your documentation for an explanation of their exact 
+  names.
+
+    "net" provides network connectivity via ports and sockets.
+    "int" provides network protocol wrappers (HTTP, FTP, POP3, and SMTP).
+    "obv" provides an ORB-based virtual stream package based on the Custom Valuetype feature in CORBA 2.3
+    "orb" provides an ORB-based virtual stream package based on Orbix's Opaque mechanism.
+
+o The Java portions of Tools.h++ Professional require version 1.1.x of the
+  Java Development Kit.  This software is free from Sun, for several
+  OSs:
+    http://java.sun.com/products/jdk/1.1/index.html
+  Or look at one of these sites for more information on a variety of
+  Java VMs
+    http://java.sun.com/products/jdk/jdk-ports.html
+    http://www.geocities.com/SiliconValley/Pines/3360/sources.html
+
+o If you are using the Java portions of Tools.h++ Professional, make
+  sure that your CLASSPATH environment variable includes the path of 
+  the root installation directory that contains the "com" directory.
+
+o The FTP, HTTP, SMTP, and POP3 protocols expect to receive commands
+  in particular sequences.  The thread-hot Internet classes of
+  Tools.h++ Professional enforce these sequencing requirements by
+  using internal finite state machines.  A State Machine Compiler
+  (SMC) was used to generate code from an ASCII description of a
+  finite state machine.  This SMC compiler, written by Robert Martin,
+  can be ordered at no charge from
+     http://www.oma.com/Offerings/catalog.html
+  
+  The ASCII description files are available in the directory,
+  <rw_root>/parts/tpr<ver><osfam>/source/src.  Their file extension is
+  '.sm'.  For example, the FTP's finite state machine description can
+  be found in the ftpgen.sm file.
+	 
+o cma wrappers can be a problem. If you are using a threads library
+  that #defines some system calls to be preceded by "cma_", then see
+  the cma wrappers part of the "Known difficulties" section.
+
+o Restoring empty collections with the jtools library
+	  
+  Care must be taken when using the Virtual Streams for Java mechanism
+  to restore certain types of collections, specifically those that
+  depend on a Comparator to maintain elements in order.  These are:
+  BinaryTree, BTree, and BTreeDictionary.
+	  
+  The code that restores these collections will set the Comparator
+  automatically based on the first element within the collection.
+	  
+  Thus, if the collection is empty, the code has no means for setting
+  the Comparator.  You will have to set the comparator explicitly before
+  inserting any elements.
+	  
+  For example:
+	  
+      // ...
+      vistream = new PortableInputStream(new FileInputStream("sorted.dat"));
+	  
+      BinaryTree bintree
+        = (BinaryTree) vistream.restoreObject(CollectableMappings.allCollectables);
+	  
+      if (bintree.size() == 0)
+        bintree.setComparator(new NumericCompare());
+	  
+      bintree.insert(new Integer(3));
+      bintree.insert(new Integer(5));
+      // ...
+	  
+
+===========================================================
+1.  Change log
+-----------------------------------------------------------
+o Support for Linux.
+
+o Obv library support for WINNT/MSVC 6.x and Solaris 2.6/Sunpro 4.2.
+
+0 Orbix 3.x support for WINNT/MSVC 6.x and Solaris 2.6/Sunpro 4.2
+
+o Serialize and Serf support have been removed.
+  
+o  Fixed bug #8752
+
+o  Fixed bug #8764
+
+o  Fixed bug #10838
+
+o  Fixed bug #10857 
+
+o  Fixed bug #10634
+
+o  Fixed bug #11592
+
+===========================================================
+2.  Documentation notes
+-----------------------------------------------------------
+
+For easiest access to the Rogue Wave online documentation installed 
+on your computer, open the file <rw_root>/htmldocs/index.htm with your
+favorite browser, and follow the links it contains to the documents
+you need.
+ 
+o The following on-line documentation is available:
+
+    <rw_root>/htmldocs/tprug/index.htm       User's Guide
+    <rw_root>/htmldocs/tprref/index.htm      C++ Class Reference
+    <rw_root>/htmldocs/tprapi/packages.html  Java Class Reference
+    <rw_root>/htmldocs/tpr110bd/index.htm    Build Guide (HTML)
+    <rw_root>/htmldocs/pdf/tpr110bd.pdf      Build Guide (PDF)
+
+o We have made every effort to be sure that our online and printed
+  documentation is both useful and correct.  In case you find a
+  problem, please contact us (email or printed mail is usually best
+  for documentation issues) to let us know how we can make our docs
+  better. 
+
+===========================================================
+3.  OS-specific notes
+-----------------------------------------------------------
+
+o Contents:
+  
+  AIX 4.2 and 4.3
+  Digital Unix 4.0d
+  HP-UX 10.2x
+  HP-UX 11.0
+  Linux
+  IRIX 6.2 and 6.5
+  Solaris 2.6
+  Solaris 2.7
+  Windows 95 and Windows NT 4
+
+-----------------------------------------------------------
+  AIX 4.2
+...........................................................
+
+o Problems with the underlying AIX system calls may allow a DATAGRAM
+  socket to proceed with communication operations, such as send(),
+  sendto(), recv(), and recvfrom(), after the socket has been shut
+  down on the read side, on the write side, or on both sides.
+
+o The AIX recv() system call has a problem that causes the
+  RWSocket::recv() function to fail to receive (peek) data of DATAGRAM
+  type when the receiving flag of the function is set to MSG_PEEK. 
+
+o The select() call on AIX 4.2 clears the read bit for the current
+  file handle when checking for other conditions such as the ability
+  to write and error conditions pending.  This causes rwSocketSelect()
+  to return when a file descriptor is open for reading, but the 
+  RWSocketAttribute::sock_attr_canread and RWSocketAttribute::CANREAD
+  bits will not be set.  This only happens when selecting on multiple
+  conditions, i.e. it seems to operate fine when selecting on read
+  conditions only.
+
+-----------------------------------------------------------
+  AIX 4.3
+...........................................................
+
+o AIX 4.3 with the C++ 3.6.6 64 bit compiler does not throw
+  an exception when socket::send is called with an invalid 
+  buffer length.  This is also a problem on Linux. Please
+  refer to the Linux section below for more details.
+
+
+-----------------------------------------------------------
+  Digital Unix 4.0d
+...........................................................
+  
+    --- Nothing to Report ---
+
+-----------------------------------------------------------
+  HP-UX 10.2x
+...........................................................
+
+o The HP-UX threads package has the cma wrappers problem. Please
+  see the last item, labeled "cma wrappers" in the Known difficulties 
+  section of this file (above).
+
+o HP-UX compilers do not provide adequate platform version information
+  to the preprocessor. If you need to use Threads.h++ you must
+  pass -DRW_THR_OS_VERSION_HPUX=0x1020 on the compiler command line.
+  We have done this for the build of the int library, but we have
+  _not_ done it for the examples because we wanted you to come looking
+  for this information before you begin building your own code.
+
+  The simplest way to handle building the int-library based examples
+  is to use the Software Parts Manager to create a configuration with
+  this command line define. Of course you will also have to provide
+  the definintion to the compiler while compiling any other code that
+  makes use of the Threads.h++ library.
+
+  You may add or edit a configuration from the SPM as follows:
+
+  - Choose the BuildInfo tab on the left side of the SPM window
+
+  - To add a new configuration from scratch:
+    Right-click the Configurations folder and choose "add".
+    /or/
+    Select the Configurations folder and use the menubar's Add button. 
+
+  - To change an existing configuration:
+    Right-click the configuration and choose "copy" .
+
+  - Put -DRW_THR_OS_VERSION_HPUX=0x1020 in the Post-Build Arguments
+    line. 
+
+  - Complete the rest of the form.
+
+  Of course you might instead choose to directly edit the examples
+  makefiles. If you prefer this technique, simply append 
+  -DRW_THR_OS_VERSION_HPUX=0x1020
+  to the RWLAST_CCOPTS line near the top of the makefile
+
+-----------------------------------------------------------
+  HP-UX 11.0
+...........................................................
+
+o Please also see the aCC compiler notes section.
+
+o HP-UX compilers do not provide adequate platform version information
+  to the preprocessor. If you need to use Threads.h++ you must
+  pass -DRW_THR_OS_VERSION_HPUX=0x1100 on the compiler command line.
+  We have done this for the build of the int library, but we have
+  _not_ done it for the examples because we wanted you to come looking
+  for this information before you begin building your own code.
+
+  The simplest way to handle building the int-library based examples
+  is to use the Software Parts Manager to create a configuration with
+  this command line define. Of course you will also have to provide
+  the definintion to the compiler while compiling any other code that
+  makes use of the Threads.h++ library.
+
+  You may add or edit a configuration from the SPM as follows:
+
+  - Choose the BuildInfo tab on the left side of the SPM window
+
+  - To add a new configuration from scratch:
+    Right-click the Configurations folder and choose "add".
+    /or/
+    Select the Configurations folder and use the menubar's Add button. 
+
+  - To change an existing configuration:
+    Right-click the configuration and choose "copy" .
+
+  - Put -DRW_THR_OS_VERSION_HPUX=0x1100 in the Post-Build Arguments
+    line. 
+
+  - Complete the rest of the form.
+
+  Of course you might instead choose to directly edit the examples
+  makefiles. If you prefer this technique, simply append 
+  -DRW_THR_OS_VERSION_HPUX=0x1100
+  to the RWLAST_CCOPTS line near the top of the makefile
+
+o One test executable generated by the aCC 3.10 compiler had trouble
+  catching an exception that we deliberately caused by attempting to
+  read from an uninitialized RWPortalIStream. The runtime error
+  message depends upon the way the library was built. In "Debug" mode,
+  we see the message...
+  
+     aCC runtime error: stack unwind failed (1) 1
+     Abort(coredump)
+  
+   while in "Shipping" mode, it merely tells you one of:
+
+     *** Termination signal 134
+   or
+     Abort(core dump)
+
+   We have reported this bug to HP.
+
+-----------------------------------------------------------
+  IRIX 6.2
+...........................................................
+
+o We certified only for the 32-bit version of this OS (CC -n32)
+
+-----------------------------------------------------------
+  IRIX 6.5
+...........................................................
+
+    --- Nothing to Report ---
+
+
+-----------------------------------------------------------
+  Linux
+...........................................................
+
+rwSocketSelect 
+
+	On Linux the select functions will return RWSocketAttribute::sock_attr_canwrite for unconnected
+	stream sockets.  Please refer to the class reference for RWSocketAttribute for more details
+
+
+RWInetPort
+
+	RWInetPort::prepare function relys on the underlying Linux getservbyname function. However
+	the getservbyname function does not return a valid servent struct even when passed a known 
+	service name. therefore a RWInetPort created with a service name will throw an RWInetServiceNotFound
+	exception when prepare is called. To avoid this problem create a RWInetPort with the integer port number 
+	instead of the service name.
+
+	
+RWSocket
+
+	The underlying Linux send( char * data, int buflen, int flags ) returns successfully 
+	when called with an invalid buffer length( i.e. buflen <= 0 ).  Linux will send out a 0 length
+	packet.  Therefore RWSocket:: send() will return 0 for the number of bytes sent instead 
+	of throwing a RWxmsg exception.
+
+	On the same note Linux, for stream sockets, returns successfully if receive is called
+	on an unconnected socket therefore RWSocket recv( .. ) will return 0 for bytes recveived
+	instead of throwing a RWxmsg exception.
+
+RWPortalXStream
+
+	When trying to use an unconnected portal stream, RWPortalXStream will core dump instead 
+	throwing an RWNoChannel exception. This is also a problem on hpux 11 - 64 bit, please
+	refer to the Hpux section for more details.
+
+
+
+-----------------------------------------------------------
+  Solaris 2.6
+...........................................................
+  
+    --- Nothing to Report ---
+  
+-----------------------------------------------------------
+  Solaris 2.7
+...........................................................
+  
+    --- Nothing to Report ---
+  
+-----------------------------------------------------------
+  Windows 95
+...........................................................
+  
+    --- Nothing to Report ---
+  
+-----------------------------------------------------------
+ Windows NT 4
+...........................................................
+
+o When built with full debug features and DLLs, applications that use
+  the thread-hot Internet classes of the 'int' library will produce
+  error messages at program termination, indicating that subthreads
+  were not terminated properly.  Work around this problem either by
+  not enabling debug options, or by using static libraries.
+  
+
+===========================================================
+4.  Compiler-specific notes
+-----------------------------------------------------------
+
+o Contents:
+   Sunpro 5.0
+   Borland C++ Builder V4
+   Borland C++ Builder V3
+   HP aCC A.01.15 and aCC A.03.10
+   DEC C++ V6.1
+   IBM CSet++ 3.1 and 3.6 for AIX
+   MSVC 6.x
+   SGI Mips Pro C++ 7.2.1 (32 bit and 64 bit)
+   SunPro 4.2.0, patch level 7
+
+
+-----------------------------------------------------------
+  Sunpro 5.0
+...........................................................
+
+o  For now, you will need to obtain Sun patch #107311-02 from Sun in order to get the following support for Tools.h++ Professional  on Sun WorkShop 5.0
+
+-----------------------------------------------------------
+  Borland C++ Builder V4
+...........................................................
+
+o Support for V4 of this compiler is limited on this CD.  The Net
+  portion of Toolspro is the only part supported for this release
+  and assumes you have update #1 from Borland.
+
+  We are currently working with Borland to resolve the issues preventing
+  us from supporting the inet portions of this product.
+
+
+-----------------------------------------------------------
+  Borland C++ Builder V3
+...........................................................
+
+o Support for V3 of this compiler is not available on this CD.  
+  It is however available on our Winter 99 CD.
+
+  On the Winter 99 CD, Tools.h++ Professional is certified for Borland C++ Builder 3.0
+  (BCB3). BCB3 introducs the Visual Component Library (VCL) which
+  needs to be compiled differently from previous versions of BCB. If
+  you use the default method to build DLL's with VCL then your
+  applications may crash.
+
+  A patch will be made available as soon as possible on the
+  KnowledgeBase web page:
+    http://www.roguewave.com/kb
+
+  If you are using Borland C++ Builder V.3.0 and wish to create
+  VCL applications and you are building a Tools.h++ Professional
+  library as a DLL, you must change one line of the Borland makefile 
+  prototype
+    parts\tpr0110\source\etc\PC\WINNT\BORLAND\makefile.in
+  Line 328 currently begins:
+
+     cw32$(RWMT)i.lib import32.lib $(RWFIRST_USERLIBS) ...
+
+   It should be changed as follows:
+
+    cw32$(RWMT)i.lib is replaced with:
+    cp32$(RWMT)i.lib release\vcle35.lib release\vcl35.lib
+  for a release library or:
+    cp32$(RWMT)i.lib debug\vcle35.lib debug\vcl35.lib
+  for a debug library.  
+
+  For example, if I were building buildtype 7d for use with VCl, 
+  line 217 of makefile.in would look like this:
+    cp32$(RWMT)i.lib debug\vcle35.lib debug\vcl35.lib import32.lib \
+      $(RWFIRST_USERLIBS) $(RWLINKLIBS) $(RWLAST_USERLIBS)
+
+
+
+-----------------------------------------------------------
+ HP aCC A.01.15 (HP-UX 10) and HP aCC A.03.10 (HP-UX 11)
+...........................................................
+  
+o As far as we can tell, these compilers have the same front end, but
+  have different back ends tuned to their OSs. We have certified aCC
+  A.01.15 for HP-UX 10.20, and aCC A.03.10, generating either 32-bit
+  or 64-bit code on HP-UX 11.x. See the note about cmp wrappers in the
+  General Comments section above if you are compiling on HP-UX 10.x .
+
+o When you #include orbix header files, you will receive a great many
+  warnings of this form:
+  
+  Error (future) 600: "/opt/orbix/inc/corba/it_vars.hh", line 1211 #
+  Type specifier is omitted; "int" is no longer assumed. 
+         operator ! () const;
+                  ^^^^^^^^^^
+  We have chosen not to turn off these warnings in our makefiles, but
+  you may do so if you wish.
+
+-----------------------------------------------------------
+ DEC C++ V6.1 for Digital Unix 4.0d
+...........................................................
+  
+o When this compiler began supporting namespaces, the autmatic
+  template instantiation object files in the template repository
+  directory cxx_repository got longer names than they had for prior
+  compiler versions, and as a result, it is no longer possible for us
+  to build a library that archives all those files with a single
+  command, because the length of the command line would now exceed the
+  system limit. As a result, the command that builds our library is
+  now somewhat more complex because we had to break up the files into
+  groups of a managable size. If you have trouble because of this
+  situation, you can follow our pattern of building the library one
+  step at a time.
+
+o When compiling the net part you will receive these warnings :
+
+  Warning: /usr/include/pdsc.h, line 506: nested comment is not allowed
+  /*stack_or_reg:     pdsc_short_stack_or_reg;/* stack/reg frame specific */
+
+  Notice that this comes from a DEC header file.
+
+-----------------------------------------------------------
+ IBM CSet++ 3.1 for AIX 4.2
+ IBM CSet++ 3.6 for AIX 4.3
+...........................................................
+
+o The Software Parts Manager configuration process defines the macro
+  RW_COMPILE_INSTANTIATE on AIX because certain extensively
+  templatized code will not otherwise work. Unfortunately, defining
+  this macro can result in link-time warnings of duplicate symbols,
+  when multiple copies of the same template instantiation (from
+  various files of an application) are linked into an executable. This
+  can happen with both Tools.h++ and Tools.h++ Professional template
+  classes.
+
+  In the makefiles for our examples, we have turned off these warnings
+  with the -bnoerrmsg linker option.  You may choose to do the same.  
+  
+  Alternatively, you may address the root of the problem by adding the
+  line 
+
+    #undef RW_COMPILE_INSTANTIATE
+
+  near the bottom of the header file rw/compiler.h .  Since CSet++
+  recognizes only .c as a template definition suffix, you  must also
+  be sure to link or copy each *.cc file to the equivalent *.c file.
+  This alternative may cause compilation or link time problems if
+  your code makes extensive use of templates.
+
+o The xlC compiler will issue a warning when an explicit call to a
+  destructor is made for a class or type that does not contain an
+  explicit destructor.  Instantiating a Standard C++ Library container
+  class on a pointer to a user-defined class will cause this warning
+  which can (in this case) be safely ignored.
+  
+-----------------------------------------------------------
+  MSVC 6.x
+...........................................................
+
+    --- Nothing to Report ---
+
+-----------------------------------------------------------
+  SGI Mips Pro C++ 7.2 (32 bit OS compiling -n32)
+...........................................................
+  
+    --- Nothing to Report ---
+
+-----------------------------------------------------------
+  SGI Mips Pro C++ 7.2.1 (64 bit OS, compiling -64)
+...........................................................
+
+    --- Nothing to Report ---
+
+-----------------------------------------------------------
+  SunPro 4.2.0
+..........................................................
+  
+o You may consider compiling the library and your application without
+  the -O optimizer, if you experience either lengthy compile times or
+  a compile-time error that says "out of memory." Two portions of
+  Tools.h++ Professional make extensive use of templates (the
+  thread-hot Internet classes and the Obv library, and based on our experience,
+  advanced template instantiation sometimes doesn't work very well
+  with the -O option.
+
+o Under Solaris, using SunPro 4.2, your application might hang:
+
+  1) If you try to bind an address to a socket that already has an
+     address.
+  2) If you try to bind a datagram socket to a stream address.
+  3) If you try to accept a connection before you listen on a stream
+     socket.
+
+  You should consider compiling socket.cpp without -O optimization if
+  you experience such behavior.
+
+o Linking a multithread, debug application with SunPro 4.2 on Solaris
+  2.6 will result in a warning from 'ild', the incremental linker:
+
+   ild: (warning) ignoring symbol version info due to incompatible format
+
+  This warning appears to be innocuous. It can be eliminated by
+  switching to 'ld', the non-incremental linker, by using the -xildoff
+  option to CC. We chose not complicate our makefiles by including
+  this workaround, but you are free to include -xildoff in your
+  makefiles if you wish.
+
+
+===========================================================
+5.  ORB-specific notes
+-----------------------------------------------------------
+
+o Tools.h++ Professional is certified for use with IONA's Orbix 2.3c.
+
+o The "orb" library of this version of Tools.h++ Professional was not
+  certified for us on Windows NT or Windows 95 because we are now
+  certifying for MSVC 6.0, but IONA has not yet finished testing Orbix
+  with that compiler.  We did run all our "orb" library tests with the
+  MSVC 6.0 compiler, and they all worked, but since our tests use
+  such a tiny part of the Orbix functionality, we cannot say that you
+  will fare as well. If you need more information about what we used
+  to know about Orbix and MSVC, please see section 5.a. below.
+  
+o A word of warning:  when the Orbix 2.3 'idl' compiler is used to map
+  an IDL file to C++, the generated *.hh file will #include a header file
+  that you must supply.  (This is in contrast to earlier versions of Orbix,
+  whose 'idl' compilers would generate forward declarations for classes
+  declared as 'opaque'.  Incomplete class declarations such as these could
+  cause compiler warnings.)  For example, if dogsrv.idl declares Dog and
+  RWCString as opaque types,
+
+    opaque Dog;
+    opaque RWCString;
+
+  then the generated dogsrv.hh file will include the following #include
+  directive:
+
+    #include "dogsrvO.h"
+
+  The name of the included file is derived from the name of the IDL file: 
+  Orbix drops the '.idl' extension, and appends 'O.h' in its place.  You
+  must create this header file.  It should #include the header files for
+  the classes you have declared as opaque.  For example:
+
+    #include "dog.h"
+    #include <rw/cstring.h>
+
+o The Tools.h++ header file <rw/locale.h> defines the RWLocale::CurrSymbol
+  enumeration, which has NONE as one of its values.  By default, the Orbix
+  <CORBA.h> header file defines a macro named NONE.  If <rw/locale.h> is
+  included, directly or indirectly, in a compilation unit after <CORBA.h>,
+  a clash will result between these two uses of NONE, unless the macro
+  NONE_CLASH is defined before <CORBA.h> is included.
+
+  For the most part, code based upon Tools.h++ Professional will be shielded
+  from this clash because <rw/toolpro/reqstrea.h> defines NONE_CLASH.  So,
+  any source file that includes <rw/toolpro/reqstrea.h> before <CORBA.h>
+  will not experience this name clash.
+
+  Orbix 2.3 users, however, should be aware of a potential problem with 
+  code generated by IONA's 'idl' compiler.  As stated in the note above,
+  this code will include "basenameO.h", a header file you must supply.
+  If this header file includes <rw/locale.h>, directly or indirectly, you
+  will experience compilation errors.  Including <rw/toolpro/reqstrea.h>
+  at the top of your "basenameO.h" file will *not* solve the problem, as
+  the generated code includes "basenameO.h" after <CORBA.h>.  Your only
+  solution is to define NONE_CLASH on the compile command line, like so:
+
+    -DNONE_CLASH=1
+
+o If you plan to use the "CORBA Tools" module within Tools.h++
+  Professional, you need to set a preprocessor macro when building
+  your application code. This macro indicates to the Tools.h++
+  Professional headers which version of Orbix you are using.
+  Specifically, the makefiles and project files for your own source
+  code should set one of the following macros:
+
+    RW_ORBIX_2_2
+    RW_ORBIX_2_3
+
+  For example, when compiling code that uses Orbix 2.3, you should use
+  the following flag when invoking your compiler:
+
+    -DRW_ORBIX_2_3=1
+
+o To place into a DLL code that invokes the RWDEFINE_OPAQUE() and
+  RWDEFINE_OPAQUE_COLLECTABLE() macros, you need to set a special
+  preprocessor macro when building your DLL.
+
+  When creating source files for your DLL, mark your classes and
+  functions for export as usual. (When using the MSVC compiler, this
+  is done by using the '__declspec(dllexport)' directive.) Then when
+  compiling the DLL that will make use of the orb DLL, define the
+  _RWORBSTREAMSBUILDCUSTOMDLL preprocessor macro. This causes the
+  stream insertion and extraction operators generated by the
+  RWDEFINE_OPAQUE() and RWDEFINE_OPAQUE_COLLECTABLE() macros to be
+  marked for export.
+
+  When using your DLL, no special preprocessor macros are necessary
+  for using the orb DLL, however, you should mark your classes and
+  functions for import as usual.
+
+o The "CORBA Tools" module of Tools.h++ Professional makes use of, and
+  therefore tests, only a very small part of the IONA Orbix code: That
+  part associated with the "opaque" extension to the CORBA standard.
+  We do not test the great majority of the Orbix API, and we do not
+  certify IONA or Orbix for a particular platform.
+
+===========================================================
+5.a.  Orb-specific notes for MSVC
+-----------------------------------------------------------
+  
+o The Orbix libraries for Windows NT/95 are multithreaded.  Since they
+  were built with the -MD option to the MSVC compiler, all sources,
+  including linked-in static libraries, have to be built with the -MD
+  option to ensure compatibility.  Otherwise, two or more of the libc,
+  libcmt, and msvcrt libraries will be linked into your application and
+  certain symbols will be multiply defined.
+
+  However, the makefiles for most Rogue Wave products use MSVC's
+  -MT compiler switch to create multithreaded libraries.  The -MT and
+  -MD compiler switches are incompatible, so you must make a change.
+
+  Software Parts Manager allows you to add or edit a configuration to
+  provide the -MD switch to the end of every compile line, overriding
+  any -MT switches that might be present. If you have not already done
+  this while compiling Tools.h++ (and possibly Threads.h++ and the
+  Standard C++ Library), those libraries must be recompiled using the
+  special configuration.
+
+  You may add or edit a configuration from the SPM as follows:
+
+  - Choose the BuildInfo tab on the left side of the SPM window
+
+  - To add a new configuration from scratch:
+    Right-click the Configurations folder and choose "add".
+    /or/
+    Select the Configurations folder and use the menubar's Add button. 
+
+  - To change an existing configuration:
+    Right-click the configuration and choose "copy" .
+
+  - Put -MD in the Post-Build and Post-Link Arguments lines.
+
+  - Complete the rest of the form. (You must choose Multi-Threading.)
+
+  - Use the edited configuration to (re) build all the Rogue Wave
+    libraries you will be using with Orbix.
+  
+  During the compilation, MSVC will warn you repeatedly that you are
+  overriding the -MT switch with -MD. This warning is harmless.
+  
+o The example makefiles use a recursive technique to cause the orbix-
+  specific details to happen. Unfortunately, Windows 95 will not
+  accept an nmake command line long enough to handle all the details
+  that the Orbix makefile requires, so we have done the work with a
+  response file. Unfortunately again, the way the response file works,
+  if there are any double quote characters in any of the macros that
+  are passed, the response file will not be correctly created. By yet
+  another misfortune, the default location for MSVC is in a directory
+  with a space in its name, so environmental variables for Windows 95
+  must have double quotes around pathnames. If all this happens to
+  you, then here is how you proceed: 
+  1: edit the makefile to create a named response file. Where you see
+     this:
+		$(MAKE) -f $(OTHER_MAKEFILE) $(RECURSIVE_TARGET) @<<
+     (lots of data)
+      <<
+     change it to this:
+		$(MAKE) -f $(OTHER_MAKEFILE) $(RECURSIVE_TARGET) @<<response
+     (lots of data)
+      <<
+  
+  2: create the response file by attempting the make.
+  3: edit the response file to clean up any missing or extra double
+     quotes.
+  4: Finally, re-edit the makefile line to look like this:
+		$(MAKE) -f $(OTHER_MAKEFILE) $(RECURSIVE_TARGET) @response
+
+  (Aren't you _happy_ to know all this? So are we. ;)
+  
+o On Windows 95, applications that use Orbix 2.2 and DLLs sometimes refuse
+  to exit upon program completion.  IONA Technologies has acknowledged
+  the problem and is searching for a resolution.  Until one is found,
+  link your Orbix 2.2 applications with static libraries on Windows 95.
+
+o On Windows 95 and Windows NT, applications that use Orbix 2.3 and
+  DLLs sometimes refuse to exit upon program completion.  Rogue Wave is
+  searching for a resolution.  Until one is found, link your Orbix 2.3
+  applications with static libraries on Windows.
+
+
+
+
+===========================================================
+6.  OBV-specific notes
+-----------------------------------------------------------  
+
+o  The OBV library and examples are compiled with the compiler's RTTI flag turned
+   on.  Your application should do the same.  See the example makefiles for details.
+
+o  The OBV library is currently only supported on Solaris 2.6/Sunpro 4.2 and 
+   WINNT/MSVC 6.x.
+
+
+===========================================================
+7.  Known difficulties
+-----------------------------------------------------------
+
+o If you are using Borland Builder 3, please see the Borland part of
+  the compiler-specific notes section for details about compiling to
+  work with VCL applications.
+
+o If you build using Threads.h++ on HP-UX 11.x, please see the
+  HP part of the OS-specific notes section for details about a
+  necessary command line argument.
+
+o We have a small number of outstanding bugs, mostly to do with edge
+  cases among the various network protocols, with platform-specific
+  problems, or with enhancement requests.  You can contact Rogue Wave
+  technical support for details.  Be sure to check out our knowledge
+  base page on the Technical Support web page: 
+      http://support.roguewave.com
+
+o rwSocketSelect() returns RWSocketAttribute::sock_attr_canwrite on
+  stream sockets that are not connected. This is a problem with the
+  underlying select() function. It should not affect most users, since
+  you probably don't want to call rwSocketSelect() on sockets that are
+  not connected.
+
+o Some RWSockErr error codes do not have string equivalents.  The 
+  why() member function for these will print out a number to represent
+  the specific error, rather than a string. This applies mostly to
+  Winsock error codes that are not present in BSD sockets. The error
+  code strings can be found in the system's winsock.h header file.
+
+o The ranges of basic data types differ between Java and C++, and for
+  C++, between platforms. Caution is required when writing distributed
+  software systems whose components will run in multiple environments.
+  Be sure to consult the Tools.h++ Professional User's Guide for
+  specific advice on the use of basic data types in distributed
+  systems.
+
+o The Java Virtual Machine available from Sun Microsystems and the JVM
+  available with Microsoft's Internet Explorer differ slightly in the
+  way they serialize the contents of a com.roguewave.tools.v2_0.BTree
+  instance. As a result, a BTree serialized with one JVM can be
+  restored by the same JVM, but cannot be restored by the other JVM.
+  If this is a problem for you, contact Rogue Wave Technical Support
+  and request the description of a non-backward-compatible workaround.
+  Refer to bug #8058 in your correspondence.
+
+  The Orbix libraries for Windows NT/95 are multithreaded.  Since they
+  were built with the -MD option to the MSVC compiler, all sources,
+  including linked-in static libraries, have to be built with the -MD
+  option to ensure compatibility.  Otherwise, two or more of the libc,
+  libcmt, and msvcrt libraries will be linked into your application and
+  certain symbols will be multiply defined.
+
+  However, the makefiles for most Rogue Wave products use MSVC's
+  -MT compiler switch to create multithreaded libraries.  The -MT and
+  -MD compiler switches are incompatible, so you must make a change.
+
+  Software Parts Manager allows you to add or edit a configuration to
+  provide the -MD switch to the end of every compile line, overriding
+  any -MT switches that might be present. If you have not already done
+  this while compiling Tools.h++ (and possibly Threads.h++ and the
+  Standard C++ Library), those libraries must be recompiled using the
+  special configuration.
+
+  You may add or edit a configuration from the SPM as follows:
+
+  - Choose the BuildInfo tab on the left side of the SPM window
+
+  - To add a new configuration from scratch:
+    Right-click the Configurations folder and choose "add".
+    /or/
+    Select the Configurations folder and use the menubar's Add button. 
+
+  - To change an existing configuration:
+    Right-click the configuration and choose "copy" .
+
+  - Put -MD in the Post-Build and Post-Link Arguments lines.
+
+  - Complete the rest of the form. (You must choose Multi-Threading.)
+
+  - Use the edited configuration to (re) build all the Rogue Wave
+    libraries you will be using with Orbix.
+  
+  During the compilation, MSVC will warn you repeatedly that you are
+  overriding the -MT switch with -MD. This warning is harmless.
+  
+o The example makefiles use a recursive technique to cause the orbix-
+  specific details to happen. Unfortunately, Windows 95 will not
+  accept an nmake command line long enough to handle all the details
+  that the Orbix makefile requires, so we have done the work with a
+  response file. Unfortunately again, the way the response file works,
+  if there are any double quote characters in any of the macros that
+  are passed, the response file will not be correctly created. By yet
+  another misfortune, the default location for MSVC is in a directory
+  with a space in its name, so environmental variables for Windows 95
+  must have double quotes around pathnames. If all this happens to
+  you, then here is how you proceed: 
+  1: edit the makefile to create a named response file. Where you see
+     this:
+		$(MAKE) -f $(OTHER_MAKEFILE) $(RECURSIVE_TARGET) @<<
+     (lots of data)
+      <<
+     change it to this:
+		$(MAKE) -f $(OTHER_MAKEFILE) $(RECURSIVE_TARGET) @<<response
+     (lots of data)
+      <<
+  
+  2: create the response file by attempting the make.
+  3: edit the response file to clean up any missing or extra double
+     quotes.
+  4: Finally, re-edit the makefile line to look like this:
+		$(MAKE) -f $(OTHER_MAKEFILE) $(RECURSIVE_TARGET) @response
+
+  (Aren't you _happy_ to know all this? So are we. ;)
+
+o cma wrappers problem
+  There is a problem with building multithreaded C++ programs using
+  some posix or DCE thread packages that, via #define macros, redefine
+  common system call names.  For example, on one platform 
+  /usr/include/dce/cma_ux.h reads in part:
+
+    #if !_CMA_THREAD_SYNC_IO_
+    # if !defined(_CMA_NOWRAPPERS_) && _CMA_UNIPROCESSOR_
+    #  if (_CMA_UNIX_TYPE != _CMA__SVR4)
+    #  define accept        cma_accept
+    #  define close         cma_close
+    #  define connect       cma_connect
+    #  define creat         cma_creat
+  
+  You should not change this behavior (by defining _CMA_NOWRAPPERS)
+  because if you do so, your application will not link to the
+  appropriate thread-safe versions of the various system calls. The
+  only appropriate technique is to be sure that both the library
+  object files and your application object files are built with the
+  same names. To make matters even more interesting, at least one
+  platform provides an iostream library that was not compiled with the
+  cma wrappers. 
+
+  To accomodate all this, Tools.h++ Professional header files now each
+  include <iostream.h> (if needed) and then <pthread.h> if they are
+  being built in multi-thread mode. This has the following effects:
+  
+  1: Your builds may take slightly longer, because more header files 
+     are being parsed. 
+
+  2: You may get iostream delcarations "for free" on some platforms,
+     but not on others. If you need iostream declarations, we
+     recommend that you do #include <rw/rstream.h>, because it
+     protects you from having to know whether your iostream library is
+     declared in <iostream.h> or <iostream>. If our headers have
+     already included it, there is no harm done.
+
+  3: You may get pthread declarations "for free" on some platforms,
+     but not on others. If you need them, do include them. If our
+     headers have already included <pthread.h>, there is no harm done.
+
+  4: (One gotcha). Some tokens in our library _will_ be changed by
+     the cma_wrapper macros. As a result, you may see compiler or
+     linker diagnostics that refer, in our code, to cma_select,
+     cma_socket, etc. There is no reasonable way to avoid this and
+     remain compatible with the (DCE) pthread libraries. Simply be
+     aware of the possibility, so that you can correctly interpret
+     such reports.
+
+  5: (The other gotcha). Because we must #include <pthread.h> to
+     assure that our library will resolve calls in your code, you will
+     find that some iostream calls in your code have been changed by
+     the cma macros. On some platforms, this will result in unresolved
+     externals because the iostreams part of the system libraries
+     weren't built with the cma_ prefixes. If this happens to you,
+     there _is_ a solution. (Please remember that we didn't make this
+     problem, and that we are at _least_ as happy as you are to be
+     presented with it.) The solution is to provide an inline function
+     with a name that <pthread.h> won't change, after you include the
+     stream header and before you include any of our headers or
+     pthread.h . An example follows: 
+
+     // old.cpp
+     // -------
+     
+     #include <rw/toolpro/socket.h> // <pthread.h> indirectly
+     #include <fstream.h>
+     // ...
+     ofstream errlog("error.log");
+     // ...
+     errlog.close()  // looks like cma_close, so won't link
+
+     // new.cpp
+     // -------
+     
+     // include stream stuff first
+     #include <fstream.h>
+     
+     // the next line will link: <pthread.h> not yet seen
+     inline void Oclose(ofstream& f) { f.close(); }
+ 
+     // now include <pthread.h> directly or otherwise
+     #include <rw/toolpro/socket.h> // <pthread.h> indirectly
+     
+     // ...
+     ofstream errlog("error.log");
+     // ...
+     Oclose(errlog)  // Probably optimized to the direct call
+
+  6: Along the same lines are problems with istream.read and
+     istream.write. If you are using these functions then you may
+     have to make a change simuliar to the one above. In this case
+     however, the inline function needs to be declared after the
+     iostream header and before the pthread header.
+
+
+===========================================================
+7.  Tools.h++ Professional FAQ
+-----------------------------------------------------------
+
+FAQ: How can I get the port number from an RWSocket?
+Ans: Not all RWSockets have port numbers associated with them: Only
+     sockets constructed using an RWInetAddr have a port. An
+     RWSocketListener can be constructed without knowing the local
+     port, so it will serve as an example of how to recover the port
+     information from an RWSocket:
+
+     int main() {
+       RWInetAddr local;
+       cout << "initial local port #: " << local.port() << endl; // ** 0 **
+     
+       RWSocketListener listen(local);
+       if( RWInetAddr::is(listen.socket().getsockname()))        // ** 1 **
+       {
+         RWInetAddr check = 
+                RWInetAddr::as(listen.socket().getsockname());   // ** 2 **
+         cout << "RWInetAddr port # is " << check.port() << endl;// ** 3 **
+       } else {
+         cout << "The RWSockAddr was no RWInetAddr!" << endl;
+       }
+       cout << "final local port #: " << local.port() << endl;   // ** 4 **
+       return 0;
+     }
+     NOTES:
+     0: Default InetAddr has no port associated with it (yet), so this
+        line will print a zero.
+     1: getsockname returns an RWSockAddr. Using the static method
+        RWInetAddr::is(const RWSockAddr&), we can be sure we have an
+        RWInetAddr. (In real code, this might not be as obvious as it
+        is here!)
+     2: RWInetAddr::as(const RWSockAddr&) returns an RWInetAddr if it
+        can legally do so.
+     3: From an RWInetAddr, we can discover the port number. This one
+        should not be zero.
+     4: Just as a final check, note that the original RWInetAddr was
+        not altered: RWSocketListener makes its own copy.
+
+FAQ: When I try to build a library I get an error "throw not supported
+     in this environment".
+Ans: "throw" is a C++ exception handling function. This error will
+     occur if your compiler does not support C++ exceptions, or
+     (possibly) if exceptions are not enabled on your compiler (via a
+     compiler flag). This facility is required by Tools.h++
+     Professional. If your compiler does not support C++ exception
+     handling, it cannot be used to build Tools.h++ Professional.
+
+FAQ: When building some of the examples, I get multiple error messages
+     that say, "Retrying connection to host `myhost.com' port 1571."
+     Why?
+Ans: In addition to building the example programs, the makefiles for
+     the 'dog', 'roster', and 'library' examples also register the
+     example server applications with your Orbix daemon. These
+     makefiles assume that your Orbix daemon is running. If your
+     daemon is not running, attempting to build the example programs
+     will result in errors from the Orbix 'putit' utility. Likewise,
+     running 'make clean' in these directories will attempt to
+     de-register the server programs; if the Orbix daemon is not
+     running, this will result in errors from the Orbix 'rmit'
+     utility.
+
+FAQ: Does Tools.h++ Professional have support for serial devices (for
+     example, COM1, COM2 on NT boxes and /dev/ttyc1 etc. on UNIX boxes)?
+Ans: No.  Tools.h++ Professional does not support serial device
+     operations. 
+
+FAQ: Does Tools.h++ Professional support asynchronous communication
+     (i.e. non-blocking support)?
+Ans: Yes, the RWSocket::ioctl() member functions let you set the
+     blocking mode for a socket. Macros make the process even easier.
+     These are SET_BLOCKING(RWSocket) and SET_NON_BLOCKING(RWSocket).
+     For example, to put a socket into non-blocking mode:
+
+       RWSocket mySock(mySockType);
+       SET_NON_BLOCKING(mySock);
+
+FAQ: How do I use the rwSocketSelect() functionality to make a
+     blocking socket operate like a non-blocking socket?
+Ans: In general, you can use rwSocketSelect() with a timeout to wait 
+     for conditions to become true (that is, for an event to happen)
+     with a guarantee that you will only be blocked for a specified
+     amount of time. When a condition becomes true, you can make a
+     blocking method call, because you know that the condition on which
+     you would block is already satisfied.
+
+     This is usually an acceptable practice. However, there is a
+     possibility that the blocking call will still block. This is
+     often a case of false assumptions being built into the
+     application, but can also be due to other factors such as race
+     conditions.
+
+     For example, after your thread is notified of data to be read, a
+     different thread in the application could read the buffer and
+     clear it. In this case, your thread would block on the empty
+     buffer until more data was available to read. For this reason,
+     you should be sure to guard against race conditions after using
+     the rwSocketSelect() call.
+
+     Here are some scenarios :
+
+     1. Suppose a server wants to accept connections from any client,
+        but doesn't want to wait for connections forever.  The server
+        binds to an address and calls listen() to start listening for
+        connections.  It can then use rwSocketSelect() to determine
+        when a client is trying to establish a connection.  Only then
+        will it call accept().  This way, the server is sure that
+        there is a connection request pending before it makes the
+        accept() call.  In other words, it is confident that it won't
+        block indefinitely when it makes the blocking invocation.
+
+        ex:
+          serverSocket.bind();
+          serverSocket.listen();
+          rwSocketSelect(<tell_me_when_clients_ask_for_connections>,
+                         <timeout>); 
+          if (<select tells me that a connection is waiting>) {
+            serverSocket.accept();
+            // ...
+          }
+
+     2. Suppose that a client wants to connect to a server to
+        receive some previously agreed upon data. In this case, the
+        client wants to read after it is connected, but needs to make
+        certain that if the information does not arrive immediately,
+        it can recover, or perform other tasks while waiting.
+
+        ex:
+          clientSocket.connect();
+          select(<tell_me_when_server_sends_me_stuff>, <timeout>);
+          if (<select tells me that the server sent me data>) {
+            clientSocket.recv(); 
+            // ...
+          } else {
+            // ... something else
+          }
+
+        Note: if you had not used rwSocketSelect() in this case, the
+        server might have accepted the connection, but may not have
+        sent the data in a timely manner (or at all). In this case,
+        the application would have locked up, waiting for the server's
+        data to arrive.
+
+     One area where the rwSocketSelect() mechanism does not help is on
+     a blocking socket's connect() call.  rwSocketSelect() must be
+     issued on a connected socket, so you have to call connect()
+     before you can call rwSocketSelect().  This forces you to wait
+     for the connect() to complete.
+
+FAQ: What does the RWSocket::accept() method return?
+Ans: Assuming that the RWSockAddr* argument to accept is non-null, it 
+     returns a socket that is "connected" to the client that requested
+     the connection. The address of the client is in the RWSockAddr
+     pointed to by the original accept() argument.
+
+FAQ: Is there a limit to the size of messages or packets that can be 
+     sent/received, using the networking tools in Tools.h++ Professional?
+Ans: Tools.h++ Professional does not impose a limit on the size of the
+     messages but is restricted by any underlying operating system
+     limitations.
+
+FAQ: Is there a limit to the number of messages that can exist
+     concurrently at a destination?
+Ans: No.  Tools.h++ Professional does not impose a limit on the number of
+     outstanding messages.  The limit is determined by the buffer space
+     available unless application specific message handling is implemented.
+
+FAQ: What are some of the messaging options available? 
+Ans: The following are the attributes or options available for sockets:
+
+        sock_attr_canread      // Data is available for reading
+        sock_attr_canwrite     // Data is available for writing
+        sock_attr_exception    // An exception, such as OOB data arriving
+        sock_attr_isconnected  // Connect has completed
+        sock_attr_canaccept    // A new connection is ready to be accepted
+
+     Any of the attributes can be aggregated by OR-ing them together.
+     See the RWSocketAttribute in the Class Reference for details.
+
+FAQ: Can you specify the maximum wait time for a response to a message
+     that has been sent?
+Ans: No.  Tools.h++ Professional does not currently provide this
+     feature. 
+
+FAQ: What capabilities are there for clients to locate a server?
+Ans: The networking tools module of Tools.h++ Professional does not
+     contain any server location services.  Many higher level
+     mechanisms (RPC, CORBA, etc.) provide name services to locate
+     network servers.  This is not typically a feature associated with
+     socket libraries.  However, a naming service could be implemented
+     by having a known server available on the network that accepts
+     registrations, de-registrations, and named queries.  If your
+     application needs such a service, you must purchase it as
+     an adjunct product, or develop one yourself.
+
+FAQ: Does Tools.h++ Professional have the capability to queue the
+     messages from a socket?
+Ans: No.  Tools.h++ does not have the ability to queue incoming socket
+     messages.  This feature must be implemented by an application.
+
+FAQ: Can the socket functionality in Tools.h++ Professional be
+     integrated into an event-driven application (like X)?
+Ans: Currently, the application developer has to perform the integration.  
+     A common method of implementing the socket event loop is to use
+     the rwSocketSelect() method of asynchronous programming that is
+     discussed in a previous FAQ in this document.  The challenge lies
+     in integrating the two message loops.  Either the socket-based
+     message loop can be spawned in a separate thread, in which case
+     the threads must communicate with each other via shared memory
+     and/or additional messages,  or the socket event loop can steal
+     (or be given) time from the primary event loop.  The socket event
+     loop is not difficult to implement.  Integration of the event
+     loops however, is a bit more tricky. 
+
+FAQ: What is the difference between the send() and the sendAtLeast()
+     methods in class RWSocket?
+Ans: When using send(), it is the responsibility of the application to check 
+     the number of bytes sent, and resend if necessary. Method sendAtLeast()
+     guarantees (*see next FAQ) the transmission of the number of bytes
+     specified (or the entire buffer if no size is specified). In essence,
+     it does the work for you.
+
+FAQ: Will sendAtLeast() ever succeed or will send() report bytes sent when 
+     data has not been sent?
+Ans: Yes.  If the receiving end of a TCP/IP socket disconnects or terminates 
+     unexpectedly, send() and sendAtLeast() will report sent bytes and/or
+     succeed even though the socket has been closed.  This is due to the
+     underlying protocol.  TCP/IP will send a FIN segment from the end of 
+     the socket that closes and the other end must receive this data in order
+     for the socket to know the other end has closed.  There is no way for
+     send to determine if the socket is closed, the only way is to determine
+     that the other end of the socket has closed is to do a recv().  You must
+     use the recv() that takes a pointer to a RWNetBuf::State.  If the
+     recv() returns 0, you must check to see if the RWNetBuf::State has been
+     set to RWNetBuf::eof.  If this is the case, the other side of the socket
+     has closed.
+
+FAQ: How can I discover whether RWIFtpAgent, RWIHttpAgent,
+     RWIPop3Agent or RWISmtpAgent methods have successfully completed?
+
+Ans: We can use RWIFtpAgent as an example. One user had code that 
+     looked like this: 
+     
+       try {
+         theFtpAgent.del("not_here");       // Should throw
+       }
+       catch(...) {
+         cout << "Delete Failed." << endl;
+       }
+
+     The commented line attempts to delete a file that doesn't exist,
+     but the catch block is never entered because the RWIOUResult
+     returned from the del method was never redeemed. If you replace
+     the commented line with
+     
+       RWIFtpReply reply = theFtpAgent.del("not_here").redeem();
+
+     then any errors will be discovered and you will be able to
+     examine the details of the reply.
+  
+FAQ: My SMTP mailer refuses to process email addresses unless they
+     have angle brackets around them. Why doesn't your library
+     provide them automatically?
+  
+Ans: Our mail system hiccups when we send strings with the angle
+     brackets already present: It wants to add them for itself. The
+     spec (RFC 821) does seem to require them, but in view of the fact
+     that certainly not _all_ mailers handle them happily, we've
+     decided to leave it up to individual programmers whether to send
+     them or not.
+     
+
+============================================================================
+  $Id:
+

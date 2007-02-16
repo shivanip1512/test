@@ -1,0 +1,903 @@
+
+                      R O G U E   W A V E
+
+    P L A T F O R M   I N F O R M A T I O N   D O C U M E N T
+
+                           AUGUST 1999
+      
+
+=========================================================================
+Contents:
+-------------------------------------------------------------------------
+  1. About this document
+  2. Rogue Wave Contact Information
+  3: OS/Compiler Specific Issues and Patch Level Information 
+     [common across products]
+
+
+=========================================================================
+1: ABOUT THIS DOCUMENT
+-------------------------------------------------------------------------
+A. This document discusses characterization issues for the different 
+operating system and compiler environments that we have encountered at 
+Rogue Wave.  It is included here as a convenience for our customers who 
+may experience similar obstacles in their development efforts.
+
+
+==================================================
+2: Rogue Wave Contact Information 
+-------------------------------------------------------------------------
+
+Rogue Wave Software, Inc.
+5500 Flatiron Parkway
+Boulder, CO  80301
+ 
+Corporate Office:  (303) 473-9118
+Toll Free:  (800) 487-3217
+Fax:  (303) 447-2568
+sales@roguewave.com
+www.roguewave.com
+ 
+Technical Support:  (303) 545-3205
+Online Knowledge Base:  support.roguewave.com
+Email:  support@roguewave.com
+
+Serving Europe:
+Rogue Wave Software GmbH
++49-6103-59 34-0
+Rogue Wave Software B.V.
++31-20-301 26 26
+Rogue Wave Software S.A.R.L.
++33-1-4196 2626
+Rogue Wave Software-UK.Ltd.
++44-118-988 0224
+Rogue Wave Software S.R.L.
++39-02-3809 3288
+
+
+=========================================================================
+3: OS/Compiler Specific Issues and Patch Level Information 
+   [common across products]
+-------------------------------------------------------------------------
+
+This section notes OS/Compilers issues that are common across
+products, and could apply to application development.  In addition, 
+for your convenience we list the OS/Compiler version and patch level 
+combinations used for certification at Rogue Wave Software, as of 
+this release. We strongly urge you to verify that your system is current 
+with the recommended patch levels.
+
+Platforms are listed below alphabetically, by OS for Unix, and by 
+compiler for Windows. 
+
+NOTE: Not all Rogue Wave products necessarily support every OS/Compiler
+combination that follows. The OS/Compiler combinations that are 
+supported by a specific product will be listed in the support section
+of each product's documentation.
+
+
+
+                  *****************************
+                    ****  AIX xlC users ****
+                   ***************************
+
+*************************************** AIX 4.2
+(output of 'oslevel', and 'lslpp -h')
+*****OS 
+  4.2.0.0
+
+*****COMPILER/RUNTIMES/LINKER
+  xlC.cpp            3.1.4.0  11/22/96     13:08:01    
+  xlC.rte            3.1.4.0  11/22/96     13:07:37  
+  bos.rte.bind_cmds  4.2.0.6  06/23/98     12:42:41    
+
+*****DCE THREADS*****
+  dce.pthreads.rte          2.1.0.4   05/22/98
+
+*****POSIX THREADS*****
+  bos.rte.libpthreads       4.2.0.3   06/23/98     12:42:41    
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+*************************************** AIX 4.3
+(output of 'oslevel', and 'lslpp -h')
+*****OS
+   4.3.0.0
+
+*****COMPILER/RUNTIMES/LINKER
+   xlC.cpp            3.1.4.4   04/03/98     15:07:33    
+   xlC.rte            3.6.3.0   05/21/98     10:32:11    
+   ibmcxx.cmp         3.6.0.0   04/20/98     14:38:00    
+   ibmcxx.lib         3.6.0.0   04/20/98     14:38:00    
+   ibmcxx.rte         3.6.0.0   04/20/98     14:37:23    
+   bos.rte.bind_cmds  4.3.1.0   05/21/98     10:34:57    
+
+*****DCE THREADS
+   dce.pthreads.rte        2.1.0.6   10/01/98     11:37:16    
+
+*****POSIX THREADS
+   bos.rte.libpthreads     4.3.1.2   10/01/98     11:37:15    
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+*************************************** AIX 4.3 C/C++ 3.6.4
+(output of 'oslevel', and 'lslpp -h')
+*****OS
+   4.3.0.0
+
+*****COMPILER/RUNTIMES/LINKER
+   xlC.cpp            4.3.0.0   09/04/98     15:04:31 
+   xlC.rte            3.6.4.1   12/07/98     12:52:40 
+   ibmcxx.cmp         3.6.4.1   12/07/98     12:52:41
+   ibmcxx.lib         3.6.4.1   12/07/98     12:52:47 
+   ibmcxx.rte         3.6.4.0   11/23/98     13:46:09 
+   bos.rte.bind_cmds  4.3.1.1   08/26/98     09:10:13 
+
+*****DCE THREADS
+   dce.pthreads.rte        2.1.0.4   08/26/98     09:42:24 
+
+*****POSIX THREADS
+   bos.rte.libpthreads     4.3.1.2   10/21/98     10:22:02  
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+*************************************** AIX 4.3.2 C/C++ 3.6.4
+(output of 'oslevel', and 'lslpp -h')
+*****OS
+  4.3.1.0
+
+*****COMPILER/RUNTIMES/LINKER
+   xlC.cpp            4.3.0.1   02/22/99     13:19:47
+   xlC.rte            3.6.4.0   02/22/99     13:19:33
+   ibmcxx.cmp         3.6.4.0   02/23/99     16:41:55
+   ibmcxx.lib         3.6.4.0   02/23/99     16:41:16
+   ibmcxx.rte         3.6.4.0   02/23/99     16:40:34
+   bos.rte.bind_cmds  4.3.2.0   02/22/99     13:18:53
+
+*****POSIX THREADS
+   bos.rte.libpthreads     4.3.2.0   02/22/99     13:18:53
+
+  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+*************************************** AIX 4.3.2 C/C++ 3.6.6
+(output of 'oslevel', and 'lslpp -h')
+*****OS
+  4.3.2.0
+
+*****COMPILER/RUNTIMES/LINKER
+   xlC.cpp            4.3.0.1   01/21/99     13:11:58
+   xlC.rte            3.6.6.0   07/12/99     16:05:56
+   ibmcxx.cmp         3.6.6.0   07/12/99     16:07:11
+   ibmcxx.lib         3.6.6.0   07/12/99     16:06:27
+   ibmcxx.rte         3.6.6.0   07/12/99     16:05:13
+   bos.rte.bind_cmds  4.3.2.0   01/21/99     12:49:24
+
+*****POSIX THREADS
+   bos.rte.libpthreads     4.3.2.0   01/21/99     12:49:24
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+ 
+1. As shipped, the 3.6 compiler will core dump multi-threaded applications 
+which try to throw an exception. For POSIX threads this has been addressed  
+by PTF#s u456094 & u456045.  For DCE threads, IBM has addressed this in the 
+3.6.4 run time environment with PTF# u459165. We have installed and verified 
+these fixes.
+
+2.  When linking executables to a shared library under AIX, it is
+necessary to specify -L<path> on the command line, which will cause
+<path> to be added to the shared library search path.  Our
+examples and test programs specify a relative path, which has the
+undesirable side-effect that these test programs and examples must be
+executed from the same directory that was the current directory, when the
+link command was executed.
+
+3. On Aix 4.3/C++ 3.6.0 for the use of DCE threads, the _AIX_PTHREADS_D7 
+macro is now being defined. In addition the following libraries must be 
+linked in, IN THIS ORDER:
+
+  -ldcepthreads -lpthreads_compat -lpthreads
+
+These changes are required for DCE threads to work correctly with the
+compatibility layer that DCE threads are built upon.
+
+4. On Aix 4.3/C++ 3.6.0 for the use of POSIX threads it is now correct to
+use xlC (not xlC_r) to invoke the compiler.
+
+5. As shipped, AIX 4.3.2 does not support DCE threads.  IBM has informed us
+that an upcoming patch will allow this support.
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+
+                     **********************
+                ******   Borland users    ******
+                 *** Window NT/ Windows 95 ***
+                     **********************
+
+
+*************************************** Borland Builder 4
+
+*****OS
+  Microsoft Windows NT 4.00.1381
+  Microsoft Windows 95 4.00.950.B
+
+*****COMPILER/RUNTIMES/LINKER
+  bcc32.exe: Borland C++ 5.4 for Win32 Copyright (c) 1996, 1999 
+             Borland Corporation
+  ilink32.exe: Turbo Incremental Link 4.0.10.23 Copyright (c) 1996, 1999 
+               Borland International
+
+*****THREADS*****
+  WIN32
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+1. You may find that you need to manually increase the index page
+size for the librarian or linker, particularly if you compile with
+debugging on.  The error message may be sufficient, but if not, please
+consult Borland's documents on how to do this. You make the change on
+the appropriate line in the makefile as follows:
+
+To change the librarian, find the line in the makefile that contains
+the macro definition "RWLIBBUILDOPTS=" and add additional arguments
+to the end of the definition. 
+
+To change the linker, find the line in the makefile that contains
+the macro definition "RWLINKTYPEOPTS=" and add additional arguments
+to the end of the definition.
+
+2. The Standard C++ Library which ships with BCB3 is an early version
+which is not always consistent with the latest standard.  Owners of 
+BCB3 should contact our sales department for upgrade information.
+
+3.  There are times when statements such as:
+
+    class Mickey;
+    class Donald;
+
+    Mickey mouse = Donald(duck);
+
+may be optimized by Borland in such a way that either "mouse"
+will be incorrectly initialized or exceptions thrown from
+within "duck" not be caught.  If this happens, we have found
+found three workarounds to try:
+
+    a. Turn off optimization
+
+    b. Rewrite the code above to read:
+
+        class Mickey;
+        class Donald;
+
+        Mickey mouse;
+        mouse = Donald(duck);
+
+    c. Use the following templatized function:
+
+        template <class T>
+        void __initialize (T& t, T val) { t = val; }
+
+        class Mickey;
+        class Donald;
+
+        Mickey mouse;
+        Donald dummyDuck;
+        __initialize(dummyDuck, Donald(duck));
+        mouse = Donald(duck);
+
+We encourage you to contact Borland if you can duplicate this bug.
+
+4. BCB3 may cause throws to fail under optimization for size.
+When this optimization is turned off, the problem goes away. 
+Therefore, -Od can be added to the end of the compile flags.
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+                   ***************************
+                ****   DEC C++ on OSF users   ****
+                   ***************************
+
+*************************************** Digital UNIX V4.0D  (Rev. 878)
+(output of 'what', and '/usr/sbin/setld -i')
+
+*****OS
+  Digital UNIX V4.0D  (Rev. 878)
+
+*****COMPILER/RUNTIMES/LINKER
+  cxx: 
+    Driver DIGITAL C++ V6.1-027
+  deccxx_driver: 
+    Driver DIGITAL C++ V6.1-027
+
+*****POSIX THREADS
+  libpthread.so: 
+    DECthreads version V3.14-126
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+                   ***************************
+                ****         HP users        ****
+                   ***************************
+
+
+*************************************** HP-UX 10.20 (cfront & aCC)
+(output of 'uname -a', 'what', and '/usr/sbin/swlist')                                 
+
+*****OS
+  HP-UX B.10.20 A 9000/879 208095301
+                                                                  
+*****COMPILER/RUNTIMES/LINKER
+  CC:                                                              
+    HP C++ HPCPLUSPLUS  A.10.36                                   
+
+  cfront:                                                        
+    HP C++ HPCPLUSPLUS  A.10.36                                  
+
+  lib++.a:                                                       
+    HP C++ HPCPLUSPLUS  A.10.36                                 
+  ld:  
+    92453-07 linker linker ld B.10.28 971016
+
+  PHSS_14731 B.10.00.00.AA  HP C++ core library components (A.10.36) 
+  PHSS_14732 B.10.00.00.AA  HP C++ (A.10.36) to fix numerous defects 
+  PHSS_15380 B.10.00.00.AA  ld(1) and som tools cumulative patch 
+                                                                
+  CC:                                                              
+    HP C++ HPCPLUSPLUS  A.10.45                                   
+
+  cfront:                                                        
+    HP C++ HPCPLUSPLUS  A.10.45 (990416) 
+     HP-UX SLLIC/OPTIMIZER UX.10.20.563 (DAVIS): 01/28/99
+     Ucode Code Generator - UX10.20.67 (PACG_UX10)
+     High Level Optimizer - UX.10.21.980511 (UX10.MULTI) [-DHLO_RELEASE +O3] 
+     - 22-Feb-99.20:10
+
+  lib++.a:                                                       
+    HP C++ HPCPLUSPLUS  A.10.10.40                                 
+  ld:  
+    92453-07 linker linker ld B.10.32 990202
+
+  aCC:                                                           
+    HP aC++ B3910B A.01.18
+  ctcom: 
+    HP aC++ B3910B A.01.18
+  libCsup.a:  
+    HP aC++ B3910B A.01.15 Language Support Library
+  libCsup.sl:  
+    HP aC++ B3910B A.01.15 Language Support Library
+  ld:  
+    92453-07 linker linker ld B.10.28 971016
+
+  PHSS_16585 B.10.00.00.AA  HP aC++ runtime libraries (aCC A.01.18) 
+  PHSS_16586 B.10.00.00.AA  HP aC++ (aCC A.01.18) to fix numerous defects 
+
+*****DCE THREADS
+  libdce.sl: 
+    HP DCE/9000 1.5 PHSS_15731-32 davis_34 
+
+   libdcecp.sl: 
+     HP DCE/9000 1.5 PHSS_15731-32 davis_34 
+
+  PHSS_15731 B.10.00.00.AA  HP DCE/9000 1.5 
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+*************************************** HP-UX 11.00
+(output of 'uname -a', 'what', and '/usr/sbin/swlist')                                 
+
+*****OS
+  HP-UX B.11.00 A 9000/802 1492633391
+
+*****COMPILER/RUNTIMES/LINKER
+  aCC:  
+    HP aC++ B3910B A.03.10
+  ctcom: 
+    HP aC++ B3910B A.03.10
+  libCsup.a:   
+    HP aC++ B3910B A.03.10 Language Support Library
+  libCsup.sl:  
+    HP aC++ B3910B A.03.10 Language Support Library
+  ld:  
+    92453-07 linker command s800.sgs ld PA64 B.11.00 REL 980519
+
+  64-bitDevLibs   B.11.00        Cross Platform Development Kit 
+  B3913CB         B.11.00        HP C++ Compiler  (S800) 
+  B3913DB         B.11.00        HP aC++ Compiler (S800) 
+  PHKL_14174   1.0   proper compilation of C++ large file apps 
+  PHSS_14246   1.0   linker startup code / SLLIC ELF support 
+  PHSS_14577   1.0   HP aC++ runtime library components (A.03.10) 
+  PHSS_14583   1.0   LIBCL patch    
+  PHSS_16404   1.0   ld(1) and linker tools cumulative patch 
+
+*****DCE THREADS
+ libdce.sl: 
+   HP DCE/9000 1.7 
+ libdcecp.sl: 
+   HP DCE/9000 1.7 
+
+*****POSIX THREADS
+  libpthread.sl: 
+    Pthread Interfaces libpthread HP-UX (Release B.11.00): 
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+1. aCC issues warnings about the ellipsis:
+Warning 302: "/usr/include/rpc/xdr.h", line 102 # The (...) parameter
+list is a non-portable feature.
+
+2. You may encounter "out of memory" error messages while compiling
+the library or your applications.  In this case, have your system
+admin increase the kernel parameter "maxdsiz" or the swap space.
+This seems to happen most often when complex template-based code 
+is being compiled. 
+
+3. In using aCC, the va_arg macro with templates sometimes triggered
+problems in our test suite. We found that for a template class such as:
+
+     template <class Container, class T>
+     class MyTemplateClass<Container,T> { ...
+
+that changing something like:
+
+          Container C;
+          C.insert(C.end(), va_arg(AP,T))
+
+to:
+          Container C;
+          T val = va_arg(AP, T);
+          C.insert(C.end(), val);
+
+solved the problem.
+
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+                     *********************
+                  ****     Irix Users    ****
+                     **********************
+
+Please see the "SGI (Irix) users" section below.
+
+
+
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+
+                     *********************
+               ****   Microsoft VC++ users  ****
+                ***  Window NT/ Windows 95  ***
+                     **********************
+
+
+*************************************** Microsoft Visual C++ V6.0 SP3
+
+*****OS
+  Microsoft Windows NT 4.00.1381
+  Microsoft Windows 95 4.00.950.B
+
+*****COMPILER/LINKER/RUNTIMES
+  cl.exe: Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168
+  link.exe: Microsoft (R) Incremental Linker Version 6.00.8447
+
+*****THREADS
+  WIN32
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+1.  In sufficiently complicated templatized classes that have default arguments
+in the constructors, MSVC may generate one of a number of errors.  It may
+quietly fail to generate code for these constructors, resulting in a link
+time error, it may report an error in unrelated code, or it may give the
+error "C1001 - internal compiler error".
+
+(NOTE: This example may not be "sufficiently complicated", and may work fine.)
+
+template <class T> Fred{
+  public:
+    Fred(Flint<T> flint = stone): _f(flint){}   // MSVC Bug: may not work
+
+    Fred(): _f(stone);                          // Work around
+    Fred(Flint<T> flint ): _f(flint){}          // Work around
+private:
+    Flint<T> _f;
+};
+
+If you'd like to see this workaround in action, look at the code in 
+tools/source/src/rw and tools/source/src/rw/stdex that is bracketed with
+the macro RW_NO_DEFAULT_TEMPL_ARGS.
+
+2.  If there is a sufficiently complicated function defined outside
+of the body of a templatized class, MSVC may generate one of a number of errors.  
+It may quietly fail to generate code for these functions, resulting in a link
+time error, it may report an error in unrelated code, or it may give the
+error: C1001 - internal compiler error.
+
+(NOTE: Again this may not be a sufficiently complicated example )
+
+Because of this bug, this will not work:
+template <class T> class F{
+   // ...
+  public:
+    size_type  index(bool (*fn)(value_type, void*), void* x) const;
+  // ...
+};
+
+template <class T> F<T>::index(bool (*fn)(F<T>::value_type, void*), void* x) 
+const{ 
+        // Body of function.  This may fail.
+}
+
+Instead of this, use:
+template <class T> class F{
+    // ...
+  public:
+    size_type  index(bool (*fn)(value_type, void*), void* x) const{ 
+    // Body of function.  This workaround will work.
+    }
+};
+
+If you'd like to see this workaround in action, look at the code in 
+tools/source/src/rw and tools/source/src/rw/stdex that is bracketed with
+the macro RW_BROKEN_NAME_RESOLUTION.
+
+3. There is a problem when facets of MSVC Standard Library iostreams classes
+that are imbued are accessed. Microsoft tech support has provided us with a 
+partial work around which applies _only_ to the "C" locale. If you need to use 
+the new iostreams imbued with locales other than "C", please contact Microsoft 
+technical support and mention CASE_ID_NUM: SRX960925600480, which deals with 
+the problem of obtaining locale facets imbued on iostreams passed into a DLL. 
+Our code contains the work-around, and simply assumes you will use the "C" locale. 
+Here is an excerpt from email we received from Microsoft's technical support:
+ 
+       The STD C++ libraries' version of stream objects are not "DLL
+       safe" yet.  The problem is caused by two things:
+ 
+       1. The .DLL doesn't have a global "C" locale object.
+       2. The .EXE and .DLL have two separate instances of the "C"
+       locale object.
+ 
+       The only way to workaround this currently is to imbue the stream
+       object with a locale object that has been instantiated on the
+       DLL side of the call. You will have to do this wherever a stream
+       object enters the DLL, and undo it wherever it exits the DLL.
+       This includes call back functions.
+ 
+       [they then provide an example, and two macros which work
+       together to patch the problem.]
+ 
+
+We find that we have had to use their work-around in both library and test code. We 
+have introduced the following code where needed, based on their suggestion:
+
+ 
+       #ifdef RW_MSVC_DLL_LOCALE_FACET /* defined in rw/compiler.h */
+       // Use this macro prior to using any stream calls, for 'z' some
+       // stream in your code. Note the local variable _temploc
+       #  define VC42_FORCE_CLOCALE(z)                      \
+          locale *_temploc=(z.getloc()==locale("C"))?       \
+                           &(z.imbue(locale::classic())):0;
+       // use this macro to put the stream back like it was. Obviously,
+       // _temploc must still be in scope
+       #  define VC42_REPLACE_LOCALE(z)             \
+            if ( _temploc ) z.imbue(*_temploc);
+       #else
+       // Or if you do not have this bug, the macros are empty.
+       #define VC42_FORCE_CLOCALE(z)
+       #define VC42_REPLACE_LOCALE(z)
+       #endif
+ 
+       // later, you would use the macros like this:
+       {
+         ofstream myStream("myStream.out");
+         VC42_FORCE_CLOCALE(myStream)      // no trailing ';'
+         // one or more calls into our DLL or Microsoft's
+         VC42_RWPLACE_LOCALE(myStream)     // no trailing ';'
+       }
+ 
+The good news about this bug is that its effect is obvious. You will experience it 
+for any code which attempts to access the stream's imbued locale. One easy test is 
+to attempt to shift an integer or float into a character-based ostream (which requires
+formatting information from the stream's locale). Another is to use the ws manipulator 
+on an istream (which needs to ask the locale which chars are considered "white"). The 
+lesson here is to carefully test any code which makes use of the new iostreams.
+
+4. As a result of the above issue, MSVC Standard Library iostreams classes cannot be
+considered thread-safe.  If you need to use iostreams in a multi-thread environment, 
+you must use either the Rogue Wave Standard C++ Library implementation, or no standard
+library. Despite this, Tools.h++ code will be compiled with  thread-safe 
+features if you choose to make Tools.h++ a DLL. This has to do with choosing 
+the appropriate run-time library for DLL code, and does not imply that the 
+Microsoft iostreams library is thread-safe.
+
+5. There is an issue using MSVC fstreams: Because of the way they are implemented, 
+istreams and ostreams will only be opened with the default value of ios::openmode, or 
+with _exactly_ the ios::openmode flag that you pass. For instance, we found that this
+line fails:
+       ofstream binaryStream("bintest.out",ios::bin);
+but this one works correctly
+       ofstream binaryStream("bintest.out",ios::bin|ios::out|ios::trunc);
+as does this:
+       ofstream characterStream("chartest.out");
+ 
+The istreams operator bool (or void*) doesn't return false until _after_ an eof() has 
+been seen. So code like 
+        while(astream >> anRWCString) {
+           //... do something   // N+1 times for MSVC 4.2 stdlib iostreams
+        }
+will run through the loop one extra time.  The fix is to change your test condition:
+        while(! (astream >> anRWCString).eof()) {
+           //... do something  // N times for any iostreams package we know
+        }
+
+We thought about changing RWCString and our vstream classes to set the flag correctly, 
+but decided that would leave you in a worse position. Shifting with Tools.h++ classes 
+would then work "correctly" but differently from shifting with other classes, and your 
+code would have to be aware of this individual difference.
+ 
+Note that this bug causes some examples in toolexam to require _two_ control-Zs rather 
+than one, with a carriage return after each.
+
+6. MSVC Standard C++ Library basic_streambuf::xsputn has a bug which impacts RWbostream: 
+a byte with value 0xFF will not be inserted.  We worked around the problem by making 
+repeated calls to sputc().  This work-around does have efficiency costs.
+
+7. Microsoft acknowledges Bug C4786: Cannot handle long identifiers. They suggest turning 
+off debugging, or shortening the affected objects, methods, or argument lists.
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+                   ***************************
+               ****          Linux           ****
+                   ***************************
+
+*****OS
+  Linux 2.2.5
+
+*****COMPILER/LINKER/RUNTIMES
+  g++: gcc version egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)
+  ld:  GNU ld version 2.9.1 (with BFD 2.9.1.0.23)  
+	glibc version 2.1.1 
+	
+*****THREADS
+	glibc version 2.1.1 
+  linuxthreads (a glibc implimentation of the POSIX 1003.1c "pthread" interface)
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+1. If you are using templates and you encounter compilation errors 
+related to template instantiation depth exceeds maximum of 17, try 
+adding the "-ftemplate-depth-NN" option to the g++ command, where 
+NN in the maximum template instantiation depth.
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+                   ***************************
+                ****     SGI (Irix) users    ****
+                   ***************************
+
+
+*************************************** Irix 6.2
+(output of 'uname -a' and 'versions')
+
+*****OS
+  IRIX 6.2 03131015 IP22
+
+*****COMPILER/RUNTIMES/LINKER
+  I  c++_dev              06/08/98  
+     C++, 7.1 on irix 6.2
+  I  c++_dev.sw.lib       06/08/98  
+     C++ Libraries
+  I  patchSG0002575       06/05/98  
+     Patch SG0002575: libblas incorrect results and performance 
+     for 7.1 compilers
+  I  patchSG0002687       06/05/98  
+     Patch SG0002687: MIPSpro 7.2 Compiler Back-end #2
+
+*****POSIX THREADS
+  I  patchSG0002420       06/05/98  Patch SG0002420: Pthread library fixes
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+*************************************** Irix 6.5
+(output of 'uname -a' and 'versions')
+
+*****OS
+  IRIX64 6.5 05190004 IP30
+
+*****COMPILER/RUNTIMES/LINKER
+  I  c++_dev              07/17/98  C++ Headers and Libraries, 7.2.1
+  I  patchSG0002992       07/17/98  Patch SG0002992: MIPSpro 7.2.1 Compiler Back-end #1
+  I  patchSG0003048.c++_fe_sw  07/17/98  C++ Compiler Front-end
+  I  patchSG0003131       07/17/98  Patch SG0003131: 7.2.1 base compiler runtime environment
+                                    for IRIX 6.2/6.3/6.4/6.5
+  I  c++_dev.sw.lib       07/17/98  C++ Libraries
+  I  c++_dev.sw.libns     07/17/98  C++ NonShared Libraries
+  I  c++_dev.sw64.lib     07/17/98  C++ Libraries 64bit
+
+*****POSIX THREADS
+(no patches installed)
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+1. If you are using templates and you encounter unresolved symbols 
+when you compile try adding the "-ptall" option to the CC command.
+
+2. If you are using templates and you encounter coredumps during
+exception handling, try adding the "-INLINE:none" option to the CC
+command.
+
+3. If your code causes a warning(1183) in the stdlib header file iterator
+      Warning(1183): pointless comparison of unsigned integer with zero 
+for the line 355:   
+      if (n >= 0)   
+it is harmless and can be ignored.
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+
+                 *******************************
+            ****   Sun / Solaris / SunOS users   ****
+                   ***************************
+
+
+*************************************** SunOS 4.1.3
+(output of 'uname -a' and 'what')
+
+*****OS
+  SunOS 4.1.3_U1 2 sun4m
+
+*****COMPILER/RUNTIMES/LINKER
+  CC:  
+    RELEASE VERSION SC3.0.1 07 Jul 1995
+  libcomplex.a: 
+    RELEASE VERSION SC3.0.1 7/13/94 C++4.0.1
+  libtask.a:
+    RELEASE VERSION SC3.0.1 7/13/94 C++4.0.1
+  ld: 
+    ld.c 1.140 93/02/18
+
+  (!) The patch level for SunPro C++ 4.1 for SunOS 4.1.X includes an
+      unofficial patch release that takes the compiler beyond p22 in order
+      to fix Sun's Bug #4164766. Please contact Sun for information regarding
+      the patch for this necessary fix.
+
+*****THREADS
+  None
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+*************************************** SunOS 5.5.1
+(output of 'uname -a', and what)
+
+*****OS
+  SunOS 5.5.1 Generic_103640-08 sun4u sparc SUNW,Ultra-1
+  
+*****COMPILER/RUNTIMES/LINKER
+  CC:  
+    RELEASE VERSION WorkShop Compilers 4.2 16 Jun 1998 C++ 4.2 patch 104631-07
+  libcomplex.so: 
+    RELEASE VERSION WorkShop Compilers 4.2 15 Jun 1998 C++ 4.2 patch 104631-07
+  libtask.a:  
+    RELEASE VERSION WorkShop Compilers 4.2 30 Oct 1996 C++ 4.2
+  ld: 
+    ld.sh   1.4     94/10/24 SMI
+
+*****DCE THREADS*****
+  Transarc DCE 1.1 Threads
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+*************************************** SunOS 5.6
+(output of 'uname -a' and 'what')
+
+*****OS
+  SunOS 5.6 Generic_105181-03 sun4u sparc SUNW,Ultra-Enterprise
+
+*****COMPILER/RUNTIMES/LINKER
+  CC:  
+    RELEASE VERSION WorkShop Compilers 4.2 16 Jun 1998 C++ 4.2 patch 104631-07
+  libcomplex.so.5: 
+    RELEASE VERSION WorkShop Compilers 4.2 15 Jun 1998 C++ 4.2 patch 104631-07
+  libtask.a:  
+    RELEASE VERSION WorkShop Compilers 4.2 30 Oct 1996 C++ 4.2
+  ld: 
+    ld.sh   1.4     94/10/24 SMI
+    
+*****OS
+  SunOS 5.6 Generic_105181-03 sun4u sparc SUNW,Ultra-Enterprise
+  
+*****COMPILER
+  CC:  
+    RELEASE VERSION WorkShop Compilers 5.0 15 Dec 1998 C++ 5.0
+  libcomplex.so.5: 
+    RELEASE VERSION WorkShop Compilers 5.0 15 Dec 1998 C++ 5.0   
+	(see note in Solaris 7 section for partial support)
+
+*****POSIX THREADS
+  libposix4.so: SunOS 5.6 Generic August 1997
+
+*****SOLARIS THREADS
+  libpthread.so: SunOS 5.6 Generic August 1997
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+  
+*************************************** Solaris 7
+(output of 'uname -a' and 'what')
+	
+*****OS
+  SunOS 5.7 Generic sun4u sparc SUNW,Ultra-Enterprise
+  
+*****COMPILER
+  CC:  
+    RELEASE VERSION WorkShop Compilers 5.0 15 Dec 1998 C++ 5.0
+  libcomplex.so.5: 
+    RELEASE VERSION WorkShop Compilers 5.0 15 Dec 1998 C++ 5.0
+    
+  we are also certified with the -compat compile option for this compiler on
+Solaris 7.
+	
+  At this time, Rogue Wave is only able to provide partial support for some of our products on Sun WorkShop(tm) 5.0 because we have encountered a number of issues with this compiler that we cannot work around. Sun and Rogue Wave are now working together to resolve these issues as fast as possible. Once they are resolved, we will do our best to promptly deliver full support for our products on Sun WorkShop 5.0.
+
+  For now, you will need to:
+Obtain Sun patch #107311-02 from Sun and install it
+Refer to the readme file for each product for important details on support for   this platform.
+  
+*****POSIX THREADS
+  libposix4.so: SunOS 5.7 Generic October 1998
+
+*****SOLARIS THREADS
+  libpthread.so: SunOS 5.7 Generic October 1998
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+1. With patch 101914-22 for SunPro C++ 4.1 for SunOS 4.1.X we began to
+experience core dump problems in our test suites related to templates.
+The problem appeared to be related to a incorrect verion of tdb_link 
+attached to this patch. The patch level we certified with on SunOS 4.1.X
+includes an unofficial patch release to fix Sun's Bug #4164766. Please 
+contact Sun for information regarding the patch for this necessary fix.
+
+2. "signal 10 or signal 11" error when using the SunPro 4.2 compiler:
+This problem is due to using a construct that is not yet supported
+by the compiler. The offending construct consisted of templates in a 
+function declaration or of nested templates where the template was not 
+yet instantiated. We have worked around the problem by changing our code 
+to not use the offending construct.
+
+Here is an example where the offending code has been changed
+from:
+      bucket_t(bool v, const typename 
+      rw_slist<pair<T,unsigned long> >::iterator& c) 
+      :valid_(v), chain_(c){}
+to:
+      typedef rw_slist<pair<T,unsigned long> >::iterator rw_slist_iterator;
+      bucket_t(bool v, const rw_slist_iterator& c)
+      :valid_(v), chain_(c){}
+
+3. We experienced different results from the C strftime facility in Solaris 7 than previous versions of Solaris. This has been noted in Sun's Bug #4197673.
+
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+
+                   ***************************
+                ****        xlC users        ****
+                   ***************************
+
+Please see the section "AIX xlC (CSet++) users" above.
+
+ -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+
+

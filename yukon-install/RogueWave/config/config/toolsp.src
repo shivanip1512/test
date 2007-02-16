@@ -1,0 +1,3 @@
+STATUS=good
+Q_THREADS=Yes,_I_have_a_copy_of_Threads.h++.
+Q_ORB=No,_I_do_not_have_a_copy_of_an_Orb.

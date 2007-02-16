@@ -1,0 +1,257 @@
+
+                    R O G U E   W A V E
+       T O O L S . H + +    C L A S S   L I B R A R Y
+
+           Rogue Wave Tools.h++: Version 7.1.0
+
+Rogue Wave
+P.O. Box 2328
+Corvallis, OR 97339
+     (503) 754-3010 (Sales)
+     (503) 754-2311 (Tech support)
+FAX: (503) 757-6650
+WWW: http://www.roguewave.com
+
+
+     ***************************************************
+     *                                                 *
+     *  Using Pure Software's "Purify" with Tools.h++  *
+     *                                                 *
+     ***************************************************
+
+=========================================================================
+Contents:
+  0. General comments 
+  1. PLK in RWZone::local() (cached RWCStrings)
+  2. PLK in RWLocale::global() (cached RWCStrings)
+  3. UMR in various FILE* manipulators (Seen in RWFile or derived)
+  4. UMR in call to FILE* write  (Seen in RWFile or derived)
+  5. SBR if throw from a block with nontrivial local variable
+  6. Leaked memory with exception during persistence
+  7. UMR in ios::precision(int) and ios::fill(char)
+  8. PLK in RWCString or RWWString
+====================================
+   
+0. Purify can be pretty picky about a number of things that are really
+   okay when you look closely at them. We like that, since it means
+   that when we finally do get a clean purify report, we are certain
+   that we have fixed everything we possibly can. We do look at the
+   reports we get, and we work hard to fix real problems. However,
+   there are times when we just cannot both pacify Purify and provide
+   the most usable possible library. Of course, we also cannot change
+   reports about library calls that we make. This file discusses what
+   you can do when you run Purify and discover such situations.
+
+   There are usually two choices. One fix is to add a bit of code
+   which cleans up some cached object so Purify doesn't complain. This
+   isn't something we wanted to document for all users since the
+   cached values will be automatically cleaned up at exit, but it is
+   probably the cleanest way to get a good Purify report. The other
+   option is to provide a line in your .purify file which turns off
+   the complaint, but may leave a trace in the "Purify Heap Analysis" 
+   where even supressed reports are summarized. 
+
+====================================
+1. PLK in RWZone::local() (cached RWCStrings)
+   Purify reports a potential memory leak from two strings contained
+   within the RWZoneSimple that is cached after the first call to
+   RWZone::local(). RWCString is implemented so that the pointer to
+   the RWCStringRep actually points into the middle of the block that
+   was allocated to hold it. This causes Purify to flag these two
+   strings rather than reporting them as memory still in use. Although
+   this is a correct report, it is not a real problem since RWCString
+   knows how to obtain the correct pointer, and will do so to release
+   memory at program exit time. There are two solutions: Either add a
+   line to your .purify file, or explicitly free the cached memory:
+   
+	Either use this .purify line:
+   
+suppress PLK malloc;operator new(unsigned int);static RWCStringRef::getRep(unsigned int unsigned int);RWCString::replace(unsigned int, unsigned int, const char*,unsigned int); makelocal(void);static RWZone::local(void)
+   
+	or add one of these lines near the end of your program:
+   
+delete (RWZone*)RWZone::local(0); //cast away const for older compilers
+	(You should use this line if purify reports _only_ PLK from
+	 RWZone, but no PLK from RWLocale)
+
+RWLocale::releaseCache()
+	(This line will release all RWZone and RWLocale caches)
+
+   Note that even if for some reason RWZone::local() is needed
+   after the delete line, by setting the replacement value to 0, you
+   (or if you use releaseCache(), we) have flagged that another
+   RWZoneSimple should be built if it needed. 
+   
+===================================
+2. PLK in RWLocale::global() (cached RWCStrings)
+   Purify reports a potential memory leak from many strings contained
+   within the default RWLocale that is cached after the first call to
+   RWLocal::global(). This is essentially identical to the report from
+   a cached RWZone above, except that RWLocale is a (much) more
+   complicated structure than RWZone. RWCString is implemented so that
+   the pointer to the RWCStringRep actually points into the middle of
+   the block that was allocated to hold it. This causes Purify to flag
+   these strings rather than reporting them as memory still in use.
+   There are two solutions: Either add several lines to your .purify
+   file, or explicitly free the cached memory:
+
+	Either use these .purify lines:
+suppress PLK malloc;operator new(unsigned int);static RWCStringRef::getRep(unsigned int, unsigned int);RWCString::RWCString(char, unsigned int);RWLocaleSnapshot::RWLocaleSnapshot(const char*);static RWLocale::defaultLocale(void);static RWLocale::global(void)
+   
+suppress PLK malloc;operator new(unsigned int);static RWCStringRef::getRep(unsigned int, unsigned int);RWCString::replace(unsigned int,unsigned int,const char*,unsigned int);RWLocaleSnapshot::RWLocaleSnapshot(const char*);static RWLocale::defaultLocale(void);static RWLocale::global(void)
+   
+suppress PLK malloc;operator new(unsigned int);static RWCStringRef::getRep(unsigned int, unsigned int);RWCString::RWCString(const char*);RWLocaleSnapshot::RWLocaleSnapshot(const char*);static RWLocale::defaultLocale(void);static RWLocale::global(void)
+   
+   or add one of these lines near the end of your program:
+delete (RWLocale*)RWLocale::global(0); //cast away const for older compilers
+   or
+RWLocale::releaseCache()
+
+   (Note that even if for some reason RWLocale::global() is needed
+   after the delete line, by setting the replacement value to 0, you
+   (or if you have used releaseCache(), we) have flagged that another
+   default RWLocale should be built if needed.) 
+
+===================================
+3. UMR in various FILE* manipulators (Seen in RWFile or derived)
+   Purify reports a UMR on some operating systems during an fflush;
+   This is an artifact of the way that the underlying FILE* buffer is
+   cached in memory, and cannot be fixed by changing our code or
+   yours. The only way to make purify quiet is to change to a cleaner
+   version of libc (usually not an option :), or add a line to your
+   .purify file:
+   
+suppress UMR write;_xflsbuf;fflush
+
+   Note that many but not all of the associated UMRs will be
+   suppressed with this more specific line:
+
+suppress UMR write;_xflsbuf;fflush;fseek
+
+   Also note that your system may name these methods with or without
+   the leading underscore. 
+   
+===================================
+4. UMR in call to FILE* write (Seen in RWFile or derived) 
+   Purify reports a UMR on some operating systems during an fwrite on
+   a FILE* buffer which has just been initialized. This is an artifact
+   of the way that the underlying FILE* buffer is cached in memory,
+   and cannot be fixed by changing our code or yours. The only way to
+   make purify quiet is to change to a cleaner version of libc
+   (usually not an option :), or add a line to your .purify file:
+  
+suppress UMR write;fwrite
+
+===================================
+5.  SBR if throw from a block with nontrivial local variable
+   Purify reports an SBR (Stack array bounds read) in _ex_rethrow_q on
+   at least one operating system / compiler pair. We believe that this
+   is an artifact of the way that the compiler generates stack
+   unrolling, so it cannot be fixed by changing your code or ours. The
+   only way to make purify quiet is to change to a cleaner version of
+   libC (usually not an option :), or add a line to your .purify file:
+
+suppress SBR _ex_rethrow_q
+	
+===================================
+6. Leaked memory during persistence.
+   If an exception is thrown while persisting into an RWCollectable,
+   the partially restored RWCollectable may be abandoned on the
+   heap. We have examined a variety of potential solutions to this
+   difficulty, and cannot find one which we feel is perfect.  However,
+   since we recognize the need under some circumstances to maintain
+   complete control of the heap, we do make it possible for you to
+   recover the memory dedicated to partially restored RWCollectables.  
+
+   First, we need to explain that since you may have persisted an
+   arbitrarily complex structure, there is no way that Tools.h++ can
+   know how to proceed to recover the heap allocated to it: If we
+   attempt to delete all the pointers which have been restored so far,
+   it is quite likely that we will get to them in some wrong order,
+   perhaps by deleting a pointer held within another RWCollectable,
+   and then calling the destructor for that "outer collectable" ,
+   which would in turn very likely call delete again on the pointer we
+   had already deleted. If we attempt to delete only those
+   RWCollectable pointers which we have built during the course of
+   restoreGuts() calls we made for our collections, it is just as
+   likely that we will delete a contained collection, thus leaking all
+   of its contents. Or consider self-referential RWCollectables.
+   Because of this, the very best we can do is return to the caller a
+   pointer to a partly restored object. Presumably, the programmer who
+   asked for the object to be restored is in the best position to
+   write the code that can correctly return memory to the heap. To
+   make that possible, we have made these changes:
+
+   -- In our restoreGuts methods, we now catch exceptions, insert any
+      partly constructed RWCollectable into the collection, and rethrow.
+      
+   -- We make use of two new static methods:
+    RWCollectable::tryRecursiveRestore(RWCollectable*&, RWFile&);
+    RWCollectable::tryRecursiveRestore(RWCollectable*&, RWvistream&);
+      to provide "exception aware partial restoration" for all
+      RWCollectables. 
+
+   If you must recover the heap space allocated for partially restored
+   RWCollectables, you need to write your code to make it possible:
+      
+   -- An RWCollectable pointer must be intialized to point to a valid
+      address (possibly rwnil) _before_ you restore into it. (Upon
+      return it will be pointing to a fully restored RWCollectable
+      object, or if an exception is caught, to a partly restored
+      object.) 
+   
+   -- You must write your saveGuts and restoreGuts methods in such a
+      way as to allow you to clean up in case an exception is thrown. 
+      We suggest that all pointers be initialized to rwnil (zero) in
+      the default constructor so that you can tell which of them have
+      been (partly) restored.
+      
+     Here is a code snippet:
+	// an RWbistream named bstr is in use
+	MyCollectable *p = 0; // _must_ initialize the pointer!!
+	try {
+  	  bstr >> p;
+	// you may also use: RWCollectable::tryRecursiveRestore(p,bstr);
+	// but only if p's type is _exactly_ RWCollectable*
+        } catch (...) {
+	  // Must catch every possible exception: No telling who 
+	  // threw it, or exactly what went wrong.
+      
+	  // if we get here, we have trouble... do the best we can...
+          // be sure p is not nil as first step in your cleanup code!
+	  fixPartialRestore(p);   // whatever you need to do
+	  delete p;               // if appropriate
+	  throw;                  // if appropriate, pass exception on.
+	}
+        // if we get here, presumably all went well. Use p as needed
+	// someFunction(...p...)  // or whatever
+  
+===================================
+7. UMR in calls to ios::precision(int) and ios::fill(char)
+   Purify reports a UMR on some operating systems while constructing
+   an fstream. This is an artifact of the way the iostreams package on
+   those systems has been coded, and cannot be fixed by changing our
+   code or yours. The only way to make purify quiet is to change to a
+   cleaner version of the iostreams package (usually not an option :),
+   or add two lines to your .purify file:
+
+suppress UMR ios::precision(int);ios::init(streambuf*);
+suppress UMR ios::fill(char);ios::init(streambuf*);    
+   
+===================================
+8. PLK in RWCString or RWWString
+   We have had a number of comments concerning PLK reports in
+   RWCString and RWWString. These Rogue Wave string classes are
+   implemented so that the pointer to the string representation
+   actually points into the middle of the block that was allocated to
+   hold it. This causes Purify to flag such strings as potential
+   memory leaks, since there is no current pointer to the beginning of
+   the allocated block. Although this is a correct report, it is not a
+   real problem since these string classes know how to obtain the
+   correct pointer, and will do so to release memory when the final
+   copy of the string goes out of scope (possibly during exit from
+   main()). You will normally see these reports if you are using one
+   of our string classes in (or as) a static object. You may quiet the
+   report either by suppressing it, or by explicitly destroying such
+   strings prior to the end of the program.
+===================================

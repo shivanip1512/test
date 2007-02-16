@@ -1,0 +1,145 @@
+
+                             R O G U E   W A V E
+
+      DBTools.h++ Access Library for Microsoft SQL Server DB-Library
+
+                          Version 3.2.1 November 1999
+
+Rogue Wave Software, Inc.
+5500 Flatiron Parkway
+Boulder, CO  80301
+
+Corporate Office:  (303) 473-9118
+Toll Free:  (800) 487-3217
+Fax:  (303) 447-2568
+sales@roguewave.com
+www.roguewave.com
+
+Technical Support:  (303) 545-3205
+Online Knowledge Base:  support.roguewave.com
+Email:  support@roguewave.com
+
+
+Serving Europe:
+Rogue Wave Software GmbH
++49-6103-59 34-0
+Rogue Wave Software B.V.
++31-20-301 26 26
+Rogue Wave Software S.A.R.L.
++33-1-4196 2626
+Rogue Wave Software-UK.Ltd.
++44-118-988 0224
+Rogue Wave Software S.R.L.
++39-02-3809 3288
+
+This file contains:
+-------------------
+  1. Compiler specific notes
+  2. OS specific notes
+  3. Known difficulties in this release 
+  4. Changes from previous release
+
+===========================
+1. Compiler-specific notes:
+---------------------------
+
+none
+
+=====================
+2. OS-specific notes:
+---------------------
+
+The following Operating Systems are supported.
+
+Windows NT v4.0
+Windows 95 
+
+There are no known limitations with any of these OS's at the date of 
+this release.
+
+=====================================
+3. Known difficulties in this release
+-------------------------------------
+As of the shipping date, the following were unresolved:
+
+ID	Description
+--      -----------
+10729   RWDBStoredProcs now support parameters of type image.  But, 
+        according to mssql 6.5 documentation "The image datatype cannot 
+        be used for variables or parameters in stored procedures."  
+        mssql 7.0 documentation states "All data types, including text 
+        and image, can be used as a parameter for a stored procedure."
+
+=================================
+4.  Changes from previous release, not documented elsewhere:
+---------------------------------
+3.2.0 -> 3.2.1
+  Maintenance release.
+ 
+3.1.3 -> 3.1.4
+  Maintenance release.
+  With this version, the names of the database specific access library object modules to link 
+  with your application when using static builds of the libraries have been changed as follows.
+
+	On UNIX: old name: db<xx>lib.o		new name: rw<libtype><buildtype>.o
+	On PC:	old name: db<xx>lib.obj		new name: rw<libtype><buildtype>.obj
+
+	Where xx is the place holder for the first two characters of the access library's 
+	<libtype> variable listed in the online DBTools.h++ Build Guide, section 2.2.2, 
+	Table 6 "Possible values for <libtype>".
+
+3.0.0 -> 3.1.3
+
+ o general maintenance of library.
+
+3.0.0 -> 3.0.2
+2.2.1 -> 3.0.0
+2.2.0 -> 2.2.1
+
+November 1997
+--------------
+  o Fixed a problem with updating a column of type TEXT.
+
+
+2.1.3 -> 2.2.0
+
+August 1997
+--------------
+  o Fixed problem with stored procedures and decimal types.
+
+  o Invalid RWDBCursors now get destroyed properly.
+
+  o Can now compile MSAccess library with STDLIB=MS
+
+  o Corrected RWDBTable::foreignKeys() and RWDBTable::referredToBy() method  
+
+  o RWDBStoredProc with in/out parameter of type text now handled properly.
+
+  o Now use the new MT safe error handles as per Sqlserver documentation. 
+
+
+#==========================================================================
+#
+#  Copyright (c) 1994-1999 Rogue Wave Software, Inc.  All Rights Reserved.
+#
+#  This computer software is owned by Rogue Wave Software, Inc. and is
+#  protected by U.S. copyright laws and other laws and by international
+#  treaties.  This computer software is furnished by Rogue Wave Software,
+#  Inc. pursuant to a written license agreement and may be used, copied,
+#  transmitted, and stored only in accordance with the terms of such
+#  license and with the inclusion of the above copyright notice.  This
+#  computer software or any other copies thereof may not be provided or
+#  otherwise made available to any other person.
+#
+#  U.S. Government Restricted Rights.  This computer software is provided
+#  with Restricted Rights.  Use, duplication, or disclosure by the
+#  Government is subject to restrictions as set forth in subparagraph (c)
+#  (1) (ii) of The Rights in Technical Data and Computer Software clause
+#  at DFARS 252.227-7013 or subparagraphs (c) (1) and (2) of the
+#  Commercial Computer Software – Restricted Rights at 48 CFR 52.227-19,
+#  as applicable.  Manufacturer is Rogue Wave Software, Inc., 5500
+#  Flatiron Parkway, Boulder, Colorado 80301 USA.
+#
+#==========================================================================
+#
+# $Id:

@@ -1,0 +1,369 @@
+Created By          : jotteson
+Created At          : 01/29/07 12:33:25
+Target Name         : dbt15d
+Target Location     : C:\roguewavebuild\workspaces\WINNT4\MSVC60\15d\lib
+Build Result        : SUCCESS
+Build Error         : No Error
+Build Description   : C++ library
+Build Profile       : MultiDebugStdLibShared
+Build Options:        
+-     Build Mode    : FullDebug
+-     Threading     : Multi
+-     Linkage       : Shared
+-     Standard Lib  : StdLibYes
+Prepend Build Opts  : 
+Prepend Link Opts   : 
+Postpend Build Opts : 
+Postpend Link Opts  : 
+Build Command(s)    : C:\spm\scripts\rwenv -bC:\spm\utils\mks\win32\bin "rwbuild -m -z   -t15 -d -fC:\spm\scripts\platform\msvc.in -iC:\roguewavebuild\workspaces\WINNT4\MSVC60\15d C:\roguewavebuild\parts\dbt0321w/source"
+Part                : source
+Configuration       : MultiDebugStdLibShared-WINNT 4-MSVC 6.0
+Environment         : WINNT 4-MSVC 6.0
+OS                  : WINNT
+OS Version          : 4
+Part Builder        : MSVC
+Part Builder Version: 6.0
+
+---------- Transcript of build ----------
+# Setting environment in which to run "rwbuild -m -z   -t15 -d -fC:/spm/scripts/platform/msvc.in -iC:/roguewavebuild/workspaces/WINNT4/MSVC60/15d C:/roguewavebuild/parts/dbt0321w/source"
+# Running "rwbuild -m -z   -t15 -d -fC:/spm/scripts/platform/msvc.in -iC:/roguewavebuild/workspaces/WINNT4/MSVC60/15d C:/roguewavebuild/parts/dbt0321w/source"
+
+Please wait just a moment while I initialize myself . . .
+Microsoft C++ compiler
+For this build I will read config.dat
+  from your workspace C:/roguewavebuild/workspaces/WINNT4/MSVC60/15d.
+ 
+Setup Complete.
+RWSHARED = 1
+RWSYMBDEBUG  = 1
+RWDEBUG  = 1
+RWMULTI  = 1
+RWSTDLIB = 1
+ 
+Generating makefiles...
+# Installing C:/roguewavebuild/parts/dbt0321w/source/
+   in C:/roguewavebuild/workspaces/WINNT4/MSVC60/15d
+# Making C:/roguewavebuild/parts/dbt0321w/source
+  for WINNT/MSVC
+nmake 
+
+Microsoft (R) Program Maintenance Utility   Version 6.00.9782.0
+Copyright (C) Microsoft Corp 1988-1998. All rights reserved.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\blob.cpp -o blob.obj
+blob.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\blobio.cpp -o blobio.obj
+blobio.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\bkins.cpp -o bkins.obj
+bkins.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\bkinsi.cpp -o bkinsi.obj
+bkinsi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\bknull.cpp -o bknull.obj
+bknull.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\bkread.cpp -o bkread.obj
+bkread.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\bkreadi.cpp -o bkreadi.obj
+bkreadi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\column.cpp -o column.obj
+column.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\columni.cpp -o columni.obj
+columni.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\comsel.cpp -o comsel.obj
+comsel.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\comseli.cpp -o comseli.obj
+comseli.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\connect.cpp -o connect.obj
+connect.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\connecti.cpp -o connecti.obj
+connecti.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\cursor.cpp -o cursor.obj
+cursor.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\cursori.cpp -o cursori.obj
+cursori.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\datetime.cpp -o datetime.obj
+datetime.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\datetmio.cpp -o datetmio.obj
+datetmio.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbabsdate.cpp -o dbabsdate.obj
+dbabsdate.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbase.cpp -o dbase.obj
+dbase.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbasei.cpp -o dbasei.obj
+dbasei.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbdatevec.cpp -o dbdatevec.obj
+dbdatevec.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbdatevi.cpp -o dbdatevi.obj
+dbdatevi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbentry.cpp -o dbentry.obj
+dbentry.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dberr.cpp -o dberr.obj
+dberr.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbmgr.cpp -o dbmgr.obj
+dbmgr.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbmutex.cpp -o dbmutex.obj
+dbmutex.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbref.cpp -o dbref.obj
+dbref.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\dbtablei.cpp -o dbtablei.obj
+dbtablei.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\decin.cpp -o decin.obj
+decin.cpp
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\decport.cpp -o decport.obj
+decport.cpp
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\decprtio.cpp -o decprtio.obj
+decprtio.cpp
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\deleter.cpp -o deleter.obj
+deleter.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\deleteri.cpp -o deleteri.obj
+deleteri.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\drtnio.cpp -o drtnio.obj
+drtnio.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\duration.cpp -o duration.obj
+duration.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\envhandl.cpp -o envhandl.obj
+envhandl.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\expr.cpp -o expr.obj
+expr.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\expri.cpp -o expri.obj
+expri.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\forkey.cpp -o forkey.obj
+forkey.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\forkeyi.cpp -o forkeyi.obj
+forkeyi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\func.cpp -o func.obj
+func.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\future.cpp -o future.obj
+future.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\futurei.cpp -o futurei.obj
+futurei.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\inserter.cpp -o inserter.obj
+inserter.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\insertri.cpp -o insertri.obj
+insertri.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\memtabi.cpp -o memtabi.obj
+memtabi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\memtable.cpp -o memtable.obj
+memtable.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\mgrproxy.cpp -o mgrproxy.obj
+mgrproxy.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\nullind.cpp -o nullind.obj
+nullind.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\phrase.cpp -o phrase.obj
+phrase.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\prece.cpp -o prece.obj
+prece.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\reader.cpp -o reader.obj
+reader.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\readeri.cpp -o readeri.obj
+readeri.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\restabi.cpp -o restabi.obj
+restabi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\result.cpp -o result.obj
+result.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\resulti.cpp -o resulti.obj
+resulti.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\row.cpp -o row.obj
+row.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\schema.cpp -o schema.obj
+schema.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\schemai.cpp -o schemai.obj
+schemai.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\select.cpp -o select.obj
+select.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\selecti.cpp -o selecti.obj
+selecti.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\shiftrow.cpp -o shiftrow.obj
+shiftrow.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\status.cpp -o status.obj
+status.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\statusi.cpp -o statusi.obj
+statusi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\stmt.cpp -o stmt.obj
+stmt.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\stmti.cpp -o stmti.obj
+stmti.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\stored.cpp -o stored.obj
+stored.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\storedi.cpp -o storedi.obj
+storedi.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\syshandl.cpp -o syshandl.obj
+syshandl.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\table.cpp -o table.obj
+table.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\tablei.cpp -o tablei.obj
+tablei.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\taggen.cpp -o taggen.obj
+taggen.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\tmtablei.cpp -o tmtablei.obj
+tmtablei.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\tmtbase.cpp -o tmtbase.obj
+tmtbase.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\tracer.cpp -o tracer.obj
+tracer.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\updater.cpp -o updater.obj
+updater.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\updateri.cpp -o updateri.obj
+updateri.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\value.cpp -o value.obj
+value.cpp
+Compiling windows.h - this should happen just once per project.
+
+	cl    -I..\.. -IC:/roguewavebuild/parts/dbt0321w\source\src     -nologo -GX -DNOMINMAX -DWIN32 -MDd -DRWDEBUG=1 -Zi -Fd..\..\lib\dbt15d.pdb   -DRW_MULTI_THREAD -D_REENTRANT  -DRWDLL -D_RWDBBUILDDLL -D__DLL__    -D RW_THR_OS_VERSION_WINNT=0x0400 -c C:/roguewavebuild/parts/dbt0321w\source\src\valueio.cpp -o valueio.obj
+valueio.cpp
+Compiling windows.h - this should happen just once per project.
+
+	link  /DEBUG /PDB:..\..\lib\dbt15d.pdb   /DLL @C:\DOCUME~1\jotteson\LOCALS~1\Temp\nma05856.
+Microsoft (R) Incremental Linker Version 6.00.8447
+Copyright (C) Microsoft Corp 1992-1998. All rights reserved.
+
+/OUT:..\..\lib\dbt15d.dll /IMPLIB:..\..\lib\dbt15d.lib 
+-LIBPATH:..\..\lib tls15d.lib user32.lib blob.obj blobio.obj bkins.obj bkinsi.obj bknull.obj bkread.obj bkreadi.obj column.obj columni.obj comsel.obj comseli.obj connect.obj connecti.obj cursor.obj cursori.obj datetime.obj datetmio.obj dbabsdate.obj dbase.obj dbasei.obj dbdatevec.obj dbdatevi.obj dbentry.obj dberr.obj dbmgr.obj dbmutex.obj dbref.obj dbtablei.obj decin.obj decport.obj decprtio.obj deleter.obj deleteri.obj drtnio.obj duration.obj envhandl.obj expr.obj expri.obj forkey.obj forkeyi.obj func.obj future.obj futurei.obj inserter.obj insertri.obj memtabi.obj memtable.obj mgrproxy.obj nullind.obj phrase.obj prece.obj reader.obj readeri.obj restabi.obj result.obj resulti.obj row.obj schema.obj schemai.obj select.obj selecti.obj shiftrow.obj status.obj statusi.obj stmt.obj stmti.obj stored.obj storedi.obj syshandl.obj table.obj tablei.obj taggen.obj tmtablei.obj tmtbase.obj tracer.obj updater.obj updateri.obj value.obj valueio.obj 
+   Creating library ..\..\lib\dbt15d.lib and object ..\..\lib\dbt15d.exp

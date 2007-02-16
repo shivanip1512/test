@@ -1,0 +1,106 @@
+
+                   T O O L D L L . D O C       
+
+      Notes on the Tools.h++ Dynamic Link Library (DLL)
+
+                        Version 7.0
+
+
+Tools.h++ can be built as a DLL using Borland C++ under Windows NT and 95 
+(32-bit Windows).  Tools.h++ can also be built using Microsoft Visual C++ 
+under Windows NT and 95.
+
+=================
+All Users:
+-----------------
+
+You must link your program with the import library.  
+
+Under Windows NT, Windows 95 and OS/2, the names of the import libraries
+and DLLs are:
+
+OS           Compiler              Import library       DLL
+----------   --------------        --------------       ----------
+All          All                   tls#d.lib            tls#d.dll
+
+where "#" is the build type number.  Please refer to the Build Guide for
+more information about build types and about the locations of the DLL's.
+
+You should always use the DLL version of you compiler's run-time
+library when using the DLL version of Tools.h++.
+
+See the demonstration program in the DLLDEMO subdirectory for an
+example of using and linking with the DLL (Microsoft or Borland only).
+
+
+=================
+Microsoft Users:
+-----------------
+
+In order to use the DLL version of Tools.h++, you must:
+
+  o use a 32-bit Edition of Visual C++ under Windows NT or Windows 95
+
+  o define the macro "RWDLL" on the compiler command line;
+
+  o compile your application with the -MD switch to use the DLL
+    version of Microsoft's run-time library.
+
+Note that when building the DLL version of Tools.h++ under Microsoft,
+you will automatically be building a multithread-safe version of the
+library as well.
+
+
+
+=================
+Borland Users:
+-----------------
+
+In order to use the DLL version of Tools.h++, you must:
+
+  o define the macro "RWDLL" on the compiler command line;
+
+  o define the macro "_RTLDLL" for using Borland's run-time library (RTL)
+    DLL, as per Borland's instructions.
+
+===========================================
+Building a DLL that uses the Tools.h++ DLL
+-------------------------------------------
+
+When building a DLL that uses the Tools.h++ DLL, if you instantiate
+any generic or template classes, the code for these will actually end
+up in your DLL.  If you wish for these classes to be exported
+("_export" for Borland), you must define the macro
+"_RWEXPORT_INSTANTIATED" when compiling your DLL.
+
+This feature is available for the Borland compiler only.
+
+
+
+RCS Ident:
+
+$Id: tooldll.doc,v 7.7 1996/05/31 22:43:30 hart Exp $
+
+######################################################################
+#  Copyright (c) 1989-1999 Rogue Wave Software, Inc.  All Rights Reserved.
+#
+#  This computer software is owned by Rogue Wave Software, Inc. and is
+#  protected by U.S. copyright laws and other laws and by international
+#  treaties.  This computer software is furnished by Rogue Wave Software,
+#  Inc. pursuant to a written license agreement and may be used, copied,
+#  transmitted, and stored only in accordance with the terms of such
+#  license and with the inclusion of the above copyright notice.  This
+#  computer software or any other copies thereof may not be provided or
+#  otherwise made available to any other person.
+#
+#  U.S. Government Restricted Rights.  This computer software is provided
+#  with Restricted Rights.  Use, duplication, or disclosure by the
+#  Government is subject to restrictions as set forth in subparagraph (c)
+#  (1) (ii) of The Rights in Technical Data and Computer Software clause
+#  at DFARS 252.227-7013 or subparagraphs (c) (1) and (2) of the
+#  Commercial Computer Software – Restricted Rights at 48 CFR 52.227-19,
+#  as applicable.  Manufacturer is Rogue Wave Software, Inc., 5500
+#  Flatiron Parkway, Boulder, Colorado 80301 USA.
+#
+#==========================================================================
+

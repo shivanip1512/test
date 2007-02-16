@@ -1,0 +1,2135 @@
+
+                    R O G U E   W A V E
+     T H R E A D S . H + +    C L A S S   L I B R A R Y
+
+           Rogue Wave Threads.h++: Version 1.4.0
+
+                                                             October 1999
+
+#  Copyright (c) 1996-1999 Rogue Wave Software, Inc.  All Rights Reserved.
+#
+#  This computer software is owned by Rogue Wave Software, Inc. and is
+#  protected by U.S. copyright laws and other laws and by international
+#  treaties.  This computer software is furnished by Rogue Wave Software,
+#  Inc. pursuant to a written license agreement and may be used, copied,
+#  transmitted, and stored only in accordance with the terms of such
+#  license and with the inclusion of the above copyright notice.  This
+#  computer software or any other copies thereof may not be provided or
+#  otherwise made available to any other person.
+#
+#  U.S. Government Restricted Rights.  This computer software is provided
+#  with Restricted Rights.  Use, duplication, or disclosure by the
+#  Government is subject to restrictions as set forth in subparagraph (c)
+#  (1) (ii) of The Rights in Technical Data and Computer Software clause
+#  at DFARS 252.227-7013 or subparagraphs (c) (1) and (2) of the
+#  Commercial Computer Software – Restricted Rights at 48 CFR 52.227-19,
+#  as applicable.  Manufacturer is Rogue Wave Software, Inc., 5500
+#  Flatiron Parkway, Boulder, Colorado 80301 USA.
+#
+#==========================================================================
+
+=========================================================================
+Contents:
+-------------------------------------------------------------------------
+
+  0.  Change log - What's new this release
+  1.  General comments
+  2.  Notes for AIX users
+  3.  Notes for HP-UX users
+    a.  Notes for C-Front based (CC) users
+    b.  Notes for Ansi C++ (aCC) users
+  4.  Notes for Solaris users
+  5.  Notes for Windows users 
+    a. Notes for Microsoft Visual C++ users
+    b. Notes for Borland C++ users
+  6.  Notes for IRIX users
+  7.  Notes for DEC OS users
+  8.  Notes for Linux users
+
+====================================================
+Chapter 0. Change Log - What's new this release
+----------------------------------------------------
+
+----------------------------------------------------
+1.3.0 -> 1.4.0
+----------------------------------------------------
+
+   Threads 1.3.0 is a minor release of the product
+   that adds support for Linux.
+
+   Certification and support for the following operating systems 
+   has been added:
+
+     Linux 2.2.5
+
+
+   Certification and support for the following compilers
+   has been added:
+
+     GCC/egcs g++ 1.1.2
+ 
+   Certification and support for the following thread APIs 
+   has been added:
+  
+     POSIX 1003.1c Thread API (under Linux 2.2.5)
+
+
+   The complete support matrix for this release is:
+
+      DEC OSF/1 (Digital Unix) v4.0d
+         DEC CXX C++ Compiler v6.1
+            Tools.h++ v7.1.0 
+               No standard library
+               DEC standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c Thread API
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.18 
+            Tools.h++ v7.1.0 
+               Rogue Wave standard library v1.3.0 (always)
+               HP DCE Thread API 
+         HP C++ Compiler 10.36
+            Tools.h++ v7.1.0 
+               No standard library (always)
+               HP DCE Thread API 
+      HPUX v11.00
+         HP ANSI C++ Compiler A.03.10 (32 & 64-bit)
+            Tools.h++ v7.1.0 
+               Rogue Wave standard library v1.3.0 (always)
+               POSIX 1003.1c Thread API (32 & 64-bit)
+               HP DCE Thread API (32-bit only)
+      IBM AIX v4.3.2 
+         IBM xlC C++ Compiler v3.6.6 (32 and 64 bit)
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c (Draft 10) Thread API
+      Linux 2.2.5 [NEW]
+         GCC/egcs g++ 1.1.2 [NEW]
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c (Draft 10) Thread API
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.4, Update Pack 1
+            Tools.h++ v7.1.0 
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #3
+            Tools.h++ v7.1.0 
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.3.0 
+      Microsoft Windows 95
+         Borland C++ Compiler v5.4, Update Pack 1
+            Tools.h++ v7.1.0 
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #3
+            Tools.h++ v7.1.0 
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.3.0 
+      SGI IRIX64 v6.5
+         SGI C++ Compiler v7.2.1 (using -n32 and -64)
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0 patch #104631-07
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v5.0 patch #107311-02
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v7
+         SunPro C++ Compiler v5.0 patch #107311-02
+               -compat=4 or -compat=5 modes
+            Tools.h++ v7.1.0 
+               No standard library
+               Sun standard library
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+
+
+
+----------------------------------------------------
+1.2.4 -> 1.3.0
+----------------------------------------------------
+
+   Threads 1.3.0 is a minor release of the product.
+   It adds a new class (RWThreadPool), support for 
+   recent versions of several compilers, and fixes
+   for some previous bugs.
+
+   The RWThreadPool class is a high-performance
+   alternative for users who don't need all the
+   functionality of RWServerPool.  Consult the
+   Threads.h++ User Guide and Class Reference for 
+   more information.
+
+   At this time, Rogue Wave is only able to provide 
+   partial support for some of our products on Sun 
+   WorkShop 5.0 because we have encountered a number 
+   of issues with this compiler that we cannot work 
+   around. Sun and Rogue Wave are now working 
+   together to resolve these issues as fast as 
+   possible. Once they are resolved, we will do our 
+   best to promptly deliver full support for our 
+   products on Sun WorkShop 5.0.  See "Notes for 
+   Solaris users" for full details.
+
+   For now, you will need to obtain Sun patch #107311-02 
+   from Sun in order to get support for Threads.h++ on 
+   Sun WorkShop 5.0.
+
+   Certification and support for the following compilers
+   has been added:
+
+     Borland C++ Compiler 5.4 (Update Pack 1)
+     IBM xlC C++ Compiler v3.6.6 (under AIX 4.3)
+     Microsoft Visual C++ Compiler v6.0 (12.00) (Service Pack #3)
+     SunPro C++ Compiler v5.0 (patch #107311-02)
+     SunPro C++ Compiler v5.0 (-compat=4 builds)
+
+   Certification and support for the following thread APIs 
+   has been added:
+  
+     POSIX 1003.1c Thread API (under Sun Solaris v7)
+
+   
+   Certification and/or support for the following compilers
+   and/or operating systems has been dropped.  Their use with 
+   Threads.h++ v1.3.0 is deprecated:
+
+     Borland C++ Compiler 5.3
+     HP aCC C++ Compiler vA.01.15 (under HP-UX 10.20)
+     IBM AIX v4.2
+     IBM xlC C++ Compiler v3.6.4 (under AIX 4.3)
+     Microsoft Visual C++ Compiler v6.0 (12.00) (Service Pack #2)
+     Sunpro C++ Compiler v5.0 (under Sun Solaris 2.6)
+     Sunpro C++ Compiler v4.2 (under Sun Solaris 7)
+
+
+
+   The complete support matrix for this release is:
+
+      DEC OSF/1 (Digital Unix) v4.0d
+         DEC CXX C++ Compiler v6.1
+            Tools.h++ v7.1.0 
+               No standard library
+               DEC standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c Thread API
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.18 
+            Tools.h++ v7.1.0 
+               Rogue Wave standard library v1.3.0 (always)
+               HP DCE Thread API 
+         HP C++ Compiler 10.36
+            Tools.h++ v7.1.0 
+               No standard library (always)
+               HP DCE Thread API 
+      HPUX v11.00
+         HP ANSI C++ Compiler A.03.10 (32 & 64-bit)
+            Tools.h++ v7.1.0 
+               Rogue Wave standard library v1.3.0 (always)
+               POSIX 1003.1c Thread API (32 & 64-bit)
+               HP DCE Thread API (32-bit only)
+      IBM AIX v4.3.2 
+         IBM xlC C++ Compiler v3.6.6 (32 and 64 bit) [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c (Draft 10) Thread API
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.4, Update Pack 1 [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #3 [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.3.0 
+      Microsoft Windows 95
+         Borland C++ Compiler v5.4, Update Pack 1 [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #3 [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.3.0 
+      SGI IRIX64 v6.5
+         SGI C++ Compiler v7.2.1 (using -n32 and -64)
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0 patch #104631-07
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v5.0 patch #107311-02 [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Rogue Wave standard library v1.3.0 
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v7
+         SunPro C++ Compiler v5.0 patch #107311-02 [NEW]
+               -compat=4 or -compat=5 modes [NEW]
+            Tools.h++ v7.1.0 
+               No standard library
+               Sun standard library
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+
+
+ o SunPro C++ 5.0 users, please see "Chapter 4. Notes for 
+   Solaris users" for additional important information.
+
+
+
+----------------------------------------------------
+1.2.3 -> 1.2.4
+----------------------------------------------------
+
+   Threads 1.2.4 is a maintenance version that adds
+   support for the SunPro C++ 5.0 compiler to the
+   certification matrix.  All the platforms of
+   Threads 1.2.3 are supported on 1.2.4 but only 
+   the SunPro compilers have been certified for
+   this release.
+
+   At this time, Rogue Wave is only able to provide 
+   partial support for some of our products on Sun 
+   WorkShop 5.0 because we have encountered a number 
+   of issues with this compiler that we cannot work 
+   around. Sun and Rogue Wave are now working 
+   together to resolve these issues as fast as 
+   possible. Once they are resolved, we will do our 
+   best to promptly deliver full support for our 
+   products on Sun WorkShop 5.0.
+
+   For now, you will need to obtain Sun patch 
+   #107311-02 from Sun in order to get support 
+   for Threads.h++ on Sun WorkShop 5.0.
+
+   Certification and support for the following compiler has
+   been added:
+
+      Sun Solaris v2.7
+         SunPro C++ Compiler v5.0
+
+ 
+   Certification and/or support for the following thread API has been 
+   deprecated and will be eliminated:
+
+         Sun Solaris v7 POSIX Threads API 
+
+
+   The complete support matrix for this release is:
+
+      DEC OSF/1 (Digital Unix) v4.0d
+         DEC CXX C++ Compiler v6.1
+            Tools.h++ v7.0.B 
+               No standard library
+               DEC standard library
+               Rogue Wave standard library v1.2.6 
+               POSIX 1003.1c Thread API
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.18 
+            Tools.h++ v7.0.B 
+               Rogue Wave standard library v1.2.6 (always)
+               HP DCE Thread API 
+         HP C++ Compiler v10.36
+            Tools.h++ v7.0.B 
+               No standard library (always)
+               HP DCE Thread API 
+      HPUX v11.00
+         HP ANSI C++ Compiler A.03.10 (32 & 64-bit)
+            Tools.h++ v7.0.B 
+               Rogue Wave standard library v1.2.6 (always)
+               POSIX 1003.1c Thread API
+               HP DCE Thread API (32-bit only)
+      IBM AIX v4.2
+         IBM xlC CSet++ C++ Compiler v3.1.4
+            Tools.h++ v7.0.B 
+               No standard library
+               Rogue Wave standard library v1.2.6
+               POSIX 1003.1c (Draft 7) Thread API
+               IBM DCE Thread API
+      IBM AIX v4.3.2 
+         IBM xlC CSet++ C++ Compiler v3.6.4 
+            Tools.h++ v7.0.B 
+               No standard library
+               Rogue Wave standard library v1.2.6 
+               POSIX 1003.1c (Draft 10) Thread API
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.3 
+            Tools.h++ v7.0.B 
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #2 
+            Tools.h++ v7.0.B 
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.6 
+      Microsoft Windows 95
+         Borland C++ Compiler v5.3
+            Tools.h++ v7.0.B 
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #2 
+            Tools.h++ v7.0.B 
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.6 
+      SGI IRIX64 v6.5
+         SGI C++ Compiler v7.2.1 (using -n32 and -64)
+            Tools.h++ v7.0.B 
+               No standard library
+               Rogue Wave standard library v1.2.6 
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0p7
+            Tools.h++ v7.0.B 
+               No standard library
+               Rogue Wave standard library v1.2.6 
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v7
+         SunPro C++ Compiler v4.2.0p7
+            Tools.h++ v7.0.B 
+               No standard library
+               Rogue Wave standard library v1.2.6 
+               Solaris Thread API
+      Sun Solaris v7
+         SunPro C++ Compiler v5.0 patch #107311-02 [NEW]
+            Tools.h++ v7.0.B 
+               No standard library
+               Sun standard library
+               Solaris Thread API
+
+
+ o SunPro C++ 5.0 users, please see "Chapter 4. Notes for 
+   Solaris users" for additional important information.
+
+
+
+----------------------------------------------------
+1.2.2 -> 1.2.3
+----------------------------------------------------
+
+   Certification and support for the following operating systems 
+   has been added:
+
+         IBM AIX 4.3.2
+        
+   Certification and support for the following compilers has 
+   been added:
+
+         HP ANSI C++ Compiler A.01.18, HPUX v10.20  
+         Microsoft Visual C++ 6.0 Service Pack #2
+
+   Certification and support for the following compiler has 
+   been suspended (see "Notes for Borland C++ users"):
+
+         Borland C++ Builder 3.0   
+
+   Certification and/or support for the following operating systems 
+   has been deprecated and will be eliminated:
+
+         SGI IRIX64 OS v6.2
+         SUN Solaris 2.5.1
+
+   Certification and/or support for the following compilers has been 
+   deprecated and will be eliminated:
+
+         DEC CXX C++ Compiler v6.1 w/-oldcxx for 5.7 compatibility
+         Microsoft Visual C++ 6.0 Service Pack #1
+ 
+   Certification and/or support for the following thread API has been 
+   deprecated and will be eliminated:
+
+         IBM AIX 4.3.2 DCE Threads API
+
+   The complete certification matrix for this release is:
+
+      DEC OSF/1 (Digital Unix) v4.0d
+         DEC CXX C++ Compiler v6.1
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               DEC standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+               POSIX 1003.1c Thread API
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.18 [NEW]
+            Tools.h++ v7.0.B [NEW]
+               Rogue Wave standard library v1.2.6 [NEW] (always)
+               HP DCE Thread API 
+         HP C++ Compiler v10.36
+            Tools.h++ v7.0.B [NEW]
+               No standard library (always)
+               HP DCE Thread API 
+      HPUX v11.00
+         HP ANSI C++ Compiler A.03.10 (32 & 64-bit)
+            Tools.h++ v7.0.B [NEW]
+               Rogue Wave standard library v1.2.6 [NEW] (always)
+               POSIX 1003.1c Thread API
+               HP DCE Thread API (32-bit only)
+      IBM AIX v4.2
+         IBM xlC CSet++ C++ Compiler v3.1.4
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+               POSIX 1003.1c (Draft 7) Thread API
+               IBM DCE Thread API
+      IBM AIX v4.3.2 [NEW]
+         IBM xlC CSet++ C++ Compiler v3.6.4 [NEW]
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+               POSIX 1003.1c (Draft 10) Thread API
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.3 
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #2 [NEW]
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+      Microsoft Windows 95
+         Borland C++ Compiler v5.3
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #2 [NEW]
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+      SGI IRIX64 v6.5
+         SGI C++ Compiler v7.2.1 (using -n32 and -64)
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0p7
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.7
+         SunPro C++ Compiler v4.2.0p7
+            Tools.h++ v7.0.B [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.6 [NEW]
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+
+ o Due to internal compiler errors that we have been unable
+   to work around at this time, SunPro C++ 5.0 is not supported.
+
+ o Due to internal compiler errors that we have been unable 
+   to work around at this time, Borland C++ Builder 4.0 
+   is not supported. In addition, due to  Rogue Wave 
+   cross-product constraints Borland C++ Builder 3.0 is 
+   also not supported.  For Borland C++ Builder 3.0
+   support use the previous CD release of February 1999.
+
+ o RWServerPool has been changed so that it enqueues runnables
+   as described in the User Guide, Section 7.4, "Enqueuing
+   Runnables on a Server."
+
+ o Under certain circumstances, calls to pthread_attr_init
+   and pthread_attr_create were not matched with calls to
+   pthread_attr_destroy and pthread_attr_delete.  This could
+   cause memory leaks.  This has been corrected in this
+   release. 
+
+
+----------------------------------------------------
+1.2.1 -> 1.2.2
+----------------------------------------------------
+
+   Certification and support for the following operating systems 
+   has been added:
+
+         Sun Solaris 2.7
+        
+   Certification and support for the following compilers has 
+   been added:
+
+         IBM xlC CSet++ C++ Compiler v3.6.4 (under AIX v4.3)
+         DEC CXX C++ Compiler v6.1 (under OSF1 v4.0d)
+         Microsoft Visual C++ 6.0 Service Pack #1
+
+   Certification and/or support for the following operating systems 
+   has been deprecated and will be eliminated:
+
+         SGI IRIX64 OS v6.2
+     SUN Solaris 2.5.1
+
+   Certification and/or support for the following compilers has been 
+   deprecated and will be eliminated:
+
+         DEC CXX C++ Compiler v5.7
+         HP CC C++ Compiler v10.30
+
+   The complete certification matrix for this release is:
+
+      DEC OSF/1 (Digital Unix) v4.0d
+         DEC CXX C++ Compiler v6.1 w/-oldcxx for 5.7 compatibility [NEW]
+            Tools.h++ v7.0.A [NEW]
+               No standard library (always)
+               POSIX 1003.1c Thread API
+         DEC CXX C++ Compiler v6.1 [NEW]
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               DEC standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               POSIX 1003.1c Thread API
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.15
+            Tools.h++ v7.0.A [NEW]
+               Rogue Wave standard library v1.2.5 [NEW] (always)
+               HP DCE Thread API 
+         HP C++ Compiler v10.36
+            Tools.h++ v7.0.A
+               No standard library (always)
+               HP DCE Thread API 
+      HPUX v11.00
+         HP ANSI C++ Compiler A.03.10 (32 & 64-bit)
+            Tools.h++ v7.0.A [NEW]
+               Rogue Wave standard library v1.2.5 [NEW] (always)
+               POSIX 1003.1c Thread API
+               HP DCE Thread API (32-bit only)
+      IBM AIX v4.2
+         IBM xlC CSet++ C++ Compiler v3.1.4
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               POSIX 1003.1c (Draft 7) Thread API
+               IBM DCE Thread API
+      IBM AIX v4.3 [NEW]
+         IBM xlC CSet++ C++ Compiler v3.6.4 [NEW]
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               POSIX 1003.1c (Draft 10) Thread API
+               IBM DCE Thread API
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.3 
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #1 [NEW]
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+      Microsoft Windows 95
+         Borland C++ Compiler v5.3
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Borland standard library
+         Microsoft Visual C++ Compiler v6.0 (12.00) Service Pack #1 [NEW]
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32 only)
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               POSIX 1003.1c Thread API
+      SGI IRIX64 v6.5 [NEW]
+         SGI C++ Compiler v7.2.1 (using -n32 and -64) [NEW]
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0p7
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.7 [NEW]
+         SunPro C++ Compiler v4.2.0p7
+            Tools.h++ v7.0.A [NEW]
+               No standard library
+               Rogue Wave standard library v1.2.5 [NEW]
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+
+
+----------------------------------------------------
+1.2.0 -> 1.2.1 (Patch Release)
+----------------------------------------------------
+
+o This release adds member functions that were missing from the
+  RWPCPtrBufferBase template class (in prodcons.cc).
+
+o This release fixes a bug in the RWIOUTrap implementation where the 
+  internal RWIOUTrapImp body could be destroyed before all of the
+  registered IOUs had been closed and inserted into the trap's 
+  internal queue.
+  
+----------------------------------------------------
+1.1.3 (w/Patch #1) -> 1.2.0
+----------------------------------------------------
+
+   Certification and support for the following operating systems 
+   has been added:
+
+         IBM AIX v4.3
+         SGI IRIX64 v6.5
+        
+   Certification and support for the following compilers has 
+   been added:
+
+         HP CC C++ Compiler v10.36 (under HP-UX 10.20)
+         HP aCC C++ Compiler v01.15 (under HP-UX 10.20)
+         HP aCC C++ Compiler v03.10 (under HP-UX 11.00)
+         IBM xlC CSet++ C++ Compiler v3.6.0 (under AIX v4.3)
+         DEC CXX C++ Compiler v6.0 using -oldcxx (under OSF1 v4.0)
+         SGI MIPSPro C++ Compiler v7.2.1 (under IRIX64 v6.5)
+         SUN WorkShop C++ Compiler v4.2.0p7
+
+   Certification and support for the following thread APIs has been added:
+
+         OSF/DCE 1.1 for HP-UX 11.00
+         POSIX 1003.1C (Draft 10) for AIX 4.3
+
+   Certification and/or support for the following operating systems 
+   has been deprecated and will be eliminated:
+
+         SGI IRIX64 OS v6.2
+
+   Certification and/or support for the following compilers has been 
+   deprecated and will be eliminated:
+
+         DEC CXX C++ Compiler v5.7
+         HP CC C++ Compiler v10.30
+         HP aCC C++ Compiler v01.12
+         HP aCC C++ Compiler v03.05
+         Microsoft Visual C++ Compiler v5.0 (11.00)
+         SUN WorkShop C++ Compiler v4.2.0p5
+
+   The complete certification matrix for this release is:
+
+      DEC OSF/1 (Digital Unix) v4.0d
+         DEC CXX C++ Compiler v6.0 w/-oldcxx for 5.7 compatibility [NEW]
+            Tools.h++ v7.0.9
+               No standard library (always)
+               POSIX 1003.1c Thread API
+         DEC CXX C++ Compiler v6.0
+            Tools.h++ v7.0.9
+               No standard library
+               DEC standard library [NEW]
+               Rogue Wave standard library v1.2.4 [NEW]
+               POSIX 1003.1c Thread API
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.15 [NEW]
+            Tools.h++ v7.0.9
+               Rogue Wave standard library v1.2.4 (always)
+               HP DCE Thread API 
+         HP C++ Compiler v10.36 [NEW]
+            Tools.h++ v7.0.9
+               No standard library (always)
+               HP DCE Thread API 
+      HPUX v11.00
+         HP ANSI C++ Compiler A.03.10 (32 & 64-bit) [NEW]
+            Tools.h++ v7.0.9 
+               Rogue Wave standard library v1.2.4 (always)
+               POSIX 1003.1c Thread API
+               HP DCE Thread API (32-bit only) [NEW]
+      IBM AIX v4.2
+         IBM xlC CSet++ C++ Compiler v3.1
+            Tools.h++ v7.0.9
+               No standard library
+               Rogue Wave standard library v1.2.4
+               POSIX 1003.1c (Draft 7) Thread API
+               IBM DCE Thread API
+      IBM AIX v4.3 [NEW]
+         IBM xlC CSet++ C++ Compiler v3.6.0 [NEW]
+            Tools.h++ v7.0.9
+               No standard library
+               Rogue Wave standard library v1.2.4
+               POSIX 1003.1c (Draft 10) Thread API [NEW]
+               IBM DCE Thread API
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.3 
+            Tools.h++ v7.0.9
+               No standard library
+               Borland standard library [NEW]
+         Microsoft Visual C++ Compiler v6.0 (12.00)
+            Tools.h++ v7.0.9
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.4
+      Microsoft Windows 95
+         Borland C++ Compiler v5.3
+            Tools.h++ v7.0.9
+               No standard library
+               Borland standard library [NEW]
+         Microsoft Visual C++ Compiler v6.0 (12.00)
+            Tools.h++ v7.0.9
+               No standard library
+               Microsoft standard library
+               Rogue Wave standard library v1.2.4
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32 only)
+            Tools.h++ v7.0.9
+               No standard library
+               Rogue Wave standard library v1.2.4
+               POSIX 1003.1c Thread API
+      SGI IRIX64 v6.5 [NEW]
+         SGI C++ Compiler v7.2.1 (using -n32 and -64) [NEW]
+            Tools.h++ v7.0.9
+               No standard library
+               Rogue Wave standard library v1.2.4
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.5.1
+         SunPro C++ Compiler v4.2.0p7 [NEW]
+            Tools.h++ v7.0.9
+               No standard library
+               Rogue Wave standard library v1.2.4
+               Solaris Thread API
+               POSIX 1003.1c Thread API 
+               Transarc DCE Thread API
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0p7 [NEW]
+            Tools.h++ v7.0.9
+               No standard library
+               Rogue Wave standard library v1.2.4
+               Solaris Thread API
+               POSIX 1003.1c Thread API
+
+o This release adds new member functions and functionality to the existing 
+  producer-consumer queue and stack classes and adds several new producer-
+  consumer queue and stack classes that can be used to provide guarded 
+  and/or prioritized communication between threads.  The new functionality
+  includes the addition of open/close semantics, callbacks for transitions
+  to the empty, full, open, and closed states, the ability to dynamically
+  adjust the maximum capacity the queue or stack, and the ability to "peek"
+  at the next available entry in the buffer.
+
+o This release uses the functionality provided by one of the new producer-
+  consumer queue classes to add new and improved functionality to the 
+  RWRunnableServer and RWServerPool classes.  These new implementations allow
+  the user to limit and change the capacity of the server input queues, and
+  also allow the user to prioritize the processing of enqueued runnables.
+  The new implementation also eliminates some deficiencies that existing in 
+  earlier implementations where there existed the possibility that a server 
+  would maintain "dangling" references to runnables that had been enqueued 
+  but never processed as a result of server shutdown or cancellation.
+
+o The changes described above have been implemented so as to maintain 
+  source-code compatibility with normal client code.  Users who have 
+  directly sub-classed the earlier implementations of these classes may 
+  need to make changes in their implementations.
+
+o Two new examples have been added; 'attrtest' and 'balance'.  
+
+  The 'attrtest' example attempts to exercise all of the thread attributes 
+  that are supported in an environment.  It demonstrates how the attribute 
+  API can be used to test, query, and set the various thread attributes, 
+  and can be used as a simple tool for exploring the capabilities provided 
+  by each supported environment. (Note: the availability and range of values 
+  supported for each attribute may vary with the user privileges of the 
+  parent process!)
+
+  The 'balance' example illustrates how the new empty/full callback 
+  capability of the producer-consumer queue class can be used to implement
+  a simple load-balancing strategy where threads are created and destroyed 
+  as required to accomodate variations in rate that data is inserted into
+  a producer-consumer queue.
+
+----------------------------------------------------
+1.1.2 -> 1.1.3 Patch #1
+----------------------------------------------------
+
+   Certification and support for the following operating 
+   systems and/or compilers has been added:
+
+         DEC OSF/1 OS v4.0"d" w/DEC CXX C++ Compiler v6.0
+         Microsoft Visual C++ Compiler v6.0 (12.00)
+        
+   The complete certification matrix for this release is:
+
+      IBM AIX v4.2
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3
+               POSIX 1003.1c Thread API
+               IBM DCE Thread API [NEW]
+      SGI IRIX64 v6.2 
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3 
+               POSIX 1003.1c Thread API
+         SGI C++ Compiler v7.1 (using -64) 
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3 
+               POSIX 1003.1c Thread API
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3 
+               POSIX 1003.1c Thread API
+         SGI C++ Compiler v7.1 (using -64) 
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.3
+               POSIX 1003.1c Thread API
+      DEC OSF/1 (Digital Unix) v4.0"d"
+         DEC CXX C++ Compiler v5.7 [NEW]
+            Tools.h++ v7.0.8
+               No standard library (always)
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.5.1
+         SunPro C++ Compiler v4.2.0 (patch 5)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3
+               Solaris Thread API
+               POSIX 1003.1c Thread API [NEW]
+               Transarc DCE Thread API [NEW]
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0 (patch 5)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3
+               Solaris Thread API
+               POSIX 1003.1c Thread API [NEW]
+               Transarc DCE Thread API [NEW]
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.12 [NEW]
+            Tools.h++ v7.0.8 
+               Rogue Wave standard library v1.2.3 (always)
+               HP DCE Thread API [NEW]
+         HP C++ Compiler v10.30 [NEW]
+            Tools.h++ v7.0.8
+               No standard library (always)
+               HP DCE Thread API [NEW]
+      HPUX v11.00 [NEW]  
+         HP ANSI C++ Compiler A.03.05 [NEW]
+            Tools.h++ v7.0.8 
+               Rogue Wave standard library v1.2.3 (always)
+               POSIX 1003.1c Thread API [NEW]
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.3 [NEW]
+            Tools.h++ v7.0.8
+               No standard library (always)
+         Microsoft Visual C++ Compiler v5.0sp3 (11.00)
+            Tools.h++ v7.0.8
+               No standard library
+               MS/Plauger standard library (MSVC v5.0)
+               Rogue Wave standard library v1.2.3    
+         Microsoft Visual C++ Compiler v6.0 (12.00)
+            Tools.h++ v7.0.8 (w/latest patch)
+               No standard library
+               MS/Plauger standard library (MSVC v5.0)
+               Rogue Wave standard library v1.2.3 (w/latest patch)    
+      Microsoft Windows 95
+         Borland C++ Compiler v5.3 [NEW]
+            Tools.h++ v7.0.8
+               No standard library
+         Microsoft Visual C++ Compiler v5.0sp3 (11.00)
+            Tools.h++ v7.0.8
+               No standard library
+               MS/Plauger standard library (MSVC v5.0)
+               Rogue Wave standard library v1.2.3    
+         Microsoft Visual C++ Compiler v6.0 (12.00)
+            Tools.h++ v7.0.8 (w/latest patch)
+               No standard library
+               MS/Plauger standard library (MSVC v5.0)
+               Rogue Wave standard library v1.2.3 (w/latest patch)    
+
+----------------------------------------------------
+1.1.2 -> 1.1.3 
+----------------------------------------------------
+
+   Certification and support for the following operating 
+   systems and/or compilers has been added:
+
+         Borland C++ Compiler v5.3 for Windows NT/95
+         HP HPUX OS v10.20 w/HP C++ Compiler v01.12
+         HP HPUX OS v10.20 w/HP C++ Compiler v10.30
+         HP HPUX OS v11.30 w/HP C++ Compiler v03.05 (32 & 64 bit)
+         DEC OSF/1 OS v4.0 w/DEC CXX C++ Compiler v5.7
+        
+   Certification and/or support for the following operating systems 
+   and/or compilers has been deprecated and will be eliminated:
+
+         Borland C++ Compiler v5.02 for Window NT/95
+         HP HPUX OS v10.10
+         HP C++ Compiler v10.22
+         HP aCC Compiler v01.01
+         DEC CXX C++ Compiler v5.5
+         IBM OS/2 and IBM Visual C++ compiler
+  
+   The complete certification matrix for this release is:
+
+      IBM AIX v4.2
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3
+               POSIX 1003.1c Thread API
+               IBM DCE Thread API [NEW]
+      SGI IRIX64 v6.2 
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3 
+               POSIX 1003.1c Thread API
+         SGI C++ Compiler v7.1 (using -64) 
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3 
+               POSIX 1003.1c Thread API
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3 
+               POSIX 1003.1c Thread API
+         SGI C++ Compiler v7.1 (using -64) 
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.3
+               POSIX 1003.1c Thread API
+      DEC OSF/1 (Digital Unix) v4.0"d"
+         DEC CXX C++ Compiler v5.7 [NEW]
+            Tools.h++ v7.0.8
+               No standard library (always)
+               POSIX 1003.1c Thread API
+      Sun Solaris v2.5.1
+         SunPro C++ Compiler v4.2.0 (patch 5)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3
+               Solaris Thread API
+               POSIX 1003.1c Thread API [NEW]
+               Transarc DCE Thread API [NEW]
+      Sun Solaris v2.6
+         SunPro C++ Compiler v4.2.0 (patch 5)
+            Tools.h++ v7.0.8
+               No standard library
+               Rogue Wave standard library v1.2.3
+               Solaris Thread API
+               POSIX 1003.1c Thread API [NEW]
+               Transarc DCE Thread API [NEW]
+      HPUX v10.20  
+         HP ANSI C++ Compiler A.01.12 [NEW]
+            Tools.h++ v7.0.8 
+               Rogue Wave standard library v1.2.3 (always)
+               HP DCE Thread API [NEW]
+         HP C++ Compiler v10.30 [NEW]
+            Tools.h++ v7.0.8
+               No standard library (always)
+               HP DCE Thread API [NEW]
+      HPUX v11.00 [NEW]  
+         HP ANSI C++ Compiler A.03.05 [NEW]
+            Tools.h++ v7.0.8 
+               Rogue Wave standard library v1.2.3 (always)
+               POSIX 1003.1c Thread API [NEW]
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.3 [NEW]
+            Tools.h++ v7.0.8
+               No standard library (always)
+         Microsoft Visual C++ Compiler v5.0sp3 (11.00)
+            Tools.h++ v7.0.8
+               No standard library
+               MS/Plauger standard library (MSVC v5.0)
+               Rogue Wave standard library v1.2.3    
+      Microsoft Windows 95
+         Borland C++ Compiler v5.3 [NEW]
+            Tools.h++ v7.0.8
+               No standard library
+         Microsoft Visual C++ Compiler v5.0sp3 (11.00)
+            Tools.h++ v7.0.8
+               No standard library
+               MS/Plauger standard library (MSVC v5.0)
+               Rogue Wave standard library v1.2.3    
+
+----------------------------------------------------
+1.1.2 -> 1.1.2 Patch for MSVC 5.0 Service Patch #3
+----------------------------------------------------
+
+   The certification matrix for this patch is:
+
+      Microsoft Windows NT v4.0
+         Microsoft Visual C++ Compiler v5.0 (SP#3 only) 
+            Tools.h++ v7.0.7 (Patched)
+               No standard library
+               Rogue Wave Standard Library 1.2.2 (Patched)
+               Microsoft Standard Library 
+      Microsoft Windows 95
+         Microsoft Visual C++ Compiler v5.0 (SP#3 only)
+            Tools.h++ v7.0.7 (Patched)
+               No standard library
+               Rogue Wave Standard Library 1.2.2 (Patched)
+               Microsoft Standard Library 
+
+  o  This patch upgrades Threads.h++ version 1.1.2 to work with MSVC 5.0
+     compilers patched with Service Patch #3.  
+
+  o  Threads.h++ 1.1.2 with this patch applied is not certified for
+     use with any compiler other than MSVC 5.0 SP#3.  
+
+  o  This patch is certified only after Rogue Wave patches for MSVC 5.0 SP#3 
+     have been applied to the SPM, the Rogue Wave Standard Library 1.2.2,
+     and Tools.h++ 7.0.7.   
+
+  o  This patch extends Threads.h++ support for MSVC 5.0 to include builds 
+     that use the Rogue Wave and Microsoft C++ Standard Library implementations. 
+-----------------------------------------------
+1.1.2 -> 1.1.2 Solaris 2.6 - SunPro4.2-5p Only 
+-----------------------------------------------
+
+   The updated certification matrix for this patch is:
+
+      Sun Solaris v2.6 
+         SunPro C++ Compiler v4.2p5
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2
+
+
+ o This patch upgrades Threads.h++ to support Solaris 2.6,
+   with the SunPro 4.2p5 compiler.  This patch is only certified
+   for this platform.  
+
+ o This patch also fixes a compiler error when building the activobj.cpp
+   and prodcons.cpp examples by removing inlining hints for the global
+   template "make" functions for the RWThreadFunction, RWRunnableFunction, 
+   RWThreadIOUFunction and RWRunnableIOUFunction classes. 
+
+   The preprocessor macro, RW_THR_CANT_INLINE_TEMPLATE_FUNCTIONS, is
+   defined for the Solaris 2.6.
+
+------------------------------
+1.1.1 -> 1.1.2 
+------------------------------
+
+   The updated certification matrix for this release is:
+
+      IBM AIX v4.1 
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2
+      IBM AIX v4.2
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2
+      SGI IRIX64 v6.2 
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2 
+         SGI C++ Compiler v7.1 (using -64) 
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2 
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2 [NEW]
+         SGI C++ Compiler v7.1 (using -64) [NEW]
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2
+      IBM OS/2 Warp v3.0
+         IBM Visual Age C++ Compiler v3.0
+            Tools.h++ v7.0.7
+               No standard library
+      DEC OSF/1 (Digital Unix) v4.0
+         DEC CXX C++ Compiler v5.5
+            Tools.h++ v7.0.7
+               No standard library
+      Sun Solaris v2.5 (and v2.5.1)
+         SunPro C++ Compiler v4.1.0
+            Tools.h++ v7.0.7
+               No standard library
+         SunPro C++ Compiler v4.2.0 [NEW]
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2
+      HPUX v10.20 and later 
+         HP ANSI C++ Compiler A.01.06 [NEW]
+            Tools.h++ v7.0.7 
+               Rogue Wave standard library v1.2.2
+         HP C++ Compiler v10.22
+            Tools.h++ v7.0.7
+               No standard library
+      Microsoft Windows NT v3.51
+         Borland C++ Compiler v5.02 [NEW]
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2    
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.7
+               No standard library
+               Plauger standard library (MSVC v4.2)
+               Rogue Wave standard library v1.2.2    
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.02 [NEW]
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2    
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.7
+               No standard library
+               Plauger standard library (MSVC v4.2)
+               Rogue Wave standard library v1.2.2    
+         Microsoft Visual C++ Compiler v5.0 (11.00)
+            Tools.h++ v7.0.7
+               No standard library
+      Microsoft Windows 95
+         Borland C++ Compiler v5.02 [NEW]
+            Tools.h++ v7.0.7
+               No standard library
+               Rogue Wave standard library v1.2.2    
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.7
+               No standard library
+               Plauger standard library (MSVC v4.2) [See notes]
+               Rogue Wave standard library v1.2.2 [See notes]
+         Microsoft Visual C++ Compiler v5.0 (11.00)
+            Tools.h++ v7.0.7
+               No standard library
+
+ o Threads.h++ has been upgraded to support the Borland 5.02, MSVC 5.0,
+   HP Ansi C++ A.01.06 and SunPro 4.2 compilers.
+
+ o True inline destructors in RWPointer and RWOnlyPointer have been
+   converted to out-of-line inline member functions to facilitate 
+   instantiation by the Sunpro 4.2 compiler.  Some other platforms,
+   however, require an inline statement in the class decaration of
+   a template class for virtual destructors.  For these platforms we
+   use a preprocessor macro to supply the needed keyword.
+
+ o Some defects were corrected:
+
+   - Users calling the suspend() method from a RWThreadSelf handle
+     experienced deadlock.  This problem has been fixed.  Unfortunately,
+     the fix requires users to recompile their code if they use either 
+     the RWThread or RWThreadSelf suspend call.  Otherwise, errors will
+     occur at link-time.
+
+   - On OS2, Threads.h++ was generating debug assertions whenever user
+     code tried to intercept a signal during a blocking lock acquisition
+     attempt. This problem has been fixed for all indefinitely blocking
+     calls.  
+
+   - The RW_THR_HAS_PROCESS_SCOPE_PRIORITY and RW_THR_HAS_SYSTEM_SCOPE_PRIORITY
+     macros were both being set for all POSIX platforms.  All currently
+     supported POSIX thread implementations only support either process or
+     system scoped threads.  These macro settings have been corrected.
+
+   - RWServerPool and RWRunnableServer were storing a handle to the last
+     executed runnable while blocking to wait for a new runnable to be 
+     enqueued.  The result of this was that the runnables were not getting
+     destroyed when users expected them to be.  This has been fixed.  Now
+     RWServerPool and RWRunnableServer release their handle to the most
+     recently executed runnable before attempting to dequeue another to
+     execute.
+
+   - RWServerPool was failing to reset its thread count if the server pool
+     was cancelled.  The result was that a cancelled RWServerPool would
+     appear to restart, but would not create any runnable servers or 
+     service any enqueued runnables.  This has been fixed.
+
+   - Threads.h++ was using an outdated macro to identify the machine 
+     archetecture for SunPro compilers.  Threads.h++ is only supported
+     on the sparc versions of the SunPro compiler.  We were using the
+     deprecated "sparc" macro instead of the "__sparc" macro to verify
+     this.  Some users encountered errors when building on a SunPro
+     compiler using the +p (do not allow anachronisms) flag.  This has
+     been fixed.
+
+   - 
+      
+
+
+------------------------------
+1.1.0 -> 1.1.1
+------------------------------
+Date     : April 28, 1997 
+------------------------------
+
+ o In the 1.1.1 release the 1.1.0 release was modified to support 
+   installation and building using the product build model required
+   by Rogue Wave's Software Parts Manager (SPM).  The product was 
+   certified with the new SPM versions of Rogue Wave's Standard 
+   Library and Tools.h++ products.  These changes primarily affect
+   the makefile customization script and makefiles.
+
+ o The Threads.h++ support matrix is described below:
+
+   Certification and support for the following operating 
+   systems and/or compilers has been added:
+
+         IBM AIX v4.2 w/IBM xlC C++ Compiler v3.1
+         SGI IRIX v6.2 w/SGI C++ Compiler v7.1 using -64
+         SGI IRIX64 v6.2 w/SGI C++ Compiler v7.1 using -n32 and -64
+
+   There were no operating systems for which certification and/or 
+   support has been deprecated and or was eliminated.
+  
+   The updated certification matrix for this release is:
+
+      IBM AIX v4.1 
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.6
+               No standard library
+               Rogue Wave standard library v1.2.1
+      IBM AIX v4.2 [NEW]
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.6
+               No standard library
+               Rogue Wave standard library v1.2.1
+      HP HP-UX v10.20
+         HP C++ Compiler v10.22
+            Tools.h++ v7.0.6
+               No standard library
+      SGI IRIX64 v6.2 [NEW]
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.6
+               No standard library
+               Rogue Wave standard library v1.2.1 
+         SGI C++ Compiler v7.1 (using -64) 
+            Tools.h++ v7.0.6
+               No standard library
+               Rogue Wave standard library v1.2.1 
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.6
+               No standard library
+               Rogue Wave standard library v1.2.1 [NEW]
+         SGI C++ Compiler v7.1 (using -64) [NEW]
+            Tools.h++ v7.0.6
+               No standard library
+               Rogue Wave standard library v1.2.1
+      IBM OS/2 Warp v3.0
+         IBM Visual Age C++ Compiler v3.0
+            Tools.h++ v7.0.6
+               No standard library
+      DEC OSF/1 (Digital Unix) v4.0
+         DEC CXX C++ Compiler v5.5
+            Tools.h++ v7.0.6
+               No standard library
+      Sun Solaris v2.5 (and v2.5.1)
+         SunPro C++ Compiler v4.1.0
+            Tools.h++ v7.0.6
+               No standard library
+      Microsoft Windows NT v3.51
+         Borland C++ Compiler v5.01
+            Tools.h++ v7.0.6
+               No standard library
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.6
+               No standard library
+               Plauger standard library (MSVC v4.2)
+               Rogue Wave standard library v1.2.1    
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.01
+            Tools.h++ v7.0.6
+               No standard library
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.6
+               No standard library
+               Plauger standard library (MSVC v4.2)
+               Rogue Wave standard library v1.2.1    
+      Microsoft Windows 95
+         Borland C++ Compiler v5.01
+            Tools.h++ v7.0.6
+               No standard library
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.6
+               No standard library
+               Plauger standard library (MSVC v4.2) [See notes]
+               Rogue Wave standard library v1.2.1 [See notes]
+
+ o Some minor defects were corrected:
+
+   - Signal 11 errors produced when building examples under 
+     HPUX were eliminated by using the +pth compiler option. 
+     This option causes the HP compiler to use shorter
+     names for template instantiations which seems to have
+     eliminated the Signal 11 errors.
+
+   - Threads.h++ can now be built on SGI IRIX64 v6.2 systems 
+     (R8000 and R10000 based workstations). See the IRIX notes
+     section below for details.
+
+   - In previous versions of Threads.h++, there existed the
+     potential for unexpected exceptions to be produced when 
+     reusing a single RWThreadAttribute instance to create 
+     threads with different contention scopes, inheritance 
+     policies, or other attribute differences.  These exceptions
+     resulted from an internal detection of incompatibilities 
+     between previous attribute settings and a new attribute 
+     setting.  These exceptions have been eliminated; 
+     changing an attribute will automatically reset any other
+     attributes whose values are incompatible with the new
+     attribute setting.  This correction results in behavior
+     that now matches that described within the Threads.h++ 
+     documentation.
+
+   - The 'prodcons' example would sometimes hang during
+     execution when built using the MSVC standard library.
+     This was the result of a bug in the standard library
+     iostream implementation, which was avoided by 
+     eliminating an the unnecessary ios::in attribute
+     passed in an ifstream constructor.
+
+   - When used under Solaris, the RWCondition 'wait' functions
+     (and the RWSemaphore and RWReadersWriteLock 'acquire' 
+     functions which use the RWCondition class internally) would 
+     fail with an RWInternalError exception if a signal was 
+     directed to, and handled by, a thread blocked within these 
+     function calls.  We have corrected this problem by forcing 
+     the thread to reenter the underlying wait if interrupted by 
+     a signal.
+
+   - The RWServerPool class has been fixed to eliminate a
+     deadlock condition that would arise if a runnable executing 
+     within the pool attempted to access the server pool object 
+     while the server was being shutdown, or its pool size was 
+     being reduced.
+
+   - The exception specifications on the RWThreadAttribute class
+     "reset" functions have been corrected to include the 
+     RWTHROperationNotSupported exception.  Attempts to reset an
+     unsupported attribute in previous versions of Threads.h++
+     resulted in a call to unexpected() because this exception
+     was missing from the exception specification.
+
+   - Using the RWRunnableServer and RWServerPool classes produced
+     a signficant memory leak when previous versions of the library 
+     were compiled in the release configuration using the Sunpro 4.1.0 
+     compiler on Solaris platforms.  This leak was apparently caused 
+     by a bug in the compiler where a temporary handle instance was 
+     constructed but never destroyed when the temporary went out of 
+     scope.  The compiler's failure to destroy this temporary handle
+     meant that the reference-counted RWRunnable, RWRunnableServer
+     and RWServerPool instances they referred to would never be 
+     destroyed!  This problem was eliminated by the simple removal of
+     an explicit cast.
+
+o Other changes:
+
+   - Previous versions of Threads.h++ generated a special a 
+     header file, defsol.h, that was used when building under 
+     the Solaris operating system to communicate the operating 
+     system version to the Threads.h++ code. Use of this file 
+     has been eliminated.  
+
+o Some known problems:
+
+   - Threads.h++ cannot yet be built using the Sunpro v4.2 compiler.
+     This compiler randomly fails to generate object code for 
+     instantiated template class functions, which results in errors
+     while linking shared versions of the library or the example 
+     programs.  We hope to develop a workaround for this problem in 
+     a later release.
+ 
+------------------------------
+1.0.1 -> 1.1.0
+------------------------------
+Date     : February 24, 1997 
+------------------------------
+
+ o The 1.1.0 release of Threads now includes support for two new 
+   platforms:
+   
+   DEC OSF/1 v4.0 with version 5.5 of the DEC CXX C++ compiler.  
+
+   SGI IRIX 6.2 with version 7.1 of the SGI C++ compiler.  
+   (Only the new -n32 and -64 build options of this compiler are 
+    supported (these modes cause CC to execute the underlying 64 bit
+    compiler). The -32 and -use_cfront compiler options that result 
+    in the execution of the older NCC,DCC and OCC compilers are not 
+    supported.  The new -experimental flag that selects a newer EDG 
+    front-end is not supported by this release.  We were unable to 
+    certify Threads.h++ using the -64 mode in this release, but we 
+    anticipate no difficulties in using this mode, and we plan to
+    certify using 64-bit code in our next release.)
+
+ o In addition to the two new platforms, there have been several 
+   other changes in the Threads.h++ support matrix:
+
+   Certification and support for the following operating 
+   systems and/or compilers has been added:
+         Borland C++ Compiler v5.01 for Windows NT/95
+         HP HPUX OS v10.20 w/HP C++ Compiler v10.22
+         DEC OSF/1 OS v4.0 w/DEC CXX C++ Compiler v5.5
+         SGI IRIX OS v6.2 w/SGI C++ Compiler v7.1 (with -n32)
+        
+   Certification and/or support for the following operating systems 
+   and/or compilers has been deprecated and will be eliminated:
+         Borland C++ Compiler v5.0 for Window NT/95
+         HP HPUX OS v10.01
+         HP HPUX OS v10.10
+         HP C++ Compiler v10.11
+         Sun Solaris OS v2.4
+  
+   The updated certification matrix for this release is:
+      IBM AIX v4.1 
+         IBM xlC C++ Compiler v3.1
+            Tools.h++ v7.0.3
+               No standard library
+               Rogue Wave standard library v1.2
+      HP HP-UX v10.20
+         HP C++ Compiler v10.22
+            Tools.h++ v7.0.3
+               No standard library
+      SGI IRIX v6.2
+         SGI C++ Compiler v7.1 (using -n32)
+            Tools.h++ v7.0.3
+               No standard library
+      IBM OS/2 Warp v3.0
+         IBM Visual Age C++ Compiler v3.0
+            Tools.h++ v7.0.3
+               No standard library
+      DEC OSF/1 (Digital Unix) v4.0
+         DEC CXX C++ Compiler v5.5
+            Tools.h++ v7.0.3
+               No standard library
+      Sun Solaris v2.5
+         SunPro C++ Compiler v4.1.0
+            Tools.h++ v7.0.3
+               No standard library
+      Microsoft Windows NT v3.51
+         Borland C++ Compiler v5.01
+            Tools.h++ v7.0.3
+               No standard library
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.3
+               No standard library
+               Plauger standard library (MSVC v4.2)
+               Rogue Wave standard library v1.2    
+      Microsoft Windows NT v4.0
+         Borland C++ Compiler v5.01
+            Tools.h++ v7.0.3
+               No standard library
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.3
+               No standard library
+               Plauger standard library (MSVC v4.2)
+               Rogue Wave standard library v1.2    
+      Microsoft Windows 95
+         Borland C++ Compiler v5.01
+            Tools.h++ v7.0.3
+               No standard library
+         Microsoft Visual C++ Compiler v4.2 (10.20)
+            Tools.h++ v7.0.3
+               No standard library
+               Plauger standard library (MSVC v4.2) [See notes]
+               Rogue Wave standard library v1.2 [See notes]
+         
+ o A new macro called RWTHR_IOSTD has been introduced to indicate 
+   when the new C++ standard iostreams headers are to be used. 
+   This change corrects a problem in the 1.0.1 version of
+   Threads.h++ that prevented its use with the 7.0.2 version of
+   Tools.h++. 
+
+ o The custom script and makefile.in files have been changed to
+   use a different internal naming convention for the target
+   library files and to add targets for the two new platforms. 
+   The makefile usage remains the same as was described in 
+   previous versions of the Threads.h++ installation instructions.
+
+------------------------------
+1.0.0 -> 1.0.1
+------------------------------
+Date     : October 28, 1996 
+------------------------------
+
+ o The 1.0.1 release now includes working support for OS/2 using the IBM
+   Visual Age 3.0 compiler.  The OS/2 version of Threads.h++ may be used
+   with or without the Rogue Wave Standard C++ Library.
+
+ o The original release of Threads.h++ could not be used with a Tools.h++
+   library built on the Standard C++ Library.  This release now includes 
+   support for the Standard C++ Library.  You may now compile and link
+   Threads.h++ with the a Standard C++ Library in the following 
+   configurations:
+
+      Win32 NT,95 / MSVC v4.2 / Rogue Wave Standard Library v1.2 
+      Win32 NT,95 / MSVC v4.2 / Plauger Standard Library (incl w/MSVC)
+      AIX v4.1 / IBM xlC v3.1 / Rogue Wave Standard Library v1.2
+      OS/2 v3.0 / IBM Visual Age v3.0 / Rogue Wave Standard Library v1.2
+
+   As of this writing, you may not compile and link with any Standard
+   Library under the Borland C++ compiler; Borland defines its own string 
+   class that conflicts with the Standard Library string class.
+
+   To support use of the Standard Library, operator<() members were added
+   to all Threads.h++ classes that were used in a Tools.h++ templatized 
+   collection.  Default constructors were also added to a few classes.
+   These changes should have no impact on code built using the 1.0.0 version.   
+
+ o The PC makefiles for the Threads.h++ library and examples have been changed. 
+   The new makefiles fully support the use of subdirectories to store the
+   intermediate and/or final results of a particular build configuration
+   variant.  These new makefiles also correct some minor defects in the
+   original makefiles, and also bring the makefile usage into line with the
+   instructions given in the installation manual.  The UNIX makefiles have
+   not changed. 
+
+ o The order of header file includes within the library was changed 
+   slightly to alleviate an occasional problem with #if/#endif nesting 
+   depth under the Microsoft compiler.
+   
+ o Some defects in the RWServerPool class were corrected; you may now 
+   reduce the size of a server pool without generating an assert, and a
+   server pool may now be restarted after it has been stopped.
+
+ o Significant changes were made in the way template classes are declared
+   and exported under the Borland compiler.  Template classes are no longer
+   declared for export or import; explicit instantiations are used to 
+   export and import instantiations made within the Threads.h++ library.  
+   This allows Borland users to instantiate and export Threads.h++ template
+   classes within their own DLLs.
+
+ o The files recurmtx.* were removed from the library.  These files 
+   implemented an undocumented, obsolete recursive mutex class that may be 
+   implemented using the RWRecursiveLock<Mutex> template class.
+
+ o This version of Threads.h++ has been certified with the latest release
+   of Tools.h++, v7.0.3.  This latest version of Tools.h++ must be used if you
+   plan to use the Plauger Standard C++ Library included with version 4.2
+   of Microsoft Visual C++. 
+
+=========================================
+Chapter 1. General comments
+-----------------------------------------
+
+ o A clarification on timeouts:
+   Several functions in the Threads.h++ library accept a timeout
+   value.  This value is meant to specify the amount of "wall-clock"
+   time, in milliseconds, that a function waits before timing out.
+ 
+   However, there are situations where these functions actually
+   measure duration by the amount of CPU time used, not by the elapsed
+   wall-clock time.  This may result in longer timeout periods than
+   are expected or intended.  In these situations, the amount of delay
+   is directly proportional to the percentage of available CPU time
+   granted to the process.
+
+ o Threads.h++ must be used in conjunction with Tools.h++. Tools.h++
+   MUST be built with multi-threading turned on. 
+
+   To build a multi-thread version of Tools.h++ on Unix, review the 
+   installation instructions supplied with the Tools.h++ distribution.
+
+   Threads.h++ may optionally be built on top of the Standard C++ Library.
+
+=======================================================
+Chapter 2. Notes for AIX users (using CSet++ compiler)
+-------------------------------------------------------
+
+ o Under AIX 4.3.2, in the system file /opt/include/dce/pthread.h
+   there is a line: #undef __ This line causes compiles using DCE
+   threads to fail.  However, if this line is commented out, then Java
+   will fail.  Due to this problem, DCE threads are currently not
+   supported under AIX 4.3.2.  To find out when this problem will be
+   fixed please contact IBM technical support.
+
+ o Duplicate symbol warnings ("ld: 0711-224") are generated when
+   Threads.h++ is built as a shared library under AIX.  This problem
+   stems from the fact that we compile template instantiations
+   directly into the object files.
+
+   There are apparently no ill effects from the multiple definitions
+   warnings. No problems appeared either in our tests or have been
+   reported by our customers.
+ 
+ o (Historical Note) 
+   A known problem for IBM C++ v.3.6.0 under AIX 4.3 was that a
+   program would dump core when an exception was thrown from
+   multi-threaded code built using POSIX (or DCE) threads.  IBM issued
+   a patch that resolved the problem for POSIX threads and intended to
+   fix the problem for DCE with version 3.6.4.  This problem is fixed
+   in version 3.6.6.
+
+
+================================
+Chapter 3. Notes for HP-UX users
+--------------------------------
+
+ o Threads.h++ supports two versions of the HP-UX operating system,
+   B.10.20 and B.11.00.  Different compilers are supported under each
+   version.
+
+   Under HP-UX B.10.20, we support the old-style A.10.36 (CC) compiler
+   and the newer A.01.18 (aCC) compiler.
+
+   Under HP-UX B.11.00, we only support the new A.03.10 (aCC) compiler
+   under either 32-bit or 64-bit modes.
+
+ o We were unable to certify for use under either version A.10.40 or
+   A.10.45 of the HP CC compiler. Both of these versions of the
+   'cfront' compiler were prone to failing with internal errors while
+   compiling the Threads.h++ source code.  We were unable to resolve
+   these problems prior to release.
+
+=========================================
+Chapter 3a. Notes for HP C-Front CC users
+-----------------------------------------
+
+ o The Tools.h++ and Threads.h++ libraries are now both automatically
+   compiled with the +eh flag to enable exception handling.
+
+   HP A.10.3x compiler users: You must build your object file using
+   the +eh flag (which enables C++ exception handling).  RW products
+   require the use of this flag.  Code generated with +eh is not link-
+   compatible with code generated without the +eh flag.
+
+ o There is a well-known problem in building multi-threaded C++
+   programs on HP-UX B.10.20 using the HP DCE library, where they
+   redefine, via #define macros, common system call names.
+
+   For example, if you look at /usr/include/dce/cma_ux.h you 
+   will see:
+
+   #if !_CMA_THREAD_SYNC_IO_
+   # if !defined(_CMA_NOWRAPPERS_) && _CMA_UNIPROCESSOR_
+   #  if (_CMA_UNIX_TYPE != _CMA__SVR4)
+   #  define accept        cma_accept
+   #  define close         cma_close
+   #  define connect       cma_connect
+   #  define creat         cma_creat
+
+   And so on. This is a problem with C++ because preprocessor macros
+   don't respect class scope symbols. That is to say, these macros
+   will even convert member function names. We do have some names in
+   the library, such as close, read, and write that are affected by
+   these macros. We decided not to do anything to prevent the macros
+   from changing these names.  The name changes should not have any
+   adverse effect, but don't be surprised if you are debugging and
+   find yourself stepping into a function named "cma_xxx", when you
+   were expecting "xxx".
+
+ o Tools.h++, Threads.h++, and all applications built with them, must
+   define -D_THREAD_SAFE in order to tell the compiler to link to
+   reentrant versions of the run-time and streams libraries.  During
+   the library builds, add -D_THREAD_SAFE to the compiler flags.  The
+   system libraries linked in by using -D_THREAD_SAFE were built with
+   the aforementioned macro substitutions of common names, and thus
+   won't generate link-time errors with multi-threaded applications.
+
+ o The HP C++ compiler cannot inline template functions or member
+   functions of a template class.  Instead, an out-of-line version of
+   the function is instantiated in every affected translation unit.
+   The HP C++ compiler will not inline functions with exception
+   specifications.  For this reason, we have turned off all exception
+   specifications as the default by defining the macro
+   RW_THR_DISABLE_EXCEPTION_SPECS.  This dramatically reduced the size
+   of the library.
+
+
+=============================================
+Chapter 3b. Notes for HP Ansi C++ aCC users  
+---------------------------------------------
+
+ o Threads.h++ is supported on two different versions of the aCC
+   compiler, depending on the operating system version.  We only
+   support the A.01.18 version under HP-UX B.10.20 and the A.03.10
+   version under HP-UX B.11.00.
+
+ o Exception handling is the default for the aCC compiler.  "aCC"
+   users do not have to worry about setting the +eh flag for Tools.h++
+   or the Rogue Wave Standard Library when building Threads.h++.
+
+ o There is a well-known problem with building multi-threaded C++
+   programs using the HP DCE library, where they redefine, via #define
+   macros, common system call names.
+
+   For example, if you look at /usr/include/dce/cma_ux.h you will
+   see:
+
+   #if !_CMA_THREAD_SYNC_IO_
+   # if !defined(_CMA_NOWRAPPERS_) && _CMA_UNIPROCESSOR_
+   #  if (_CMA_UNIX_TYPE != _CMA__SVR4)
+   #  define accept        cma_accept
+   #  define close         cma_close
+   #  define connect       cma_connect
+   #  define creat         cma_creat
+
+   And so on. This is a problem with C++ because preprocessor macros
+   don't respect class scope symbols. That is to say, these macros
+   will even convert member function names. We do have some names in
+   the library, such as close, read, and write that are affected by
+   these macros. We decided not to do anything to prevent the macros
+   from changing these names.  The name changes should not have any
+   adverse effect, but don't be surprised if you are debugging and
+   find yourself stepping into a function named "cma_xxx", when you
+   were expecting "xxx".
+
+ o Tools.h++, Threads.h++, and all applications built with them, must
+   define -D_THREAD_SAFE in order to tell the compiler to link to
+   reentrant versions of the run-time and streams libraries.  During
+   the library builds, add -D_THREAD_SAFE to the compiler flags.  The
+   system libraries linked in by using -D_THREAD_SAFE were built with
+   the aforementioned macro substitutions of common names, and thus
+   won't generate link-time errors with multi-threaded applications.
+
+ o Threads uses the default, compile-time instantiation model with the
+   aCC compiler.  This is a change from the way Threads.h++ is built
+   on other Unix platforms, including the HP cfront compiler, which
+   all use link-time instantiation.
+
+ o The DCE thread API is supported only under 32-bit builds (+DA2.0N).
+
+ o We were forced to disable optimization while building the examples
+   because the code produced by v3.10 compiler for the attrtest
+   example was producing unexplained core dumps when entering a simple
+   inline function.
+ 
+ o Under aCC 3.10, compilation of ../../rw/thr/server.h for 64-bit
+   type-12s or type-12d builds produces two warnings: "Warning 6933"
+   and "Warning 6099".  As per the text of the 6099 message, we have
+   reported the warnings to HP.  The warnings do not appear to harm
+   the build, but do imply that at least portions of the code related
+   to server.h may not be optimized, even if optimization is
+   specified.
+
+ o Under aCC A.01.18, several instances of "Warning 888:" occur during
+   the library and example program builds.  This is because certain
+   Threads library code throws the RWxmsg exception without specifying
+   in the corresponding exception spec.  We are working to rectify
+   this situation.
+
+===============================================
+Chapter 4. Notes for Solaris users
+-----------------------------------------------
+
+ o Due to internal compiler errors that we have been unable to work
+   around at this time, users of SunPro C++ 5.0 must add the "+d"
+   option to their CC command lines.  +d prevents the compiler from
+   expanding C++ inline functions.  For large programs that rely
+   heavily on inline functions, the amount of code generated may be
+   substantial.
+
+ o Several "jumbo" patches are available for the Sunpro 4.2 compiler
+   from Sun Microsystems.  Threads.h++ is certified with the Sunpro
+   5.0 compiler as patched to sunpatch #107311-02 and with the Sunpro
+   4.2 compiler as patched to sunpatch #104631-07.
+
+ o You may now choose to configure the Rogue Wave products to use
+   either the native Solaris thread API or Sun's implementation of the
+   POSIX 1003.1c API. The POSIX API simply wraps the native thread
+   library.  Both libraries can supposedly be used safely within the
+   same application.  We recommend using the native API when possible,
+   as this API gives you the greatest level of control over your
+   threads.
+
+ o We have encountered occasional problems running the Threads.h++
+   examples on multiprocessor SunOS 2.6 systems.  A few of the
+   examples will drop core with a segmentation fault while peforming a
+   malloc operation.  At the time of this writing, we had not yet
+   determined the source of this problem, but are continuing to
+   investigate it.
+
+ o We observed several instances of "Warning (Anachronism)" messages
+   during compilation of the Threads library code.  We believe these
+   messages are currently benign, but are working to change the code
+   so that they do not lead to problems in future releases.
+
+=========================================
+Chapter 5. Notes for Windows users
+-----------------------------------------
+
+ o You may not access and should not attempt to create MFC objects
+   from threads created using the Threads.h++ runnable object classes.
+   The MFC library relies on thread-local storage to store handles to
+   the underlying Windows objects created by a given thread.  The MFC
+   class, CWinThread creates this thread-local storage when it
+   launches a thread.  This restriction on access also applies to MFC
+   threads; one thread may not access the MFC objects created by
+   another thread.
+
+   If you need to manipulate a Windows object encapsulated by an MFC
+   object created by another thread, you will need to acquire the
+   handle of the underlying object and manipulate the object directly.
+
+   Even though you may not manipulate MFC object instances directly,
+   you may still use the Threads.h++ synchronization and communication
+   mechanisms with threads that were created using MFC's CWinThread.
+
+-------------------------------------------------
+Chapter 5a. Notes for Microsoft Visual C++ users
+-------------------------------------------------
+
+ o If you choose to build Threads.h++ with a standard library, you may
+   choose to build Threads.h++ using either the Rogue Wave Standard
+   C++ Library or the Standard C++ Library that ships with MSVC 6.0.
+   See the installation instructions for more information.
+
+ o You will likely see many warnings if you compile a debug version of
+   Threads.h++ with the standard library.  Most of these warnings
+   result when the Microsoft compiler is forced to truncate some very
+   long symbols when producing the debug information for each
+   translation unit; Microsoft only allows symbols with 255 or less
+   characters to be stored for debugging purposes, and some of the
+   template instantiations produced by Threads.h++, Tools.h++ and the
+   standard C++ library have upwards of 2000 characters!  We decided
+   not to suppress these warnings so that users will be aware of these
+   truncated symbols. Users can force suppression of these messages by
+   customizing the build so it uses the '/w' option.
+ 
+ o If you choose to build Tools.h++ and Threads.h++ with the Standard
+   C++ Library version included with MSVC 6.0, you will likely see an
+   incredible number of warning messages about nonstandard extensions
+   being used.  This warning cannot be disabled (it is apparently
+   re-enabled by #pragma statements in the Microsoft header files).
+   Just ignore these messages or build with the '/w' option to disable
+   all warning messages.
+ 
+ o If you encounter linker warnings for incompatible libraries when
+   using the Threads.h++ library, the likely reason is that your code
+   was compiled to use a different version (debug or non-debug) of the
+   runtime library.  When compiling your code make sure that you
+   compile it with the proper flag set on the command line:
+
+      Threads.h++/Tools.h++/Stdlib Static Non-debug  /MT
+      Threads.h++/Tools.h++/Stdlib Static Debug      /MTd
+      Threads.h++/Tools.h++/Stdlib DLL Non-debug     /MD
+      Threads.h++/Tools.h++/Stdlib DLL Debug         /MDd
+
+ o We have globally disabled warning 4251. We found this warning to be
+   pervasive but benign when building the library and examples.  If
+   you find it necessary to re-enable this warning, use the following
+   pragma after including Threads.h++ header files:
+
+      #pragma warning( default : 4251 )
+
+ o If you are using the Microsoft compiler on Windows 95 to build
+   "MultiDebugStdLibShared" (15d) libraries and if your workspace 
+   is a file pathname that is greater than 66 characters long, then 
+   you may get the LNK1201 linker error which says something like:
+
+      "error writing to program database "filename"; check for 
+       insufficient disk space"
+
+   To work around this Microsoft problem, simply move your 
+   workspace to a root directory with a shorter pathname, 
+   delete all the thr*.* files in the lib/ directory and all the
+   *.obj files in the buildloc/threads/ directory and then rebuild
+   the Threads.h++ libraries.
+   
+
+-----------------------------------------
+Chapter 5b. Notes for Borland C++ users
+-----------------------------------------
+
+ o It has been our experience with Borland that assignments using a
+   template or attempting to instantiate a template in a function call
+   does not, in fact, cause template instantiation to take place.  You
+   must declare templates before they can be used.  For example:
+
+     classname<int> foo = rwMakeClass(...);     ,or
+     somefunction(new classname<int>);
+
+   will NOT result in an instantiation of classname on int.  
+   However,
+
+     classname<int> foo;
+     foo = rwMakeClass(...);           ,or
+
+     classname<int> dummy;  //Somewhere else in code
+       ...
+     somefunction(new classname<int>);
+ 
+   will.    
+
+   If you get undefined template symbols with Borland, check for 
+   the above usage. 
+
+   We have also detected problems with template instantiation when
+   attempting to take the address of a template class member function
+   prior to its definition.  Take care to avoid this problem when
+   using the Threads.h++ "functor" classes.
+
+ o We now use ilink32.exe, instead of using tlink32.exe to create a
+   Threads.h++ DLL using Borland C++ 5.4.  Apparently, the "tlink32"
+   linker failed because Threads.h++ exceeded an internal resource
+   limit.  The incremental linker does not seem to share this
+   limitation.
+
+ o We have occasionally experienced problems with command-line length
+   limits when invoking Borland tools from within our Parts Manager
+   shell scripts, when executing under Windows 95.  The problem
+   usually seems to disappear by executing the make directly from the
+   command-line.
+
+ o We have observed the following warning messages during builds
+   of either the library, the example programs, or both:
+
+   a. W8004 - "... is asigned a value that is never used in ..."
+      
+   b. W8012 - "Comparing signed and unsigned values in ..."
+ 
+   c. W8026 - "Functions taking class-by-value argument(s) are not 
+               expanded inline in ..."
+
+   d. W8027 - "Functions containing while are not expanded inline"
+
+   e. W8057 - "Parameter '...' is never used in ..."
+
+   None of the warnings appear to translate into adverse affects in 
+   the final library built.  We are reviewing builds under Borland
+   to find ways of resolving these warning, if possible.
+
+ o Two example programs, rwlock and ioutrap, return "Abnormal program
+   termination errors" when built and run with the 
+   "MultiReleaseStdLibShared" (12d) version of the Threads library.
+
+   A workaround is to change the statement in rwlock.cpp from:
+          printRatioThread.requestCancellation();
+   to: 
+          printRatioThread.requestCancellation(10);
+   
+   And to change the statement in ioutrap.cpp from: 
+          resultReaderThread.requestCancellation();
+   to:
+          resultReaderThread.requestCancellation(10);
+
+   We are analyzing these programs to discover and resolve
+   the cause of this problem.
+
+
+=========================================
+Chapter 6. Notes for IRIX users
+-----------------------------------------
+
+
+ o Under IRIX64 v6.5, we support the new MIPSPro 7.2.1 compiler using
+   either the -n32 or -64 options.
+
+ o Only the -n32 and -64 build options of this compiler are supported
+   (these modes cause CC to execute the underlying 64-bit compiler).
+   You must explicitly select these by supplying either the -n32 or
+   -64 flag to the compiler and linker.  The best way to do this is to
+   specify the desired flag when prompted to do so by the ./bin/config
+   script during product configuration.
+
+ o In order for rld to find the Threads.h++ shared library during
+   startup of an application linked to the Threads.h++ dso, users must
+   set the LD_LIBRARY_PATH environment variable to point to the
+   Threads.h++ lib directory.  For more information, try "man rld" or
+   "man dso".
+
+ o Occasionally, when building the example programs, we have found
+   that the v7.1 compiler/linker will generate corrupted executables
+   that subsequently fail with an assertion during loading.  We have
+   been able to correct this problem simply by deleting and
+   recompiling the offending executable.  This problem appears to
+   originate in the compiler/linker and not in Threads.h++.
+
+ o The MIPS Pro C++ 7.1 compiler generates exception handling code,
+   which by default is not aware of multithreading.  This problem
+   manifests as a debug assertion from the run-time library with a
+   message like "Assert in throw.cxx".
+
+   To fix this, all multithreaded programs built with the MIPS Pro 7.1
+   compiler must add a callback used by the exception mechanism to
+   identify the current thread number.  Add the following lines to the
+   beginning of your program:
+
+       #include<exception.h>
+       #include<pthread.h>
+       set_thread_id_function(pthread_self);
+
+   This will register the function "pthread_self" from the Posix
+   thread library as a callback identifying the current thread.
+
+=========================================
+Chapter 7. Notes for DEC OS users
+-----------------------------------------
+
+ o In order for an application linked to the Threads.h++ shared
+   library to successfully load dynamic objects during program
+   startup, users must set the LD_LIBRARY_PATH environment variable to
+   point to the directory containing the Threads.h++ shared library.
+
+ o The unpatched, multi-processor (MP) version of dUnix/OSF1 4.0 has a
+   bug in it that causes problems with delivery of condition variable
+   signals between threads.  If the "barrier" example hangs during
+   execution, then your version of the OS has this problem.  It can be
+   corrected by applying patches "a" through "d", available from DEC.
+
+ o The "d" patch for OSF1 v4.0 replaces the POSIX "pthreads" library
+   and header files with a brand new implementation.  The patch-level
+   of the operating system used to build a Threads.h++ binary must
+   match the patch level of the operating system where that binary is
+   used, in order to ensure a proper match for the underlying pthreads
+   library.
+
+
+=========================================
+Chapter 8. Notes for Linux users
+-----------------------------------------
+
+ o LinuxThreads aren't really threads but are separate processes, 
+   each sharing its address space with the others using the 
+   clone() system function.  This has a number of implications,
+   some of which follow.
+
+ o Scheduling between LinuxThreads is scheduling between Unix 
+   processes.
+
+ o LinuxThreads are visible using the `ps` command line utility 
+   and each use up one entry in the kernel's process table, which
+   is usually limited to 512 processes.  Moreover each thread stack 
+   is spaced 2 Mb apart in memory.
+  
+ o You can't do process-wide manipulation of LinuxThreads. For example,
+   you can't have process-scope priorities.
+
+ o LinuxThreads don't share PID's and PPID's.
+
+ o If you are using templates and you encounter compilation errors 
+   related to template instantiation depth exceeds maximum of 17, 
+   try adding the "-ftemplate-depth-NN" option to the g++ command, 
+   where NN in the maximum template instantiation depth.
+
+ o If you are using LinuxThreads, you can't use the signals SIGUSR1 
+   or SIGUSR2 in addition to SIGPWR which is used by Threads.h++.
+
+End-of-File
