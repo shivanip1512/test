@@ -1116,7 +1116,7 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 		{
 			allYukonUsers = new ArrayList<LiteYukonUser>();
 			allUsersMap = new HashMap<Integer, LiteYukonUser>();
-			YukonUserLoader l = new YukonUserLoader(allYukonUsers, allUsersMap);
+			YukonUserLoader l = new YukonUserLoader(allYukonUsers, allUsersMap, databaseAlias);
 			l.run();
 			return allYukonUsers;
 		}

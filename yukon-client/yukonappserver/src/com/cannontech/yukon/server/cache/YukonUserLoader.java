@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,11 +19,11 @@ public final class YukonUserLoader implements Runnable
 {
 	private static final String sql = "SELECT UserID,Username,Password,Status FROM YukonUser";
 	
-   	private final List allUsers;
-	private final Map allUsersMap;
+   	private final List<LiteYukonUser> allUsers;
+	private final Map<Integer, LiteYukonUser> allUsersMap;
 	private final String dbAlias;
 
-	public YukonUserLoader(final ArrayList allUsers, Map allUsersMap, final String dbAlias) {
+	public YukonUserLoader(List<LiteYukonUser> allUsers, Map<Integer, LiteYukonUser> allUsersMap, final String dbAlias) {
    		this.allUsers = allUsers;
       	this.dbAlias = dbAlias;
 		this.allUsersMap = allUsersMap;
