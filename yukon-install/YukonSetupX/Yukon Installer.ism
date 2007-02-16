@@ -521,6 +521,7 @@
 		<row><td>net15d.dll</td><td>Common Dlls</td><td>net15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\net15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>notification.jar</td><td>Common Bin</td><td>notification.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\notification.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>notifserver.conf</td><td>Notification</td><td>notifserver.conf</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\notifserver.conf</td><td>1</td><td/></row>
+		<row><td>ntwdblib.dll</td><td>Common Dlls</td><td>ntwdblib.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\ntwdblib.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>odb15d.dll</td><td>Common Dlls</td><td>odb15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\odb15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>ora15d.dll</td><td>Common Dlls</td><td>ora15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\ora15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>parsetest.exe</td><td>Test Applications</td><td>parsetest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\parsetest.exe</td><td>1</td><td>NewSubFolder83</td></row>
