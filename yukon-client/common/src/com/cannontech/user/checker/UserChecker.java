@@ -1,14 +1,13 @@
 package com.cannontech.user.checker;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.util.Checker;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * A UserChecker is an object that has a single check() method
  * that takes a LiteYukonUser as its argument.
  */
-public interface UserChecker extends Checker<LiteYukonUser>{
+public interface UserChecker {
     
     /**
      * @param user The current user owning the session

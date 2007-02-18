@@ -1,10 +1,10 @@
 package com.cannontech.core.authorization.support.pao;
 
-import com.cannontech.common.util.Checker;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.UserChecker;
 
 /**
  * PaoAuthorization implementation which ignores the pao and permission and just
@@ -12,9 +12,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class PaoRoleAuthorization implements PaoAuthorization {
 
-    private Checker<LiteYukonUser> roleChecker = null;
+    private UserChecker roleChecker = null;
 
-    public void setRoleChecker(Checker<LiteYukonUser> roleChecker) {
+    public void setRoleChecker(UserChecker roleChecker) {
         this.roleChecker = roleChecker;
     }
 

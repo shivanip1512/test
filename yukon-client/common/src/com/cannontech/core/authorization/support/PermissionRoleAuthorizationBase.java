@@ -2,6 +2,7 @@ package com.cannontech.core.authorization.support;
 
 import com.cannontech.common.util.Checker;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.UserChecker;
 
 /**
  * Base implementation of Authorization. Generic for easy reuse.
@@ -10,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
 
     Checker<T> objectChecker = null;
-    Checker<LiteYukonUser> roleChecker = null;
+    UserChecker roleChecker = null;
     Permission permission = null;
 
     public PermissionRoleAuthorizationBase() {
@@ -25,7 +26,7 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
         this.objectChecker = objectChecker;
     }
 
-    public void setRoleChecker(Checker<LiteYukonUser> roleChecker) {
+    public void setRoleChecker(UserChecker roleChecker) {
         this.roleChecker = roleChecker;
     }
 
