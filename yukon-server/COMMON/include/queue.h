@@ -467,7 +467,7 @@ public:
                 {
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
-                    if(wRes == true)
+                    if(wRes == true && !getCollection().empty())
                     {
                         pval = getCollection().front();
                         getCollection().pop_front();
