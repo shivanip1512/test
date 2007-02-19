@@ -65,7 +65,7 @@ class CtiPCPtrQueue{
 
             if ( !(q.size() > 0) ) {
                 success = wait.timed_wait( scoped_lock, xt );
-                if (success) {
+                if (success && q.size() > 0) {
                     result = q.front();
                     q.pop_front();
                     return true;
