@@ -4998,11 +4998,27 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
 
 
             list <LONG> *pointIds  = feederToDelete->getPointIds();
+            //Delete pointids on this feeder
             while (!pointIds->empty())
             {
                 LONG pointid = pointIds->front();
                 pointIds->pop_front();
-                _pointid_feeder_map.erase(pointid);
+                int ptCount = getNbrOfFeedersWithPointID(pointid);
+                if (ptCount > 1)
+                {
+                    multimap< long, CtiCCFeederPtr >::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
+                    while (iter1 != _pointid_feeder_map.end() || iter1 != _pointid_feeder_map.upper_bound(pointid))
+                    {
+                        if (((CtiCCFeederPtr)iter1->second)->getPAOId() == feederToDelete->getPAOId())
+                        {
+                            _pointid_feeder_map.erase(iter1);
+                            break;
+                        }
+                        iter1++;
+                    }   
+                } 
+                else
+                    _pointid_feeder_map.erase(pointid);
             }
             feederToDelete->getPointIds()->clear();
             try
@@ -5073,11 +5089,27 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
           //  capBankToDelete->dumpDynamicData();
 
             list <LONG>* pointIds  = capBankToDelete->getPointIds();
+            //Delete pointids on this feeder
             while (!pointIds->empty())
             {
                 LONG pointid = pointIds->front();
                 pointIds->pop_front();
-                _pointid_capbank_map.erase(pointid);
+                int ptCount = getNbrOfCapBanksWithPointID(pointid);
+                if (ptCount > 1)
+                {
+                    multimap< long, CtiCCCapBankPtr >::iterator iter1 = _pointid_capbank_map.lower_bound(pointid);
+                    while (iter1 != _pointid_capbank_map.end() || iter1 != _pointid_capbank_map.upper_bound(pointid))
+                    {
+                        if (((CtiCCCapBankPtr)iter1->second)->getPAOId() == capBankToDelete->getPAOId())
+                        {
+                            _pointid_capbank_map.erase(iter1);
+                            break;
+                        }
+                        iter1++;
+                    }   
+                } 
+                else
+                    _pointid_capbank_map.erase(pointid);
             }
             capBankToDelete->getPointIds()->clear();
 
