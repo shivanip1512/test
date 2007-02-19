@@ -9,7 +9,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
     <description>Yukon Authorization Services</description>
     
-    <!-- Services -->
+    
+    <!-- Authorization Services -->
     <!-- Pao command authorization service - authorizes commands on paos -->	
 	<bean id="paoCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoCommandAuthorizationServiceImpl">
 		<property name="authorizationService" ref="paoAuthorizationService" />
@@ -21,6 +22,20 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 		<property name="authorizationService" ref="lmAuthorizationService" />
 		<property name="converter" ref="permissionConverter" />
 	</bean>
+
+
+    
+    <!-- Pao Permission Service -->
+    <bean id="paoPermissonService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl">
+	    <property name="groupDao" ref="yukonGroupDao" />
+	    <property name="paoPermissionDao" ref="paoPermissionDao" />
+    </bean>
+    
+    <!-- Authorization Daos -->
+    <bean id="paoPermissionDao" class="com.cannontech.core.authorization.dao.PaoPermissionDaoImpl" >
+    	<property name="jdbcOps" ref="jdbcTemplate" />
+    	<property name="nextValueHelper" ref="nextValueHelper" />
+    </bean>
 	
 	<!-- Pao checkers -->
     <!-- Pao checker which matches LM paos -->
@@ -186,12 +201,19 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     </bean>
 
 	<!-- 
-		Service which authorizes permissions for paos based on a role property.  Contains a list of 
-		authorizations which map a pao permission with a role property.
+		Service which authorizes permissions for paos.  This service iterates through the 
+		list of authorizations. If one of the authorizations returns authorized, the service
+		returns authorized. If none of the authorizations returns authorized, the service
+		returns unauthorized.
 	 -->
     <bean id="paoAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoAuthorizationServiceImpl" >
         <property name="authorizationList">
         	<list>
+        	
+        		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
+				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization">
+					<property name="paoPermissionService" ref="paoPermissonService" />
+				</bean>
 
         		<!-- Load Management pao permissions -->
         		

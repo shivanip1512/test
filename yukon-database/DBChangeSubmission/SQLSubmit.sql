@@ -19,3 +19,33 @@ insert into yukonroleproperty values (-10315, -103, 'Control Cap Control device'
 insert into yukonroleproperty values (-10316, -103, 'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.')
 insert into yukonroleproperty values (-10317, -103, 'Execute Manual Command', 'true', 'Allow the ability to execute manual commands')
 /**********************/
+
+/********** New tables for pao permissions ************/
+create table userpaopermission (
+   userPaoPermissionId        	numeric              not null,
+   userId               	numeric              not null,
+   paoId                	numeric              not null,
+   permission          		varchar(50)          not null
+)
+
+alter table userpaopermission
+   add constraint PK_USERPAOPERMISSION primary key  (userPaoPermissionId)
+
+alter table userpaopermission
+   add constraint AK_USERPAOPERMISSION_USERPAOPERM unique  (userId, paoId, permission)
+
+
+create table grouppaopermission (
+   groupPaoPermissionId        	numeric              not null,
+   groupId               	numeric              not null,
+   paoId                	numeric              not null,
+   permission          		varchar(50)          not null
+)
+
+alter table grouppaopermission
+   add constraint PK_GROUPPAOPERMISSION primary key (groupPaoPermissionId)
+
+alter table grouppaopermission
+   add constraint AK_GROUPPAOPERMISSION_GROUPPAOPERM unique (groupId, paoId, permission)
+/**********************/
+

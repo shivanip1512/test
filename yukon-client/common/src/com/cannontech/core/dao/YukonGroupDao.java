@@ -1,0 +1,11 @@
+package com.cannontech.core.dao;
+
+import java.util.List;
+
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
+public interface YukonGroupDao {
+
+    public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user);
+}

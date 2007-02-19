@@ -50,5 +50,11 @@
       <sequence name="MeterReadLog">
         <table name="MeterReadLog" identitycolumn="MeterReadLogId" initsequence="true"/>
       </sequence>
+      <sequence name="userpaopermissionid">
+        <table name="UserPaoPermissiong" identitycolumn="userpaopermissionid" initsequence="true"/>
+      </sequence>
+      <sequence name="grouppaopermissionid">
+        <table name="GroupPaoPermissiong" identitycolumn="grouppaopermissionid" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
