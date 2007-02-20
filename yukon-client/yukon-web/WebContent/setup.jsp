@@ -29,7 +29,7 @@ function dispStatusMsg(msgStr) { //v1.0
 
 </head>
 
-<body class="Background" text="#000000" leftmargin="0" topmargin="0" onLoad="document.forms.form1.db_user_name.focus()">
+<body class="Background" text="#000000" leftmargin="0" topmargin="0">
 <br>
 <table width="650" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
