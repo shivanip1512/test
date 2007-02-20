@@ -67,7 +67,6 @@ public class PrefixTokenizerTest extends TestCase {
         while ((tok = tokenizer.next()) != null) {
             String tokeText = tok.termText();
             tokeTextList.add(tokeText);
-            System.out.println(tokeText);
         }
         assertEquals("Lists don't match", tokeTextList, expectedList);
     }
