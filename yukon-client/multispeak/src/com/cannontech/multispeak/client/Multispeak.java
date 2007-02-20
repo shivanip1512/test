@@ -440,7 +440,7 @@ public class Multispeak implements MessageListener {
                     }
                 }
                 if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
-                    logMSPActivity("getLatestReadingByMeterNo", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
+                    logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meterNumber + ") - Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
                 }
             }
       }
