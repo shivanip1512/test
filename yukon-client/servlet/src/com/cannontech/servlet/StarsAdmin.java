@@ -90,6 +90,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 import com.cannontech.user.UserUtils;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 /**
@@ -1976,6 +1977,8 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+        LiteYukonUser loggedInUser = ServletUtil.getYukonUser(req);
+        //TEM is there a role we can check loggedInUser for???
 		int userID = Integer.parseInt( req.getParameter("UserID") );
 		LiteYukonUser memberLogin = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
 		boolean isMemberManager = false;
@@ -1995,7 +1998,6 @@ public class StarsAdmin extends HttpServlet {
 				req,
 				session,
 				memberLogin.getUsername(),
-				memberLogin.getPassword(),
 				true)) == null)
 		{
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "The member login is no longer valid" );
@@ -2015,6 +2017,8 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	public static void switchContext(StarsYukonUser user, HttpServletRequest req, HttpSession session, int memberID) throws WebClientException {
+        LiteYukonUser loggedInUser = ServletUtil.getYukonUser(req);
+        //TEM is there a role we can check loggedInUser for???
 		if (memberID == user.getEnergyCompanyID()) return;
 		
 //		if (!DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ))
@@ -2033,7 +2037,6 @@ public class StarsAdmin extends HttpServlet {
 						req,
 						session,
 						liteUser.getUsername(),
-						liteUser.getPassword(),
 						true) == null)
 				{
 					throw new WebClientException( "The member login is no longer valid" );

@@ -64,7 +64,7 @@ public class SetupServlet extends HttpServlet
 			//validate the password since we have a good DB connection
 			LiteYukonUser admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
 			
-			if( !admin.getPassword().equals(adminPword) )
+			if( DaoFactory.getAuthDao().login(admin.getUsername(), adminPword) == null )
 			{
 				urlParams.put( "invalid", "true" );
 				resp.sendRedirect( retPage + urlParams.toString() );

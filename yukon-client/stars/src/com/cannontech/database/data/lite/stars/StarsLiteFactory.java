@@ -969,8 +969,8 @@ public class StarsLiteFactory {
 	public static void setYukonUser(com.cannontech.database.db.user.YukonUser user, com.cannontech.database.data.lite.LiteYukonUser liteUser) {
 		user.setUserID( new Integer(liteUser.getUserID()) );
 		user.setUsername( liteUser.getUsername() );
-		user.setPassword( liteUser.getPassword() );
 		user.setStatus( liteUser.getStatus() );
+		user.setAuthType( liteUser.getAuthType() );
 	}
 	
 	public static void setLMThermostatSeason(com.cannontech.database.db.stars.hardware.LMThermostatSeason season, LiteLMThermostatSeason liteSeason) {

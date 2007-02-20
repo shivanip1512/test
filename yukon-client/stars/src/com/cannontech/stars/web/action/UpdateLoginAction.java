@@ -6,6 +6,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -17,6 +19,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.yukon.AuthenticationRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -45,6 +49,7 @@ import com.cannontech.tools.email.EmailMessage;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateLoginAction implements ActionBase {
+    private static final AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -172,6 +177,9 @@ public class UpdateLoginAction implements ActionBase {
 	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
+	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
+	    AuthType defaultAuthType = AuthType.valueOf(defaultAuthTypeStr);
+        
 		com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -182,7 +190,7 @@ public class UpdateLoginAction implements ActionBase {
 		}
         
 		dbUser.setUsername( login.getUsername() );
-		dbUser.setPassword( login.getPassword() );
+        dbUser.setAuthType(defaultAuthType);
 		if (login.getStatus() != null)
 			dbUser.setStatus( StarsMsgUtils.getUserStatus(login.getStatus()) );
 		else
@@ -193,10 +201,17 @@ public class UpdateLoginAction implements ActionBase {
 		LiteYukonUser liteUser = new LiteYukonUser(
 				dbUser.getUserID().intValue(),
 				dbUser.getUsername(),
-				dbUser.getPassword(),
 				dbUser.getStatus()
 				);
+        liteUser.setAuthType(defaultAuthType);
+
 		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
+        
+        ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
+        
+        if (authenticationService.supportsPasswordSet(defaultAuthType)) {
+            authenticationService.setPassword(liteUser, login.getPassword());
+        }
         
 		if (liteContact != null) {
 			liteContact.setLoginID( liteUser.getUserID() );

@@ -14,6 +14,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -118,7 +119,7 @@ public class UpdateContactsAction implements ActionBase {
     					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
     						newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
     					login.getYukonUser().setUsername(newUserName);
-    					login.getYukonUser().setPassword(time); 
+    					login.getYukonUser().setAuthType(AuthType.NONE);
     					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
     					//login.setEnergyCompany()

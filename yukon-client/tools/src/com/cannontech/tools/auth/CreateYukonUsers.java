@@ -6,6 +6,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -52,7 +53,7 @@ public class CreateYukonUsers {
         String salt = RandomStringUtils.randomNumeric(5);
         String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
         user.getYukonUser().setUsername(stupidUserName);
-        user.getYukonUser().setPassword(RandomStringUtils.randomAlphanumeric(12));
+        user.getYukonUser().setAuthType(AuthType.NONE);
         user.getYukonUser().setStatus("Enabled");
         dbPersistentDao.performDBChange(user, Transaction.INSERT);
         return user;

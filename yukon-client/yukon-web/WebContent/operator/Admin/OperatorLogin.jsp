@@ -9,7 +9,7 @@
 	if (userID != -1)
 		liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 	else
-		liteUser = new LiteYukonUser(-1, "", "", UserUtils.STATUS_ENABLED);
+		liteUser = new LiteYukonUser(-1, "", UserUtils.STATUS_ENABLED);
 	
 	String checked = liteUser.getStatus().equalsIgnoreCase(UserUtils.STATUS_ENABLED)? "checked" : "";
 %>

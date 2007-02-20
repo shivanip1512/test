@@ -25,7 +25,6 @@ function dispStatusMsg(msgStr)
 						  {"user_trending.jsp", "Trending", "/user/CILC/"},
   						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
-						  {"user_ee_profile.jsp", "Profile", "/user/CILC/"}
 						 };
 	String bulletImg = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
 	
@@ -177,20 +176,6 @@ function dispStatusMsg(msgStr)
             <td style="padding:1"><%= ((String[]) links.get("switch_commands.jsp"))[HTML] %></td>
           </tr>
           </cti:checkProperty>
-        </table>
-      </div>
-    </td>
-  </tr>
-  </cti:checkRole>
-  <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>"> 
-  <tr>
-    <td height="20">
-      <div align="left"><span class="NavHeader">Administration</span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("user_ee_profile.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("user_ee_profile.jsp"))[HTML] %></td>
-          </tr>
         </table>
       </div>
     </td>

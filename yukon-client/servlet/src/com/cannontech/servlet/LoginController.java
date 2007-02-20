@@ -252,8 +252,8 @@ private static void initSession(LiteYukonUser user, HttpSession session) throws 
  * Notice that the session is invalidated if login succeed, you should
  * get a new session object after invoking this method.
  */
-public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession session, String username, String password, boolean saveCurrentUser) {
-	LiteYukonUser user = DaoFactory.getAuthDao().yukonLogin(username,password);
+public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession session, String username, boolean saveCurrentUser) {
+    LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(username);
 	if (user == null || DaoFactory.getAuthDao().getRolePropertyValue(user,WebClientRole.HOME_URL) == null)
 		return null;
 	

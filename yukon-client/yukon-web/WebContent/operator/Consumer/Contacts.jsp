@@ -70,44 +70,6 @@
                                 <input type="text" name="FirstName" size="24" value="<%= primContact.getFirstName() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
-                            <!--
-                            <tr> 
-                    			<td width="100" class="TableCell"> 
-                      				<div align="right">Login Group: </div>
-                    			</td>
-                    			<td width="192"> 
-                      				<select name="CustomerGroup" onchange="setContentChanged(true)">
-									<%
-	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-	if (custGroups == null || custGroups.length == 0) {
-									%>
-                        			<option value="">(none)</option>
-									<%
-	}
-	else {
-		for (int i = 0; i < custGroups.length; i++) {
-			String selected = (login.getUsername().length() > 0 && custGroups[i].getGroupID() == login.getGroupID())? "selected" : "";
-									%>
-                        			<option value="<%= custGroups[i].getGroupID() %>" <%= selected %>><%= custGroups[i].getGroupName() %></option>
-									<%
-		}
-	}
-									%>
-                      				</select>
-                    			</td>
-                  			</tr>
-                         	 <tr>
-                             <td width="100" align="right">User Name:</td>
-                             <td width="192">
-                               <input type="text" name="Username" size="24" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
-                             </td>
-                          </tr>
-                          <tr>
-                             <td width="100" align="right">Password:</td>
-                             <td width="192">
-                               <input type="text" name="Password" size="24" value="<%= login.getPassword() %>" onchange="setContentChanged(true)">
-                             </td>
-                          </tr>-->
                           </table>
                         </td>
                         <td>

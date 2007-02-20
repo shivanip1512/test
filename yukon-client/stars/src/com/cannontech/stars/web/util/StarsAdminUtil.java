@@ -22,6 +22,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -65,7 +67,9 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.WorkOrderRole;
+import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -94,6 +98,7 @@ public class StarsAdminUtil {
 	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
+    private static final AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	
 	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
 		if (energyCompany.getDefaultRouteID() != routeID) {
@@ -1222,6 +1227,8 @@ public class StarsAdminUtil {
 	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
+	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
+	    AuthType defaultAuthType = AuthType.valueOf(defaultAuthTypeStr);
 		if (username.length() == 0)
 			throw new WebClientException( "Username cannot be empty" );
 		if (password.length() == 0)
@@ -1233,7 +1240,7 @@ public class StarsAdminUtil {
 		com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
 		
 		userDB.setUsername( username );
-		userDB.setPassword( password );
+        userDB.setAuthType(defaultAuthType);
 		userDB.setStatus( status );
 		
 		for (int i = 0; i < operGroups.length; i++) {
@@ -1253,21 +1260,19 @@ public class StarsAdminUtil {
 					CtiUtilities.getDatabaseAlias()
 					);
 			stmt.execute();
-			
-			ArrayList operLoginIDs = energyCompany.getOperatorLoginIDs();
-			synchronized (operLoginIDs) {
-				if (!operLoginIDs.contains( userDB.getUserID() ))
-					operLoginIDs.add(userDB.getUserID());
-			}
 		}
 		
 		LiteYukonUser liteUser = new LiteYukonUser(
 				userDB.getUserID().intValue(),
 				userDB.getUsername(),
-				userDB.getPassword(),
 				userDB.getStatus()
 				);
+        liteUser.setAuthType(defaultAuthType);
 		ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
+        
+        if (authenticationService.supportsPasswordSet(defaultAuthType)) {
+            authenticationService.setPassword(liteUser, password);
+        }
 		
 		return liteUser;
 	}
@@ -1278,11 +1283,13 @@ public class StarsAdminUtil {
 		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
 			throw new WebClientException( "Username '" + username + "' already exists" );
 		
-		if (password.length() == 0) {
+		if (password.length() != 0) {
 			if (!username.equalsIgnoreCase( liteUser.getUsername() ))
 				throw new WebClientException( "Password cannot be empty" );
-			// Only the login group and/or status have been changed, ignore the password
-			password = liteUser.getPassword();
+			if (!authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
+                throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
+            }
+            authenticationService.setPassword(liteUser, password);
 		}
 		
 		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
@@ -1290,7 +1297,6 @@ public class StarsAdminUtil {
 		
 		StarsLiteFactory.setYukonUser( dbUser, liteUser );
 		dbUser.setUsername( username );
-		dbUser.setPassword( password );
 		if (status != null) dbUser.setStatus( status );
 		
 		boolean groupChanged = false;
