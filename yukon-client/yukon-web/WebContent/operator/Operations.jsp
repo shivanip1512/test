@@ -19,7 +19,7 @@
 	}
 </script>
 
-<div class="main">
+<div id="main">
 
 <!-- Consumer Account Information section -->
 <%
@@ -319,26 +319,26 @@
 </cti:checkMultiRole>
 
 <!-- Administration section -->
-<cti:checkRole role="AdministratorRole.ROLEID">
+<cti:checkRole role="operator.AdministratorRole.ROLEID">
 
 	<tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
 		
-			<cti:checkProperty property="AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/AdminTest.jsp">Config Energy Company</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
-			<cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_MEMBERS"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/ManageMembers.jsp">Member <br/> Management</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
-			<cti:checkProperty property="AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/NewEnergyCompany.jsp">New Energy <br/> Company</a>
 	            </tags:sectionLink>
 			</cti:checkProperty> 
-			<cti:checkProperty property="AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"> 
 	        	<form name="DeleteForm" method="post" action="<c:url value="/servlet/StarsAdmin"/>">
 	            	<input type="hidden" name="action" value="DeleteEnergyCompany">
 	            	<input type="hidden" name="REDIRECT" value="<c:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
@@ -347,17 +347,17 @@
 	            	</tags:sectionLink>
 	        	</form>
 			</cti:checkProperty>
-			<cti:checkProperty property="AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/SwitchCommands.jsp">View Batch Commands</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
-			<cti:checkProperty property="AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/OptOutEvents.jsp">View Scheduled <cti:getProperty property="ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN" defaultvalue="opt out" format="all_capital"/> Events</a>
 	            </tags:sectionLink>
 			</cti:checkProperty> 
-			<cti:checkProperty property="AdministratorRole.ADMIN_MULTISPEAK_SETUP"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP"> 
 	            <tags:sectionLink>
 	            	<a href="../msp_setup.jsp">Multispeak Setup</a>
 	            </tags:sectionLink>
