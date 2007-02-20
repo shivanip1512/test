@@ -605,14 +605,16 @@ public class PointDataSummaryModel extends ReportModelBase
 				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
-				        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
-				            return lpMeterData.getVoltageDemandRate();
-				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
-				            return lpMeterData.getDemandRate();
-						else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-						    return lpMeterData.getLastIntervalDemand();
-//				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
-//				            return lpMeterData.getLastIntervalVoltage();
+				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+					        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
+					            return lpMeterData.getVoltageDemandRate();
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
+					            return lpMeterData.getDemandRate();
+							else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+							    return lpMeterData.getLastIntervalDemand();
+	//				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
+	//				            return lpMeterData.getLastIntervalVoltage();
+				    	}
 				    }
 				    return null;
 				}
@@ -688,17 +690,19 @@ public class PointDataSummaryModel extends ReportModelBase
 				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
-				        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ||
-				                lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
-				        {
-				            //Return null for voltage since this CASE is used to calculate total kWh
-//				            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
-				            return null;	//a null value "should" give us an "N/A" value.
-				        }
-				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
-				            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND)	//All other intervals are demandIntervals
-				            divisor = Integer.valueOf( lpMeterData.getLastIntervalDemand()).intValue();
+				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+					        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ||
+					                lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
+					        {
+					            //Return null for voltage since this CASE is used to calculate total kWh
+	//				            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
+					            return null;	//a null value "should" give us an "N/A" value.
+					        }
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
+					            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND)	//All other intervals are demandIntervals
+					            divisor = Integer.valueOf( lpMeterData.getLastIntervalDemand()).intValue();
+				    	}
 				    }				    
 				    if (divisor >  -1)
 				        return new Integer(3600 / divisor);
@@ -710,12 +714,14 @@ public class PointDataSummaryModel extends ReportModelBase
 				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
-				        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
-				            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
-				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
-				            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-				        else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-				            divisor = Integer.valueOf(lpMeterData.getLastIntervalDemand()).intValue();
+				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+					        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
+					            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
+					            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
+					        else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+					            divisor = Integer.valueOf(lpMeterData.getLastIntervalDemand()).intValue();
+				    	}
 				    }				    
 				    if (divisor >  -1)
 				        return new Integer(86400 / divisor);
