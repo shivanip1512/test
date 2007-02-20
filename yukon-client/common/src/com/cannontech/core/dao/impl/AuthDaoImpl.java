@@ -5,15 +5,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.RoleDao;
@@ -25,7 +27,6 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -40,46 +41,34 @@ public class AuthDaoImpl implements AuthDao {
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
     private IDatabaseCache databaseCache;
+    private AuthenticationService authenticationService;
     
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.AuthDao#login(java.lang.String, java.lang.String)
      */
 	public LiteYukonUser login(String username, String password) {
-		String radiusMethod;
-		//If admin user, skip the radius login attempt (the authentication mode is YUKON when skipped).
-		if( isAdminUser(username))
-			radiusMethod  = AuthenticationRole.YUKON_AUTH_STRING;
-		else
-			radiusMethod = roleDao.getGlobalPropertyValue(AuthenticationRole.AUTHENTICATION_MODE);
-			
-		if(radiusMethod != null && radiusMethod.equalsIgnoreCase(AuthenticationRole.RADIUS_AUTH_STRING))
-		{
-			CTILogger.info("Attempting a RADIUS login");
-			return RadiusLogin.login(username, password);
-		}
-		else
-		{
-			return yukonLogin(username, password);
-		}
-	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#yukonLogin(java.lang.String, java.lang.String)
-     */
-	public LiteYukonUser yukonLogin(String username, String password) {
-		
-		synchronized(databaseCache) {
-			Iterator i = databaseCache.getAllYukonUsers().iterator();
-			while(i.hasNext()) {
-				LiteYukonUser u = (LiteYukonUser) i.next();
-				if( !CtiUtilities.isDisabled(u.getStatus()) &&
-					u.getUsername().equals(username) &&
-					u.getPassword().equals(password) ) {
-					return u;  //success!
-				   }
-			}			
-			return null; //failure
-		}
+        try {
+            return authenticationService.login(username, password);
+        } catch (Exception e) {
+            CTILogger.info(e);
+            return null;
+        }
+//		String radiusMethod;
+//		//If admin user, skip the radius login attempt (the authentication mode is YUKON when skipped).
+//		if( isAdminUser(username))
+//			radiusMethod  = AuthenticationRole.YUKON_AUTH_STRING;
+//		else
+//			radiusMethod = roleDao.getGlobalPropertyValue(AuthenticationRole.AUTHENTICATION_MODE);
+//			
+//		if(radiusMethod != null && radiusMethod.equalsIgnoreCase(AuthenticationRole.RADIUS_AUTH_STRING))
+//		{
+//			CTILogger.info("Attempting a RADIUS login");
+//			return RadiusLogin.login(username, password);
+//		}
+//		else
+//		{
+//			return yukonLogin(username, password);
+//		}
 	}
 	
 	/* (non-Javadoc)
@@ -200,27 +189,16 @@ public class AuthDaoImpl implements AuthDao {
 	{
 		synchronized(databaseCache) 
 		{
-			Map lookupMap = databaseCache.getYukonGroupRolePropertyMap();
+			Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> lookupMap = 
+                databaseCache.getYukonGroupRolePropertyMap();
 			
-//Set s = lookupMap.keySet();
-//Iterator it = s.iterator();
-//while( it.hasNext() )
-//System.out.println("  " + it.next() );
-//
-//System.out.println("     Vals" );
-//Collection c = lookupMap.values();
-//it = c.iterator();
-//while( it.hasNext() )
-//System.out.println("  " + it.next() );
-
-
-			Map roleMap = (Map) lookupMap.get( group_ );			
+			Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> roleMap = lookupMap.get( group_ );			
 			
 			if(roleMap != null) {			
-				Iterator rIter = roleMap.entrySet().iterator(); 
+                Iterator<Entry<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> rIter = roleMap.entrySet().iterator();
 				while(rIter.hasNext()) {
-					Map propMap = (Map) ((Map.Entry) rIter.next()).getValue(); //Iter.next();
-					String val = (String) propMap.get(getRoleProperty(rolePropertyID));
+					Map<LiteYukonRoleProperty, String> propMap = rIter.next().getValue();
+					String val = propMap.get(getRoleProperty(rolePropertyID));
 					if(val != null) return val;
 				}
 			}
@@ -231,8 +209,8 @@ public class AuthDaoImpl implements AuthDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.AuthDao#getRoles(java.lang.String)
      */
-	public List getRoles(String category) {
-		List retList = new ArrayList(100);
+	public List<LiteYukonRole> getRoles(String category) {
+		List<LiteYukonRole> retList = new ArrayList<LiteYukonRole>(100);
 				
 		synchronized(databaseCache) {
 			Iterator i = databaseCache.getAllYukonRoles().iterator();
@@ -282,8 +260,8 @@ public class AuthDaoImpl implements AuthDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.AuthDao#getRoleProperties(com.cannontech.database.data.lite.LiteYukonRole)
      */
-	public List getRoleProperties(LiteYukonRole role) {
-		ArrayList props = new ArrayList();
+	public List<LiteYukonRoleProperty> getRoleProperties(LiteYukonRole role) {
+		ArrayList<LiteYukonRoleProperty> props = new ArrayList<LiteYukonRoleProperty>();
 		
         synchronized(databaseCache) {
 			for(Iterator i = databaseCache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
@@ -553,5 +531,9 @@ public class AuthDaoImpl implements AuthDao {
     @Required
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 }

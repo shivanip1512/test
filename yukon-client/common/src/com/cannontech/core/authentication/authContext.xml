@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="authenticationService" class="com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl">
+      <property name="providerMap">
+        <map>
+          <entry key="PLAIN" value-ref="localPlainAuthentication"/>
+          <entry key="HASH_SHA" value-ref="localShaAuthentication"/>
+          <entry key="RADIUS" value-ref="radiusLoginProvider"/>
+          <entry key="NONE" value-ref="nullAuthentication"/>
+        </map>
+      </property>
+      <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
+    
+    <bean id="yukonUserPasswordDao" class="com.cannontech.core.authentication.dao.impl.YukonUserPasswordDaoImpl">
+      <property name="template" ref="simpleJdbcTemplate"/>
+    </bean>
+    
+    <bean id="localPlainAuthentication" class="com.cannontech.core.authentication.service.impl.LocalPlainAuthenticationService">
+      <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
+    </bean>
+    
+    <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService">
+      <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
+      <property name="passwordHasher">
+        <bean class="com.cannontech.core.authentication.service.impl.MessageDigestHasher">
+          <constructor-arg value="SHA"/>
+        </bean>
+      </property>
+    </bean>
+    
+    <bean id="radiusLoginProvider" class="com.cannontech.common.login.radius.RadiusLogin">
+      <property name="roleDao" ref="roleDao"/>
+    </bean>
+    
+    <bean id="nullAuthentication" class="com.cannontech.core.authentication.service.impl.NullAuthenticationService">
+    </bean>
+</beans>
+

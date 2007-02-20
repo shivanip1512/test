@@ -36,6 +36,11 @@
         <property name="dataSource" ref="yukonDataSource" />
     </bean>
 
+    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate"
+        singleton="false">
+        <constructor-arg ref="jdbcTemplate"/>
+    </bean>
+
     <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
         <property name="dbChangeListener" ref="cacheDbChangeListener" />
     </bean>

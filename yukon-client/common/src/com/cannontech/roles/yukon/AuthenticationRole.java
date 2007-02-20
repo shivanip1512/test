@@ -25,5 +25,6 @@ public interface AuthenticationRole {
 	public static final int AUTH_METHOD = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 4;
 	public static final int AUTHENTICATION_MODE = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 5;
 	public static final int AUTH_TIMEOUT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 6;
+    public static final int DEFAULT_AUTH_TYPE = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 7;
 	
 }

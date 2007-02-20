@@ -1,154 +1,130 @@
 package com.cannontech.database.data.lite;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.user.YukonUser;
 
 /**
  * @author alauinger
  */
 public class LiteYukonUser extends LiteBase {
-	private String username;
-	private String password;
-	private String status;
-	
-	public LiteYukonUser() {
-		this(0,null,null,null);
-	}
-	
-	public LiteYukonUser(int id) {
-		this(id,null,null,null);
-	}
-	
-	public LiteYukonUser(int id, String username, String password, String status) {
-		setLiteType(LiteTypes.YUKON_USER);
-		setUserID(id);
-		setUsername(username);
-		setPassword(password);		
-		setStatus(status);
-	}
-	
-	/**
-	 * Returns the password.
-	 * @return String
-	 */
-	public String getPassword() {
-		return password;
-	}
+    private String username;
+    private String status;
+    private AuthType authType;
 
+    public LiteYukonUser() {
+        this(0,null,null);
+    }
 
-	public void retrieve( String dbAlias )
-	{
-		
-		String sql = 
-			"SELECT Username,Password,Status FROM " + YukonUser.TABLE_NAME + " " +
-			"WHERE UserID = " + getUserID();
-   		
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rset = null;
-		
-		try 
-		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-							dbAlias );
+    public LiteYukonUser(int id) {
+        this(id,null,null);
+    }
 
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sql);
+    public LiteYukonUser(int id, String username, String status) {
+        this(id, username, status, AuthType.PLAIN);
+    }
 
-			
-			if( rset.next() ) 
-			{
-      		setUsername( rset.getString(1).trim() );
-      		setPassword( rset.getString(2).trim() );
-      		setStatus( rset.getString(3) );
-         }
-         
-		}
-		catch(SQLException e ) 
-		{
-      	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-      finally 
-      {
-         	try {
-            	if( stmt != null )
-               	stmt.close();
-            	if( conn != null )
-               	conn.close();
-         	}
-         	catch( java.sql.SQLException e ) {
-            	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         	}
-      }
-      
-	}
-	
-	/**
-	 * Returns the username.
-	 * @return String
-	 */
-	public String getUsername() {
-		return username;
-	}
+    public LiteYukonUser(int id, String username, String status, AuthType authType) {
+        setLiteType(LiteTypes.YUKON_USER);
+        setUserID(id);
+        setUsername(username);
+        setStatus(status);
+        setAuthType(authType);
+    }
 
-	/**
-	 * Sets the password.
-	 * @param password The password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void retrieve( String dbAlias )
+    {
 
-	/**
-	 * Sets the username.
-	 * @param username The username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select", "Username,Status,AuthType");
+        sql.append("from", YukonUser.TABLE_NAME);
+        sql.append("where", "UserID = ?");
 
-	/**
-	 * Returns the userID.
-	 * @return int
-	 */
-	public int getUserID() {
-		return getLiteID();
-	}
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
 
-	/**
-	 * Sets the userID.
-	 * @param userID The userID to set
-	 */
-	public void setUserID(int userID) {
-		setLiteID(userID);
-	}
-	
-	/**
-	 * This method was created by Cannon Technologies Inc.
-	 */
-	public String toString()
-	{
-		return getUsername();
-	}
+        Object[] args = new Object[] {getUserID()};
+        template.query(sql.toString(), args, new ResultSetExtractor() {
+            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+                rs.next();
+                setUsername(rs.getString("Username").trim() );
+                setStatus(rs.getString("Status") );
+                setAuthType(AuthType.valueOf(rs.getString("AuthType")));
+                return null;
+            }
+        });
 
-	/**
-	 * Returns the status.
-	 * @return String
-	 */
-	public String getStatus() {
-		return status;
-	}
+    }
 
-	/**
-	 * Sets the status.
-	 * @param status The status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    /**
+     * Returns the username.
+     * @return String
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Sets the username.
+     * @param username The username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Returns the userID.
+     * @return int
+     */
+    public int getUserID() {
+        return getLiteID();
+    }
+
+    /**
+     * Sets the userID.
+     * @param userID The userID to set
+     */
+    public void setUserID(int userID) {
+        setLiteID(userID);
+    }
+
+    /**
+     * This method was created by Cannon Technologies Inc.
+     */
+    public String toString()
+    {
+        return getUsername();
+    }
+
+    /**
+     * Returns the status.
+     * @return String
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets the status.
+     * @param status The status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public AuthType getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
 
 }

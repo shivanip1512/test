@@ -1,7 +1,5 @@
 package com.cannontech.common.login.radius;
 
-import java.util.Iterator;
-
 import net.sourceforge.jradiusclient.RadiusAttribute;
 import net.sourceforge.jradiusclient.RadiusAttributeValues;
 import net.sourceforge.jradiusclient.RadiusClient;
@@ -9,13 +7,15 @@ import net.sourceforge.jradiusclient.RadiusPacket;
 import net.sourceforge.jradiusclient.exception.InvalidParameterException;
 import net.sourceforge.jradiusclient.exception.RadiusException;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.authentication.service.AuthenticationProvider;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.AuthenticationRole;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author snebben
@@ -23,59 +23,45 @@ import com.cannontech.yukon.IDatabaseCache;
  * Handles Radius login and authentication
  *
  */
-public class RadiusLogin
-{
+public class RadiusLogin implements AuthenticationProvider {
+    private static Logger log = YukonLogManager.getLogger(RadiusLogin.class);
+    private RoleDao roleDao;
 	/**
 	 * @param username
 	 * @param password
 	 * @return
 	 */
-	public static LiteYukonUser login(String username, String password)
-	{
-		// We need to decide if checking for role existance (checkRole) defines a YukonGroup
-		// having Radius logins, or whether we should check the role property RADIUS_SERVER_ADDRESS 
-		// has some value other than '(none)'. SN / Jon
-		RadiusClient rc;
-		try
-		{
-			String radiusAddr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
-			int authPort = Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
-			int acctPort = Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
-			int authTimeout = Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.AUTH_TIMEOUT)) * 1000;
-			String secret = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
+    public boolean login(String username, String password) {
+        // We need to decide if checking for role existance (checkRole) defines a YukonGroup
+        // having Radius logins, or whether we should check the role property RADIUS_SERVER_ADDRESS 
+        // has some value other than '(none)'. SN / Jon
+        RadiusClient rc;
+        try {
+            String radiusAddr = roleDao.getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
+            int authPort = Integer.valueOf(roleDao.getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
+            int acctPort = Integer.valueOf(roleDao.getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
+            int authTimeout = Integer.parseInt(roleDao.getGlobalPropertyValue(AuthenticationRole.AUTH_TIMEOUT)) * 1000;
+            String secret = roleDao.getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
 
-		
-			rc = new RadiusClient(
-				radiusAddr, authPort, acctPort, secret, authTimeout );
-			
-			if( basicAuthenticate(rc, username, password))
-			{
-				IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-				synchronized(cache) {
-				Iterator i = cache.getAllYukonUsers().iterator();
-				while(i.hasNext()) {
-					LiteYukonUser u = (LiteYukonUser) i.next();
-					if( CtiUtilities.isEnabled(u.getStatus()) &&
-						u.getUsername().equalsIgnoreCase(username) ) {
-						return u;  //success!
-					   }
-				}
-				}			
-			}
-				
-		}
-		catch (RadiusException e)
-		{
-			//Auto-generated catch block
-			CTILogger.error( e.getMessage(), e );
-		}
-		catch (InvalidParameterException e)
-		{
-			//Auto-generated catch block
-			CTILogger.error( e.getMessage(), e );
-		}
-		return null;
-	}
+            rc = new RadiusClient(radiusAddr, authPort, acctPort, secret, authTimeout );
+
+            if( basicAuthenticate(rc, username, password)) {
+                return true;			
+            }
+
+        }
+        catch (RadiusException e) {
+            log.error( "Radius Login Failed", e );
+        }
+        catch (InvalidParameterException e) {
+            log.error( "Radius Login Failed", e );
+        }
+        return false;
+    }
+    
+    public boolean login(LiteYukonUser user, String password) {
+        return login(user.getUsername(), password);
+    }
 
 	/**
 	 *  TESTING FUNCTION!!!!
@@ -94,13 +80,11 @@ public class RadiusLogin
 		}
 		catch (RadiusException e)
 		{
-			//Auto-generated catch block
-			CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 		}
 		catch (InvalidParameterException e)
 		{
-			//Auto-generated catch block
-			CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 		}
 		return false;
 	}
@@ -114,10 +98,6 @@ public class RadiusLogin
 	{
 		try
 		{
-			boolean attributes = false, continueTest = true;
-			String authMethod = null;
-
-			attributes = false;
 			RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
 			accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_NAME, userName.getBytes()));
 			accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD, userPass.getBytes()));
@@ -126,83 +106,32 @@ public class RadiusLogin
 			switch(accessResponse.getPacketType()){
 				case RadiusPacket.ACCESS_ACCEPT:
 					CTILogger.info("User " + userName + " authenticated");
-					//printAttributes(accessResponse);
-					//basicAccount(rc,userName);
 					return true;
 				case RadiusPacket.ACCESS_REJECT:
 					CTILogger.info("User " + userName + " NOT authenticated");
-					//printAttributes(accessResponse);
 					return false;
 				case RadiusPacket.ACCESS_CHALLENGE:
 					String reply = new String(accessResponse.getAttribute(RadiusAttributeValues.REPLY_MESSAGE).getValue());
-					System.out.println("User " + userName + " Challenged with " + reply);
+					log.warn("User " + userName + " Challenged with " + reply);
 					break;
 				default:
-					System.out.println("Received an unknown RadiusPacket with the following type: " + accessResponse.getPacketType());
+					log.warn("Received an unknown RadiusPacket with the following type: " + accessResponse.getPacketType());
 					break;
 			}
 		}
-		catch(InvalidParameterException ivpex)
-		{
-			CTILogger.error( ivpex.getMessage(), ivpex );
+		catch(InvalidParameterException ivpex) {
+			log.error("Radius basicAuthenticate failed for: " + userName, ivpex);
 		}
-		catch(RadiusException rex)
-		{
-			CTILogger.error( rex.getMessage(), rex );
+		catch(RadiusException rex) {
+			log.error("Radius basicAuthenticate failed for: " + userName, rex);
 		}
 
 		return false;
-	}	
-	/**
-	 * @param rp
-	 */
-	private static void printAttributes(RadiusPacket rp)
-	{
-		Iterator attributes = rp.getAttributes().iterator();
-		RadiusAttribute tempRa;
-		CTILogger.debug("Response Packet Attributes");
-		CTILogger.debug("\tType\tValue");
-		while(attributes.hasNext())
-		{
-			tempRa = (RadiusAttribute)attributes.next();
-			CTILogger.debug("\t" + tempRa.getType() + "\t" + new String(tempRa.getValue()));
-		}
 	}
 
-	/**
-	 * Opens the Radius accounting port to send/log Radius accounting events to
-	 * the server. This is optional on most systems.
-	 * 
-	 * @param rc
-	 * @param userName
-	 * @throws InvalidParameterException
-	 * @throws RadiusException
-	 */
-	private static boolean basicAccount(final RadiusClient rc, final String userName)throws InvalidParameterException, RadiusException
-	{
-		RadiusPacket accountRequest = new RadiusPacket(RadiusPacket.ACCOUNTING_REQUEST);
-		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_NAME,userName.getBytes()));
-		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.ACCT_STATUS_TYPE,new byte[]{0, 0, 0, 1}));
+    @Required
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }	
 
-		//What exactly is the ACCT_SESSION_ID??? using username until we learn more!  SN
-		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.ACCT_SESSION_ID,(userName).getBytes()));
-		accountRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.SERVICE_TYPE,new byte[]{0, 0, 0, 1}));
-		RadiusPacket accountResponse = rc.account(accountRequest);
-		printAttributes(accountResponse);
-		switch(accountResponse.getPacketType()){
-			case RadiusPacket.ACCOUNTING_MESSAGE:
-				CTILogger.debug("User " + userName + " got ACCOUNTING_MESSAGE response");
-				return true;
-			case RadiusPacket.ACCOUNTING_RESPONSE:
-				CTILogger.debug("User " + userName + " got ACCOUNTING_RESPONSE response");
-				return true;
-			case RadiusPacket.ACCOUNTING_STATUS:
-				CTILogger.debug("User " + userName + " got ACCOUNTING_STATUS response");
-				return true;
-			default:
-				CTILogger.debug("User " + userName + " got invalid response " + accountResponse.getPacketType() );
-				return false;
-		}
-		
-	}	
 }

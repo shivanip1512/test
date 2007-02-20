@@ -3,7 +3,10 @@ package com.cannontech.database.db.user;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -15,14 +18,14 @@ public class YukonUser extends DBPersistent
 		
 	private Integer userID = null;
 	private String username = null;
-	private String password = null;
 	private String status = UserUtils.STATUS_DISABLED;
+    private AuthType authType = AuthType.PLAIN;
 
 	private static final String[] SELECT_COLUMNS = 
 	{ 	
 		"Username", 
-		"Password",
-		"Status" 
+		"Status",
+        "AuthType"
 	};
 	
 	
@@ -30,7 +33,7 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getUserID(), getUsername(), getPassword(), getStatus() };
+		Object[] addValues = { getUserID(), getUsername(), getStatus(), getAuthType().name() };
 		add(TABLE_NAME, addValues);
 	}
 
@@ -46,7 +49,7 @@ public class YukonUser extends DBPersistent
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
-		String sql = "SELECT l.UserID, l.UserName, l.Password, l.LoginCount, l.LastLogin, l.Status " +
+		String sql = "SELECT l.UserID, l.UserName, l.AuthType, l.LoginCount, l.LastLogin, l.Status " +
 			"FROM " + TABLE_NAME + " l " +
 			"WHERE l.UserID = ?";// and l.UserID > " + UserUtils.USER_INVALID_ID;
 	
@@ -70,8 +73,8 @@ public class YukonUser extends DBPersistent
 					user.setDbConnection(conn);
 					user.setUserID( new Integer(rset.getInt("UserID")) );
 					user.setUsername( rset.getString("UserName") );
-					user.setPassword( rset.getString("Password") );
 					user.setStatus( rset.getString("Status") );
+                    user.setAuthType(AuthType.valueOf(rset.getString("AuthType")));
 				}
 						
 			}
@@ -102,46 +105,9 @@ public class YukonUser extends DBPersistent
 	 */
 	public static final Integer getNextUserID( java.sql.Connection conn )
 	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-		
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		String sql = "SELECT max(UserID) as UserID " + "FROM " + TABLE_NAME;
-		int newID = 0;
-		
-		try
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			rset = pstmt.executeQuery();							
-	
-			while( rset.next() )
-			{
-				newID = rset.getInt("UserID") + 1;
-				if( newID < 1 )
-					newID = 1;
-				break;
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-			}	
-		}	
-		
-		return new Integer( newID );
+        NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+        int nextValue = nextValueHelper.getNextValue(TABLE_NAME);
+        return nextValue;
 	}
 	
 	
@@ -163,8 +129,8 @@ public class YukonUser extends DBPersistent
 		
 		if(results.length == SELECT_COLUMNS.length) {
 			setUsername((String) results[0]);
-			setPassword((String) results[1]);
-			setStatus((String) results[2]);
+			setStatus((String) results[1]);
+			setAuthType(AuthType.valueOf((String) results[2]));
 		}
 	}
 
@@ -172,20 +138,12 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		Object[] setValues = { getUsername(), getPassword(), getStatus() };
+		Object[] setValues = { getUsername(), getStatus(), getAuthType().name() };
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
 		
 		update(TABLE_NAME, SELECT_COLUMNS, setValues, constraintColumns, constraintValues);
-	}
-
-	/**
-	 * Returns the password.
-	 * @return String
-	 */
-	public String getPassword() {
-		return password;
 	}
 
 	/**
@@ -202,14 +160,6 @@ public class YukonUser extends DBPersistent
 	 */
 	public String getUsername() {
 		return username;
-	}
-
-	/**
-	 * Sets the password.
-	 * @param password The password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	/**
@@ -243,5 +193,15 @@ public class YukonUser extends DBPersistent
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+
+    public AuthType getAuthType() {
+        return authType;
+    }
+
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
 
 }

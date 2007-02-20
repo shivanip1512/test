@@ -17,10 +17,9 @@ public interface AuthDao {
      * @param username
      * @param password
      * @return LiteYukonUser
+     * @deprecated Please call AuthenticationService.login() directly
      */
     public LiteYukonUser login(String username, String password);
-
-    public LiteYukonUser yukonLogin(String username, String password);
 
     /**
      * Returns LiteYukonRole if the given user 

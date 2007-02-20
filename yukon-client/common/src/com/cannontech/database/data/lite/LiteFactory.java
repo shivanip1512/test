@@ -194,7 +194,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			returnObject = new com.cannontech.database.data.user.YukonUser();
 	 		((com.cannontech.database.data.user.YukonUser)returnObject).setUserID( new Integer(((LiteYukonUser)liteObject).getUserID()) );
 	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setUsername( ((LiteYukonUser)liteObject).getUsername() );
-	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setPassword( ((LiteYukonUser)liteObject).getPassword() );
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setAuthType( ((LiteYukonUser)liteObject).getAuthType() );
 	 		break;
 		case LiteTypes.YUKON_GROUP:
 			returnObject = new com.cannontech.database.data.user.YukonGroup();
@@ -411,8 +411,8 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteYukonUser(
 			((YukonUser)val).getUserID().intValue(),
 			((YukonUser)val).getYukonUser().getUsername(),
-			((YukonUser)val).getYukonUser().getPassword(),
-			((YukonUser)val).getYukonUser().getStatus() );
+			((YukonUser)val).getYukonUser().getStatus(),
+            ((YukonUser)val).getYukonUser().getAuthType());
 	}
 	else if( val instanceof YukonGroup )
 	{

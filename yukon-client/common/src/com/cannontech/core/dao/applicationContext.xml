@@ -15,6 +15,7 @@
   	<property name="yukonUserDao" ref="yukonUserDao" />
   	<property name="contactDao" ref="contactDao" />
   	<property name="databaseCache" ref="databaseCache" />
+  	<property name="authenticationService" ref="authenticationService" />
   </bean>
   <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
   	<property name="databaseCache" ref="databaseCache" />

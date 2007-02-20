@@ -49,3 +49,8 @@ alter table grouppaopermission
    add constraint AK_GROUPPAOPERMISSION_GROUPPAOPERM unique (groupId, paoId, permission)
 /**********************/
 
+
+/*** New column for YukonUser to support variable authentication types */
+alter table YukonUser add  AuthType varchar(16) default 'PLAIN' not null;
+insert into yukonroleproperty values (-1307, -4, 'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,NONE');
+/************/

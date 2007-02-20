@@ -56,5 +56,8 @@
       <sequence name="grouppaopermissionid">
         <table name="GroupPaoPermissiong" identitycolumn="grouppaopermissionid" initsequence="true"/>
       </sequence>
+      <sequence name="YukonUser">
+        <table name="YukonUser" identitycolumn="UserID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
