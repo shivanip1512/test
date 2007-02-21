@@ -47,6 +47,7 @@
 
     <target name="init">
         <echo message="JAVA_HOME=${env.JAVA_HOME}"/>
+        <echo message="ANT_HOME=${env.ANT_HOME}"/>
         <echo message="target=${yukon.javac.target}"/>
         <mkdir dir="${yukon.lib}" />
     </target>
