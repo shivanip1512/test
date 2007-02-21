@@ -19,17 +19,14 @@ Class-Path: ./
  mx4j-rjmx.jar 
  common.jar 
  tools.jar 
- log4j-1.2.4.jar 
  rwav.jar 
  acme.jar 
  yukonappserver.jar 
- j2ee.jar 
  jfreechart.jar 
  jcommon.jar 
  jcfield401K.jar 
- jcpagelayout450k.jar 
- jcchart401k.jar 
- xerces.jar 
+ jcpagelayout450K.jar 
+ jcchart401K.jar 
  batik.jar 
  SqlServer.jar 
  jtds.jar 
@@ -45,4 +42,4 @@ Class-Path: ./
  wsdl4j.jar 
  spring.jar 
  ../log/ 
- ../export/
+ ../export/ 

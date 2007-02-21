@@ -10,15 +10,13 @@ Class-Path: ./
  common.jar 
  yukonappserver.jar 
  commercialcurtailment.jar 
- j2ee.jar 
  jcpagelayout450K.jar 
  rwav.jar 
  acme.jar 
- log4j-1.2.4.jar 
  batik.jar 
  junit.jar 
  jtds.jar 
  SqlServer.jar 
  classes12.jar 
  ../log/ 
- ../export/
+ ../export/ 

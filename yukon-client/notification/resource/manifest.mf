@@ -4,7 +4,6 @@ Class-Path: ./
  common.jar 
  cbc.jar 
  commercialcurtailment.jar 
- log4j-1.2.4.jar 
  mx4j.jar 
  mx4j-jmx.jar 
  mx4j-tools.jar 
@@ -15,7 +14,6 @@ Class-Path: ./
  rwav.jar 
  vvr_tools.jar 
  yukonappserver.jar 
- j2ee.jar 
  jtds.jar 
  jdom.jar 
  SqlServer.jar 
@@ -27,4 +25,4 @@ Class-Path: ./
  commons-collections-3.2.jar 
  commons-lang-2.1.jar 
  ../log/ 
- ../export/
+ ../export/ 

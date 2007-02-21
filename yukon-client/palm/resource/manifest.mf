@@ -1,3 +1,10 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.palm.client.ClientFrame
-Class-Path: ./ common.jar yukonappserver.jar j2ee.jar jtds.jar SqlServer.jar classes12.jar ../log/ ../export/
+Class-Path: ./ 
+ common.jar 
+ yukonappserver.jar 
+ jtds.jar 
+ SqlServer.jar 
+ classes12.jar 
+ ../log/ 
+ ../export/ 

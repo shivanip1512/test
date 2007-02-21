@@ -1,3 +1,12 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.export.gui.ExportGui
-Class-Path: ./ rwav.jar common.jar calchist.jar log4j-1.2.4.jar yukonappserver.jar j2ee.jar SqlServer.jar jtds.jar classes12.jar ../log/ ../export/
+Class-Path: ./ 
+ rwav.jar 
+ common.jar 
+ calchist.jar 
+ yukonappserver.jar 
+ SqlServer.jar 
+ jtds.jar 
+ classes12.jar 
+ ../log/ 
+ ../export/ 

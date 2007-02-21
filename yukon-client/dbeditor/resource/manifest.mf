@@ -7,12 +7,10 @@ Class-Path:
  billing.jar 
  rwav.jar 
  acme.jar 
- log4j-1.2.4.jar 
  yukonappserver.jar 
- j2ee.jar 
  jcfield401K.jar 
  classes12.jar 
  jtds.jar 
  SqlServer.jar 
  ../log/ 
- ../export/
+ ../export/ 

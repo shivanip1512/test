@@ -6,9 +6,7 @@ Class-Path:
  common.jar 
  yukonappserver.jar 
  tools.jar 
- j2ee.jar 
  rwav.jar 
- log4j-1.2.4.jar 
  batik.jar 
  junit.jar 
  jtds.jar 
@@ -22,9 +20,8 @@ Class-Path:
  wsdl4j.jar 
  commons-fileupload.jar 
  mail.jar 
- xerces.jar 
  jaxm-api.jar 
  saaj.jar 
  ../log/ 
- ../export/
+ ../export/ 
 
