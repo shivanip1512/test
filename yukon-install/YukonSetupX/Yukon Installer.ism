@@ -478,7 +478,6 @@
 		<row><td>int15d.dll</td><td>Common Dlls</td><td>int15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\int15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>interp.dll</td><td>MACS Server</td><td>interp.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\interp.dll</td><td>1</td><td>NewSubFolder75</td></row>
 		<row><td>itext.jar</td><td>Common Bin</td><td>itext.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\itext.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>j2ee.jar</td><td>Common Bin</td><td>j2ee.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\j2ee.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jar.exe1</td><td>Yukon Web Deployment</td><td>jar.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\jar.exe</td><td>1</td><td>NewSubFolder4</td></row>
 		<row><td>java.dll1</td><td>Yukon Web Deployment</td><td>java.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\java.dll</td><td>1</td><td>NewSubFolder4</td></row>
 		<row><td>jcfield401k.jar</td><td>Common Bin</td><td>jcfield401K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcfield401K.jar</td><td>1</td><td>NewSubFolder85</td></row>
@@ -570,7 +569,6 @@
 		<row><td>wrapper.dll</td><td>Common Bin</td><td>Wrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\Wrapper.dll</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>wrapper.exe</td><td>Common Bin</td><td>Wrapper.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\Wrapper.exe</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>wrapper.jar</td><td>Common Bin</td><td>wrapper.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\wrapper.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>xerces.jar</td><td>Common Bin</td><td>xerces.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\xerces.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>xerces_c_1_7_0d.dll</td><td>Common Dlls</td><td>xerces-c_1_7_0D.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\xerces-c_1_7_0D.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>yc.jar</td><td>Yukon Commander</td><td>yc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yc.jar</td><td>1</td><td>NewSubFolder89</td></row>
 		<row><td>yukon.war</td><td>Yukon Web Deployment</td><td>yukon.war</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yukon.war</td><td>1</td><td>NewSubFolder4</td></row>
