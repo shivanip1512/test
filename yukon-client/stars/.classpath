@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/struts.jar"/>
-	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/jruntags.jar"/>

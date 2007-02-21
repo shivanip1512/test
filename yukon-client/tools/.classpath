@@ -9,7 +9,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/led.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/rwav.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/xerces.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/castor-xml.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/dom4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jaxm-runtime.jar"/>
