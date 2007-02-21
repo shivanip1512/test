@@ -229,8 +229,8 @@ insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcol
 insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 3, 'Alt - Enabled', 2, 6, 0 from stategroup where name = '1LNSUBSTATE';
 
 insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1 , '1LNVERIFY', 'Status' from stategroup;
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 0, 'Verify All', 2, 6, 0 from stategroup where name = '1LNVERIFY';
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 5, 1, 'Verify Stop', 6, 6, 0 from stategroup where name = '1LNVERIFY';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 0, 'Verify All', 2, 6, 0 from stategroup where name = '1LNVERIFY';
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 1, 'Verify Stop', 6, 6, 0 from stategroup where name = '1LNVERIFY';
 
 update point set pointoffset = 2 where pointname like 'UV op count%';
 update point set pointoffset = 3 where pointname like 'OV op count%';
