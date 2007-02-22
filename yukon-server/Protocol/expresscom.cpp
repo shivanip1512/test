@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/02/03 00:44:33 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/02/22 22:42:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,15 +103,15 @@ bool CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 {
     bool status = false;
 
-    _uniqueAddress      = parse.getiValue("xc_serial", 0);   //( serial != -1 ? serial : 0 );
-    _spidAddress        = parse.getiValue("xc_spid", 0);     //( spid != -1 ? spid : 0);
-    _geoAddress         = parse.getiValue("xc_geo", 0);      //( geo != -1 ? geo : 0);
-    _substationAddress  = parse.getiValue("xc_sub", 0);      //( substation != -1 ? substation : 0);
-    _feederAddress      = parse.getiValue("xc_feeder", 0);   //( feeder != -1 ? feeder : 0);
-    _zipAddress         = parse.getiValue("xc_zip", 0);      //( zip != -1 ? zip : 0);
-    _udaAddress         = parse.getiValue("xc_uda", 0);      //( uda != -1 ? uda : 0);
-    _programAddress     = parse.getiValue("xc_program", 0);  //( program != -1 ? program : 0);
-    _splinterAddress    = parse.getiValue("xc_splinter", 0); //( splinter != -1 ? splinter : 0);
+    _uniqueAddress      = parse.getiValue("xc_serial",   0);  //( serial     != -1 ? serial     : 0 );
+    _spidAddress        = parse.getiValue("xc_spid",     0);  //( spid       != -1 ? spid       : 0);
+    _geoAddress         = parse.getiValue("xc_geo",      0);  //( geo        != -1 ? geo        : 0);
+    _substationAddress  = parse.getiValue("xc_sub",      0);  //( substation != -1 ? substation : 0);
+    _feederAddress      = parse.getiValue("xc_feeder",   0);  //( feeder     != -1 ? feeder     : 0);
+    _zipAddress         = parse.getiValue("xc_zip",      0);  //( zip        != -1 ? zip        : 0);
+    _udaAddress         = parse.getiValue("xc_uda",      0);  //( uda        != -1 ? uda        : 0);
+    _programAddress     = parse.getiValue("xc_program",  0);  //( program    != -1 ? program    : 0);
+    _splinterAddress    = parse.getiValue("xc_splinter", 0);  //( splinter   != -1 ? splinter   : 0);
 
     resolveAddressLevel();
 
@@ -453,7 +453,7 @@ INT CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cycle
 
             int bytes = parse.getiValue("bytes_to_follow", 0);
 
-            // We are allowing any number of bytes they desire to send. 
+            // We are allowing any number of bytes they desire to send.
             // This is due to the oddity of timing the adjustors, so it is possible to have
             // a slightly variable number of adjustors.
             _message.push_back(bytes);
@@ -844,12 +844,12 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
     msgBlock[1] = flags;
     msgBlock[2] = timePeriod;
 
-    while (i < str.length() && i < 121) 
+    while (i < str.length() && i < 121)
     {
         msgBlock[i+3] = str.data()[i];
         i++;
     }
-    
+
     status = data(msgBlock, i, 0x02, 0x0 );
     return status;
 
@@ -1016,20 +1016,21 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
 
 void CtiProtocolExpresscom::resolveAddressLevel()
 {
-    _addressLevel = atIndividual;
-    _addressLength = atIndividualLen+1;
+    _addressLevel  = atIndividual;
+    _addressLength = atIndividualLen + 1;
 
-    if(_uniqueAddress == 0)
+    if( _uniqueAddress == 0 )
     {
         _addressLength = 1;
-        if(_spidAddress != 0)           {_addressLevel |= atSpid;       _addressLength += atSpidLen;      }
-        if(_geoAddress != 0)            {_addressLevel |= atGeo;        _addressLength += atGeoLen;       }
-        if(_substationAddress != 0)     {_addressLevel |= atSubstation; _addressLength += atSubstationLen;}
-        if(_feederAddress != 0)         {_addressLevel |= atFeeder;     _addressLength += atFeederLen;    }
-        if(_zipAddress != 0)            {_addressLevel |= atZip;        _addressLength += atZipLen;       }
-        if(_udaAddress != 0)            {_addressLevel |= atUser;       _addressLength += atUserLen;      }
-        if(_programAddress != 0)        {_addressLevel |= atProgram;    _addressLength += atProgramLen;   }
-        if(_splinterAddress != 0)       {_addressLevel |= atSplinter;   _addressLength += atSplinterLen;  }
+
+        if( _spidAddress       != 0 )   {   _addressLevel |= atSpid;       _addressLength += atSpidLen;         }
+        if( _geoAddress        != 0 )   {   _addressLevel |= atGeo;        _addressLength += atGeoLen;          }
+        if( _substationAddress != 0 )   {   _addressLevel |= atSubstation; _addressLength += atSubstationLen;   }
+        if( _feederAddress     != 0 )   {   _addressLevel |= atFeeder;     _addressLength += atFeederLen;       }
+        if( _zipAddress        != 0 )   {   _addressLevel |= atZip;        _addressLength += atZipLen;          }
+        if( _udaAddress        != 0 )   {   _addressLevel |= atUser;       _addressLength += atUserLen;         }
+        if( _programAddress    != 0 )   {   _addressLevel |= atProgram;    _addressLength += atProgramLen;      }
+        if( _splinterAddress   != 0 )   {   _addressLevel |= atSplinter;   _addressLength += atSplinterLen;     }
     }
 
     return;
@@ -1038,21 +1039,23 @@ void CtiProtocolExpresscom::resolveAddressLevel()
 
 void CtiProtocolExpresscom::dump() const
 {
-    if(_message.size() > 0)
+    if( _message.size() > 0 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
+
         char of = dout.fill('0');
+
         dout << " Message : ";
 
-        for(int i = 0; i < _message.size(); i++)
+        for( int i = 0; i < _message.size(); i++ )
         {
             dout << hex << setw(2) << (int)_message[i] << dec << " ";
         }
+
         dout << endl;
 
         dout.fill(of);
     }
-
 }
 
 BYTE CtiProtocolExpresscom::getStartByte() const
@@ -1172,7 +1175,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
                                    parse.getiValue("xcte", 0),
                                    parse.getiValue("xctf", 0),
                                    parse.getiValue("xcdsf", 0),
-                                   hold, 
+                                   hold,
                                    bump,
                                    parse.getiValue("xcstage", 0x00));
     }
@@ -1310,7 +1313,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
         bool restore = parse.isKeyValid("xcrunprog") ? true : false;
         bool temporary = parse.isKeyValid("xcholdprog") ? false : true;
-        
+
         if(parse.isKeyValid("xctwosetpoints"))
         {
             thermostatSetStateTwoSetpoint( relaymask,
@@ -1345,7 +1348,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 
         status = disableContractorMode( parse.getiValue("xcmode", 0) );
     }
-    else if (parse.isKeyValid("xcutilinfo")) 
+    else if (parse.isKeyValid("xcutilinfo"))
     {
         status = updateUtilityInformation(parse.getiValue("xcutilchan", 0),
                                           parse.getsValue("xcparametername"),
@@ -1355,9 +1358,9 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                                           parse.getiValue("xcpastusage", -1),
                                           parse.getiValue("xcpresentcharge", -1),
                                           parse.getiValue("xcpastcharge", -1) );
-       
+
     }
-    
+
     if(parse.isKeyValid("ovuv"))
     {
         BYTE action = 0x01;
@@ -1433,7 +1436,7 @@ INT CtiProtocolExpresscom::disableContractorMode(bool enableFlag)
     return status;
 }
 
-INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, CtiString name, string unit, string currency, SHORT presentusage, 
+INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, CtiString name, string unit, string currency, SHORT presentusage,
                                                      SHORT pastusage, SHORT presentcharge, SHORT pastcharge)
 {
     INT status = NoError;
@@ -1442,16 +1445,16 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, CtiString name, 
 
     _message.push_back( mtUtilityInformation );
     _message.push_back( chan );
-    
+
     size_t configpos = _message.size();
     _message.push_back(config);
     size_t utilflagpos = _message.size();
     _message.push_back(utilFlags);
-    
+
     if(!name.empty())
     {
         config |= 0x02;
-        
+
         for (int i = 0; i < 16; i++) //limit of 16 bytes.
         {
             if (i < name.length())
@@ -1483,28 +1486,28 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, CtiString name, 
         }
     }
 
-    if (presentusage > 0) 
+    if (presentusage > 0)
     {
         config |= 0x01;
         utilFlags |= 0x01;
         _message.push_back(HIBYTE(presentusage));
         _message.push_back(LOBYTE(presentusage));
     }
-    if (pastusage > 0) 
+    if (pastusage > 0)
     {
         config |= 0x01;
         utilFlags |= 0x02;
         _message.push_back(HIBYTE(pastusage));
         _message.push_back(LOBYTE(pastusage));
     }
-    if (presentcharge > 0) 
+    if (presentcharge > 0)
     {
         config |= 0x01;
         utilFlags |= 0x04;
         _message.push_back(HIBYTE(presentcharge));
         _message.push_back(LOBYTE(presentcharge));
     }
-    if (pastcharge > 0) 
+    if (pastcharge > 0)
     {
         config |= 0x01;
         utilFlags |= 0x08;
@@ -1763,7 +1766,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
                 flaglo |= 0x10;         // Temp setpoint included.
                 _message.push_back(LOBYTE(setpoint));
             }
-            
+
             if(delay > 0)
             {
                 flaglo |= 0x40;
@@ -1834,7 +1837,7 @@ INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool tem
             {
                 flaglo |= 0x10;         // Temp setpoint included.
                 _message.push_back(LOBYTE(setcoolpoint));
-                if (setheatpoint > 0) 
+                if (setheatpoint > 0)
                 {
                     _message.push_back(LOBYTE(setheatpoint));
                 }
@@ -1842,7 +1845,7 @@ INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool tem
                 {
                     _message.push_back(LOBYTE(0xFF));  //setpointheat = 0xff, no change.
                 }
-                
+
             }
             else if(setheatpoint > 0)
             {
@@ -2083,7 +2086,7 @@ unsigned short CtiProtocolExpresscom::crctbl[256] = {  /* generated by crcgen.c 
     0x6E17,0x7E36,0x4E55,0x5E74,0x2E93,0x3EB2,0x0ED1,0x1EF0
 };
 
-unsigned short CtiProtocolExpresscom::addCRC(unsigned short crc, unsigned char data) 
+unsigned short CtiProtocolExpresscom::addCRC(unsigned short crc, unsigned char data)
 {
     crc = crc^(data);
     crc = crctbl[(unsigned char)crc];
