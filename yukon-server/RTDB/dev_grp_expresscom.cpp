@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/08/30 20:21:26 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/02/22 21:58:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,36 +139,36 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
         checkForEmptyParseAddressing( parse, OutMessage, retList );
 
-        int serial = 0;
-        int spid = 0;
-        int geo = 0;
+        int serial     = 0;
+        int spid       = 0;
+        int geo        = 0;
         int substation = 0;
-        int feeder = 0;
-        int zip = 0;
-        int uda = 0;
-        int program = 0;
-        int splinter = 0;
+        int feeder     = 0;
+        int zip        = 0;
+        int uda        = 0;
+        int program    = 0;
+        int splinter   = 0;
 
         serial = (int)(getExpresscomGroup().getSerial());
 
         if(serial == 0)
         {
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid = (int)(getExpresscomGroup().getServiceProvider());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo = (int)(getExpresscomGroup().getGeo());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation = (int)(getExpresscomGroup().getSubstation());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder = (int)(getExpresscomGroup().getFeeder());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip = (int)(getExpresscomGroup().getZip());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda = (int)(getExpresscomGroup().getUda());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program = (int)(getExpresscomGroup().getProgram());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter = (int)(getExpresscomGroup().getSplinter());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid        = (int)(getExpresscomGroup().getServiceProvider());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo         = (int)(getExpresscomGroup().getGeo());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation  = (int)(getExpresscomGroup().getSubstation());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder      = (int)(getExpresscomGroup().getFeeder());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip         = (int)(getExpresscomGroup().getZip());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda         = (int)(getExpresscomGroup().getUda());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program     = (int)(getExpresscomGroup().getProgram());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter    = (int)(getExpresscomGroup().getSplinter());
 
-            parse.setValue("xc_spid", spid);
-            parse.setValue("xc_geo", geo);
-            parse.setValue("xc_sub", substation);
-            parse.setValue("xc_feeder", feeder);
-            parse.setValue("xc_zip", zip);
-            parse.setValue("xc_uda", uda);
-            parse.setValue("xc_program", program);
+            parse.setValue("xc_spid",     spid);
+            parse.setValue("xc_geo",      geo);
+            parse.setValue("xc_sub",      substation);
+            parse.setValue("xc_feeder",   feeder);
+            parse.setValue("xc_zip",      zip);
+            parse.setValue("xc_uda",      uda);
+            parse.setValue("xc_program",  program);
             parse.setValue("xc_splinter", splinter);
         }
         else
