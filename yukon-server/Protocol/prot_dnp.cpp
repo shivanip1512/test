@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2007/01/09 22:47:07 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2007/02/22 21:50:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -601,18 +601,34 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
         if( final )
         {
-            _string_results.push_back(CTIDBG_new string(_app_layer.getInternalIndications()));
-
-            switch( _command )
+            if( _command == Command_UnsolicitedInbound )
             {
-                case Command_Class0Read:
-                case Command_Class1Read:
-                case Command_Class2Read:
-                case Command_Class3Read:
-                case Command_Class123Read:
-                case Command_Class1230Read:
+                stringlist_t::iterator itr;
+
+                for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
                 {
-                    _string_results.push_back(CTIDBG_new string(pointSummary(5)));
+                    delete *itr;
+                }
+
+                _string_results.clear();
+            }
+            else
+            {
+                _string_results.push_back(CTIDBG_new string(_app_layer.getInternalIndications()));
+
+                switch( _command )
+                {
+                    case Command_Class0Read:
+                    case Command_Class1Read:
+                    case Command_Class2Read:
+                    case Command_Class3Read:
+                    case Command_Class123Read:
+                    case Command_Class1230Read:
+                    {
+                        _string_results.push_back(CTIDBG_new string(pointSummary(5)));
+
+                        break;
+                    }
                 }
             }
 
