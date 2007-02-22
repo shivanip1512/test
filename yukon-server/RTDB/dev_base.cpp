@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/02/22 21:49:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -561,6 +561,9 @@ void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
             _orphaned.reset(i);;
         }
     }
+
+    //  Not sure if this is the proper place to do this - perhaps it should be done in the device manager
+    resetDirty();
 }
 
 /*
