@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2007/01/24 22:33:55 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2007/02/22 21:55:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@ Application::Application() :
     _ioState(Uninitialized),
     _seqno(0)
 {
+    _iin.raw = 0;
 }
 
 Application::Application(const Application &aRef)
