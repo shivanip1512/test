@@ -31,7 +31,16 @@
       </property>
     </bean>
     
-    <bean id="radiusLoginProvider" class="com.cannontech.common.login.radius.RadiusLogin">
+    <!--  Allow startup when radius library is missing by using a proxy bean -->
+    <bean id="radiusLoginProvider" class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="targetSource">
+        <bean class="org.springframework.aop.target.LazyInitTargetSource">
+           <property name="targetBeanName"><idref local="radiusLoginProviderTarget"/></property>
+        </bean>
+      </property>
+    </bean>
+     
+     <bean id="radiusLoginProviderTarget" class="com.cannontech.common.login.radius.RadiusLogin" lazy-init="true">
       <property name="roleDao" ref="roleDao"/>
     </bean>
     
