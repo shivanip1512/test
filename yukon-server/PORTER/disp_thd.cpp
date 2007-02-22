@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2007/01/08 16:49:08 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2007/02/22 21:53:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -152,8 +152,20 @@ void DispatchMsgHandlerThread(VOID *Arg)
                             dout << TimeNow << " Porter has received a " << ((CtiDBChangeMsg*)MsgPtr)->getCategory() << " DBCHANGE message from Dispatch." << endl;
                         }
 
-                        //  the UDP thread needs to reload each item individually, so we can't ever discard any
-                        Cti::Porter::UDPInterfaceQueue.push_back(MsgPtr->replicateMessage());
+                        const CtiDBChangeMsg *dbchg = (CtiDBChangeMsg *)MsgPtr;
+
+                        if( dbchg->getDatabase() == ChangePAODb )
+                        {
+                            CtiDeviceSPtr dev;
+
+                            if( dev = DeviceManager.getEqual(dbchg->getId()) )
+                            {
+                                dev->setDirty(true);
+                            }
+
+                            //  the UDP thread needs to reload each item individually, so we can't ever discard any
+                            Cti::Porter::UDPInterfaceQueue.push_back(MsgPtr->replicateMessage());
+                        }
 
                         if(pChg)
                         {
