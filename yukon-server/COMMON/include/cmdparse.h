@@ -66,6 +66,7 @@ private:
     void    doParsePutStatusFisherP (const string &CmdStr);
     void    doParsePutStatusEmetcon (const string &CmdStr);
     void    resolveProtocolType(const string &CmdStr);
+    void    doParseExpresscomAddressing(const string &CmdStr);
 
     void    doParseControlExpresscom  (const string &CmdStr);
     void    doParsePutConfigExpresscom(const string &CmdStr);
