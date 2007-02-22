@@ -405,6 +405,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp peak hour channel 3 10-15-2003 15
     boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
 
+    //  getvalue frozen 12/12/2007 12/27/2007
+    //  getvalue frozen channel n 12/12/2007
+    boost::regex  re_frozen("frozen (channel " + str_num + " )?" + str_date + " (" + str_date + ")?");
+
     boost::regex  re_outage("outage " + str_num);
 
     boost::regex  re_offset("off(set)? *" + str_num);
@@ -669,6 +673,33 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         if(CmdStr.contains(" frozen"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_FROZEN;
+
+            if( !(temp = CmdStr.match(re_frozen)).empty() )
+            {
+                //  getvalue frozen 12/12/2007 12/27/2007
+                //  getvalue frozen 12/12/2007
+                //  getvalue frozen channel n 12/12/2007
+                //
+                //  "frozen (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
+
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  frozen
+
+                temp = cmdtok();
+
+                if( temp.compareTo("channel") )
+                {
+                    cmdtok();  //  channel number;  this is parsed above, and we get it from _cmd["channel"]
+                }
+
+                _cmd["frozen_date_begin"] = cmdtok();
+
+                if( !(temp = cmdtok()).empty() )
+                {
+                    _cmd["frozen_date_end"] = cmdtok();
+                }
+            }
         }
 
         if(CmdStr.contains(" power"))
@@ -3755,42 +3786,52 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
         }
         else
         {
-            //  check for "emetcon" protocol
-            if(CmdStr.contains("emetcon"))
+            if( CmdStr.contains("xcom") || CmdStr.contains("expresscom") )
             {
-                _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
+                _cmd["type"] = CtiParseValue("expresscom", ProtocolExpresscomType);
+                doParseExpresscomAddressing(CmdStr);
             }
-            else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
-            {
-                _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
-            }
-            else if(CmdStr.contains("golay"))       // Sourcing from CmdStr, which is the entire command string.
-            {
-                _cmd["type"] = CtiParseValue( "golay", ProtocolGolayType );
-            }
-            else if(CmdStr.contains("sadig"))       // Sourcing from CmdStr, which is the entire command string.
-            {
-                _cmd["type"] = CtiParseValue( "sadig", ProtocolSADigitalType );
-            }
-            else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
-            {
-                _cmd["type"] = CtiParseValue( "sa105", ProtocolSA105Type );
-            }
-            else if(CmdStr.contains("sa205"))       // Sourcing from CmdStr, which is the entire command string.
-            {
-                _cmd["type"] = CtiParseValue( "sa205", ProtocolSA205Type );
-            }
-            else if(CmdStr.contains("sa305"))       // Sourcing from CmdStr, which is the entire command string.
-            {
-                _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
-            }
+            else if( CmdStr.contains("emetcon") )   _cmd["type"] = CtiParseValue("emetcon", ProtocolEmetconType);
+            else if( CmdStr.contains("golay") )     _cmd["type"] = CtiParseValue("golay",   ProtocolGolayType);
+            else if( CmdStr.contains("sadig") )     _cmd["type"] = CtiParseValue("sadig",   ProtocolSADigitalType);
+            else if( CmdStr.contains("sa105") )     _cmd["type"] = CtiParseValue("sa105",   ProtocolSA105Type);
+            else if( CmdStr.contains("sa205") )     _cmd["type"] = CtiParseValue("sa205",   ProtocolSA205Type);
+            else if( CmdStr.contains("sa305") )     _cmd["type"] = CtiParseValue("sa305",   ProtocolSA305Type);
             else
             {  //  default to Versacom if nothing found
-                _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+                _cmd["type"] = CtiParseValue("versacom", ProtocolVersacomType);
             }
         }
     }
 }
+
+void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
+{
+    CtiString CmdStr(_CmdStr);
+
+    boost::regex re_serial  ("serial "   + str_num);
+    boost::regex re_spid    ("spid "     + str_num);
+    boost::regex re_geo     ("geo "      + str_num);
+    boost::regex re_sub     ("sub "      + str_num);
+    boost::regex re_feeder  ("feeder "   + str_num);
+    boost::regex re_zip     ("zip "      + str_num);
+    boost::regex re_uda     ("uda "      + str_num);
+    boost::regex re_program ("program "  + str_num);
+    boost::regex re_splinter("splinter " + str_num);
+
+    CtiString temp;
+
+    if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_feeder)).empty() )   _cmd["xc_feeder"]   = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_zip)).empty() )      _cmd["xc_zip"]      = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_uda)).empty() )      _cmd["xc_uda"]      = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_program)).empty() )  _cmd["xc_program"]  = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_splinter)).empty() ) _cmd["xc_splinter"] = atoi(temp.match(str_num).data());
+}
+
 
 const string& CtiCommandParser::getCommandStr() const
 {
