@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2007/02/22 18:26:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -311,7 +311,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             IDLCFunction(Dev, 0, DEST_BASE, CLPWR);
 
             /* Now send a message to logger */
-            _snprintf(Message, 50, "%0.20s Power Fail Detected", Dev->getName());
+            _snprintf(Message, 50, "%0.20s Power Fail Detected", Dev->getName().c_str());
             SendTextToLogger ("Inf", Message);
         }
     }
@@ -370,7 +370,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             /* Now send a message to logger */
-            _snprintf(Message, 50,  "%0.20s Time Sync Loss", Dev->getName());
+            _snprintf(Message, 50,  "%0.20s Time Sync Loss", Dev->getName().c_str());
             SendTextToLogger ("Inf", Message);
         }
     }
@@ -393,7 +393,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             /* Now send a message to logger */
-            _snprintf(Message, 50,  "%0.20s Low Battery Detected", Dev->getName());
+            _snprintf(Message, 50,  "%0.20s Low Battery Detected", Dev->getName().c_str());
             SendTextToLogger ("Inf", Message);
         }
     }
@@ -420,7 +420,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             /* Now send a message to logger */
             if( Dev )
             {
-                _snprintf(Message, 50,  "%0.20s Cold Start Sent", Dev->getName());
+                _snprintf(Message, 50,  "%0.20s Cold Start Sent", Dev->getName().c_str());
                 SendTextToLogger ("Inf", Message);
             }
         }
@@ -437,7 +437,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 /* Now send a message to logger */
                 if( Dev )
                 {
-                    _snprintf(Message, 50,  "%0.20s FAULTC Detected", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s FAULTC Detected", Dev->getName().c_str());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -460,7 +460,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 /* Now send a message to logger */
                 if( Dev )
                 {
-                    _snprintf(Message, 50,  "%0.20s Cold Start Detected", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Cold Start Detected", Dev->getName().c_str());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -481,7 +481,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 /* Now send a message to logger */
                 if( Dev )
                 {
-                    _snprintf(Message, 50,  "%0.20s Deadman Detected", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Deadman Detected", Dev->getName().c_str());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -531,7 +531,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
             if(Dev)   /* Now send a message to logger */
             {
-                _snprintf(Message, 50,  "%0.20s DLC Alg Restarted", Dev->getName());
+                _snprintf(Message, 50,  "%0.20s DLC Alg Restarted", Dev->getName().c_str());
                 SendTextToLogger ("Inf", Message);
             }
         }
@@ -557,7 +557,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     /* Now send a message to logger */
                     if( Dev )
                     {
-                        _snprintf(Message, 50,  "%0.20s TS Alg ENABLED", Dev->getName());
+                        _snprintf(Message, 50,  "%0.20s TS Alg ENABLED", Dev->getName().c_str());
                         SendTextToLogger ("Inf", Message);
                     }
                 }
@@ -576,7 +576,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             /* Now send a message to logger */
             if( Dev )
             {
-                _snprintf(Message, 50,  "%0.20s LM Alg ENPRO", Dev->getName());
+                _snprintf(Message, 50,  "%0.20s LM Alg ENPRO", Dev->getName().c_str());
                 SendTextToLogger ("Inf", Message);
             }
         }
@@ -643,13 +643,13 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 {
                     pInfo->RColQMin = 15;
                     /* Now send a message to logger */
-                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName().c_str());
                     SendTextToLogger ("Inf", Message);
                 }
                 else if(InMessage->IDLCStat[3] - 14 < 61)
                 {
                     pInfo->RColQMin = 61;
-                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -658,7 +658,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 if(InMessage->IDLCStat[3] - 14 >= 15 && InMessage->IDLCStat[3] - 14 < 61)
                 {
                     pInfo->RColQMin = 61;
-                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
                     SendTextToLogger ("Inf", Message);
                 }
             }
