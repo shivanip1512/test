@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/09/23 13:30:59 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/02/22 22:15:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -254,32 +254,73 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     }
                 case ProtocolExpresscomType:
                     {
-                        int xcserial = parse.getiValue("serial");
-                        int xcrelaymask = parse.getiValue("relaymask", 1);
-
-                        parse.setValue("xc_serial", xcserial);
-                        parse.setValue("relaymask", xcrelaymask);
-
-                        if( INT_MIN == xcserial )
+                        if( parse.isKeyValid("serial") )
                         {
-                            string   problem;
+                            int xcserial = parse.getiValue("serial");
+                            int xcrelaymask = parse.getiValue("relaymask", 1);
+
+                            parse.setValue("xc_serial", xcserial);
+                            parse.setValue("relaymask", xcrelaymask);
 
                             if( INT_MIN == xcserial )
                             {
-                                problem = string("Invalid Request: Serial number not specified");
+                                string   problem;
+
+                                if( INT_MIN == xcserial )
+                                {
+                                    problem = "Invalid Request: Serial number not specified";
+                                }
+                                else
+                                {
+                                    problem = "Invalid Request: (Load 1,2,3...) not specified";
+                                }
+
+                                status = CtiInvalidRequest;
+
+                                vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
                             }
-                            else
+
+                            OutMessage->Retry = 2;                      // Default to two tries per route!
+                        }
+                        else
+                        {
+                            //  must parse according to the other Expresscom addressing levels
+
+                            if( !parse.getiValue("xc_program",  0) &&
+                                !parse.getiValue("xc_splinter", 0) &&
+                                !parse.getiValue("relaymask",   0) )
                             {
-                                problem = string("Invalid Request: (Load 1,2,3...) not specified");
+                                // This is bad!  We would control every single load based upon geo addressing...
+                                string resultString = "\nERROR: " + getName() + " Group addressing control commands to all loads is prohibited\n" + \
+                                                      " The group must specify program, splinter or load level addressing";
+
+                                CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                                             OutMessage->Request.CommandStr,
+                                                                             resultString,
+                                                                             BADPARAM,
+                                                                             OutMessage->Request.RouteID,
+                                                                             OutMessage->Request.MacroOffset,
+                                                                             OutMessage->Request.Attempt,
+                                                                             OutMessage->Request.TrxID,
+                                                                             OutMessage->Request.UserID,
+                                                                             OutMessage->Request.SOE,
+                                                                             CtiMultiMsg_vec());
+                                retList.push_back( pRet );
+
+                                if(OutMessage)
+                                {
+                                    delete OutMessage;
+                                    OutMessage = NULL;
+                                }
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << resultString << endl;
+                                }
                             }
-
-                            status = CtiInvalidRequest;
-
-                            vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
                         }
 
-                        OutMessage->Retry = 2;                      // Default to two tries per route!
                         break;
                     }
                 case ProtocolSA105Type:
