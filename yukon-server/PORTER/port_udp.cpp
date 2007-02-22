@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/02/07 18:03:44 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/02/22 22:53:32 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,16 +117,14 @@ void UDPInterface::run( void )
 
                 if( (msg = MessageQueue.getQueue()) && (msg->isA() == MSG_DBCHANGE) )
                 {
+                    CtiDBChangeMsg *db_msg = (CtiDBChangeMsg *)msg;
                     device_record *dr;
 
                     //  find the device record, if it exists
-                    if( dr = getDeviceRecordByID(((CtiDBChangeMsg *)msg)->getId()) )
+                    if( db_msg->getId() && (dr = getDeviceRecordByID(db_msg->getId())) )
                     {
-                        //  then remove it from the collections
-                        _devices.erase(((CtiDBChangeMsg *)msg)->getId());
-                        _addresses.erase(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()));
-
-                        delete dr;
+                        //  mark it for closer inspection later
+                        dr->dirty = true;
                     }
                 }
             }
@@ -344,7 +342,41 @@ bool UDPInterface::getOutMessages( unsigned wait )
             {
                 device_record *dr = getDeviceRecordByID(om->TargetID);
 
-                if( dr && dr->device )
+                if( !dr || !dr->device )
+                {
+                    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    //  return an error - this deletes the OM
+                    ReturnResultMessage(ErrorDeviceIPUnknown, &im, om);
+                }
+                else if( dr->dirty )
+                {
+                    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - waiting for device reload for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiReturnMsg(dr->device->getID(),
+                                                                           om->Request.CommandStr,
+                                                                           "Waiting for device reload for device \"" + dr->device->getName() + "\"",
+                                                                           NOTNORMAL,
+                                                                           om->Request.RouteID,
+                                                                           om->Request.MacroOffset,
+                                                                           om->Request.Attempt,
+                                                                           om->Request.TrxID,
+                                                                           om->Request.UserID,
+                                                                           om->Request.SOE,
+                                                                           CtiMultiMsg_vec()));
+
+                    delete om;
+                    om = 0;
+                }
+                else
                 {
                     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
@@ -355,17 +387,6 @@ bool UDPInterface::getOutMessages( unsigned wait )
                     dr->work.outbound.push(om);
 
                     om_ready = true;
-                }
-                else
-                {
-                    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cti::Porter::UDPInterface::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    //  return an error - this deletes the OM
-                    ReturnResultMessage(ErrorDeviceIPUnknown, &im, om);
                 }
             }
         }
@@ -438,9 +459,9 @@ bool UDPInterface::getPackets( int wait )
 
                     device_record *dr = getDeviceRecordByAddress(master_address, slave_address);
 
-                    //  we have no record of this device, we'll try to look it up
                     if( !dr )
                     {
+                        //  we have no record of this device, we'll try to look it up
                         boost::shared_ptr<CtiDeviceBase> dev_base;
 
                         //  we didn't have this device in the mapping table, so look it up
@@ -460,10 +481,15 @@ bool UDPInterface::getPackets( int wait )
                             //    our hold on this pointer...  no need to delete it
                             dr->device = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
 
-                            dr->work.timeout = CtiTime(YUKONEOT).seconds();
+                            dr->id     = dr->device->getID();
 
-                            _devices.insert(make_pair(dr->device->getID(), dr));
-                            _addresses.insert(make_pair(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()), dr));
+                            dr->master = dr->device->getMasterAddress();
+                            dr->slave  = dr->device->getAddress();
+
+                            _devices.insert(make_pair(dr->id, dr));
+                            _addresses.insert(make_pair(make_pair(dr->master, dr->slave), dr));
+
+                            dr->work.timeout = CtiTime(YUKONEOT).seconds();
                         }
                         else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {
@@ -473,7 +499,7 @@ bool UDPInterface::getPackets( int wait )
                     }
 
                     //  do we have a device yet?
-                    if( dr )
+                    if( dr && dr->device )
                     {
                         if( dr->ip   != p->ip ||
                             dr->port != p->port )
@@ -1207,6 +1233,33 @@ void UDPInterface::Inbound::run()
 }
 
 
+UDPInterface::device_record *UDPInterface::validateDeviceRecord( device_record *dr )
+{
+    //  should we reload the device?
+    if( dr && dr->device && dr->dirty && !dr->device->isDirty() )
+    {
+        //  have the addresses changed?
+        if( dr->master != dr->device->getMasterAddress() ||
+            dr->slave  != dr->device->getAddress() )
+        {
+            //  if so, remove it from the collections
+            _devices.erase(dr->id);
+            _addresses.erase(make_pair(dr->master, dr->slave));
+
+            delete dr;
+            dr = 0;
+        }
+        else
+        {
+            //  not dirty any more - we can reset our own dirty flag
+            dr->dirty = false;
+        }
+    }
+
+    return dr;
+}
+
+
 UDPInterface::device_record *UDPInterface::getDeviceRecordByID( long device_id )
 {
     device_record *retval = 0;
@@ -1215,7 +1268,7 @@ UDPInterface::device_record *UDPInterface::getDeviceRecordByID( long device_id )
 
     if( drim_itr != _devices.end() )
     {
-        retval = drim_itr->second;
+        retval = validateDeviceRecord(drim_itr->second);
     }
 
     return retval;
@@ -1230,7 +1283,7 @@ UDPInterface::device_record *UDPInterface::getDeviceRecordByAddress( unsigned sh
 
     if( dram_itr != _addresses.end() )
     {
-        retval = dram_itr->second;
+        retval = validateDeviceRecord(dram_itr->second);
     }
 
     return retval;
@@ -1249,6 +1302,11 @@ void UDPInterface::applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevi
             device_record *dr = CTIDBG_new device_record;
 
             dr->device = boost::static_pointer_cast<CtiDeviceSingle>(RemoteDevice);
+
+            dr->id     = dr->device->getID();
+
+            dr->master = dr->device->getMasterAddress();
+            dr->slave  = dr->device->getAddress();
 
             dr->ip   = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP);
             dr->port = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port);

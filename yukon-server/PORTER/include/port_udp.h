@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/02/07 18:03:44 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/02/22 22:53:32 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,14 @@ protected:
     {
         CtiDeviceSingleSPtr device;
 
+        bool dirty;
+
         device_work work;
+
+        u_short id;
+
+        u_short master;
+        u_short slave;
 
         u_long  ip;
         u_short port;
@@ -143,6 +150,8 @@ protected:
     };
 
     static void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid);
+
+    device_record *validateDeviceRecord( device_record *dr );
 
     device_record *getDeviceRecordByAddress( unsigned short master, unsigned short slave );
     device_record *getDeviceRecordByID     ( long device_id );
