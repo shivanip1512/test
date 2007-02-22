@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2007/01/22 21:30:19 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2007/02/22 17:46:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -245,14 +245,40 @@ bool CtiDeviceCCU::hasQueuedWork() const
 
 INT CtiDeviceCCU::queuedWorkCount() const
 {
-    INT workCount = 0;
+    long workCount = 0;
+    long priority = 0;
     if( getType() == TYPE_CCU711 && _trxInfo != NULL )
     {
         CtiTransmitter711Info *p711Info =  (CtiTransmitter711Info *)_trxInfo;
-        workCount = p711Info->QueueHandle->Elements;
+        workCount = p711Info->QueueHandle->Elements;        
     }
 
     return workCount;
+}
+
+/*void CtiDeviceCCU::getRequestQueueInfo(long requestID, long &count, long &priority)
+{
+    count = 0;
+    priority = 0;
+    if( requestID > 0 )
+    {
+        CtiTransmitter711Info *p711Info =  (CtiTransmitter711Info *)_trxInfo;
+        GetRequestCountAndPriority(p711Info->QueueHandle, requestID, count, priority);
+    }
+}*/
+
+Cti::DeviceQueueInterface* CtiDeviceCCU::getDeviceQueueHandler()
+{
+    if( getType() == TYPE_CCU711 )
+    {
+        _queueHandler.set711Info((CtiTransmitter711Info *)_trxInfo);
+        return &_queueHandler;
+    }
+    else
+    {
+        return NULL;
+    }
+    
 }
 
 /* Routine to decode returned CCU message and update database */

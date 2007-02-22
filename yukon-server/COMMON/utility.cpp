@@ -2210,10 +2210,10 @@ LONG ResetBreakAlloc()
 #define LOADPROFILESEQUENCE 4  //  Cti::Protocol::Emetcon::Scan_LoadProfile
 
 
-bool findLPRequestEntries(void *om, void* d)
+bool findLPRequestEntries(void *om, PQUEUEENT d)
 {
     OUTMESS *NewGuy = (OUTMESS *)om;
-    OUTMESS *OutMessage = (OUTMESS *)d;
+    OUTMESS *OutMessage = (OUTMESS *)(d->Data);
     bool bRet = false;
 
     if(NewGuy && OutMessage)
@@ -2260,6 +2260,13 @@ bool findLPRequestEntries(void *om, void* d)
     }
 
     return(bRet);
+}
+
+bool findRequestIDMatch(void *rid, PQUEUEENT d)
+{
+    ULONG requestID = (ULONG)rid;
+
+    return(d->Request == requestID);
 }
 
 void cleanupOutMessages(void *unusedptr, void* d)

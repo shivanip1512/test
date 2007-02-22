@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/02/22 17:46:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,7 +249,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                             dout << "OutLength " << OutMessage->OutLength << endl;
                         }
 
-                        if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                        if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
                         {
                             printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
                             delete (OutMessage);
@@ -434,7 +434,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                     dout << "OutLength " << OutMessage->OutLength << endl;
                 }
 
-                if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
                 {
                     printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                     delete (OutMessage);

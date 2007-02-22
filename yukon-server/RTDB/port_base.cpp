@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2007/01/22 21:32:35 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2007/02/22 17:46:41 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.68  2007/02/22 17:46:41  jotteson
+* Bug Id: 814, 651
+* Completed integration of MACS with new system messages. QueueWrites were changed to be sure they put the proper ID into the queues. New messaging used, new device interface used.
+*
 * Revision 1.67  2007/01/22 21:32:35  jotteson
 * Ports now track timing of messages.
 *
@@ -1553,7 +1557,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             NewOutMessage = CTIDBG_new CtiOutMessage(*OutMessage);
 
             NewOutMessage->Retry = 2;
-            _parentPort->writeQueue( NewOutMessage->EventCode, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
+            _parentPort->writeQueue( NewOutMessage->Request.UserID, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
         }
 
         REQUESTDATA    ReadResult;
@@ -1568,7 +1572,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             // Move the OM from the pool queue to the child queue.
             if( readQueue( &ReadResult, &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
             {
-                _parentPort->writeQueue( NewOutMessage->EventCode, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
+                _parentPort->writeQueue( NewOutMessage->Request.UserID, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Port " << getName() << " Moving OutMessage back to parent port " << _parentPort->getName() << endl;
@@ -1711,6 +1715,19 @@ void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
     }
 }
 
+vector<long> CtiPort::getQueuedWorkDevices()
+{
+    vector<long> retVal;
+    map< LONG, int >::iterator iter;
+    _criticalSection.acquire();
+    for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
+    {
+        retVal.push_back(iter->first);
+    }
+    _criticalSection.release();
+    return retVal;
+}
+
 void CtiPort::setPortCommunicating(bool state, DWORD ticks)
 {
     try
@@ -1740,24 +1757,35 @@ DWORD CtiPort::getPortTiming()
     return _entryMsecTime;
 }
 
-int CtiPort::getWorkCount()
+int CtiPort::getWorkCount(long requestID)
 {
-    int workCount = 0;
+    ULONG workCount = 0;
     map< LONG, int >::iterator iter;
     try
     {
-        if( _communicating )
+        if( requestID == 0 )
         {
-            workCount++;
+            if( _communicating )
+            {
+                workCount++;
+            }
+            workCount += queueCount();
+    
+            _criticalSection.acquire();
+            for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
+            {
+                workCount += iter->second;
+            }
+            _criticalSection.release();
         }
-        workCount += queueCount();
-
-        _criticalSection.acquire();
-        for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
+        else
         {
-            workCount += iter->second;
+            ULONG priority;
+            if(_portQueue != NULL)
+            {
+                GetRequestCountAndPriority(_portQueue, requestID, workCount, priority);
+            }
         }
-        _criticalSection.release();
     }
     catch( ... )
     {

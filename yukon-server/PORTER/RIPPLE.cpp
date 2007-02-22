@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/12/28 20:53:54 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2007/02/22 17:46:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -320,7 +320,7 @@ LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 
         if(StageOutMessage != NULL)      // Only STANDARD LCU's return non-NULL on the above call.  And only when needed
         {
-            if(PortManager.writeQueue (StageOutMessage->Port, StageOutMessage->EventCode, sizeof (*StageOutMessage), (char *) StageOutMessage, StageOutMessage->Priority))
+            if(PortManager.writeQueue (StageOutMessage->Port, StageOutMessage->Request.UserID, sizeof (*StageOutMessage), (char *) StageOutMessage, StageOutMessage->Priority))
             {
                 printf ("\nError putting \"Staging LCU\" entry onto Queue\n");
             }
@@ -329,7 +329,7 @@ LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
              * Write the control OutMessage back to the queue util the staging operation completes.
              * At which time, the getStageTime() will be set to current time, or 0 if the stage command fails...
              */
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
                 printf ("\nError Replacing entry onto Queue\n");
             }
@@ -1298,7 +1298,7 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
             lcu->setExecutionProhibited(lcu->getID(), CtiTime(0UL));
             lcu->resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
 
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1415,7 +1415,7 @@ INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
             {
                 ScanOutMessage->Priority = MAXPRIORITY - 1;  // This is the only thing that really matters now.
 
-                if(PortManager.writeQueue(ScanOutMessage->Port, ScanOutMessage->EventCode, sizeof (*ScanOutMessage), (char *) ScanOutMessage, MAXPRIORITY - 1))
+                if(PortManager.writeQueue(ScanOutMessage->Port, ScanOutMessage->Request.UserID, sizeof (*ScanOutMessage), (char *) ScanOutMessage, MAXPRIORITY - 1))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

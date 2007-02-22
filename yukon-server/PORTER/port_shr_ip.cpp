@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2007/02/12 18:19:57 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/02/22 17:46:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,7 +298,7 @@ void CtiPortShareIP::inThread()
                                 memcpy (OutMessage->Buffer.OutMessage, Buffer, bytesRead);
 
                                 //  ... and put it on the correct port's queue
-                                if(getPort()->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                                if(getPort()->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);

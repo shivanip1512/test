@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.104 $
-* DATE         :  $Date: 2007/01/22 21:35:01 $
+* REVISION     :  $Revision: 1.105 $
+* DATE         :  $Date: 2007/02/22 17:46:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -351,7 +351,7 @@ static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unused
 
 void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
 {
-    extern bool findAllQueueEntries(void *unused, void* d);
+    extern bool findAllQueueEntries(void *unused, PQUEUEENT d);
     extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
     LONG PortID = (LONG)lprtid;
@@ -405,7 +405,7 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
 
 void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
-    extern bool findAllQueueEntries(void *unused, void* d);
+    extern bool findAllQueueEntries(void *unused, PQUEUEENT d);
     extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
     LONG id = (LONG)unusedPtr;

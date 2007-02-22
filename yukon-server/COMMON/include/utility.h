@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2007/01/25 21:04:38 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2007/02/22 17:46:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@ using std::string;
 
 #include "ctitime.h"
 
+#include "queues.h"
 #include "dlldefs.h"
 #include "numstr.h"
 #include "sorted_vector.h"
@@ -186,7 +187,8 @@ IM_EX_CTIBASE ULONG    MilliTime (PULONG);
 
 IM_EX_CTIBASE LONG     ResetBreakAlloc();
 
-IM_EX_CTIBASE bool findLPRequestEntries(void *om, void* d);
+IM_EX_CTIBASE bool findLPRequestEntries(void *om, PQUEUEENT d);
+IM_EX_CTIBASE bool findRequestIDMatch(void *rid, PQUEUEENT d);
 IM_EX_CTIBASE void cleanupOutMessages(void *unusedptr, void* d);
 IM_EX_CTIBASE string explainTags(const unsigned tags);
 

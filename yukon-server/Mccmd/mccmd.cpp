@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2007/01/25 21:07:25 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2007/02/22 17:46:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
+#include "msg_queuedata.h"
 #include "msg_signal.h"
 #include "msg_dbchg.h"
 #include "msg_notif_email.h"
@@ -53,6 +54,7 @@
 #include <rw/ctoken.h>
 
 unsigned gMccmdDebugLevel = 0x00000000;
+bool gDoNotSendCancel = false;
 
 const boost::regex   re_num("[0-9]+");
 const boost::regex   re_timeout("timeout[= ]+[0-9]+");
@@ -87,7 +89,7 @@ void _MessageThrFunc()
         while( 1 )
         {
             //Wake up every second to respect cancellation requests
-            CtiReturnMsg* in = (CtiReturnMsg*) PILConnection->ReadConnQue( 1000 );
+            CtiMessage* in = PILConnection->ReadConnQue( 1000 );
 
             if( in != 0 )
             {
@@ -96,11 +98,20 @@ void _MessageThrFunc()
 
                 boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
 
-                unsigned int msgid = in->UserMessageId();
+                unsigned int msgid = 0;
+
+                if( in->isA() == MSG_PCRETURN )
+                {
+                    msgid =((CtiReturnMsg *)in)->UserMessageId();
+                }
+                else if( in->isA() == MSG_QUEUEDATA )
+                {
+                    msgid =((CtiQueueDataMsg *)in)->UserMessageId();
+                }
 
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-                    if( InQueueStore.findValue( in->UserMessageId(), counted_ptr ) && (counted_ptr.use_count() > 0) )
+                    if( InQueueStore.findValue( msgid, counted_ptr ) && (counted_ptr.use_count() > 0) )
                         counted_ptr->write(in);
                     else
                     {
@@ -109,7 +120,14 @@ void _MessageThrFunc()
                             dout << CtiTime() << " [" << rwThreadId() <<
                             "] Received message for interpreter [" <<
                             GetThreadIDFromMsgID(msgid) << "]" << endl;
-                            DumpReturnMessage(*in);
+                            if( in->isA() == MSG_PCRETURN )
+                            {
+                                DumpReturnMessage(*(CtiReturnMsg*)in);
+                            }
+                            else if( in->isA() == MSG_REQUESTCANCEL )
+                            {
+                                in->dump();
+                            }
                         }
                         delete in;
                     }
@@ -526,6 +544,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     init_script += gConfigParms.getValueAsString(MCCMD_INIT_SCRIPT, "init.tcl");
 
     gMccmdDebugLevel = gConfigParms.getValueAsULong(MCCMD_DEBUG_LEVEL, 0x00000000);
+    gDoNotSendCancel = gConfigParms.isTrue(MACS_DISABLE_CANCEL);
 
     if( gMccmdDebugLevel > 0 )
     {
@@ -1452,7 +1471,7 @@ int WriteFailToFile(FILE* errFile, int status, string &dev_name)
 static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
-    bool timed_out = false;
+    bool timed_out = false;    
 
     RWSet req_set;
 
@@ -1497,6 +1516,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         return TCL_OK;
 
     CtiTime start;
+    CtiTime lastPorterCountTime;
     
     // Some structures to sort the responses
     PILReturnMap device_map;
@@ -1523,11 +1543,33 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 if( device_map.size() == 0 )
                     break;
             }
+            else if( msg->isA() == MSG_QUEUEDATA )
+            {
+                CtiQueueDataMsg *queueMessage = (CtiQueueDataMsg *)msg;
+                if( queueMessage->getRequestId() == msgid )
+                {
+                    ULONG count = queueMessage->getRequestIdCount();
+                    string output("Queue Data Received, there are ");
+                    output += CtiNumStr(count);
+                    output += " objects for this script in porter.";
+                    WriteOutput(output.c_str());
+
+                    if( count == 0 )
+                    {
+                        output = "Porter has reported a count of 0 messages for this script. ";
+                        output += "MACS reports " + CtiNumStr(device_map.size());
+                        output += " devices left to respond. If the script does not finish very soon this";
+                        output += " should be considered a problem.";
+                        WriteOutput(output.c_str());
+                        // At some point we could break; here if we are confident about this.
+                    }
+                }
+            }
             else
             {
-          delete msg;
-              string err("Received unknown message __LINE__, __FILE__");
-              WriteOutput(err.c_str());
+                delete msg;
+                string err("Received unknown message __LINE__, __FILE__");
+                WriteOutput(err.c_str());
             }
 
             msg = NULL;
@@ -1556,9 +1598,22 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             info += CtiTime(start).asString();
             info += "\r\n nothing was received from porter in the last ";
             info += CtiNumStr(timeout);
-            info += " seconds";
+            info += " seconds.";
+            if( gDoNotSendCancel == false )
+            {
+                info += " Sending cancel message to porter";
+                PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, 0, 0, 0, 0, msgid));
+            }
+            
             WriteOutput(info.c_str());
+            
             break;
+        }
+
+        if( now > lastPorterCountTime + 5*60 ) //Hard coded 5 minutes for now. This should be changed.
+        {
+            lastPorterCountTime = now;
+            PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, 0, 0, 0, 0, msgid));
         }
     } while(true);
 
@@ -1567,6 +1622,11 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     //and deleted below
     //delete msg;
 
+    // If we were interrupted (cancelled generally) we want to cancel all remaining messages.
+    if( interrupted == true && timeout > 0 && gDoNotSendCancel == false )
+    {
+        PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, 0, 0, 0, 0, msgid));
+    }
     // set up good and bad tcl lists
     Tcl_Obj* good_list = Tcl_NewListObj(0,NULL);
     Tcl_Obj* bad_list = Tcl_NewListObj(0,NULL);
@@ -1632,6 +1692,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 
 /***
     Handles the sorting of an incoming message form PIL
+    This appears to be Deprecated and unused.
 ****/
 void HandleMessage(RWCollectable* msg,
            PILReturnMap& good_map,

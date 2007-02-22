@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/10/18 19:19:13 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2007/02/22 17:46:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,8 +88,8 @@ USHORT QueSequence = {0x8000};
 
 static CHAR tempstr[100];
 
-bool findAllQueueEntries(void *unused, void* d);
-bool findReturnNexusMatch(void *nid, void* d);
+bool findAllQueueEntries(void *unused, PQUEUEENT d);
+bool findReturnNexusMatch(void *nid, PQUEUEENT d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
 
@@ -352,7 +352,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
                 if(QueueHandle(InMessage->Port) != NULL)
                 {
-                    if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->EventCode, sizeof (*TimeSyncMessage), (char *)TimeSyncMessage, TimeSyncMessage->Priority))
+                    if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->Request.UserID, sizeof (*TimeSyncMessage), (char *)TimeSyncMessage, TimeSyncMessage->Priority))
                     {
                         _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
                         {
@@ -692,7 +692,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             OutMessage->Retry--;
 
             /* Put it back on the queue for this port */
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Error Requeing Command on device \"" << Dev->getName() << "\"" << endl;
@@ -1429,7 +1429,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 }
 
                 // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
-                if(WriteQueue(pInfo->QueueHandle, MyOutMessage->EventCode, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
+                if(WriteQueue(pInfo->QueueHandle, MyOutMessage->Request.UserID, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1574,7 +1574,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                     OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
                 statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
-                if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
                 {
                     _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                     {
@@ -1703,7 +1703,7 @@ BuildActinShed (CtiDeviceSPtr Dev)
         /* we are done with the request message */
         delete (MyOutMessage);
 
-        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->EventCode, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->Request.UserID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
         {
             _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
             {
@@ -1831,18 +1831,16 @@ DeQueue (INMESS *InMessage)
     return(status);
 }
 
-
-bool findReturnNexusMatch(void *nid, void* d)
+bool findReturnNexusMatch(void *nid, PQUEUEENT d)
 {
     CTINEXUS *rnid = (CTINEXUS *)nid;
-    OUTMESS *OutMessage = (OUTMESS *)d;
+    OUTMESS *OutMessage = (OUTMESS *)(d->Data);
 
     return(OutMessage->ReturnNexus == rnid);
 }
 
-bool findAllQueueEntries(void *unused, void* d)
+bool findAllQueueEntries(void *unused, PQUEUEENT d)
 {
-    OUTMESS *OutMessage = (OUTMESS *)d;
     return true;
 }
 

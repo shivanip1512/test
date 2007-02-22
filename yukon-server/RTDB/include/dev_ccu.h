@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_ccu.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/01/22 21:30:19 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/02/22 17:46:43 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@
 #include "dsm2.h"
 #include "dev_idlc.h"
 #include "mgr_point.h"
+#include "device_queue_interface.h"
 
 class IM_EX_DEVDB CtiDeviceCCU : public CtiDeviceIDLC
 {
@@ -54,6 +55,8 @@ private:
     CtiTime _tsLastCheck;
 
     unsigned long _algorithmCommandTime[AlgorithmCount];
+
+    Cti::DeviceQueueInterface _queueHandler;
 
 protected:
 
@@ -83,6 +86,7 @@ public:
     bool checkAlgorithmReset(int alg);
     bool hasQueuedWork() const;
     INT queuedWorkCount() const;
+    Cti::DeviceQueueInterface* getDeviceQueueHandler();
 
     virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);

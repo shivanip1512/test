@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/12/27 01:40:38 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/02/22 17:46:43 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@ class CtiTransmitterInfo;
 struct PointDeviceMapping;
 
 namespace Cti       {
+class DeviceQueueInterface;
 namespace Protocol  {
 class Interface;
 }
@@ -281,6 +282,7 @@ public:
 
     void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
     Cti::Config::CtiConfigDeviceSPtr getDeviceConfig();//Configs are now thread safe!
+    virtual Cti::DeviceQueueInterface* getDeviceQueueHandler();
 
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
 

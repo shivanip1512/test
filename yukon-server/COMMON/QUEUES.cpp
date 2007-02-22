@@ -1177,7 +1177,7 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
  */
 IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                               void *ptr,
-                              bool (*myFindFunc)(void*, void*),
+                              bool (*myFindFunc)(void*, PQUEUEENT),
                               void (*myCleanFunc)(void*, void*))
 {
     INT purgecnt = 0;
@@ -1202,7 +1202,7 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     Entry = Entry->Next;        // Hang on to the next guy, so we can continue;
                     try
                     {
-                        if( (*myFindFunc)(ptr, DeleteEntry->Data) )
+                        if( (*myFindFunc)(ptr, DeleteEntry) )
                         {
                             purgecnt++;
                             (*myCleanFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data

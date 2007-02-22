@@ -134,6 +134,14 @@ void  CtiCommandParser::parse()
         {
             _cmd["port_entries"] = CtiParseValue(true);
         }
+        else if( CmdStr.contains("request cancel") )
+        {
+            _cmd["request_cancel"] = CtiParseValue(true);
+        }
+        else if( CmdStr.contains("request count") )
+        {
+            _cmd["request_count"] = CtiParseValue(true);
+        }
     }
 
     if(CmdStr.contains(" select"))

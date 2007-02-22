@@ -128,7 +128,7 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
 
 IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                               void *ptr,
-                              bool (*myFindFunc)(void*, void*),
+                              bool (*myFindFunc)(void*, PQUEUEENT),
                               void (*myCleanFunc)(void*, void*));
 
 IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(void*, void*));
@@ -137,6 +137,6 @@ IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &Nu
 
 IM_EX_CTIBASE INT GetIndividualRequestStartPos(HCTIQUEUE QueueHandle, ULONG RequestID, UINT &StartPos);
 
-IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG RequestID, UINT &Count, UINT &Priority);
+IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG &Count, ULONG &Priority);
 
 #endif /* QUEUE_H */

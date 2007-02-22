@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2007/02/09 20:54:48 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2007/02/22 17:46:43 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -247,7 +247,8 @@ public:
     void addDeviceQueuedWork(long deviceID, int workCount);
     void setPortCommunicating(bool state = true, DWORD ticks = 0);
     void addPortTiming(DWORD ticks);
-    int getWorkCount();
+    int getWorkCount(long requestID = 0);
+    vector<long> getQueuedWorkDevices();
     DWORD getPortTiming();
 
     CtiPort& setDevicePreload(LONG id);

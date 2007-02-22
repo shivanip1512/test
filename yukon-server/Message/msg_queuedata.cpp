@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/01/29 21:10:26 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/02/22 17:46:41 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,16 +29,18 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 RWDEFINE_COLLECTABLE( CtiQueueDataMsg, MSG_QUEUEDATA );
 
 CtiQueueDataMsg::CtiQueueDataMsg(
-                                long       id,
+                                long       queid,
                                 unsigned   queueCount,
                                 unsigned   rate,
                                 long       requestId,
-                                unsigned   requestIdCount ) :
-_id(id),
+                                unsigned   requestIdCount,
+                                long       userMessageId ) :
+_queueID(queid),
 _queueCount(queueCount),
 _rate(rate),
 _requestId(requestId),
 _requestIdCount(requestIdCount),
+_userMessageID(userMessageId),
 _time(CtiTime())
 {
 }
@@ -58,11 +60,12 @@ CtiQueueDataMsg& CtiQueueDataMsg::operator=(const CtiQueueDataMsg& aRef)
     {
         Inherited::operator=(aRef);
 
-        _id                 = aRef.getId();            
+        _queueID            = aRef.getId();            
         _requestId          = aRef.getRequestId();
         _rate               = aRef.getRate();
         _queueCount         = aRef.getQueueCount();
         _requestIdCount     = aRef.getRequestIdCount();
+        _userMessageID      = aRef.UserMessageId();
 
         _time               = aRef.getTime();
     }
@@ -73,7 +76,7 @@ CtiQueueDataMsg& CtiQueueDataMsg::operator=(const CtiQueueDataMsg& aRef)
 void CtiQueueDataMsg::saveGuts(RWvostream &aStream) const
 {
     Inherited::saveGuts(aStream);
-    aStream << getId() << getQueueCount() << getRate() << getRequestId() << getRequestIdCount() << getTime();
+    aStream << getId() << getQueueCount() << getRate() << getRequestId() << getRequestIdCount() << getTime() << UserMessageId();
 }
 
 void CtiQueueDataMsg::restoreGuts(RWvistream& aStream)
@@ -85,9 +88,10 @@ void CtiQueueDataMsg::restoreGuts(RWvistream& aStream)
     unsigned       queueCount;        // Count of items in queue
     long           requestId;         // RequestID, if any.
     unsigned       requestIdCount;    // Count of items with requestID _requestID
+    long           userMessageId;
     CtiTime        time;
 
-    aStream >> id >> queueCount >> rate >> requestId >> requestIdCount >> time;
+    aStream >> id >> queueCount >> rate >> requestId >> requestIdCount >> time >> userMessageId;
 
     setId(id);
     setQueueCount(queueCount);
@@ -95,15 +99,16 @@ void CtiQueueDataMsg::restoreGuts(RWvistream& aStream)
     setRequestId(requestId);
     setRequestIdCount(requestIdCount);
     setTime(time);
+    setUserMessageId(userMessageId);
 }
 
 long  CtiQueueDataMsg::getId() const
 {
-    return _id;
+    return _queueID;
 }
 CtiQueueDataMsg& CtiQueueDataMsg::setId( const long a_id )
 {
-    _id = a_id;
+    _queueID = a_id;
     return *this;
 }
 
@@ -147,6 +152,16 @@ CtiQueueDataMsg& CtiQueueDataMsg::setRequestIdCount( const unsigned requestIdCou
     return *this;
 }
 
+long  CtiQueueDataMsg::UserMessageId() const
+{
+    return _userMessageID;
+}
+CtiQueueDataMsg& CtiQueueDataMsg::setUserMessageId( const long userMessageID )
+{
+    _userMessageID = userMessageID;
+    return *this;
+}
+
 const CtiTime& CtiQueueDataMsg::getTime() const
 {
     return _time;
@@ -170,12 +185,13 @@ void CtiQueueDataMsg::dump() const
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << " Id                            " << getId() << endl;
+        dout << " QueueID                       " << getId() << endl;
         dout << " Rate                          " << getRate() << endl;
         dout << " QueueCount                    " << getQueueCount() << endl;
         dout << " RequestId                     " << getRequestId() << endl;
         dout << " RequestIdCount                " << getRequestIdCount() << endl;
         dout << " Time                          " << getTime() << endl;
+        dout << " UserMessageID                 " << UserMessageId() << endl;
     }
 
 }

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/22 21:39:32 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/02/22 17:46:43 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,11 +30,12 @@ class IM_EX_MSG CtiQueueDataMsg : public CtiMessage
 {
 protected:
 
-   long           _id;
+   long           _queueID;
    long           _requestId;         // RequestID, if any.
    unsigned       _rate;              // Time in ms to send out 1 entry
    unsigned       _queueCount;        // Count of items in queue
    unsigned       _requestIdCount;    // Count of items with requestID _requestID
+   long           _userMessageID;     // ID sent by user in request message
 
    CtiTime        _time;
 
@@ -44,11 +45,12 @@ public:
 
    typedef CtiMessage Inherited;
 
-   CtiQueueDataMsg(long       _id               = 0,
+   CtiQueueDataMsg(long       _queueID          = 0,
                    unsigned   _queueCount       = 0,
                    unsigned   _rate             = 0,
                    long       _requestId        = 0,
-                   unsigned   _requestIDCount   = 0
+                   unsigned   _requestIDCount   = 0,
+                   long       _userMessageID    = 0
                    );
 
    CtiQueueDataMsg(const CtiQueueDataMsg &aRef);
@@ -75,6 +77,9 @@ public:
 
    unsigned  getRequestIdCount() const;
    CtiQueueDataMsg& setRequestIdCount( const unsigned count );
+
+   long UserMessageId() const;
+   CtiQueueDataMsg& setUserMessageId(long user_message_id );
 
    const CtiTime& getTime() const;
    CtiTime& getTime();

@@ -39,6 +39,7 @@
 #define CLASS_APPLDEF                     ((MSG_BASE) + 100)
 
 #define MSG_QUEUEDATA                     ((MSG_BASE) + 150)
+#define MSG_REQUESTCANCEL                 ((MSG_BASE) + 151)
 
 #endif      // #ifndef __COLLECTABLE_H__
 

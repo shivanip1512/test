@@ -7,11 +7,15 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/22 21:40:08 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/02/22 17:46:42 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.2  2007/02/22 17:46:42  jotteson
+* Bug Id: 814, 651
+* Completed integration of MACS with new system messages. QueueWrites were changed to be sure they put the proper ID into the queues. New messaging used, new device interface used.
+*
 * Revision 1.1  2007/01/22 21:40:08  jotteson
 * Initial Revision. Thread in porter that executes system messages and returns results to requestor.
 *
@@ -25,12 +29,15 @@
 #include "cmdparse.h"
 #include "counter.h"
 #include "cparms.h"
+#include "device_queue_interface.h"
 #include "msg_cmd.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "msg_queuedata.h"
+#include "msg_requestcancel.h"
 #include "systemmsgthread.h"
+#include "queues.h"
 #include "port_base.h"
 
 static LARGE_INTEGER perfFrequency;
@@ -158,6 +165,14 @@ void SystemMsgThread::executeSystemMessage(CtiRequestMsg *msg)
     {
         executePortEntryRequest(msg, parse);
     }
+    else if( parse.isKeyValid("request_count") )
+    {
+        executeRequestCount(msg, parse);
+    }
+    else if( parse.isKeyValid("request_cancel") )
+    {
+        executeCancelRequest(msg, parse);
+    }
 }
 
 void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandParser &parse)
@@ -165,62 +180,232 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
     unsigned int entries = 0;
     string resultString;
     CtiConnection  *Conn = NULL;
-    CtiReturnMsg   *retMsg = CTIDBG_new CtiReturnMsg(msg->DeviceId(),
-                                                    msg->CommandString(),
-                                                    "Unknown Error",
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    msg->TransmissionId(),
-                                                    msg->UserMessageId(),
-                                                    0);
+    CtiPortSPtr port;
+    vector <CtiPortManager::ptr_type> portList;
+    ULONG requestID = msg->OptionsField();
+    CtiQueueDataMsg *response = NULL;
 
     if( _pPortManager != NULL )
     {
-        if( msg->OptionsField() != 0 )
+        if( requestID != 0 )
         {
             CtiPortSPtr port = _pPortManager->PortGetEqual(msg->OptionsField());
             if( port )
             {
                 entries = port->getWorkCount();
 
-                resultString = "There are ";
-                resultString += entries;
-                resultString += " entries on this port./n";
-                retMsg->setResultString(resultString);
-                retMsg->insert(CTIDBG_new CtiQueueDataMsg(port->getPortID(), entries, port->getPortTiming()));
+                response = CTIDBG_new CtiQueueDataMsg(port->getPortID(), entries, port->getPortTiming(), 0, 0, msg->UserMessageId());
             }
             else
             {
-                resultString = "Error, unknown port./n";
-                retMsg->setStatus(BADRANGE);
-                retMsg->setResultString(resultString);
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Received port entry request for unknown port " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
         {
-            resultString = "Error, unknown port./n";
-            retMsg->setStatus(CtiInvalidRequest);
-            retMsg->setResultString(resultString);
+            getPorts(portList);
+
+            vector<CtiPortManager::ptr_type>::iterator portIter;
+            for( portIter = portList.begin(); portIter != portList.end(); portIter ++ )
+            {
+                port = *portIter;
+
+                if( port )
+                {
+                    entries += port->getWorkCount(requestID);
+                }
+            }
+
+            response = CTIDBG_new CtiQueueDataMsg(0, entries, 0, 0, 0, msg->UserMessageId() );
         }
     }
 
-    if( retMsg != NULL )
+    if( response != NULL )
     {
         if( (Conn = ((CtiConnection*)msg->getConnectionHandle())) != NULL )
         {
             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
-                retMsg->dump();
+                response->dump();
             }
 
-            Conn->WriteConnQue(retMsg);
+            Conn->WriteConnQue(response);
         }
         else
         {
-            delete retMsg;
+            delete response;
         }
+    }
+}
+
+void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &parse)
+{
+    unsigned int entries = 0;
+    string resultString;
+    ULONG requestID = msg->OptionsField();;
+    ULONG count, priority;
+    CtiDeviceSPtr tempDev;
+    CtiPortSPtr port;
+    vector <long> queuedDevices;
+    Cti::DeviceQueueInterface* queueInterface;
+    vector <CtiPortManager::ptr_type> portList;
+    CtiConnection  *Conn = NULL;
+    CtiQueueDataMsg *response = NULL;
+
+    if( _pPortManager != NULL && _pDevManager != NULL )
+    {
+        if( requestID != 0 )
+        {
+            getPorts(portList);
+
+            vector<CtiPortManager::ptr_type>::iterator portIter;
+            for( portIter = portList.begin(); portIter != portList.end(); portIter ++ )
+            {
+                port = *portIter;
+
+                if( port )
+                {
+                    entries += port->getWorkCount(requestID);
+                    queuedDevices = port->getQueuedWorkDevices();
+    
+                    vector<long>::iterator devIter;
+                    for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
+                    {
+                        tempDev = _pDevManager->getEqual(*devIter);
+    
+                        if( tempDev )
+                        {
+                            queueInterface = tempDev->getDeviceQueueHandler();
+    
+                            if( queueInterface != NULL )
+                            {
+                                queueInterface->getQueueRequestInfo(requestID, count, priority);
+                                entries += count;
+                            }
+                        }
+                    }
+                }
+            }
+
+            response = CTIDBG_new CtiQueueDataMsg(0, 0, 0, requestID, entries, msg->UserMessageId());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Request count recieved with no request ID " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    if( response != NULL )
+    {
+        if( (Conn = ((CtiConnection*)msg->getConnectionHandle())) != NULL )
+        {
+            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+            {
+                response->dump();
+            }
+
+            Conn->WriteConnQue(response);
+        }
+        else
+        {
+            delete response;
+        }
+    }
+}
+
+
+void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser &parse)
+{
+    unsigned int entries = 0;
+    string resultString;
+    ULONG requestID = msg->OptionsField();
+    ULONG count, priority;
+    CtiDeviceSPtr tempDev;
+    CtiPortSPtr port;
+    Cti::DeviceQueueInterface *queueInterface;
+    vector <long> queuedDevices;
+    vector <CtiPortManager::ptr_type> portList;
+    CtiConnection  *Conn = NULL;
+    CtiRequestCancelMsg *response = NULL;
+
+    if( _pPortManager != NULL && _pDevManager != NULL )
+    {
+        if( requestID != 0 )
+        {
+            getPorts(portList);
+
+            vector<CtiPortManager::ptr_type>::iterator portIter;
+            for( portIter = portList.begin(); portIter != portList.end(); portIter ++ )
+            {
+                port = *portIter;
+
+                if( port )
+                {
+                    if( port->getWorkCount(requestID) > 0 )
+                    {
+                        // Here we are trying to save the horrors of CleanQueue from being called without cause.
+                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cleanupOutMessages);
+                    }
+                    
+                    queuedDevices = port->getQueuedWorkDevices();
+    
+                    vector<long>::iterator devIter;
+                    for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
+                    {
+                        tempDev = _pDevManager->getEqual(*devIter);
+    
+                        if( tempDev )
+                        {
+                            queueInterface = tempDev->getDeviceQueueHandler();
+    
+                            if( queueInterface != NULL )
+                            {
+                                queueInterface->cancelRequest(requestID, count);
+                                entries += count;
+                            }
+                        }
+                    }
+                }
+            }
+
+            response = CTIDBG_new CtiRequestCancelMsg(requestID, entries, msg->UserMessageId());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Request cancel recieved with no request ID " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    if( response != NULL )
+    {
+        if( (Conn = ((CtiConnection*)msg->getConnectionHandle())) != NULL )
+        {
+            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+            {
+                response->dump();
+            }
+
+            Conn->WriteConnQue(response);
+        }
+        else
+        {
+            delete response;
+        }
+    }
+}
+
+void SystemMsgThread::getPorts(vector<CtiPortManager::ptr_type> &ports)
+{
+    CtiLockGuard<CtiMutex> guard(_pPortManager->getMux());
+    CtiPortManager::spiterator iter = _pPortManager->begin();
+    CtiPortManager::spiterator end = _pPortManager->end();
+
+    for( ; iter != end; iter++)
+    {
+        ports.push_back(iter->second);
     }
 }
 

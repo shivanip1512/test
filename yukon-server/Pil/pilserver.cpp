@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2007/01/22 21:35:01 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2007/02/22 17:46:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1451,7 +1451,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                 pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                execList.push_back( pNew );
+                execList.push_back( pNew );                
             }
 
             {
@@ -1572,7 +1572,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if(parse.isKeyValid("system") && pReq->DeviceId() == 0)
+    if(parse.isKeyValid("system_message") && pReq->DeviceId() == 0)
     {
         //This message is a system request for porter, send it to the porter system thread, not a device.
         PorterSystemMessageQueue.putQueue(pReq);

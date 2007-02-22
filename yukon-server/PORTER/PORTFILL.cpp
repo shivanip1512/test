@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/10/13 20:34:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/02/22 17:46:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -665,7 +665,7 @@ void WriteMessageToPorter(OUTMESS *&OutMessage)
 {
     /* Now add it to the collection of outbound messages */
     // In the beginning (6/25/01) ALL will send a sync message.
-    if(OutMessage && PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *)OutMessage, OutMessage->Priority))
+    if(OutMessage && PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *)OutMessage, OutMessage->Priority))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
         delete (OutMessage);
