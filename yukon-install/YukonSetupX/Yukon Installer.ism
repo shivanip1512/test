@@ -489,6 +489,7 @@
 		<row><td>jloox30.jar</td><td>Common Bin</td><td>jloox30.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jloox30.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jnt.exe</td><td>Common Bin</td><td>JNT.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\JNT.exe</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jntservices.dll</td><td>Common Bin</td><td>JNTServices.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\JNTServices.dll</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>jradius_client.jar</td><td>Common Bin</td><td>jradius-client.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jradius-client.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jtds.jar</td><td>Common Bin</td><td>jtds.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jtds.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jvm.cfg</td><td>Yukon Web Deployment</td><td>jvm.cfg</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\lib\i386\jvm.cfg</td><td>1</td><td>NewSubFolder6</td></row>
 		<row><td>jvm.dll</td><td>Yukon Web Deployment</td><td>jvm.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\client\jvm.dll</td><td>1</td><td>NewSubFolder5</td></row>
