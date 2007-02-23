@@ -168,10 +168,20 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
             CtiPointStore* pointStore = CtiPointStore::getInstance();
 
             CtiHashKey calcPointHashKey(_pointId);
-            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcPointHashKey]);
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&calcPointHashKey));
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+            if( calcPointPtr != rwnil)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Not found" << endl;
+            }
+
+            
         }
         _stack.clear();     // Start with a blank stack.
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
@@ -328,8 +338,8 @@ BOOL CtiCalc::ready( void )
   
             //Is the calc point itself disabled?
             CtiHashKey hashKey(_pointId);
-            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
-            if(componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT))
+            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
+            if( componentPointPtr == rwnil || componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT))
             {
                 isReady = false;
             }

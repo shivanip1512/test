@@ -367,11 +367,11 @@ void CtiCalculateThread::onUpdateThread( void )
                     recalcPointID = _auAffectedPoints.removeFirst( );
                     std::map<long, CtiCalc* >::iterator itr = _onUpdatePoints.find(recalcPointID);
 
-                    //  if not ready
-                    if( itr == _onUpdatePoints.end() || !calcPoint->ready( ) )
-                         continue;  // All the components are not ready.
-
                     calcPoint = (*itr).second;
+
+                    //  if not ready
+                    if( itr == _onUpdatePoints.end() || calcPoint == NULL || !calcPoint->ready( ) )
+                         continue;  // All the components are not ready.
 
                     CtiPointStore* pointStore = CtiPointStore::getInstance();
                     CtiHashKey pointHashKey(calcPoint->getPointId());
