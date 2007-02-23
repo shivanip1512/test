@@ -28,6 +28,7 @@ import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
+import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
@@ -107,6 +108,8 @@ public class ReportTypes
     // commercial curtailment
     public static final int CCURT_EVENT_SUMMARY_DATA = 33;
     public static final int CCURT_INTERRUPTION_SUMMARY_DATA = 34;
+    
+    public static final int MAX_DAILY_OPERATIONS = 35;
 	
 	private static Class[] typeToClassMap =
 	{
@@ -152,6 +155,7 @@ public class ReportTypes
 		HECO_DSMISModel.class,
 		CurtailmentEventSummaryController.class,
         CurtailmentInterruptionSummaryController.class,
+        MaxDailyOpsModel.class,
 	};
 		
 	/** String names for report types */
@@ -202,6 +206,8 @@ public class ReportTypes
 	public static final String CCURT_EVENT_SUMMARY_STRING = "Event Summary";
 	public static final String CCURT_INTERRUPTION_SUMMARY_STRING = "Interruption Summary";
     
+    public static final String MAX_DAILY_OPERATIONS_STRING = "Max Daily Operations";
+    
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
 		STATISTIC_DATA_STRING, 
@@ -249,6 +255,7 @@ public class ReportTypes
 		HECO_DSMIS_STRING,
 		CCURT_EVENT_SUMMARY_STRING,
 		CCURT_INTERRUPTION_SUMMARY_STRING,
+        MAX_DAILY_OPERATIONS_STRING,
 	};
 
 
@@ -295,7 +302,7 @@ public class ReportTypes
 	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
-	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA};
+	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA, MAX_DAILY_OPERATIONS};
 	private static int[] databaseGroupReportTypes = new int[]{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA};
 	private static int[] starsGroupReportTypes = new int[]{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
 			STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,

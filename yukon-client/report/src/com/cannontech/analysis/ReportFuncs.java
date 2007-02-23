@@ -35,6 +35,7 @@ import com.cannontech.analysis.report.LGAccountingReport;
 import com.cannontech.analysis.report.LPDataSummaryReport;
 import com.cannontech.analysis.report.LPSetupDBReport;
 import com.cannontech.analysis.report.LoadControlVerificationReport;
+import com.cannontech.analysis.report.MaxDailyOpsReport;
 import com.cannontech.analysis.report.MeterOutageReport;
 import com.cannontech.analysis.report.MeterReadReport;
 import com.cannontech.analysis.report.PointDataIntervalReport;
@@ -68,6 +69,7 @@ import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
+import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
@@ -162,7 +164,9 @@ public class ReportFuncs
 			returnVal = new HECO_CustomerMonthlyBillingSettlementReport();
 		else if( model instanceof HECO_DSMISModel)
 			returnVal = new HECO_DSMISReport(); 	        
-	    else
+        else if( model instanceof MaxDailyOpsModel)
+            returnVal = new MaxDailyOpsReport();
+        else
 	        return null;
 
 	    returnVal.setModel(model);

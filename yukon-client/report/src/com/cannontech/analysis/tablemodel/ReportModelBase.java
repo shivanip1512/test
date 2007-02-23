@@ -729,6 +729,26 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			}
 			case ModelFactory.CAPCONTROLSTRATEGY:
 			    return cache.getAllCapControlSubBuses();
+                
+            case ModelFactory.CAPCONTROLFEEDER:
+                return cache.getAllCapControlFeeders();
+                
+            case ModelFactory.CAPBANK:
+                List allPaos = cache.getAllYukonPAObjects();
+                List caps = null;
+                if( allPaos != null)
+                {
+                    caps= new ArrayList();
+                    for (int i = 0; i < allPaos.size(); i++)
+                    {
+                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+                        if(lPao.getType() == PAOGroups.CAPBANK) {                        
+                            caps.add(lPao);
+                        }
+                    }
+                }
+                return caps;
+                
 			default:
 				return new ArrayList(0);	//and empty list of nothing objects. 
         }
