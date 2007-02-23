@@ -805,7 +805,7 @@ void CtiCalculateThread::baselineThread( void )
 
                     if(!_shutdownOnThreadTimeout)
                     {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc BaselineThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc BaselineThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, 0, 0) );
                     }
                     else
                     {
