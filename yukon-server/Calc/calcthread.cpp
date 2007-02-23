@@ -332,7 +332,7 @@ void CtiCalculateThread::onUpdateThread( void )
 
                     if(!_shutdownOnThreadTimeout)
                     {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::onUpdateComplain, 0) );
                     }
                     else
                     {
@@ -576,7 +576,7 @@ void CtiCalculateThread::historicalThread( void )
 
                     if(!_shutdownOnThreadTimeout)
                     {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc HistoricalThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc HistoricalThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, 0, 0) );
                     }
                     else
                     {
