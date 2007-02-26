@@ -116,9 +116,10 @@ public class BillingDao {
 
                 rset = stmt.executeQuery();
 
-                Map<String, String> accountNumberMap = retrieveAccountNumbers();
-                if (accountNumberMap == null) {
-                    accountNumberMap = new HashMap<String, String>();
+                Map<String, String> accountNumberMap = null;
+                if( defaults.getFormatID() == FileFormatTypes.CADP ||
+               		defaults.getFormatID() == FileFormatTypes.CADPXL2 ) {
+	                accountNumberMap = retrieveAccountNumbers();
                 }
 
                 Map<String, Integer> meterPositionNumberMap = new HashMap<String, Integer>();
@@ -131,7 +132,6 @@ public class BillingDao {
                 BillableDevice device = null;
                 while (rset.next()) {
                     String meterNumber = rset.getString(1);
-                    String accountNumber = accountNumberMap.get(meterNumber);
                     currentPointID = rset.getInt(2);
                     int ptOffset = rset.getInt(3);
                     String ptType = rset.getString(4);
@@ -150,6 +150,8 @@ public class BillingDao {
                     int unitOfMeasure = rset.getInt(11);
                     String paoName = rset.getString(12);
                     int address = rset.getInt(13);
+                    
+                    String accountNumber = (accountNumberMap == null ? paoName : accountNumberMap.get(meterNumber));
 
                     if (currentPointID != lastPointID) {
                         lastPointID = currentPointID;
