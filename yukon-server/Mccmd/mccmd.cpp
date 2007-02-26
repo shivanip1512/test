@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/02/26 21:01:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1536,11 +1536,12 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             if( msg->isA() == MSG_PCRETURN )
             {
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
+                bool isInhibited = (ret_msg->Status() == DEVICEINHIBITED);
                 DumpReturnMessage(*ret_msg);
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
 
                 // have we received everything expected?
-                if( device_map.size() == 0 )
+                if( device_map.size() == 0 && !isInhibited )
                     break;
             }
             else if( msg->isA() == MSG_QUEUEDATA )
@@ -1672,8 +1673,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             GetDeviceName(m_iter->first,dev_name);
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
-        Tcl_ListObjAppendElement(interp, status_list,
-                     Tcl_NewIntObj(m_iter->second->Status()));
+            Tcl_ListObjAppendElement(interp, status_list,
+            Tcl_NewIntObj(m_iter->second->Status()));
             delete m_iter->second;
         }
     }
@@ -1739,7 +1740,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
     {
         if( msg->Status() == DEVICEINHIBITED )
         {
-            // This device was disabled, forget about it.
+            //Ignore it!
         }
         else if( msg->ExpectMore() )
         {
