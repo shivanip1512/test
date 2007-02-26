@@ -5,7 +5,8 @@ include ..\common\rwglobal.inc
 
 LIBS=\
 advapi32.lib \
-$(COMPILEBASE)\lib\ctibase.lib
+$(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\clrdump.lib
 
 TABLETESTOBJS=\
 tabletest.obj \

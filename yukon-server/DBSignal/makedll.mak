@@ -51,6 +51,7 @@ tbl_signal.obj \
 
 DBLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 
 
 CTIPROGS=\
@@ -113,20 +114,20 @@ $(BIN)\*.exe
 
 #UPDATE#
 dbsigsend.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
-		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
+		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h clrdump.h \
 		cticonnect.h netports.h tbl_signal.h ctitime.h dbmemobject.h \
-		pointdefs.h utility.h sorted_vector.h
+		pointdefs.h utility.h queues.h numstr.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 tbl_rawpthistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_rawpthistory.h ctitime.h dlldefs.h pointdefs.h utility.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h \
-		sorted_vector.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h sema.h logger.h thread.h CtiPCPtrQueue.h rwutil.h \
-		boost_time.h
+		queues.h types.h numstr.h sorted_vector.h dbaccess.h \
+		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
+		clrdump.h cticonnect.h netports.h sema.h logger.h thread.h \
+		CtiPCPtrQueue.h rwutil.h boost_time.h
 tbl_signal.obj:	yukon.h precompiled.h ctidbgmem.h tbl_signal.h \
 		ctitime.h dlldefs.h dbmemobject.h pointdefs.h utility.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h \
-		sorted_vector.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h sema.h logger.h thread.h CtiPCPtrQueue.h rwutil.h \
-		boost_time.h
+		queues.h types.h numstr.h sorted_vector.h dbaccess.h \
+		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
+		clrdump.h cticonnect.h netports.h sema.h logger.h thread.h \
+		CtiPCPtrQueue.h rwutil.h boost_time.h
 #ENDUPDATE#

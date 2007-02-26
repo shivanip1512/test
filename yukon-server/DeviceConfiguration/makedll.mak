@@ -37,6 +37,7 @@ INCLPATHS+= \
 
 LIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\clrdump.lib
 
 DLLOBJS = \
 config_base.obj \
@@ -104,31 +105,38 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
 
 #UPDATE#
 config_base.obj:	yukon.h precompiled.h ctidbgmem.h config_base.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h ctitime.h \
-		CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h cticonnect.h netports.h config_resolvers.h
+		logger.h dlldefs.h thread.h mutex.h guard.h clrdump.h \
+		ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h cticonnect.h netports.h config_resolvers.h
 config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h ctitime.h \
-		CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h cticonnect.h netports.h config_base.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h clrdump.h \
+		ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h cticonnect.h netports.h config_base.h \
 		config_resolvers.h
 config_parts_cbc.obj:	yukon.h precompiled.h ctidbgmem.h config_parts.h \
 		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h config_resolvers.h \
-		rwutil.h boost_time.h utility.h sorted_vector.h
+		clrdump.h ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h cticonnect.h netports.h \
+		config_resolvers.h rwutil.h boost_time.h utility.h queues.h \
+		numstr.h sorted_vector.h
 config_parts_mct.obj:	yukon.h precompiled.h ctidbgmem.h config_parts.h \
 		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h config_resolvers.h \
-		rwutil.h boost_time.h utility.h sorted_vector.h
+		clrdump.h ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h cticonnect.h netports.h \
+		config_resolvers.h rwutil.h boost_time.h utility.h queues.h \
+		numstr.h sorted_vector.h
 config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h rwutil.h \
 		ctitime.h dlldefs.h boost_time.h config_resolvers.h logger.h \
-		thread.h mutex.h guard.h CtiPCPtrQueue.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h cticonnect.h netports.h utility.h \
-		sorted_vector.h
+		thread.h mutex.h guard.h clrdump.h CtiPCPtrQueue.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h cticonnect.h netports.h \
+		utility.h queues.h numstr.h sorted_vector.h
+config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h \
+		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		clrdump.h ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h cticonnect.h netports.h \
+		config_resolvers.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
-		ctitime.h dlldefs.h dsm2.h mutex.h guard.h cticonnect.h \
-		netports.h sorted_vector.h id_build.h id_vinfo.h
+		ctitime.h dlldefs.h queues.h types.h numstr.h sorted_vector.h \
+		id_build.h id_vinfo.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 #ENDUPDATE#

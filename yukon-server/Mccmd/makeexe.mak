@@ -8,6 +8,7 @@ INCLPATHS+= \
 -I$(MCCMD)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
+-I$(DATABASE)\include \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(TCLINC) \
@@ -50,6 +51,7 @@ xcel.obj
 LIBS=\
 $(COMPILEBASE)\lib\$(TCL_LIB).lib \
 $(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\cticparms.lib
