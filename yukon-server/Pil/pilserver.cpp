@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2007/02/26 23:48:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -959,10 +959,9 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     int i = 0;
     int status = NoError;
 
-    list< CtiMessage* >  vgList;
-    list< CtiMessage* >  retList;
-    list< OUTMESS* >     outList;
-    list< OUTMESS* >     tempOutList;
+    list< CtiMessage* >  vgList,  temp_vgList;
+    list< CtiMessage* >  retList, temp_retList;
+    list< OUTMESS* >     outList, temp_outList;
 
     list< CtiRequestMsg* >  execList;
 
@@ -1015,18 +1014,18 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 {
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a CTIDBG_new number to deal with
                 }
-                delete_list(tempOutList);
-                tempOutList.clear();              // Just make sure!
+                delete_list(temp_outList);
+                temp_outList.clear();              // Just make sure!
 
                 if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
-                    indicateControlOnSubGroups(Dev, pExecReq, parse, vgList, retList);
+                    indicateControlOnSubGroups(Dev, pExecReq, parse, temp_vgList, temp_retList);
                 }
 
                 try
                 {
-                    status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
-                    reportClientRequests(Dev, parse, pReq, pExecReq, vgList, retList);
+                    status = Dev->ExecuteRequest(pExecReq, parse, temp_vgList, temp_retList, temp_outList);    // Defined ONLY in dev_base.cpp
+                    reportClientRequests(Dev, parse, pReq, pExecReq, temp_vgList, temp_retList);
                 }
                 catch(...)
                 {
@@ -1039,11 +1038,23 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     }
                 }
 
-                for(int j = tempOutList.size(); j > 0; j--)
+                while( !temp_outList.empty() )
                 {
-                    // _porterOMQueue.putQueue(tempOutList.get());
-                    outList.push_back( tempOutList.front() );
-                    tempOutList.pop_front();
+                    // _porterOMQueue.putQueue(temp_outList.get());
+                    outList.push_back(temp_outList.front());
+                    temp_outList.pop_front();
+                }
+
+                while( !temp_retList.empty() )
+                {
+                    retList.push_back(temp_retList.front());
+                    temp_retList.pop_front();
+                }
+
+                while( !temp_vgList.empty() )
+                {
+                    vgList.push_back(temp_vgList.front());
+                    temp_vgList.pop_front();
                 }
 
                 if(status != NORMAL &&
@@ -1451,7 +1462,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                 pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                execList.push_back( pNew );                
+                execList.push_back( pNew );
             }
 
             {
