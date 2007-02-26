@@ -31,10 +31,12 @@
 #include <windows.h>
 #include <iostream>
 
-
+#include "numstr.h"
 #include "dlldefs.h"
 
-
+//Includes to create a dump file
+//#include "dbghelp.h"
+#include "clrdump.h"
 
 #pragma pack(push, LockGuardPack, 8)
 template<class T>
@@ -43,10 +45,15 @@ class IM_EX_CTIBASE CtiLockGuard
 public:
     CtiLockGuard(T& resource) :  _res(resource)
     {
+        static bool hasDumped = false;
         #ifdef _DEBUG
         while(!(_acquired = _res.acquire(900000)))
         {
             std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
+            if( !hasDumped )
+            {
+                CreateDump(GetCurrentProcessId(), L"LockGuard.DMP", 0, NULL, NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
+            }
         }
         #else
         _res.acquire();
