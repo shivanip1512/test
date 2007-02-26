@@ -81,6 +81,7 @@ public final static FileFormatBase createFileFormat(int type)
             return new SimpleTOUFormat();
         
         case FileFormatTypes.EXTENDED_TOU:
+        case FileFormatTypes.EXTENDED_TOU_INCODE:
             return new ExtendedTOUFormat();
 		
 		default: //this is bad
