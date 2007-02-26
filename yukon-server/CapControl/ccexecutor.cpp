@@ -1739,7 +1739,7 @@ void CtiCCCommandExecutor::Flip7010Device()
             for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                if( bankID == currentCapBank->getControlDeviceId() )
+                if( bankID == currentCapBank->getPAOId() )
                 {
                     found = TRUE;
                     if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 7010")) 
