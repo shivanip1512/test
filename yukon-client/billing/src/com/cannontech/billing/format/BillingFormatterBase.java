@@ -30,14 +30,15 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     public static final DecimalFormat KW_FORMAT = new DecimalFormat("##0.000");
 
     private int readingCount = 0;
-
+    private BillingFileDefaults billingFileDefaults = null;
     abstract public String dataToString(BillableDevice device);
 
     public int writeBillingFile(BillingFileDefaults defaults, List<BillableDevice> deviceList)
             throws IOException {
 
         StringBuffer output = new StringBuffer();
-
+        setBillingFileDefaults(defaults);
+        
         // Add header to beginning of file string
         output.append(getBillingFileHeader());
 
@@ -47,8 +48,8 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         // Add footer to end of file string
         output.append(getBillingFileFooter());
 
-        FileWriter outputFileWriter = new FileWriter(defaults.getOutputFileDir(),
-                                                     defaults.isAppendToFile());
+        FileWriter outputFileWriter = new FileWriter(getBillingFileDefaults().getOutputFileDir(),
+                                                     getBillingFileDefaults().isAppendToFile());
         outputFileWriter.write(output.toString());
         outputFileWriter.flush();
         outputFileWriter.close();
@@ -192,5 +193,13 @@ public abstract class BillingFormatterBase implements BillingFormatter {
 
         return format.format(value);
     }
+
+	public BillingFileDefaults getBillingFileDefaults() {
+		return billingFileDefaults;
+	}
+
+	public void setBillingFileDefaults(BillingFileDefaults billingFileDefaults) {
+		this.billingFileDefaults = billingFileDefaults;
+	}
 
 }
