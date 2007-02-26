@@ -1,5 +1,7 @@
 package com.cannontech.billing.mainprograms;
 
+import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.util.ServletUtil;
 ;
@@ -13,7 +15,7 @@ import com.cannontech.util.ServletUtil;
 public class BillingFileDefaults
 {
 	public static final String BILLING_DEFAULTS_FILENAME = "\\BillingDefaultSetting.DAT";
-	public static final String BILLING_DEFAULTS_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
+	public static final String BILLING_DEFAULTS_DIRECTORY = CtiUtilities.getConfigDirPath();
 
 	//Number of members in this class.
 	private final int NUMBER_OF_PARAMETERS = 7;
@@ -121,7 +123,7 @@ public class BillingFileDefaults
 	{
 		for (int i = 0; i < DeviceMeterGroup.validBillGroupTypeStrings.length; i++)
 		{
-			if (getBillGroupType() == DeviceMeterGroup.validBillGroupTypeStrings[i])
+			if (getBillGroupType().equalsIgnoreCase(DeviceMeterGroup.validBillGroupTypeStrings[i]))
 				return DeviceMeterGroup.validBillGroupTypeIDs[i];
 		}
 		return DeviceMeterGroup.COLLECTION_GROUP;
@@ -245,8 +247,8 @@ public class BillingFileDefaults
 		if( formatID < 0)
 		{
 			//set default value
-			if( com.cannontech.billing.FileFormatTypes.getValidFormatIDs().length > 0 )
-				formatID = com.cannontech.billing.FileFormatTypes.getValidFormatIDs()[0];
+			if( FileFormatTypes.getValidFormatIDs().length > 0 )
+				formatID = FileFormatTypes.getValidFormatIDs()[0];
 		}
 		return formatID;
 	}
@@ -260,7 +262,7 @@ public class BillingFileDefaults
 	{
 		if (outputFileDir == null)
 		{
-			String directory = com.cannontech.common.util.CtiUtilities.getCanonicalFile(com.cannontech.common.util.CtiUtilities.getExportDirPath());
+			String directory = CtiUtilities.getCanonicalFile(CtiUtilities.getExportDirPath());
 			outputFileDir = directory + "outFile.txt";
 		}
 		return outputFileDir;
@@ -275,7 +277,7 @@ public class BillingFileDefaults
 	{
 		if( inputFileDir == null)
 		{
-			String directory = com.cannontech.common.util.CtiUtilities.getCanonicalFile(com.cannontech.common.util.CtiUtilities.getExportDirPath());
+			String directory = CtiUtilities.getCanonicalFile(CtiUtilities.getExportDirPath());
 			inputFileDir = directory + "inFile.txt";
 		}
 		return inputFileDir;
