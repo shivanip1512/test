@@ -1,9 +1,14 @@
 package com.cannontech.billing.format;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.device.base.BillableField;
 import com.cannontech.billing.device.base.Channel;
 import com.cannontech.billing.device.base.ReadingType;
+import com.cannontech.clientutils.CTILogger;
 
 /**
  * Class used to create a billing file with row format as follows:
@@ -30,6 +35,10 @@ import com.cannontech.billing.device.base.ReadingType;
  */
 public class ExtendedTOU_IncodeRecordFormatter extends ExtendedTOURecordFormatter {
 
+	// Key=ReadingCode+Address String, Value=MeterNumber String 
+	public Map<String, String> cisMeterNumberMap = null;
+
+	@Override
     public String dataToString(BillableDevice device) {
 
         StringBuffer writeToFile = new StringBuffer();
@@ -126,4 +135,58 @@ public class ExtendedTOU_IncodeRecordFormatter extends ExtendedTOURecordFormatte
 
         return writeToFile.toString();
     }
+    
+    @Override
+    protected String getMeterNumber(BillableDevice device, String code ) {
+    	String key = buildKey(code, device.getData(BillableField.address));
+        String customMeterNumber = (String)getCISMeterNumbers().get(key);
+        return (customMeterNumber != null ? 
+        		customMeterNumber : super.getMeterNumber(device, code));
+    }
+    
+    /**
+	 * Returns a HashMap of buildKey(readingCode, address) as key and meterNumber as value.
+	 * @return java.util.Hashtable
+	 */
+	public void retrieveCISMeterNumbers()
+	{
+        cisMeterNumberMap = new HashMap<String, String>();
+		try
+		{
+			java.io.FileReader fileReader = new java.io.FileReader(getBillingFileDefaults().getInputFileDir());
+			java.io.BufferedReader readBuffer = new java.io.BufferedReader(fileReader);
+	
+			try {
+				String line = readBuffer.readLine();
+				while(line != null) {
+					StringTokenizer tokenizer = new StringTokenizer(line.trim(), ",");					
+					if (tokenizer.countTokens() == 3) {
+						String readingCode = tokenizer.nextToken().trim();
+						String address = tokenizer.nextToken().trim();
+						String key = buildKey(readingCode, address);
+						String meterNumber = tokenizer.nextToken().trim();
+						cisMeterNumberMap.put(key, meterNumber);
+	                }
+					line = readBuffer.readLine();
+				}
+			}
+			catch(java.io.IOException ioe) {
+				CTILogger.error(ioe);
+			}
+		}
+		catch(java.io.FileNotFoundException fnfe) {
+			CTILogger.info("Cannot find "+getBillingFileDefaults().getInputFileDir()+".  Please create file (if applicable) and regenerate file.");
+			CTILogger.info("Default MeterNumbers stored in database will be used.");
+		}
+	}
+	
+	public Map<String, String> getCISMeterNumbers() {
+		if( cisMeterNumberMap == null)
+			retrieveCISMeterNumbers();
+		return cisMeterNumberMap;
+	}
+	
+	private String buildKey(String readingCode, String address){
+		return readingCode + address;
+	}
 }
