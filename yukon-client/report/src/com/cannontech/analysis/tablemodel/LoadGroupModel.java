@@ -551,7 +551,7 @@ public class LoadGroupModel extends ReportModelBase
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_SEASONAL_TOTAL + "' value='true'>Annual" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' checked name='" +ATT_SHOW_ANNUAL_TOTAL + "' value='true'>Annual" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "      </table>" + LINE_SEPARATOR;
