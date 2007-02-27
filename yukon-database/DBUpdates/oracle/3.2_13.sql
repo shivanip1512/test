@@ -17,6 +17,8 @@ alter table cceventlog add additionalInfo varchar2(20);
 update cceventlog set additionalInfo = '(none)';
 alter table cceventlog modify additionalInfo varchar2(20) not null;
 
+insert into YukonRoleProperty values(-10813, -108,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

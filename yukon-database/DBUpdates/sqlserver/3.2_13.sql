@@ -28,6 +28,10 @@ go
 update cceventlog set additionalInfo = '(none)';
 go
 alter table cceventlog alter column additionalInfo varchar(20) not null;
+go
+
+insert into YukonRoleProperty values(-10813, -108,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
