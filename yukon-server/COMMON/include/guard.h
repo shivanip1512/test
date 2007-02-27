@@ -30,6 +30,7 @@
 
 #include <windows.h>
 #include <iostream>
+#include <string>
 
 #include "numstr.h"
 #include "dlldefs.h"
@@ -52,7 +53,16 @@ public:
             std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
             if( !hasDumped )
             {
-                CreateDump(GetCurrentProcessId(), L"LockGuard.DMP", 0, NULL, NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
+                hasDumped = true;
+                std::wstring file = L"LockGuard";
+                wchar_t buff[20];
+                _itow( GetCurrentThreadId(), buff, 10);
+                file += buff;
+                file += L"-";
+                _itow( _res.lastAcquiredByTID(), buff, 10);
+                file += buff;
+                file += L".DMP";
+                CreateDump(GetCurrentProcessId(), file.c_str(), 0, NULL, NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }
         }
         #else
