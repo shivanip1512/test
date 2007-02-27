@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2007 6:32:05 PM                          */
+/* Created on:     2/27/2007 1:55:53 PM                         */
 /*==============================================================*/
 
 
@@ -392,6 +392,8 @@ drop table GenericMacro cascade constraints;
 
 drop table GraphCustomerList cascade constraints;
 
+drop table GroupPaoPermission cascade constraints;
+
 drop table HolidaySchedule cascade constraints;
 
 drop table ImportData cascade constraints;
@@ -574,7 +576,7 @@ drop table TemplateDisplay cascade constraints;
 
 drop table UNITMEASURE cascade constraints;
 
-drop table UserPAOowner cascade constraints;
+drop table UserPaoPermission cascade constraints;
 
 drop table VersacomRoute cascade constraints;
 
@@ -3926,6 +3928,22 @@ alter table GraphCustomerList
    add constraint PK_GRAPHCUSTOMERLIST primary key (GraphDefinitionID, CustomerID);
 
 /*==============================================================*/
+/* Table: GroupPaoPermission                                    */
+/*==============================================================*/
+create table GroupPaoPermission  (
+   GroupPaoPermissionID NUMBER                          not null,
+   GroupID              NUMBER                          not null,
+   PaoID                NUMBER                          not null,
+   Permission           VARCHAR2(50)                    not null
+);
+
+alter table GroupPaoPermission
+   add constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID);
+
+alter table GroupPaoPermission
+   add constraint AK_GRPPAOPERM unique (GroupID, PaoID, Permission);
+
+/*==============================================================*/
 /* Table: HolidaySchedule                                       */
 /*==============================================================*/
 create table HolidaySchedule  (
@@ -5652,15 +5670,20 @@ alter table UNITMEASURE
    add constraint SYS_C0013344 primary key (UOMID);
 
 /*==============================================================*/
-/* Table: UserPAOowner                                          */
+/* Table: UserPaoPermission                                     */
 /*==============================================================*/
-create table UserPAOowner  (
+create table UserPaoPermission  (
+   UserPaoPermissionID  NUMBER                          not null,
    UserID               NUMBER                          not null,
-   PaoID                NUMBER                          not null
+   PaoID                NUMBER                          not null,
+   Permission           VARCHAR2(50)                    not null
 );
 
-alter table UserPAOowner
-   add constraint PK_USERPAOOWNER primary key (UserID, PaoID);
+alter table UserPaoPermission
+   add constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID);
+
+alter table UserPaoPermission
+   add constraint AK_USRPAOPERM unique (UserID, PaoID, Permission);
 
 /*==============================================================*/
 /* Table: VersacomRoute                                         */
@@ -7166,6 +7189,7 @@ insert into YukonRoleProperty values(-1303,-4,'secret_key','cti','Client machine
 insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
 insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
 insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
+insert into yukonroleproperty values(-1307,-4,'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,NONE');
 
 insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
@@ -7242,6 +7266,19 @@ insert into YukonRoleProperty values(-10302,-103,'Expresscom Serial','true','Sho
 insert into YukonRoleProperty values(-10303,-103,'DCU SA205 Serial','false','Show a DCU SA205 Serial Number SortBy display');
 insert into YukonRoleProperty values(-10304,-103,'DCU SA305 Serial','false','Show a DCU SA305 Serial Number SortBy display');
 insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
+insert into yukonroleproperty values(-10306,-103,'Read device', 'true', 'Allow the ability to read values from a device')
+insert into yukonroleproperty values(-10307,-103,'Write to device', 'true', 'Allow the ability to write values to a device')
+insert into yukonroleproperty values(-10308,-103,'Read disconnect', 'true', 'Allow the ability to read disconnect from a device')
+insert into yukonroleproperty values(-10309,-103,'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device')
+insert into yukonroleproperty values(-10310,-103,'Read LM device', 'true', 'Allow the ability to read values from an LM device')
+insert into yukonroleproperty values(-10311,-103,'Write to LM device', 'true', 'Allow the ability to write values to an LM device')
+insert into yukonroleproperty values(-10312,-103,'Control LM device', 'true', 'Allow the ability to control an LM device')
+insert into yukonroleproperty values(-10313,-103,'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device')
+insert into yukonroleproperty values(-10314,-103,'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device')
+insert into yukonroleproperty values(-10315,-103,'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device')
+insert into yukonroleproperty values(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.')
+insert into yukonroleproperty values(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands')
+
 
 /* Calc Historical Role Properties */
 insert into YukonRoleProperty values(-10400,-104,'interval','900','<description>');
@@ -7269,7 +7306,7 @@ insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/M
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
 insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'false', 'Allow access to the Java Web Start Launcher for client applications.');
-
+insert into YukonRoleProperty values(-10813, -108,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
@@ -7686,14 +7723,15 @@ create table YukonUser  (
    UserID               NUMBER                          not null,
    UserName             VARCHAR2(64)                    not null,
    Password             VARCHAR2(64)                    not null,
-   Status               VARCHAR2(20)                    not null
+   Status               VARCHAR2(20)                    not null,
+   AuthType             VARCHAR2(16)                    not null
 );
 
-insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled' );
-insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled' );
-insert into yukonuser values ( -3, 'weboper', 'weboper', 'Enabled' );
-insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled' );
-insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled' );
+insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled', 'PLAIN' );
+insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN' );
+insert into yukonuser values ( -3, 'weboper', 'weboper', 'Enabled', 'PLAIN' );
+insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled', 'PLAIN' );
+insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled', 'PLAIN' );
 alter table YukonUser
    add constraint PK_YUKONUSER primary key (UserID);
 
@@ -8761,6 +8799,14 @@ alter table GraphCustomerList
    add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
       references Customer (CustomerID);
 
+alter table GroupPaoPermission
+   add constraint FK_GROUPPAO_REF_YKGRP_YUKONGRO foreign key (GroupID)
+      references YukonGroup (GroupID);
+
+alter table GroupPaoPermission
+   add constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
+
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID);
@@ -9252,13 +9298,13 @@ alter table TemplateDisplay
    add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
       references TEMPLATE (TEMPLATENUM);
 
-alter table UserPAOowner
-   add constraint FK_UsPow_YkP foreign key (PaoID)
-      references YukonPAObject (PAObjectID);
-
-alter table UserPAOowner
-   add constraint FK_UsPow_YkUsr foreign key (UserID)
+alter table UserPaoPermission
+   add constraint FK_USERPAOP_REF_YKUSR_YUKONUSE foreign key (UserID)
       references YukonUser (UserID);
+
+alter table UserPaoPermission
+   add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
 
 alter table VersacomRoute
    add constraint FK_VERSACOM_ROUTE_VER_ROUTE foreign key (ROUTEID)

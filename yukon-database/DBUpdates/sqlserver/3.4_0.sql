@@ -321,12 +321,98 @@ go
 update cceventlog set additionalInfo = '(none)';
 go
 alter table cceventlog alter column additionalInfo varchar(20) not null;
+
+insert into YukonRoleProperty values(-10813, -108,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+go
 /* @error ignore-end */
 
 insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
 insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\\yukon\\server\\export\\' );
 insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
+
+insert into yukonroleproperty values (-10306, -103, 'Read device', 'true', 'Allow the ability to read values from a device')
+insert into yukonroleproperty values (-10307, -103, 'Write to device', 'true', 'Allow the ability to write values to a device')
+insert into yukonroleproperty values (-10308, -103, 'Read disconnect', 'true', 'Allow the ability to read disconnect from a device')
+insert into yukonroleproperty values (-10309, -103, 'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device')
+
+insert into yukonroleproperty values (-10310, -103, 'Read LM device', 'true', 'Allow the ability to read values from an LM device')
+insert into yukonroleproperty values (-10311, -103, 'Write to LM device', 'true', 'Allow the ability to write values to an LM device')
+insert into yukonroleproperty values (-10312, -103, 'Control LM device', 'true', 'Allow the ability to control an LM device')
+
+insert into yukonroleproperty values (-10313, -103, 'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device')
+insert into yukonroleproperty values (-10314, -103, 'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device')
+insert into yukonroleproperty values (-10315, -103, 'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device')
+
+insert into yukonroleproperty values (-10316, -103, 'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.')
+insert into yukonroleproperty values (-10317, -103, 'Execute Manual Command', 'true', 'Allow the ability to execute manual commands')
+go
+
+alter table YukonUser add AuthType varchar(16);
+go
+update YukonUser set AuthType = 'PLAIN';
+go
+alter table YukonUser alter column AuthType varchar(16) not null;
+go
+
+insert into yukonroleproperty values (-1307, -4, 'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,NONE');
+
+create table UserPaoPermission (
+   UserPaoPermissionID  numeric              not null,
+   UserID               numeric              not null,
+   PaoID                numeric              not null,
+   Permission           varchar(50)          not null
+)
+go
+
+/*
+Still need to add transfer from UserPaoOwner to userPaoPermission so can't activate these constraints yet
+alter table UserPaoPermission
+   add constraint PK_USERPAOPERMISSION primary key  (UserPaoPermissionID)
+go
+
+alter table UserPaoPermission
+   add constraint AK_USRPAOPERM unique  (UserID, PaoID, Permission)
+go
+
+alter table UserPaoPermission
+   add constraint FK_USERPAOP_REF_YKUSR_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID)
+go
+
+alter table UserPaoPermission
+   add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+*/
+
+create table GroupPaoPermission (
+   GroupPaoPermissionID numeric              not null,
+   GroupID              numeric              not null,
+   PaoID                numeric              not null,
+   Permission           varchar(50)          not null
+)
+go
+
+alter table GroupPaoPermission
+   add constraint PK_GROUPPAOPERMISSION primary key  (GroupPaoPermissionID)
+go
+
+alter table GroupPaoPermission
+   add constraint AK_GRPPAOPERM unique  (GroupID, PaoID, Permission)
+go
+
+alter table GroupPaoPermission
+   add constraint FK_GROUPPAO_REF_YKGRP_YUKONGRO foreign key (GroupID)
+      references YukonGroup (GroupID)
+go
+
+alter table GroupPaoPermission
+   add constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
