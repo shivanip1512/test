@@ -111,11 +111,6 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		//Action to do:  "SelectDevice", set deviceID and redirect to commander page.
 		String action = req.getParameter("action");
 
-		//Flag to write to the database
-		String updateDB = req.getParameter("updateDB");
-		if( updateDB != null )
-			localBean.setUpdateToDB(true);
-		
 		if (clear != null)
 			localBean.clearResultText();
 		else if( action != null && action.equalsIgnoreCase("SavePeakReport"))

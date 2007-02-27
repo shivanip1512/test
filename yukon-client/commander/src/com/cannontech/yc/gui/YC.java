@@ -65,9 +65,6 @@ public class YC extends Observable implements MessageListener
     private final SystemLogHelper _systemLogHelper;
     private String logUserName = null;
     
-    /** Flag to write command to database, if applicable */
-    private boolean updateToDB = false;
-    
 	/** HashSet of userMessageIds for this instance */
 	private java.util.Set requestMessageIDs = new java.util.HashSet(10);
 
@@ -674,15 +671,13 @@ public class YC extends Observable implements MessageListener
 		{
 			String begString = tempCommand.substring(0, sepIndex).trim();
 			begIndex = sepIndex+1;
-			String cmd = getCommandFromLabel(begString) + getUpdateToDBString(); 
+			String cmd = getCommandFromLabel(begString); 
 			getExecuteCmdsVector().add(cmd);
 			tempCommand = tempCommand.substring(begIndex).trim();
 			sepIndex = tempCommand.indexOf(SEPARATOR);
 		}
 		//add the final (or only) command.
-		getExecuteCmdsVector().add(getCommandFromLabel(tempCommand)+ getUpdateToDBString());
-		// reset the update to database flag.
-		setUpdateToDB(false);
+		getExecuteCmdsVector().add(getCommandFromLabel(tempCommand));
 	}
     
     public void checkCommandAuthorization() throws PaoAuthorizationException{
@@ -1520,28 +1515,8 @@ public class YC extends Observable implements MessageListener
 	        file.delete();
 	    }
 	}		
-    /**
-     * @return Returns the updateToDB.
-     */
-    public boolean isUpdateToDB()
-    {
-        return updateToDB;
-    }
-    /**
-     * @param updateToDB The updateToDB to set.
-     */
-    public void setUpdateToDB(boolean updateToDB)
-    {
-        this.updateToDB = updateToDB;
-    }
-    
-    public String getUpdateToDBString()
-    {
-        if (updateToDB)
-            return " update";
-        return "";
-    }
-    public boolean isPilConnValid()
+
+	public boolean isPilConnValid()
     {
         return getPilConn().isValid();
     }

@@ -139,6 +139,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					
 				getSerialTypeToNumberMap().put(serialType_, serialNumbers);
 			}
+			setErrorMsg("");
 		}
 	}
 
