@@ -72,7 +72,7 @@ public MVRSRecord()
  */
 public String dataToString()
 {
-	Vector vectorOfLines = new Vector();
+	Vector<String> vectorOfLines = new Vector<String>();
 	try
 	{
 	    File file = new File(getInputFile());
@@ -100,13 +100,15 @@ public String dataToString()
 			vectorOfLines.add(processMVRSField(buffer.toString()));			
 		}
 		
-	} catch(Exception e){e.printStackTrace();}
+	} catch(Exception e){
+		CTILogger.error(e);
+	}
 	
 	StringBuffer writeToFile = new StringBuffer();
 	for (int i = 0; i < vectorOfLines.size(); i++)
 	{
 		//Find the FHD record and update it!
-		String str = (String)vectorOfLines.get(i);
+		String str = vectorOfLines.get(i);
 		if( str.startsWith("FHD") )
 		{
 			vectorOfLines.set(i, processFileHeader());			
@@ -191,86 +193,24 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 				}
 			}
 		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
 		finally
 		{
-			try
-			{
+			try {
 				if( rset != null ) rset.close();
 				if( pstmt != null ) pstmt.close();
 				if( conn != null ) conn.close();
 			} 
-			catch( java.sql.SQLException e2 )
-			{
-				e2.printStackTrace();//sometin is up
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error(e2);
 			}	
 		}
     }
     return deviceNameToRPHMap;
 }
-/**
- * Gets KWH reading from database
- * Creation date: (6/2/00 9:42:19 AM)
- */
-//public final String getReading(String databaseAlias) throws java.sql.SQLException {
-//	
-//	SqlStatement stmt = new SqlStatement("SELECT VALUE FROM RAWPOINTHISTORY " +
-//	        " WHERE POINTID = (SELECT POINTID FROM POINT WHERE DEVICEID = " +
-//	        " (SELECT DEVICEID FROM DEVICE WHERE NAME = '" + 
-//	        (meterRecord.meterNumber).toString() + 
-//	        "')) AND POINTID IN (SELECT POINTID FROM POINT " + 
-//	        " WHERE POINTOFFSET = 1 AND POINTTYPE = 'Analog') " + 
-//	        " AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY " + 
-//	        " WHERE POINTID IN (SELECT POINTID FROM POINT WHERE POINTTYPE = 'Analog' " +
-//	        " AND DEVICEID = (SELECT DEVICEID FROM DEVICE WHERE NAME = '" + 
-//	        (meterRecord.meterNumber).toString() + 
-//	        "')) AND POINTID IN (SELECT POINTID FROM POINT WHERE POINTOFFSET = 1))", databaseAlias );
-//	
-//	String reading = null;
-//	try
-//	{
-//		stmt.execute();
-//	}
-//	catch( Exception e )
-//	{
-//		e.printStackTrace();
-//	}
-//	if (stmt.getRowCount() > 0)
-//		reading = new String((String)stmt.getRow(0)[0]);
-//	else
-//		reading = new String("");
-//	return reading;
-//
-//}
-///**
-// * Gets the reading time from the database
-// * Creation date: (6/2/00 9:42:19 AM)
-// */
-//public final String getReadTime(String databaseAlias) throws java.sql.SQLException {
-//	
-//	com.cannontech.database.SqlStatement stmt =
-//	new com.cannontech.database.SqlStatement("SELECT TO_CHAR(TIMESTAMP, 'HH24MMSS') FROM RAWPOINTHISTORY WHERE POINTID = (SELECT POINTID FROM POINT WHERE DEVICEID = (SELECT DEVICEID FROM DEVICE WHERE NAME = '" + (meterRecord.meterNumber).toString() + "')) AND POINTID IN (SELECT POINTID FROM POINT WHERE POINTOFFSET = 1) AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY WHERE POINTID IN (SELECT POINTID FROM POINT WHERE POINTTYPE = 'Analog' AND DEVICEID = (SELECT DEVICEID FROM DEVICE WHERE NAME = '" + (meterRecord.meterNumber).toString() + "')) AND POINTID IN (SELECT POINTID FROM POINT WHERE POINTOFFSET = 1))"
-//												,databaseAlias );
-//	
-//	String readTime = null;	
-//	try
-//	{
-//		stmt.execute();
-//	}
-//	catch( Exception e )
-//	{
-//		e.printStackTrace();
-//	}
-//	if (stmt.getRowCount() > 0)
-//		readTime = new String((String)stmt.getRow(0)[0]);
-//	else
-//		readTime = new String("      ");
-//
-//	return readTime;
-//}
+
 /**
  * Handles a customer record from the input file
  * Creation date: (6/1/00 10:59:18 AM)
@@ -566,5 +506,4 @@ public final String processRouteHeaderAndTrailer(String buffer) {
 	{
 		return numberMeters;
 	}
-
 }

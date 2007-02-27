@@ -4,6 +4,9 @@ import java.util.Date;
 
 import com.cannontech.billing.record.NISC_TOU_kVarHRecord;
 import com.cannontech.billing.record.TurtleRecordBase;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 
 
 /**
@@ -26,13 +29,11 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 	 * Retrieves values from the database and inserts them in a FileFormatBase object
 	 * Creation date: (11/30/00)
 	 */
-	public boolean retrieveBillingData(String dbAlias)
+	@Override
+	public boolean retrieveBillingData()
 	{	
 		long timer = System.currentTimeMillis();
 		
-		if( dbAlias == null)
-			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-	
 		String [] SELECT_COLUMNS =
 		{
 			SQLStringBuilder.DMG_METERNUMBER,
@@ -64,11 +65,11 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
-				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+				CTILogger.info(getClass() + ":  Error getting database connection.");
 				return false;
 			}
 			else
@@ -78,7 +79,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 				rset = pstmt.executeQuery();
 	
-				com.cannontech.clientutils.CTILogger.info(" * Start looping through return resultset");
+				CTILogger.info(" * Start looping through return resultset");
 				
 				int recCount = 0;
 				
@@ -188,24 +189,21 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 				}
 			}
 		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
 		finally
 		{
-			try
-			{
+			try {
 				if( rset != null ) rset.close();
 				if( pstmt != null ) pstmt.close();
 				if( conn != null ) conn.close();
 			} 
-			catch( java.sql.SQLException e2 )
-			{
-				e2.printStackTrace();//sometin is up
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error(e2);
 			}	
 		}
-		com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+		CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 		return true;
 	}	
 	public TurtleRecordBase createRecord(String meterNumber)

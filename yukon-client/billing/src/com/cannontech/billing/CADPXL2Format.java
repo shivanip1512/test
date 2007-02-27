@@ -2,9 +2,13 @@ package com.cannontech.billing;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import com.cannontech.billing.record.CADPXL2Record;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 
 /**
  * Insert the type's description here.
@@ -28,20 +32,18 @@ public CADPXL2Format()
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
  */
-public boolean retrieveBillingData(String dbAlias)
+@Override
+public boolean retrieveBillingData()
 {
 	long timer = System.currentTimeMillis();
 	
-	if( dbAlias == null )
-		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-
-	java.util.Hashtable accountNumbersHashTable = retrieveAccountNumbers(dbAlias);
-	java.util.Hashtable countMetersPerAccount = null;
+	Hashtable<String, String> accountNumbersHashTable = retrieveAccountNumbers();
+	Hashtable<String, Integer> countMetersPerAccount = null;
 	
 	if( accountNumbersHashTable != null)
-		countMetersPerAccount = new java.util.Hashtable(accountNumbersHashTable.size());
+		countMetersPerAccount = new Hashtable<String, Integer>(accountNumbersHashTable.size());
 	else
-		countMetersPerAccount = new java.util.Hashtable();	//aren't able to set the init capacity here.
+		countMetersPerAccount = new Hashtable<String, Integer>();	//aren't able to set the init capacity here.
 
 
 	String [] SELECT_COLUMNS =
@@ -105,15 +107,13 @@ public boolean retrieveBillingData(String dbAlias)
 
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
-		if( conn == null )
-		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+		if( conn == null ) {
+			CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
-		else
-		{
+		else {
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 			rset = pstmt.executeQuery();
@@ -133,7 +133,7 @@ public boolean retrieveBillingData(String dbAlias)
 			int lastPointID = 0;
 			int recCount = 0;
 
-			com.cannontech.clientutils.CTILogger.info(" Start looping through return resultset");
+			CTILogger.info(" Start looping through return resultset");
 
 			while (rset.next())
 			{
@@ -145,9 +145,8 @@ public boolean retrieveBillingData(String dbAlias)
 					pointID = rset.getInt(2);
 					
 					double multiplier = 1;
-					if( getBillingDefaults().isRemoveMultiplier())
-					{
-						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
+					if( getBillingDefaults().isRemoveMultiplier()) {
+						multiplier = getPointIDMultiplierHashTable().get(new Integer(pointID)).doubleValue();
 					}
 					
 					if( pointID != lastPointID )	//just getting max time for each point
@@ -160,10 +159,10 @@ public boolean retrieveBillingData(String dbAlias)
 						deviceID = rset.getInt(6);
 						paoName = rset.getString(7);
 						
-						java.util.Vector registerNumberVector = new java.util.Vector();
-						java.util.Vector kwValueVector = new java.util.Vector();
-						java.util.Vector kwhValueVector = new java.util.Vector();
-						java.util.Vector kvarValueVector = new java.util.Vector();
+						Vector<Integer> registerNumberVector = new Vector<Integer>();
+						Vector<Double> kwValueVector = new Vector<Double>();
+						Vector<Double> kwhValueVector = new Vector<Double>();
+						Vector<Double> kvarValueVector = new Vector<Double>();
 	
 						// Our break label so we can exit the if-else checks
 						inValidTimestamp:
@@ -293,24 +292,21 @@ public boolean retrieveBillingData(String dbAlias)
 			}//end while
 		}//end else
 	}//end try 
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
+	catch( java.sql.SQLException e ) {
+		CTILogger.error(e);
 	}
 	finally
 	{
-		try
-		{
+		try {
 			if( rset != null ) rset.close();
 			if( pstmt != null ) pstmt.close();
 			if( conn != null ) conn.close();
 		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
+		catch( java.sql.SQLException e2 ) {
+			CTILogger.error(e2);
 		}	
 	}
-	com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+	CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 	
 	return true;
 }
@@ -333,10 +329,10 @@ public boolean retrieveBillingData(String dbAlias)
                                     String meterNumber, 
                                     Integer meterPositionNumber, 
                                     Timestamp ts,
-                                    Vector registerNumberVector,
-                                    Vector kwhValueVector,
-                                    Vector kwValueVector,
-                                    Vector kvarValueVector){
+                                    Vector<Integer> registerNumberVector,
+                                    Vector<Double> kwhValueVector,
+                                    Vector<Double> kwValueVector,
+                                    Vector<Double> kvarValueVector){
         
         return new CADPXL2Record(accountNumber, 
                                  meterNumber, 

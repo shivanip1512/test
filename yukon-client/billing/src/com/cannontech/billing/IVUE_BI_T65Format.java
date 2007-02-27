@@ -29,8 +29,8 @@ public class IVUE_BI_T65Format extends CADPXL2Format {
      */
     public CADPXL2Record createRecord(String accountNumber, String meterNumber,
             Integer meterPositionNumber, Timestamp ts,
-            Vector registerNumberVector, Vector kwhValueVector,
-            Vector kwValueVector, Vector kvarValueVector) {
+            Vector<Integer> registerNumberVector, Vector<Double> kwhValueVector,
+            Vector<Double> kwValueVector, Vector<Double> kvarValueVector) {
 
         return new IVUE_BI_T65Record(accountNumber,
                                      meterNumber,

@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/31/2001 2:53:28 PM)
@@ -8,7 +10,6 @@ package com.cannontech.billing;
 public class BillingRunnable extends java.util.Observable implements Runnable
 {
 	private FileFormatBase fileFormatBase = null;
-	private java.util.Vector collectionGroupVector = null;
 
 /**
  * BillingThread constructor comment.
@@ -32,7 +33,7 @@ public void run()
 {
 	if( fileFormatBase != null )
 	{
-		boolean success = fileFormatBase.retrieveBillingData( null );
+		boolean success = fileFormatBase.retrieveBillingData();
 
 		try
 		{
@@ -49,21 +50,12 @@ public void run()
 			setChanged();
 			this.notifyObservers("Successfully created the file : " + fileFormatBase.getOutputFileName() );
 		}
-		catch(java.io.IOException ioe)
-		{
+		catch(java.io.IOException ioe) {
 			setChanged();
 			this.notifyObservers("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
-			ioe.printStackTrace();
+			CTILogger.error(ioe);
 		}
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/2001 2:54:34 PM)
- * @param newCollectionGroupVector java.util.Vector
- */
-public void setCollectionGroupVector(java.util.Vector newCollectionGroupVector) {
-	collectionGroupVector = newCollectionGroupVector;
 }
 /**
  * Insert the method's description here.

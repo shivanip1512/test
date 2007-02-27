@@ -11,8 +11,10 @@ import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.roles.yukon.BillingRole;
 
 public class BillingBean implements java.util.Observer
 {
@@ -153,13 +155,11 @@ public void setEndDate(Date newEndDate)
 public void setEndDateStr(String newEndDateStr)
 {
 	endDateStr = newEndDateStr;
-	try
-	{
+	try {
 		setEndDate( dateFormat.parse(endDateStr));
 	}
-	catch (java.text.ParseException e)
-	{
-		e.printStackTrace();
+	catch (java.text.ParseException e) {
+		CTILogger.error(e);
 	}
 }
 

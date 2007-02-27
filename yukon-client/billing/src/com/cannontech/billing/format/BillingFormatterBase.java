@@ -33,11 +33,10 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     private BillingFileDefaults billingFileDefaults = null;
     abstract public String dataToString(BillableDevice device);
 
-    public int writeBillingFile(BillingFileDefaults defaults, List<BillableDevice> deviceList)
+    public int writeBillingFile( List<BillableDevice> deviceList)
             throws IOException {
 
         StringBuffer output = new StringBuffer();
-        setBillingFileDefaults(defaults);
         
         // Add header to beginning of file string
         output.append(getBillingFileHeader());

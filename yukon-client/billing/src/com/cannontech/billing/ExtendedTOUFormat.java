@@ -33,11 +33,9 @@ public class ExtendedTOUFormat extends FileFormatBase {
      * Retrieves values from the database and inserts them in a FileFormatBase
      * object
      */
-    public boolean retrieveBillingData(String dbAlias) {
+    @Override
+    public boolean retrieveBillingData( ) {
         long timer = System.currentTimeMillis();
-
-        if (dbAlias == null)
-            dbAlias = CtiUtilities.getDatabaseAlias();
 
         String[] SELECT_COLUMNS = { SQLStringBuilder.DMG_METERNUMBER, SQLStringBuilder.PT_POINTID,
                 SQLStringBuilder.RPH_TIMESTAMP, SQLStringBuilder.RPH_VALUE,
@@ -61,7 +59,7 @@ public class ExtendedTOUFormat extends FileFormatBase {
         ResultSet rset = null;
 
         try {
-            conn = PoolManager.getInstance().getConnection(dbAlias);
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
             if (conn == null) {
                 CTILogger.info(getClass() + ":  Error getting database connection.");
@@ -129,7 +127,7 @@ public class ExtendedTOUFormat extends FileFormatBase {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         } finally {
             try {
                 if (rset != null)
@@ -139,7 +137,7 @@ public class ExtendedTOUFormat extends FileFormatBase {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();// sometin is up
+                CTILogger.error(e2);
             }
         }
         CTILogger.info("@" + this.toString() + " Data Collection : Took " + (System.currentTimeMillis() - timer));

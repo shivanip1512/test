@@ -1,5 +1,7 @@
 package com.cannontech.billing.record;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/28/00 11:55:04 AM)
@@ -18,10 +20,10 @@ public class CADPXL2Record implements BillingRecordBase
 	private String whoReadMeter = null;
 	private String meterNumber = null;
 	private Integer meterPositionNumber = null;
-	private java.util.Vector registerNumberVector = null;
-	private java.util.Vector kwhReadingVector = null;
-	private java.util.Vector kwReadingVector = null;
-	private java.util.Vector kvarReadingVector = null;
+	private Vector<Integer> registerNumberVector = null;
+	private Vector<Double> kwhReadingVector = null;
+	private Vector<Double> kwReadingVector = null;
+	private Vector<Double> kvarReadingVector = null;
 
 	java.text.DecimalFormat decimalFormat7v2 = new java.text.DecimalFormat("0000000.00");
 	java.text.DecimalFormat decimalFormat6v3 = new java.text.DecimalFormat("000000.000");
@@ -40,7 +42,10 @@ public CADPXL2Record()
 /**
  * CADPFormat constructor comment.
  */
-public CADPXL2Record(String newAccountNumber,  String newMeterNumber, Integer newMeterPosition, java.sql.Timestamp newTimeStamp, java.util.Vector newRegNumVector, java.util.Vector newKwhVector, java.util.Vector newKwVector, java.util.Vector newKvarVector)
+public CADPXL2Record(String newAccountNumber,  String newMeterNumber, 
+		Integer newMeterPosition, java.sql.Timestamp newTimeStamp, 
+		Vector<Integer> newRegNumVector, Vector<Double> newKwhVector, 
+		java.util.Vector<Double> newKwVector, Vector<Double> newKvarVector)
 {
 	super();
 	setAccountNumber(newAccountNumber);
@@ -55,7 +60,12 @@ public CADPXL2Record(String newAccountNumber,  String newMeterNumber, Integer ne
 /**
  * CADPFormat constructor comment.
  */
-public CADPXL2Record(	String accountNumber, String importType, String serviceGroup, String paymentSign, Double payment, java.sql.Timestamp batchDate, String batchNumber, java.sql.Timestamp readDate, String whoReadMeter, String meterNumber, Integer meterPositionNumber, java.util.Vector registerNumberVector, java.util.Vector kwhReadingVector, java.util.Vector kwReadingVector, java.util.Vector kvarReadingVector )
+public CADPXL2Record(String accountNumber, String importType, String serviceGroup,
+		String paymentSign, Double payment, java.sql.Timestamp batchDate, 
+		String batchNumber, java.sql.Timestamp readDate, String whoReadMeter, 
+		String meterNumber, Integer meterPositionNumber, 
+		Vector<Integer> registerNumberVector, Vector<Double> kwhReadingVector, 
+		Vector<Double> kwReadingVector, Vector<Double> kvarReadingVector )
 {
 	super();
 	setAccountNumber(accountNumber);
@@ -275,7 +285,7 @@ public java.lang.String getImportType()
  * Creation date: (1/2/2001 4:30:45 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getKvarReadingVector() 
+public Vector<Double> getKvarReadingVector() 
 {
 	return kvarReadingVector;
 }
@@ -284,7 +294,7 @@ public java.util.Vector getKvarReadingVector()
  * Creation date: (1/2/2001 4:30:45 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getKwhReadingVector()
+public Vector<Double> getKwhReadingVector()
 {
 	return kwhReadingVector;
 }
@@ -293,7 +303,7 @@ public java.util.Vector getKwhReadingVector()
  * Creation date: (1/2/2001 4:30:45 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getKwReadingVector()
+public Vector<Double> getKwReadingVector()
 {
 	return kwReadingVector;
 }
@@ -351,7 +361,7 @@ public String getReadDate()
  * Creation date: (1/2/2001 4:30:45 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getRegisterNumberVector() 
+public Vector<Integer> getRegisterNumberVector() 
 {
 	return registerNumberVector;
 }
@@ -420,7 +430,7 @@ public void setImportType(java.lang.String newImportType)
  * Creation date: (1/2/2001 4:30:45 PM)
  * @param newKvarReadingVector java.util.Vector
  */
-public void setKvarReadingVector(java.util.Vector newKvarReadingVector)
+public void setKvarReadingVector(Vector<Double> newKvarReadingVector)
 {
 	kvarReadingVector = newKvarReadingVector;
 }
@@ -429,7 +439,7 @@ public void setKvarReadingVector(java.util.Vector newKvarReadingVector)
  * Creation date: (1/2/2001 4:30:45 PM)
  * @param newKwhReadingVector java.util.Vector
  */
-public void setKwhReadingVector(java.util.Vector newKwhReadingVector) 
+public void setKwhReadingVector(Vector<Double> newKwhReadingVector) 
 {
 	kwhReadingVector = newKwhReadingVector;
 }
@@ -438,7 +448,7 @@ public void setKwhReadingVector(java.util.Vector newKwhReadingVector)
  * Creation date: (1/2/2001 4:30:45 PM)
  * @param newKwReadingVector java.util.Vector
  */
-public void setKwReadingVector(java.util.Vector newKwReadingVector)
+public void setKwReadingVector(Vector<Double> newKwReadingVector)
 {
 	kwReadingVector = newKwReadingVector;
 }
@@ -493,7 +503,7 @@ public void setReadDate(java.sql.Timestamp timeStamp)
  * Creation date: (1/2/2001 4:30:45 PM)
  * @param newRegisterNumberVector java.util.Vector
  */
-public void setRegisterNumberVector(java.util.Vector newRegisterNumberVector) 
+public void setRegisterNumberVector(Vector<Integer> newRegisterNumberVector) 
 {
 	registerNumberVector = newRegisterNumberVector;
 }

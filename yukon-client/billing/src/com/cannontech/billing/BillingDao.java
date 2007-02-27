@@ -202,7 +202,7 @@ public class BillingDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         } finally {
             try {
                 if (rset != null)
@@ -212,7 +212,7 @@ public class BillingDao {
                 if (con != null)
                     con.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();// sometin is up
+                CTILogger.error(e2);
             }
         }
         CTILogger.info("@" + BillingDao.class.toString() + " Data Collection : Took "
@@ -261,7 +261,7 @@ public class BillingDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         } finally {
             try {
                 if (pstmt != null)
@@ -269,7 +269,7 @@ public class BillingDao {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();// sometin is up
+            	CTILogger.error(e2);
                 return null;
             }
         }
@@ -301,7 +301,7 @@ public class BillingDao {
                     tempLineString = readBuffer.readLine();
                 }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+            	CTILogger.error(ioe);
             }
         } catch (FileNotFoundException fnfe) {
 

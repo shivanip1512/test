@@ -2,6 +2,12 @@ package com.cannontech.billing;
 
 import java.util.Date;
 
+import com.cannontech.billing.record.StringRecord;
+import com.cannontech.billing.record.TurtleRecordBase;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/18/00 3:46:39 PM)
@@ -30,13 +36,11 @@ public class TurtleFormatBase extends FileFormatBase
 	 * 
 	 * Creation date: (11/30/00)
 	 */
-	public boolean retrieveBillingData(String dbAlias)
+	@Override
+	public boolean retrieveBillingData()
 	{	
 		long timer = System.currentTimeMillis();
 		
-		if( dbAlias == null)
-			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-	
 		String [] SELECT_COLUMNS =
 		{
 			SQLStringBuilder.DMG_METERNUMBER,
@@ -94,11 +98,11 @@ public class TurtleFormatBase extends FileFormatBase
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
-				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+				CTILogger.info(getClass() + ":  Error getting database connection.");
 				return false;
 			}
 			else
@@ -108,13 +112,13 @@ public class TurtleFormatBase extends FileFormatBase
 				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 				rset = pstmt.executeQuery();
 	
-				com.cannontech.clientutils.CTILogger.info(" * Start looping through return resultset");
+				CTILogger.info(" * Start looping through return resultset");
 				
 				int recCount = 0;
 				
 				if( !getBillingDefaults().isAppendToFile() )
 				{
-					getRecordVector().add( new com.cannontech.billing.record.StringRecord(getHeader()));
+					getRecordVector().add( new StringRecord(getHeader()));
 					recCount ++;
 				}
 	
@@ -153,7 +157,7 @@ public class TurtleFormatBase extends FileFormatBase
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
-									com.cannontech.billing.record.TurtleRecordBase lastRecord = getRecord(recCount -1);
+									TurtleRecordBase lastRecord = getRecord(recCount -1);
 		
 									lastRecord.setReadingKWH(reading);
 									lastRecord.setTime(ts);
@@ -165,7 +169,7 @@ public class TurtleFormatBase extends FileFormatBase
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
-									com.cannontech.billing.record.TurtleRecordBase lastRecord = getRecord(recCount -1);
+									TurtleRecordBase lastRecord = getRecord(recCount -1);
 		
 									lastRecord.setReadingKW(reading);
 									lastRecord.setTimeKW(ts);
@@ -174,7 +178,7 @@ public class TurtleFormatBase extends FileFormatBase
 							}
 							else
 							{
-								com.cannontech.billing.record.TurtleRecordBase record = createRecord(meterNumber);
+								TurtleRecordBase record = createRecord(meterNumber);
 									
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
@@ -204,34 +208,31 @@ public class TurtleFormatBase extends FileFormatBase
 				}
 			}
 		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
 		finally
 		{
-			try
-			{
+			try {
 				if( rset != null ) rset.close();
 				if( pstmt != null ) pstmt.close();
 				if( conn != null ) conn.close();
 			} 
-			catch( java.sql.SQLException e2 )
-			{
-				e2.printStackTrace();//sometin is up
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error(e2);
 			}	
 		}
-		com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+		CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 		return true;
 	}
 	
-	public com.cannontech.billing.record.TurtleRecordBase createRecord(String meterNumber)
+	public TurtleRecordBase createRecord(String meterNumber)
 	{
-		return new com.cannontech.billing.record.TurtleRecordBase(meterNumber);
+		return new TurtleRecordBase(meterNumber);
 	}
-	public com.cannontech.billing.record.TurtleRecordBase getRecord(int index)
+	public TurtleRecordBase getRecord(int index)
 	{
-		return (com.cannontech.billing.record.TurtleRecordBase)getRecordVector().get(index);
+		return (TurtleRecordBase)getRecordVector().get(index);
 	}
 	public String getHeader()
 	{

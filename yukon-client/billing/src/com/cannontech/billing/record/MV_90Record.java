@@ -1,5 +1,7 @@
 package com.cannontech.billing.record;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 5:32:56 PM)
@@ -12,7 +14,7 @@ public class MV_90Record implements BillingRecordBase
 
 	private String meterNumber = null;	//10
 	private boolean newMeterNumber = false;
-	private java.util.Vector readingKWVector = null;
+	private Vector<Double> readingKWVector = null;
 	private Double readingKW = null;	//8.1
 
 	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -38,7 +40,7 @@ public class MV_90Record implements BillingRecordBase
 	/**
 	 * MV_90Record constructor comment.
 	 */
-	public MV_90Record(String newMeterNumber, java.util.Vector readingVector, java.sql.Timestamp newTimestamp)
+	public MV_90Record(String newMeterNumber, Vector<Double> readingVector, java.sql.Timestamp newTimestamp)
 	{
 		super();
 		setMeterNumber(newMeterNumber);
@@ -83,12 +85,12 @@ public class MV_90Record implements BillingRecordBase
 			
 		if( getReadingKWVector() != null)
 		{
-			Double value = (Double)getReadingKWVector().get(0);
+			Double value = getReadingKWVector().get(0);
 			writeToFile.append(KW_FORMAT_8v1.format(value.doubleValue()));
 			
 			for( int i = 1; i < getReadingKWVector().size(); i++)
 			{
-				value = (Double)getReadingKWVector().get(i);
+				value = getReadingKWVector().get(i);
 				{
 	//				for ( int j = 0; j < (10 - KW_FORMAT_8v1.format(value.length()));j++)
 	//				{
@@ -143,7 +145,7 @@ public class MV_90Record implements BillingRecordBase
 	 * Creation date: (8/27/2001 3:16:28 PM)
 	 * @return java.lang.String
 	 */
-	public java.util.Vector getReadingKWVector()
+	public Vector<Double> getReadingKWVector()
 	{
 		return readingKWVector;
 	}
@@ -198,7 +200,7 @@ public class MV_90Record implements BillingRecordBase
 	 * Creation date: (8/27/2001 3:16:28 PM)
 	 * @param newReadingKWH java.lang.String
 	 */
-	public void setReadingKWVector(java.util.Vector newReadingKWHVector)
+	public void setReadingKWVector(Vector<Double> newReadingKWHVector)
 	{
 		readingKWVector = newReadingKWHVector;
 	}

@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.util.Vector;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -122,8 +124,8 @@ public static synchronized boolean retrieveFileFormats()
 
 	try
 	{
-		java.util.Vector formatIDVector = new java.util.Vector();
-		java.util.Vector formatTypeVector = new java.util.Vector();
+		java.util.Vector<Integer> formatIDVector = new Vector<Integer>();
+		java.util.Vector<String> formatTypeVector = new Vector<String>();
 		
 		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 		if( conn == null )
@@ -163,22 +165,19 @@ public static synchronized boolean retrieveFileFormats()
 		}
 	}
 			
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
+	catch( java.sql.SQLException e ) {
+		CTILogger.error(e);
 	}
 	finally
 	{
-		try
-		{
+		try {
 			if( stmt != null )
 				stmt.close();
 			if( conn != null )
 				conn.close();
 		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
 	}
 	return returnStatus;

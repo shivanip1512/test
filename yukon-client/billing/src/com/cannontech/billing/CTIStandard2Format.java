@@ -2,6 +2,10 @@ package com.cannontech.billing;
 
 import java.util.Date;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/4/2002 3:56:10 PM)
@@ -24,12 +28,10 @@ public CTIStandard2Format() {
  * @param collectionGroups java.util.Vector
  * @param dbAlias java.lang.String
  */
-public boolean retrieveBillingData(String dbAlias)
+@Override
+public boolean retrieveBillingData()
 {
 	long timer = System.currentTimeMillis();
-
-	if( dbAlias == null )
-		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
 	String [] SELECT_COLUMNS =
 	{
@@ -61,10 +63,9 @@ public boolean retrieveBillingData(String dbAlias)
 
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-		if( conn == null )
-		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		if( conn == null ) {
+			CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 		else
@@ -73,7 +74,7 @@ public boolean retrieveBillingData(String dbAlias)
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 			rset = pstmt.executeQuery();
 
-			com.cannontech.clientutils.CTILogger.info(" *Start looping through return resultset");
+			CTILogger.info(" *Start looping through return resultset");
 
 			int currentPointID = 0;
 			int lastPointID = 0;
@@ -112,24 +113,21 @@ public boolean retrieveBillingData(String dbAlias)
 			}
 		}
 	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
+	catch( java.sql.SQLException e ) {
+		CTILogger.error(e);
 	}
 	finally
 	{
-		try
-		{
+		try {
 			if( rset != null ) rset.close();
 			if( pstmt != null ) pstmt.close();
 			if( conn != null ) conn.close();
 		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
+		catch( java.sql.SQLException e2 ) {
+			CTILogger.error(e2);
 		}	
 	}
-	com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+	CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 	return true;
 }
 }

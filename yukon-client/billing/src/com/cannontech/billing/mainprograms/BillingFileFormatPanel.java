@@ -5,6 +5,8 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (3/4/2002 8:36:18 AM)
  * @author: 
  */ 
+import java.util.Vector;
+
 import javax.swing.JOptionPane;
 
 import com.cannontech.billing.FileFormatBase;
@@ -892,8 +894,8 @@ private String getInputFileText()
 		catch( Exception e)
 		{
 			inputFileText = "C:\\yukon\\client\\config\\input.txt";
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Billing File Input Path was NOT found in config.properties, defaulted to " + inputFileText);
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'billing_input_file' to config.properties with the proper billing file location.");
+			CTILogger.info("[" + new java.util.Date() + "]  Billing File Input Path was NOT found in config.properties, defaulted to " + inputFileText);
+			CTILogger.info("[" + new java.util.Date() + "]  Add row named 'billing_input_file' to config.properties with the proper billing file location.");
 		}
 	}
 	return inputFileText;
@@ -911,6 +913,7 @@ private javax.swing.JCheckBox getIsAppendingCheckBox() {
 			ivjIsAppendingCheckBox.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjIsAppendingCheckBox.setText("Append to File");
 			// user code begin {1}
+			ivjIsAppendingCheckBox.setSelected(getBillingDefaults().isAppendToFile());
 			ivjIsAppendingCheckBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1125,7 +1128,7 @@ private void handleException(java.lang.Throwable exception)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	 exception.printStackTrace();
+	CTILogger.error(exception);
 }
 /**
  * Initialize the class.
@@ -1242,7 +1245,7 @@ private void initialize() {
 	} 
 	catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		exception.printStackTrace(System.out);
+		CTILogger.error(exception);
 	}
 }
 /**
@@ -1262,9 +1265,8 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 //	newEndDate = tempDate;
 
 	// Get all selected collection groups from the groupList scroll panel.
-	java.util.Vector selectedCollGrps = new java.util.Vector(getGroupList().getSelectedValues().length);
-	for (int i = 0; i < getGroupList().getSelectedValues().length; i++)
-	{
+	Vector<String> selectedCollGrps = new Vector<String>(getGroupList().getSelectedValues().length);
+	for (int i = 0; i < getGroupList().getSelectedValues().length; i++) {
 		selectedCollGrps.add( getGroupList().getSelectedValues()[i].toString());
 	}
 
@@ -1316,7 +1318,7 @@ public synchronized void update(java.util.Observable obs, Object data)
 {
 	if( obs instanceof BillingFile )
 	{
-		com.cannontech.clientutils.CTILogger.info("...Ended format at: " + new java.util.Date() );
+		CTILogger.info("...Ended format at: " + new java.util.Date() );
 
 		//kill our timerThread
 		getTimerThread().interrupt();

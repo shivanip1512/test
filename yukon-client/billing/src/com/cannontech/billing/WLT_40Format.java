@@ -1,6 +1,20 @@
 package com.cannontech.billing;
 
+import java.util.Vector;
+
+import com.cannontech.billing.record.BillingRecordBase;
+import com.cannontech.billing.record.StringRecord;
+import com.cannontech.billing.record.WLT_40HeaderRecord0000;
+import com.cannontech.billing.record.WLT_40HeaderRecord0001;
+import com.cannontech.billing.record.WLT_40HeaderRecord0002;
+import com.cannontech.billing.record.WLT_40PulseDataRecord;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.RawPointHistory;
 
 /**
  * Insert the type's description here.
@@ -25,7 +39,9 @@ public WLT_40Format()
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, java.util.Vector rawPointHistoryVector, java.util.Vector returnPulseVector, java.util.Vector pulseTotalVector, java.util.Vector pulseMultiplierVector, java.util.Vector missingIntervalsVector, java.util.Vector falseIntervalsVector)
+public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, Vector<RawPointHistory> rawPointHistoryVector, 
+		Vector<String> returnPulseVector, Vector<Integer> pulseTotalVector, Vector<Double> pulseMultiplierVector, 
+		Vector<Integer> missingIntervalsVector, Vector<Integer> falseIntervalsVector)
 {
 	int falseIntervals = 0;
 	int missingIntervals = 0;
@@ -46,16 +62,16 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 		String tempDataStatusZoneString = null;
 		for(int i=0;i<rawPointHistoryVector.size();i++)
 		{
-			com.cannontech.database.db.point.RawPointHistory currentRPH = (com.cannontech.database.db.point.RawPointHistory)rawPointHistoryVector.get(i);
+			RawPointHistory currentRPH = rawPointHistoryVector.get(i);
 			if( i == 0 )
 			{
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
-				com.cannontech.clientutils.CTILogger.info("First raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+				CTILogger.info("First raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
 			}
 			else if( i == (rawPointHistoryVector.size()-1) )
 			{
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
-				com.cannontech.clientutils.CTILogger.info("Last raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+				CTILogger.info("Last raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
 			}
 
 			if( expectedRPHTimestamp.getTime().getTime() < currentRPH.getTimeStamp().getTime().getTime() )
@@ -68,7 +84,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
 				while( expectedRPHTimestamp.getTime().getTime() < currentRPH.getTimeStamp().getTime().getTime() )
 				{
-					com.cannontech.clientutils.CTILogger.info("Missing raw point entry for date: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
+					CTILogger.info("Missing raw point entry for date: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 					//com.cannontech.clientutils.CTILogger.info("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
 					//com.cannontech.clientutils.CTILogger.info("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 					expectedRPHTimestamp.add(java.util.GregorianCalendar.SECOND,demandInterval.intValue());
@@ -82,9 +98,9 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 			if( lastRPHTimestamp == null ||
 					currentRPH.getTimeStamp().getTime().getTime() != lastRPHTimestamp.getTime().getTime() )
 			{
-				if( currentRPH.getQuality().intValue() == com.cannontech.database.data.point.PointQualities.NORMAL_QUALITY ||
-						currentRPH.getQuality().intValue() == com.cannontech.database.data.point.PointQualities.PARTIAL_INTERVAL_QUALITY ||
-						currentRPH.getQuality().intValue() == com.cannontech.database.data.point.PointQualities.POWERFAIL_QUALITY )
+				if( currentRPH.getQuality().intValue() == PointQualities.NORMAL_QUALITY ||
+						currentRPH.getQuality().intValue() == PointQualities.PARTIAL_INTERVAL_QUALITY ||
+						currentRPH.getQuality().intValue() == PointQualities.POWERFAIL_QUALITY )
 				{
 					intervalPulses = (int)(currentRPH.getValue().doubleValue()/(multiplier.doubleValue()*(3600/demandInterval.intValue())));
 					if( intervalPulses <= 9999 )
@@ -95,20 +111,17 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 
 				switch(currentRPH.getQuality().intValue())
 				{
-					case com.cannontech.database.data.point.PointQualities.NORMAL_QUALITY:
+					case PointQualities.NORMAL_QUALITY:
 					{
 						if( intervalPulses <= 9999 )
-						{
 							quality = '0';
-						}
-						else
-						{
+						else {
 							quality = '1';
 							falseIntervals++;
 						}
 						break;
 					}
-					case com.cannontech.database.data.point.PointQualities.DEVICE_FILLER_QUALITY:
+					case PointQualities.DEVICE_FILLER_QUALITY:
 					{
 						quality = '9';
 						falseIntervals++;
@@ -121,7 +134,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 						falseIntervals++;
 						break;
 					}*/
-					case com.cannontech.database.data.point.PointQualities.POWERFAIL_QUALITY:
+					case PointQualities.POWERFAIL_QUALITY:
 					{
 						quality = '4';
 						falseIntervals++;
@@ -150,11 +163,11 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 			else
 			{
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
-				com.cannontech.clientutils.CTILogger.info( "Duplicate timestamp: " + timestampFormatter.format( currentRPH.getTimeStamp().getTime()) + ", using first entry throwing other entries with the same timestamp." );
+				CTILogger.info( "Duplicate timestamp: " + timestampFormatter.format( currentRPH.getTimeStamp().getTime()) + ", using first entry throwing other entries with the same timestamp." );
 			}
 		}
 		pulseTotalVector.addElement(new Integer(tempPulseTotal));
-		pulseMultiplierVector.addElement(new Double(multiplier.doubleValue()));
+		pulseMultiplierVector.addElement(multiplier);
 
 		java.util.GregorianCalendar stopRPHTimestamp = new java.util.GregorianCalendar();
 		stopRPHTimestamp.setTime(getBillingDefaults().getEndDate());
@@ -168,7 +181,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 			java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
 			while( expectedRPHTimestamp.getTime().getTime() < stopRPHTimestamp.getTime().getTime() )
 			{
-				com.cannontech.clientutils.CTILogger.info("Missing raw point entry for date: " + timestampFormatter.format( expectedRPHTimestamp.getTime()) );
+				CTILogger.info("Missing raw point entry for date: " + timestampFormatter.format( expectedRPHTimestamp.getTime()) );
 				//com.cannontech.clientutils.CTILogger.info("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
 				//com.cannontech.clientutils.CTILogger.info("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 				expectedRPHTimestamp.add(java.util.GregorianCalendar.SECOND,demandInterval.intValue());
@@ -187,11 +200,8 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
  */
-public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbAlias)
+public boolean retrieveBillingData(java.util.Vector collectionGroups)
 {
-	String databaseAlias = new String( 
-		dbAlias == null ? com.cannontech.common.util.CtiUtilities.getDatabaseAlias() : dbAlias );
-
 	//If we do not have any collectiongroups, we will get every single point value!!
 	StringBuffer collectionGroupString = new StringBuffer();
 	for(int i=0;i<collectionGroups.size();i++)
@@ -208,7 +218,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 
 	java.io.RandomAccessFile file = null;
-	java.util.Vector substationPointGroupVector = new java.util.Vector( 40 );
+	Vector<String> substationPointGroupVector = new Vector<String>( 40 );
 	java.io.File checkFile = null;
 	if( getInputFileName() != null &&
 		  getInputFileName().length() > 0 )
@@ -248,21 +258,18 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 		// Close file
 		file.close();						
 	}
-	catch(java.io.IOException ex)
-	{
-		ex.printStackTrace();
+	catch(java.io.IOException ex) {
+		CTILogger.error(ex);
 		return false;
 	}
 	finally
 	{
-		try
-		{
+		try {
 			if( checkFile.exists() )
 				file.close();
 		}
-		catch( java.io.IOException ex )
-		{
-			ex.printStackTrace();
+		catch( java.io.IOException ex ) {
+			CTILogger.error(ex);
 		}
 	}
 
@@ -276,7 +283,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 		for(int i=0;i<substationPointGroupVector.size();i++)
 		{
 			String substationId = null;
-			java.util.Vector channelPointIdVector = new java.util.Vector();
+			Vector<Integer> channelPointIdVector = new Vector<Integer>();
 
 			java.util.StringTokenizer stringTokenizer = new java.util.StringTokenizer(((String)substationPointGroupVector.get(i)),",");
 			int pass = 0;
@@ -295,14 +302,14 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				}
 			}
 
-			dbConnection = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
+			dbConnection = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			java.sql.ResultSet rset = null;
 			
 			try
 			{
 				java.sql.PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTTYPE FROM POINT P, RAWPOINTHISTORY RPH WHERE P.POINTID = ? AND P.POINTID = RPH.POINTID AND TIMESTAMP >= ? AND TIMESTAMP < ? ORDER BY TIMESTAMP");
-				java.util.Vector tempRawPointHistoryVector = null;
-				java.util.Vector rawPointHistoryVectorOfVectors = new java.util.Vector();
+				Vector<RawPointHistory> tempRawPointHistoryVector = null;
+				Vector<Vector<RawPointHistory>> rawPointHistoryVectorOfVectors = new Vector<Vector<RawPointHistory>>();
 				String pointType = null;
 				try
 				{
@@ -314,7 +321,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 							preparedStatement.setTimestamp(2,new java.sql.Timestamp(getBillingDefaults().getDemandStartDate().getTime()));
 							preparedStatement.setTimestamp(3,new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
 							rset = preparedStatement.executeQuery();
-							tempRawPointHistoryVector = new java.util.Vector();
+							tempRawPointHistoryVector = new Vector<RawPointHistory>();
 
 							while (rset.next())
 							{
@@ -340,60 +347,51 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 							}
 							else
 							{
-								rawPointHistoryVectorOfVectors.add(new java.util.Vector(0));//add vector with size == 0
+								rawPointHistoryVectorOfVectors.add(new Vector<RawPointHistory>(0));//add vector with size == 0
 							}
 
 							tempRawPointHistoryVector = null;
 						}
 					}
 				}
-				catch( java.sql.SQLException e )
-				{
-					e.printStackTrace();
+				catch( java.sql.SQLException e ) {
+					CTILogger.error(e);
 				}
 				finally
 				{
-					try
-					{
+					try {
 						if( preparedStatement != null )
 							preparedStatement.close();
 					}
-					catch( java.sql.SQLException e )
-					{
-						e.printStackTrace();
+					catch( java.sql.SQLException e ) {
+						CTILogger.error(e);
 					}
 				}
 				prepStatement = null;
 
-				java.util.Vector tempPulseVector = null;
-				java.util.Vector pulseVectorOfVectors = new java.util.Vector();
-				if( pointType != null &&
-						com.cannontech.database.data.point.PointTypes.getType(pointType) == com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT )
-				{
+				Vector<String> tempPulseVector = null;
+				Vector<Vector <String>> pulseVectorOfVectors = new Vector<Vector <String>>();
+				if( pointType != null && PointTypes.getType(pointType) == PointTypes.DEMAND_ACCUMULATOR_POINT ) {
 					preparedStatement = dbConnection.prepareStatement("SELECT PA.MULTIPLIER, DLP.LOADPROFILEDEMANDRATE, PU.UOMID FROM POINTACCUMULATOR PA, DEVICELOADPROFILE DLP, POINTUNIT PU, POINT P WHERE PA.POINTID = ? AND PA.POINTID = P.POINTID AND PU.POINTID = P.POINTID AND DLP.DEVICEID = P.PAOBJECTID");
 				}
-				else
-				{
+				else {
 					preparedStatement = dbConnection.prepareStatement("SELECT PA.MULTIPLIER, DLP.LOADPROFILEDEMANDRATE, PU.UOMID FROM POINTANALOG PA, DEVICELOADPROFILE DLP, POINTUNIT PU, POINT P WHERE PA.POINTID = ? AND PA.POINTID = P.POINTID AND PU.POINTID = P.POINTID AND DLP.DEVICEID = P.PAOBJECTID");
 				}
 				pointType = null;
 
-				com.cannontech.billing.record.WLT_40HeaderRecord0000 header0000 = 
-					new com.cannontech.billing.record.WLT_40HeaderRecord0000();
-				com.cannontech.billing.record.WLT_40HeaderRecord0001 header0001 =
-					new com.cannontech.billing.record.WLT_40HeaderRecord0001();
-				com.cannontech.billing.record.WLT_40HeaderRecord0002 header0002 = 
-					new com.cannontech.billing.record.WLT_40HeaderRecord0002();
+				WLT_40HeaderRecord0000 header0000 = new WLT_40HeaderRecord0000();
+				WLT_40HeaderRecord0001 header0001 = new WLT_40HeaderRecord0001();
+				WLT_40HeaderRecord0002 header0002 = new WLT_40HeaderRecord0002();
 				header0000.setIdentNumber(substationId);
 				header0001.setIdentNumber(substationId);
 				header0002.setIdentNumber(substationId);
 
 				Integer savedDemandInterval = null;
-				java.util.Vector missingIntervalsVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector falseIntervalsVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector pulseTotalVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector pulseMultiplierVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector unitOfMeasureIdVector = new java.util.Vector(channelPointIdVector.size());
+				Vector<Integer> missingIntervalsVector = new Vector<Integer>(channelPointIdVector.size());
+				Vector<Integer> falseIntervalsVector = new Vector<Integer>(channelPointIdVector.size());
+				Vector<Integer> pulseTotalVector = new Vector<Integer>(channelPointIdVector.size());
+				Vector<Double> pulseMultiplierVector = new Vector<Double>(channelPointIdVector.size());
+				Vector<Integer> unitOfMeasureIdVector = new Vector<Integer>(channelPointIdVector.size());
 
 				java.util.GregorianCalendar tempGreg1 = new java.util.GregorianCalendar();
 				tempGreg1.setTime(getBillingDefaults().getDemandStartDate());
@@ -417,13 +415,13 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 								Integer loadProfileDemandRate = new Integer(rset.getInt(2));
 								Integer unitOfMeasureId = new Integer(rset.getInt(3));
 								unitOfMeasureIdVector.addElement(unitOfMeasureId);
-								tempPulseVector = new java.util.Vector(((java.util.Vector)rawPointHistoryVectorOfVectors.get(j)).size());
-								if( savedDemandInterval == null )
-								{
+								tempPulseVector = new Vector<String>((rawPointHistoryVectorOfVectors.get(j)).size());
+								
+								if( savedDemandInterval == null ) {
 									savedDemandInterval = new Integer(loadProfileDemandRate.intValue());
 								}
 								predictedIntervals = (int)(milliseconds/1000/savedDemandInterval.intValue());
-								parseAndCalculatePulses(multiplier, loadProfileDemandRate, (java.util.Vector)rawPointHistoryVectorOfVectors.get(j), tempPulseVector, pulseTotalVector, pulseMultiplierVector, missingIntervalsVector, falseIntervalsVector);
+								parseAndCalculatePulses(multiplier, loadProfileDemandRate, rawPointHistoryVectorOfVectors.get(j), tempPulseVector, pulseTotalVector, pulseMultiplierVector, missingIntervalsVector, falseIntervalsVector);
 							}
 
 							if( tempPulseVector != null && tempPulseVector.size() > 0 )
@@ -432,25 +430,24 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 							}
 							else
 							{
-								pulseVectorOfVectors.add(new java.util.Vector(0));//add vector with size == 0
+								pulseVectorOfVectors.add(new Vector<String>(0));//add vector with size == 0
 							}
 
 							if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() != predictedIntervals )
 							{
-								com.cannontech.clientutils.CTILogger.info("Why isn't there the corrent number of pulses?");
-								com.cannontech.clientutils.CTILogger.info( "Expected number " + Integer.toString(predictedIntervals) );
-								com.cannontech.clientutils.CTILogger.info( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
+								CTILogger.info("Why isn't there the corrent number of pulses?");
+								CTILogger.info( "Expected number " + Integer.toString(predictedIntervals) );
+								CTILogger.info( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
 								if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
 								{
-									com.cannontech.clientutils.CTILogger.info("Not enough pulses!!");
+									CTILogger.info("Not enough pulses!!");
 									while( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
 									{
-										((java.util.Vector)pulseVectorOfVectors.get(j)).addElement("00002");
+										(pulseVectorOfVectors.get(j)).addElement("00002");
 									}
 								}
-								else //if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() > predictedIntervals )
-								{
-									com.cannontech.clientutils.CTILogger.info("Too many pulses!!");
+								else { //if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() > predictedIntervals )
+									CTILogger.info("Too many pulses!!");
 								}
 							}
 
@@ -458,20 +455,17 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 					}
 				}
-				catch( java.sql.SQLException e )
-				{
-					e.printStackTrace();
+				catch( java.sql.SQLException e ) {
+					CTILogger.error(e);
 				}
 				finally
 				{
-					try
-					{
+					try {
 						if( preparedStatement != null )
 							preparedStatement.close();
 					}
-					catch( java.sql.SQLException e )
-					{
-						e.printStackTrace();
+					catch( java.sql.SQLException e ) {
+						CTILogger.error(e);
 					}
 				}
 				prepStatement = null;
@@ -500,7 +494,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 				header0001.setPulseTotalVector(pulseTotalVector);
 				header0001.setPulseMultiplierVector(pulseMultiplierVector);
-				java.util.Vector unitOfMeasureCodeVector = new java.util.Vector();
+				Vector<Integer> unitOfMeasureCodeVector = new Vector<Integer>();
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
 					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
@@ -582,32 +576,28 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				getRecordVector().add( header0002 );
 
 				int currentDataRecordSortCode = 100;
-				java.util.Vector tempDataStatusZonesVector = null;
-				com.cannontech.billing.record.WLT_40PulseDataRecord record = 
-					new com.cannontech.billing.record.WLT_40PulseDataRecord();
+				Vector<String> tempDataStatusZonesVector = null;
+				WLT_40PulseDataRecord record =  new WLT_40PulseDataRecord();
 				record.setIdentNumber(substationId);
 				record.setSortCode(new Integer(currentDataRecordSortCode));
 				currentDataRecordSortCode++;
-				tempDataStatusZonesVector = new java.util.Vector(24);
+				tempDataStatusZonesVector = new Vector<String>(24);
 				for(int x=0;x<((java.util.Vector)pulseVectorOfVectors.get(0)).size();x++)
 				{
 					for(int y=0;y<pulseVectorOfVectors.size();y++)
 					{
 						if(tempDataStatusZonesVector.size()<24)
 						{
-							if( x < ((java.util.Vector)pulseVectorOfVectors.get(y)).size() )
-							{
-								tempDataStatusZonesVector.addElement(((java.util.Vector)pulseVectorOfVectors.get(y)).get(x));
+							if( x < ((java.util.Vector)pulseVectorOfVectors.get(y)).size() ) {
+								tempDataStatusZonesVector.addElement((pulseVectorOfVectors.get(y)).get(x));
 							}
-							else
-							{
+							else {
 								tempDataStatusZonesVector.addElement("00002");
 							}
 						}
 						else
 						{
-							if( tempDataStatusZonesVector != null && tempDataStatusZonesVector.size() > 0 )
-							{
+							if( tempDataStatusZonesVector != null && tempDataStatusZonesVector.size() > 0 ) {
 								record.setDataStatusZonesVector(tempDataStatusZonesVector);
 							}
 
@@ -616,10 +606,10 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 							record.setIdentNumber(substationId);
 							record.setSortCode(new Integer(currentDataRecordSortCode));
 							currentDataRecordSortCode++;
-							tempDataStatusZonesVector = new java.util.Vector(24);
+							tempDataStatusZonesVector = new Vector<String>(24);
 							if( x < ((java.util.Vector)pulseVectorOfVectors.get(y)).size() )
 							{
-								tempDataStatusZonesVector.addElement(((java.util.Vector)pulseVectorOfVectors.get(y)).get(x));
+								tempDataStatusZonesVector.addElement((pulseVectorOfVectors.get(y)).get(x));
 							}
 							else
 							{
@@ -629,26 +619,23 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					}
 				}
 
-				getRecordVector().add( new com.cannontech.billing.record.StringRecord(FILE_TERMINATION_RECORD) );
+				getRecordVector().add( new StringRecord(FILE_TERMINATION_RECORD) );
 			}
-			catch(Exception e)
-			{		
-				e.printStackTrace();
+			catch(Exception e) {		
+				CTILogger.error(e);
 				return false;
 			}
 			finally
 			{
-				try
-				{
+				try {
 					if( dbConnection != null ) dbConnection.close();
 					if( prepStatement != null ) prepStatement.close();
 					if( rset != null ) rset.close();
 				}
-				catch( java.sql.SQLException ex )
-				{
+				catch( java.sql.SQLException ex ) {
 					//this is most likey caused by the rset already being closed,
 					// happens when there is zero rows returned
-					com.cannontech.clientutils.CTILogger.info(ex.getMessage());
+					CTILogger.error(ex);
 					return true;
 				}
 			}
@@ -665,20 +652,18 @@ public void writeToFile() throws java.io.IOException
 {
 	StringBuffer tempBuffer = null;
 	String outputFileName = null;
-	java.util.Vector records = getRecordVector();
+	Vector<BillingRecordBase> records = getRecordVector();
 	
 	for(int i=0;i<records.size();i++)
 	{
-		String recordString = ((com.cannontech.billing.record.BillingRecordBase)records.get(i)).dataToString();
+		String recordString = records.get(i).dataToString();
 		if( recordString != FILE_TERMINATION_RECORD )
 		{
-			if( tempBuffer != null )
-			{
+			if( tempBuffer != null ) {
 				tempBuffer.append(recordString);
 			}
-			else
-			{
-				outputFileName = ((com.cannontech.billing.record.WLT_40HeaderRecord0000)records.get(i)).getIdentNumber() + ".40A";
+			else {
+				outputFileName = ((WLT_40HeaderRecord0000)records.get(i)).getIdentNumber() + ".40A";
 				tempBuffer = new StringBuffer();
 				tempBuffer.append(recordString);
 			}
@@ -688,7 +673,7 @@ public void writeToFile() throws java.io.IOException
 			tempBuffer.append(recordString);
 			if( outputFileName != null )
 			{
-				java.io.File outFile = new java.io.File(com.cannontech.common.util.CtiUtilities.getExportDirPath() );
+				java.io.File outFile = new java.io.File(CtiUtilities.getExportDirPath() );
 				outFile.mkdirs();
 				
 				java.io.FileWriter outputFileWriter = new java.io.FileWriter( outFile + outputFileName);
@@ -697,9 +682,8 @@ public void writeToFile() throws java.io.IOException
 				outputFileWriter.close();
 				outputFileName = null;
 			}
-			else
-			{
-				com.cannontech.clientutils.CTILogger.info("Output File Name == null!!!!!!!");
+			else {
+				CTILogger.info("Output File Name == null!!!!!!!");
 			}
 
 			tempBuffer = null;
@@ -711,477 +695,9 @@ public void writeToFile() throws java.io.IOException
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
  */
-public boolean retrieveBillingData(String dbAlias)
+@Override
+public boolean retrieveBillingData()
 {
 	return false;
-	/*
-	String databaseAlias = new String( 
-		dbAlias == null ? com.cannontech.common.util.CtiUtilities.getDatabaseAlias() : dbAlias );
-
-	//If we do not have any collectiongroups, we will get every single point value!!
-	StringBuffer collectionGroupString = new StringBuffer();
-	for(int i=0;i<collectionGroups.size();i++)
-	{
-		if( i == 0 )
-			collectionGroupString.append(" and (COLLECTIONGROUP='" + collectionGroups.get(i) + "'");
-		else
-			collectionGroupString.append(" or COLLECTIONGROUP='" + collectionGroups.get(i) + "'");
-	}
-
-	//be sure we have at least 1 collection group
-	if( collectionGroupString.length() > 0 )
-		collectionGroupString.append(")");
-
-
-	java.io.RandomAccessFile file = null;
-	java.util.Vector substationPointGroupVector = new java.util.Vector( 40 );
-	java.io.File checkFile = null;
-	if( getInputFileName() != null &&
-		  getInputFileName().length() > 0 )
-	{
-		checkFile = new java.io.File( getInputFileName() );
-	}
-	else
-	{
-		checkFile = new java.io.File( "../config/mv90.dat" );
-	}
-	
-	try
-	{
-		// open file		
-		if( checkFile.exists() )
-		{
-			file = new java.io.RandomAccessFile( checkFile, "r" );
-
-			long filePointer = 0;
-			long length = file.length();
-
-			while ( filePointer < length )  // loop until the end of the file
-			{
-				String line = file.readLine();  // read a line in
-
-				substationPointGroupVector.addElement( line );
-
-				// set our pointer to the new position in the file
-				filePointer = file.getFilePointer();
-			}
-		}
-		else
-		{
-			return false;
-		}
-
-		// Close file
-		file.close();						
-	}
-	catch(java.io.IOException ex)
-	{
-		ex.printStackTrace();
-		return false;
-	}
-	finally
-	{
-		try
-		{
-			if( checkFile.exists() )
-				file.close();
-		}
-		catch( java.io.IOException ex )
-		{
-			ex.printStackTrace();
-		}
-	}
-
-	// make sure we received all lines from the parameters file
-	if( substationPointGroupVector.size() == 0 )
-	{
-		return false;
-	}
-	else
-	{
-		for(int i=0;i<substationPointGroupVector.size();i++)
-		{
-			String substationId = null;
-			java.util.Vector channelPointIdVector = new java.util.Vector();
-
-			java.util.StringTokenizer stringTokenizer = new java.util.StringTokenizer(((String)substationPointGroupVector.get(i)),",");
-			int pass = 0;
-			while( stringTokenizer.hasMoreTokens() )
-			{
-				String tokenString = stringTokenizer.nextToken();
-				com.cannontech.clientutils.CTILogger.info(tokenString);
-				if( pass == 0 )
-				{
-					substationId = tokenString;
-					pass++;
-				}
-				else
-				{
-					channelPointIdVector.addElement(new Integer(tokenString));
-				}
-			}
-
-			dbConnection = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-			java.sql.ResultSet rset = null;
-			
-			try
-			{
-				java.sql.PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTTYPE FROM POINT P, RAWPOINTHISTORY RPH WHERE P.POINTID = ? AND P.POINTID = RPH.POINTID AND TIMESTAMP >= ? AND TIMESTAMP < ? ORDER BY TIMESTAMP");
-				java.util.Vector tempRawPointHistoryVector = null;
-				java.util.Vector rawPointHistoryVectorOfVectors = new java.util.Vector();
-				String pointType = null;
-				try
-				{
-					for(int j=0;j<channelPointIdVector.size();j++)
-					{
-						if( ((Integer)channelPointIdVector.get(j)).intValue() > 0 )
-						{
-							preparedStatement.setInt(1,((Integer)channelPointIdVector.get(j)).intValue());
-							preparedStatement.setTimestamp(2,new java.sql.Timestamp(getBillingDefaults().getDemandStartDate().getTime()));
-							preparedStatement.setTimestamp(3,new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
-							rset = preparedStatement.executeQuery();
-							tempRawPointHistoryVector = new java.util.Vector();
-
-							while (rset.next())
-							{
-								Integer changeID = new Integer(0);
-								Integer pointID = new Integer(rset.getInt(1));
-								java.util.GregorianCalendar timestamp = new java.util.GregorianCalendar();
-								timestamp.setTime(rset.getTimestamp(2));
-								Integer quality = new Integer(rset.getInt(3));
-								Double value = new Double(rset.getDouble(4));
-								if( pointType == null )
-								{
-									pointType = new String(rset.getString(5));
-								}
-
-								com.cannontech.database.db.point.RawPointHistory rph = new com.cannontech.database.db.point.RawPointHistory(changeID, pointID, timestamp, quality, value);
-
-								tempRawPointHistoryVector.add(rph);
-							}
-
-							if( tempRawPointHistoryVector != null && tempRawPointHistoryVector.size() > 0 )
-							{
-								rawPointHistoryVectorOfVectors.add(tempRawPointHistoryVector);
-							}
-							else
-							{
-								rawPointHistoryVectorOfVectors.add(new java.util.Vector(0));//add vector with size == 0
-							}
-
-							tempRawPointHistoryVector = null;
-						}
-					}
-				}
-				catch( java.sql.SQLException e )
-				{
-					e.printStackTrace();
-				}
-				finally
-				{
-					try
-					{
-						if( preparedStatement != null )
-							preparedStatement.close();
-					}
-					catch( java.sql.SQLException e )
-					{
-						e.printStackTrace();
-					}
-				}
-				prepStatement = null;
-
-				java.util.Vector tempPulseVector = null;
-				java.util.Vector pulseVectorOfVectors = new java.util.Vector();
-				if( pointType != null &&
-						com.cannontech.database.data.point.PointTypes.getType(pointType) == com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT )
-				{
-					preparedStatement = dbConnection.prepareStatement("SELECT PA.MULTIPLIER, DLP.LOADPROFILEDEMANDRATE, PU.UOMID FROM POINTACCUMULATOR PA, DEVICELOADPROFILE DLP, POINTUNIT PU, POINT P WHERE PA.POINTID = ? AND PA.POINTID = P.POINTID AND PU.POINTID = P.POINTID AND DLP.DEVICEID = P.PAOBJECTID");
-				}
-				else
-				{
-					preparedStatement = dbConnection.prepareStatement("SELECT PA.MULTIPLIER, DLP.LOADPROFILEDEMANDRATE, PU.UOMID FROM POINTANALOG PA, DEVICELOADPROFILE DLP, POINTUNIT PU, POINT P WHERE PA.POINTID = ? AND PA.POINTID = P.POINTID AND PU.POINTID = P.POINTID AND DLP.DEVICEID = P.PAOBJECTID");
-				}
-				pointType = null;
-
-				com.cannontech.billing.record.WLT_40HeaderRecord0000 header0000 = 
-					new com.cannontech.billing.record.WLT_40HeaderRecord0000();
-				com.cannontech.billing.record.WLT_40HeaderRecord0001 header0001 =
-					new com.cannontech.billing.record.WLT_40HeaderRecord0001();
-				com.cannontech.billing.record.WLT_40HeaderRecord0002 header0002 = 
-					new com.cannontech.billing.record.WLT_40HeaderRecord0002();
-				header0000.setIdentNumber(substationId);
-				header0001.setIdentNumber(substationId);
-				header0002.setIdentNumber(substationId);
-
-				Integer savedDemandInterval = null;
-				java.util.Vector missingIntervalsVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector falseIntervalsVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector pulseTotalVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector pulseMultiplierVector = new java.util.Vector(channelPointIdVector.size());
-				java.util.Vector unitOfMeasureIdVector = new java.util.Vector(channelPointIdVector.size());
-
-				java.util.GregorianCalendar tempGreg1 = new java.util.GregorianCalendar();
-				tempGreg1.setTime(getBillingDefaults().getDemandStartDate());
-				java.util.GregorianCalendar tempGreg2 = new java.util.GregorianCalendar();
-				tempGreg2.setTime(getBillingDefaults().getEndDate());
-				long milliseconds = getBillingDefaults().getEndDate().getTime() - getBillingDefaults().getDemandStartDate().getTime();
-				int predictedIntervals = 0;
-
-				try
-				{
-					for(int j=0;j<channelPointIdVector.size();j++)
-					{
-						if( ((Integer)channelPointIdVector.get(j)).intValue() > 0 )
-						{
-							preparedStatement.setInt(1,((Integer)channelPointIdVector.get(j)).intValue());
-							rset = preparedStatement.executeQuery();
-
-							if( rset.next() )
-							{
-								Double multiplier = new Double(rset.getDouble(1));
-								Integer loadProfileDemandRate = new Integer(rset.getInt(2));
-								Integer unitOfMeasureId = new Integer(rset.getInt(3));
-								unitOfMeasureIdVector.addElement(unitOfMeasureId);
-								tempPulseVector = new java.util.Vector(((java.util.Vector)rawPointHistoryVectorOfVectors.get(j)).size());
-								if( savedDemandInterval == null )
-								{
-									savedDemandInterval = new Integer(loadProfileDemandRate.intValue());
-								}
-								predictedIntervals = (int)(milliseconds/1000/savedDemandInterval.intValue());
-								parseAndCalculatePulses(multiplier, loadProfileDemandRate, (java.util.Vector)rawPointHistoryVectorOfVectors.get(j), tempPulseVector, pulseTotalVector, pulseMultiplierVector, missingIntervalsVector, falseIntervalsVector);
-							}
-
-							if( tempPulseVector != null && tempPulseVector.size() > 0 )
-							{
-								pulseVectorOfVectors.add(tempPulseVector);
-							}
-							else
-							{
-								pulseVectorOfVectors.add(new java.util.Vector(0));//add vector with size == 0
-							}
-
-							if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() != predictedIntervals )
-							{
-								com.cannontech.clientutils.CTILogger.info("Why isn't there the corrent number of pulses?");
-								com.cannontech.clientutils.CTILogger.info( "Expected number " + Integer.toString(predictedIntervals) );
-								com.cannontech.clientutils.CTILogger.info( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
-								if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
-								{
-									com.cannontech.clientutils.CTILogger.info("Not enough pulses!!");
-									while( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
-									{
-										((java.util.Vector)pulseVectorOfVectors.get(j)).addElement("00002");
-									}
-								}
-								else //if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() > predictedIntervals )
-								{
-									com.cannontech.clientutils.CTILogger.info("Too many pulses!!");
-								}
-							}
-
-							tempPulseVector = null;
-						}
-					}
-				}
-				catch( java.sql.SQLException e )
-				{
-					e.printStackTrace();
-				}
-				finally
-				{
-					try
-					{
-						if( preparedStatement != null )
-							preparedStatement.close();
-					}
-					catch( java.sql.SQLException e )
-					{
-						e.printStackTrace();
-					}
-				}
-				prepStatement = null;
-
-				int missingIntervals = 0;
-				for(int k=0;k<missingIntervalsVector.size();k++)
-				{
-					if( ((Integer)missingIntervalsVector.get(k)).intValue() > missingIntervals )
-					{//we take just the highest missing intervals number because if we will have 3 times to many missing intervals if we count all 3 channels
-						missingIntervals = ((Integer)missingIntervalsVector.get(k)).intValue();
-					}
-				}
-				int falseIntervals = 0;
-				for(int k=0;k<falseIntervalsVector.size();k++)
-					falseIntervals += ((Integer)falseIntervalsVector.get(k)).intValue();
-
-				header0000.setStartTime(tempGreg1);
-				header0000.setStopTime(tempGreg2);
-				header0000.setTotalIntervals(new Integer(predictedIntervals-missingIntervals));
-				header0000.setPredictedIntervals(new Integer(predictedIntervals));
-				header0000.setMissingIntervals(new Integer(missingIntervals));
-				header0000.setFalseIntervals(new Integer(falseIntervals));
-				//header0000.setStartMeterReadingVector();
-				//header0000.setEndMeterReadingVector();
-				//header0000.setMeterMultiplierVector();
-
-				header0001.setPulseTotalVector(pulseTotalVector);
-				header0001.setPulseMultiplierVector(pulseMultiplierVector);
-				java.util.Vector unitOfMeasureCodeVector = new java.util.Vector();
-				for(int k=0;k<unitOfMeasureIdVector.size();k++)
-				{
-					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
-					if( unitMeasureName.equalsIgnoreCase("kWh") )
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(1));
-					}
-					else if( unitMeasureName.equalsIgnoreCase("kW") )
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(2));
-					}
-					else if( unitMeasureName.equalsIgnoreCase("kVArh") )
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(3));
-					}
-					else if( unitMeasureName.equalsIgnoreCase("kVAr") )
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(4));
-					}
-					else if( unitMeasureName.equalsIgnoreCase("TEMP-F") )
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(5));
-					}
-					else if( unitMeasureName.equalsIgnoreCase("kQ") )
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(6));
-					}
-					else
-					{
-						unitOfMeasureCodeVector.addElement(new Integer(0));
-					}
-				}
-				if( unitOfMeasureCodeVector.size() > 0 )
-				{
-					header0001.setUnitOfMeasureCodeVector(unitOfMeasureCodeVector);
-				}
-				if( savedDemandInterval == null )
-				{
-					savedDemandInterval = new Integer(3600);
-				}
-				header0001.setOriginalRecordedIntervalsPerHour(new Integer(3600/savedDemandInterval.intValue()));
-				header0001.setDaysPerRecording( new Integer( (int)(milliseconds/86400000) ) );
-				header0001.setSegmentedIntervalsPerHour( new Integer( 3600/savedDemandInterval.intValue() ) );
-				header0001.setRequestedOutputIntervalsPerHour( new Integer( 3600/savedDemandInterval.intValue() ) );
-				java.util.GregorianCalendar tempGreg3 = new java.util.GregorianCalendar();
-				tempGreg3.setTime(getBillingDefaults().getDemandStartDate());
-				java.util.GregorianCalendar tempGreg4 = new java.util.GregorianCalendar();
-				tempGreg4.setTime(getBillingDefaults().getEndDate());
-				int tempDstOffset = tempGreg3.get(java.util.Calendar.DST_OFFSET);
-				while( tempGreg3.getTime().getTime() < tempGreg4.getTime().getTime() )
-				{
-					if( tempDstOffset != tempGreg3.get(java.util.Calendar.DST_OFFSET) )
-					{
-						// DST starts at 2 AM
-						if( tempGreg3.get(java.util.Calendar.MONTH) == java.util.Calendar.OCTOBER )
-						{
-							header0001.setDstType("F");
-							header0001.setDstChange(new java.util.GregorianCalendar(tempGreg3.get(java.util.Calendar.YEAR), tempGreg3.get(java.util.Calendar.MONTH), tempGreg3.get(java.util.Calendar.DAY_OF_MONTH)-1, 1, 0));
-						}
-						else// if( tempGreg3.get(java.util.Calendar.MONTH) == java.util.Calendar.APRIL )
-						{
-							header0001.setDstType("S");
-							header0001.setDstChange(new java.util.GregorianCalendar(tempGreg3.get(java.util.Calendar.YEAR), tempGreg3.get(java.util.Calendar.MONTH), tempGreg3.get(java.util.Calendar.DAY_OF_MONTH)-1, 3, 0));
-						}
-						java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm");
-						com.cannontech.clientutils.CTILogger.info("Day Light Savings Time Change at: " + timestampFormatter.format(header0001.getDstChange().getTime()) + " type: " + header0001.getDstType() );
-						break;
-					}
-					else
-					{
-						tempGreg3.add(java.util.Calendar.DAY_OF_MONTH, 1);
-					}
-				}
-
-				//header0002.set();
-
-				getRecordVector().add( header0000 );
-				getRecordVector().add( header0001 );
-				getRecordVector().add( header0002 );
-
-				int currentDataRecordSortCode = 100;
-				java.util.Vector tempDataStatusZonesVector = null;
-				com.cannontech.billing.record.WLT_40PulseDataRecord record = 
-					new com.cannontech.billing.record.WLT_40PulseDataRecord();
-				record.setIdentNumber(substationId);
-				record.setSortCode(new Integer(currentDataRecordSortCode));
-				currentDataRecordSortCode++;
-				tempDataStatusZonesVector = new java.util.Vector(24);
-				for(int x=0;x<((java.util.Vector)pulseVectorOfVectors.get(0)).size();x++)
-				{
-					for(int y=0;y<pulseVectorOfVectors.size();y++)
-					{
-						if(tempDataStatusZonesVector.size()<24)
-						{
-							if( x < ((java.util.Vector)pulseVectorOfVectors.get(y)).size() )
-							{
-								tempDataStatusZonesVector.addElement(((java.util.Vector)pulseVectorOfVectors.get(y)).get(x));
-							}
-							else
-							{
-								tempDataStatusZonesVector.addElement("00002");
-							}
-						}
-						else
-						{
-							if( tempDataStatusZonesVector != null && tempDataStatusZonesVector.size() > 0 )
-							{
-								record.setDataStatusZonesVector(tempDataStatusZonesVector);
-							}
-
-							getRecordVector().add( record );
-							record = new com.cannontech.billing.record.WLT_40PulseDataRecord();
-							record.setIdentNumber(substationId);
-							record.setSortCode(new Integer(currentDataRecordSortCode));
-							currentDataRecordSortCode++;
-							tempDataStatusZonesVector = new java.util.Vector(24);
-							if( x < ((java.util.Vector)pulseVectorOfVectors.get(y)).size() )
-							{
-								tempDataStatusZonesVector.addElement(((java.util.Vector)pulseVectorOfVectors.get(y)).get(x));
-							}
-							else
-							{
-								tempDataStatusZonesVector.addElement("00002");
-							}
-						}
-					}
-				}
-
-				getRecordVector().add( new com.cannontech.billing.record.StringRecord(FILE_TERMINATION_RECORD) );
-			}
-			catch(Exception e)
-			{		
-				e.printStackTrace();
-				return false;
-			}
-			finally
-			{
-				try
-				{
-					if( dbConnection != null ) dbConnection.close();
-					if( prepStatement != null ) prepStatement.close();
-					if( rset != null ) rset.close();
-				}
-				catch( java.sql.SQLException ex )
-				{
-					//this is most likey caused by the rset already being closed,
-					// happens when there is zero rows returned
-					com.cannontech.clientutils.CTILogger.info(ex.getMessage());
-					return true;
-				}
-			}
-		}
- 	}
-
-	return true;
-	*/
 }
 }

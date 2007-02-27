@@ -5,9 +5,15 @@ package com.cannontech.billing;
  * Creation date: (5/18/00 2:07:05 PM)
  * @author: 
  */
+import java.util.Hashtable;
+import java.util.Vector;
+
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 import com.cannontech.billing.record.BillingRecordBase;
 import com.cannontech.billing.record.MVRSRecord;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 
 public abstract class FileFormatBase
 {
@@ -16,9 +22,9 @@ public abstract class FileFormatBase
 	
 	//used to store every line of output that will be written to the file
 	// it holds Objects of type BillingRecordBase
-	private java.util.Vector recordVector = null;
+	private Vector<BillingRecordBase> recordVector = null;
 	public static BillingFileDefaults billingDefaults = null;
-	public java.util.Hashtable pointIDMultiplierHashTable = null;
+	public Hashtable<Integer, Double> pointIDMultiplierHashTable = null;
 	
 	public static final int validAnalogPtOffsets[] =
 	{
@@ -179,7 +185,7 @@ public abstract class FileFormatBase
 	 * Returns a hashtable of pointid as key and multiplier as value.
 	 * @return java.util.Hashtable
 	 */
-	public java.util.Hashtable getPointIDMultiplierHashTable()
+	public Hashtable<Integer, Double> getPointIDMultiplierHashTable()
 	{
 		if( pointIDMultiplierHashTable == null)
 		{
@@ -193,10 +199,10 @@ public abstract class FileFormatBase
 	 * Creation date: (11/29/00)
 	 * @return java.util.Vector
 	 */
-	public java.util.Vector getRecordVector()
+	public Vector<BillingRecordBase> getRecordVector()
 	{
 		if( recordVector == null )
-			recordVector = new java.util.Vector(150);
+			recordVector = new Vector<BillingRecordBase>(150);
 			
 		return recordVector;
 	}
@@ -298,66 +304,37 @@ public abstract class FileFormatBase
 	}
 
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/13/2002 2:35:25 PM)
-	 * @param args java.lang.String[]
-	 */
-	public void main(String[] args)
-	{
-		try
-		{
-			FileFormatBase billingFile = null;
-		} 
-		catch (Throwable exception)
-		{
-			System.err.println("Exception occurred in main() of javax.swing.JFrame");
-			exception.printStackTrace(System.out);
-		}
-	}
-	
-	/**
 	 * Returns a hashtable of meternumber as key and account number as value.
 	 * Collects the meterNumber/Account number set from the database unless the file 
 	 *  meterAndAccountNumbers.txt exists containing this mapping.
 	 * @return java.util.Hashtable
 	 * @param dbAlias the database string name alias.
 	 */
-	public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
+	public Hashtable<String, String> retrieveAccountNumbers()
 	{
-		java.util.Vector returnBillingAccountNumber = new java.util.Vector();
-	
-		java.util.Vector linesInFile = new java.util.Vector();
-		java.util.Hashtable accountNumberHashTable = null;
+		Vector <String> linesInFile = new Vector<String>();
+		Hashtable <String, String> accountNumberHashTable = null;
 		
-		if (dbAlias == null)
-			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-		try
-		{
+		try {
 			java.io.FileReader meterAndAccountNumbersFileReader = new java.io.FileReader("../config/meterAndAccountNumbers.txt");
-			//java.io.FileReader meterAndAccountNumbersFileReader = new java.io.FileReader("D:/yukon/client/config/meterAndAccountNumbers.txt");
-			
 			java.io.BufferedReader readBuffer = new java.io.BufferedReader(meterAndAccountNumbersFileReader);
 	
-			try
-			{
+			try {
 				String tempLineString = readBuffer.readLine();
 							
-				while(tempLineString != null)
-				{
+				while(tempLineString != null) {
 					linesInFile.add(new String(tempLineString));
 					tempLineString = readBuffer.readLine();	
 				}
 			}
-			catch(java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
+			catch(java.io.IOException ioe) {
+				CTILogger.error(ioe);
 			}
 		}
-		catch(java.io.FileNotFoundException fnfe)
-		{
-			com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
-			com.cannontech.clientutils.CTILogger.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
-			com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+		catch(java.io.FileNotFoundException fnfe) {
+			CTILogger.info("***********************************************************************************************");
+			CTILogger.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
+			CTILogger.info("***********************************************************************************************");
 			return null;	//with null return, meternumbers will be used in place of accountnumbers
 		}
 	
@@ -365,10 +342,9 @@ public abstract class FileFormatBase
 		{	
 			java.util.Collections.sort(linesInFile);
 			int hashCapacity = (linesInFile.size() + 1);
-			accountNumberHashTable = new java.util.Hashtable(hashCapacity);
+			accountNumberHashTable = new Hashtable<String, String>(hashCapacity);
 	
-			for (int i = 0; i < linesInFile.size(); i++)
-			{
+			for (int i = 0; i < linesInFile.size(); i++) {
 				String line = (String)linesInFile.get(i);
 				int commaIndex = line.indexOf(",");
 				
@@ -386,7 +362,7 @@ public abstract class FileFormatBase
 	 * @param dbAlias the database name string alias
 	 * @return boolean
 	 */
-	abstract public boolean retrieveBillingData(String dbAlias);
+	abstract public boolean retrieveBillingData();
 	
 	/**
 	 * Returns the number of records collected.
@@ -417,10 +393,9 @@ public abstract class FileFormatBase
 	 * Collects the pointid/multiplier from the database.
 	 * @return java.util.Hashtable
 	 */
-	public java.util.Hashtable retrievePointIDMultiplierHashTable()
+	public Hashtable<Integer, Double> retrievePointIDMultiplierHashTable()
 	{
-
-		java.util.Hashtable multiplierHashTable = new java.util.Hashtable();
+		Hashtable<Integer, Double> multiplierHashTable = new Hashtable<Integer, Double>();
 		
 		String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
 	
@@ -429,20 +404,17 @@ public abstract class FileFormatBase
 		java.sql.ResultSet rset = null;
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
-			if( conn == null )
-			{
+			if( conn == null ) {
 				com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
 				return null;
 			}
-			else
-			{
+			else {
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
 	
-				while( rset.next() )
-				{
+				while( rset.next() ) {
 					Integer pointID = new Integer(rset.getInt(1));
 					Double multiplier = new Double(rset.getDouble(2));
 					multiplierHashTable.put(pointID, multiplier);				
@@ -452,28 +424,24 @@ public abstract class FileFormatBase
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
 				
-				while( rset.next())
-				{
+				while( rset.next()) {
 					Integer pointID = new Integer( rset.getInt(1));
 					Double multiplier = new Double( rset.getDouble(2));
 					multiplierHashTable.put(pointID, multiplier);
 				}
 			}
 		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
 		finally
 		{
-			try
-			{
+			try {
 				if( pstmt != null ) pstmt.close();
 				if( conn != null ) conn.close();
 			} 
-			catch( java.sql.SQLException e2 )
-			{
-				e2.printStackTrace();//sometin is up
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error(e2);
 				return null;
 			}	
 		}

@@ -1,5 +1,13 @@
 package com.cannontech.billing;
 
+import java.util.Hashtable;
+import java.util.Vector;
+
+import com.cannontech.billing.record.NCDC_Handheld;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 /**
  * @author snebben
  *
@@ -38,13 +46,11 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	/**
 	 * @see com.cannontech.billing.FileFormatBase#retrieveBillingData(String)
 	 */
-	public boolean retrieveBillingData(String dbAlias)
+	@Override
+	public boolean retrieveBillingData()
 	{
 		long timer = System.currentTimeMillis();
 		
-		if( dbAlias == null )
-			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-	
 		java.util.Hashtable inputRecordsHashTable = retrieveInputFile();
 		if( inputRecordsHashTable == null)
 			return false;	//can't do anything without the input records
@@ -81,11 +87,11 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
-				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+				CTILogger.info(getClass() + ":  Error getting database connection.");
 				return false;
 			}
 			else
@@ -106,7 +112,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 				int lastPointID = 0;
 				int recCount = 0;
 	
-				com.cannontech.clientutils.CTILogger.info(" Start looping through return resultset");
+				CTILogger.info(" Start looping through return resultset");
 	
 				while (rset.next())
 				{
@@ -137,7 +143,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
-									com.cannontech.billing.record.NCDC_Handheld lastRecord = (com.cannontech.billing.record.NCDC_Handheld)getRecordVector().get(recCount -1);
+									NCDC_Handheld lastRecord = (NCDC_Handheld)getRecordVector().get(recCount -1);
 		
 									lastRecord.setKwhReading(new Double(value));
 									lastRecord.setReadDate(ts);
@@ -149,7 +155,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
-									com.cannontech.billing.record.NCDC_Handheld lastRecord = (com.cannontech.billing.record.NCDC_Handheld)getRecordVector().get(recCount -1);
+									NCDC_Handheld lastRecord = (NCDC_Handheld)getRecordVector().get(recCount -1);
 		
 									lastRecord.setKwReading(new Double(value));
 									lastRecord.setReadDate(ts);
@@ -158,7 +164,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 							}
 							else
 							{
-								com.cannontech.billing.record.NCDC_Handheld record = new com.cannontech.billing.record.NCDC_Handheld();
+								NCDC_Handheld record = new NCDC_Handheld();
 								
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
@@ -191,7 +197,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								if( inRecord == null)	//we have a big problem!  What is our deviceName?
 								{
 									//I guess we have to skip this record and move on!
-									com.cannontech.clientutils.CTILogger.info("SKIPPING DEVICE NAME " + loc + ".  DO NOT HAVE A REFERENCE TO THIS DEVICE IN THE INPUT FILE.");
+									CTILogger.info("SKIPPING DEVICE NAME " + loc + ".  DO NOT HAVE A REFERENCE TO THIS DEVICE IN THE INPUT FILE.");
 								}
 								else
 								{
@@ -211,24 +217,21 @@ public class NCDC_HandheldFormat extends FileFormatBase
 				}//end while
 			}//end else
 		}//end try 
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
 		finally
 		{
-			try
-			{
+			try {
 				if( rset != null ) rset.close();
 				if( pstmt != null ) pstmt.close();
 				if( conn != null ) conn.close();
 			} 
-			catch( java.sql.SQLException e2 )
-			{
-				e2.printStackTrace();//sometin is up
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error(e2);
 			}	
 		}
-		com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+		CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 		
 		return true;
 	}
@@ -239,47 +242,39 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	 * @return java.util.Hashtable
 	 * @param dbAlias the database string name alias.
 	 */
-	public java.util.Hashtable retrieveInputFile()
+	public Hashtable retrieveInputFile()
 	{
-		java.util.Vector returnInputRecordsVector = new java.util.Vector();
-	
-		java.util.Vector linesInFile = new java.util.Vector();
-		java.util.Hashtable inputRecordsHashTable = null;
+		Vector <String> linesInFile = new Vector <String>();
+		Hashtable <String, InputRecord> inputRecordsHashTable = null;
 		
-		try
-		{
+		try {
 			java.io.FileReader inputRecordsFileReader = new java.io.FileReader(billingDefaults.getInputFileDir());
 			java.io.BufferedReader readBuffer = new java.io.BufferedReader(inputRecordsFileReader);
 	
-			try
-			{
+			try {
 				String tempLineString = readBuffer.readLine();
 							
-				while(tempLineString != null)
-				{
+				while(tempLineString != null) {
 					linesInFile.add(new String(tempLineString));
 					tempLineString = readBuffer.readLine();	
 				}
 			}
-			catch(java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
+			catch(java.io.IOException ioe) {
+				CTILogger.error(ioe);
 			}
 		}
-		catch(java.io.FileNotFoundException fnfe)
-		{
-			com.cannontech.clientutils.CTILogger.info("****************************************************************************");
-			com.cannontech.clientutils.CTILogger.info("Cannot find "+getInputFileName()+".  Please create file and regenerate file.");
-			com.cannontech.clientutils.CTILogger.info("****************************************************************************");
+		catch(java.io.FileNotFoundException fnfe) {
+			CTILogger.info("****************************************************************************");
+			CTILogger.info("Cannot find "+getInputFileName()+".  Please create file and regenerate file.");
+			CTILogger.info("****************************************************************************");
 			return null;	//with null, we will have to exit!
 		}
 	
-		if(linesInFile != null)
-		{	
-			com.cannontech.clientutils.CTILogger.info("Successfully read " + linesInFile.size()+ " lines from file " + getInputFileName()+".");
+		if(linesInFile != null) {	
+			CTILogger.info("Successfully read " + linesInFile.size()+ " lines from file " + getInputFileName()+".");
 			java.util.Collections.sort(linesInFile);
 			int hashCapacity = (linesInFile.size() + 1);
-			inputRecordsHashTable = new java.util.Hashtable(hashCapacity);
+			inputRecordsHashTable = new Hashtable<String, InputRecord>(hashCapacity);
 	
 			for (int i = 0; i < linesInFile.size(); i++)
 			{
@@ -297,8 +292,4 @@ public class NCDC_HandheldFormat extends FileFormatBase
 		}
 		return inputRecordsHashTable;
 	}
-	
-
-	
-
 }

@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (7/10/2002 11:15:09 AM)
@@ -130,7 +132,7 @@ public class SQLStringBuilder
 	
 	private String buildWhereClause(java.util.Vector groupVector, String groupingColumn, int [] analogOffsets, int [] pulseAccOffsets, int []demandAccOffsets)
 	{
-		java.util.Vector whereClauses = new java.util.Vector();
+		Vector<String> whereClauses = new Vector<String>();
 		
 		//String whereString = " WHERE ";
 		if( yukonPAObjectTable_from)

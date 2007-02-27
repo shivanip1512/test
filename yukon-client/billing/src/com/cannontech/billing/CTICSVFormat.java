@@ -36,11 +36,8 @@ public class CTICSVFormat extends FileFormatBase {
      * @param dbAlias - Alias for db to retrieve values from
      * @return True if retrieval was successful
      */
-    public boolean retrieveBillingData(String dbAlias) {
+    public boolean retrieveBillingData( ) {
         long timer = System.currentTimeMillis();
-
-        if (dbAlias == null)
-            dbAlias = CtiUtilities.getDatabaseAlias();
 
         String[] SELECT_COLUMNS = { SQLStringBuilder.PAO_PAONAME, SQLStringBuilder.RPH_VALUE,
                 SQLStringBuilder.RPH_TIMESTAMP, SQLStringBuilder.PT_POINTID,
@@ -85,7 +82,7 @@ public class CTICSVFormat extends FileFormatBase {
         ResultSet rset = null;
 
         try {
-            conn = PoolManager.getInstance().getConnection(dbAlias);
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             if (conn == null) {
                 CTILogger.info(getClass() + ":  Error getting database connection.");
                 return false;
@@ -143,7 +140,7 @@ public class CTICSVFormat extends FileFormatBase {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            CTILogger.error(e);
         } finally {
             try {
                 if (rset != null)
@@ -153,7 +150,7 @@ public class CTICSVFormat extends FileFormatBase {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();// sometin is up
+                CTILogger.error(e2);
             }
         }
         CTILogger.info("@" + this.toString() + " Data Collection : Took " + (System.currentTimeMillis() - timer));

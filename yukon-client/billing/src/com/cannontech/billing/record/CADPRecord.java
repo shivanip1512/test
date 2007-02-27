@@ -1,5 +1,7 @@
 package com.cannontech.billing.record;
 
+import java.util.Vector;
+
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.roles.yukon.BillingRole;
 ;
@@ -16,10 +18,10 @@ public class CADPRecord implements BillingRecordBase
 	private String tranNumber = null;
 	private String batchDate = null;
 	private String batchNumber = null;
-	private java.util.Vector meterNumberVector = null;
-	private java.util.Vector kwhReadingVector = null;
-	private java.util.Vector kwReadingVector = null;
-	private java.util.Vector kvarReadingVector = null;
+	private Vector<String> meterNumberVector = null;
+	private Vector<Double> kwhReadingVector = null;
+	private Vector<Double> kwReadingVector = null;
+	private Vector<Double> kvarReadingVector = null;
 	private String pageNumber = null;
 	private String filler = null;
 
@@ -40,9 +42,9 @@ public CADPRecord()
  * CADPFormat constructor comment.
  */
 public CADPRecord(String newCoopId, String newPageCenter, String newTranNumber, 
-	String newbatchDate, String newBatchNumber, java.util.Vector newMeterNumbers, 
-	java.util.Vector newKwhReadings, java.util.Vector newKwReadings, 
-	java.util.Vector newKvarReadings, String newPageNumber)
+	String newbatchDate, String newBatchNumber, Vector<String> newMeterNumbers, 
+	Vector<Double> newKwhReadings, Vector<Double> newKwReadings, 
+	java.util.Vector<Double> newKvarReadings, String newPageNumber)
 {
 	super();
 	setCoopId(coopId);
@@ -60,8 +62,8 @@ public CADPRecord(String newCoopId, String newPageCenter, String newTranNumber,
 /**
  * CADPFormat constructor comment.
  */
-public CADPRecord(java.util.Vector newMeterNumbers, java.util.Vector newKwhReadings, 
-	java.util.Vector newKwReadings, java.util.Vector newKvarReadings)
+public CADPRecord(Vector<String> newMeterNumbers, Vector<Double> newKwhReadings, 
+	Vector<Double> newKwReadings, Vector<Double> newKvarReadings)
 {
 	super();
 	setMeterNumberVector(newMeterNumbers);
@@ -102,13 +104,13 @@ public String dataToString()
 		writeToFile.append(tempMeterNum);
 
 
-		writeToFile.append(decimalFormat5v0.format(((Double)getKwhReadingVector().get(i)).doubleValue()));
+		writeToFile.append(decimalFormat5v0.format(getKwhReadingVector().get(i).doubleValue()));
 
-		if( ((Double)getKwReadingVector().get(i)).doubleValue() == 0)
+		if( getKwReadingVector().get(i).doubleValue() == 0)
 			writeToFile.append("       ");
 		else
 		{
-			String tempKwReadingString = decimalFormat4v3.format(((Double)getKwReadingVector().get(i)).doubleValue());
+			String tempKwReadingString = decimalFormat4v3.format(getKwReadingVector().get(i).doubleValue());
 
 			for(int j=0;j<tempKwReadingString.length();j++)
 			{
@@ -119,11 +121,11 @@ public String dataToString()
 			}
 		}
 	
-		if( ((Double)getKvarReadingVector().get(i)).doubleValue() == 0)
+		if( getKvarReadingVector().get(i).doubleValue() == 0)
 			writeToFile.append("     ");
 		else
 		{
-			String tempKvarReadingString = decimalFormat5v0.format(((Double)getKvarReadingVector().get(i)).doubleValue());
+			String tempKvarReadingString = decimalFormat5v0.format(getKvarReadingVector().get(i).doubleValue());
 			for(int j = 0; j < tempKvarReadingString.length();j++)
 			{
 				if(tempKvarReadingString.charAt(j) != '.')
@@ -233,7 +235,7 @@ public java.lang.String getFiller()
  * Creation date: (11/30/2000 4:19:40 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getKvarReadingVector() {
+public Vector<Double> getKvarReadingVector() {
 	return kvarReadingVector;
 }
 /**
@@ -241,7 +243,7 @@ public java.util.Vector getKvarReadingVector() {
  * Creation date: (11/30/2000 4:19:40 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getKwhReadingVector() {
+public Vector<Double> getKwhReadingVector() {
 	return kwhReadingVector;
 }
 /**
@@ -249,7 +251,7 @@ public java.util.Vector getKwhReadingVector() {
  * Creation date: (11/30/2000 4:19:40 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getKwReadingVector() {
+public Vector<Double> getKwReadingVector() {
 	return kwReadingVector;
 }
 /**
@@ -257,7 +259,7 @@ public java.util.Vector getKwReadingVector() {
  * Creation date: (11/30/2000 4:19:40 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getMeterNumberVector() {
+public Vector<String> getMeterNumberVector() {
 	return meterNumberVector;
 }
 /**
@@ -334,7 +336,7 @@ public void setFiller(java.lang.String newFiller)
  * Creation date: (11/30/2000 4:19:40 PM)
  * @param newKvReadingVector java.util.Vector
  */
-public void setKvarReadingVector(java.util.Vector newKvarReadingVector)
+public void setKvarReadingVector(Vector<Double> newKvarReadingVector)
 {
 	kvarReadingVector = newKvarReadingVector;
 }
@@ -343,7 +345,7 @@ public void setKvarReadingVector(java.util.Vector newKvarReadingVector)
  * Creation date: (11/30/2000 4:19:40 PM)
  * @param newKwhReadingVector java.util.Vector
  */
-public void setKwhReadingVector(java.util.Vector newKwhReadingVector) {
+public void setKwhReadingVector(Vector<Double> newKwhReadingVector) {
 	kwhReadingVector = newKwhReadingVector;
 }
 /**
@@ -351,7 +353,7 @@ public void setKwhReadingVector(java.util.Vector newKwhReadingVector) {
  * Creation date: (11/30/2000 4:19:40 PM)
  * @param newKwReadingVector java.util.Vector
  */
-public void setKwReadingVector(java.util.Vector newKwReadingVector) {
+public void setKwReadingVector(Vector<Double> newKwReadingVector) {
 	kwReadingVector = newKwReadingVector;
 }
 /**
@@ -359,7 +361,7 @@ public void setKwReadingVector(java.util.Vector newKwReadingVector) {
  * Creation date: (11/30/2000 4:19:40 PM)
  * @param newMeterNumberVector java.util.Vector
  */
-public void setMeterNumberVector(java.util.Vector newMeterNumberVector)
+public void setMeterNumberVector(Vector<String> newMeterNumberVector)
 {
 	meterNumberVector = newMeterNumberVector;
 }

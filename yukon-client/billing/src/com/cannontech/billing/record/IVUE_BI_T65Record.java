@@ -16,8 +16,8 @@ public class IVUE_BI_T65Record extends CADPXL2Record {
     }
 
     public IVUE_BI_T65Record(String newAccountNumber, String newMeterNumber,
-            Integer newMeterPosition, Timestamp newTimeStamp, Vector newRegNumVector,
-            Vector newKwhVector, Vector newKwVector, Vector newKvarVector) {
+            Integer newMeterPosition, Timestamp newTimeStamp, Vector<Integer> newRegNumVector,
+            Vector<Double> newKwhVector, Vector<Double> newKwVector, Vector<Double> newKvarVector) {
 
         super();
 
@@ -34,8 +34,8 @@ public class IVUE_BI_T65Record extends CADPXL2Record {
     public IVUE_BI_T65Record(String accountNumber, String serviceLocationNumber, String importType,
             String serviceGroup, String paymentSign, Double payment, Timestamp batchDate,
             String batchNumber, Timestamp readDate, String whoReadMeter, String meterNumber,
-            Integer meterPositionNumber, String route, Vector registerNumberVector,
-            Vector kwhReadingVector, Vector kwReadingVector, Vector kvarReadingVector) {
+            Integer meterPositionNumber, String route, Vector<Integer> registerNumberVector,
+            Vector<Double> kwhReadingVector, Vector<Double> kwReadingVector, Vector<Double> kvarReadingVector) {
 
         super();
 
@@ -124,15 +124,14 @@ public class IVUE_BI_T65Record extends CADPXL2Record {
 
         if (getRegisterNumberVector().size() > 0) {
             for (int i = 0; i < getRegisterNumberVector().size(); i++) {
-                for (int j = 0; j < (2 - ((Integer) getRegisterNumberVector().get(i)).toString()
-                                                                                     .length()); j++) {
+                for (int j = 0; j < (2 - getRegisterNumberVector().get(i).toString().length()); j++) {
                     writeToFile.append("0");
                 }
                 writeToFile.append(getRegisterNumberVector().get(i).toString());
 
                 if (getKwhReadingVector().size() > i) {
                     pass++;
-                    String tempKwhReadingString = decimalFormat9v0.format(((Double) getKwhReadingVector().get(i)).doubleValue());
+                    String tempKwhReadingString = decimalFormat9v0.format(getKwhReadingVector().get(i).doubleValue());
                     for (int j = 0; j < tempKwhReadingString.length(); j++) {
                         if (tempKwhReadingString.charAt(j) != '.') {
                             writeToFile.append(tempKwhReadingString.charAt(j));
@@ -146,7 +145,7 @@ public class IVUE_BI_T65Record extends CADPXL2Record {
 
                 if (getKwReadingVector().size() > i) {
                     pass++;
-                    String tempKWReadingString = decimalFormat6v3.format(((Double) getKwReadingVector().get(i)).doubleValue());
+                    String tempKWReadingString = decimalFormat6v3.format(getKwReadingVector().get(i).doubleValue());
                     for (int j = 0; j < tempKWReadingString.length(); j++) {
                         if (tempKWReadingString.charAt(j) != '.') {
                             writeToFile.append(tempKWReadingString.charAt(j));
@@ -161,7 +160,7 @@ public class IVUE_BI_T65Record extends CADPXL2Record {
                 if (getKvarReadingVector().size() > i) {
                     pass++;
 
-                    String tempKvarReadingString = decimalFormat7v2.format(((Double) getKvarReadingVector().get(i)).doubleValue());
+                    String tempKvarReadingString = decimalFormat7v2.format(getKvarReadingVector().get(i).doubleValue());
                     for (int j = 0; j < tempKvarReadingString.length(); j++) {
                         if (tempKvarReadingString.charAt(j) != '.') {
                             writeToFile.append(tempKvarReadingString.charAt(j));

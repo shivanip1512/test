@@ -1,6 +1,12 @@
 package com.cannontech.billing;
 
 import java.util.Date;
+import java.util.Vector;
+
+import com.cannontech.billing.record.CADPRecord;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 
 /**
  * Insert the type's description here.
@@ -20,24 +26,16 @@ public CADPFormat()
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
  */
-public boolean retrieveBillingData(String dbAlias)
+@Override
+public boolean retrieveBillingData()
 {
 	long timer = System.currentTimeMillis();
 	
-	if( dbAlias == null )
-		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-
 	if (getBillingDefaults().getBillGroup().isEmpty())
 		return false;
 
-	java.util.Hashtable accountNumbersHashTable = retrieveAccountNumbers(dbAlias);
-	java.util.Hashtable countMetersPerAccount = null;
+	java.util.Hashtable accountNumbersHashTable = retrieveAccountNumbers();
 	
-	if( accountNumbersHashTable != null)
-		countMetersPerAccount = new java.util.Hashtable(accountNumbersHashTable.size());
-	else
-		countMetersPerAccount = new java.util.Hashtable();	//aren't able to set the init capacity here.
-
 	String [] SELECT_COLUMNS =
 	{
 		SQLStringBuilder.DMG_METERNUMBER,
@@ -99,15 +97,13 @@ public boolean retrieveBillingData(String dbAlias)
 
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
-		if( conn == null )
-		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+		if( conn == null ) {
+			CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
-		else
-		{
+		else {
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 			rset = pstmt.executeQuery();
@@ -117,7 +113,6 @@ public boolean retrieveBillingData(String dbAlias)
 			
 			String meterNumber = new String();
 			String paoName = new String();
-			int pageNumber = 0;	//individual row counter
 			double value = 0;
 			
 			int pointID = 0;
@@ -128,14 +123,10 @@ public boolean retrieveBillingData(String dbAlias)
 
 			int vectorRecordCount = 0;
 
-			boolean hadKW = true;
-			boolean hadKWH = true;
-			boolean hadKVAR = true;
-
-			java.util.Vector acctNumberVector = new java.util.Vector(8);
-			java.util.Vector kwValueVector = new java.util.Vector(8);
-			java.util.Vector kwhValueVector = new java.util.Vector(8);
-			java.util.Vector kvarValueVector = new java.util.Vector(8);
+			Vector <String> acctNumberVector = new Vector<String>(8);
+			Vector <Double> kwValueVector = new Vector<Double>(8);
+			Vector <Double> kwhValueVector = new Vector<Double>(8);
+			Vector <Double> kvarValueVector = new Vector<Double>(8);
 
 			for (int i = 0; i < 8; i++)
 			{
@@ -155,13 +146,12 @@ public boolean retrieveBillingData(String dbAlias)
 					pointID = rset.getInt(2);
 					
 					double multiplier = 1;
-					if( getBillingDefaults().isRemoveMultiplier())
-					{
+					if( getBillingDefaults().isRemoveMultiplier()) {
 						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
 					}
 	
-					if( pointID != lastPointID )	//just getting max time for each point
-					{
+					if( pointID != lastPointID ) {	//just getting max time for each point
+
 						lastPointID = pointID;
 						meterNumber = rset.getString(1);
 						ptOffset = rset.getInt(3);
@@ -178,7 +168,6 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 	
 								kwhValueVector.set(vectorRecordCount -1, new Double(value));
-								hadKWH = true;
 							}
 							else if ( isKW(ptOffset) )
 							{
@@ -186,7 +175,6 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 									
 								kwValueVector.set(vectorRecordCount - 1, new Double(value));
-								hadKW = true;
 							}
 							else if ( isKVAR(ptOffset) )
 							{
@@ -194,16 +182,11 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 	
 								kvarValueVector.set(vectorRecordCount -1, new Double(value));
-								hadKVAR = true;
 							}
 						}
 						
 						else	//**  HAVE NEW POINT AND METERNUMBER **//
 						{
-							hadKWH = false;
-							hadKW = false;
-							hadKVAR = false;
-							
 							lastDeviceID = deviceID;
 	
 							//*****************************************************************************************
@@ -215,7 +198,6 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 									
 								kwhValueVector.set(vectorRecordCount, new Double(value));
-								hadKWH = true;
 							}
 							else if (isKW(ptOffset))
 							{
@@ -223,7 +205,6 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 	
 								kwValueVector.set(vectorRecordCount, new Double(value));
-								hadKW = true;
 							}
 	
 							else if (isKVAR(ptOffset))
@@ -232,7 +213,6 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 	
 								kvarValueVector.set(vectorRecordCount, new Double(value));
-								hadKVAR = true;
 							}
 	
 							//*****************************************************************************************
@@ -263,10 +243,10 @@ public boolean retrieveBillingData(String dbAlias)
 								getRecordVector().addElement(cadpRec);
 	
 								//inti vectors
-								acctNumberVector = new java.util.Vector(8);
-								kwValueVector = new java.util.Vector(8);
-								kwhValueVector = new java.util.Vector(8);
-								kvarValueVector = new java.util.Vector(8);
+								acctNumberVector = new Vector<String>(8);
+								kwValueVector = new Vector<Double>(8);
+								kwhValueVector = new Vector<Double>(8);
+								kvarValueVector = new java.util.Vector<Double>(8);
 	
 								for (int i = 0; i < 8; i++)
 								{
@@ -285,33 +265,29 @@ public boolean retrieveBillingData(String dbAlias)
 			}//end while
 			if( vectorRecordCount > 0)
 			{
-				com.cannontech.billing.record.CADPRecord cadpRec =
-					new com.cannontech.billing.record.CADPRecord(acctNumberVector,
-														kwhValueVector, 
-														kwValueVector, 
-														kvarValueVector);
+				CADPRecord cadpRec = new CADPRecord(acctNumberVector,
+													kwhValueVector,
+													kwValueVector,
+													kvarValueVector);
 				getRecordVector().addElement(cadpRec);
 			}
 		}//end else
 	}//end try 
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
+	catch( java.sql.SQLException e ) {
+		CTILogger.error(e);
 	}
 	finally
 	{
-		try
-		{
+		try {
 			if( rset != null ) rset.close();
 			if( pstmt != null ) pstmt.close();
 			if( conn != null ) conn.close();
 		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
+		catch( java.sql.SQLException e2 ) {
+			CTILogger.error(e2);
 		}	
 	}
-	com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+	CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 	
 	return true;
 }

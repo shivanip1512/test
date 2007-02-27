@@ -1,6 +1,9 @@
 package com.cannontech.billing.mainprograms;
 
+import java.util.Vector;
+
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.util.ServletUtil;
@@ -18,12 +21,12 @@ public class BillingFileDefaults
 	public static final String BILLING_DEFAULTS_DIRECTORY = CtiUtilities.getConfigDirPath();
 
 	//Number of members in this class.
-	private final int NUMBER_OF_PARAMETERS = 7;
+	private final int NUMBER_OF_PARAMETERS = 8;
 
 	private int formatID = com.cannontech.billing.FileFormatTypes.CTICSV;
 	private int demandDaysPrev = 30;
 	private int energyDaysPrev = 7;
-	private java.util.Vector billGroup = null;
+	private java.util.Vector <String> billGroup = null;
 	private String outputFileDir = null;
 	private String billGroupType = DeviceMeterGroup.validBillGroupTypeStrings[DeviceMeterGroup.COLLECTION_GROUP];
 	private boolean removeMultiplier = false;
@@ -68,7 +71,7 @@ public class BillingFileDefaults
 	 * BillingFileDefaults constructor comment.
 	 */
 	public BillingFileDefaults(int formatID, int demandDaysPrev, int energyDaysPrev, 
-					java.util.Vector billGroupVector, int billGroupType, String outputFileDir, 
+					Vector <String> billGroupVector, int billGroupType, String outputFileDir, 
 					boolean removeMultiplier, String inputFileDir, java.util.Date endDate,
 					boolean appendToFile)
 	{
@@ -100,7 +103,7 @@ public class BillingFileDefaults
 	 * Group name(s) from Yukon.DeviceMeterGroup.[collectiongroup|testcollectiongroup|billinggroup].
 	 * @return java.util.Vector
 	 */
-	public java.util.Vector getBillGroup()
+	public Vector <String> getBillGroup()
 	{
 		return billGroup;
 	}
@@ -300,17 +303,17 @@ public class BillingFileDefaults
 	 */
 	public void setBillGroup(String billGroupString)
 	{
-		java.util.Vector tempBillGrp = null;
+		Vector <String> tempBillGrp = null;
 		int endIndex = billGroupString.indexOf(",");
 	
 		if( endIndex < 0)	//only one billing group selected in dat file.
 		{
-			tempBillGrp = new java.util.Vector(1);
+			tempBillGrp = new Vector <String>(1);
 			tempBillGrp.add(billGroupString);
 		}
 		else
 		{	
-			tempBillGrp = new java.util.Vector();
+			tempBillGrp = new Vector <String>();
 			int count = 0;
 			
 			while ( endIndex > 0)			//returns -1 "," not found
@@ -334,7 +337,7 @@ public class BillingFileDefaults
 	 * Sets the billGroup.
 	 * @param billGroup The billGroup to set
 	 */
-	private void setBillGroup(java.util.Vector billGroup)
+	private void setBillGroup(Vector <String> billGroup)
 	{
 		this.billGroup = billGroup;
 	}
@@ -457,7 +460,8 @@ public class BillingFileDefaults
 		java.io.RandomAccessFile raFile = null;
 		java.io.File inFile = new java.io.File( BILLING_DEFAULTS_DIRECTORY + BILLING_DEFAULTS_FILENAME);
 	
-		java.util.Vector fileParameters = new java.util.Vector( 15 );
+//		Vector <String> fileParameters = new Vector <String>(15);
+		String[] fileParameters = new String[NUMBER_OF_PARAMETERS];
 		
 		try
 		{
@@ -468,12 +472,10 @@ public class BillingFileDefaults
 						
 				long readLinePointer = 0;
 				long fileLength = raFile.length();
-	
-				while ( readLinePointer < fileLength )  // loop until the end of the file
-				{
-						
+				int index = 0;
+				while ( readLinePointer < fileLength ) { // loop until the end of the file
 					String line = raFile.readLine();  // read a line in
-					fileParameters.addElement( line );
+					fileParameters[index++] = line;
 	
 					// set our pointer to the new position in the file
 					readLinePointer = raFile.getFilePointer();
@@ -485,10 +487,8 @@ public class BillingFileDefaults
 			// Close file
 			raFile.close();						
 		}
-		catch(java.io.IOException ex)
-		{
-			System.out.print("IOException in parseDefaultsFile()");
-			ex.printStackTrace();
+		catch(java.io.IOException ex) {
+			CTILogger.error(ex);
 		}
 		finally
 		{
@@ -498,15 +498,12 @@ public class BillingFileDefaults
 				if( inFile.exists() )
 					raFile.close();
 			}
-			catch( java.io.IOException ex )
-			{}		
+			catch( java.io.IOException ex ) {
+				CTILogger.error(ex);
+			}		
 		}
-	
-		if( fileParameters.size() == NUMBER_OF_PARAMETERS )
-		{
-			// make sure we received all lines from the parameters file		
-			updateFileDefaults( fileParameters);
-		}
+
+		updateFileDefaults( fileParameters);
 	}
 
 	/**
@@ -514,18 +511,21 @@ public class BillingFileDefaults
 	 * Sets default parameter values from infileDefaultsVector.  *Order is critical*
 	 * @param infileDefaultsVector
 	 */
-	public void updateFileDefaults(java.util.Vector infileDefaultsVector)
+	public void updateFileDefaults(String[] infileDefaults)
 	{
 		int index = 0;
-		setFormatID( (new Integer((String)infileDefaultsVector.get(index++))).intValue());
-		setDemandDaysPrev((new Integer((String)infileDefaultsVector.get(index++))).intValue());
-		setEnergyDaysPrev((new Integer((String)infileDefaultsVector.get(index++))).intValue());
-		setBillGroup((String)infileDefaultsVector.get(index++));
-		setOutputFileDir((String)infileDefaultsVector.get(index++));
+		setFormatID( (new Integer(infileDefaults[index++])).intValue());
+		setDemandDaysPrev((new Integer(infileDefaults[index++])).intValue());
+		setEnergyDaysPrev((new Integer(infileDefaults[index++])).intValue());
+		setBillGroup(infileDefaults[index++]);
+		setOutputFileDir(infileDefaults[index++]);
 		
-		//	if( index < infileDefaultsVector.size())
-		setBillGroupType((String)infileDefaultsVector.get(index++));
-		setRemoveMultiplier(new Boolean((String)infileDefaultsVector.get(index++)).booleanValue());
+		setBillGroupType(infileDefaults[index++]);
+		if( infileDefaults[index]!= null) {
+			setRemoveMultiplier(new Boolean(infileDefaults[index++]).booleanValue());
+			if( infileDefaults[index] != null)
+				setAppendToFile(new Boolean(infileDefaults[index++]).booleanValue());
+		}
 		//setInputFile((String)infileDefaultsVector.get(index++));
 	}
 	
@@ -569,14 +569,14 @@ public class BillingFileDefaults
 			// write the type of bill Group being used (MUST BE A DB COLUMN FROM DEVICEMETERGROUP table)
 			writer.write( getBillGroupType() + "\r\n" );
 			
-			writer.write( String.valueOf(isRemoveMultiplier()));
+			writer.write( String.valueOf(isRemoveMultiplier()) + "\r\n" );
+			
+			writer.write( String.valueOf(isAppendToFile()));
 	
 			writer.close();
 		}
-		catch ( java.io.IOException e )
-		{
-			System.out.print(" IOException in writeBillingDefaultsFile");
-			e.printStackTrace();
+		catch ( java.io.IOException e ) {
+			CTILogger.error(e);
 		}
 		
 	}

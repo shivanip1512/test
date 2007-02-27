@@ -41,8 +41,8 @@ Offset	Length	Type	Description	NISC Value
 public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 {
     //The TurtleRecordBase demand reading and time/date fields are not used, but rather a vector of them are used in order to keep TOU
-    private Vector peakDemandReadingsVector = new Vector(5);
-    private Vector peakDemandTimestampVector = new Vector(5);
+    private Vector<Double> peakDemandReadingsVector = new Vector<Double>(5);
+    private Vector<Timestamp> peakDemandTimestampVector = new Vector<Timestamp>(5);
 	private Double readingKvarH = null;	// 6digits (no decimal)
 
 	private static java.text.DecimalFormat KVARH_FORMAT_NODECIMAL = new java.text.DecimalFormat("######");
@@ -204,28 +204,28 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
     /**
      * @return Returns the peakDemandReadingsVector.
      */
-    public Vector getPeakDemandReadingsVector()
+    public Vector<Double> getPeakDemandReadingsVector()
     {
         return peakDemandReadingsVector;
     }
     /**
      * @param peakDemandReadingsVector The peakDemandReadingsVector to set.
      */
-    public void setPeakDemandReadingsVector(Vector peakDemandReadingsVector)
+    public void setPeakDemandReadingsVector(Vector<Double> peakDemandReadingsVector)
     {
         this.peakDemandReadingsVector = peakDemandReadingsVector;
     }
     /**
      * @return Returns the peakDemandTimestampVector.
      */
-    public Vector getPeakDemandTimestampVector()
+    public Vector<Timestamp> getPeakDemandTimestampVector()
     {
         return peakDemandTimestampVector;
     }
     /**
      * @param peakDemandTimestampVector The peakDemandTimestampVector to set.
      */
-    public void setPeakDemandTimestampVector(Vector peakDemandTimestampVector)
+    public void setPeakDemandTimestampVector(Vector<Timestamp> peakDemandTimestampVector)
     {
         this.peakDemandTimestampVector = peakDemandTimestampVector;
     }

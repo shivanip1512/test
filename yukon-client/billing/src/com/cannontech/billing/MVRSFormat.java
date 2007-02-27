@@ -20,7 +20,8 @@ public MVRSFormat()
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
  */
-public boolean retrieveBillingData(String databaseAlias)
+@Override
+public boolean retrieveBillingData()
 {
 	return true;	//the data is read from an input file, not from the database
 }
