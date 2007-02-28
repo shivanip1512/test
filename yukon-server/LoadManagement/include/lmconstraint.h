@@ -7,6 +7,7 @@
 #include <string>
 
 #include "lmprogramdirect.h"
+#include "lmcontrolarea.h"
 
 using std::vector;
 using std::string;
@@ -29,6 +30,7 @@ public:
     bool checkSeason(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     bool checkWeekDays(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     bool checkControlWindows(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     bool checkMasterActive();
     bool checkNotifyActiveOffset(ULONG proposed_start_from_1901);
     

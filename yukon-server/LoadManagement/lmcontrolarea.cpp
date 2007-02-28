@@ -1563,100 +1563,102 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
     LONG activePrograms = 0;
 
     //setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
-
-    for(LONG i=0;i<_lmprograms.size();i++)
+    if( isControlTime(secondsFromBeginningOfDay) )
     {
-        CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
-
-
-        if( !stringCompareIgnoreCase(currentLMProgram->getControlType(),CtiLMProgramBase::AutomaticType) ||
-            !stringCompareIgnoreCase(currentLMProgram->getControlType(),"Enabled") )
-        {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
-            CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
-            if( con_checker.checkManualProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
-            {
-                if( getControlAreaState() == CtiLMControlArea::InactiveState )
+        for(LONG i=0;i<_lmprograms.size();i++)
+        {
+            CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
+    
+    
+            if( !stringCompareIgnoreCase(currentLMProgram->getControlType(),CtiLMProgramBase::AutomaticType) ||
+                !stringCompareIgnoreCase(currentLMProgram->getControlType(),"Enabled") )
+            {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+                CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
+                if( con_checker.checkManualProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
                 {
-                    string text("Manual Status Trigger Start, LM Control Area: ");
-                    text += getPAOName();
-                    string additional = *getAutomaticallyStartedSignalString();
-                    //additional += getAutomaticallyStartedSignalString();
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
-                    signal->setSOE(1);
-
-                    multiDispatchMsg->insert(signal);
+                    if( getControlAreaState() == CtiLMControlArea::InactiveState )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                        string text("Manual Status Trigger Start, LM Control Area: ");
+                        text += getPAOName();
+                        string additional = *getAutomaticallyStartedSignalString();
+                        //additional += getAutomaticallyStartedSignalString();
+                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                        signal->setSOE(1);
+    
+                        multiDispatchMsg->insert(signal);
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << text << ", " << additional << endl;
+                        }
                     }
-                }
-
-                if( (currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
-                    currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
-                    currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState) ||
-
-                    // If the program is manual active and ramping out we need to be able to turn
-                    // the program around and start ramping in or at least cancel the ramp out
-                    (currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState &&
-                     boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getIsRampingOut()))
-                {
-                    if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+    
+                    if( (currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
+                        currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
+                        currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState) ||
+    
+                        // If the program is manual active and ramping out we need to be able to turn
+                        // the program around and start ramping in or at least cancel the ramp out
+                        (currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState &&
+                         boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getIsRampingOut()))
                     {
-                        CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram);
-                        CtiLMManualControlRequest* manual_req = new CtiLMManualControlRequest(
-                            CtiLMManualControlRequest::START_NOW,
-                            lmProgramDirect->getPAOId(),
-                            gEndOfCtiTime,
-                            CtiTime(),
-                            gEndOfCtiTime,
-                            1, //gear
-                            CtiLMProgramDirect::defaultLMStartPriority,
-                            "Server Manual Start",
-                            CtiLMManualControlRequest::USE_CONSTRAINTS);
-                        CtiLMExecutorFactory factory;
-                        CtiLMExecutor* executor = factory.createExecutor(manual_req);
-                        executor->Execute();
+                        if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+                        {
+                            CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram);
+                            CtiLMManualControlRequest* manual_req = new CtiLMManualControlRequest(
+                                CtiLMManualControlRequest::START_NOW,
+                                lmProgramDirect->getPAOId(),
+                                gEndOfCtiTime,
+                                CtiTime(),
+                                gEndOfCtiTime,
+                                1, //gear
+                                CtiLMProgramDirect::defaultLMStartPriority,
+                                "Server Manual Start",
+                                CtiLMManualControlRequest::USE_CONSTRAINTS);
+                            CtiLMExecutorFactory factory;
+                            CtiLMExecutor* executor = factory.createExecutor(manual_req);
+                            executor->Execute();
+                        }
+    
+    /*                    if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
+                            getControlAreaState() != CtiLMControlArea::ActiveState )
+                        {
+                            setControlAreaState(CtiLMControlArea::ActiveState);
+                            }*/
                     }
-
-/*                    if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
-                        getControlAreaState() != CtiLMControlArea::ActiveState )
-                    {
-                        setControlAreaState(CtiLMControlArea::ActiveState);
-                        }*/
                 }
             }
         }
-    }
-
-        for(LONG j=0;j<_lmprograms.size();j++)
-    {
-        if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-            (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState)
+    
+            for(LONG j=0;j<_lmprograms.size();j++)
         {
-            fullyActivePrograms++;
-            activePrograms++;
+            if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+                (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+                (_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState)
+            {
+                fullyActivePrograms++;
+                activePrograms++;
+            }
+            else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
+            {
+                activePrograms++;
+            }
         }
-        else if( (_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
+    
+        if( fullyActivePrograms > 0 &&
+            fullyActivePrograms >= _lmprograms.size() )
         {
-            activePrograms++;
+            setControlAreaState(CtiLMControlArea::FullyActiveState);
         }
-    }
-
-    if( fullyActivePrograms > 0 &&
-        fullyActivePrograms >= _lmprograms.size() )
-    {
-        setControlAreaState(CtiLMControlArea::FullyActiveState);
-    }
-    else if( activePrograms > 0 )
-    {
-        setControlAreaState(CtiLMControlArea::ActiveState);
-    }
-
-    if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Control cannot go active because no programs are currently available " << endl;
+        else if( activePrograms > 0 )
+        {
+            setControlAreaState(CtiLMControlArea::ActiveState);
+        }
+    
+        if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Control cannot go active because no programs are currently available " << endl;
+        }
     }
 }
 

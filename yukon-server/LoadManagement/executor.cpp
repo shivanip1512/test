@@ -1211,6 +1211,12 @@ void CtiLMManualControlRequestExecutor::Execute()
                                                          startTime.seconds(),
                                                          stopTime.seconds());
 
+
+            if( controlArea != NULL )
+            {
+                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds());
+            }
+
             if(response != NULL)
             {
                 if(passed_check)
@@ -1240,8 +1246,9 @@ void CtiLMManualControlRequestExecutor::Execute()
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
             // Fix up program control window if necessary
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
-            CoerceStartStopTime(program, startTime, stopTime);
-            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) )
+            CoerceStartStopTime(program, startTime, stopTime, controlArea);
+            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
+                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds())  )
             {
                 StartProgram(program, controlArea, startTime, stopTime);
 
@@ -1290,7 +1297,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);           
             // Fix up program control window if necessary
             startTime = (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStartTime();        
-            CoerceStartStopTime(program, startTime, stopTime);
+            CoerceStartStopTime(program, startTime, stopTime, controlArea);
             StopProgram(program, controlArea, stopTime);
             if(response != NULL)
             {
@@ -1608,7 +1615,7 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
  * Change start and stop so that they fit inside one of the program control windows.  Prefer an ealier control window
  * to a later one
  */
-void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop)
+void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea)
 {
     CtiTime beginningOfDay(0,0,0);//This creates a time of today, at 0:00:00.00
     {
@@ -1619,10 +1626,6 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
     LONG stopSecondsFromBeginningOfDay = stop.seconds() - beginningOfDay.seconds();
     
     std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
-    if(control_windows.size() == 0)
-    {   // no control windows, nothing to do
-        return;
-    }
 
     bool found_cw = false;
     for(int i = 0; i < control_windows.size() && !found_cw; i++)
@@ -1655,7 +1658,28 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
         }
     }
 
+    if( controlArea != NULL )
+    {
+        startSecondsFromBeginningOfDay = start.seconds() - beginningOfDay.seconds();
+        stopSecondsFromBeginningOfDay = stop.seconds() - beginningOfDay.seconds();
+
+        if( startSecondsFromBeginningOfDay < controlArea->getCurrentDailyStartTime() )
         {
+            start += (controlArea->getCurrentDailyStartTime() - startSecondsFromBeginningOfDay);
+        }
+
+        if( controlArea->getCurrentDailyStopTime() < controlArea->getCurrentDailyStartTime() && stopSecondsFromBeginningOfDay > (controlArea->getCurrentDailyStopTime() + 24*60*60) )
+        {
+            stop -= (stopSecondsFromBeginningOfDay - (controlArea->getCurrentDailyStopTime() + 24*60*60));
+        }
+        else if( controlArea->getCurrentDailyStopTime() > controlArea->getCurrentDailyStartTime() && stopSecondsFromBeginningOfDay > controlArea->getCurrentDailyStopTime() )
+        {
+            stop -= (stopSecondsFromBeginningOfDay - controlArea->getCurrentDailyStopTime());
+        }
+
+    }
+
+    {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " - after coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
     }

@@ -491,6 +491,71 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
     return false;
 }
 
+bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+{
+    bool retVal = true;
+    // We want the seconds at the beginning of the day in which the program is to start
+    CtiTime startTime(proposed_start_from_1901);
+    CtiDate startDate(startTime);
+    startTime = CtiTime(startDate);
+
+    ULONG startSecondsFromDayBegin = proposed_start_from_1901 - startTime.seconds();
+    ULONG stopSecondsFromDayBegin = proposed_stop_from_1901 - startTime.seconds();
+
+    if(controlArea.getCurrentDailyStopTime() == 0 && controlArea.getCurrentDailyStopTime() == 0)
+    {
+        retVal = true;
+    }
+    else if( proposed_start_from_1901 > proposed_stop_from_1901 )
+    {
+        string result = "The proposed start time of ";
+        result += CtiTime(proposed_start_from_1901).asString();
+        result += " is after the stop time of ";
+        result += CtiTime(proposed_stop_from_1901).asString();
+		_results.push_back(result);
+
+        retVal = false;
+    }
+    else if( startSecondsFromDayBegin < controlArea.getCurrentDailyStartTime() )
+    {
+        string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
+        result += CtiTime(proposed_start_from_1901).asString();
+        result += " is outside the CONTROL AREA control window that runs from ";
+        result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
+        result += " to ";
+        result += CtiTime(controlArea.getCurrentDailyStopTime() + startTime.seconds()).asString();
+		_results.push_back(result);
+
+        retVal = false;
+    }
+    else if( controlArea.getCurrentDailyStopTime() < controlArea.getCurrentDailyStartTime() && stopSecondsFromDayBegin > (controlArea.getCurrentDailyStopTime() + 24*60*60) )
+    {
+        string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
+        result += CtiTime(proposed_start_from_1901).asString();
+        result += " is outside the CONTROL AREA control window that runs from ";
+        result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
+        result += " to ";
+        result += CtiTime(controlArea.getCurrentDailyStopTime() + 24*60*60 + startTime.seconds()).asString();
+		_results.push_back(result);
+
+        retVal = false;
+    }
+    else if( controlArea.getCurrentDailyStopTime() > controlArea.getCurrentDailyStartTime() && stopSecondsFromDayBegin > controlArea.getCurrentDailyStopTime() )
+    {
+        string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
+        result += CtiTime(proposed_start_from_1901).asString();
+        result += " is outside the CONTROL AREA control window that runs from ";
+        result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
+        result += " to ";
+        result += CtiTime(controlArea.getCurrentDailyStopTime() + startTime.seconds()).asString();
+		_results.push_back(result);
+
+        retVal = false;
+    }
+
+    return retVal;
+}
+
 /*
  * Check that the program is starting before the notify active offset.
  * If the notify active offset is 60 minutes and the program is asked to start in 50 mintes we are violating this constraint
