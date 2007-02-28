@@ -7,7 +7,7 @@
 <script type="text/javascript">
 
 addSmartScrolling('currentAltSubDivOffset', 'AltSubBusScrollableDiv', 'selectedSubBus', 'AltSubBusList');
-
+var switchPointPicker = new PointPicker('switch_point','com.cannontech.common.search.criteria.CCTwoStatePointCriteria','pointName:switchPointName','switchPointPicker','');
 
 </script>
 </f:verbatim>
@@ -78,7 +78,7 @@ addSmartScrolling('currentAltSubDivOffset', 'AltSubBusScrollableDiv', 'selectedS
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:pointPicker_showPicker('switch_point','com.cannontech.common.search.criteria.CCTwoStatePointCriteria','pointName:switchPointName')" >
+                    <h:outputLink  value="javascript:switchPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>

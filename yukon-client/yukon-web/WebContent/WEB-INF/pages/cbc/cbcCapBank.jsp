@@ -27,7 +27,7 @@ CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capCont
 
 <script type="text/javascript">
 formatSelectedPoint ('cbcPointDiv');
-
+var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria','pointName:ctlPoint;deviceName:cbcDevice','cbcPointPicker','');
 </script>
 
 </f:verbatim>
@@ -130,7 +130,7 @@ formatSelectedPoint ('cbcPointDiv');
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:pointPicker_showPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria','pointName:ctlPoint;deviceName:cbcDevice')" >
+                    <h:outputLink  value="javascript:cbcPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>

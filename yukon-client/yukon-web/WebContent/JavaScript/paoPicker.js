@@ -1,31 +1,44 @@
 // see itemPicker.js for the general structure of item picker dialogs
 
-PointPicker = Class.create();
+PaoPicker = Class.create();
 
 //must extend ItemPicker; this will not work as a standalone object
-PointPicker.prototype = Object.extend(new ItemPicker(), { 
+PaoPicker.prototype = Object.extend(new ItemPicker(), { 
 	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context) {
 		this.baseInitialize(destItemIdFieldId, criteria, extraMapping, pickerId, context);
-		this.sameItemLink = 'Same Device';
+		this.sameItemLink = 'Same Type';
 	},
 	
 	//controllerMethod should match name of appropriate method in the xxPickerController java class
 	setUrlPrefix: function(controllerMethod) {
-		var url = this.context + '/picker/point/' + controllerMethod + '?';
+		var url = this.context + '/picker/pao/' + controllerMethod + '?';
 		return url;
 	},
 	
 	//controllerInParameterLabel should match name of appropriate parameter request in xxPickerController java class
 	setUrlIntParameter: function(url) {
-		var controllerIntParameterLabel = 'currentPointId';
+		var controllerIntParameterLabel = 'currentPaoId';
 		url += '&' + controllerIntParameterLabel + '=' + $(this.destItemIdFieldId).value;
 		//could add more parameters here
 		return url;
 	},
 	
+	doSameItemSearch: function(start) {
+	    this.lastMethod = this.doSameItemSearch;
+	    this.inSearch = true;
+	    this.currentSearch = '';
+	    
+	    var url = this.setUrlPrefix('sameType');
+	    url = this.setUrlIntParameter(url);
+	    
+	    url += '&criteria=' + this.criteria;
+	    url += '&start=' + start;
+	    new Ajax.Request(url, {'method': 'get', 'onComplete': this.onComplete.bind(this), 'onFailure': this.ajaxError.bind(this)});
+	},
+	
 	//should involve the actions taken when the pickertype-specific item is selected
 	selectThisItem: function(hit) {
-	    $(this.destItemIdFieldId).value = hit.pointId;
+	    $(this.destItemIdFieldId).value = hit.paoId;
 	    
 	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
 	    for (i=0; i < this.extraInfo.length; i+=1) {
@@ -46,14 +59,14 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	
 	    var currentId = $(this.destItemIdFieldId).value;
 	    var selectCurrent = function(rowElement, data) {
-	        if (data.pointId == currentId) {
-	            rowElement.className = "itemPicker_currentPointRow";
+	        if (data.paoId == currentId) {
+	            rowElement.className = "itemPicker_currentPaoRow";
 	        }
 	    };
 	    
 	    ///////////////////////////////////////////////////////////////////
 	    // The following array refers to properties that are available in
-	    // the UltraLightPoint interface. If additional properties are added
+	    // the UltraLightPao interface. If additional properties are added
 	    // to that class, they will automatically be added to the JSON 
 	    // data structure that is returned. The link attribute, when set,
 	    // must refer to a function that will return an appropriate onClick
@@ -61,11 +74,16 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	    // the onClick function, instead it generates the onClick function.
 	    /////////////////////////////////////////////////////////////////////////////
 	    this.outputCols = [
-	        {"title": "Device", "field": "deviceName", "link": null},
-	        {"title": "Point Id", "field": "pointId", "link": null},
-	        {"title": "Point", "field": "pointName", "link": createItemLink}
+	        {"title": "Type", "field": "type", "link": null},
+	        {"title": "Pao Id", "field": "paoId", "link": null},
+	        {"title": "Pao", "field": "paoName", "link": createItemLink}
 	      ];
 	    
 	    return this.renderTableResults(json, selectCurrent);
+	},
+	
+	onPickerShown: function(transport, json) {
+	    $('itemPicker_query').focus();
+	    this.showAll();
 	}
 });

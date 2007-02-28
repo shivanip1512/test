@@ -1,31 +1,43 @@
 // see itemPicker.js for the general structure of item picker dialogs
 
-PointPicker = Class.create();
+LoginGroupPicker = Class.create();
 
 //must extend ItemPicker; this will not work as a standalone object
-PointPicker.prototype = Object.extend(new ItemPicker(), { 
+LoginGroupPicker.prototype = Object.extend(new ItemPicker(), { 
 	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context) {
 		this.baseInitialize(destItemIdFieldId, criteria, extraMapping, pickerId, context);
-		this.sameItemLink = 'Same Device';
+		this.sameItemLink = '';   
 	},
 	
 	//controllerMethod should match name of appropriate method in the xxPickerController java class
 	setUrlPrefix: function(controllerMethod) {
-		var url = this.context + '/picker/point/' + controllerMethod + '?';
+		var url = this.context + '/picker/loginGroup/' + controllerMethod + '?';
 		return url;
 	},
 	
 	//controllerInParameterLabel should match name of appropriate parameter request in xxPickerController java class
 	setUrlIntParameter: function(url) {
-		var controllerIntParameterLabel = 'currentPointId';
+		var controllerIntParameterLabel = 'currentLoginGroupId';
 		url += '&' + controllerIntParameterLabel + '=' + $(this.destItemIdFieldId).value;
 		//could add more parameters here
 		return url;
 	},
 	
+	doSameItemSearch: function(start) {
+	    this.lastMethod = this.doSameItemSearch;
+	    this.inSearch = true;
+	    this.currentSearch = '';
+	    //
+	    var url = this.setUrlPrefix('sameLoginGroup');
+	    url = this.setUrlIntParameter(url);
+	    
+	    url += '&criteria=' + this.criteria;
+	    url += '&start=' + start;
+	},
+	
 	//should involve the actions taken when the pickertype-specific item is selected
 	selectThisItem: function(hit) {
-	    $(this.destItemIdFieldId).value = hit.pointId;
+	    $(this.destItemIdFieldId).value = hit.groupId;
 	    
 	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
 	    for (i=0; i < this.extraInfo.length; i+=1) {
@@ -46,14 +58,14 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	
 	    var currentId = $(this.destItemIdFieldId).value;
 	    var selectCurrent = function(rowElement, data) {
-	        if (data.pointId == currentId) {
-	            rowElement.className = "itemPicker_currentPointRow";
+	        if (data.groupId == currentId) {
+	            rowElement.className = "itemPicker_currentGroupRow";
 	        }
 	    };
 	    
 	    ///////////////////////////////////////////////////////////////////
 	    // The following array refers to properties that are available in
-	    // the UltraLightPoint interface. If additional properties are added
+	    // the UltraLightYukonLoginGroup interface. If additional properties are added
 	    // to that class, they will automatically be added to the JSON 
 	    // data structure that is returned. The link attribute, when set,
 	    // must refer to a function that will return an appropriate onClick
@@ -61,11 +73,15 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	    // the onClick function, instead it generates the onClick function.
 	    /////////////////////////////////////////////////////////////////////////////
 	    this.outputCols = [
-	        {"title": "Device", "field": "deviceName", "link": null},
-	        {"title": "Point Id", "field": "pointId", "link": null},
-	        {"title": "Point", "field": "pointName", "link": createItemLink}
+	       	{"title": "Login Group", "field": "groupName", "link": createItemLink},
+	        {"title": "Login Group Id", "field": "groupId", "link": null}
 	      ];
 	    
 	    return this.renderTableResults(json, selectCurrent);
+	},
+	
+	onPickerShown: function(transport, json) {
+	    $('itemPicker_query').focus();
+	    this.showAll();
 	}
 });

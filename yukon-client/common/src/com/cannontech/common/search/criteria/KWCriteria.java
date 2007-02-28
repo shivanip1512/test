@@ -4,7 +4,7 @@ import org.apache.lucene.search.BooleanClause;
 
 import com.cannontech.database.data.point.PointUnits;
 
-public class KWCriteria extends PointDeviceCriteriaHelper {
+public class KWCriteria extends YukonObjectCriteriaHelper {
     private static final Integer[] UNITS =  {PointUnits.UOMID_KW};
 
     public KWCriteria() {

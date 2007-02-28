@@ -8,7 +8,10 @@
         formatSelectedPoint ('subVarDiv');
         formatSelectedPoint ('subWattDiv');
         formatSelectedPoint ('subVoltDiv');
-                
+        
+        var subVarPointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:subVarPoint;deviceName:subVarDevice','subVarPointPicker','');
+		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','');
+		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','');        
     </script>
 </f:verbatim>
 
@@ -100,14 +103,14 @@
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:pointPicker_showPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:subVarPoint;deviceName:subVarDevice')" >
+                    <h:outputLink  value="javascript:subVarPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                 <x:commandLink id="varPoint_setNone" title="Do not use a point for the Watt value" 
+                 <x:commandLink id="varPoint_setNone" title="Do not use a point for the VAR value" 
                  styleClass="medStaticLabel"
                     value="No Var Point" actionListener="#{capControlForm.varPtTeeClick}">
                         <f:param name="ptID" value="0"/>
@@ -139,14 +142,14 @@
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:pointPicker_showPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice')" >
+                    <h:outputLink  value="javascript:subWattPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                 <x:commandLink id="wattPoint_setNone" title="Do not use a point for the Watt value" 
+                 <x:commandLink id="wattPoint_setNone" title="Do not use a point for the watt value" 
                  styleClass="medStaticLabel"
                     value="No Watt Point" actionListener="#{capControlForm.wattPtTeeClick}">
                         <f:param name="ptID" value="0"/>
@@ -178,14 +181,14 @@
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:pointPicker_showPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice')" >
+                    <h:outputLink  value="subVoltPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                 <x:commandLink id="voltPoint_setNone" title="Do not use a point for the Watt value" 
+                 <x:commandLink id="voltPoint_setNone" title="Do not use a point for the volt value" 
                  styleClass="medStaticLabel"
                     value="No Volt Point" actionListener="#{capControlForm.voltPtTeeClick}">
                         <f:param name="ptID" value="0"/>

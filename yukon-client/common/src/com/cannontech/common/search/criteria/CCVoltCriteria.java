@@ -4,7 +4,7 @@ import org.apache.lucene.search.BooleanClause;
 
 import com.cannontech.database.data.point.PointUnits;
 
-public class CCVoltCriteria extends PointDeviceCriteriaHelper {
+public class CCVoltCriteria extends YukonObjectCriteriaHelper {
     private static final Integer[] UNITS = PointUnits.CAP_CONTROL_VOLTS_UOMIDS;
 
     public CCVoltCriteria() {

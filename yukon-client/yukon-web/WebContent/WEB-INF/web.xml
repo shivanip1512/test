@@ -184,7 +184,7 @@
     </servlet>
     
     <servlet>
-        <servlet-name>point-picker</servlet-name>
+        <servlet-name>picker</servlet-name>
         <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -206,7 +206,7 @@
         <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
+    
     <servlet>
         <servlet-name>httpRemote</servlet-name>
         <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
@@ -495,8 +495,8 @@
     </servlet-mapping>  
 
     <servlet-mapping>
-        <servlet-name>point-picker</servlet-name>
-        <url-pattern>/pointPicker/*</url-pattern>
+        <servlet-name>picker</servlet-name>
+        <url-pattern>/picker/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -5,9 +5,9 @@ import java.io.Reader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 
-public class PointDeviceAnalyzer extends Analyzer {
+public class YukonObjectAnalyzer extends Analyzer {
 
-    public PointDeviceAnalyzer() {
+    public YukonObjectAnalyzer() {
         super();
     }
 

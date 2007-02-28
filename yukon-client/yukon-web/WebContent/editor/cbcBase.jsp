@@ -15,11 +15,12 @@
 <f:view>
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
+<cti:includeScript link="/JavaScript/itemPicker.js"/>
 <cti:includeScript link="/JavaScript/pointPicker.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/pointPicker.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css"/>
 <%
     //****
     // Entry point file for all operations that edit a PAObject

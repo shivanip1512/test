@@ -10,21 +10,18 @@ import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.lang.StringUtils;
 
-public class PointPickerTag extends ItemPickerTag {
-    public PointPickerTag() {
+public class LoginGroupPickerTag extends ItemPickerTag {
+    public LoginGroupPickerTag() {
         super();
     }
     
     public void doTag() throws JspException, IOException {
-        startOfTag("/JavaScript/pointPicker.js");
-        
+        startOfTag("/JavaScript/loginGroupPicker.js");
+          
         // build up extraMapping string
         List<String> extraMappings = new ArrayList<String>();
         if (StringUtils.isNotBlank(itemNameElement)) {
-            extraMappings.add("pointName:" + itemNameElement);
-        }
-        if (StringUtils.isNotBlank(parentItemNameElement)) {
-            extraMappings.add("deviceName:" + parentItemNameElement);
+            extraMappings.add("loginGroupName:" + itemNameElement);
         }
         String extraMappingString = StringUtils.join(extraMappings.iterator(), ";");
         
@@ -34,7 +31,7 @@ public class PointPickerTag extends ItemPickerTag {
             + itemIdField + "\','" + constraint + "','" 
             + extraMappingString + "','" + pickerId + "','"
             + request.getContextPath() + "'";
-        getJspContext().getOut().println("<script> var " + pickerId + " = new PointPicker(" + initString + ");");
+        getJspContext().getOut().println("<script> var " + pickerId + " = new LoginGroupPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
         String outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
         getJspContext().getOut().println( outputTagString );
@@ -42,27 +39,19 @@ public class PointPickerTag extends ItemPickerTag {
         getJspContext().getOut().println("</a>");
     }
     
-    public String getPointIdField() {
+    public String getLoginGroupIdField() {
         return itemIdField;
     }
 
-    public void setPointIdField(String itemIdField) {
+    public void setLoginGroupIdField(String itemIdField) {
         this.itemIdField = itemIdField;
     }
 
-    public String getPointNameElement() {
+    public String getLoginGroupNameElement() {
         return itemNameElement;
     }
 
-    public void setPointNameElement(String itemNameElement) {
+    public void setLoginGroupNameElement(String itemNameElement) {
         this.itemNameElement = itemNameElement;
-    }
-
-    public String getDeviceNameElement() {
-        return parentItemNameElement;
-    }
-
-    public void setDeviceNameElement(String parentItemNameElement) {
-        this.parentItemNameElement = parentItemNameElement;
     }
 }

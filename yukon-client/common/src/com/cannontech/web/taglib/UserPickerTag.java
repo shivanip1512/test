@@ -10,21 +10,21 @@ import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.lang.StringUtils;
 
-public class PointPickerTag extends ItemPickerTag {
-    public PointPickerTag() {
+public class UserPickerTag extends ItemPickerTag {
+    public UserPickerTag() {
         super();
     }
     
     public void doTag() throws JspException, IOException {
-        startOfTag("/JavaScript/pointPicker.js");
+        startOfTag("/JavaScript/userPicker.js");
         
         // build up extraMapping string
         List<String> extraMappings = new ArrayList<String>();
         if (StringUtils.isNotBlank(itemNameElement)) {
-            extraMappings.add("pointName:" + itemNameElement);
+            extraMappings.add("userName:" + itemNameElement);
         }
         if (StringUtils.isNotBlank(parentItemNameElement)) {
-            extraMappings.add("deviceName:" + parentItemNameElement);
+            extraMappings.add("loginGroupName:" + parentItemNameElement);
         }
         String extraMappingString = StringUtils.join(extraMappings.iterator(), ";");
         
@@ -34,7 +34,7 @@ public class PointPickerTag extends ItemPickerTag {
             + itemIdField + "\','" + constraint + "','" 
             + extraMappingString + "','" + pickerId + "','"
             + request.getContextPath() + "'";
-        getJspContext().getOut().println("<script> var " + pickerId + " = new PointPicker(" + initString + ");");
+        getJspContext().getOut().println("<script> var " + pickerId + " = new UserPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
         String outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
         getJspContext().getOut().println( outputTagString );
@@ -42,27 +42,27 @@ public class PointPickerTag extends ItemPickerTag {
         getJspContext().getOut().println("</a>");
     }
     
-    public String getPointIdField() {
+    public String getUserIdField() {
         return itemIdField;
     }
 
-    public void setPointIdField(String itemIdField) {
+    public void setUserIdField(String itemIdField) {
         this.itemIdField = itemIdField;
     }
 
-    public String getPointNameElement() {
+    public String getUserNameElement() {
         return itemNameElement;
     }
 
-    public void setPointNameElement(String itemNameElement) {
+    public void setUserNameElement(String itemNameElement) {
         this.itemNameElement = itemNameElement;
     }
 
-    public String getDeviceNameElement() {
+    public String getLoginGroupNameElement() {
         return parentItemNameElement;
     }
 
-    public void setDeviceNameElement(String parentItemNameElement) {
+    public void setLoginGroupNameElement(String parentItemNameElement) {
         this.parentItemNameElement = parentItemNameElement;
     }
 }

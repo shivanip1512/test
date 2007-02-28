@@ -8,7 +8,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -16,20 +15,20 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 
 import com.cannontech.common.search.index.IndexManager;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 
-public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
+public class LoginGroupLuceneSearcher implements LoginGroupSearcher {
 
     private Analyzer analyzer = new YukonObjectSearchAnalyzer();
     private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
     private IndexManager manager = null;
 
-    public PointDeviceLuceneSearcher() {
+    public LoginGroupLuceneSearcher() {
         }
     
-    public SearchResult<UltraLightPoint> search(String queryString, YukonObjectCriteria criteria, final int start, final int count) {
+    public SearchResult<UltraLightLoginGroup> search(String queryString, YukonObjectCriteria criteria, final int start, final int count) {
         try {
             // fix the query a little bit...
             String[] terms = queryString.split("\\s+");
@@ -58,39 +57,32 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         return finalQuery;
     }
     
-    private SearchResult<UltraLightPoint> doQuery(Query query, final int start, final int count) throws IOException {
+    private SearchResult<UltraLightLoginGroup> doQuery(Query query, final int start, final int count) throws IOException {
         Hits hits;
         IndexSearcher indexSearcher = this.manager.getIndexSearcher();
         indexLock.readLock().lock();
         try {
             hits = indexSearcher.search(query);
             
-            int stop; // 0-based, exclusive bound
+            int stop; // 0-based, exclusive boundx
             stop = Math.min(start + count, hits.length());
             
-            List<UltraLightPoint> disconnectedCollection = new ArrayList<UltraLightPoint>(count);
+            List<UltraLightLoginGroup> disconnectedCollection = new ArrayList<UltraLightLoginGroup>(count);
             for (int i = start; i < stop; ++i) {
                 final Document doc = hits.doc(i);
                 // a Document does not hold a referrence to an IndexReader so it is okay
                 // to hold a reference to one here
-                UltraLightPoint ultra = new UltraLightPoint() {
-                    public String getPointName() {
-                        return doc.get("point");
+                UltraLightLoginGroup ultra = new UltraLightLoginGroup() {
+                    public String getGroupName() {
+                        return doc.get("group");
                     }
-                    public String getDeviceName() {
-                        return doc.get("device");
+                    public int getGroupId() {
+                        return Integer.parseInt(doc.get("groupid"));
                     }
-                    public int getPointId() {
-                        return Integer.parseInt(doc.get("pointid"));
-                    }
-                    public int getDeviceId() {
-                        return Integer.parseInt(doc.get("deviceid"));
-                    }
-                    
                 };
                 disconnectedCollection.add(ultra);
             }
-            SearchResult<UltraLightPoint> result = new SearchResult<UltraLightPoint>();
+            SearchResult<UltraLightLoginGroup> result = new SearchResult<UltraLightLoginGroup>();
             result.setBounds(start, count, hits.length());
             result.setResultList(disconnectedCollection);
             return result;
@@ -104,37 +96,11 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         }
     }
     
-    public SearchResult<UltraLightPoint> search(String queryString, YukonObjectCriteria criteria) {
+    public SearchResult<UltraLightLoginGroup> search(String queryString, YukonObjectCriteria criteria) {
         return search(queryString, criteria, 0, -1);
     }
     
-    public SearchResult<UltraLightPoint> sameDevicePoints(int currentPointId, YukonObjectCriteria criteria, int start, int count) {
-        try {
-            Hits hits;
-            Query queryWithCriteria;
-            TermQuery termQuery = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
-            IndexSearcher indexSearcher = this.manager.getIndexSearcher();
-            indexLock.readLock().lock();
-            try {
-                hits = indexSearcher.search(termQuery);
-                if (hits.length() != 1) {
-                    return SearchResult.emptyResult();
-                }
-                Document document = hits.doc(0);
-                String deviceId = document.get("deviceid");
-                TermQuery query = new TermQuery(new Term("deviceid", deviceId));
-                queryWithCriteria = compileAndCombine(query, criteria);
-            } finally {
-                indexLock.readLock().unlock();
-                indexSearcher.close();
-            }
-            return doQuery(queryWithCriteria, start, count);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public SearchResult<UltraLightPoint> allPoints(YukonObjectCriteria criteria, int i, int j) {
+    public SearchResult<UltraLightLoginGroup> allLoginGroups(YukonObjectCriteria criteria, int i, int j) {
         Query query = new MatchAllDocsQuery();
         try {
             Query queryWithCriteria = compileAndCombine(query, criteria);
@@ -147,5 +113,4 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     public void setIndexManager(IndexManager manager) {
         this.manager = manager;
     }
-
 }

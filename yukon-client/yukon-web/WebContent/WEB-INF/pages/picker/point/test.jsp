@@ -5,7 +5,7 @@
 <h2>This should show all points</h2>
 <input id="blah" type="hidden" value="0"> 
 <span id="deviceNameSpan">POINT NAME</span> / <span id="pointNameSpan">POINT NAME</span>
-<cti:pointPicker pointIdField="blah" constraint="" pointNameElement="pointNameSpan" paoNameElement="deviceNameSpan">Select point...</cti:pointPicker><br>
+<cti:pointPicker pickerId="funWithPointPicker" pointIdField="blah" constraint="" pointNameElement="pointNameSpan" deviceNameElement="deviceNameSpan">Select point...</cti:pointPicker><br>
 
 <hr>
  some other content 
@@ -17,6 +17,6 @@
 <hr>
 <h2>This should show KW Points</h2>
 <input id="blah2" type="text" value="0"> 
-<cti:pointPicker pointIdField="blah2" constraint="com.cannontech.common.search.criteria.KWCriteria">Select point...</cti:pointPicker><br>
+<cti:pointPicker pickerId="kWPointPicker" pointIdField="blah2" constraint="com.cannontech.common.search.criteria.KWCriteria">Select point...</cti:pointPicker><br>
 
 </cti:standardPage>

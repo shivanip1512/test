@@ -10,7 +10,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
-import com.cannontech.common.search.PointDeviceAnalyzer;
+import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -28,7 +28,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
     }
 
     protected Analyzer getAnalyzer() {
-        return new PointDeviceAnalyzer();
+        return new YukonObjectAnalyzer();
     }
 
     protected String getDocumentQuery() {

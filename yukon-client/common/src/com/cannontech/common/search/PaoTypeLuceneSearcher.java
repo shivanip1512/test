@@ -20,16 +20,16 @@ import org.apache.lucene.search.TermQuery;
 
 import com.cannontech.common.search.index.IndexManager;
 
-public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
+public class PaoTypeLuceneSearcher implements PaoTypeSearcher {
 
     private Analyzer analyzer = new YukonObjectSearchAnalyzer();
     private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
     private IndexManager manager = null;
 
-    public PointDeviceLuceneSearcher() {
+    public PaoTypeLuceneSearcher() {
         }
     
-    public SearchResult<UltraLightPoint> search(String queryString, YukonObjectCriteria criteria, final int start, final int count) {
+    public SearchResult<UltraLightPao> search(String queryString, YukonObjectCriteria criteria, final int start, final int count) {
         try {
             // fix the query a little bit...
             String[] terms = queryString.split("\\s+");
@@ -58,7 +58,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         return finalQuery;
     }
     
-    private SearchResult<UltraLightPoint> doQuery(Query query, final int start, final int count) throws IOException {
+    private SearchResult<UltraLightPao> doQuery(Query query, final int start, final int count) throws IOException {
         Hits hits;
         IndexSearcher indexSearcher = this.manager.getIndexSearcher();
         indexLock.readLock().lock();
@@ -68,29 +68,25 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             int stop; // 0-based, exclusive bound
             stop = Math.min(start + count, hits.length());
             
-            List<UltraLightPoint> disconnectedCollection = new ArrayList<UltraLightPoint>(count);
+            List<UltraLightPao> disconnectedCollection = new ArrayList<UltraLightPao>(count);
             for (int i = start; i < stop; ++i) {
                 final Document doc = hits.doc(i);
                 // a Document does not hold a referrence to an IndexReader so it is okay
                 // to hold a reference to one here
-                UltraLightPoint ultra = new UltraLightPoint() {
-                    public String getPointName() {
-                        return doc.get("point");
+                UltraLightPao ultra = new UltraLightPao() {
+                    public String getPaoName() {
+                        return doc.get("pao");
                     }
-                    public String getDeviceName() {
-                        return doc.get("device");
+                    public String getType() {
+                        return doc.get("type");
                     }
-                    public int getPointId() {
-                        return Integer.parseInt(doc.get("pointid"));
+                    public int getPaoId() {
+                        return Integer.parseInt(doc.get("paoid"));
                     }
-                    public int getDeviceId() {
-                        return Integer.parseInt(doc.get("deviceid"));
-                    }
-                    
                 };
                 disconnectedCollection.add(ultra);
             }
-            SearchResult<UltraLightPoint> result = new SearchResult<UltraLightPoint>();
+            SearchResult<UltraLightPao> result = new SearchResult<UltraLightPao>();
             result.setBounds(start, count, hits.length());
             result.setResultList(disconnectedCollection);
             return result;
@@ -104,15 +100,15 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         }
     }
     
-    public SearchResult<UltraLightPoint> search(String queryString, YukonObjectCriteria criteria) {
+    public SearchResult<UltraLightPao> search(String queryString, YukonObjectCriteria criteria) {
         return search(queryString, criteria, 0, -1);
     }
     
-    public SearchResult<UltraLightPoint> sameDevicePoints(int currentPointId, YukonObjectCriteria criteria, int start, int count) {
+    public SearchResult<UltraLightPao> sameTypePaos(int currentPaoId, YukonObjectCriteria criteria, int start, int count) {
         try {
             Hits hits;
             Query queryWithCriteria;
-            TermQuery termQuery = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
+            TermQuery termQuery = new TermQuery(new Term("paoid", Integer.toString(currentPaoId)));
             IndexSearcher indexSearcher = this.manager.getIndexSearcher();
             indexLock.readLock().lock();
             try {
@@ -121,8 +117,8 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
                     return SearchResult.emptyResult();
                 }
                 Document document = hits.doc(0);
-                String deviceId = document.get("deviceid");
-                TermQuery query = new TermQuery(new Term("deviceid", deviceId));
+                String type = document.get("type");
+                TermQuery query = new TermQuery(new Term("type", type));
                 queryWithCriteria = compileAndCombine(query, criteria);
             } finally {
                 indexLock.readLock().unlock();
@@ -134,7 +130,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         }
     }
     
-    public SearchResult<UltraLightPoint> allPoints(YukonObjectCriteria criteria, int i, int j) {
+    public SearchResult<UltraLightPao> allPaos(YukonObjectCriteria criteria, int i, int j) {
         Query query = new MatchAllDocsQuery();
         try {
             Query queryWithCriteria = compileAndCombine(query, criteria);

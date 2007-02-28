@@ -12,7 +12,7 @@ public class JsonViewResolver implements ViewResolver {
     }
 
     public View resolveViewName(String viewName, Locale locale) throws Exception {
-        if (viewName.equals("results")) {
+        if (viewName.equals("json")) {
             return new JsonView();
         }
         return null;

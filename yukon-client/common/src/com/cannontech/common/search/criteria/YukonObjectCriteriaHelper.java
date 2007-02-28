@@ -6,11 +6,11 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import com.cannontech.common.search.PointDeviceCriteria;
+import com.cannontech.common.search.YukonObjectCriteria;
 
-public class PointDeviceCriteriaHelper implements PointDeviceCriteria {
+public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     BooleanQuery query = new BooleanQuery(false);
-    public PointDeviceCriteriaHelper() {
+    public YukonObjectCriteriaHelper() {
         query.setMinimumNumberShouldMatch(1);
     }
     public Query getCriteria() {

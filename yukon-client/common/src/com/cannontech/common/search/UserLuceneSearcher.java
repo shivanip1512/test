@@ -19,17 +19,20 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 import com.cannontech.common.search.index.IndexManager;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.user.UserUtils;
 
-public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
+public class UserLuceneSearcher implements UserSearcher {
 
     private Analyzer analyzer = new YukonObjectSearchAnalyzer();
     private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
     private IndexManager manager = null;
 
-    public PointDeviceLuceneSearcher() {
+    public UserLuceneSearcher() {
         }
     
-    public SearchResult<UltraLightPoint> search(String queryString, YukonObjectCriteria criteria, final int start, final int count) {
+    public SearchResult<UltraLightYukonUser> search(String queryString, YukonObjectCriteria criteria, final int start, final int count) {
         try {
             // fix the query a little bit...
             String[] terms = queryString.split("\\s+");
@@ -58,39 +61,36 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         return finalQuery;
     }
     
-    private SearchResult<UltraLightPoint> doQuery(Query query, final int start, final int count) throws IOException {
+    private SearchResult<UltraLightYukonUser> doQuery(Query query, final int start, final int count) throws IOException {
         Hits hits;
         IndexSearcher indexSearcher = this.manager.getIndexSearcher();
         indexLock.readLock().lock();
         try {
             hits = indexSearcher.search(query);
             
-            int stop; // 0-based, exclusive bound
+            int stop; // 0-based, exclusive boundx
             stop = Math.min(start + count, hits.length());
             
-            List<UltraLightPoint> disconnectedCollection = new ArrayList<UltraLightPoint>(count);
+            List<UltraLightYukonUser> disconnectedCollection = new ArrayList<UltraLightYukonUser>(count);
             for (int i = start; i < stop; ++i) {
                 final Document doc = hits.doc(i);
                 // a Document does not hold a referrence to an IndexReader so it is okay
                 // to hold a reference to one here
-                UltraLightPoint ultra = new UltraLightPoint() {
-                    public String getPointName() {
-                        return doc.get("point");
+                UltraLightYukonUser ultra = new UltraLightYukonUser() {
+                    public String getUserName() {
+                        return doc.get("user");
                     }
-                    public String getDeviceName() {
-                        return doc.get("device");
+                    /*groupName is not searchable; it is only for display purposes*/
+                    public String getGroupName() {
+                        return getGroupNamesFromUser((Integer.parseInt(doc.get("userid"))));
                     }
-                    public int getPointId() {
-                        return Integer.parseInt(doc.get("pointid"));
+                    public int getUserId() {
+                        return Integer.parseInt(doc.get("userid"));
                     }
-                    public int getDeviceId() {
-                        return Integer.parseInt(doc.get("deviceid"));
-                    }
-                    
                 };
                 disconnectedCollection.add(ultra);
             }
-            SearchResult<UltraLightPoint> result = new SearchResult<UltraLightPoint>();
+            SearchResult<UltraLightYukonUser> result = new SearchResult<UltraLightYukonUser>();
             result.setBounds(start, count, hits.length());
             result.setResultList(disconnectedCollection);
             return result;
@@ -104,37 +104,11 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         }
     }
     
-    public SearchResult<UltraLightPoint> search(String queryString, YukonObjectCriteria criteria) {
+    public SearchResult<UltraLightYukonUser> search(String queryString, YukonObjectCriteria criteria) {
         return search(queryString, criteria, 0, -1);
     }
     
-    public SearchResult<UltraLightPoint> sameDevicePoints(int currentPointId, YukonObjectCriteria criteria, int start, int count) {
-        try {
-            Hits hits;
-            Query queryWithCriteria;
-            TermQuery termQuery = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
-            IndexSearcher indexSearcher = this.manager.getIndexSearcher();
-            indexLock.readLock().lock();
-            try {
-                hits = indexSearcher.search(termQuery);
-                if (hits.length() != 1) {
-                    return SearchResult.emptyResult();
-                }
-                Document document = hits.doc(0);
-                String deviceId = document.get("deviceid");
-                TermQuery query = new TermQuery(new Term("deviceid", deviceId));
-                queryWithCriteria = compileAndCombine(query, criteria);
-            } finally {
-                indexLock.readLock().unlock();
-                indexSearcher.close();
-            }
-            return doQuery(queryWithCriteria, start, count);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public SearchResult<UltraLightPoint> allPoints(YukonObjectCriteria criteria, int i, int j) {
+    public SearchResult<UltraLightYukonUser> allUsers(YukonObjectCriteria criteria, int i, int j) {
         Query query = new MatchAllDocsQuery();
         try {
             Query queryWithCriteria = compileAndCombine(query, criteria);
@@ -146,6 +120,19 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     
     public void setIndexManager(IndexManager manager) {
         this.manager = manager;
+    }
+    
+    public String getGroupNamesFromUser(int userid) {
+
+        List<LiteYukonGroup> groups = DaoFactory.getYukonGroupDao().getGroupsForUser(userid);
+        StringBuffer groupNames = new StringBuffer(groups.get(0).getGroupName());
+        for(int j = 1; j < groups.size(); j++) {
+            if(groups.get(j).getGroupID() == UserUtils.USER_ADMIN_ID)
+                continue;
+            groupNames.append(", " + groups.get(j).getGroupName());
+        }
+        
+        return groupNames.toString();
     }
 
 }

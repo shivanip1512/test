@@ -20,4 +20,5 @@ public interface AdministratorRole {
     public static final int ADMIN_MULTI_WAREHOUSE = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 9;
     public static final int ADMIN_AUTO_PROCESS_BATCH_COMMANDS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 10;
     public static final int ADMIN_MULTISPEAK_SETUP = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 11;
+    public static final int ADMIN_LM_USER_ASSIGN = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 12;
 }

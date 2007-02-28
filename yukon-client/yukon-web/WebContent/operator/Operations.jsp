@@ -362,6 +362,11 @@
 	            	<a href="../msp_setup.jsp">Multispeak Setup</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
+			<cti:checkProperty property="AdministratorRole.ADMIN_LM_USER_ASSIGN"> 
+	            <tags:sectionLink>
+	            	<a href="/picker/userlm">LM Visibility <br/> User Assignment</a>
+	            </tags:sectionLink>
+			</cti:checkProperty>
             <tags:sectionLink>
             	<a href="/logging/">View Logs</a>
             </tags:sectionLink>

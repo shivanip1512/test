@@ -11,9 +11,9 @@ import org.apache.lucene.analysis.WhitespaceTokenizer;
  * Compatible with PointDeviceAnalyzer, but doesn't emit prefix tokens for search
  * terms which would be just crazy.
  */
-public class PointDeviceSearchAnalyzer extends Analyzer {
+public class YukonObjectSearchAnalyzer extends Analyzer {
 
-    public PointDeviceSearchAnalyzer() {
+    public YukonObjectSearchAnalyzer() {
         super();
     }
 

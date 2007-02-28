@@ -9,8 +9,44 @@
     </bean>
 
     <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher" />
-
+    
     <bean id="pointDeviceIndexManager" class="com.cannontech.common.search.index.PointDeviceIndexManager" 
+          singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+
+    <bean id="userSearcherLucene" class="com.cannontech.common.search.UserLuceneSearcher" singleton="true" autowire="byType">
+        <property name="indexManager" ref="userIndexManager" />
+    </bean>
+
+    <alias name="userSearcherLucene" alias="userSearcher" />
+    
+        <bean id="userIndexManager" class="com.cannontech.common.search.index.UserIndexManager" 
+          singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+    
+    <bean id="loginGroupSearcherLucene" class="com.cannontech.common.search.LoginGroupLuceneSearcher" singleton="true" autowire="byType">
+        <property name="indexManager" ref="loginGroupIndexManager" />
+    </bean>
+
+    <alias name="loginGroupSearcherLucene" alias="loginGroupSearcher" />
+    
+        <bean id="loginGroupIndexManager" class="com.cannontech.common.search.index.LoginGroupIndexManager" 
+          singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+    
+    <bean id="paoTypeSearcherLucene" class="com.cannontech.common.search.PaoTypeLuceneSearcher" singleton="true" autowire="byType">
+        <property name="indexManager" ref="paoTypeIndexManager" />
+    </bean>
+
+    <alias name="paoTypeSearcherLucene" alias="paoTypeSearcher" />
+    
+    <bean id="paoTypeIndexManager" class="com.cannontech.common.search.index.PaoTypeIndexManager" 
           singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
@@ -20,6 +56,9 @@
         <property name="managerList">
             <list>
                 <ref bean="pointDeviceIndexManager" />
+                <ref bean="userIndexManager" />
+                <ref bean="loginGroupIndexManager" />
+                <ref bean="paoTypeIndexManager" />
             </list>
         </property>
     </bean>

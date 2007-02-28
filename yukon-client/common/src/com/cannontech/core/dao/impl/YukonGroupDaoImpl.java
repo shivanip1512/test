@@ -28,6 +28,16 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
                                                             new LiteYukonGroupMapper());
         return groupList;
     }
+    
+    public List<LiteYukonGroup> getGroupsForUser(int userID) {
+
+        String sql = "select yug.userid, yug.groupid, yg.groupname from YukonUserGroup yug, YukonGroup yg where userid = ? " +
+                " and yug.groupid = yg.groupid";
+        List<LiteYukonGroup> groupList = jdbcTemplate.query(sql,
+                                                            new Object[] { userID },
+                                                            new LiteYukonGroupMapper());
+        return groupList;
+    }
 
     /**
      * Mapping class to process a result set row into a LiteYukonGroup
@@ -38,6 +48,9 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
             LiteYukonGroup group = new LiteYukonGroup();
             group.setGroupID(rs.getInt("groupid"));
+            String groupName = rs.getString("groupname");
+            if(groupName != null)
+                group.setGroupName(groupName);
             return group;
         }
 

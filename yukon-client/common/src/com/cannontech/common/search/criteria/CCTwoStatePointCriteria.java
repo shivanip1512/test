@@ -2,7 +2,7 @@ package com.cannontech.common.search.criteria;
 
 import org.apache.lucene.search.BooleanClause;
 
-public class CCTwoStatePointCriteria extends PointDeviceCriteriaHelper {
+public class CCTwoStatePointCriteria extends YukonObjectCriteriaHelper {
     
     public CCTwoStatePointCriteria() {
         super();

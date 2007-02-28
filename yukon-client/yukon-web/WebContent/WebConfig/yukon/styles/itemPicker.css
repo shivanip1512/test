@@ -1,22 +1,22 @@
-table.pointPickerResultTable {
+table.itemPickerResultTable {
     font-size: 80%;
     width: 100%;
     border-collapse: collapse;
 }
 
-table.pointPickerResultTable th {
+table.itemPickerResultTable th {
     text-align: left;
 }
 
-pointPicker_commandLinks {
+itemPicker_commandLinks {
     font-size: 80%;
 }
 
-#pointPicker_resultAreaFixed {
+#itemPicker_resultAreaFixed {
     height: 349px;
 }
 
-#pointPicker_popup {
+#itemPicker_popup {
     position: absolute;
     background: white;
     opacity: .93;
@@ -30,27 +30,27 @@ pointPicker_commandLinks {
     z-index: 100;
 }
 
-table.pointPickerResultTable tr.pointPicker_currentPointRow {
+table.itemPickerResultTable tr.itemPicker_currentItemRow {
     background: yellow;
 }
 
-table#pointPicker_navTable {
+table#itemPicker_navTable {
     width: 100%;
 }
 
-table#pointPicker_navTable td.left {
+table#itemPicker_navTable td.left {
     text-align: left;
     width: 60px;
 }
-table#pointPicker_navTable td.center {
+table#itemPicker_navTable td.center {
     text-align: center;
 }
-table#pointPicker_navTable td.right {
+table#itemPicker_navTable td.right {
     text-align: right;
     width: 60px;
 }
 
-.pointPicker_selectedLink {
+.itemPicker_selectedLink {
     background-color: yellow;
 }
 

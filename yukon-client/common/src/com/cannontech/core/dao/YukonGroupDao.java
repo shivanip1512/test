@@ -8,4 +8,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface YukonGroupDao {
 
     public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user);
+    
+    public List<LiteYukonGroup> getGroupsForUser(int userID);
 }

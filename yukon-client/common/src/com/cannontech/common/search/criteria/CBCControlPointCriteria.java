@@ -4,7 +4,7 @@ import org.apache.lucene.search.BooleanClause;
 
 import com.cannontech.database.data.pao.PAOGroups;
 
-public class CBCControlPointCriteria extends PointDeviceCriteriaHelper {
+public class CBCControlPointCriteria extends YukonObjectCriteriaHelper {
 
     public CBCControlPointCriteria() {
         super();
