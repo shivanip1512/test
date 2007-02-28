@@ -102,7 +102,7 @@ public class BillingDao {
         ResultSet rset = null;
 
         try {
-            CTILogger.info("SQL Statement: " + sql);
+            CTILogger.info("SQL Statement: " + sql.replaceAll(" {2,}", " "));
 
             con = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
