@@ -657,10 +657,10 @@ void CtiCCCommandExecutor::EnableCapBank()
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[i];
         for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)ccFeeders.at(j))->getCCCapBanks();
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
             for(LONG k=0;k<ccCapBanks.size();k++)
             {
@@ -741,10 +741,10 @@ void CtiCCCommandExecutor::DisableCapBank()
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[i];
         for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)ccFeeders.at(j))->getCCCapBanks();
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
             for(LONG k=0;k<ccCapBanks.size();k++)
             {
