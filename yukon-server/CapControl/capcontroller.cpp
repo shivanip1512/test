@@ -61,6 +61,13 @@ extern BOOL _ALLOW_PARALLEL_TRUING;
 extern ULONG _DB_RELOAD_WAIT;
 extern ULONG _LINK_STATUS_TIMEOUT;
 
+extern BOOL _IGNORE_NOT_NORMAL_FLAG;
+extern ULONG _POINT_AGE;
+extern ULONG _SCAN_WAIT_EXPIRE;
+extern BOOL _RETRY_FAILED_BANKS;
+extern BOOL _LOG_MAPID_INFO;
+
+
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 
 /* The singleton instance of CtiCapController */
@@ -148,29 +155,6 @@ void CtiCapController::stop()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-    /*try
-    {
-        if ( _ccEventMsgThread.isValid() && _ccEventMsgThread.requestCancellation() == RW_THR_ABORTED )
-        {
-            _ccEventMsgThread.terminate();
-
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - CC Event Msg Thread forced to terminate." << endl;
-            }
-        }
-        else
-        {
-            _ccEventMsgThread.requestCancellation();
-            _ccEventMsgThread.join();
-        }
-    } 
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }  */
-
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -241,6 +225,9 @@ void CtiCapController::controlLoop()
         CtiTime rwnow;
         CtiTime announceTime((unsigned long) 0);
         CtiTime tickleTime((unsigned long) 0);
+        CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
+
+
 
         while(TRUE)
         {
@@ -249,18 +236,24 @@ void CtiCapController::controlLoop()
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-                currentDateTime.now();
+                currentDateTime = CtiTime();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
 
                 {
-                    if( (secondsFrom1901%900) == 0 && secondsFrom1901 != lastThreadPulse )
-                    {//every thirty minutes tell the user if the control thread is still alive
+                    if( currentDateTime.seconds() > fifteenMinCheck.seconds() && secondsFrom1901 != lastThreadPulse)
+                    {//every  fifteen minutes tell the user if the control thread is still alive
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Controller refreshing CPARMS" << endl;
+                        }
+                        refreshCParmGlobals(true);
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Controller thread pulse" << endl;
                         }
                         lastThreadPulse = secondsFrom1901;
+                        fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
                         store->verifySubBusAndFeedersStates();
                     }
                     if( secondsFromBeginningOfDay <= 60 && secondsFrom1901 >= lastDailyReset+61 )
@@ -2608,6 +2601,269 @@ void CtiCapController::loadControlLoopCParms()
         dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
+}
+
+void CtiCapController::refreshCParmGlobals(bool force)
+{
+    string str;
+    char var[128];
+
+
+    try
+    {
+        _CC_DEBUG = CC_DEBUG_NONE;
+
+        strcpy(var, "CAP_CONTROL_DEBUG");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), tolower);
+            _CC_DEBUG = (str=="true"?(CC_DEBUG_STANDARD|CC_DEBUG_POINT_DATA):CC_DEBUG_NONE);
+
+            if( !_CC_DEBUG )
+            {
+                if( str=="false" )
+                {
+                    _CC_DEBUG = CC_DEBUG_NONE;
+                }
+                else
+                {
+                    char *eptr;
+                    _CC_DEBUG = strtoul(str.c_str(), &eptr, 16);
+                }
+            }
+
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        dout.setOutputFile("capcontrol");
+
+        strcpy(var, "CAP_CONTROL_LOG_FILE");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            dout.setOutputFile(str.c_str());
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _DB_RELOAD_WAIT = 5;  //5 seconds
+
+        strcpy(var, "CAP_CONTROL_DB_RELOAD_WAIT");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _DB_RELOAD_WAIT = atoi(str.c_str());
+
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+
+        _IGNORE_NOT_NORMAL_FLAG = FALSE;
+
+        strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), tolower);
+            _IGNORE_NOT_NORMAL_FLAG = (str=="true"?TRUE:FALSE);
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _SEND_TRIES = 1;
+
+        strcpy(var, "CAP_CONTROL_SEND_RETRIES");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _SEND_TRIES = atoi(str.c_str())+1;
+
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _USE_FLIP_FLAG = FALSE;
+
+        strcpy(var, "CAP_CONTROL_USE_FLIP");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _USE_FLIP_FLAG = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+
+        _POINT_AGE = 3;  //3 minute
+
+        strcpy(var, "CAP_CONTROL_POINT_AGE");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _POINT_AGE = atoi(str.data())+1;
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _SCAN_WAIT_EXPIRE = 1;  //1 minute
+
+        strcpy(var, "CAP_CONTROL_SCAN_WAIT_EXPIRE");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _SCAN_WAIT_EXPIRE = atoi(str.data())+1;
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _ALLOW_PARALLEL_TRUING = FALSE;
+
+        strcpy(var, "CAP_CONTROL_ALLOW_PARALLEL_TRUING");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _ALLOW_PARALLEL_TRUING = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _RETRY_FAILED_BANKS = FALSE;
+
+        strcpy(var, "CAP_CONTROL_RETRY_FAILED_BANKS");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _RETRY_FAILED_BANKS = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _LOG_MAPID_INFO = FALSE;
+
+        strcpy(var, "CAP_CONTROL_LOG_MAPID_INFO");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _LOG_MAPID_INFO = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _LINK_STATUS_TIMEOUT = 5;  //1 minute
+
+        strcpy(var, "CAP_CONTROL__LINK_STATUS_TIMEOUT");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _LINK_STATUS_TIMEOUT = atoi(str.data())+1;
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+    }
+    catch(RWxmsg& msg )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** EXCEPTION **** " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
 }
 
 

@@ -60,6 +60,7 @@ public:
     CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
 
     void loadControlLoopCParms();
+    void refreshCParmGlobals(bool force);
 
 private:
     
