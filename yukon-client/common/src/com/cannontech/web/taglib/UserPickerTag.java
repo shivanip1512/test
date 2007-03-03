@@ -33,7 +33,7 @@ public class UserPickerTag extends ItemPickerTag {
         String initString = "\'"
             + itemIdField + "\','" + constraint + "','" 
             + extraMappingString + "','" + pickerId + "','"
-            + request.getContextPath() + "'";
+            + request.getContextPath() + "','" + finalTriggerAction + "'";
         getJspContext().getOut().println("<script> var " + pickerId + " = new UserPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
         String outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
@@ -56,13 +56,5 @@ public class UserPickerTag extends ItemPickerTag {
 
     public void setUserNameElement(String itemNameElement) {
         this.itemNameElement = itemNameElement;
-    }
-
-    public String getLoginGroupNameElement() {
-        return parentItemNameElement;
-    }
-
-    public void setLoginGroupNameElement(String parentItemNameElement) {
-        this.parentItemNameElement = parentItemNameElement;
     }
 }
