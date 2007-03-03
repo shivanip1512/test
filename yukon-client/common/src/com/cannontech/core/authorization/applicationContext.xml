@@ -26,7 +26,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
     
     <!-- Pao Permission Service -->
-    <bean id="paoPermissonService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl">
+    <bean id="paoPermissionService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl">
 	    <property name="groupDao" ref="yukonGroupDao" />
 	    <property name="paoPermissionDao" ref="paoPermissionDao" />
     </bean>
@@ -212,7 +212,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         	
         		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
 				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization">
-					<property name="paoPermissionService" ref="paoPermissonService" />
+					<property name="paoPermissionService" ref="paoPermissionService" />
 				</bean>
 
         		<!-- Load Management pao permissions -->
