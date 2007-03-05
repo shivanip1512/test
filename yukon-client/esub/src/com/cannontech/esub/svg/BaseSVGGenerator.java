@@ -164,7 +164,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
 
     public abstract DrawingUpdater initDrawingUpdater(Drawing d);
 
-    private Element createElement(SVGDocument doc, LxComponent comp) {
+    public Element createElement(SVGDocument doc, LxComponent comp) {
             
             Element elem = null;
                         
@@ -214,8 +214,8 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
                     String link = de.getLinkTo();
                     elem.setAttributeNS(null,"elementID", de.getElementID());
                     elem.setAttributeNS(null,"classid",comp.getClass().getName());
-                    addBehavior(comp, elem);
                     if(link != null && link.length() > 0) {
+                        addBehavior(comp, elem);
                         Element linkElem = doc.createElementNS(xlinkNS, "a");
                         linkElem.setAttributeNS(xlinkNS, "xlink:href", link);
 
