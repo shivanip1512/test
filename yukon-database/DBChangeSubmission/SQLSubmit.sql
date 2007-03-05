@@ -8,4 +8,11 @@ go
 update dynamiccccapbank set twowaycbcstate = -1;
 go
 alter table dynamiccccapbank alter column twowaycbcstate numeric not null;
+go
+alter table dynamiccccapbank add twowaycbcstatetime datetime;
+go
+update dynamiccccapbank set twowaycbcstatetime = '01-JAN-1990';
+go
+alter table dynamiccccapbank alter column twowaycbcstatetime datetime not null;
+
 /********** END JULIE ********************************************************/
