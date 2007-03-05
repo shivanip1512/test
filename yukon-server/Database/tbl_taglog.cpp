@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/03/05 22:55:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,7 +215,7 @@ RWDBStatus CtiTableTagLog::Update(RWDBConnection &conn)
     table["forstr"].assign(getTaggedForStr().c_str());
 
     long rowsAffected;
-    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__&rowsAffected);
+    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
     if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
