@@ -1,15 +1,9 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-
-import org.apache.commons.lang.StringUtils;
 
 public class ItemPickerTag extends SimpleTagSupport {
     protected String pickerId; 
@@ -17,6 +11,7 @@ public class ItemPickerTag extends SimpleTagSupport {
     protected String constraint;
     protected String itemNameElement;
     protected String parentItemNameElement;
+    protected String finalTriggerAction;
 
     public ItemPickerTag() {
         super();
@@ -74,6 +69,14 @@ public class ItemPickerTag extends SimpleTagSupport {
 
     public void setPickerId(String pickerId) {
         this.pickerId = pickerId;
+    }
+
+    public String getFinalTriggerAction() {
+        return finalTriggerAction;
+    }
+
+    public void setFinalTriggerAction(String finalTriggerAction) {
+        this.finalTriggerAction = finalTriggerAction;
     }
 
 }
