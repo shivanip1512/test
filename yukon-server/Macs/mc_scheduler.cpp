@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/04/24 14:47:33 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/03/05 19:15:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,8 +45,6 @@ void CtiMCScheduler::initEvents(const CtiTime& now)
 
 void CtiMCScheduler::initEvents(const CtiTime& now, CtiMCSchedule& sched)
 {
-    CtiLockGuard<CtiLogger> guard(dout);
-
     const string& state = sched.getCurrentState();
     const string& policy = sched.getStartPolicy();
 
@@ -96,14 +94,12 @@ void CtiMCScheduler::initEvents(const CtiTime& now, CtiMCSchedule& sched)
     if( calc_start.isValid() && calc_stop.isValid()     &&
         calc_start <= now && now <= calc_stop    )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
         CtiTime start;
         if( (start = schedulePolicyStart(yesterday_time,sched)).isValid() )
             schedulePolicyStop(start,sched);
     }
     else //schedule a start/stop normally
     {
-        CtiLockGuard< CtiLogger > guard(dout);
         CtiTime start;
         if( (start = schedulePolicyStart(now, sched)).isValid() )
             schedulePolicyStop(start, sched);
@@ -120,7 +116,7 @@ void CtiMCScheduler::initEvents(const CtiTime& now, CtiMCSchedule& sched)
   events - The set that getEvents inserts events to be processed into.
 ----------------------------------------------------------------------------*/
 void CtiMCScheduler::getEvents(const CtiTime& now, set< ScheduledEvent >& events)
-{  CtiLockGuard< CtiLogger > g(dout);
+{
    {
         std::deque< ScheduledEvent >::iterator iter = _event_deque.begin();
         while( iter != _event_deque.end() )
