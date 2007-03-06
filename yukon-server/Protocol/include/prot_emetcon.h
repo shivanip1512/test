@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/12/27 05:42:18 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2007/03/06 17:38:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,6 +96,7 @@ public:
         GetValue_Outage,
         GetValue_TOU,
         GetValue_FreezeCounter,
+        GetValue_DailyRead,
 
         // PutValue Commands
         PutValue_IEDReset,
@@ -175,6 +176,7 @@ public:
         PutConfig_LoadProfileInterest,
         PutConfig_LoadProfileReportPeriod,
         PutConfig_LongLoadProfile,
+        PutConfig_DailyReadInterest,
         PutConfig_Multiplier,
         PutConfig_Multiplier2,
         PutConfig_Multiplier3,
