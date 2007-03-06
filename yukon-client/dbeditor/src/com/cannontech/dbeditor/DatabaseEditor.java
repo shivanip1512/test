@@ -110,7 +110,7 @@ public class DatabaseEditor
 		com.cannontech.database.cache.DBChangeLiteListener 
 {
    //all editor frame sizes
-   public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 500);
+   public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
    public static final URL DBEDITOR_GIF = DatabaseEditor.class.getResource("/dbEditorIcon.gif");
    
 	//gui elements of the app
