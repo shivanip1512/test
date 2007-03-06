@@ -1216,7 +1216,8 @@ public static Date roundToMinute(Date toRound) {
             while ( t != null ) {
                 Throwable cause = ExceptionUtils.getCause(t);
                 if (cause == null) {
-                    p.println(t);
+                    String escapedCause = StringEscapeUtils.escapeHtml(t.toString());
+                    p.println(escapedCause);
                     StackTraceElement[] trace = t.getStackTrace();
                     for (StackTraceElement element : trace) {
                         String className = element.getClassName();
@@ -1237,7 +1238,8 @@ public static Date roundToMinute(Date toRound) {
                     }
                     
                 } else {
-                    p.write(t.toString());
+                    String escapedCause = StringEscapeUtils.escapeHtml(t.toString());
+                    p.println(escapedCause);
                     p.write("\n");
                 }
                 t = cause;
