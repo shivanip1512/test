@@ -69,7 +69,7 @@ private:
     void CloseCapBank();
     void ConfirmOpen();
     void ConfirmClose();
-    void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, LONG bankId);
+    void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG bankId);
     void SendAllData();
     void ReturnCapToOriginalFeeder();
     void ResetDailyOperations();

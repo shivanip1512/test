@@ -132,8 +132,13 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
     else if (secondsFrom1901 >= _lastindividualdbreloadtime.seconds() + _DB_RELOAD_WAIT)
     {
         checkDBReloadList();
-    } 
-    
+    }
+    else if (_2wayFlagUpdate) 
+    {
+        dumpAllDynamicData();
+        _2wayFlagUpdate = FALSE;
+    }
+
     if( _reloadfromamfmsystemflag )
     {
         checkAMFMSystemForUpdates();
@@ -831,6 +836,7 @@ void CtiCCSubstationBusStore::reset()
         }
 
         _isvalid = TRUE;
+        _2wayFlagUpdate = FALSE;
     }
     catch (...)
     {
@@ -2168,6 +2174,18 @@ void CtiCCSubstationBusStore::setWasSubBusDeletedFlag(BOOL wasDeleted)
     _wassubbusdeletedflag = wasDeleted;
 }
 
+BOOL CtiCCSubstationBusStore::get2wayFlagUpdate()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    return _2wayFlagUpdate;
+}
+
+void CtiCCSubstationBusStore::set2wayFlagUpdate(BOOL flag)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    _2wayFlagUpdate = flag;
+}
+
 /*---------------------------------------------------------------------------
     verifySubBusAndFeedersStates
 
@@ -2235,6 +2253,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending", "cap control"));
                             }
                             else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
                             {
@@ -2243,6 +2262,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending", "cap control"));
                             }
                         }
                     }
@@ -2273,6 +2293,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled", "cap control"));
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
                         {
@@ -2281,6 +2302,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled", "cap control"));
                         }
                     }
                 }
@@ -2336,6 +2358,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled", "cap control"));
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
                         {
@@ -2344,6 +2367,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled", "cap control"));
                         }
                     }
                 }
@@ -4048,7 +4072,9 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCCapBankTable["prevverificationcontrolstatus"]
                     << dynamicCCCapBankTable["verificationcontrolindex"]
                     << dynamicCCCapBankTable["additionalflags"]
-                    << dynamicCCCapBankTable["currentdailyoperations"];
+                    << dynamicCCCapBankTable["currentdailyoperations"]
+                    << dynamicCCCapBankTable["twowaycbcstate"]
+                    << dynamicCCCapBankTable["twowaycbcstatetime"];
 
 
                     selector.from(dynamicCCCapBankTable);
@@ -5259,10 +5285,19 @@ void CtiCCSubstationBusStore::checkDBReloadList()
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
         {
 
-            while (!_reloadList.empty())
+            if (_reloadList.empty() && _2wayFlagUpdate) 
             {
                 dumpAllDynamicData();
-        
+                _2wayFlagUpdate = FALSE;
+            }
+            else if (!_reloadList.empty()) 
+            {
+                dumpAllDynamicData();
+                _2wayFlagUpdate = FALSE;
+            }
+            while (!_reloadList.empty())
+            {
+
                 CC_DBRELOAD_INFO reloadTemp = _reloadList.front();
 
                 switch (reloadTemp.objecttype)

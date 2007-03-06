@@ -88,6 +88,8 @@ public:
     void setReloadFromAMFMSystemFlag(BOOL reload);
     BOOL getWasSubBusDeletedFlag();
     void setWasSubBusDeletedFlag(BOOL wasDeleted);
+    BOOL get2wayFlagUpdate();
+    void set2wayFlagUpdate(BOOL flag);
 
     void verifySubBusAndFeedersStates();
     void resetDailyOperations();
@@ -230,6 +232,7 @@ private:
     BOOL _wassubbusdeletedflag;
     CtiTime _lastdbreloadtime;
     CtiTime _lastindividualdbreloadtime;
+    BOOL _2wayFlagUpdate;
 
     LONG _linkStatusPointId;
     BOOL _linkStatusFlag;

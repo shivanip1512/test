@@ -3413,6 +3413,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                             returnBoolean = FALSE;
                         }
                         found = TRUE;
+                        setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                     }
                 }
             }

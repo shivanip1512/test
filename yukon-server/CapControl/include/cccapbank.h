@@ -83,6 +83,8 @@ public:
     BOOL getRetryCloseFailedFlag() const;
     LONG getUDPPort() const;
     const string& getIpAddress() const;
+    LONG getReportedCBCState() const;
+    const CtiTime& getReportedCBCStateTime() const;
 
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
@@ -130,8 +132,10 @@ public:
     CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
     CtiCCCapBank& setRetryOpenFailedFlag(BOOL retryOpenFailedFlag);
     CtiCCCapBank& setRetryCloseFailedFlag(BOOL retryCloseFailedFlag);
-    CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value);
-    CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value);
+    CtiCCCapBank& setUDPPort(LONG value);
+    CtiCCCapBank& setIpAddress(ULONG value);
+    CtiCCCapBank& setReportedCBCState(LONG value);
+    CtiCCCapBank& setReportedCBCStateTime(const CtiTime& timestamp);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -237,7 +241,8 @@ private:
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;
     LONG _udpPortNumber;
-
+    LONG _reportedCBCState;
+    CtiTime _reportedCBCStateTime;
     
     //don't stream
     BOOL _insertDynamicDataFlag;

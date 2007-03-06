@@ -171,6 +171,16 @@ LONG CtiCCCapBank::getUDPPort() const
     return _udpPortNumber;
 }
 
+LONG CtiCCCapBank::getReportedCBCState() const
+{
+    return _reportedCBCState;
+}
+
+const CtiTime& CtiCCCapBank::getReportedCBCStateTime() const
+{
+    return _reportedCBCStateTime;
+}
+
 
 /*---------------------------------------------------------------------------
     getDisableFlag
@@ -902,6 +912,29 @@ CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
     return *this;
 
 }
+CtiCCCapBank& CtiCCCapBank::setReportedCBCState(LONG value)
+{
+    if (_reportedCBCState != value)
+    {
+        _dirty = TRUE;
+    }
+    _reportedCBCState = value;
+
+    return *this;
+
+}
+
+CtiCCCapBank& CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
+{
+    if (_reportedCBCStateTime != timestamp)
+    {
+        _dirty = TRUE;
+    }
+    _reportedCBCStateTime = timestamp;
+
+    return *this;
+
+}
 
 
 BOOL CtiCCCapBank::updateVerificationState(void)
@@ -1446,7 +1479,8 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
 
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
-
+        _reportedCBCState = right._reportedCBCState;
+        _reportedCBCStateTime = right._reportedCBCStateTime;
     }
     return *this;
 }
@@ -1528,7 +1562,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
     setIpAddress(0);
     setUDPPort(0);
-    
+    setReportedCBCState(-1);
+    setReportedCBCStateTime(gInvalidCtiTime);
 
     _insertDynamicDataFlag = TRUE;
     /*{
@@ -1563,6 +1598,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _retryCloseFailedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
+    rdr["twowaycbcstate"] >> _reportedCBCState;
+    rdr["twowaycbcstatetime"] >> _reportedCBCStateTime;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;
@@ -1665,7 +1702,9 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
             << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
             << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags[0])
-            << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations );
+            << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
+            << dynamicCCCapBankTable["twowaycbcstate"].assign(_reportedCBCState)
+            << dynamicCCCapBankTable["twowaycbcstatetime"].assign( toRWDBDT((CtiTime)_reportedCBCStateTime) );
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << updater.asString().c_str() << endl;
@@ -1727,7 +1766,9 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << _prevVerificationControlStatus
             << _vCtrlIndex
             << string(*addFlags, 20)
-            << _currentdailyoperations;
+            << _currentdailyoperations
+            << _reportedCBCState
+            << _reportedCBCStateTime;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

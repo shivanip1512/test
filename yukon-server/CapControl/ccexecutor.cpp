@@ -1068,7 +1068,10 @@ void CtiCCCommandExecutor::OpenCapBank()
                             text += tempchar1;
                             pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
-                            DOUBLE kvarBefore, kvarAfter, kvarChange;
+                            DOUBLE kvarBefore = 0;
+                            DOUBLE kvarAfter = 0;
+                            DOUBLE kvarChange = 0;
+
                             if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                             {
@@ -1091,8 +1094,11 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress()));
                             }
+                            INT seqId = CCEventSeqIdGen();
+                            currentSubstationBus->setEventSequence(seqId);
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress()));
+
                         }
                         else
                         {
@@ -1160,7 +1166,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                         }
                         else if (confirmImmediately)
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                         }
                         break;
                     }
@@ -1314,12 +1320,16 @@ void CtiCCCommandExecutor::CloseCapBank()
                             text += tempchar1;
                             pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
+                            DOUBLE kvarBefore = 0;
+                            DOUBLE kvarAfter = 0;
+                            DOUBLE kvarChange = 0;
+
                             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
                                 (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                             {
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                DOUBLE kvarBefore, kvarAfter, kvarChange;
+
                                 if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                     !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                                 {
@@ -1336,12 +1346,11 @@ void CtiCCCommandExecutor::CloseCapBank()
                             
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
-
-
-                                INT seqId = CCEventSeqIdGen();
-                                currentSubstationBus->setEventSequence(seqId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress()));
                             }
+
+                            INT seqId = CCEventSeqIdGen();
+                            currentSubstationBus->setEventSequence(seqId);
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress()));
                         }
                         else
                         {
@@ -1410,7 +1419,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                         }
                         else if (confirmImmediately)
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                         }
                         break;
                     }
@@ -1821,8 +1830,11 @@ void CtiCCCommandExecutor::Flip7010Device()
                                     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                     currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                                    ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                                 }
+
+                                INT seqId = CCEventSeqIdGen();
+                                currentSubstationBus->setEventSequence(seqId);
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
                             else
                             {
@@ -1890,7 +1902,7 @@ void CtiCCCommandExecutor::Flip7010Device()
                             }
                             else if (confirmImmediately)
                             {
-                                doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
+                                doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                             }
                             break;
                         }
@@ -2287,12 +2299,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
-
-
-                                INT seqId = CCEventSeqIdGen();
-                                currentSubstationBus->setEventSequence(seqId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
+                            INT seqId = CCEventSeqIdGen();
+                            currentSubstationBus->setEventSequence(seqId);
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+
                         }
                         else
                         {
@@ -2390,7 +2401,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         }
                         else
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                         }
                         break;
                     }
@@ -2550,11 +2561,11 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
-
-                                INT seqId = CCEventSeqIdGen();
-                                currentSubstationBus->setEventSequence(seqId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
+                            INT seqId = CCEventSeqIdGen();
+                            currentSubstationBus->setEventSequence(seqId);
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+
                         }
                         else
                         {
@@ -2656,7 +2667,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                         }
                         else
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                         }
                         break;
                     }
@@ -2715,7 +2726,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     doConfirmImmediately
 ---------------------------------------------------------------------------*/    
 
-void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, LONG bankId)
+void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG bankId)
 {
     CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[currentSubstationBus->getLastFeederControlledPosition()];
@@ -2737,6 +2748,27 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                     {
                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+
+                        DOUBLE kvarBefore = 0;
+                        DOUBLE kvarAfter = 0;
+                        DOUBLE kvarChange = 0;
+
+                        if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                            !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                        {
+                            kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
+                            kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
+                            kvarChange = 0;
+                        }
+                        else
+                        {
+                            kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
+                            kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
+                            kvarChange = 0;
+                        }
+
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
+
                     }
                     else
                     {
@@ -2752,6 +2784,26 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                     {
                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+
+                        DOUBLE kvarBefore = 0;
+                        DOUBLE kvarAfter = 0;
+                        DOUBLE kvarChange = 0;
+
+                        if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                            !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                        {
+                            kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
+                            kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
+                            kvarChange = 0;
+                        }
+                        else
+                        {
+                            kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
+                            kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
+                            kvarChange = 0;
+                        }
+
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
                     }
                     else
                     {
@@ -2819,6 +2871,26 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                             {
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+
+                                DOUBLE kvarBefore = 0;
+                                DOUBLE kvarAfter = 0;
+                                DOUBLE kvarChange = 0;
+
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                {
+                                    kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
+                                    kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
+                                    kvarChange = 0;
+                                }
+                                else
+                                {
+                                    kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
+                                    kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
+                                    kvarChange = 0;
+                                }
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
                             }
                             else
                             {
@@ -2835,6 +2907,26 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                             {
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+
+                                DOUBLE kvarBefore = 0;
+                                DOUBLE kvarAfter = 0;
+                                DOUBLE kvarChange = 0;
+
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                {
+                                    kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
+                                    kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
+                                    kvarChange = 0;
+                                }
+                                else
+                                {
+                                    kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
+                                    kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
+                                    kvarChange = 0;
+                                }
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
                             }
                             else
                             {

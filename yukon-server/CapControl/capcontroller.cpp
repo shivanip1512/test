@@ -1648,6 +1648,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                 {
                     msgMulti = (CtiMultiMsg *)message;
                     CtiMultiMsg_vec& temp = msgMulti->getData( );
+                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - ParseMessage MsgMulti has "<< temp.size() <<" entries."<< endl;
@@ -2160,6 +2161,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 currentCapBank->getTagsControlStatus() != (LONG)tags )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                store->set2wayFlagUpdate(TRUE);
                             }
                             //JULIE: TXU fix for status change time setting to old date on disabled banks.
                             if (!currentCapBank->getDisableFlag()) 
@@ -2211,6 +2213,15 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
                             {   
+                                if (twoWayPts->getCapacitorBankStateId() == pointID) 
+                                {
+                                    if (currentCapBank->getReportedCBCState() != value) 
+                                    {
+                                        currentCapBank->setReportedCBCStateTime(timestamp);
+                                    }
+                                    currentCapBank->setReportedCBCState(twoWayPts->getCapacitorBankState());
+                                }
+                                store->set2wayFlagUpdate(TRUE);
                                 if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2219,11 +2230,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             }
                             else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value))
                             {
-                                if (twoWayPts->getUDPIpAddressId() > 0) 
+                                if (twoWayPts->getUDPIpAddressId() == 0) 
                                 {
                                     currentCapBank->setIpAddress(twoWayPts->getUDPIpAddress());
                                 }
-                                if (twoWayPts->getUDPPortNumberId() > 0) 
+                                if (twoWayPts->getUDPPortNumberId() == 0) 
                                 {
                                     currentCapBank->setUDPPort(twoWayPts->getUDPPortNumber());
                                 }
