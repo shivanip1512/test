@@ -1,5 +1,12 @@
 package com.cannontech.database.db.device;
 
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.db.pao.YukonPAObject;
+
 /**
  * This type was created in VisualAge.
  */
@@ -138,64 +145,26 @@ public void update() throws java.sql.SQLException
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-/**
- *
- * This method returns the names of the CCUs or RTUs that have a shared physical address
- * on a given dedicated comm channel, or it will return null if the address is unique
- */
-public static String[] isAddressUnique(int address, Integer excludedPAOId, int portID ) throws java.sql.SQLException
-{
-		
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-											com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    /**
+     * This method returns the names of the CCUs or RTUs that have a shared
+     * physical address on a given dedicated comm channel
+     */
+    @SuppressWarnings("unchecked")
+    public static String[] isAddressUnique(int address, Integer excludedPAOId, Integer portID) {
 
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	java.util.Vector devices = new java.util.Vector(5);
+        JdbcOperations ops = JdbcTemplateHelper.getYukonTemplate();
+        
+        String sql = "select y.paoname " + "from " + YukonPAObject.TABLE_NAME + " y, " + TABLE_NAME
+                + " d, " + "DeviceDirectCommSettings p " + "where y.paobjectid= d.deviceid "
+                + "and d.address=? and y.paobjectid= p.deviceid "
+                + (portID != null ? " and p.portid=" + portID : "")
+                + (excludedPAOId != null ? " and y.paobjectid <> " + excludedPAOId : "");
 
-	String sql = 
-			"select y.paoname " +
-			"from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " + 
-			TABLE_NAME + " d, " + "DeviceDirectCommSettings p " +
-			"where y.paobjectid= d.deviceid " +
-			"and d.address= " + address + " and y.paobjectid= p.deviceid and p.portid= " + portID + 
-			(excludedPAOId != null 
-					? " and y.paobjectid <> " + excludedPAOId
-					: "");
-	try
-	{		
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery( sql.toString() );
+        List<String> devices = ops.queryForList(sql, new Object[]{address}, String.class);
+        
+        return devices.toArray(new String[]{});
 
-		while( rset.next() )
-			devices.add( rset.getString(1) );
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{			
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
-
-	if( devices.size() <= 0 )
-		return null;
-	else
-	{
-		String[] s = new String[devices.size()];
-		return (String[])devices.toArray(s);
-	}
-
-}
+    }
 
 
 }

@@ -4,7 +4,6 @@ package com.cannontech.core.dao.impl;
  * Implementation of PaoDao Creation date: (7/1/2006 9:40:33 AM)
  * @author: alauinger
  */
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,9 +15,10 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.StopWatch;
-import com.cannontech.core.dao.*;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -243,9 +243,10 @@ public final class PaoDaoImpl implements PaoDao {
      * @param address
      * @return ArrayList<LiteYukonPaobject>
      */
-    public List getLiteYukonPaobjectsByAddress(int address)
+    @SuppressWarnings("unchecked")
+    public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address)
     {
-        List liteYukonPaobects = new ArrayList(); 
+        List<LiteYukonPAObject> liteYukonPaobects = new ArrayList(); 
         try {
             String sqlString = 
                 "SELECT pao.PAObjectID, pao.Category, pao.PAOName, " +

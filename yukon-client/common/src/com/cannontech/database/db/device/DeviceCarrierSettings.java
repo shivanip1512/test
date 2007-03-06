@@ -1,5 +1,12 @@
 package com.cannontech.database.db.device;
 
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.db.pao.YukonPAObject;
+
 /**
  * This type was created in VisualAge.
  */
@@ -75,67 +82,28 @@ public void initialize( Integer deviceID, Integer address ) {
 	setDeviceID( deviceID );
 	setAddress( address );
 }
-/**
- * This method was created in VisualAge.
- * @return String[]
- *
- * This method returns the name of the PAOBjects that have the same address,
- *  or it will return null if the address is unique
- */
-public static String[] isAddressUnique(int address, Integer excludedPAOId ) throws java.sql.SQLException
-{
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-											com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	java.util.Vector devices = new java.util.Vector(5);
+    /**
+     * Method to get a list of names of paobjects that have the given address
+     * @param address - Address in question
+     * @param excludedPAOId - Id of pao to ignore (if any)
+     * @return Array of pao names
+     */
+    @SuppressWarnings("unchecked")
+    public static String[] isAddressUnique(int address, Integer excludedPAOId) {
 
-	String sql = 
-			"select y.paoname " +
-			"from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " + 
-			TABLE_NAME + " d " +
-			"where y.paobjectid=d.deviceid " +
-			"and d.address= " + address +
-			(excludedPAOId != null 
-					? " and y.paobjectid <> " + excludedPAOId
-					: "");
+        JdbcOperations ops = JdbcTemplateHelper.getYukonTemplate();
 
-	try
-	{		
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery( sql.toString() );
+        String sql = "select y.paoname from " + YukonPAObject.TABLE_NAME + " y, " + TABLE_NAME
+                + " d " + "where y.paobjectid=d.deviceid " + "and d.address=?"
+                + (excludedPAOId != null ? " and y.paobjectid <> " + excludedPAOId : "");
 
-		while( rset.next() )
-			devices.add( rset.getString(1) );
+        List<String> devices = ops.queryForList(sql, new Object[] { address }, String.class);
 
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{			
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
+        return devices.toArray(new String[] {});
 
-	if( devices.size() <= 0 )
-		return null;
-	else
-	{
-		String[] s = new String[devices.size()];
-		return (String[])devices.toArray(s);
-	}
-
-}
+    }
+    
 /**
  * retrieve method comment.
  */

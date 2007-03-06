@@ -3,7 +3,6 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PaoDao {
     
@@ -79,6 +78,6 @@ public interface PaoDao {
 
     public int countLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
-    public List getLiteYukonPaobjectsByAddress(int address);    
+    public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address);    
 
 }
