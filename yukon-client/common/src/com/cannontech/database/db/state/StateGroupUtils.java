@@ -26,6 +26,8 @@ public final class StateGroupUtils {
 
     public static final int STATEGROUP_ANALOG = -1;
 
+    public static final int STATEGROUP_TWO_STATE_ACTIVE = -8;
+
     // all StateGroup types
     public static final String GROUP_TYPE_STATUS = "Status";
 

@@ -99,3 +99,9 @@ go
 insert into sequencenumber values (1,'DeviceReadLog');
 insert into sequencenumber values (1,'DeviceReadRequestLog');
 insert into sequencenumber values (1,'DeviceReadJobLog');
+
+/********** Add new stategroup and states for loadprogram status    ************/
+insert into stategroup values (-8, 'TwoStateActive', 'Status')
+insert into state values (-8, 0, 'Active', 0, 6, 0)
+insert into state values (-8, 1, 'Inactive', 2, 6, 0)
+/**********************/
