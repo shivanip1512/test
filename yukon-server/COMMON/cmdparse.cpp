@@ -682,13 +682,13 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 //
                 //  "frozen (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
 
-                CtiTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(temp);
 
                 cmdtok();  //  frozen
 
-                temp = cmdtok();
+                temp = cmdtok();  //  frozen
 
-                if( temp.compareTo("channel") )
+                if( !temp.compareTo("channel") )
                 {
                     cmdtok();  //  channel number;  this is parsed above, and we get it from _cmd["channel"]
                 }
@@ -697,7 +697,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
                 if( !(temp = cmdtok()).empty() )
                 {
-                    _cmd["frozen_date_end"] = cmdtok();
+                    _cmd["frozen_date_end"] = temp;
                 }
             }
         }
