@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2007/01/29 23:41:58 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2007/03/06 19:35:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,8 @@ private:
 
 protected:
 
-    string printable_time(unsigned long seconds);
+    string printable_time(unsigned long seconds) const;
+    string printable_date(unsigned long seconds) const;
 
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
@@ -55,10 +56,12 @@ protected:
     {
         ValueType_Voltage,
         ValueType_Demand,
+        ValueType_DynamicDemand,
         ValueType_TOUDemand,
         ValueType_TOUFrozenDemand,
         ValueType_LoadProfile_Voltage,
         ValueType_LoadProfile_Demand,
+        ValueType_LoadProfile_DynamicDemand,
         ValueType_Accumulator,
         ValueType_FrozenAccumulator,
         ValueType_IED,
@@ -219,8 +222,12 @@ protected:
     {
         unsigned long time;
         unsigned long time_end;
+
         unsigned offset;
         unsigned channel;
+
+        long in_progress;
+
         bool retry;
         bool failed;
     } _llpInterest;
@@ -231,6 +238,7 @@ protected:
         int channel;
         int period;
         int command;
+        bool in_progress;
     } _llpPeakInterest;
 
     //  this is more extensible than a pair
@@ -255,7 +263,7 @@ protected:
     bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=0UL, double default_multiplier=1.0, int tags=0);
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
-    virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
+    virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len) = 0;
 
     virtual ConfigPartsList getPartsList();
 
