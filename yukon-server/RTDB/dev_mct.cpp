@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2007/01/29 23:38:34 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2007/03/06 19:20:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -893,6 +893,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_Holiday:
         case Emetcon::PutConfig_TOUEnable:
         case Emetcon::PutConfig_TOUDisable:
+        case Emetcon::PutConfig_DailyReadInterest:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -3509,6 +3510,37 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
         switch( InMessage->Sequence )
         {
+            case Emetcon::PutConfig_Multiplier:
+            case Emetcon::PutConfig_Multiplier2:
+            case Emetcon::PutConfig_Multiplier3:                resultString = getName() + " / Multiplier sent"; break;
+
+            case Emetcon::PutConfig_GroupAddress_Bronze:
+            case Emetcon::PutConfig_GroupAddress_GoldSilver:
+            case Emetcon::PutConfig_GroupAddress_Lead:
+            case Emetcon::PutConfig_UniqueAddress:              resultString = getName() + " / Address reconfiguration sent";   break;
+
+            case Emetcon::PutConfig_GroupAddressEnable:         resultString = getName() + " / Group addressing enable sent";   break;
+            case Emetcon::PutConfig_GroupAddressInhibit:        resultString = getName() + " / Group addressing inhibit sent";  break;
+
+            case Emetcon::PutConfig_LoadProfileInterest:        resultString = getName() + " / Load profile period of interest sent";   break;
+            case Emetcon::PutConfig_LoadProfileReportPeriod:    resultString = getName() + " / Load profile reporting period sent";     break;
+            case Emetcon::PutConfig_DailyReadInterest:          resultString = getName() + " / Daily read period of interest sent";     break;
+
+            case Emetcon::PutConfig_Raw:                        resultString = getName() + " / Raw bytes sent";         break;
+            case Emetcon::PutConfig_TSync:                      resultString = getName() + " / Time sync sent";         break;
+            case Emetcon::PutConfig_Intervals:                  resultString = getName() + " / Intervals sent";         break;
+            case Emetcon::PutConfig_DemandInterval:             resultString = getName() + " / Demand interval sent";   break;
+            case Emetcon::PutConfig_LoadProfileInterval:        resultString = getName() + " / Load profile interval sent"; break;
+            case Emetcon::PutConfig_ChannelSetup:               resultString = getName() + " / Channel config sent";    break;
+            case Emetcon::PutConfig_IEDClass:                   resultString = getName() + " / IED class info sent";    break;
+            case Emetcon::PutConfig_IEDScan:                    resultString = getName() + " / IED scan rate sent";     break;
+            case Emetcon::PutConfig_Disconnect:                 resultString = getName() + " / Disconnect config sent"; break;
+            case Emetcon::PutConfig_TOU:                        resultString = getName() + " / TOU config sent";        break;
+            case Emetcon::PutConfig_TimeZoneOffset:             resultString = getName() + " / Time zone sent";         break;
+            case Emetcon::PutConfig_Holiday:                    resultString = getName() + " / Holiday dates sent";     break;
+            case Emetcon::PutConfig_TOUEnable:                  resultString = getName() + " / TOU enable sent";        break;
+            case Emetcon::PutConfig_TOUDisable:                 resultString = getName() + " / TOU disable sent";       break;
+
             case Emetcon::PutConfig_Install:
             {
                 int sspec;
