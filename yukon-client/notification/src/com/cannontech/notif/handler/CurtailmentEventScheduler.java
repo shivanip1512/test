@@ -82,7 +82,11 @@ public class CurtailmentEventScheduler extends EventScheduler {
             break;
             
         case ADJUSTING:
+            if (!attemptDeleteNotification(event, NotificationReason.STOPPING)) {
+                CTILogger.warn("Stop message for initial event was not stopped on adjust: event=" + event);
+            }
             createNotification(participants, NotificationReason.ADJUSTING, now);
+            createNotification(participants, NotificationReason.STOPPING, event.getStopTime());
             break;
         }
 
