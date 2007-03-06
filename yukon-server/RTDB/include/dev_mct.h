@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/12/27 05:43:42 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2007/03/06 19:19:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ protected:
     string _configName;
 
     bool          _lpIntervalSent;
-    CtiTime        _lastLPRequest;
+    CtiTime       _lastLPRequest;
     unsigned long _nextLPScanTime;
 
     unsigned long _disconnectAddress;
@@ -127,6 +127,9 @@ protected:
             return retval;
         }
     };
+
+    typedef set< DynamicPaoAddressing > DynamicPaoAddressing_t;
+    typedef map< int, DynamicPaoAddressing_t > DynamicPaoFunctionAddressing_t;
 
     int _lastSequenceNumber;
     MessageReadDataSet_t _expectedReadData;
@@ -285,9 +288,6 @@ public:
 
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
     static  INT verifyAlphaBuffer( DSTRUCT *DSt );
-
-    typedef set< DynamicPaoAddressing > DynamicPaoAddressing_t;
-    typedef map< int, DynamicPaoAddressing_t > DynamicPaoFunctionAddressing_t;
 };
 
 #endif // #ifndef __DEV_MCT_H__
