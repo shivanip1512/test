@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2007/02/09 20:00:48 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2007/03/06 19:40:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,21 @@ private:
 
     static DynamicPaoAddressing_t         initDynPaoAddressing();
     static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
+
+    struct daily_read_interest_t
+    {
+        unsigned long single_day;
+
+        unsigned long multi_day_start;
+        unsigned long multi_day_end;
+
+        long in_progress;
+
+        unsigned channel;
+
+        bool retry;
+        bool failed;
+    } _daily_read_interest;
 
 protected:
 
@@ -167,6 +182,18 @@ protected:
 
         FuncRead_MReadLen         =    9,
 
+        FuncRead_SingleDayDailyReportCh1Pos = 0x1d,
+        FuncRead_SingleDayDailyReportCh1Len =   13,
+
+        FuncRead_SingleDayDailyReportCh2Pos = 0x1e,
+        FuncRead_SingleDayDailyReportCh2Len =   11,
+
+        FuncRead_SingleDayDailyReportCh3Pos = 0x1f,
+        FuncRead_SingleDayDailyReportCh3Len =    9,
+
+        FuncRead_MultiDayDailyReportingBasePos = 0x20,
+        FuncRead_MultiDayDailyReportingLen     =   13,
+
         FuncRead_FrozenMReadPos   = 0x91,
         FuncRead_FrozenMReadLen   =   10,
 
@@ -200,6 +227,9 @@ protected:
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,
 
+        FuncWrite_DailyReadInterestPos = 0x50,
+        FuncWrite_DailyReadInterestLen =    3,
+
         FuncWrite_SetAddressPos        = 0xf1,
         FuncWrite_SetAddressLen        =    4,
 
@@ -216,8 +246,8 @@ protected:
     enum PointOffsets
     {
         PointOffset_Voltage       =    4,
-        PointOffset_MaxVoltage    =   14,
-        PointOffset_MinVoltage    =   15,
+        PointOffset_VoltageMax    =   14,
+        PointOffset_VoltageMin    =   15,
 
         PointOffset_Analog_Outage =  100,
     };
@@ -237,18 +267,19 @@ protected:
 
     void returnErrorMessage( int retval, const CtiOutMessage *om, list< CtiMessage* > &retList, const string &error ) const;
 
-    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
+    virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
+    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
 
     CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
-    int executePutConfigDemandLP  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    int executePutConfigDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    int executePutConfigOptions   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    int executePutConfigCentron   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    int executePutConfigDemandLP  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
+    int executePutConfigDisconnect( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
+    int executePutConfigOptions   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
+    int executePutConfigCentron   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
 
-    virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
+    virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
 
     INT decodeGetValueKWH                   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueDemand                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -256,6 +287,7 @@ protected:
     INT decodeGetValueOutage                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueFreezeCounter         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueLoadProfilePeakReport ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueDailyRead             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigCentron              ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
