@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/12/27 01:43:52 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2007/03/06 19:38:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,7 +109,9 @@ private:
         IED_Mask               = 0xF0,
     };
 
-    long getLoadProfileInterval( unsigned channel );
+    long       getLoadProfileInterval( unsigned channel );
+    point_info getLoadProfileData    ( unsigned channel, unsigned char *buf, unsigned len );
+
     long _lastConfigRequest;
 
     void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
