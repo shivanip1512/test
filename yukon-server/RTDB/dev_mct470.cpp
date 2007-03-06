@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2007/02/13 19:09:42 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2007/03/06 19:39:20 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,8 +41,8 @@ using namespace Cti::Config;
 const CtiDeviceMCT470::CommandSet      CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
 
-const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT470::_dynPaoAddressing     = CtiDeviceMCT470::initDynPaoAddressing();
-const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::_dynPaoFuncAddressing = CtiDeviceMCT470::initDynPaoFuncAddressing();
+const CtiDeviceMCT470::DynamicPaoAddressing_t         CtiDeviceMCT470::_dynPaoAddressing     = CtiDeviceMCT470::initDynPaoAddressing();
+const CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::_dynPaoFuncAddressing = CtiDeviceMCT470::initDynPaoFuncAddressing();
 
 CtiDeviceMCT470::CtiDeviceMCT470( ) :
     _lastConfigRequest(0)
@@ -150,7 +150,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     return cs;
 }
 
-CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddressing()
+CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddressing()
 {
     DynamicPaoAddressing_t addressSet;
     DynamicPaoFunctionAddressing_t functionSet;
@@ -255,7 +255,7 @@ bool CtiDeviceMCT470::getOperation( const UINT &cmd, BSTRUCT &bst ) const
     return found;
 }
 
-CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
+CtiDeviceMCT470::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
 {
     DynamicPaoAddressing_t addressSet;
 
@@ -696,6 +696,19 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
     }
 
     return retval;
+}
+
+
+CtiDeviceMCT470::point_info CtiDeviceMCT470::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
+{
+    point_info pi;
+
+    pi = getData(buf, len, ValueType_LoadProfile_Demand);
+
+    //  adjust for the demand interval
+    pi.value *= 3600 / getLoadProfileInterval(channel);
+
+    return pi;
 }
 
 
