@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2007/03/07 17:27:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,7 +101,6 @@ extern CtiLocalConnect PorterToPil;
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
 INT RemotePort(OUTMESS *&OutMessage);
-INT PorterControlCode(OUTMESS *&OutMessage);
 INT ValidateRemote(OUTMESS *&OutMessage);
 INT ValidatePort(OUTMESS *&OutMessage);
 INT ValidateEmetconMessage(OUTMESS *&OutMessage);
@@ -403,12 +402,6 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
     INT status = NORMAL;
 
     if((status = ValidateOutMessage(OutMessage)) != NORMAL)
-    {
-        return status;
-    }
-
-    /* check if this is a global control message */
-    if((status = PorterControlCode(OutMessage)) != NORMAL)
     {
         return status;
     }
@@ -839,46 +832,6 @@ INT RemotePort(OUTMESS *&OutMessage)
     }
     /* Leave the memory intact */
     return NORMAL;
-}
-
-INT PorterControlCode(OUTMESS *&OutMessage)
-{
-    INT i = 0;
-    INT status = NORMAL;
-
-    if((OutMessage->EventCode & COMMANDCODE))
-    {
-        switch(OutMessage->EventCode & COMMANDMASK)
-        {
-        case STOPALL:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "Shutdown message received... Porter shutting down" << endl;
-                }
-                /* put the mother of all queue flushes here */
-                CTISleep (2000L);
-                CTIExit (EXIT_PROCESS, 0);
-            }
-        case REMOTECONTROL:
-            {
-                if((i = RemoteControl (OutMessage)) != NORMAL)
-                {
-                    SendError (OutMessage, (USHORT)i);
-                    return i;
-                }
-
-                delete (OutMessage);
-                OutMessage = 0;
-
-                // I must cause my caller (PorterEntryPoint) to return in this case,
-                // even though there is no real error.
-                status = !NORMAL;
-            }
-        }
-    }
-
-    return status;
 }
 
 /*----------------------------------------------------------------------------*
