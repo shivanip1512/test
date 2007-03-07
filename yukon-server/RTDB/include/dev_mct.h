@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2007/03/06 19:19:01 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2007/03/07 15:35:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@ protected:
     };
 
     virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
-    virtual bool hasOperation( const UINT &cmdType ) const;
 
     enum WireConfig
     {

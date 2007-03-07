@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.111 $
-* DATE         :  $Date: 2007/03/06 19:20:09 $
+* REVISION     :  $Revision: 1.112 $
+* DATE         :  $Date: 2007/03/07 15:35:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1371,7 +1371,7 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         {
             //  outmess needs to be filled in by another function, just check if it's there
             function = Emetcon::Scan_LoadProfile;
-            found = hasOperation(Emetcon::Scan_LoadProfile);
+            found = getOperation(Emetcon::Scan_LoadProfile, OutMessage->Buffer.BSt);
 
             if( found )
             {
@@ -3945,24 +3945,6 @@ bool CtiDeviceMCT::getOperation( const UINT &cmd, BSTRUCT &bst ) const
       bst.IO        = itr->io;
 
       found = true;
-   }
-
-   return found;
-}
-
-
-bool CtiDeviceMCT::hasOperation( const UINT &cmd ) const
-{
-   bool found = false;
-
-   if( !_commandStore.empty() )
-   {
-       CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
-
-       if( itr != _commandStore.end() )
-       {
-           found = true;
-       }
    }
 
    return found;
