@@ -15,7 +15,9 @@ INCLPATHS+= \
 .PATH.cpp = .;$(R_PROCLOG)
 
 
-PROCLIBS=$(COMPILEBASE)\lib\ctibase.lib
+PROCLIBS=
+$(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 
 
 ALL:            plog.exe plogtest.exe
@@ -39,7 +41,7 @@ plogtest.exe:     test.obj Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-test.obj -link	$(LIBS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\proclog.lib $(COMPILEBASE)\lib\ctibase.lib
+test.obj -link	$(LIBS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\proclog.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
