@@ -8,12 +8,14 @@
     </h2>
     <hr>
     <table cellpadding="5">
-        <th>
-            Index Name
-        </th>
-        <th>
-            Date Created
-        </th>
+    	<tr>
+	        <th>
+	            Index Name
+	        </th>
+	        <th>
+	            Date Created
+	        </th>
+	    </tr>
         <c:forEach var="index" items="${indexList}">
             <tr>
                 <td>

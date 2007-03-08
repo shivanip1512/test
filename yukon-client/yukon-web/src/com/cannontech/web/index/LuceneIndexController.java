@@ -37,7 +37,7 @@ public class LuceneIndexController extends MultiActionController {
 
     public ModelAndView percentDone(HttpServletRequest request, HttpServletResponse response) {
 
-        ModelAndView mav = new ModelAndView("results");
+        ModelAndView mav = new ModelAndView("json");
 
         final String index = request.getParameter("index");
 
