@@ -405,9 +405,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp peak hour channel 3 10-15-2003 15
     boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
 
-    //  getvalue frozen 12/12/2007 12/27/2007
-    //  getvalue frozen channel n 12/12/2007
-    boost::regex  re_frozen("frozen (channel " + str_num + " )?" + str_date + " (" + str_date + ")?");
+    //  getvalue daily read 12/12/2007 12/27/2007
+    //  getvalue daily read channel n 12/12/2007
+    boost::regex  re_dailyread("daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?");
 
     boost::regex  re_outage("outage " + str_num);
 
@@ -673,31 +673,34 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         if(CmdStr.contains(" frozen"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_FROZEN;
-
-            if( !(temp = CmdStr.match(re_frozen)).empty() )
+        }
+        if(CmdStr.contains(" daily"))
+        {
+            if( !(temp = CmdStr.match(re_dailyread)).empty() )
             {
-                //  getvalue frozen 12/12/2007 12/27/2007
-                //  getvalue frozen 12/12/2007
-                //  getvalue frozen channel n 12/12/2007
+                //  getvalue daily read 12/12/2007 12/27/2007
+                //  getvalue daily read 12/12/2007
+                //  getvalue daily read channel n 12/12/2007
                 //
-                //  "frozen (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
+                //  "daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
 
                 CtiTokenizer cmdtok(temp);
 
-                cmdtok();  //  frozen
+                cmdtok();  //  daily
+                cmdtok();  //  read
 
-                temp = cmdtok();  //  frozen
+                temp = cmdtok();
 
                 if( !temp.compareTo("channel") )
                 {
                     cmdtok();  //  channel number;  this is parsed above, and we get it from _cmd["channel"]
                 }
 
-                _cmd["frozen_date_begin"] = cmdtok();
+                _cmd["daily_read_date_begin"] = cmdtok();
 
                 if( !(temp = cmdtok()).empty() )
                 {
-                    _cmd["frozen_date_end"] = temp;
+                    _cmd["daily_read_date_end"] = temp;
                 }
             }
         }
