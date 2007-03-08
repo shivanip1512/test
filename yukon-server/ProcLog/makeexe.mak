@@ -15,7 +15,7 @@ INCLPATHS+= \
 .PATH.cpp = .;$(R_PROCLOG)
 
 
-PROCLIBS=
+PROCLIBS= \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 
