@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:17:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/03/08 21:56:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ using namespace std;
     and sets the temporary file name used to obtain results
 ---------------------------------------------------------------------------*/
 CtiInterpreter::CtiInterpreter()
-: _isevaluating(false), _queue(0), _dostop(false), _block(false), _eval_barrier(2)
+: _isevaluating(false), _queue(0), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL)
 {
     set( CtiInterpreter::EVALUATE, false);
     set( CtiInterpreter::EVALUATE_FILE, false );
@@ -46,7 +46,7 @@ CtiInterpreter::~CtiInterpreter()
 {
 }
 
-bool CtiInterpreter::evaluate(const string& command, bool block )
+bool CtiInterpreter::evaluate(const string& command, bool block, void (*preEval)(CtiInterpreter* interp), void (*postEval)(CtiInterpreter* interp))
 {
     //Hack to handle the condition that the thread hasn't started up yet
     //but evaluate has been called
@@ -62,6 +62,15 @@ bool CtiInterpreter::evaluate(const string& command, bool block )
         _isevaluating = true;
         _evalstring = command;
         _block = block;
+
+        if( preEval != NULL )
+        {
+            preEvalFunction = preEval;
+        }
+        if( postEval != NULL )
+        {
+            postEvalFunction = postEval;
+        }
 
         interrupt( CtiInterpreter::EVALUATE );
 
@@ -98,6 +107,16 @@ bool CtiInterpreter::evaluateFile(const string& file, bool block )
     return true;
 }
 
+void CtiInterpreter::setScheduleId(long schedId)
+{
+    _scheduleId = schedId;
+}
+
+long CtiInterpreter::getScheduleId()
+{
+    return _scheduleId;
+}
+
 /*---------------------------------------------------------------------------
     isEvaluating
 
@@ -125,6 +144,11 @@ void CtiInterpreter::stopEval()
     _dostop = false;
 }
 
+Tcl_Interp *CtiInterpreter::getTclInterpreter()
+{
+    return _interp;
+}
+
 /*---------------------------------------------------------------------------
     run
 
@@ -135,11 +159,9 @@ void CtiInterpreter::stopEval()
 ---------------------------------------------------------------------------*/
 void CtiInterpreter::run()
 {
-    Tcl_Interp* interp;
-
     try
     {
-        interp = Tcl_CreateInterp();
+        _interp = Tcl_CreateInterp();
 
         Tcl_CreateEventSource( &CtiInterpreter::event_setup_proc, &CtiInterpreter::event_check_proc, this );
 
@@ -160,19 +182,31 @@ void CtiInterpreter::run()
                 }
                 else
                 if( isSet( CtiInterpreter::EVALUATE ) )
-                {                    
-                    int r = Tcl_Eval( interp, (char*) _evalstring.c_str() );
+                {
+                    if( preEvalFunction != NULL)
+                    {
+                        (*preEvalFunction)(this);
+                        preEvalFunction = NULL;
+                    }
+
+                    int r = Tcl_Eval( _interp, (char*) _evalstring.c_str() );
+
+                    if( postEvalFunction != NULL)
+                    {
+                        (*postEvalFunction)(this);
+                        postEvalFunction = NULL;
+                    }
 
                     if( r != 0 )
                     {
-                       char* result = Tcl_GetStringResult(interp);
+                       char* result = Tcl_GetStringResult(_interp);
 
                        // check for interrupted as to not alarm the reader
                        if( strcmp(result,"interrupted") != 0)
                        {                       
                            CtiLockGuard< CtiLogger > guard(dout);
                             
-                           char* err = Tcl_GetVar(interp, "errorInfo", 0 );
+                           char* err = Tcl_GetVar(_interp, "errorInfo", 0 );
                            if( err != NULL )
                            {
                                 dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
@@ -184,19 +218,19 @@ void CtiInterpreter::run()
                 else
                 if( isSet( CtiInterpreter::EVALUATE_FILE ) )
                 {
-                    int r = Tcl_EvalFile( interp, (char*) _evalstring.c_str() );
-		    if(r != 0)
-		    {
-			char* result = Tcl_GetStringResult(interp);
+                    int r = Tcl_EvalFile( _interp, (char*) _evalstring.c_str() );
+        		    if(r != 0)
+        		    {
+                        char* result = Tcl_GetStringResult(_interp);
                         CtiLockGuard< CtiLogger > guard(dout);
                             
-                        char* err = Tcl_GetVar(interp, "errorInfo", 0 );
+                        char* err = Tcl_GetVar(_interp, "errorInfo", 0 );
                         if( err != NULL )
                         {
-			  dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
-                          dout << CtiTime() << " " << err << endl;
+                            dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
+                            dout << CtiTime() << " " << err << endl;
                         }                   
-		    }
+        		    }
                 }
 
                 set( CtiInterpreter::EVALUATE, false );
@@ -221,12 +255,12 @@ void CtiInterpreter::run()
         dout << CtiTime() << " Interpreter shutting down." << endl;
     }
 
-    Tcl_DeleteInterp(interp);
+    Tcl_DeleteInterp(_interp);
 
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " interp exiting" << endl;
+        dout << CtiTime() << " _interp exiting" << endl;
     }
 }
       
@@ -244,11 +278,11 @@ void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
 
     //find the interpreter who is associated with this thread and
     //post an event the interpreters event queue if _dostop is set
-    CtiInterpreter* interp = (CtiInterpreter*) clientData;
+    CtiInterpreter* _interp = (CtiInterpreter*) clientData;
 
-    if ( interp->_dostop )
+    if ( _interp->_dostop )
     {  
-        int id = interp->getID();
+        int id = _interp->getID();
 
         Tcl_Event* event = (Tcl_Event*) Tcl_Alloc( sizeof( Tcl_Event) );
 
@@ -258,7 +292,7 @@ void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
         Tcl_ThreadQueueEvent( (Tcl_ThreadId) id, event, TCL_QUEUE_HEAD );
         Tcl_ThreadAlert( (Tcl_ThreadId) id );
 
-        interp->_dostop = false;
+        _interp->_dostop = false;
     }
 
 }

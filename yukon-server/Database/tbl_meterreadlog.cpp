@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/tbl_meterreadlog.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/25 21:03:28 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/03/08 21:56:14 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,15 +37,15 @@ void CtiTableMeterReadLog::Insert(RWDBConnection &conn)
     inserter <<
     getLogID() <<
     getDeviceID() <<
-    getRequestID() <<
     getTime() <<
-    getStatusCode();
+    getStatusCode() <<
+    getRequestLogID();
 
     RWDBStatus stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
-        LONG newcid = SynchronizedIdGen("MeterReadLog", 1);
+        LONG newcid = SynchronizedIdGen("DeviceReadLog", 1);
 
         if(newcid != getLogID() && newcid != 0)
         {
@@ -77,7 +77,7 @@ CtiTableMeterReadLog& CtiTableMeterReadLog::operator=(const CtiTableMeterReadLog
     {
         setLogID(aRef.getLogID());
         setDeviceID(aRef.getDeviceID());
-        setRequestID(aRef.getRequestID());
+        setRequestLogID(aRef.getRequestLogID());
         setStatusCode(aRef.getStatusCode());
         setTime(aRef.getTime()); 
     }
@@ -112,7 +112,7 @@ LONG CtiTableMeterReadLog::getDeviceID() const
     return _deviceID;
 }
 
-LONG CtiTableMeterReadLog::getRequestID() const
+LONG CtiTableMeterReadLog::getRequestLogID() const
 {
     return _requestID;
 }
@@ -129,7 +129,7 @@ CtiTime CtiTableMeterReadLog::getTime() const
 
 string CtiTableMeterReadLog::getTableName() const
 {
-    return string("meterreadlog");
+    return string("devicereadlog");
 }
 
 CtiTableMeterReadLog&   CtiTableMeterReadLog::setLogID(LONG id)
@@ -144,7 +144,7 @@ CtiTableMeterReadLog&   CtiTableMeterReadLog::setDeviceID(LONG id)
     return *this;
 }
 
-CtiTableMeterReadLog&   CtiTableMeterReadLog::setRequestID(LONG id)
+CtiTableMeterReadLog&   CtiTableMeterReadLog::setRequestLogID(LONG id)
 {
     _requestID = id;
     return *this;

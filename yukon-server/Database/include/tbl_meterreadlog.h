@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/Include/tbl_meterreadlog.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/01/25 21:03:28 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/03/08 21:56:14 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,13 +74,13 @@ public:
 
    LONG                    getLogID() const;
    LONG                    getDeviceID() const;
-   LONG                    getRequestID() const;
+   LONG                    getRequestLogID() const;
    LONG                    getStatusCode() const;
    CtiTime                 getTime() const;
 
    CtiTableMeterReadLog&   setLogID(LONG id);
    CtiTableMeterReadLog&   setDeviceID(LONG id);
-   CtiTableMeterReadLog&   setRequestID(LONG id);
+   CtiTableMeterReadLog&   setRequestLogID(LONG id);
    CtiTableMeterReadLog&   setStatusCode(LONG code);
    CtiTableMeterReadLog&   setTime(const CtiTime &rwt);
 };

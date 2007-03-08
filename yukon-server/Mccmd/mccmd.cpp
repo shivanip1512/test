@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/02/26 21:01:45 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2007/03/08 21:56:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@
 #include "msg_signal.h"
 #include "msg_dbchg.h"
 #include "msg_notif_email.h"
+#include "tbl_devicereadrequestlog.h"
 #include "ctibase.h"
 #include "collectable.h"
 #include "pointtypes.h"
@@ -46,6 +47,7 @@
 #include "xcel.h"
 #include "decodetextcmdfile.h"
 #include "utility.h"
+
 
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
@@ -1471,7 +1473,9 @@ int WriteFailToFile(FILE* errFile, int status, string &dev_name)
 static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
-    bool timed_out = false;    
+    bool timed_out = false;
+    UINT jobId = 0;
+    long requestLogId = 0;
 
     RWSet req_set;
 
@@ -1479,12 +1483,26 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     //Be sure to remove it before exiting
     unsigned int msgid = GenMsgID();
 
+    char* jobIdStr = Tcl_GetVar(interp, "DeviceReadLogId", 0 );
+    if( jobIdStr != NULL )
+    {
+        jobId = atoi(jobIdStr);
+    }
+
     boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr( new  CtiCountedPCPtrQueue<RWCollectable>() );
+    CtiTblDeviceReadRequestLog deviceReadLog(requestLogId, msgid, cmd_line, CtiTime::now(), CtiTime::now(), jobId);
 
     if( timeout != 0 ) // don't bother if we don't want responses
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
         InQueueStore.insertKeyAndValue(msgid, queue_ptr);
+
+        if( jobId > 0 )
+        {
+            requestLogId = SynchronizedIdGen("DeviceReadRequestLog", 1);
+            deviceReadLog.setRequestLogId(requestLogId);
+            deviceReadLog.Insert();
+        }
     }
 
     BuildRequestSet(interp, cmd_line,req_set);
@@ -1668,7 +1686,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
              m_iter != device_map.end();
              m_iter++ )
         {
-            CtiTableMeterReadLog result(0, m_iter->first, m_iter->second->UserMessageId(), ErrorMACSTimeout, m_iter->second->getMessageTime());
+            CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second->getMessageTime());
             resultQueue.push_back(result);
             GetDeviceName(m_iter->first,dev_name);
 
@@ -1679,7 +1697,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         }
     }
 
-    WriteResultsToDatabase(resultQueue);
+    WriteResultsToDatabase(resultQueue, requestLogId);
+
+    if( timeout != 0 && jobId > 0 ) // don't bother if we don't want responses
+    {
+        deviceReadLog.setStopTime(CtiTime::now());
+        deviceReadLog.Update();
+    }
 
     //Remove the queue from the InQueueStore
     {
@@ -1747,7 +1771,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
       device_map.insert(PILReturnMap::value_type(dev_id, msg));
             if( msg->Status() != NORMAL )
             {
-                CtiTableMeterReadLog result(0, msg->DeviceId(), msg->UserMessageId(), msg->Status(), msg->getMessageTime());
+                CtiTableMeterReadLog result(0, msg->DeviceId(), 0, msg->Status(), msg->getMessageTime());
                 resultQueue.push_back(result);
             }
         }
@@ -2106,14 +2130,17 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
 //Warning, this function clears the Queue. This is done so the function can be called anytime.
 //It is in no way thread safe.
-int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue)
+int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT requestLogId)
 {
     int retVal = NORMAL;
     int endVal = 0;
 
-    endVal = SynchronizedIdGen("MeterReadLog", resultQueue.size());
+    if( requestLogId > 0 )
+    {
+        endVal = SynchronizedIdGen("DeviceReadLog", resultQueue.size());
+    }
 
-    if( endVal > 0 )
+    if( endVal > 0 && requestLogId > 0 )
     {
         string connstr("meterlog");
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -2128,6 +2155,7 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue)
             for(; iter != resultQueue.end() && i <= endVal; )
             {
                 iter->setLogID(i);
+                iter->setRequestLogID(requestLogId);
                 iter->Insert(conn);
                 iter++;
                 i++;
@@ -2143,8 +2171,9 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue)
         }
 
         conn.commitTransaction(connstr.c_str());
-        resultQueue.clear();
     }
+
+    resultQueue.clear();
 
     return retVal;
 }

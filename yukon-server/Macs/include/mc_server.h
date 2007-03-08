@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 19:47:42 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/03/08 21:56:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,6 +133,10 @@ private:
     // start and stops scripts
     void executeScript(const CtiMCSchedule& sched);
     void stopScript(long id);
+
+    // The interpreter can call these.
+    static void preScriptFunction(CtiInterpreter *interp);
+    static void postScriptFunction(CtiInterpreter *interp);
 
     // Checks to see if all the schedules corresponding
     // scripts are actually running

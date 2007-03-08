@@ -154,7 +154,7 @@ static void HandleMessage(RWCollectable* msg,
               PILReturnMap& bad_map,
               PILReturnMap& device_map);
 
-static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue);
+static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT requestLogId);
 
 /* Retrieves the id of a notification group given its name */
 static long GetNotificationGroupID( const string& name );

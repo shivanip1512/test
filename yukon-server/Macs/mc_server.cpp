@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2007/01/25 21:06:43 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/03/08 21:56:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,9 @@
 #include "rwutil.h"
 #include <time.h>
 #include <algorithm>
-#include <utility.h> 
+#include <utility.h>
+
+#include "tbl_devicereadjoblog.h"
 
 using namespace std;
 
@@ -431,8 +433,10 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
             dout << CtiTime() << " [" << interp->getID() << "] " << script.getScriptName() << endl;
         }
 
+        interp->setScheduleId(sched.getScheduleID());
+
         // start the evaluation, non-blocking
-        interp->evaluate( script.getContents(), false );
+        interp->evaluate( script.getContents(), false, CtiMCServer::preScriptFunction, CtiMCServer::postScriptFunction );
 
         _running_scripts.insert(
         map< long, CtiInterpreter* >::value_type(sched.getScheduleID(), interp ) );
@@ -452,6 +456,45 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         dout << CtiTime() << " Dumping interpreter pool after executing a new script" << endl;
         _interp_pool.dumpPool();
     }
+}
+
+void CtiMCServer::preScriptFunction(CtiInterpreter *interp)
+{
+    Tcl_Interp *tclInterpreter = NULL;
+
+    if( interp != NULL && (tclInterpreter = interp->getTclInterpreter()) != NULL )
+    {
+        ULONG logId = SynchronizedIdGen("DeviceReadJobLog", 1);
+        Tcl_SetVar(tclInterpreter, "DeviceReadLogId", (char *)CtiNumStr(logId).toString().c_str(), 0);
+
+        CtiTblDeviceReadJobLog jobLogTable(logId, interp->getScheduleId() , CtiTime::now(), CtiTime::now());
+        jobLogTable.Insert();
+    }
+}
+
+void CtiMCServer::postScriptFunction(CtiInterpreter *interp)
+{
+    UINT jobId = 0;
+    Tcl_Interp *tclInterpreter = NULL;
+
+    if( interp != NULL && (tclInterpreter = interp->getTclInterpreter()) != NULL )
+    {
+        char* jobIdStr = Tcl_GetVar(tclInterpreter, "DeviceReadLogId", 0 );
+        if( jobIdStr != NULL )
+        {
+            jobId = atoi(jobIdStr);
+            Tcl_UnsetVar(tclInterpreter, "DeviceReadLogId", 0 );
+        }
+    
+        if( jobId != 0 )
+        {
+            CtiTblDeviceReadJobLog jobLogTable(jobId);
+            jobLogTable.setStopTime(CtiTime::now());
+            jobLogTable.UpdateStopTime();
+        }
+    }
+    
+    
 }
 
  /*----------------------------------------------------------------------------

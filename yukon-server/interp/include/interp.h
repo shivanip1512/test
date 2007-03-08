@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_interp.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:17:31 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/03/08 21:56:14 $
 *
 * Copyright (c) 2003, Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,9 +55,12 @@ public:
     CtiInterpreter();
     virtual ~CtiInterpreter();
 
-    bool evaluate(const string& command, bool block = true );
+    bool evaluate(const string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
     bool evaluateFile(const string& file, bool block = true );
+    void setScheduleId(long schedId);
 
+    long getScheduleId();
+    Tcl_Interp *getTclInterpreter();
     bool isEvaluating() const;
     void stopEval();
 
@@ -79,9 +82,13 @@ private:
 
     RWBarrier _eval_barrier;    
 
+    void (*preEvalFunction)(CtiInterpreter* interp);
+    void (*postEvalFunction)(CtiInterpreter* interp);
     volatile bool _isevaluating;
     volatile bool _dostop;
     volatile bool _block;
+
+    long _scheduleId;
 
     string _evalstring;
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;
