@@ -22,11 +22,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     @SuppressWarnings("unchecked")
     public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user) {
 
-        String sql = "select userid, groupid from YukonUserGroup where userid = ?";
-        List<LiteYukonGroup> groupList = jdbcTemplate.query(sql,
-                                                            new Object[] { user.getUserID() },
-                                                            new LiteYukonGroupMapper());
-        return groupList;
+    	return getGroupsForUser(user.getUserID());
     }
     
     public List<LiteYukonGroup> getGroupsForUser(int userID) {
