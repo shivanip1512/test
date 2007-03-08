@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2007/03/06 19:35:28 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2007/03/08 22:43:34 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,6 +63,7 @@ protected:
         ValueType_LoadProfile_Demand,
         ValueType_LoadProfile_DynamicDemand,
         ValueType_Accumulator,
+        ValueType_AccumulatorDelta,
         ValueType_FrozenAccumulator,
         ValueType_IED,
         ValueType_Raw,

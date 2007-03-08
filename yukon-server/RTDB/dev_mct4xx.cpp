@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2007/03/06 19:37:46 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2007/03/08 22:43:34 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -393,6 +393,8 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
         case ValueType_Accumulator:
         case ValueType_FrozenAccumulator:   min_error = 0xff989680; break;
 
+        case ValueType_AccumulatorDelta:    min_error = 0xfffffffa; break;
+
         case ValueType_Demand:
         case ValueType_DynamicDemand:
         case ValueType_TOUDemand:
@@ -402,7 +404,7 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
         case ValueType_LoadProfile_Voltage: min_error = 0xffffffa1; break;
     }
 
-    if( error_code > min_error )
+    if( error_code >= min_error )
     {
         value       = 0;
 
