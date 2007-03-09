@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2007/03/07 15:35:52 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2007/03/09 21:30:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2977,11 +2977,11 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 {
     INT status = NORMAL;
 
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
 
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
-    CtiPointSPtr         pPoint;
+    CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg  *pData     = NULL;
+    CtiPointSPtr      pPoint;
 
     double Value;
     string resultStr;
@@ -3011,7 +3011,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 for(i = 0; i < 2; i++)
                 {
-                    pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[i];
+                    pfCount = (pfCount << 8) + DSt.Message[i];
                 }
 
                 if( (pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
@@ -3049,7 +3049,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
     INT status = NORMAL;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT &DSt   = InMessage->Buffer.DSt;
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
     int min, sec, channel;
@@ -3086,26 +3086,26 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
                 result  = getName() + " / Holiday schedule:\n";
 
-                seconds = DSt->Message[0] << 24 |
-                          DSt->Message[1] << 16 |
-                          DSt->Message[2] << 8  |
-                          DSt->Message[3];
+                seconds = DSt.Message[0] << 24 |
+                          DSt.Message[1] << 16 |
+                          DSt.Message[2] << 8  |
+                          DSt.Message[3];
 
                 holiday = CtiTime(seconds);
                 result += "Holiday 1: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
-                seconds = DSt->Message[4] << 24 |
-                          DSt->Message[5] << 16 |
-                          DSt->Message[6] << 8  |
-                          DSt->Message[7];
+                seconds = DSt.Message[4] << 24 |
+                          DSt.Message[5] << 16 |
+                          DSt.Message[6] << 8  |
+                          DSt.Message[7];
 
                 holiday = CtiTime(seconds);
                 result += "Holiday 2: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
-                seconds = DSt->Message[8]  << 24 |
-                          DSt->Message[9]  << 16 |
-                          DSt->Message[10] << 8  |
-                          DSt->Message[11];
+                seconds = DSt.Message[8]  << 24 |
+                          DSt.Message[9]  << 16 |
+                          DSt.Message[10] << 8  |
+                          DSt.Message[11];
 
                 holiday = CtiTime(seconds);
                 result += "Holiday 3: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
@@ -3118,11 +3118,11 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             {
                 long gold, silver, bronze, lead_load, lead_meter;
 
-                bronze     = DSt->Message[0];
-                lead_load  = ((DSt->Message[3] & 0xf0) << 4) | DSt->Message[1];
-                lead_meter = ((DSt->Message[3] & 0x0f) << 8) | DSt->Message[2];
-                gold       = (DSt->Message[4] & 0xc0) >> 6;
-                silver     = (DSt->Message[4] & 0x3f);
+                bronze     = DSt.Message[0];
+                lead_load  = ((DSt.Message[3] & 0xf0) << 4) | DSt.Message[1];
+                lead_meter = ((DSt.Message[3] & 0x0f) << 8) | DSt.Message[2];
+                gold       = (DSt.Message[4] & 0xc0) >> 6;
+                silver     = (DSt.Message[4] & 0x3f);
 
                 resultStr  = getName() + " / Group Addresses:\n";
                 resultStr += "Gold:       " + CtiNumStr(gold + 1).spad(5) + string("\n");
@@ -3140,7 +3140,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             {
                 //  see MCT22X ResultDecode for an additional MCT22X step
 
-                sec = DSt->Message[0] * 15;
+                sec = DSt.Message[0] * 15;
 
                 min = sec / 60;
                 sec = sec % 60;
@@ -3156,7 +3156,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
             case Emetcon::GetConfig_LoadProfileInterval:
             {
-                min = DSt->Message[0] * 5;
+                min = DSt.Message[0] * 5;
 
                 resultStr = getName() + " / Load Profile Interval: " + CtiNumStr( min ) + " min";
 
@@ -3183,13 +3183,13 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "message[0] = " << (int)DSt->Message[0] << endl;
-                    dout << "message[1] = " << (int)DSt->Message[1] << endl;
+                    dout << "message[0] = " << (int)DSt.Message[0] << endl;
+                    dout << "message[1] = " << (int)DSt.Message[1] << endl;
                 }
 
-                multnum   = (int)DSt->Message[0];
+                multnum   = (int)DSt.Message[0];
                 multnum <<= 8;
-                multnum  |= (int)DSt->Message[1];
+                multnum  |= (int)DSt.Message[1];
 
                 if( multnum == 1000 )
                 {
@@ -3219,9 +3219,9 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 //    Message[1] decrements once every 5 minutes, and starts from 144 (12 hours left).
                 //    Message[0] decrements once every 15 seconds, and starts from 20 (5 minutes left).
 
-                ticper12hr  = 14  - DSt->Message[2];  //  invert counter to be how many units have PASSED,
-                ticper5min  = 144 - DSt->Message[1];  //    NOT how many are LEFT.
-                ticper15sec = 20  - DSt->Message[0];  //
+                ticper12hr  = 14  - DSt.Message[2];  //  invert counter to be how many units have PASSED,
+                ticper5min  = 144 - DSt.Message[1];  //    NOT how many are LEFT.
+                ticper15sec = 20  - DSt.Message[0];  //
 
                 day = (ticper12hr * 12) / 24;       //  find how many days have passed
                 if( day > 7 )
@@ -3261,13 +3261,27 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 }
                 else
                 {
-                    rawlen = InMessage->Buffer.DSt.Length;
+                    rawlen = DSt.Length;
                 }
 
-                for( int i = 0; i < rawlen; i++ )
+                if( parse.isKeyValid("rawfunc") )
                 {
-                    resultStr += getName( ) + " / raw:  " +
-                              CtiNumStr(i+rawloc).xhex().zpad(2) + " : " + CtiNumStr((int)InMessage->Buffer.DSt.Message[i]).xhex().zpad(2) + "\n";
+                    for( int i = 0; i < rawlen; i++ )
+                    {
+                        resultStr += getName( ) +
+                                        " / FR " + CtiNumStr(parse.getiValue("rawloc")).xhex().zpad(2) +
+                                        " byte " + CtiNumStr(i).zpad(2) +
+                                        " : " + CtiNumStr((int)DSt.Message[i]).xhex().zpad(2) + "\n";
+                    }
+                }
+                else
+                {
+                    for( int i = 0; i < rawlen; i++ )
+                    {
+                        resultStr += getName( ) +
+                                        " / byte " + CtiNumStr(i+rawloc).xhex().zpad(2) +
+                                        " : " + CtiNumStr((int)DSt.Message[i]).xhex().zpad(2) + "\n";
+                    }
                 }
 
                 ReturnMsg->setResultString( resultStr );
@@ -3288,11 +3302,11 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
     INT status = NORMAL;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
-    CtiPointSPtr    pPoint;
+    CtiPointSPtr     pPoint;
 
     double    Value;
     string resultStr, defaultStateName;
@@ -3317,7 +3331,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
         {
             case TYPEMCT213:
             {
-                switch( DSt->Message[0] & 0xc0 )
+                switch( DSt.Message[0] & 0xc0 )
                 {
                     case CtiDeviceMCT210::MCT210_StatusConnected:     Value = CLOSED;  defaultStateName = "Connected";      break;
                     case CtiDeviceMCT210::MCT210_StatusDisconnected:  Value = OPENED;  defaultStateName = "Disconnected";   break;
@@ -3329,7 +3343,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
             case TYPEMCT310ID:
             case TYPEMCT310IDL:
             {
-                switch( DSt->Message[0] & 0xc0 )
+                switch( DSt.Message[0] & 0xc0 )
                 {
                     case CtiDeviceMCT310::MCT310_StatusConnected:           Value = CLOSED;         defaultStateName = "Connected";             break;
                     case CtiDeviceMCT310::MCT310_StatusConnectArmed:        Value = INDETERMINATE;  defaultStateName = "Connect armed";         break;
@@ -3341,7 +3355,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
             }
             case TYPEMCT410:
             {
-                switch( DSt->Message[0] & 0x03 )
+                switch( DSt.Message[0] & 0x03 )
                 {
                     case CtiDeviceMCT410::RawStatus_Connected:
                     {
@@ -3489,7 +3503,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
     ULONG pfCount = 0;
     string resultString;
     OUTMESS *OutTemplate;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiRequestMsg *pReq;
@@ -3552,13 +3566,13 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 //
                 //  36, 292, 548, 804, 1060, 1316, 1572, 1828, 2084, 2340, 2596, 2852, 3108, 3364, 3620, 3876, ...
 
-                if( DSt->Message[0] == 36 )
+                if( DSt.Message[0] == 36 )
                 {
-                    sspec = DSt->Message[0];
+                    sspec = DSt.Message[0];
                 }
                 else
                 {
-                    sspec = DSt->Message[0] + (DSt->Message[4] << 8);
+                    sspec = DSt.Message[0] + (DSt.Message[4] << 8);
                 }
 
                 //  if it's an invalid sspec or if the option bits aren't set properly
@@ -3567,7 +3581,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     resultString = getName( ) + " / sspec \'" + CtiNumStr(sspec) + "\' not valid - looks like an \'" + sspecIsFrom( sspec ) + "\'." + "\n" +
                                    getName( ) + " / install command aborted";
                 }
-                else if( (getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL) && (sspec == 1007 || sspec == 153) && !(DSt->Message[2] & 0x40) )
+                else if( (getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL) && (sspec == 1007 || sspec == 153) && !(DSt.Message[2] & 0x40) )
                 {
                     //  if the disconnect option bit is not set
                     resultString = getName( ) + " / option bits not valid - looks like a 310I";
@@ -3579,7 +3593,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                         getType( ) == TYPEMCT310IDL ||
                         getType( ) == TYPEMCT310IL )
                     {
-                        if( !(DSt->Message[2] & 0x01) )
+                        if( !(DSt.Message[2] & 0x01) )
                         {
                             resultString = getName() + " / Error:  Metering channel 1 not enabled" + "\n";
                         }
@@ -3842,11 +3856,11 @@ bool CtiDeviceMCT::hasVariableDemandRate( int type, int sspec )
 }
 
 
-INT CtiDeviceMCT::extractStatusData(INMESS *InMessage, INT type, USHORT *StatusData)
+INT CtiDeviceMCT::extractStatusData( const INMESS *InMessage, INT type, USHORT *StatusData)
 {
    INT i;
    INT status = NORMAL;
-   DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+   const DSTRUCT &DSt = InMessage->Buffer.DSt;
 
    /* extract status data by device type */
    switch(type)
@@ -3854,8 +3868,8 @@ INT CtiDeviceMCT::extractStatusData(INMESS *InMessage, INT type, USHORT *StatusD
    case TYPEMCT210:
    case TYPEMCT310:
       /* only 2 bytes for these guys */
-      StatusData[4] = MAKESHORT(DSt->Message[0], 0);
-      StatusData[5] = MAKESHORT(DSt->Message[1], 0);
+      StatusData[4] = MAKESHORT(DSt.Message[0], 0);
+      StatusData[5] = MAKESHORT(DSt.Message[1], 0);
       break;
 
    case TYPEMCT318:
@@ -3863,7 +3877,7 @@ INT CtiDeviceMCT::extractStatusData(INMESS *InMessage, INT type, USHORT *StatusD
    case TYPEMCT360:
    case TYPEMCT370:
       /* only 1 byte of status data */
-      StatusData[0] = MAKESHORT (DSt->Message[0], 0);
+      StatusData[0] = MAKESHORT (DSt.Message[0], 0);
       break;
 
    case TYPEMCT248:
@@ -3874,18 +3888,18 @@ INT CtiDeviceMCT::extractStatusData(INMESS *InMessage, INT type, USHORT *StatusD
       for(i = 0; i < 6; i++)
       {
          /* put the data in order for translating */
-         StatusData[i] = MAKESHORT(DSt->Message[i + 7], 0);
+         StatusData[i] = MAKESHORT(DSt.Message[i + 7], 0);
       }
 
       /* make the cap status the last byte */
-      StatusData[7] = MAKESHORT(DSt->Message[0], 0);
+      StatusData[7] = MAKESHORT(DSt.Message[0], 0);
       break;
 
    default:
       for(i = 0; i < 7; i++)
       {
          /* put the data in order for translating */
-         StatusData[i] = MAKESHORT(DSt->Message[i], 0);
+         StatusData[i] = MAKESHORT(DSt.Message[i], 0);
 
       }
       StatusData[7] = 0;
@@ -3896,7 +3910,7 @@ INT CtiDeviceMCT::extractStatusData(INMESS *InMessage, INT type, USHORT *StatusD
 }
 
 // static method
-INT CtiDeviceMCT::verifyAlphaBuffer(DSTRUCT *DSt)
+INT CtiDeviceMCT::verifyAlphaBuffer( const DSTRUCT &DSt )
 {
    int x;
    int status = NORMAL;
@@ -3907,18 +3921,18 @@ INT CtiDeviceMCT::verifyAlphaBuffer(DSTRUCT *DSt)
     * same and not 0 its bad).
     */
 
-   if(DSt->Message[1] != 0)
+   if(DSt.Message[1] != 0)
    {
       /* check to make sure that all values are not the same */
-      for(x = 2; x < DSt->Length; x++)
+      for(x = 2; x < DSt.Length; x++)
       {
-         if(DSt->Message[x - 1] != DSt->Message[x])
+         if(DSt.Message[x - 1] != DSt.Message[x])
          {
             break;   /* values are different buffer is good */
          }
       }
 
-      if(x == DSt->Length)
+      if(x == DSt.Length)
       {
          status = ALPHABUFFERERROR;  /* went through the whole loop and all is was the same */
       }
