@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2007/02/26 23:48:25 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2007/03/09 21:44:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1907,7 +1907,7 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
 
     if( !gConfigParms.isTrue("PIL_OMIT_COMMAND_LOGGING") )   // Set this to true if you want to skip the excessive logs from pil.
     {
-        bool name_none = !pReqOrig->getUser().empty() && (!stringCompareIgnoreCase(pReqOrig->getUser(), "none") || !stringCompareIgnoreCase(pReqOrig->getUser(), "(none)"));
+        bool name_none  = !pReqOrig->getUser().empty() && (!stringCompareIgnoreCase(pReqOrig->getUser(), "none") || !stringCompareIgnoreCase(pReqOrig->getUser(), "(none)"));
         bool user_valid = !pReqOrig->getUser().empty() && (!name_none || gConfigParms.isTrue("PIL_LOG_UNKNOWN_USERS") );
 
         if(Dev && user_valid &&
