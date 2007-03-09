@@ -84,6 +84,8 @@ public class CustomerLoader implements Runnable
                 lc.setRateScheduleID(custRateScheduleID);
                 lc.setAltTrackingNumber(custAltTrackNum);
                 lc.setTemperatureUnit(temperatureUnit);
+                lc.setAdditionalContacts(new Vector<LiteContact>(0));
+                
                 return lc;
             }
             
@@ -138,16 +140,6 @@ public class CustomerLoader implements Runnable
             Vector<LiteContact> additionalContacts = entry.getValue();
             customer.setAdditionalContacts(additionalContacts);
         }
-        
-        // Add an empty map for customers with no additional contacts - when getAdditionalContacts()
-        // is called in the future, a database hit won't be needed to determine there are no additional
-        // contacts
-        for(LiteCustomer customer : allCustomers){
-            if(customer.getAdditionalContactsVector() == null){
-                customer.setAdditionalContacts(new Vector<LiteContact>(0));
-            }
-        }
-        
         
         if (VersionTools.starsExists()) {
             // Now we do the same for accountIds as we just did with additional contacts.
