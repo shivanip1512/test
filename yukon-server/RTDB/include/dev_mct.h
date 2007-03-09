@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2007/03/07 15:35:52 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2007/03/09 21:29:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -285,8 +285,8 @@ public:
     void setExpectedFreeze( int freeze );  //  overrides a do-nothing virtual in dev_base
     int  getNextFreeze( void ) const;
 
-    static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
-    static  INT verifyAlphaBuffer( DSTRUCT *DSt );
+    static  INT extractStatusData( const INMESS *InMessage, INT type, USHORT *StatusData );
+    static  INT verifyAlphaBuffer( const DSTRUCT &DSt );
 };
 
 #endif // #ifndef __DEV_MCT_H__
