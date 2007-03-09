@@ -15,6 +15,7 @@ Class-Path: ./
  vvr_tools.jar 
  yukonappserver.jar 
  jtds.jar 
+ jta.jar 
  jdom.jar 
  SqlServer.jar 
  classes12.jar 
@@ -23,6 +24,6 @@ Class-Path: ./
  commons-discovery.jar 
  commons-httpclient.jar 
  commons-collections-3.2.jar 
- commons-lang-2.1.jar 
+ commons-lang-2.3.jar 
  ../log/ 
  ../export/ 
