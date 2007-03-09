@@ -18,6 +18,7 @@ logic.obj
 CTILIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\$(TCL_LIB).lib
 
 
