@@ -16,7 +16,6 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Implementation for PaoPermissionDao
@@ -106,6 +105,16 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
     public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission) {
         this.removeGroupPermission(group.getGroupID(), pao.getYukonID(), permission);
+    }
+
+    public void removeAllPaoPermissions(int paoId) {
+
+        String sql = "delete from GroupPaoPermission where paoid = ?";
+        jdbcTemplate.update(sql, new Object[] { paoId });
+
+        sql = "delete from UserPaoPermission where paoid = ?";
+        jdbcTemplate.update(sql, new Object[] { paoId });
+
     }
 
     @SuppressWarnings("unchecked")
@@ -239,11 +248,4 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
         }
     }
 
-    public static void main(String[] args) {
-
-        PaoPermissionDaoImpl dao = (PaoPermissionDaoImpl) YukonSpringHook.getBean("paoPermissionDao");
-
-        System.out.println(dao.isUserHasPermissionForPao(1, 1, Permission.CONTROL_COMMAND));
-        System.out.println(dao.isUserHasPermissionForPao(1, 1, Permission.READ_COMMAND));
-    }
 }

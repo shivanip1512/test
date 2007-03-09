@@ -117,4 +117,11 @@ public interface PaoPermissionDao {
      */
     public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission);
+
+    /**
+     * Method to remove all permissions for a given pao. (Can be used when
+     * deleting a pao)
+     * @param paoId - Id of pao to remove permissions for
+     */
+    public void removeAllPaoPermissions(int paoId);
 }

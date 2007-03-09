@@ -6,15 +6,15 @@ import java.util.Vector;
 
 import com.cannontech.common.device.configuration.dao.DeviceConfigurationDao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
-import com.cannontech.database.db.user.UserPaoOwner;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -76,7 +76,11 @@ public void delete() throws java.sql.SQLException
 	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
     delete ("DynamicLMControlHistory","PAObjectID", getPAObjectID() );
 	delete( "PAOOwner", "ChildID", getPAObjectID() );
-    delete( UserPaoOwner.TABLE_NAME, "PaoID", getPAObjectID() );
+    
+    // Remove pao permissions
+    PaoPermissionDao paoPermissionDao = (PaoPermissionDao) YukonSpringHook.getBean("paoPermissionDao");
+    paoPermissionDao.removeAllPaoPermissions(getPAObjectID());
+    
     delete( "DynamicPAOInfo", "PAObjectID", getPAObjectID() );
 
 	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
