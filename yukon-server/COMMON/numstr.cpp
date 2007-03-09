@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/06/26 19:47:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/03/09 21:31:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,20 +18,20 @@
 #include <stdio.h>  //  for _snprintf
 #include "numstr.h"
 
-CtiNumStr::CtiNumStr( double dVal, int precision )  {  _data.ul = 0;    _data.d   =  dVal;               _dataType = Double;  _precision = precision;  init();  }
-CtiNumStr::CtiNumStr( float fVal,  int precision )  {  _data.ul = 0;    _data.f   =  fVal;               _dataType = Float;   _precision = precision;  init();  }
+CtiNumStr::CtiNumStr( double dVal, int precision )  {  _data.ul = 0;    _data.d   =  dVal;               _dataType = DataType_Double;  _precision = precision;  init();  }
+CtiNumStr::CtiNumStr( float fVal,  int precision )  {  _data.ul = 0;    _data.f   =  fVal;               _dataType = DataType_Float;   _precision = precision;  init();  }
 
-CtiNumStr::CtiNumStr( char cVal )                   {  _data.ul = 0;    _data.c   = (int)cVal;           _dataType = Char;       init();  }
-CtiNumStr::CtiNumStr( unsigned char ucVal )         {  _data.ul = 0;    _data.uc  = (unsigned int)ucVal; _dataType = UChar;      init();  }
+CtiNumStr::CtiNumStr( char cVal )                   {  _data.ul = 0;    _data.c   = (int)cVal;           _dataType = DataType_Char;       init();  }
+CtiNumStr::CtiNumStr( unsigned char ucVal )         {  _data.ul = 0;    _data.uc  = (unsigned int)ucVal; _dataType = DataType_UChar;      init();  }
 
-CtiNumStr::CtiNumStr( short sVal )                  {  _data.ul = 0;    _data.s   =  sVal;               _dataType = Short;      init();  }
-CtiNumStr::CtiNumStr( unsigned short usVal )        {  _data.ul = 0;    _data.us  = usVal;               _dataType = UShort;     init();  }
-CtiNumStr::CtiNumStr( int iVal )                    {  _data.ul = 0;    _data.i   =  iVal;               _dataType = Int;        init();  }
-CtiNumStr::CtiNumStr( unsigned int uiVal )          {  _data.ul = 0;    _data.ui  = uiVal;               _dataType = UInt;       init();  }
-CtiNumStr::CtiNumStr( long lVal )                   {  _data.ul = 0;    _data.l   =  lVal;               _dataType = Long;       init();  }
-CtiNumStr::CtiNumStr( unsigned long ulVal )         {  _data.ul = 0;    _data.ul  = ulVal;               _dataType = ULong;      init();  }
+CtiNumStr::CtiNumStr( short sVal )                  {  _data.ul = 0;    _data.s   =  sVal;               _dataType = DataType_Short;      init();  }
+CtiNumStr::CtiNumStr( unsigned short usVal )        {  _data.ul = 0;    _data.us  = usVal;               _dataType = DataType_UShort;     init();  }
+CtiNumStr::CtiNumStr( int iVal )                    {  _data.ul = 0;    _data.i   =  iVal;               _dataType = DataType_Int;        init();  }
+CtiNumStr::CtiNumStr( unsigned int uiVal )          {  _data.ul = 0;    _data.ui  = uiVal;               _dataType = DataType_UInt;       init();  }
+CtiNumStr::CtiNumStr( long lVal )                   {  _data.ul = 0;    _data.l   =  lVal;               _dataType = DataType_Long;       init();  }
+CtiNumStr::CtiNumStr( unsigned long ulVal )         {  _data.ul = 0;    _data.ul  = ulVal;               _dataType = DataType_ULong;      init();  }
 
-CtiNumStr::CtiNumStr( void *vpVal )                 {  _data.ul = 0;    _data.vp  = vpVal;               _dataType = Pointer;    init();  }
+CtiNumStr::CtiNumStr( void *vpVal )                 {  _data.ul = 0;    _data.vp  = vpVal;               _dataType = DataType_Pointer;    init();  }
 
 CtiNumStr::CtiNumStr( const CtiNumStr &aRef )
 {
@@ -58,23 +58,23 @@ string CtiNumStr::toString()
 {
     switch( _dataType )
     {
-        case Char:
-        case UChar:
-        case Short:
-        case UShort:
-        case Int:
-        case UInt:
-        case Long:
-        case ULong:
+        case DataType_Char:
+        case DataType_UChar:
+        case DataType_Short:
+        case DataType_UShort:
+        case DataType_Int:
+        case DataType_UInt:
+        case DataType_Long:
+        case DataType_ULong:
             buildIntString( );
             break;
 
-        case Float:
-        case Double:
+        case DataType_Float:
+        case DataType_Double:
             buildFloatString( );
             break;
 
-        case Pointer:
+        case DataType_Pointer:
             buildPointerString( );
             break;
 
@@ -93,23 +93,23 @@ CtiNumStr::operator string ( )
 {
     switch( _dataType )
     {
-        case Char:
-        case UChar:
-        case Short:
-        case UShort:
-        case Int:
-        case UInt:
-        case Long:
-        case ULong:
+        case DataType_Char:
+        case DataType_UChar:
+        case DataType_Short:
+        case DataType_UShort:
+        case DataType_Int:
+        case DataType_UInt:
+        case DataType_Long:
+        case DataType_ULong:
             buildIntString( );
             break;
 
-        case Float:
-        case Double:
+        case DataType_Float:
+        case DataType_Double:
             buildFloatString( );
             break;
 
-        case Pointer:
+        case DataType_Pointer:
             buildPointerString( );
             break;
 
@@ -125,7 +125,8 @@ CtiNumStr::operator string ( )
 
 void CtiNumStr::init( void )
 {
-    if( _dataType == Float || _dataType == Double )
+    if( _dataType == DataType_Float ||
+        _dataType == DataType_Double )
     {
         if( _precision > MaxPrecision )
         {
@@ -137,7 +138,7 @@ void CtiNumStr::init( void )
         _precision = 0;
     }
 
-    _fmt = Default;
+    _fmt = Format_Default;
 
     _padding = 0;
     _zeroes  = 0;
@@ -146,19 +147,19 @@ void CtiNumStr::init( void )
 
 CtiNumStr &CtiNumStr::hex( void )
 {
-    _fmt = Hex;
+    _fmt = Format_Hex;
     return *this;
 }
 
 CtiNumStr &CtiNumStr::xhex( void )
 {
-    _fmt = XHex;
+    _fmt = Format_XHex;
     return *this;
 }
 
 CtiNumStr &CtiNumStr::exp( void )
 {
-    _fmt = Exponential;
+    _fmt = Format_Exponential;
     return *this;
 }
 
@@ -196,7 +197,7 @@ void CtiNumStr::buildIntString( void )
     int  fmtChars = 0,
          overflow;
 
-    if( _fmt == XHex )
+    if( _fmt == Format_XHex )
     {
         fmtString[fmtChars++] = '0';
         fmtString[fmtChars++] = 'x';
@@ -213,11 +214,11 @@ void CtiNumStr::buildIntString( void )
 
     switch( _fmt )
     {
-        case Hex:
-        case XHex:
+        case Format_Hex:
+        case Format_XHex:
         {
-            if( _dataType == Short || _dataType == UShort ||
-                _dataType == Char  || _dataType == UChar )
+            if( _dataType == DataType_Short || _dataType == DataType_UShort ||
+                _dataType == DataType_Char  || _dataType == DataType_UChar )
             {
                 //  anything shorter than 4 bytes needs this (see printf format specification for details)
                 fmtString[fmtChars++] = 'h';
@@ -227,36 +228,36 @@ void CtiNumStr::buildIntString( void )
             break;
         }
 
-        case Default:
+        case Format_Default:
         {
             switch( _dataType )
             {
-                case ULong:
+                case DataType_ULong:
                     fmtString[fmtChars++] = 'l';
                     fmtString[fmtChars++] = 'u';
                     break;
 
-                case Long:
+                case DataType_Long:
                     fmtString[fmtChars++] = 'l';
                     fmtString[fmtChars++] = 'd';
                     break;
 
-                case UChar:
-                case UInt:
+                case DataType_UChar:
+                case DataType_UInt:
                     fmtString[fmtChars++] = 'u';
                     break;
 
-                case Char:
-                case Int:
+                case DataType_Char:
+                case DataType_Int:
                     fmtString[fmtChars++] = 'd';
                     break;
 
-                case UShort:
+                case DataType_UShort:
                     fmtString[fmtChars++] = 'h';
                     fmtString[fmtChars++] = 'u';
                     break;
 
-                case Short:
+                case DataType_Short:
                     fmtString[fmtChars++] = 'h';
                     fmtString[fmtChars++] = 'd';
                     break;
@@ -296,7 +297,7 @@ void CtiNumStr::buildFloatString( void )
 
     switch( _fmt )
     {
-        case Exponential:
+        case Format_Exponential:
         {
             fmtString[fmtChars++] = 'g';
             break;
@@ -311,7 +312,7 @@ void CtiNumStr::buildFloatString( void )
 
     fmtString[fmtChars] = 0;
 
-    if( _dataType == Float )
+    if( _dataType == DataType_Float )
     {
         if( _snprintf( _dataString, DataStringLength, fmtString, _padding, _precision, _data.f ) < 0 )
         {
@@ -320,7 +321,7 @@ void CtiNumStr::buildFloatString( void )
             _dataString[DataStringLength-1] = 0;
         }
     }
-    else if( _dataType == Double )
+    else if( _dataType == DataType_Double )
     {
         if( _snprintf( _dataString, DataStringLength, fmtString, _padding, _precision, _data.d ) < 0 )
         {

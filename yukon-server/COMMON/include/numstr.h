@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:25:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/03/09 21:31:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,8 +26,6 @@ using std::string;
 
 class IM_EX_CTIBASE CtiNumStr
 {
-    enum Format;
-
 private:
 
     enum
@@ -57,21 +55,28 @@ private:
     int    _precision;
     int    _padding;
     int    _zeroes;
-    Format _fmt;
 
-    enum
+    enum Formats
     {
-        Double,
-        Float,
-        Char,
-        UChar,
-        Short,
-        UShort,
-        Int,
-        UInt,
-        Long,
-        ULong,
-        Pointer
+        Format_Default,
+        Format_Hex,
+        Format_XHex,
+        Format_Exponential
+    } _fmt;
+
+    enum DataTypes
+    {
+        DataType_Double,
+        DataType_Float,
+        DataType_Char,
+        DataType_UChar,
+        DataType_Short,
+        DataType_UShort,
+        DataType_Int,
+        DataType_UInt,
+        DataType_Long,
+        DataType_ULong,
+        DataType_Pointer
     } _dataType;
 
 protected:
@@ -100,7 +105,7 @@ public:
 
     CtiNumStr &operator=( const CtiNumStr &aRef );
     operator string ( );
- 
+
     void init( void );
 
     string toString(void);
@@ -119,14 +124,6 @@ public:
         MaxPrecision     = 15,
         MaxZeroPadding   = 20,
         MaxSpacePadding  = 20
-    };
-
-    enum Format
-    {
-        Default,
-        Hex,
-        XHex,
-        Exponential
     };
 };
 
