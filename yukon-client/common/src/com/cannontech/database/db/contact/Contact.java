@@ -216,13 +216,12 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
-		String sql = 
-			"select cnt.contactid from " + TABLE_NAME + " cnt " +
-			"where cnt.contactid not in " +
-			"(select ca.contactid from CustomerAdditionalContact ca) " +
-			"and cnt.contactid not in " +
-			"(select cs.primarycontactid from " + Customer.TABLE_NAME + " cs)" +
-			"order by cnt.contfirstname, cnt.contlastname";
+		String sql = "select cnt.contactid from " + TABLE_NAME
+                + " cnt where not exists (select 1 from CustomerAdditionalContact ca where "
+                + "ca.contactid = cnt.contactid) and not exists (select 1 from "
+                + Customer.TABLE_NAME
+                + " cs where cs.primarycontactid = cnt.contactid) order by cnt.contfirstname, "
+                + "cnt.contlastname";
 
 		try
 		{		

@@ -237,6 +237,10 @@ public class LiteCustomer extends LiteBase {
     public void setTemperatureUnit(String temperatureUnit) {
         this.temperatureUnit = temperatureUnit;
     }
+    
+    public Vector<LiteContact> getAdditionalContactsVector() {
+        return this.additionalContacts;
+    }
 
     /**
 	 * Returns the additionalContacts.

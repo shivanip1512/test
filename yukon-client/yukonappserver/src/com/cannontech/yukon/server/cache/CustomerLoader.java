@@ -134,7 +134,18 @@ public class CustomerLoader implements Runnable
         // would cause the lite object to load all of the additional contact (lazy style) first--
         // which would defeat the purpose of what we're trying to do here.
         for (Map.Entry<LiteCustomer, Vector<LiteContact>> entry : temporaryAdditionalContacts.entrySet()) {
-            entry.getKey().setAdditionalContacts(entry.getValue());
+            LiteCustomer customer = entry.getKey();
+            Vector<LiteContact> additionalContacts = entry.getValue();
+            customer.setAdditionalContacts(additionalContacts);
+        }
+        
+        // Add an empty map for customers with no additional contacts - when getAdditionalContacts()
+        // is called in the future, a database hit won't be needed to determine there are no additional
+        // contacts
+        for(LiteCustomer customer : allCustomers){
+            if(customer.getAdditionalContactsVector() == null){
+                customer.setAdditionalContacts(new Vector<LiteContact>(0));
+            }
         }
         
         
