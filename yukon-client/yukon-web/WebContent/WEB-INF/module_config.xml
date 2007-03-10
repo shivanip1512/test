@@ -274,6 +274,11 @@
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
   </module>
+  
+  <module name="userlm">
+    <skin name="standard"/>
+    <css file="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
+  </module>
 
   <module name="commander">
     <skin name="standard"/>

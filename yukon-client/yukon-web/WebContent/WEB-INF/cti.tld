@@ -363,6 +363,11 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>finalTriggerAction</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
   </tag>
   <tag>
     <name>loginGroupPicker</name>
@@ -385,6 +390,11 @@
     </attribute>
    <attribute>
       <name>loginGroupNameElement</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>finalTriggerAction</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
@@ -415,6 +425,11 @@
     </attribute>
    <attribute>
       <name>typeElement</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>finalTriggerAction</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>

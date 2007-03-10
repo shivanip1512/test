@@ -4,9 +4,10 @@ LoginGroupPicker = Class.create();
 
 //must extend ItemPicker; this will not work as a standalone object
 LoginGroupPicker.prototype = Object.extend(new ItemPicker(), { 
-	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context) {
+	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context, triggerAction) {
 		this.baseInitialize(destItemIdFieldId, criteria, extraMapping, pickerId, context);
-		this.sameItemLink = '';   
+		this.sameItemLink = '';
+		this.triggerAction = triggerAction;   
 	},
 	
 	//controllerMethod should match name of appropriate method in the xxPickerController java class
@@ -44,6 +45,8 @@ LoginGroupPicker.prototype = Object.extend(new ItemPicker(), {
 	        info = this.extraInfo[i];
 	        $(info.fieldid).innerHTML = hit[info.property];
 	    }
+	    
+	   	this.triggerEndAction(hit);
 	},
 	
 	//it should do what is necessary to select the specific current row and guide any pickertype-

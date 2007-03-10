@@ -8,7 +8,7 @@
                 /point/test=testpage
                 /point/*=PointPickerController
                 /userlm=userlm
-                /user/owner=usertestpage
+                /userlm/*=UserLMAssignmentController
                 /user/*=UserPickerController
                 /loginGroup/*=LoginGroupPickerController
                 /pao/*=PaoPickerController
@@ -48,10 +48,6 @@
             <value type="boolean">true</value>
         </property>
         <property name="pointDeviceSearcher" ref="pointDeviceSearcher"/>
-    </bean>
-    
-    <bean id="usertestpage" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="/user/usertest"/>
     </bean>
     
     <bean id="UserPickerController" class="com.cannontech.web.picker.user.UserPickerController" >
@@ -114,4 +110,27 @@
     <bean id="userlm" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName" value="/user/userlm"/>
     </bean>
+    
+    <bean id="UserLMAssignmentController" class="com.cannontech.web.picker.user.UserLMAssignmentController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver">
+           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="yukonGroupDao" ref="yukonGroupDao"/>
+        <property name="paoPermissionService" ref="paoPermissionService"/>
+        <property name="paoTypeSearcher" ref="paoTypeSearcher"/>
+    </bean>
+    
 </beans>

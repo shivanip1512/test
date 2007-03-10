@@ -48,7 +48,13 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
               var linkFunc = linkFuncGenerate(dataArray[i]);
               Event.observe(link,'click',linkFunc);
           }
-          var text = document.createTextNode(dataArray[i][outputCols[col].field]);
+          
+          //in case we want to display static text but maintain a value
+          var dataString = dataArray[i][outputCols[col].field];
+          if(!dataString) {
+          	dataString = outputCols[col].field;
+          }
+          var text = document.createTextNode(dataString);
           node.appendChild(text);
       }
     }

@@ -34,6 +34,9 @@ ItemPicker.prototype = {
 	    this.sameItemLink = 'Same Device';
 	    //picker subclass should fill this in with appropriately named columns
 	    this.outputCols = [];
+	    //this can be a string specifying a JavaScript call for eval on the selectThisItem finale
+	    //format: "divToRefresh:divId;url:controllerString"
+	    this.triggerFinalAction = '';
 	},
 	
 	initialize: function (destItemIdFieldId, criteria, extraMapping, pickerId, context) {
@@ -244,6 +247,22 @@ ItemPicker.prototype = {
 	onPickerShown: function(transport, json) {
 	    $('itemPicker_query').focus();
 	    this.sameParentItem();
-	}
+	},
 	
+	triggerEndAction: function(selectedItem) {
+		if (this.triggerFinalAction) {
+		    var pairs = this.triggerFinalAction.split(/;/);
+	        var divPair = pairs[0].split(/:/);
+	        if (divPair.length == 2) {
+		    	var controllerPair = pairs[1].split(/:/);
+		    	if (controllerPair.length == 2) {
+		    		var onCompletePair = pairs[2].split(/:/);	
+					if (onCompletePair.length == 2) {
+		        		//use of eval in this call is a security risk.  Consider replacing entire manual pair parsing with a JSON parser.
+		        		new Ajax.Updater(divPair[1], this.context + controllerPair[1] + '?selectedItem=' + selectedItem.toJSONString(), {'method': 'get', 'onComplete': eval(onCompletePair[1])});
+		        	}
+		        }
+		    }
+	    }
+	}
 }
