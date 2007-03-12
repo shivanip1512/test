@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/02/22 22:53:32 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/03/12 16:51:31 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@ protected:
 
         Inbound( SOCKET &s, CtiFIFOQueue< packet > &packet_queue );
 
-    } *_inbound;
+    };
 
     typedef queue< CtiOutMessage * > om_queue;
     typedef queue< packet *        > packet_queue;

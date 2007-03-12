@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/02/22 22:53:32 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/03/12 16:51:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,11 +164,11 @@ void UDPInterface::run( void )
         }
     }
 
-    if( _inbound->isRunning() )
+    if( inbound.isRunning() )
     {
-        _inbound->interrupt(CtiThread::SHUTDOWN);
+        inbound.interrupt(CtiThread::SHUTDOWN);
 
-        _inbound->join();
+        inbound.join();
     }
 
     //  delete the device records
