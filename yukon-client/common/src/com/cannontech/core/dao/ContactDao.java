@@ -108,7 +108,7 @@ public interface ContactDao {
      * Returns all contactNotifications.
      * @return List LiteContactNotifications
      */
-    public List getAllContactNotifications();
+    public List<LiteContactNotification> getAllContactNotifications();
 
     /**
      * Returns the LiteCICustomer for addltContactID_.

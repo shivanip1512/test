@@ -17,7 +17,7 @@ public interface ContactNotificationDao {
      * Returns all contactNotifications.
      *
      */
-    public List getAllContactNotifications();
+    public List<LiteContactNotification> getAllContactNotifications();
 
     /**
      * Returns the parent Contact for this ContactNotifcation

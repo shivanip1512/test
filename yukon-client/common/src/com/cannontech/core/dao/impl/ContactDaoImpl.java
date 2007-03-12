@@ -13,6 +13,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
@@ -250,13 +251,13 @@ public final class ContactDaoImpl implements ContactDao
 	public String[] getAllEmailAddresses( int contactID_ )
 	{
 		LiteContact contact = getContact( contactID_ );
-		ArrayList strList = new ArrayList(16);
+		ArrayList<String> strList = new ArrayList<String>(16);
 
 		//find all the email addresses in the list ContactNotifications
 		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
 		{	
 			LiteContactNotification ltCntNotif = 
-					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
+					contact.getLiteContactNotifications().get(j);
 					
 			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
 			{
@@ -264,8 +265,7 @@ public final class ContactDaoImpl implements ContactDao
 			}
 		}
 
-		String[] emails = new String[ strList.size() ];
-		return (String[])strList.toArray( emails );
+		return strList.toArray( new String[strList.size()] );
 	}
 
 	/* (non-Javadoc)
@@ -317,7 +317,7 @@ public final class ContactDaoImpl implements ContactDao
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllContactNotifications()
      */
-	public List getAllContactNotifications() 
+	public List<LiteContactNotification> getAllContactNotifications() 
 	{
 		return contactNotifcationDao.getAllContactNotifications();
 	}

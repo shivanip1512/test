@@ -1,7 +1,6 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -44,20 +43,12 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactNotificationDao#getAllContactNotifications()
      */
-	public List getAllContactNotifications() 
+	public List<LiteContactNotification> getAllContactNotifications() 
 	{
-		List cntNotifs = new ArrayList(64);
 		synchronized( databaseCache )		
 		{
-			Iterator it = databaseCache.getAllContactNotifsMap().values().iterator();
-			
-			while( it.hasNext() )
-			{
-				cntNotifs.add( it.next() );
-			}
-		}
-
-		return cntNotifs;
+		    return new ArrayList<LiteContactNotification>(databaseCache.getAllContactNotifsMap().values());
+        }
 	}
 
 	/* (non-Javadoc)
