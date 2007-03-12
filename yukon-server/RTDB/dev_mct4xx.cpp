@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2007/03/08 22:43:34 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2007/03/12 22:24:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1135,6 +1135,12 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
         nRet = NoError;
     }
 
+    if( errRet != NULL )
+    {
+        delete errRet;
+        errRet = NULL;
+    }
+
     return nRet;
 }
 
@@ -1962,6 +1968,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 }
 
                 retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+                ReturnMsg = NULL;
 
                 //note that at the moment only putconfig install will ever have a group message count.
                 decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
@@ -1974,6 +1981,12 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
                 break;
             }
+        }
+
+        if( ReturnMsg != NULL )
+        {
+            delete ReturnMsg;
+            ReturnMsg = NULL;
         }
 
     }

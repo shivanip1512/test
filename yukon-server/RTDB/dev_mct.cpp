@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.113 $
-* DATE         :  $Date: 2007/03/09 21:30:47 $
+* REVISION     :  $Revision: 1.114 $
+* DATE         :  $Date: 2007/03/12 22:23:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1426,18 +1426,6 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
     INT function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
         if( getType() == TYPEMCT360  ||  //  only these types can have an IED attached
@@ -2780,6 +2768,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     if( errRet )
     {
         delete errRet;
+        errRet = NULL;
     }
 
     if(!found)

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2007/03/06 19:39:20 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2007/03/12 22:24:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1174,17 +1174,6 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
     bool found = false;
     int function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
@@ -1548,17 +1537,6 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
     bool found = false;
     int function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
 
 /*
     if( parse.isKeyValid("channels") )
@@ -2040,6 +2018,12 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg         *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
 
         nRet = NoError;
+    }
+
+    if( errRet != NULL )
+    {
+        delete errRet;
+        errRet = NULL;
     }
 
     return nRet;

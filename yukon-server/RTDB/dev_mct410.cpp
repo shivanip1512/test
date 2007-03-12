@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.128 $
-* DATE         :  $Date: 2007/03/12 16:26:42 $
+* REVISION     :  $Revision: 1.129 $
+* DATE         :  $Date: 2007/03/12 22:24:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1261,9 +1261,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                    && (time_end <= time_start ||         //  make sure it ends after it starts
                        time_end > CtiTime::now())) )     //  must end on or before yesterday midnight
             {
-                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
                 found = false;
                 nRet  = BADPARAM;
@@ -1483,6 +1480,12 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         nRet = NoError;
+    }
+
+    if( errRet != NULL )
+    {
+        delete errRet;
+        errRet = NULL;
     }
 
     return nRet;
