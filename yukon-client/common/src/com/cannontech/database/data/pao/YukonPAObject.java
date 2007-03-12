@@ -1,5 +1,6 @@
 package com.cannontech.database.data.pao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -76,7 +77,10 @@ public void delete() throws java.sql.SQLException
 	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
     delete ("DynamicLMControlHistory","PAObjectID", getPAObjectID() );
 	delete( "PAOOwner", "ChildID", getPAObjectID() );
-    
+    try {
+        delete( "UserPaoOwner", "PaoID", getPAObjectID() );
+    }
+    catch (SQLException e) {}
     // Remove pao permissions
     PaoPermissionDao paoPermissionDao = (PaoPermissionDao) YukonSpringHook.getBean("paoPermissionDao");
     paoPermissionDao.removeAllPaoPermissions(getPAObjectID());
