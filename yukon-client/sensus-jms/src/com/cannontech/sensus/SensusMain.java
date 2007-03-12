@@ -22,7 +22,8 @@ public class SensusMain {
             }
             
             // load the parent context
-            ApplicationContext context = YukonSpringHook.getContext("com.cannontech.context.sensus-jms");
+            YukonSpringHook.setDefaultContext("com.cannontech.context.sensus-jms");
+            ApplicationContext context = YukonSpringHook.getContext();
             new FileSystemXmlApplicationContext(mainContextString, context);
             log.info("Sensus main started");
 
