@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.127 $
-* DATE         :  $Date: 2007/03/12 14:55:24 $
+* REVISION     :  $Revision: 1.128 $
+* DATE         :  $Date: 2007/03/12 16:26:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1292,13 +1292,15 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             {
                 string temp = getName() + " / Daily read request already in progress\n";
 
+                temp += "Channel " + CtiNumStr(_daily_read_interest.channel + 1) + ", ";
+
                 if( _daily_read_interest.single_day )
                 {
-                    temp += "Current request: " + printable_time(_daily_read_interest.single_day) + "\n";
+                    temp += printable_date(_daily_read_interest.single_day) + "\n";
                 }
                 else
                 {
-                    temp += "Current request: " + printable_time(_daily_read_interest.multi_day_start) + " - " + printable_time(_daily_read_interest.multi_day_end) + "\n";
+                    temp += printable_date(_daily_read_interest.multi_day_start) + " - " + printable_date(_daily_read_interest.multi_day_end) + "\n";
                 }
 
                 returnErrorMessage(NOTNORMAL, OutMessage, retList, temp);
@@ -2709,6 +2711,9 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
 
             peak    = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 
+            //  adjust for the demand interval
+            peak.value *= 3600 / getDemandInterval();
+
             switch( _daily_read_interest.channel )
             {
                 case 0: demand_pointname      = "kW";
@@ -2755,10 +2760,18 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
             if( day != d.dayOfMonth() || (month % 4) != ((d.month() - 1) % 4) )
             {
                 resultString  = getName() + " / Invalid day/month returned by daily read ";
-                resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr((d.month() - 1) % 4) + ")";
+                resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr(((d.month() - 1) % 4) + 1) + ")";
             }
             else
             {
+                //  if it's channel 1, we'll send the data anyway
+                if( _daily_read_interest.channel
+                    && !getDevicePointOffsetTypeEqual(_daily_read_interest.channel + 1, PulseAccumulatorPointType)
+                    && !getDevicePointOffsetTypeEqual(_daily_read_interest.channel + 1, DemandAccumulatorPointType) )
+                {
+                    resultString += "No points defined for channel " + CtiNumStr(_daily_read_interest.channel + 1) + "\n";
+                }
+
                 insertPointDataReport(PulseAccumulatorPointType, _daily_read_interest.channel + 1, ReturnMsg,
                                       reading, consumption_pointname,  _daily_read_interest.single_day + 86400);  //  add on 24 hours - end of day
 
