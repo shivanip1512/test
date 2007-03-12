@@ -11775,12 +11775,6 @@ go
 
 
 alter table DEVICEREADLOG
-   add constraint FK_DEVICERE_FK_DRLOGD_DEVICE foreign key (DeviceID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID)
 go

@@ -376,10 +376,6 @@ alter table DEVICEREADLOG
    add constraint PK_DEVICEREADLOG primary key (DeviceReadLogID);
 
 alter table DEVICEREADLOG
-   add constraint FK_DEVICERE_FK_DRLOGD_DEVICE foreign key (DeviceID)
-      references DEVICE (DEVICEID);
-
-alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID);
 
