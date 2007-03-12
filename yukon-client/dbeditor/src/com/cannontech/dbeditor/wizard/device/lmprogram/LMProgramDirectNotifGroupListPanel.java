@@ -180,9 +180,9 @@ public Object getValue(Object o)
 	
     
     // Create Status point
-    PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
-    program.setPAObjectID(paoDao.getNextPaoId());
-    
+    if(program.getPAObjectID() == null){
+        PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+        program.setPAObjectID(paoDao.getNextPaoId());
 
     PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
     PointBase point = pointService.createPoint(PointTypes.STATUS_POINT,
@@ -193,12 +193,14 @@ public Object getValue(Object o)
                                                0,
                                                StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE);
 
-    SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
-    persistant.addOwnerDBPersistent(program);
-    persistant.addDBPersistent(point);
+        SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
+        persistant.addOwnerDBPersistent(program);
+        persistant.addDBPersistent(point);
+        
+        return persistant;
+    }
     
-	return persistant;
-	
+    return program;
 }
 /**
  * Called whenever the part throws an exception.
