@@ -46,11 +46,6 @@ number nvResult;
 begin
     Disable(STATUSEX);
 
-    nvResult = AskYesNo ( "Would you like to open the server master.cfg file for editing?" , YES );
-    if(nvResult = 1) then
-        LaunchApp("notepad.exe", TARGETDIR ^ "\\server\\config\\master.cfg");
-    endif;
-
     szAppPath = TARGETDIR ^ "\\server\\bin";
 
     if( RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE) < 0 ) then
@@ -143,7 +138,8 @@ end;
  
 export prototype Tomcat_Installed();
 function Tomcat_Installed()
-STRING szCmdLine;
+STRING szCmdLine;     
+STRING configMsg1, configMsg2, configMsg3, configMsg4, configMsg5;
 string szServPath, szPath, TomcatPath, JavaPath;
 string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile, szValue, dateString;
 number nvResult, nvType, nvSize, foundVal, dirSearch, nSize;
@@ -196,17 +192,22 @@ SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 szServPath = TomcatPath ^ "\\bin\\";
 szCmdLine = 'install';
-/*nvResult = AskYesNo ( "Would you like to install Tomcat as a service?" , NO );
-if(nvResult = 1) then */
+
 LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
-	//SprintfBox (SEVERE, "DEBUG: Command Line Contents", "%s", szCmdLine + szCmdLine2 + szCmdLine3);     
-//endif;
 
-//start the Tomcat service
-szCmdLine = 'start "Yukon Web Application Service"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
+//we no longer want the web application service to start right away
+/*szCmdLine = 'start "Yukon Web Application Service"';
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );  */
 
-setupIsNeeded = 1;
+configMsg1 = "To configure Yukon, please verify the following:";
+configMsg2 = "\n  1.) That master.cfg file contains the correct database connection information.";
+configMsg3 = "\n  2.) That the Yukon Web Application Service has been started. \n   ** (Changes to master.cfg will require a restart of this service.)";
+configMsg4 = "\n  3.) That setup.jsp has been visited with a browser and all settings are correct (see desktop shortcut).";
+configMsg5 = "\n\nWould you like to open the master.cfg file for editing at this time?";
+nvResult = AskYesNo ( configMsg1 + configMsg2 + configMsg3 + configMsg4 + configMsg5, YES );
+if(nvResult = 1) then
+	LaunchApp("notepad.exe", TARGETDIR ^ "\\server\\config\\master.cfg");
+endif;
 
 end;
 ///////////////////////////////////////////////////////////////////////////////

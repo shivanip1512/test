@@ -340,13 +340,6 @@ begin
 
     endif;
     //}}IS_SCRIPT_TAG(Dlg_SdDinishEx)
-    
-    if(setupIsNeeded) then
-    	szMsg = "To configure Yukon for the first time, please follow the Yukon Setup shortcut on your desktop.";
-    	MessageBox ( szMsg , INFORMATION );
-    endif;
- 
-    	
 end;
 //---------------------------------------------------------------------------
 // OnSetTARGETDIR
