@@ -142,6 +142,11 @@ function setCommercial()
 </script>
 </head>
 
+<!--  Need to do a little dance here.  JSTL won't see scriptlet (non-String) vars unless they
+are present in page, session, etc. as an attribute. -->
+<%pageContext.setAttribute("liteEC",liteEC);%>
+<c:set target="${accountBean}" property="energyCompany" value="${liteEC}" />
+
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
