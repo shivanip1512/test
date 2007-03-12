@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/27/2007 1:31:03 PM                         */
+/* Created on:     3/12/2007 7:53:50 AM                         */
 /*==============================================================*/
 
 
@@ -1227,6 +1227,30 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DEVICEREADJOBLOG')
+            and   type = 'U')
+   drop table DEVICEREADJOBLOG
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEREADLOG')
+            and   type = 'U')
+   drop table DEVICEREADLOG
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEREADREQUESTLOG')
+            and   type = 'U')
+   drop table DEVICEREADREQUESTLOG
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('DEVICESCANRATE')
             and   type = 'U')
    drop table DEVICESCANRATE
@@ -2038,14 +2062,6 @@ if exists (select 1
            where  id = object_id('MCTConfigMapping')
             and   type = 'U')
    drop table MCTConfigMapping
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('METERREADLOG')
-            and   type = 'U')
-   drop table METERREADLOG
 go
 
 
@@ -4318,6 +4334,61 @@ go
 
 
 /*==============================================================*/
+/* Table: DEVICEREADJOBLOG                                      */
+/*==============================================================*/
+create table DEVICEREADJOBLOG (
+   DeviceReadJobLogID   numeric              not null,
+   ScheduleID           numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null
+)
+go
+
+
+alter table DEVICEREADJOBLOG
+   add constraint PK_DEVICEREADJOBLOG primary key  (DeviceReadJobLogID)
+go
+
+
+/*==============================================================*/
+/* Table: DEVICEREADLOG                                         */
+/*==============================================================*/
+create table DEVICEREADLOG (
+   DeviceReadLogID      numeric              not null,
+   DeviceID             numeric              not null,
+   RequestID            numeric              not null,
+   Timestamp            datetime             not null,
+   StatusCode           smallint             not null,
+   DeviceReadRequestLogID numeric              not null
+)
+go
+
+
+alter table DEVICEREADLOG
+   add constraint PK_DEVICEREADLOG primary key  (DeviceReadLogID)
+go
+
+
+/*==============================================================*/
+/* Table: DEVICEREADREQUESTLOG                                  */
+/*==============================================================*/
+create table DEVICEREADREQUESTLOG (
+   DeviceReadRequestLogID numeric              not null,
+   RequestID            numeric              not null,
+   Command              varchar(128)         not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null,
+   DeviceReadJobLogID   numeric              not null
+)
+go
+
+
+alter table DEVICEREADREQUESTLOG
+   add constraint PK_DEVICEREADREQUESTLOG primary key  (DeviceReadRequestLogID)
+go
+
+
+/*==============================================================*/
 /* Table: DEVICESCANRATE                                        */
 /*==============================================================*/
 create table DEVICESCANRATE (
@@ -5625,7 +5696,9 @@ create table DynamicCCCapBank (
    PrevVerificationControlStatus numeric              not null,
    VerificationControlIndex numeric              not null,
    AdditionalFlags      varchar(32)          not null,
-   CurrentDailyOperations numeric              not null
+   CurrentDailyOperations numeric              not null,
+   TwoWayCBCState       numeric              not null,
+   TwoWayCBCStateTime   datetime             not null
 )
 go
 
@@ -7442,24 +7515,6 @@ go
 
 
 /*==============================================================*/
-/* Table: METERREADLOG                                          */
-/*==============================================================*/
-create table METERREADLOG (
-   MeterReadLogID       numeric              not null,
-   DeviceID             numeric              not null,
-   RequestID            numeric              not null,
-   TIMESTAMP            datetime             not null,
-   STATUSCODE           numeric              not null
-)
-go
-
-
-alter table METERREADLOG
-   add constraint PK_METERREADLOG primary key  (MeterReadLogID)
-go
-
-
-/*==============================================================*/
 /* Table: MSPInterface                                          */
 /*==============================================================*/
 create table MSPInterface (
@@ -8109,6 +8164,8 @@ INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
 INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
+INSERT INTO State VALUES(-8, 0, 'Active', 0, 6, 0);
+INSERT INTO State VALUES(-8, 1, 'Inactive', 2, 6, 0);
 
 alter table STATE
    add constraint PK_STATE primary key  (STATEGROUPID, RAWSTATE)
@@ -8149,6 +8206,7 @@ INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status' );
 INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
 INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
+insert into StateGroup values (-8, 'TwoStateActive', 'Status')
 alter table STATEGROUP
    add constraint SYS_C0013128 primary key  (STATEGROUPID)
 go
@@ -8241,7 +8299,9 @@ create table SequenceNumber (
 go
 
 
-insert into sequencenumber values (1,'MeterReadLog');
+insert into SequenceNumber values (1,'DeviceReadLog');
+insert into SequenceNumber values (1,'DeviceReadRequestLog');
+insert into SequenceNumber values (1,'DeviceReadJobLog');
 alter table SequenceNumber
    add constraint PK_SEQUENCENUMBER primary key  (SequenceName)
 go
@@ -11705,6 +11765,30 @@ go
 alter table DEVICEMETERGROUP
    add constraint SYS_C0013213 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEREADJOBLOG
+   add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key (ScheduleID)
+      references MACSchedule (ScheduleID)
+go
+
+
+alter table DEVICEREADLOG
+   add constraint FK_DEVICERE_FK_DRLOGD_DEVICE foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEREADLOG
+   add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
+      references DEVICEREADREQUESTLOG (DeviceReadRequestLogID)
+go
+
+
+alter table DEVICEREADREQUESTLOG
+   add constraint FK_DEVICERE_FK_DRREQL_DEVICERE foreign key (DeviceReadJobLogID)
+      references DEVICEREADJOBLOG (DeviceReadJobLogID)
 go
 
 

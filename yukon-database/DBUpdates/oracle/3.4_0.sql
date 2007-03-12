@@ -106,29 +106,22 @@ insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Con
 insert into YukonRoleProperty values(-10922,-109,'C&I Curtailment Reports Group Label','Stars','Label (header) for C&I Curtailment group reports.');
 insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
 insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'false', 'Allow access to the Java Web Start Launcher for client applications.');
-go
 
 create table TemplateDisplay (
    DisplayNum           number              not null,
    TemplateNum          number              not null
 );
-go
 
 alter table TemplateDisplay
    add constraint PK_TEMPLATEDISPLAY primary key  (DisplayNum);
-go
-
 
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_DISPLAY foreign key (DisplayNum)
       references DISPLAY (DISPLAYNUM);
-go
-
 
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
       references TEMPLATE (TEMPLATENUM);
-go
 
 update mspVendor set CompanyName = 'Cannon' where vendorid = 1;
 update mspVendor set AppName = 'Yukon' where vendorid = 1;
@@ -235,19 +228,6 @@ insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcol
 update point set pointoffset = 2 where pointname like 'UV op count%';
 update point set pointoffset = 3 where pointname like 'OV op count%';
 
-create table METERREADLOG  (
-   "MeterReadLogID"     NUMBER                          not null,
-   "DeviceID"           NUMBER                          not null,
-   "RequestID"          NUMBER                          not null,
-   TIMESTAMP            DATE                            not null,
-   STATUSCODE           NUMBER                          not null
-);
-
-alter table METERREADLOG
-   add constraint PK_METERREADLOG primary key ("MeterReadLogID");
-
-insert into sequencenumber values (1,'MeterReadLog');
-
 alter table RawPointHistory drop constraint FK_RawPt_Point;
 alter table SystemLog drop constraint SYS_C0013408;
 
@@ -343,8 +323,74 @@ alter table GroupPaoPermission
    add constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 
+/* @error ignore-begin */
+alter table dynamiccccapbank add twowaycbcstate number;
+update dynamiccccapbank set twowaycbcstate = -1;
+alter table dynamiccccapbank modify twowaycbcstate number not null;
 
+alter table dynamiccccapbank add twowaycbcstatetime date;
+update dynamiccccapbank set twowaycbcstatetime = '01-JAN-1990';
+alter table dynamiccccapbank modify twowaycbcstatetime date not null;
+/* @error ignore-end */
+
+create table DEVICEREADJOBLOG  (
+   DeviceReadJobLogID   NUMBER                          not null,
+   ScheduleID           NUMBER                          not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE                            not null
+);
+
+alter table DEVICEREADJOBLOG
+   add constraint PK_DEVICEREADJOBLOG primary key (DeviceReadJobLogID);
+
+alter table DEVICEREADJOBLOG
+   add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key (ScheduleID)
+      references MACSchedule (ScheduleID);
       
+create table DEVICEREADREQUESTLOG  (
+   DeviceReadRequestLogID NUMBER                        not null,
+   RequestID            NUMBER                          not null,
+   Command              VARCHAR2(128)                   not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE                            not null,
+   DeviceReadJobLogID   NUMBER                          not null
+);
+
+alter table DEVICEREADREQUESTLOG
+   add constraint PK_DEVICEREADREQUESTLOG primary key (DeviceReadRequestLogID);
+
+alter table DEVICEREADREQUESTLOG
+   add constraint FK_DEVICERE_FK_DRREQL_DEVICERE foreign key (DeviceReadJobLogID)
+      references DEVICEREADJOBLOG (DeviceReadJobLogID);
+      
+create table DEVICEREADLOG  (
+   DeviceReadLogID      NUMBER                          not null,
+   DeviceID             NUMBER                          not null,
+   RequestID            NUMBER                          not null,
+   Timestamp            DATE                            not null,
+   StatusCode           SMALLINT                        not null,
+   DeviceReadRequestLogID NUMBER                        not null
+);
+
+alter table DEVICEREADLOG
+   add constraint PK_DEVICEREADLOG primary key (DeviceReadLogID);
+
+alter table DEVICEREADLOG
+   add constraint FK_DEVICERE_FK_DRLOGD_DEVICE foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+
+alter table DEVICEREADLOG
+   add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
+      references DEVICEREADREQUESTLOG (DeviceReadRequestLogID);
+
+insert into SequenceNumber values (1,'DeviceReadLog');
+insert into SequenceNumber values (1,'DeviceReadRequestLog');
+insert into SequenceNumber values (1,'DeviceReadJobLog');
+
+insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1, 'TwoStateActive', 'Status' from stategroup;
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 0, 'Active', 0, 6, 0 from stategroup where name = 'TwoStateActive';      
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 1, 'Inactive', 2, 6, 0 from stategroup where name = 'TwoStateActive';      
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

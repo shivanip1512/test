@@ -412,7 +412,91 @@ alter table GroupPaoPermission
       references YukonPAObject (PAObjectID)
 go
 
+/* @error ignore-begin */
+alter table dynamiccccapbank add twowaycbcstate numeric;
+go
+update dynamiccccapbank set twowaycbcstate = -1;
+go
+alter table dynamiccccapbank alter column twowaycbcstate numeric not null;
+go
+alter table dynamiccccapbank add twowaycbcstatetime datetime;
+go
+update dynamiccccapbank set twowaycbcstatetime = '01-JAN-1990';
+go
+alter table dynamiccccapbank alter column twowaycbcstatetime datetime not null;
+go
+/* @error ignore-end */
 
+create table DEVICEREADJOBLOG (
+   DeviceReadJobLogID   numeric              not null,
+   ScheduleID           numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null
+)
+go
+
+alter table DEVICEREADJOBLOG
+   add constraint PK_DEVICEREADJOBLOG primary key  (DeviceReadJobLogID)
+go
+
+alter table DEVICEREADJOBLOG
+   add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key (ScheduleID)
+      references MACSchedule (ScheduleID)
+go
+
+create table DEVICEREADREQUESTLOG (
+   DeviceReadRequestLogID numeric              not null,
+   RequestID            numeric              not null,
+   Command              varchar(128)         not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null,
+   DeviceReadJobLogID   numeric              not null
+)
+go
+
+alter table DEVICEREADREQUESTLOG
+   add constraint PK_DEVICEREADREQUESTLOG primary key  (DeviceReadRequestLogID)
+go
+
+alter table DEVICEREADREQUESTLOG
+   add constraint FK_DEVICERE_FK_DRREQL_DEVICERE foreign key (DeviceReadJobLogID)
+      references DEVICEREADJOBLOG (DeviceReadJobLogID)
+go
+      
+create table DEVICEREADLOG (
+   DeviceReadLogID      numeric              not null,
+   DeviceID             numeric              not null,
+   RequestID            numeric              not null,
+   Timestamp            datetime             not null,
+   StatusCode           smallint             not null,
+   DeviceReadRequestLogID numeric              not null
+)
+go
+
+alter table DEVICEREADLOG
+   add constraint PK_DEVICEREADLOG primary key  (DeviceReadLogID)
+go
+
+alter table DEVICEREADLOG
+   add constraint FK_DEVICERE_FK_DRLOGD_DEVICE foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+alter table DEVICEREADLOG
+   add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
+      references DEVICEREADREQUESTLOG (DeviceReadRequestLogID)
+go      
+      
+insert into SequenceNumber values (1,'DeviceReadLog');
+insert into SequenceNumber values (1,'DeviceReadRequestLog');
+insert into SequenceNumber values (1,'DeviceReadJobLog');
+go      
+      
+insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1, 'TwoStateActive', 'Status' from stategroup;
+go
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 0, 'Active', 0, 6, 0 from stategroup where name = 'TwoStateActive';      
+insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 1, 'Inactive', 2, 6, 0 from stategroup where name = 'TwoStateActive';      
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
