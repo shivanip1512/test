@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.126 $
-* DATE         :  $Date: 2007/03/08 22:42:37 $
+* REVISION     :  $Revision: 1.127 $
+* DATE         :  $Date: 2007/03/12 14:55:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2701,7 +2701,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
         {
             int day, month, outage_count = -1;
             point_info reading, peak;
-            int voltage_min, voltage_max;
+            int voltage_min = 0, voltage_max = 0;
 
             int time_voltage_min, time_voltage_max, time_peak;
 
@@ -2771,7 +2771,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     pi.quality = NormalQuality;
 
                     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
-                                          pi, "Blink Counter",  _daily_read_interest.single_day);
+                                          pi, "Blink Counter",  _daily_read_interest.single_day + 86400);  //  add on 24 hours - end of day
                 }
 
                 if( voltage_min > 0 || voltage_max > 0 )
