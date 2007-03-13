@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2007/01/09 22:47:07 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2007/03/13 19:58:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,7 +217,6 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
             int offset   = 0,
                 on_time  = 0,
                 off_time = 0;
-            bool valid_control = true;
 
             if( parse.getiValue("point") > 0 )
             {
@@ -233,13 +232,14 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
             else if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
                 //  select by a control point on the device
-                offset = parse.getiValue("offset");
+                offset  = parse.getiValue("offset");
 
                 control = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual(offset));
             }
 
             if( control )
             {
+                //  we got a point - check for a valid control type
                 if( control->getPointStatus().getControlType() > NoneControlType &&
                     control->getPointStatus().getControlType() < InvalidControlType )
                 {
@@ -323,12 +323,14 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                         dout << CtiTime() << " **** Checkpoint - invalid control type \"" << control->getPointStatus().getControlType() << "\" specified in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    //  i don't like this, but i don't see a better way yet
-                    valid_control = false;
+                    control.reset();
+                    offset  = 0;
                 }
             }
-            else
+            else if( offset )
             {
+                //  no point - send it raw if we have an offset
+
                 if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                 {
                     controltype = Protocol::DNP::BinaryOutputControl::PulseOff;
@@ -341,52 +343,61 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                 p_i.is_pseudo = false;
             }
 
-
-            controlout.type            = Protocol::DNPInterface::DigitalOutput;
-            controlout.control_offset  = offset;
-
-            controlout.dout.control    = controltype;
-            controlout.dout.trip_close = trip_close;
-            controlout.dout.on_time    = on_time;
-            controlout.dout.off_time   = off_time;
-            controlout.dout.count      = 1;
-            controlout.dout.queue      = false;
-            controlout.dout.clear      = false;
-
-            if( control )
-            {
-                OutMessage->ExpirationTime = CtiTime().seconds() + control->getControlExpirationTime();
-            }
-
-            if( control && control->getPointStatus().getControlInhibit() )
+            if( !offset )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << control->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - no point specified for control for device \"" << getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-            else if( valid_control )
+            else
             {
-                if( parse.isKeyValid("sbo_selectonly") )
+                controlout.type            = Protocol::DNPInterface::DigitalOutput;
+                controlout.control_offset  = offset;
+
+                controlout.dout.control    = controltype;
+                controlout.dout.trip_close = trip_close;
+                controlout.dout.on_time    = on_time;
+                controlout.dout.off_time   = off_time;
+                controlout.dout.count      = 1;
+                controlout.dout.queue      = false;
+                controlout.dout.clear      = false;
+
+                if( control )
                 {
-                    //  for diagnostics - used for verifying SBO timeouts
-                    command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly;
+                    OutMessage->ExpirationTime = CtiTime().seconds() + control->getControlExpirationTime();
                 }
-                else if( parse.isKeyValid("sbo_operate") )
+
+                if( control && control->getPointStatus().getControlInhibit() )
                 {
-                    //  the other half of SBO_SelectOnly
-                    command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate;
-                }
-                else if( (control && control->getPointStatus().getControlType() == SBOPulseControlType) ||
-                         (control && control->getPointStatus().getControlType() == SBOLatchControlType) )
-                {
-                    //  if successful, this will transition to SBO_Operate in DNPInterface on Porter-side
-                    command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << control->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
                 else
                 {
-                    //  boring old direct control
-                    command = Protocol::DNPInterface::Command_SetDigitalOut_Direct;
+                    if( parse.isKeyValid("sbo_selectonly") )
+                    {
+                        //  for diagnostics - used for verifying SBO timeouts
+                        command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly;
+                    }
+                    else if( parse.isKeyValid("sbo_operate") )
+                    {
+                        //  the other half of SBO_SelectOnly
+                        command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate;
+                    }
+                    else if( (control && control->getPointStatus().getControlType() == SBOPulseControlType) ||
+                             (control && control->getPointStatus().getControlType() == SBOLatchControlType) )
+                    {
+                        //  if successful, this will transition to SBO_Operate in DNPInterface on Porter-side
+                        command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select;
+                    }
+                    else
+                    {
+                        //  boring old direct control
+                        command = Protocol::DNPInterface::Command_SetDigitalOut_Direct;
+                    }
                 }
             }
 
@@ -494,7 +505,33 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
         }
     }
 
-    if( command != Protocol::DNPInterface::Command_Invalid )
+    if( command == Protocol::DNPInterface::Command_Invalid )
+    {
+        string resultString;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+        }
+
+        resultString = "Invalid command for device \"" + getName() + "\"";
+        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
+                                                string(OutMessage->Request.CommandStr),
+                                                resultString,
+                                                nRet,
+                                                OutMessage->Request.RouteID,
+                                                OutMessage->Request.MacroOffset,
+                                                OutMessage->Request.Attempt,
+                                                OutMessage->Request.TrxID,
+                                                OutMessage->Request.UserID,
+                                                OutMessage->Request.SOE,
+                                                CtiMultiMsg_vec( )) );
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+    else
     {
         //  only used for the call to sendCommRequest(), unreliable after - DO NOT USE FOR DECODES
         _pil_info.protocol_command   = command;
@@ -509,12 +546,9 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
         sendCommRequest(OutMessage, outList);
 
+
+
         nRet = NoError;
-    }
-    else
-    {
-        delete OutMessage;
-        OutMessage = NULL;
     }
 
     return nRet;
