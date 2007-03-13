@@ -650,25 +650,26 @@
 649  WriteProfString                                    isrt.obl(Profile.obs)
 650  WriteProperties                                    ifx.obl(PersistPropertyBag.obs)
 651  XCopyFile                                          isrt.obl(Files.obs)
-652  YukonServer_Installed                              Setup.obs
-653  YukonServer_Installing                             Setup.obs
-654  YukonServiceManager_Installed                      Setup.obs
-655  YukonServiceManager_Installing                     Setup.obs
-656  YukonServiceManager_UnInstalling                   Setup.obs
-657  _WinSubEnableControl                               isrt.obl(WINSUB.obs)
-658  _WinSubEnableWindow                                isrt.obl(WINSUB.obs)
-659  _WinSubGetChildWindow                              isrt.obl(WINSUB.obs)
-660  _WinSubIsWindow                                    isrt.obl(WINSUB.obs)
-661  __ISRTDoExit                                       isrt.obl(Misc.obs)
-662  __ISRTInit                                         isrt.obl(ISRTInit.obs)
-663  __ISRTRestoreMainLog                               isrt.obl(ISRTInit.obs)
-664  __ISRTRestoreMainLogEx                             isrt.obl(ISRTInit.obs)
-665  __ISRTSetComponentLog                              isrt.obl(ISRTInit.obs)
-666  __ISRTUnInit                                       isrt.obl(ISRTInit.obs)
-667  __LoadIScriptString                                isrt.obl(LoadStr.obs)
-668  program                                            ifx.obl(EventsSetupPriv.obs)
-669  removeLegacyShortcuts                              Setup.obs
-670  sfc.SRSetRestorePoint                              Setup.obs
+652  YukonClient_Installing                             Setup.obs
+653  YukonServer_Installed                              Setup.obs
+654  YukonServer_Installing                             Setup.obs
+655  YukonServiceManager_Installed                      Setup.obs
+656  YukonServiceManager_Installing                     Setup.obs
+657  YukonServiceManager_UnInstalling                   Setup.obs
+658  _WinSubEnableControl                               isrt.obl(WINSUB.obs)
+659  _WinSubEnableWindow                                isrt.obl(WINSUB.obs)
+660  _WinSubGetChildWindow                              isrt.obl(WINSUB.obs)
+661  _WinSubIsWindow                                    isrt.obl(WINSUB.obs)
+662  __ISRTDoExit                                       isrt.obl(Misc.obs)
+663  __ISRTInit                                         isrt.obl(ISRTInit.obs)
+664  __ISRTRestoreMainLog                               isrt.obl(ISRTInit.obs)
+665  __ISRTRestoreMainLogEx                             isrt.obl(ISRTInit.obs)
+666  __ISRTSetComponentLog                              isrt.obl(ISRTInit.obs)
+667  __ISRTUnInit                                       isrt.obl(ISRTInit.obs)
+668  __LoadIScriptString                                isrt.obl(LoadStr.obs)
+669  program                                            ifx.obl(EventsSetupPriv.obs)
+670  removeLegacyShortcuts                              Setup.obs
+671  sfc.SRSetRestorePoint                              Setup.obs
 
 
 ***** External Variables *****

@@ -266,3 +266,16 @@ endif;
 Enable(LOGGING);
 
 end;
+//---------------------------------------------------------------------------
+// The Installing event is sent just before the feature 
+// Yukon Client is installed.
+//---------------------------------------------------------------------------
+ 
+export prototype YukonClient_Installing();
+function YukonClient_Installing()
+string szFile;
+begin
+	szFile = TARGETDIR ^ "\\client\\bin\\*.jar";
+	DeleteFile ( szFile );	
+end;
+
