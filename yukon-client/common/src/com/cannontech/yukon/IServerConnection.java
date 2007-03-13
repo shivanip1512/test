@@ -2,13 +2,12 @@ package com.cannontech.yukon;
 
 import java.util.Observer;
 
-import com.cannontech.message.util.MessageListener;
 
 /**
  * Base interface for all yukon server connections
  * @author alauinger
  */
-public interface IServerConnection 
+public interface IServerConnection extends BasicServerConnection 
 {
 	boolean getAutoReconnect();
 	String getHost();
@@ -17,18 +16,9 @@ public interface IServerConnection
 
 	int getTimeToReconnect();
 	boolean isMonitorThreadAlive(); 
-	boolean isValid();
+    public boolean isValid();
 
-//	Object read();
-//	Object read(long millis);
-//	Object readInQueue();
-
-	void setAutoReconnect(boolean val);
-
-	void write(Object o);
-    public void queue(Object o);
-	void addMessageListener(MessageListener l);
-	void removeMessageListener(MessageListener l);
+    void setAutoReconnect(boolean val);
 
 	boolean isQueueMessages();
 	void setQueueMessages(boolean b);
