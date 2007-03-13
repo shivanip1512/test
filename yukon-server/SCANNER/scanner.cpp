@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2006/12/06 22:12:51 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/03/13 18:53:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1190,7 +1190,7 @@ void LoadScannableDevices(void *ptr)
 
 
     InitScannerGlobals();      // Go fetch from the environmant
-    ResetBreakAlloc();          // Make certain the debug library does not break us.
+    ResetBreakAlloc();         // Make certain the debug library does not break us.
 
     CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
 
@@ -1222,7 +1222,7 @@ void LoadScannableDevices(void *ptr)
                 devstr = pChg->getObjectType();
             }
 
-            ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
+             ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
 
             if(pChg == NULL)
             {
@@ -1232,7 +1232,9 @@ void LoadScannableDevices(void *ptr)
             {
                 CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
                 CtiDeviceSPtr pDev = ScannerDeviceManager.getEqual( chgid );
-                pDev->setPointDeviceMap(&ScannerPointDeviceMap);
+                if( pDev.get() != NULL )//if the chgid is not on the map, avoiding crash
+                    pDev->setPointDeviceMap(&ScannerPointDeviceMap);
+                //if pDev is null, chgid is not a scannable device.
             }
 
             stop = stop.now();
