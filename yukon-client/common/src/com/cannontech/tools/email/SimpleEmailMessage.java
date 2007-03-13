@@ -19,9 +19,10 @@ import com.cannontech.roles.yukon.SystemRole;
  * it allows the same object to be used over and over by setting
  * a new recipient.
  */
-public class SimpleEmailMessage {
+public class SimpleEmailMessage implements EmailMessageHolder {
     private Message _message;
 
+    @Deprecated
     public SimpleEmailMessage() throws MessagingException {
         java.util.Properties systemProps = System.getProperties();
         
@@ -42,7 +43,10 @@ public class SimpleEmailMessage {
             throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");
         }
         _message.setFrom(new InternetAddress(from));
-
+    }
+    
+    public SimpleEmailMessage(Message message) {
+        _message = message;
     }
     
     public void setRecipient(String address) throws MessagingException {
@@ -58,8 +62,10 @@ public class SimpleEmailMessage {
         _message.setText(body);
     }
     
+    @Deprecated
     public void send() throws MessagingException {
         _message.setSentDate(new Date());
         Transport.send(_message);
     }
+
 }
