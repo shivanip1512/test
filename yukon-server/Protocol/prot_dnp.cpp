@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2007/02/22 21:50:52 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/03/13 19:57:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -492,6 +492,8 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             case Command_WriteTime:
             {
                 _string_results.push_back(CTIDBG_new string("Time sync sent"));
+
+                break;
             }
 
             case Command_UnsolicitedEnable:
