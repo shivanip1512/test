@@ -1654,6 +1654,10 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         out.println("OS_VERSION: " + SystemUtils.OS_VERSION);
         out.println("JAVA_HOME: " + SystemUtils.JAVA_HOME);
         out.println("JAVA_VERSION: " + SystemUtils.JAVA_VERSION);
+        out.println("JAVA_CLASS_PATH: " + SystemUtils.JAVA_CLASS_PATH);
+        out.println("JAVA_LIBRARY_PATH: " + SystemUtils.JAVA_LIBRARY_PATH);
+        out.println("JAVA_EXT_DIRS: " + SystemUtils.JAVA_EXT_DIRS);
+        out.println("JAVA_ENDORSED_DIRS: " + SystemUtils.JAVA_ENDORSED_DIRS);
         return sw.toString();
     }
 
