@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.jdom.Element;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.tools.email.SimpleEmailMessage;

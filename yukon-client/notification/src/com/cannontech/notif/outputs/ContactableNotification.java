@@ -2,6 +2,7 @@ package com.cannontech.notif.outputs;
 
 import java.util.*;
 
+import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContactNotification;

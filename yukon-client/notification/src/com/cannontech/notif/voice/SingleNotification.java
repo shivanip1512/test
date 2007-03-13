@@ -7,11 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
+import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.Contactable;
-import com.cannontech.notif.outputs.NotificationTypeChecker;
 import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.user.UserUtils;
 

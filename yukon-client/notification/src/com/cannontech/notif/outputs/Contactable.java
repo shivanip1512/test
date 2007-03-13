@@ -3,6 +3,7 @@ package com.cannontech.notif.outputs;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.notification.NotifType;

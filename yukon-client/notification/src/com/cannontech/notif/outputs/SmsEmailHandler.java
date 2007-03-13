@@ -1,5 +1,6 @@
 package com.cannontech.notif.outputs;
 
+import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.notification.NotifType;
 
