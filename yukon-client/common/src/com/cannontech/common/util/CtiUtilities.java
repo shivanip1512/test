@@ -12,19 +12,25 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
-import java.net.URL;
-import java.net.NetworkInterface;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.zip.ZipException;
 
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -1647,6 +1653,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
     public static String getSystemInfoString() {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
+        out.println("getYukonBase(): " + getYukonBase());
         out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
         out.println("USER_COUNTRY: " + SystemUtils.USER_COUNTRY);
         out.println("OS_ARCH: " + SystemUtils.OS_ARCH);
@@ -1660,6 +1667,53 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         out.println("JAVA_ENDORSED_DIRS: " + SystemUtils.JAVA_ENDORSED_DIRS);
         return sw.toString();
     }
+    
+    static String[] getAllJarExceptions = {"castor-xml.jar"}; 
+    static {
+        // must be kept in order
+        Arrays.sort(getAllJarExceptions);
+    }
+    
+    public static Collection<String> getAllJars(File base, String jarName) throws IOException {
+        if (Arrays.binarySearch(getAllJarExceptions, jarName) >= 0) {
+            return Collections.emptyList();
+        }
+        LinkedHashSet<String> result = new LinkedHashSet<String>();
+        File mainJarFile = new File(base, jarName);
+        JarFile jar = null;
+        try {
+            jar = new JarFile(mainJarFile);
+            Manifest manifest = jar.getManifest();
+            if (manifest == null) {
+                return Collections.emptyList();
+            }
+            Attributes mainAttributes = manifest.getMainAttributes();
+            String value = mainAttributes.getValue(Attributes.Name.CLASS_PATH);
+            if (value == null || StringUtils.isBlank(value)) {
+                return Collections.emptyList();
+            }
+            String[] strings = value.split("\\s+");
+            for (int i = 0; i < strings.length; i++) {
+                String string = strings[i];
+                if (!string.toLowerCase().endsWith(".jar")) {
+                    continue;
+                }
+                result.add(string);
+                result.addAll(getAllJars(base, string));
+            }
+            
+            return result;
+        } catch (ZipException e) {
+            // not much we can do here
+            return Collections.emptyList();
+        } finally {
+            if (jar != null) {
+                jar.close();
+            }
+        }
+    }
+
+
 
 }
 
