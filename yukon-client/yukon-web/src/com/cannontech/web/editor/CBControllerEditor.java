@@ -496,10 +496,13 @@ public class CBControllerEditor {
     }
 	
 	private void saveState (HtmlTree tree) {
-        Object treeState = (Object) tree.saveState(FacesContext.getCurrentInstance());
-        CBCSessionInfo cbcSession = (CBCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");
-		cbcSession.setTreeState(pointTreeName, treeState);
-	}
+        if (tree != null)
+        {
+            Object treeState = tree.saveState(FacesContext.getCurrentInstance());
+            CBCSessionInfo cbcSession = (CBCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");
+    		cbcSession.setTreeState(pointTreeName, treeState);
+        }
+    }
 
 	private void restoreState (HtmlTree tree) {
         if (tree != null) {
