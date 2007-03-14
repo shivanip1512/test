@@ -2,8 +2,16 @@ package com.cannontech.web.jws;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -84,21 +92,15 @@ public class JnlpController extends AbstractController {
         // locate all jars under the client directory
         String yukonBase = CtiUtilities.getYukonBase();
         File clientDir = new File(yukonBase, "client/bin");
-        FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        };
-        File[] files = clientDir.listFiles(filter);
-        for (File jarFile : files) {
-            if (jarFile.getName().equalsIgnoreCase(appMainClassJar)) {
-                continue;
-            }
-            if (excludedJars.contains(jarFile.getName())) {
+        
+        Collection<String> allJars = CtiUtilities.getAllJars(clientDir, appMainClassJar);
+        
+        for (String jarFile : allJars) {
+            if (excludedJars.contains(jarFile)) {
                 continue;
             }
             Element jarElem = new Element("jar");
-            jarElem.setAttribute("href", jarFile.getName());
+            jarElem.setAttribute("href", jarFile);
             resourcesElem.addContent(jarElem);
         }
         
@@ -142,7 +144,7 @@ public class JnlpController extends AbstractController {
         out.output(doc, responseOutStream);
         return null;
     }
-
+    
     public void setAppTitle(String appTitle) {
         this.appTitle = appTitle;
     }
