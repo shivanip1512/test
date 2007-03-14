@@ -164,7 +164,7 @@
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:feederWattPointPicker.showPicker()" >
+                    <h:outputLink  value="javascript:feederVoltPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>

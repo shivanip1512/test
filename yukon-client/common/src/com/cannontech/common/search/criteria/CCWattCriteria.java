@@ -12,6 +12,7 @@ public class CCWattCriteria extends YukonObjectCriteriaHelper {
         //create all the rules for this criteria
         for (int i = 0; i < UNITS.length; i++) {
             addCriteria("uomid", UNITS[i], BooleanClause.Occur.SHOULD);
+            addCriteria("pointtype", "Analog", BooleanClause.Occur.MUST);
         }
     }
 

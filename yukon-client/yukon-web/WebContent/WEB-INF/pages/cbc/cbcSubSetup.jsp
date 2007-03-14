@@ -181,7 +181,8 @@
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="subVoltPointPicker.showPicker()" >
+                
+                    <h:outputLink  value="javascript:subVoltPointPicker.showPicker()" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>
