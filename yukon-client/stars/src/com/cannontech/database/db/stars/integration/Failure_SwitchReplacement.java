@@ -19,7 +19,7 @@ public class Failure_SwitchReplacement extends DBPersistent {
 
     public static final String SETTER_COLUMNS[] = { "ReplacementID", "SerialNumber", "WOType", "DeviceType", "UserName", "ErrorMsg", "DateTime"};
 
-    public static final String TABLE_NAME = "SwitchReplacement";
+    public static final String TABLE_NAME = "Failure_SwitchReplacement";
 
 
 public Failure_SwitchReplacement() {
@@ -32,24 +32,22 @@ public Failure_SwitchReplacement(SwitchReplacement switchReplacement, String err
 	this.serialNumber = switchReplacement.getSerialNumber();
 	this.woType = switchReplacement.getWOType();
 	this.deviceType = switchReplacement.getDeviceType();
-	this.deviceType = switchReplacement.getUserName();
+	this.userName = switchReplacement.getUserName();
 	this.errorMsg = errorMsg;
 	this.datetime = datetime;
 }
 
-public void add() throws java.sql.SQLException 
-{
+public void add() throws java.sql.SQLException {
     Object setValues[] = { getReplacementID(), getSerialNumber(), getWOType(), getDeviceType(), getUserName(), getErrorMsg(), getDatetime()};
 
     add( TABLE_NAME, setValues );
 }
 
-
 public void setDbConnection(Connection newValue) {
 	super.setDbConnection(newValue);
 }
-public void delete() throws java.sql.SQLException 
-{
+
+public void delete() throws java.sql.SQLException {
     Object constraintValues[] = { getReplacementID() };
 
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
