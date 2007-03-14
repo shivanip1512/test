@@ -53,7 +53,7 @@ public class WorkOrderModel extends ReportModelBase {
 	private static String title = "Work Order";
 	
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 31;
+	protected final int NUMBER_COLUMNS = 33;
 	
 	/** Enum values for column representation */
 	public final static int EC_NAME_COLUMN = 0;
@@ -68,32 +68,31 @@ public class WorkOrderModel extends ReportModelBase {
 	public final static int ACCOUNT_NO_COLUMN = 8;
 	public final static int NAME_COLUMN = 9;
 	public final static int CONSUMPTION_TYPE_COLUMN = 10;
-	public final static int PHONE_HOME_COLUMN = 11;
-	public final static int PHONE_WORK_COLUMN = 12;
-	public final static int PHONE_CONTACT_COLUMN = 13;
-    public final static int PRESENCE_REQUIRED_COLUMN = 14;
-	public final static int ADDRESS1_COLUMN = 15;
-	public final static int ADDRESS2_COLUMN = 16;
-	public final static int CITY_STATE_COLUMN = 17;
-    public final static int ZIP_COLUMN = 18;
-	
-	public final static int COMPANY_NAME_COLUMN = 19;
-	public final static int ADDTL_ORDER_NO_COLUMN = 20;
-	public final static int MAP_NO_COLUMN = 21;
-	public final static int METER_NO_COLUMN = 22;
-	public final static int ACCOUNT_NOTES_COLUMN = 23;
-	
-	public final static int SERIAL_NO_COLUMN = 24;
-	public final static int METER_NO_TO_SERIAL_COLUMN = 25;
-	public final static int DEVICE_TYPE_COLUMN = 26;
-	public final static int INSTALL_DATE_COLUMN = 27;
-	public final static int INSTALL_COMPANY_COLUMN = 28;
-
-	public final static int WORK_DESC_COLUMN = 29;
-	public final static int ACTION_TAKEN_COLUMN = 30;
+    public final static int DEBTOR_NUM_COLUMN = 11;
+	public final static int PHONE_HOME_COLUMN = 12;
+	public final static int PHONE_WORK_COLUMN = 13;
+	public final static int PHONE_CONTACT_COLUMN = 14;
+    public final static int PRESENCE_REQUIRED_COLUMN = 15;
+	public final static int ADDRESS1_COLUMN = 16;
+	public final static int ADDRESS2_COLUMN = 17;
+	public final static int CITY_STATE_COLUMN = 18;
+    public final static int ZIP_COLUMN = 19;
     
-    public final static int DEVICE_STATUS_COLUMN = 31;
-    public final static int DEBTOR_NUM_COLUMN = 32;
+	public final static int COMPANY_NAME_COLUMN = 20;
+	public final static int ADDTL_ORDER_NO_COLUMN = 21;
+	public final static int MAP_NO_COLUMN = 22;
+	public final static int METER_NO_COLUMN = 23;
+	public final static int ACCOUNT_NOTES_COLUMN = 24;
+	
+	public final static int SERIAL_NO_COLUMN = 25;
+	public final static int METER_NO_TO_SERIAL_COLUMN = 26;
+	public final static int DEVICE_TYPE_COLUMN = 27;
+    public final static int DEVICE_STATUS_COLUMN = 28;
+	public final static int INSTALL_DATE_COLUMN = 29;
+	public final static int INSTALL_COMPANY_COLUMN = 30;
+
+	public final static int WORK_DESC_COLUMN = 31;
+	public final static int ACTION_TAKEN_COLUMN = 32;
 
 	public final static int HEADER_START_INDEX = ORDER_NO_COLUMN;
 	public final static int HEADER_END_INDEX = ACCOUNT_NOTES_COLUMN; 
@@ -851,6 +850,7 @@ public class WorkOrderModel extends ReportModelBase {
 				ACCOUNT_NO_STRING,
 				NAME_STRING,
 				CONSUMPTION_TYPE_STRING,
+                DEBTOR_NUM_STRING,
 				PHONE_HOME_STRING,
 				PHONE_WORK_STRING,
 				PHONE_CONTACT_STRING,
@@ -868,13 +868,12 @@ public class WorkOrderModel extends ReportModelBase {
 				SERIAL_NO_STRING,
 				METER_NO_TO_SERIAL_STRING,
 				DEVICE_TYPE_STRING,
+                DEVICE_STATUS_STRING,
 				INSTALL_DATE_STRING,
 				INSTALL_COMPANY_STRING,
 				//FOOTER
-				WORK_DESC_STRING,
-				ACTION_TAKEN_STRING,
-                DEVICE_STATUS_STRING,
-                DEBTOR_NUM_STRING
+                WORK_DESC_STRING,
+				ACTION_TAKEN_STRING
 			};
 		}
 		
@@ -905,11 +904,11 @@ public class WorkOrderModel extends ReportModelBase {
 			int _1third = 184;
 			int _2third = _1third*2;
 			int _1half = 276;
-			int _1fifth = 110;
+			int _1sixth = 80;
 			int _thirdWidth = 180;
 			int _halfWidth = 270;
 			int _wholeWidth = 500;
-			int _fifthWidth = 104;
+			int _sixthWidth = 82;
 			
 			int _yPos = 1; 
 			columnProperties = new ColumnProperties[]{
@@ -926,30 +925,30 @@ public class WorkOrderModel extends ReportModelBase {
 				new ColumnProperties(_home, (colHeight*4), _halfWidth, null),		//ACCOUNT_NO_STRING,
 				new ColumnProperties(_home, (colHeight*6), _halfWidth, null),		//NAME_STRING,
 				new ColumnProperties(_home, (colHeight*8), _halfWidth, null),		//CONSUMPTION_TYPE_STRING,
+                new ColumnProperties(_home, (colHeight*9), _halfWidth, null),      //DEBTOR_NUM_STRING,
 				new ColumnProperties(_1half, (colHeight*6), _halfWidth,  null),		//PHONE_HOME_STRING,
 				new ColumnProperties(_1half, (colHeight*7), _halfWidth, null),		//PHONE_WORK_STRING,
 				new ColumnProperties(_1half, (colHeight*8), _halfWidth, null),		//PHONE_CONTACT_STRING,
                 new ColumnProperties(_1half, (colHeight*9), _halfWidth, null),      //PRESENCE_REQUIRED,
-				new ColumnProperties(_home, (colHeight*9), _halfWidth, null),		//ADDRESS1_STRING,				
-				new ColumnProperties(_home, (colHeight*10), _halfWidth, null),		//ADDRESS2_STRING,
-				new ColumnProperties(_home, (colHeight*11), _halfWidth, null),		//CITY_STATE_STRING,
-                new ColumnProperties(_home, (colHeight*12), _halfWidth, null),      //ZIP_STRING,                
+				new ColumnProperties(_home, (colHeight*10), _halfWidth, null),		//ADDRESS1_STRING,				
+				new ColumnProperties(_home, (colHeight*11), _halfWidth, null),		//ADDRESS2_STRING,
+				new ColumnProperties(_home, (colHeight*12), _halfWidth, null),		//CITY_STATE_STRING,
+                new ColumnProperties(_home, (colHeight*13), _halfWidth, null),      //ZIP_STRING,
 				new ColumnProperties(_home, (colHeight*7), _halfWidth, null),		//COMPANY_NAME_STRING,
 				new ColumnProperties(_1half, (colHeight*12), _halfWidth, null),		//ADDTL_ORDER_NO_STRING,
 				new ColumnProperties(_1half, (colHeight*13), _halfWidth, null),		//MAP_NO_STRING,
 				new ColumnProperties(_1half, (colHeight*14), _halfWidth, null),		//METER_NO_STRING,				
 				new ColumnProperties(_home, (colHeight*15), _wholeWidth, null),		//ACCOUNT_NOTES_STRING,
 				//ITEMBAND
-				new ColumnProperties(_home+5, _yPos, _fifthWidth, null),			//SERIAL_NO_STRING,
-				new ColumnProperties(_1fifth, _yPos, _fifthWidth, null),			//METER_NO_TO_SERIAL_STRING,
-				new ColumnProperties(_1fifth*2, _yPos, _fifthWidth, null),			//DEVICE_TYPE_STRING,
-				new ColumnProperties(_1fifth*3, _yPos, _fifthWidth, null),		//INSTALL_DATE_STRING,
-				new ColumnProperties(_1fifth*4,_yPos, _fifthWidth, null),		//INSTALL_COMPANY_STRING
+				new ColumnProperties(_home+5, _yPos, _sixthWidth, null),			//SERIAL_NO_STRING,
+				new ColumnProperties(_1sixth, _yPos, _sixthWidth, null),			//METER_NO_TO_SERIAL_STRING,
+				new ColumnProperties(_1sixth*2, _yPos, _sixthWidth, null),			//DEVICE_TYPE_STRING,
+                new ColumnProperties(_1sixth*3, _yPos, _sixthWidth, null),      //DEVICE_STATUS_STRING,
+				new ColumnProperties(_1sixth*4, _yPos, _sixthWidth, null),		    //INSTALL_DATE_STRING,
+				new ColumnProperties(_1sixth*5,_yPos, _sixthWidth, null),           //INSTALL_COMPANY_STRING
 				//FOOTER
-				new ColumnProperties(_home, (colHeight*1), _wholeWidth, null),		//WORK_DESC_STRING,
-				new ColumnProperties(_home, (colHeight*5), _wholeWidth, null),		//ACTION_TAKEN_STRING,
-                new ColumnProperties(_home, (colHeight*11), _wholeWidth, null),     //DEVICE_STATUS_STRING,
-                new ColumnProperties(_home, (colHeight*11), _wholeWidth, null),     //DEBTOR_NUM_STRING,
+                new ColumnProperties(_home, (colHeight*3), _wholeWidth, null),		//WORK_DESC_STRING,
+				new ColumnProperties(_home, (colHeight*6), _wholeWidth, null)		//ACTION_TAKEN_STRING,
 			};				
 		}
 		
