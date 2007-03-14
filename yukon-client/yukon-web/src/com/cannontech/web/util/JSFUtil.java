@@ -34,26 +34,34 @@ public abstract class JSFUtil {
             }
         }
     }
-    
+
     public static void addNullWarnMessage(String message) {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, message, null);
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                            message,
+                                            null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-    
+
     public static void addNullInfoMessage(String message) {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, message, null);
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                            message,
+                                            null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-    
+
     public static void handleException(String message, Throwable t) {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, message + ": " + t.getMessage(), null);
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                            message + ": " + t.getMessage(),
+                                            null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
         CTILogger.error(message, t);
     }
-    
+
     public static String redirect(String url) {
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+            FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .redirect(url);
             FacesContext.getCurrentInstance().responseComplete();
         } catch (IOException e) {
             CTILogger.error("Unable to redirect to " + url, e);
@@ -64,15 +72,25 @@ public abstract class JSFUtil {
 
     @SuppressWarnings("unchecked")
     public static SelectItem[] convertSelectionList(int selectionListId) {
-        YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao().getYukonSelectionList(selectionListId);
+        YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao()
+                                                          .getYukonSelectionList(selectionListId);
         List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
         SelectItem[] items = new SelectItem[yukonListEntries.size()];
         int i = 0;
         for (YukonListEntry entry : yukonListEntries) {
-            SelectItem selectItem = new SelectItem(entry.getEntryID(), entry.getEntryText());
+            SelectItem selectItem = new SelectItem(entry.getEntryID(),
+                                                   entry.getEntryText());
             items[i++] = selectItem;
         }
         return items;
+    }
+
+    public static void resetBackingBean(String beanName) {
+
+        FacesContext.getCurrentInstance()
+                    .getApplication()
+                    .createValueBinding("#{" + beanName + "}")
+                    .setValue(FacesContext.getCurrentInstance(), null);
     }
 
 }

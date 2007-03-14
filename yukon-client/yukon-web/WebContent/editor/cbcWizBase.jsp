@@ -19,6 +19,9 @@
     int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
 
     if( type != PAOGroups.INVALID ) {
+        JSFUtil.resetBackingBean("capControlForm");
+        JSFUtil.resetBackingBean("capBankEditor");
+        JSFUtil.resetBackingBean("cbcCopyForm");
         CapControlForm capControlForm =
             (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 

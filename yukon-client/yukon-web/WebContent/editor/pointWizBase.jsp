@@ -21,7 +21,7 @@
      int paoId = ParamUtil.getInteger(request, "parentId", PAOGroups.INVALID);
 
     if( paoId != PAOGroups.INVALID ) {
-  
+        JSFUtil.resetBackingBean("ptEditorForm");
         PointForm ptEditorForm =
             (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
 

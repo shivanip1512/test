@@ -1,11 +1,20 @@
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+
+<jsp:directive.page import="com.cannontech.util.ParamUtil"/>
+<jsp:directive.page import="com.cannontech.database.data.pao.PAOGroups"/>
+<jsp:directive.page import="com.cannontech.web.util.JSFUtil"/><%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
-    
+<%
+int value = ParamUtil.getInteger(request, "value", PAOGroups.INVALID);
+if (value != PAOGroups.INVALID)
+{
+    JSFUtil.resetBackingBean("pointDeleteForm");
+}
+%>
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"

@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.util.ParamUtil" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.util.JSFParamUtil" %>
+<jsp:directive.page import="com.cannontech.web.util.JSFUtil"/>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
@@ -18,6 +19,7 @@
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
 
     if( id != PAOGroups.INVALID ) {
+        JSFUtil.resetBackingBean("cbcCopyForm");
         DBCopyForm cbcCopyForm =
             (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
         cbcCopyForm.init(id);

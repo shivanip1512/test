@@ -30,6 +30,9 @@
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
 
     if( id != PAOGroups.INVALID ) {
+        JSFUtil.resetBackingBean("capControlForm");
+        JSFUtil.resetBackingBean("capBankEditor");
+        JSFUtil.resetBackingBean("cbcCopyForm");
         CapControlForm capControlForm =
             (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 
@@ -45,7 +48,6 @@ addLockButtonForButtonGroup("foot_buttons");
 
 </script>
 </f:verbatim>
-
 
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
