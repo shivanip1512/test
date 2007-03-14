@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.205 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.206 $
+* DATE         :  $Date: 2007/03/14 19:33:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1216,7 +1216,7 @@ void processPreloads(CtiPortSPtr Port)
         dev = DeviceManager.getEqual(*itr);
 
         //  do not consider the device if it's inhibited
-        if( !dev->isInhibited() )
+        if( dev && !dev->isInhibited() )
         {
             preload.time     = dev->getPreloadEndTime();
             preload.deviceid = dev->getID();
@@ -1232,58 +1232,61 @@ void processPreloads(CtiPortSPtr Port)
     {
         dev = DeviceManager.getEqual(r_itr->deviceid);
 
-        CtiTablePaoExclusion paox(0, dev->getID(), 0, 0, 0, CtiTablePaoExclusion::ExFunctionCycleTime);
-
-        if( load_end < dev->getPreloadEndTime() )
+        if( dev )
         {
-            load_end = dev->getPreloadEndTime();
-        }
-
-        if( load_begin > dev->getPreloadEndTime() )
-        {
-            load_begin = dev->getPreloadEndTime();
-        }
-
-
-        //  we would like at least this many millis to communicate
-        double preload_ideal = (dev->getPreloadBytes() * 8.0) / Port->getBaudRate();
-
-        preload_ideal *= gConfigParms.getValueAsDouble("PRELOAD_MULTIPLIER", 1.2);
-        preload_ideal += gConfigParms.getValueAsULong("PRELOAD_PADDING", 5);
-
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadEndTime() = " << dev->getPreloadEndTime() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadBytes() = " << dev->getPreloadBytes() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Device will fire at " << load_begin << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Load will begin at " << (load_begin - preload_ideal) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        if( dev->getCycleTime() )
-        {
-            paox.setCycleTime(dev->getCycleTime());
-            paox.setCycleOffset((load_begin.seconds() - (long)preload_ideal) % dev->getCycleTime());
-            paox.setTransmitTime((long)preload_ideal);
-            dev->getExclusion().addExclusion(paox);
-
-            dev->getExclusion().setEvaluateNextAt(load_begin.seconds() - preload_ideal);
-
-            load_begin -= preload_ideal;
-
-            if( load_begin < now )
+            CtiTablePaoExclusion paox(0, dev->getID(), 0, 0, 0, CtiTablePaoExclusion::ExFunctionCycleTime);
+    
+            if( load_end < dev->getPreloadEndTime() )
+            {
+                load_end = dev->getPreloadEndTime();
+            }
+    
+            if( load_begin > dev->getPreloadEndTime() )
+            {
+                load_begin = dev->getPreloadEndTime();
+            }
+    
+    
+            //  we would like at least this many millis to communicate
+            double preload_ideal = (dev->getPreloadBytes() * 8.0) / Port->getBaudRate();
+    
+            preload_ideal *= gConfigParms.getValueAsDouble("PRELOAD_MULTIPLIER", 1.2);
+            preload_ideal += gConfigParms.getValueAsULong("PRELOAD_PADDING", 5);
+    
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadEndTime() = " << dev->getPreloadEndTime() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadBytes() = " << dev->getPreloadBytes() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Device will fire at " << load_begin << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Load will begin at " << (load_begin - preload_ideal) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+    
+            if( dev->getCycleTime() )
+            {
+                paox.setCycleTime(dev->getCycleTime());
+                paox.setCycleOffset((load_begin.seconds() - (long)preload_ideal) % dev->getCycleTime());
+                paox.setTransmitTime((long)preload_ideal);
+                dev->getExclusion().addExclusion(paox);
+    
+                dev->getExclusion().setEvaluateNextAt(load_begin.seconds() - preload_ideal);
+    
+                load_begin -= preload_ideal;
+    
+                if( load_begin < now )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\" - should only see this once per port per cycle **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+            else
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\" - should only see this once per port per cycle **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - zero-length cycle time for device \"" << dev->getName() << "\" - unable to insert preloads **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - zero-length cycle time for device \"" << dev->getName() << "\" - unable to insert preloads **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

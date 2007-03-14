@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/03/13 18:53:38 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2007/03/14 19:33:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1232,9 +1232,7 @@ void LoadScannableDevices(void *ptr)
             {
                 CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
                 CtiDeviceSPtr pDev = ScannerDeviceManager.getEqual( chgid );
-                if( pDev.get() != NULL )//if the chgid is not on the map, avoiding crash
-                    pDev->setPointDeviceMap(&ScannerPointDeviceMap);
-                //if pDev is null, chgid is not a scannable device.
+                if( pDev ) pDev->setPointDeviceMap(&ScannerPointDeviceMap);
             }
 
             stop = stop.now();

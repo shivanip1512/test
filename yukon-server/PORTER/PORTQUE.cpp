@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2007/02/22 18:26:42 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2007/03/14 19:33:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
 
 void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
 {
-    if(Device->getType() == TYPE_CCU711)
+    if(Device && Device->getType() == TYPE_CCU711)
     {
         CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2007/01/30 18:16:25 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2007/03/14 19:32:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -551,7 +551,7 @@ void CtiDeviceManager::refreshScanRates(LONG id)
         if(id > 0)
         {
             CtiDeviceSPtr devsptr = getEqual(id);
-            pTempCtiDevice = devsptr.get();
+            if(devsptr) pTempCtiDevice = devsptr.get();
             if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
         }
         else
@@ -571,7 +571,7 @@ void CtiDeviceManager::refreshScanRates(LONG id)
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
         CtiDeviceSPtr devsptr = getEqual(lTemp);
-        pTempCtiDevice = devsptr.get();
+        if(devsptr) pTempCtiDevice = devsptr.get();
 
         if( pTempCtiDevice )
         {
@@ -653,7 +653,7 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
         CtiDeviceSPtr devsptr = getEqual(lTemp);
-        pTempCtiDevice = devsptr.get();
+        if(devsptr) pTempCtiDevice = devsptr.get();
 
         if( pTempCtiDevice )
         {

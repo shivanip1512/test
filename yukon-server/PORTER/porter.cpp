@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2007/03/14 19:33:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1484,8 +1484,11 @@ INT RefreshPorterRTDB(void *ptr)
         {
             CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
             CtiDeviceSPtr pDev = DeviceManager.getEqual( chgid );
-            pDev->setRouteManager(&RouteManager);
-            pDev->setPointDeviceMap(&PointToDeviceMap);
+            if( pDev )
+            {
+                pDev->setRouteManager(&RouteManager);
+                pDev->setPointDeviceMap(&PointToDeviceMap);
+            }
         }
         
     }

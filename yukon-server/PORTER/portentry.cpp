@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2007/03/07 17:27:46 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2007/03/14 19:33:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1054,17 +1054,20 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
     CtiDeviceSPtr pDev = DeviceManager.getEqual(SendOutMessage->DeviceID);
 
     /* Update the number of entries on for this ccu on the port queue */
-    switch(pDev->getType())
+    if( pDev )
     {
-    case TYPE_CCU711:
+        switch(pDev->getType())
         {
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)pDev->getTrxInfo();
-
-            pInfo->PortQueueEnts++;
-
-            if(SendOutMessage->EventCode & RCONT)
+        case TYPE_CCU711:
             {
-                pInfo->PortQueueConts++;
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)pDev->getTrxInfo();
+    
+                pInfo->PortQueueEnts++;
+    
+                if(SendOutMessage->EventCode & RCONT)
+                {
+                    pInfo->PortQueueConts++;
+                }
             }
         }
     }
@@ -1084,7 +1087,7 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage)
     ValidateEmetconMessage(OutMessage);
 
     /* Check if we should do that weird 711 type stuff */
-    if((pDev->getType() == TYPE_CCU711) &&            // This is a CCU711
+    if(pDev && (pDev->getType() == TYPE_CCU711) &&            // This is a CCU711
        !(OutMessage->EventCode & (DTRAN       |      // AND _NONE_ of these flags are set
                                   ENCODED     |
                                   RIPPLE      |
