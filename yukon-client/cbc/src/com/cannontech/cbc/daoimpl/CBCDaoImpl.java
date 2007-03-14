@@ -1,7 +1,6 @@
 package com.cannontech.cbc.daoimpl;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.cbc.CBCUtils;
 
@@ -69,7 +70,12 @@ public class CBCDaoImpl  implements CBCDao{
             else 
             {
                 Double analogVal = new Double ( pointData.getValue() );
-                DecimalFormat formater = new DecimalFormat(".##");
+                
+                ScalarPoint persPoint = (ScalarPoint) LiteFactory.convertLiteToDBPers(point);
+                Integer decimalPlaces = persPoint.getPointUnit().getDecimalPlaces();
+                
+                DecimalFormat formater = new DecimalFormat();
+                formater.setMaximumFractionDigits(decimalPlaces);
                 String format = formater.format(analogVal.doubleValue());
                 pointTimestamp.setValue(format);
             }
