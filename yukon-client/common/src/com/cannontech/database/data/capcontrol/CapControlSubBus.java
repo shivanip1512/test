@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.point.Point;
 
@@ -12,7 +13,10 @@ import com.cannontech.database.db.point.Point;
  */
 public class CapControlSubBus extends CapControlYukonPAOBase implements com.cannontech.common.editor.EditorPanel
 {
-	private com.cannontech.database.db.capcontrol.CapControlSubstationBus capControlSubstationBus = null;
+	public static final String ENABLE_OPSTATE = "subEnabled";
+    public static final String DISABLE_OPSTATE = "subDisabled";
+
+    private com.cannontech.database.db.capcontrol.CapControlSubstationBus capControlSubstationBus = null;
 
 	//contains objects of type com.cannontech.database.db.capcontrol.CCFeederSubAssignment
 	private ArrayList ccFeederList = null;

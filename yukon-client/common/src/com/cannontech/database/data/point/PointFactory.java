@@ -1,23 +1,27 @@
 package com.cannontech.database.data.point;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
-import com.cannontech.database.db.point.calculation.CalcComponent;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * This type was created in VisualAge.
  */
 public final class PointFactory {
+public static final String PTNAME_TAG = "Tag Point";
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.data.point.PointBase
@@ -440,5 +444,38 @@ public static PointBase createCalculatedPoint(Integer paoId, String name){
     
     return point;
 }
+
+//creates a tag point for a sub or a feeder
+public static synchronized PointBase createTagPoint(Integer objectID, Integer offset) {
+    PointBase newPoint =
+        PointFactory.createPoint(PointTypes.STATUS_POINT);
+    Integer pointID = new Integer (DaoFactory.getPointDao().getNextPointId() );
+    newPoint = PointFactory.createNewPoint(     
+            pointID,
+            PointTypes.STATUS_POINT,
+            PTNAME_TAG,
+            objectID,
+            offset );
+    newPoint.getPoint().setStateGroupID( new Integer (StateGroupUtils.STATEGROUPID_CAPBANK) );
+    
+    ((StatusPoint) newPoint).setPointStatus( new PointStatus(pointID) );
+
+    return newPoint;
+
+}
+
+public static synchronized void addPoint(PointBase point) {
+    try {
+        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        point.setDbConnection(connection);
+        point.add();
+        if (connection != null) connection.close();
+    } catch (SQLException e) {
+        CTILogger.error(e);
+    }
+    DaoFactory.getDbPersistentDao().performDBChange(point, DBChangeMsg.CHANGE_TYPE_ADD);
+    
+}
+
 
 }

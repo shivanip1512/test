@@ -75,7 +75,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
     /* (non-Javadoc)
      * @see com.cannontech.esub.util.SVGGenerator#generate(java.io.Writer, com.cannontech.esub.Drawing)
      */
-    public void generate(Writer writer, Drawing d) throws IOException { 
+    public synchronized void generate(Writer writer, Drawing d) throws IOException { 
         if(!genOptions.isStaticSVG()) {
             updater = initDrawingUpdater(d);
             updater.updateDrawing();

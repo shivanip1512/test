@@ -33,6 +33,19 @@ public final class TagDaoImpl implements TagDao {
 		return null;
 	}
     
+    public LiteTag getLiteTag(String tagName) {
+        synchronized(databaseCache) {
+            Iterator iter = databaseCache.getAllTags().iterator();
+            while(iter.hasNext()) {
+                LiteTag lt = (LiteTag) iter.next();
+                if(tagName.equalsIgnoreCase(lt.getTagName())) {
+                    return lt;
+                }
+            }
+        }
+        return null;
+    }
+
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }

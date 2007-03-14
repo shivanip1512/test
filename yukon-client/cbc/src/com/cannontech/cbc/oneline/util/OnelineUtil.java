@@ -55,6 +55,11 @@ public class OnelineUtil {
                                                             java.awt.Font.BOLD,
                                                             10);
 
+    public static final Font LARGE_FONT = new java.awt.Font("arial",
+                                                            java.awt.Font.BOLD,
+                                                            14);
+    public static final Color TAG_COLOR = new Color(159, 187, 172);
+
     public static LiteStateGroup getOnelineStateGroup(String groupName) {
         LiteStateGroup[] groups = DaoFactory.getStateDao().getAllStateGroups();
         for (int i = 0; i < groups.length; i++) {
@@ -184,4 +189,12 @@ public class OnelineUtil {
         return Math.max((int) (subName.length() * PXL_LARGE_FONT - OnelineUtil.SUB_IMG_WIDTH), MIN_SUBINJLINE_LENGTH);
     }
 
+    
+
+    public static String extractObjectIdFromString(String str) {
+        String[] allStrings = StringUtils.split(str, "_");
+        if (allStrings.length == 2)
+            return allStrings[1];
+        return "ID_PLACEHOLDER";
+    }
 }

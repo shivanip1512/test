@@ -16,7 +16,6 @@
         <webClassPathEntry>/commercialcurtailment/bin</webClassPathEntry>
         <webClassPathEntry>/common/bin</webClassPathEntry>
         <webClassPathEntry>/common/resource</webClassPathEntry>
-        <webClassPathEntry>/cttp/bin</webClassPathEntry>
         <webClassPathEntry>/dbeditor/bin</webClassPathEntry>
         <webClassPathEntry>/dbeditor/resource</webClassPathEntry>
         <webClassPathEntry>/esub/bin</webClassPathEntry>
@@ -33,7 +32,6 @@
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/acme.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/altova.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/antlr-2.7.6rc1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm-attrs.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm.jar</webClassPathEntry>
@@ -49,7 +47,7 @@
         <webClassPathEntry>/third-party/commons-discovery.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-fileupload.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/commons-lang-2.1.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-lang-2.3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-pool-1.3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/dom4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ecs-1.4.2.jar</webClassPathEntry>
@@ -87,7 +85,7 @@
         <webClassPathEntry>/third-party/spring.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/xerces.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/xercesImpl.jar</webClassPathEntry>
         <webClassPathEntry>/tools/bin</webClassPathEntry>
         <webClassPathEntry>/trending/bin</webClassPathEntry>
         <webClassPathEntry>/trending/resource</webClassPathEntry>

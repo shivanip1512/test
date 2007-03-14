@@ -233,7 +233,7 @@ public class TagManager implements MessageListener {
 		else
 		if(msg instanceof TagMsg) {
 			TagMsg tMsg = (TagMsg) msg;
-			Tag t = (Tag) tMsg.getTag();
+			Tag t =  tMsg.getTag();
 			Integer tagKey = new Integer(t.getPointID());
 			
 			synchronized(_allTags) {
@@ -327,15 +327,15 @@ public class TagManager implements MessageListener {
 			
 			while(rset.next()) {
 				TAGLog t = new TAGLog();
-				t.setInstanceID(new Integer(rset.getInt(2)));
+                t.setInstanceID(new Integer(rset.getInt(2)));
 				t.setPointID(new Integer(rset.getInt(3)));
 				t.setTagID(new Integer(rset.getInt(4)));
 				t.setUserName(rset.getString(5));
 				t.setAction(rset.getString(6));
 				t.setDescription(rset.getString(7));
 				t.setTagTime(new Date(rset.getTimestamp(8).getTime()));
-				t.setForStr(rset.getString(9));
-				t.setRefStr(rset.getString(10));
+                t.setRefStr(rset.getString(9));
+                t.setForStr(rset.getString(10));
 				tagLog.add(t);
 			}
 		}

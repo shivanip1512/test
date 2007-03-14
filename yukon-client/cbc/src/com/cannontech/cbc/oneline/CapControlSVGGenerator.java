@@ -1,15 +1,16 @@
 package com.cannontech.cbc.oneline;
 
+import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
-import com.cannontech.cbc.oneline.model.cap.CapControlPanel;
+import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
-import com.cannontech.cbc.oneline.model.feeder.FeederControlPanel;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
-import com.cannontech.cbc.oneline.model.sub.SubControlPanel;
+import com.cannontech.cbc.oneline.model.sub.OnelineSub;
+import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
@@ -22,8 +23,26 @@ import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxComponent;
 
 public class CapControlSVGGenerator extends BaseSVGGenerator {
+    private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
+    @Override
+    public Element createElement(SVGDocument doc, LxComponent comp) {
+        if (comp instanceof HiddenTextElement) {
 
+            HiddenTextElement text = (HiddenTextElement) comp;
+            Element textElem = doc.createElementNS(svgNS, "text");
+            for (String key : text.getProperties().keySet()) {
+                textElem.setAttributeNS(null, key, text.getProperties().get(key));
+            }
+            textElem.setAttributeNS(null, "id", text.getName());
+            textElem.setAttributeNS(null, "elementID", text.getElementID());
+            textElem.setAttributeNS(null, "style", "display: none");
+
+            return textElem;
+        } else
+
+            return super.createElement(doc, comp);
+    }
 
     public CDATASection createCDATASection(SVGDocument doc) {
         getJsGenerator().addOnload("initCC();");
@@ -59,6 +78,44 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
         elem.removeAttributeNS(null, "onclick");
 
         if (comp instanceof LxAbstractText && getGenOptions().isScriptingEnabled() && !isFeeder(comp)) {
+            String paoID = OnelineUtil.extractObjectIdFromString(compName);
+            elem.setAttributeNS(null,
+                                "onmouseover",
+                                "underLine(evt.getTarget())");
+            elem.setAttributeNS(null,
+                                "onmouseout",
+                                "noUnderLine(evt.getTarget())");
+            if (StringUtils.contains(comp.getName(), CommandPopups.SUB_TAG)) {
+
+                elem.setAttributeNS(null,
+                                    "onclick",
+                                    "openPopupWin (evt.getTarget, \"" + CommandPopups.SUB_TAG + "_" + paoID + "\")");
+            } else if (StringUtils.contains(comp.getName(),
+                                            CommandPopups.FEEDER_TAG)) {
+                elem.setAttributeNS(null,
+                                    "onclick",
+                                    "openPopupWin (evt.getTarget, \"" + CommandPopups.FEEDER_TAG + "_" + paoID + "\")");
+
+            }
+
+            else if (StringUtils.contains(comp.getName(), CommandPopups.CAP_TAG)) {
+                elem.setAttributeNS(null,
+                                    "onclick",
+                                    "openPopupWin (evt.getTarget, \"" + CommandPopups.CAP_TAG + "_" + paoID + "\")");
+
+            }
+
+        } else if (comp instanceof LxAbstractImage && getGenOptions().isScriptingEnabled() && !isCap(comp)) {
+            if (comp instanceof StateImage) {
+                StateImage newImage = (StateImage) comp;
+                if (isSub(newImage)) {
+                    String id = OnelineUtil.extractObjectIdFromString(comp.getName());
+                    addDynamicAttributes(elem, CommandPopups.SUB_COMMAND + "_" + id);
+                }
+            }
+        } else if (isFeeder(comp) && getGenOptions().isScriptingEnabled()) {
+            String id = OnelineUtil.extractObjectIdFromString(comp.getName());
+            addDynamicAttributes(elem, CommandPopups.FEEDER_COMMAND +  "_" + id);
             elem.setAttributeNS(null,
                                 "onmouseover",
                                 "underLine(evt.getTarget())");
@@ -66,33 +123,26 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
                                 "onmouseout",
                                 "noUnderLine(evt.getTarget())");
 
-        } else if (comp instanceof LxAbstractImage && getGenOptions().isScriptingEnabled() && !isCap(comp)) {
-            if (comp instanceof StateImage) {
-                StateImage newImage = (StateImage) comp;
-                if (isSub(newImage)) {
-                    setOnelineAttributes(elem,
-                                         SubControlPanel.PANEL_NAME,
-                                         false);
-                }
-            }
-        } else if (isFeeder(comp) && getGenOptions().isScriptingEnabled()) {
-            boolean isFdrTextName = comp instanceof LxAbstractText;
-            String[] temp = StringUtils.split(compName, '_');
-            setOnelineAttributes(elem,
-                                 FeederControlPanel.PANEL_NAME + "_" + temp[1],
-                                 isFdrTextName);
         } else if (isCap(comp) && getGenOptions().isScriptingEnabled()) {
-            String[] temp = StringUtils.split(compName, '_');
-            setOnelineAttributes(elem,
-                                 CapControlPanel.PANEL_NAME + "_" + temp[1],
-                                 false);
+            String str = comp.getName();
+            String id = OnelineUtil.extractObjectIdFromString(str);
+            addDynamicAttributes(elem, CommandPopups.CAP_COMMAND + "_" + id);
         }
 
     }
 
+
+    private void addDynamicAttributes(Element elem, String typeString) {
+        elem.setAttributeNS(null,
+                            "onclick",
+                            "openPopupWin(evt.getTarget(), \"" + typeString + "\")");
+        elem.setAttributeNS(null, "onmouseover", "addBorder(evt.getTarget())");
+        elem.setAttributeNS(null, "onmouseout", "noBorder(evt.getTarget())");
+    }
+
     private boolean isCap(LxComponent comp) {
         if ((comp instanceof StateImage) && StringUtils.contains(comp.getName(),
-                                                                  OnelineCap.NAME_PREFIX)) {
+                                                                 OnelineCap.NAME_PREFIX)) {
             return true;
         }
         return false;
@@ -100,22 +150,7 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
     private boolean isFeeder(LxComponent comp) {
         return (((comp instanceof LineElement) || comp instanceof LxAbstractText) && StringUtils.contains(comp.getName(),
-                                                                                                                                             OnelineFeeder.NAME_PREFIX));
-    }
-
-    private void setOnelineAttributes(Element elem, String panelName,
-            boolean addUnderline) {
-        String toggleOn = "toggleControlPanel(evt.getTarget(), 'on','" + panelName + "')";
-        String toggleOff = "toggleControlPanel(evt.getTarget(), 'off','" + panelName + "')";
-        String toggleClick = "tglOnClick(evt.getTarget(), '" + panelName + "')";
-        if (addUnderline) {
-            toggleOn = ("underLine(evt.getTarget());" + toggleOn);
-            toggleOff = ("noUnderLine(evt.getTarget());" + toggleOff);
-        }
-        elem.setAttributeNS(null, "onmouseover", toggleOn);
-        elem.setAttributeNS(null, "onmouseout", toggleOff);
-
-        elem.setAttributeNS(null, "onclick", toggleClick);
+                                                                                                          OnelineFeeder.NAME_PREFIX));
     }
 
     private boolean isSub(StateImage newImage) {
@@ -136,6 +171,8 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
         svgRoot.insertBefore(createScriptElement(doc, "prototype.js"),
                              svgRoot.getFirstChild());
         svgRoot.insertBefore(createScriptElement(doc, "cc.js"),
+                             svgRoot.getFirstChild());
+        svgRoot.insertBefore(createScriptElement(doc, "cconelinepopup.js"),
                              svgRoot.getFirstChild());
 
     }

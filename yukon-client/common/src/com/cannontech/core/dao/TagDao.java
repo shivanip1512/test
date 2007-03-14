@@ -10,5 +10,6 @@ public interface TagDao {
      * @return
      */
     public LiteTag getLiteTag(int tagID);
+    public LiteTag getLiteTag(String tagName);
 
 }

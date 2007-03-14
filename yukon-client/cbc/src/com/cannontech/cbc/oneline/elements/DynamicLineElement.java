@@ -3,6 +3,7 @@ package com.cannontech.cbc.oneline.elements;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.cbc.oneline.model.OnelineObject;
+import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.cbc.oneline.states.OnelineState;
@@ -36,6 +37,11 @@ public class DynamicLineElement extends LineElement implements OnelineLxElement 
         if (parentObject instanceof OnelineFeeder) {
             OnelineFeeder feeder = (OnelineFeeder)parentObject;
             return feeder.getStreamable();
+        }
+        if (parentObject instanceof OnelineCap)
+        {
+            OnelineCap cap = (OnelineCap) parentObject;
+            return cap.getParentFeeder().getStreamable();
         }
         return null;
     }

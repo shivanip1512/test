@@ -1,18 +1,27 @@
 package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.point.Point;
 
 /**
  * This type was created in VisualAge.
  */
+@SuppressWarnings("serial")
 public class CapControlFeeder extends CapControlYukonPAOBase implements com.cannontech.common.editor.EditorPanel
 {
-	private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = null;
+	public static final String ENABLE_OPSTATE = "feederEnabled";
+    public static final String DISABLE_OPSTATE = "feederDisabled";
+    
+    private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = null;
 	private ArrayList ccBankListVector = null;
 
 	//private com.cannontech.database.db.capcontrol.CapControlStrategy cbcStrategy = null;
@@ -185,4 +194,8 @@ public void update() throws java.sql.SQLException
 	for( int i = 0; i < getChildList().size(); i++ )
 		((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).add();
 }
+
+
+
+
 }
