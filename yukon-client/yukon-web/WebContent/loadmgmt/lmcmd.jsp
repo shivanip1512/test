@@ -182,7 +182,7 @@ function setStopAble( radioChk )
               <td width="10" class="TableCell" >  
                 <a href="javascript:void(0);" 
                  onclick="return openConfigWin('<%=gearName%>', gearnum.options[gearnum.selectedIndex].value, <%=gearPeriod%>);"
-                 name="tgconfig" id="tgconfig" > Scale </a>
+                 name="tgconfig" id="tgconfig" > Add Target Adjustments </a>
               </td>
             </tr>
 
