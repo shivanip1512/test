@@ -21,7 +21,8 @@
 	int subid = cbcSession.getLastSubID();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-	if (popupEvent == null) popupEvent = "onmouseover";
+    boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.SHOW_FLIP_COMMAND)).booleanValue();
+    if (popupEvent == null) popupEvent = "onmouseover";
 	SubBus subBus = capControlCache.getSubBus( new Integer(subid) );
 	Feeder[] feeders = capControlCache.getFeedersBySub( new Integer(subid) );
 	CapBankDevice[] capBanks = capControlCache.getCapBanksBySub( new Integer(subid) );
@@ -308,7 +309,10 @@ for( int i = 0; i < capBanks.length; i++ )
 						<input id="cmd_cap_<%=capBank.getCcId()%>_field" type="hidden" name = "cmd_dyn" value= "" />
                         <!--2-way device designator-->
                         <input id="2_way_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
-						<a href="javascript:void(0);"
+                        <input id="showFlip_<%=capBank.getCcId()%>" type="hidden" value="<%= showFlip %>"/>
+                        <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%= CBCUtils.is701xDevice(obj) %>"/>
+                        
+                        <a href="javascript:void(0);"
 						    <%= popupEvent %>="return overlib(
 								$F('cmd_cap_<%=capBank.getCcId()%>_field'),
 								STICKY, WIDTH,155, HEIGHT,110, OFFSETX,-15,OFFSETY,-15,

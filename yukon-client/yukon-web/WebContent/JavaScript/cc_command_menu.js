@@ -43,9 +43,14 @@ function updateCommandMenu(result) {
  				 	var name = getElementTextNS(result[i], 0,'param3');
  				 	var allow_ovuv = getElementTextNS(result[i], 0,'param4');
  				 	var all_manual_sts = getElementTextNS(result[i], 0,'param5');
-                    var is2_Way = document.getElementById ('2_way_' + id).value;
- 				 	
- 				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts, is2_Way];
+                    if (document.getElementById ('2_way_' + id))
+                    	var is2_Way = document.getElementById ('2_way_' + id).value;
+                    if (document.getElementById ('is701x_' + id))
+                    	var is701x = document.getElementById ('is701x_' + id).value;
+ 				 	if (document.getElementById ('showFlip_' + id))
+ 				 		var showFlip = document.getElementById ('showFlip_' + id).value;
+ 				 	showFlip = (showFlip == "true") && (is701x == "true");
+ 				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts, is2_Way, showFlip];
  				 	document.getElementById ('cmd_cap_move_back_' + id).value = generate_CB_Move_Back (id, name);		       	
                  }
  				//otherwise the only thing left is to get state
@@ -245,7 +250,8 @@ function generateCapBankMenu (id, state, opts) {
  	enable_capbank:4,
  	disable_capbank:5,
  	reset_op_cnt:12,
-    scan_2way_dev:24
+    scan_2way_dev:24,
+    flip_7010: 25
  	}
  var table_footer = "</table>";
  var table_body = "<table >";
@@ -270,6 +276,10 @@ function generateCapBankMenu (id, state, opts) {
 		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.bank_disable_ovuv, 'Disable_OV/UV', false);	
 		   }
 		
+		if (opts[6])
+			{
+		   		table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.flip_7010, 'Flip', false);	
+			}
 		}
 		else if (opts[2] == 'system') {
 		     
