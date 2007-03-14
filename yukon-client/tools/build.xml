@@ -19,7 +19,7 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/tools.jar"
-            basedir="build/" />       
+            basedir="build/"  manifest="resource/manifest.mf"/>       
 
        <jar jarfile="${yukon.lib}/tztest.jar"
             basedir="build/" manifest="resource/tztest_manifest.mf">
