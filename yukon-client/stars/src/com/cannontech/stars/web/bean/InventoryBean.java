@@ -434,6 +434,11 @@ public class InventoryBean {
         				LiteInventoryBase liteInv = (LiteInventoryBase)
         						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
         				
+                        /*This is another ugly Xcel specific requirement
+                         * They don't want meters shown on the "(none)" state filter
+                         */
+                        if(specificFilterID.intValue() == 0 && !(liteInv instanceof LiteStarsLMHardware) )
+                            continue;
                         /**
                          * TODO CurrentState in the Xcel world will need to be more elegantly
                          * combined with the old DeviceStatus.  They are currently separate so as
