@@ -107,6 +107,8 @@
 		<cvs dest="./yukon-install" command="update -A -d"/> 
 	</target>	
 	
+	<target name="build" depends="build-client,build-server,build-install"/>
+	
 	<target name="build-client" depends="update-client">
 		<echo message="building module yukon-client"/>
 		<exec failonerror="true" dir="./yukon-client/build" executable="cmd.exe">
