@@ -8,6 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 
+import javax.swing.JPanel;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
@@ -24,6 +25,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -157,16 +159,16 @@ private javax.swing.JButton getJButtonChangePassword() {
             ivjJButtonChangePassword.setText("Change Password");
             ivjJButtonChangePassword.setEnabled(true);
             ivjJButtonChangePassword.setSelected(false);
+            final JPanel that = this;
             ivjJButtonChangePassword.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     ChangePasswordDialog dialog = 
-                        ChangePasswordDialog.createPasswordDialog("Change Password", "Enter a new password for user:");
-                    if (dialog.show()) {
+                        ChangePasswordDialog.create(that, "Enter a new password for user");
+                    dialog.setVisible(true);
+                    if (dialog.getNewPassword() != null) {
+                        fireInputUpdate();
                         newPasswordValue = dialog.getNewPassword();
-                    } else {
-                        newPasswordValue = null;
                     }
-                    
                 }
             });
         } catch (Exception ivjExc) {
@@ -206,9 +208,9 @@ private javax.swing.JComboBox getJListAuthType() {
         ivjJListAuthType = new javax.swing.JComboBox(AuthType.values());
         ivjJListAuthType.setName("JListAuthType");
         java.awt.Dimension dimension = new java.awt.Dimension(122, 17);
-        //ivjJListAuthType.setMaximumSize(dimension);
-        //ivjJListAuthType.setPreferredSize(dimension);
-        //ivjJListAuthType.setMinimumSize(dimension);
+        ivjJListAuthType.setMaximumSize(dimension);
+        ivjJListAuthType.setPreferredSize(dimension);
+        ivjJListAuthType.setMinimumSize(dimension);
         ivjJListAuthType.setFont(new java.awt.Font("dialog", 0, 12));
         ivjJListAuthType.setEnabled(true);
         ivjJListAuthType.addItemListener(new ItemListener() {
@@ -217,12 +219,7 @@ private javax.swing.JComboBox getJListAuthType() {
                 AuthType type = (AuthType) ivjJListAuthType.getSelectedItem();
                 boolean shouldSetPass = authenticationService.supportsPasswordSet(type);
                 if (type != initialAuthType) {
-                    if (shouldSetPass) {
-                        passwordRequiresChanging = true;
-                    } else {
-                        passwordRequiresChanging = false;
-                        newPasswordValue = null;
-                    }
+                    fireInputUpdate();
                 }
                 getJButtonChangePassword().setEnabled(shouldSetPass);
             }
@@ -393,25 +390,32 @@ public Object getValue(Object o)
 	if( getJTextFieldUserID().getText() != null && getJTextFieldUserID().getText().length() > 0 )
 		login.getYukonUser().setUsername( getJTextFieldUserID().getText() );
 
-    login.getYukonUser().setAuthType((AuthType) getJListAuthType().getSelectedItem());
+    AuthType type = (AuthType) getJListAuthType().getSelectedItem();
+    login.getYukonUser().setAuthType(type);
+    
+    
+    boolean shouldSetPass = authenticationService.supportsPasswordSet(type);
+    if (type != initialAuthType) {
+        if (shouldSetPass) {
+            passwordRequiresChanging = true;
+        } else {
+            passwordRequiresChanging = false;
+            newPasswordValue = null;
+        }
+    }
     
     if (passwordRequiresChanging && newPasswordValue == null) {
         // prompt for new password
         
         ChangePasswordDialog dialog = 
-            ChangePasswordDialog.createPasswordDialog("Change Password", "A new password must be entered for this user:");
-        if (!dialog.show()) {
+            ChangePasswordDialog.create(this, "A new password must be entered for this user");
+        dialog.setVisible(true);
+        if (dialog.getNewPassword() == null) {
             throw new RuntimeException("Must enter new password to change user.");
         }
         newPasswordValue = dialog.getNewPassword();
     }
-    if (newPasswordValue != null) {
-        // change password
-        LiteYukonUser liteYukonuser = (LiteYukonUser) LiteFactory.createLite(login);
-        authenticationService.setPassword(liteYukonuser, newPasswordValue);
-        newPasswordValue = null;
-        passwordRequiresChanging = false;
-    }
+
 
 	if( getJCheckBoxEnableLogin().isSelected() )
 		login.getYukonUser().setStatus( UserUtils.STATUS_ENABLED );
@@ -438,6 +442,18 @@ public Object getValue(Object o)
 	}
 
 	return login;
+}
+
+@Override
+public void postSave(DBPersistent o) {
+    super.postSave(o);
+    if (newPasswordValue != null) {
+        // change password
+        LiteYukonUser liteYukonuser = (LiteYukonUser) LiteFactory.createLite(o);
+        authenticationService.setPassword(liteYukonuser, newPasswordValue);
+        newPasswordValue = null;
+        passwordRequiresChanging = false;
+    }
 }
 
 
@@ -514,9 +530,9 @@ public boolean isInputValid()
 	if( getJCheckBoxEnableLogin().isSelected() )
 	{
 
-		if( StringUtils.isNotBlank(getJTextFieldUserID().getText()))
+		if( StringUtils.isBlank(getJTextFieldUserID().getText()))
 		{
-			setErrorString("The Userid text field, Password text field and Retype Password text field must be filled in");
+			setErrorString("The Userid text field must be filled in");
 			return false;
 		}
 	}
@@ -605,6 +621,7 @@ public void setValue(Object o)
         String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
         initialAuthType = AuthType.valueOf(defaultAuthTypeStr);
         getJListAuthType().setSelectedItem(initialAuthType);
+        passwordRequiresChanging = true;
 
         return;
     }
