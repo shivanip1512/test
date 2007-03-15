@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/05/03 17:19:33 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/03/15 17:46:35 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.23  2007/03/15 17:46:35  jrichter
+      Last Interval Quadrant KVar readings reporting back correctly from present value table 28.
+
       Revision 1.22  2006/05/03 17:19:33  jrichter
       BUG FIX:  correct DST adjustment for columbia flags.  added check for _nbrFullBlocks > 0 so it wouldn't set lastLPTime to 2036
 
@@ -1996,14 +1999,13 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
         ansiOffset = getUnitsOffsetMapping(offset);
         ansiTOURate = getRateOffsetMapping(offset);
 
-
         demandSelect = _tableTwoTwo->getDemandSelect();
         for (int x = 0; x < _tableTwoOne->getNumberDemands(); x++) 
         {
             if ((int) demandSelect[x] != 255) 
             {
                 if (_tableOneTwo->getRawTimeBase(demandSelect[x]) == 4 && 
-                    _tableOneTwo->getRawIDCode(demandSelect[x]) == ansiOffset) 
+                    _tableOneTwo->getRawIDCode(demandSelect[x]) == ansiOffset )
                 {
                     success = true;
                     if (_tableOneSix->getDemandCtrlFlag(demandSelect[x]) )
@@ -2591,6 +2593,113 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+// Present Values - volts, current, pf, etc...
+////////////////////////////////////////////////////////////////////////////////////
+bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
+{
+    bool success = false;
+    unsigned char* presentDemandSelect;
+    int ansiOffset;
+    int ansiQuadrant;
+    int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
+
+    if (ansiDeviceType == 1) //if 1, kv2 gets info from mfg tbl 110
+    {
+        try
+        {
+           /* success = retreiveKV2PresentValue(offset, value);
+            if (success)
+            {
+                if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard< CtiLogger > doubt_guard( dout );
+                    dout << " *value =   "<<*value<<endl;
+                }
+            }*/
+
+            {
+                    CtiLockGuard< CtiLogger > doubt_guard( dout );
+                    dout << " NOT IMPLEMENTED FOR KV2 YET"<<endl;
+            }
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+    }
+    else
+    {
+        /* Watts = 0, Vars = 1, VA = 2, Volts = 8, Current = 12, etc */
+        ansiOffset = getUnitsOffsetMapping(offset);
+        ansiQuadrant = getQuadrantOffsetMapping(offset);
+
+        try
+        {
+            if (_tableTwoSeven != NULL)
+            {
+                /* returns pointer to list of present Demand Selects */
+                presentDemandSelect = (unsigned char*)_tableTwoSeven->getDemandSelect();
+
+                if (_tableTwoOne != NULL && presentDemandSelect != NULL)
+                {                       
+                    for (int x = 0; x < _tableTwoOne->getNbrPresentDemands(); x++) 
+                    {
+                        if ((int) presentDemandSelect[x] != 255) 
+                        {
+                            if (_tableOneTwo != NULL)
+                            {   
+                                if (_tableOneTwo->getRawTimeBase(presentDemandSelect[x]) == 4 && 
+                                    _tableOneTwo->getRawIDCode(presentDemandSelect[x]) == ansiOffset &&
+                                    _tableOneTwo->getQuadrantAccountabilityFlag(ansiQuadrant, presentDemandSelect[x]) ) 
+                                {
+                                    if (_tableOneSix != NULL  && _tableTwoEight != NULL)
+                                    {                       
+                                        if (_tableOneSix->getConstantsFlag(presentDemandSelect[x]) && 
+                                            !_tableOneSix->getConstToBeAppliedFlag(presentDemandSelect[x]))
+                                        {
+                                            if (_tableOneFive != NULL)
+                                            {    
+                                                *value = ((_tableTwoEight->getPresentDemand(x) * 
+                                                       _tableOneFive->getElecMultiplier(presentDemandSelect[x])) /*/ 1000000000*/);
+                                            }
+                                            else
+                                            {    
+                                                *value = (_tableTwoEight->getPresentDemand(x) /*/ 1000000000*/);
+                                            }
+                                            success = true;
+                                            if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
+                                            {
+                                                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                                dout << " *value =   "<<*value<<endl;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            *value = _tableTwoEight->getPresentDemand(x);
+                                            success = true;
+                                        }
+                                    }
+                                    break;
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+    }
+    presentDemandSelect = NULL;
+    return success;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
 // Battery Life - volts, current, pf, etc...
 ////////////////////////////////////////////////////////////////////////////////////
 bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
@@ -2905,7 +3014,43 @@ UINT8 CtiProtocolANSI::getLPQuality( int index )
 }
 
 
+int CtiProtocolANSI::getQuadrantOffsetMapping(int offset)
+{
+    int retVal = 300;
+    switch (offset)
+    {
+        case OFFSET_QUADRANT1_TOTAL_KVARH:
+        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR:
+        {
+            retVal = 1;
+            break;
+        }
+        case OFFSET_QUADRANT2_TOTAL_KVARH:
+        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR:
+        {
+            retVal = 2;
+            break;
+        }
+        case OFFSET_QUADRANT3_TOTAL_KVARH:
+        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR:
+        {
+            retVal = 3;
+            break;
+        }
+        case OFFSET_QUADRANT4_TOTAL_KVARH:
+        case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
+        {
+            retVal = 4;
+            break;
+        }
+    default:
+        break;
+    }
+    return retVal;
 
+
+
+}
 
 
 int CtiProtocolANSI::getUnitsOffsetMapping(int offset)
@@ -2947,6 +3092,14 @@ int CtiProtocolANSI::getUnitsOffsetMapping(int offset)
             case OFFSET_LOADPROFILE_QUADRANT2_KVAR:          
             case OFFSET_LOADPROFILE_QUADRANT3_KVAR:          
             case OFFSET_LOADPROFILE_QUADRANT4_KVAR:                   
+            case OFFSET_QUADRANT1_TOTAL_KVARH: 
+            case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR: 
+            case OFFSET_QUADRANT2_TOTAL_KVARH: 
+            case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR: 
+            case OFFSET_QUADRANT3_TOTAL_KVARH: 
+            case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR: 
+            case OFFSET_QUADRANT4_TOTAL_KVARH: 
+            case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
             {
                 retVal = 1;
                 break;
@@ -2967,7 +3120,7 @@ int CtiProtocolANSI::getUnitsOffsetMapping(int offset)
             case OFFSET_LOADPROFILE_QUADRANT1_KVA:           
             case OFFSET_LOADPROFILE_QUADRANT2_KVA:           
             case OFFSET_LOADPROFILE_QUADRANT3_KVA:           
-            case OFFSET_LOADPROFILE_QUADRANT4_KVA: 
+            case OFFSET_LOADPROFILE_QUADRANT4_KVA:
             {
                 retVal = 2;
                 break;

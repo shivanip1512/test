@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/03/31 16:18:32 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/03/15 17:46:36 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.16  2007/03/15 17:46:36  jrichter
+      Last Interval Quadrant KVar readings reporting back correctly from present value table 28.
+
       Revision 1.15  2006/03/31 16:18:32  jrichter
       BUG FIX & ENHANCEMENT:  fixed a memory leak (multiple allocations of lpBlocks, but only one deallocation), added quality retrieval.
 
@@ -357,6 +360,7 @@ class IM_EX_PROT CtiProtocolANSI
     bool retreiveFrozenSummation( int offset, double *value, double *time );
     bool retreiveFrozenDemand( int offset, double *value, double *time );
     bool retreivePresentValue( int offset, double *value );
+    bool retreivePresentDemand( int offset, double *value );
     bool retreiveLPDemand( int offset, int dataSet );
     bool retreiveBatteryLife(int x, double *value);
     bool retreiveMeterTimeDiffStatus( int offset, double *status );
@@ -365,6 +369,7 @@ class IM_EX_PROT CtiProtocolANSI
     UINT8 getLPQuality( int index );
 
     int getUnitsOffsetMapping(int offset);
+    int getQuadrantOffsetMapping(int offset);
     int getRateOffsetMapping(int offset);
     int getSegmentationOffsetMapping(int offset);
     int translateAnsiQualityToYukon(int ansiQuality );

@@ -829,21 +829,18 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         case OFFSET_RATE_C_KW:
                         case OFFSET_RATE_D_KW:
                         case OFFSET_RATE_E_KW:
-                        case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
 
                         case OFFSET_PEAK_KVAR_OR_RATE_A_KVAR:
                         case OFFSET_RATE_B_KVAR:
                         case OFFSET_RATE_C_KVAR:
                         case OFFSET_RATE_D_KVAR:
                         case OFFSET_RATE_E_KVAR:
-                        case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
 
                         case OFFSET_PEAK_KVA_OR_RATE_A_KVA:
                         case OFFSET_RATE_B_KVA:
                         case OFFSET_RATE_C_KVA:
                         case OFFSET_RATE_D_KVA:
                         case OFFSET_RATE_E_KVA:
-                        case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
                         {
                             if (archiveFlag & CMD_FLAG_FROZEN)
                             {
@@ -888,6 +885,17 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         case OFFSET_POWER_FACTOR:
                         {
                             gotValue = getSentinelProtocol().retreivePresentValue(x, &value);
+                            break;
+                        }
+                        case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
+                        case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
+                        case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
+                        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR: 
+                        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR: 
+                        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR: 
+                        case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
+                        {   
+                            gotValue = getSentinelProtocol().retreivePresentDemand(x, &value);
                             break;
                         }
                         case OFFSET_BATTERY_LIFE:
