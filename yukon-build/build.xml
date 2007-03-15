@@ -12,15 +12,17 @@
         <echo message=" branch         - branch the current sandbox, define yukon.tag"/>
         <echo message="                  I.e. build.label=3_3_3 will result in a branch tag like BR20061003_3_3_3_103043"/>    	
     	<echo message="[CVS Targets]"/>
-    	<echo message="checkout-all				- cvs  checkout the entire Yukon module"/>
-    	<echo message="checkout-client	- cvs checkout yukon-client module"/>
-    	<echo message="checkout-server	- cvs checkout yukon-server module"/>
-    	<echo message="checkout-install	- cvs checkout yukon-install module"/>
+    	<echo message="checkout-all				- cvs checkout the entire Yukon module"/>
+    	<echo message="checkout-client			- cvs checkout yukon-client module"/>
+    	<echo message="checkout-server			- cvs checkout yukon-server module"/>
+    	<echo message="checkout-install			- cvs checkout yukon-install module"/>
+    	<echo message="checkout-database 		- cvs checkout yukon-database module"/>
     	<echo message=""/>
     	<echo message="update-all				- cvs update the entire Yukon module"/>
-    	<echo message="update-client		- cvs update yukon-client module"/>
-    	<echo message="update-server		- cvs update yukon-server module"/>
-    	<echo message="update-install		- cvs update yukon-install module"/>
+    	<echo message="update-client			- cvs update yukon-client module"/>
+    	<echo message="update-server			- cvs update yukon-server module"/>
+    	<echo message="update-install			- cvs update yukon-install module"/>
+    	<echo message="update-database			- cvs update yukon-database module"/>
     	<echo message=""/>
     	<echo message="[Build Targets]"/>
     	<echo message="build					- runs buildclient,buildserver,buildinstaller targets"/>
@@ -73,7 +75,7 @@
         <cvs dest="." tag="${yukon.tag}" package="yukon" />
     </target>	
 	
-	<target name="checkout-all" depends="init,checkout-client,checkout-server,checkout-install"/>
+	<target name="checkout-all" depends="init,checkout-client,checkout-server,checkout-install,checkout-database"/>
 	
 	<target name="checkout-client" depends="init">
 		<echo message="checking out module yukon-client"/>
@@ -90,7 +92,12 @@
 		<cvs dest="." package="yukon-install"/>
 	</target>
 	
-	<target name="update-all" depends="init,update-client,update-server,update-install"/>
+	<target name="checkout-database" depends="init">
+		<echo message="checking out module yukon-database"/>
+		<cvs dest="." package="yukon-database"/>
+    </target>
+	
+	<target name="update-all" depends="init,update-client,update-server,update-install,update-database"/>
 	
 	<target name="update-client" depends="init">
 		<echo message="updating module yukon-client"/>
@@ -107,7 +114,12 @@
 		<cvs dest="./yukon-install" command="update -A -d"/> 
 	</target>	
 	
-	<target name="build" depends="build-client,build-server,build-install"/>
+	<target name="update-database" depends="init">
+		<echo message="updating module yukon-database"/>
+		<cvs dest="./yukon-database" command="update -A -d"/> 
+	</target>	
+	
+	<target name="build" depends="build-client,build-server,build-install,update-database,cleandist,builddist"/>
 	
 	<target name="build-client" depends="update-client">
 		<echo message="building module yukon-client"/>
@@ -141,6 +153,33 @@
 	   	<arg line="-p '${isfile}'"/>
 	   </exec>		
 	</target>
+	
+    <target name="cleandist" depends="init">
+        <delete dir="./dist/"/>
+    </target>
+
+    <target name="builddist" depends="init">
+        <copy todir="./temp/installer">
+            <fileset dir="./yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1"/>
+        </copy>
+        <copy todir="./temp/eSubImages">
+            <fileset dir="./yukon-client/esub/images"/>
+        </copy>
+        <copy todir="./temp/YukonDatabase/DatabaseCreation">
+            <fileset dir="./yukon-database/CreationScripts"/>
+        </copy>
+        <copy todir="./temp/YukonDatabase/DatabaseUpdates/Oracle">
+            <fileset dir="./yukon-database/DBUpdates/oracle"/>
+        </copy>
+        <copy todir="./temp/YukonDatabase/DatabaseUpdates/SqlServer">
+            <fileset dir="./yukon-database/DBUpdates/sqlserver"/>
+        </copy>
+        <mkdir dir="./dist"/>
+     	<zip destfile="./dist/yukon_${tag.date}_${build.label}_${tag.time}.zip">
+            <fileset dir="./temp"/>
+        </zip>
+        <delete dir="./temp"/>
+    </target>	
 	
 <!--	
     <target name="buildquick" depends="update,build,runUnitTests,cleandist,builddist">
@@ -215,32 +254,7 @@
         </exec>    
     </target>
 
-    <target name="cleandist" depends="init">
-        <delete dir="./yukon/dist/"/>
-    </target>
 
-    <target name="builddist" depends="init">
-        <copy todir="./yukon/temp/installer">
-            <fileset dir="./yukon/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1"/>
-        </copy>
-        <copy todir="./yukon/temp/eSubImages">
-            <fileset dir="./yukon/yukon-client/esub/images"/>
-        </copy>
-        <copy todir="./yukon/temp/YukonDatabase/DatabaseCreation">
-            <fileset dir="./yukon/yukon-database/CreationScripts"/>
-        </copy>
-        <copy todir="./yukon/temp/YukonDatabase/DatabaseUpdates/Oracle">
-            <fileset dir="./yukon/yukon-database/DBUpdates/oracle"/>
-        </copy>
-        <copy todir="./yukon/temp/YukonDatabase/DatabaseUpdates/SqlServer">
-            <fileset dir="./yukon/yukon-database/DBUpdates/sqlserver"/>
-        </copy>
-        <mkdir dir="./yukon/dist"/>
-     	<zip destfile="./yukon/dist/yukon_${tag.date}_${build.label}_${tag.time}.zip">
-            <fileset dir="./yukon/temp"/>
-        </zip>
-        <delete dir="./yukon/temp"/>
-    </target>
 
     <target name="tag" depends="init">
         <cvs command="tag TG${tag.date}_${build.label}_${tag.time} ./yukon"/> 
