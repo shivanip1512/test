@@ -123,12 +123,15 @@
 	
 	<target name="build-client" depends="update-client">
 		<echo message="building module yukon-client"/>
-		<exec failonerror="true" dir="./yukon-client/build" executable="cmd.exe">
+		<exec failonerror="true" dir="./yukon-client/build" executable="cmd.exe" errorproperty="error.log">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</exec>
+		<echo message="${error.log}"/>
+		
 		<exec failonerror="true" dir="./yukon-client/build" executable="cmd.exe">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
 		</exec>
+		
 	</target>
 	
 	<target name="build-server" depends="update-server">
