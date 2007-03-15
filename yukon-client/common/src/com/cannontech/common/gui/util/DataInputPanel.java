@@ -6,6 +6,7 @@ package com.cannontech.common.gui.util;
 import java.util.Vector;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.database.db.DBPersistent;
 
 public abstract class DataInputPanel extends javax.swing.JPanel 
 {
@@ -108,4 +109,9 @@ public void setErrorString(java.lang.String newErrorString) {
  * @param o java.lang.Object
  */
 public abstract void setValue(Object o);
+
+public void postSave(DBPersistent o) {
+    // default nothing
+}
+
 }

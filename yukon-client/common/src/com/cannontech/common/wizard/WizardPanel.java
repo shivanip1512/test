@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.db.DBPersistent;
 
 public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
 	//10 should be good enough...?
@@ -194,6 +195,16 @@ public Object getValue(Object o) throws CancelInsertException{
 	
 	return o;	
 }
+
+@Override
+public void postSave(DBPersistent o) {
+    for (DataInputPanel p : inputPanels) {
+        if (p != null) {
+            p.postSave(o);
+        }
+    }
+}
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.common.gui.util.WizardButtonPanel

@@ -2587,7 +2587,8 @@ public void selectionPerformed( PropertyPanelEvent event)
 			updateResult = updateDBPersistent(object);
 
 			if( updateResult )
-			{					
+			{			
+                panel.postSave(object);
 				//getTreeViewPanel().refresh();
 				//getTreeViewPanel().selectObject(object);
 
@@ -2732,6 +2733,9 @@ public void selectionPerformed(WizardPanelEvent event)
 			//try to insert the object into the DB
 			successfullInsertion = insertDBPersistent( newItem );
 	
+            if (successfullInsertion) {
+                p.postSave(newItem);
+            }
 
 			//tell our current tree model to update itself so it can display the newly added item
 			//getTreeViewPanel().refresh();

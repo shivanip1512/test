@@ -9,6 +9,7 @@ import java.util.Vector;
 import javax.swing.JTabbedPane;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.db.DBPersistent;
 
 public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener 
 {
@@ -224,6 +225,14 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 		
 		return o;
 	}
+    
+    @Override
+    public void postSave(DBPersistent o) {
+        for (DataInputPanel panel : getInputPanels()) {
+            panel.postSave(o);
+        }
+    }
+    
 	/**
 	 * This method was created in VisualAge.
 	 * @return boolean
