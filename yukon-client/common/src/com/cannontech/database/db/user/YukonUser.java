@@ -33,7 +33,11 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getUserID(), getUsername(), getStatus(), getAuthType().name() };
+        // Because the addValues must include a value for every column, a blank value
+        // for the password is included here even though the rest of this class ignores
+        // that column.
+	    String dummyPasswordValue = "";
+		Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue, getStatus(), getAuthType().name() };
 		add(TABLE_NAME, addValues);
 	}
 
