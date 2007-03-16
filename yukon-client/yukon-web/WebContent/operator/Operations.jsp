@@ -370,6 +370,9 @@
             <tags:sectionLink>
             	<a href="/logging/">View Logs</a>
             </tags:sectionLink>
+            <tags:sectionLink>
+            	<a href="/index/manage">Manage Indexes</a>
+            </tags:sectionLink>
 	</tags:operationSection>
 	
 </cti:checkRole>

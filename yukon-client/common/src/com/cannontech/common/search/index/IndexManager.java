@@ -35,6 +35,12 @@ public interface IndexManager extends DBChangeListener {
     public String getDateCreated();
 
     /**
+     * This method is used to get the database the index was created for
+     * @return String database index was created for
+     */
+    public String getDatabase();
+
+    /**
      * Method used to determine if the index is currently being built
      * @return True if index is currently being built
      */

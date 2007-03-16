@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -23,6 +24,8 @@ import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -40,6 +43,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
     private static final String VERSION_PROPERTY = "version";
+    private static final String DATABASE_PROPERTY = "database";
     private static final String DATE_CREATED_PROPERTY = "created";
 
     // This number can have a large affect on memory usage and index
@@ -54,6 +58,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     private File indexLocation = null;
     private File versionFile = null;
     private String version = null;
+    private String database = null;
     private Date dateCreated = null;
     private int recordCount = 0;
     private AtomicInteger count = new AtomicInteger(0);
@@ -81,6 +86,10 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     public String getVersion() {
         return this.version;
+    }
+    
+    public String getDatabase() {
+        return this.database;
     }
 
     public int getRecordCount() {
@@ -234,6 +243,7 @@ public abstract class AbstractIndexManager implements IndexManager {
             properties.load(iStream);
 
             this.version = properties.getProperty(VERSION_PROPERTY);
+            this.database = properties.getProperty(DATABASE_PROPERTY);
             String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
             if (dateString != null) {
                 try {
@@ -259,7 +269,7 @@ public abstract class AbstractIndexManager implements IndexManager {
         managerThread.start();
 
     }
-    
+
     public void shutdown() {
         shutdownNow = true;
         managerThread.interrupt();
@@ -310,9 +320,7 @@ public abstract class AbstractIndexManager implements IndexManager {
                 } else if (this.buildIndex && !this.isBuilding()) {
                     // Build the index
                     this.buildIndex = false;
-                    this.isBuilding = true;
                     this.processBuild(true);
-                    this.isBuilding = false;
 
                 } else {
                     // Interrupted for a reason other than a rebuild - stop
@@ -337,12 +345,15 @@ public abstract class AbstractIndexManager implements IndexManager {
                 indexExists = false;
             }
 
-            if (indexExists && this.isCurrentVersion()) {
+            if (indexExists && this.isCurrentVersion() && this.isCurrentDatabase()) {
                 return;
             }
         }
 
+        this.isBuilding = true;
+
         this.version = null;
+        this.database = null;
         // Set the dateCreated to the time the index building started
         this.dateCreated = new Date();
 
@@ -398,8 +409,15 @@ public abstract class AbstractIndexManager implements IndexManager {
 
             String newVersion = String.valueOf(getIndexVersion());
             Date date = new Date();
+            database = (String) jdbcTemplate.execute(new ConnectionCallback() {
+                public Object doInConnection(Connection con) throws SQLException,
+                        DataAccessException {
+                    return con.getMetaData().getURL();
+                }
+            });
 
             properties.setProperty(VERSION_PROPERTY, newVersion);
+            properties.setProperty(DATABASE_PROPERTY, database);
             properties.setProperty(DATE_CREATED_PROPERTY, DATE_FORMAT.format(date));
             properties.store(oStream, null);
 
@@ -417,6 +435,8 @@ public abstract class AbstractIndexManager implements IndexManager {
                 // Do nothing - tried to close;
             }
         }
+
+        this.isBuilding = false;
 
     }
 
@@ -436,6 +456,22 @@ public abstract class AbstractIndexManager implements IndexManager {
      */
     private boolean isCurrentVersion() {
         return String.valueOf(this.getIndexVersion()).equals(this.version);
+    }
+
+    /**
+     * Helper method to determine if the index database is the same as the
+     * current database
+     * @return True if the databases match
+     */
+    private boolean isCurrentDatabase() {
+
+        String currentDb = (String) jdbcTemplate.execute(new ConnectionCallback() {
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                return con.getMetaData().getURL();
+            }
+        });
+
+        return currentDb.equals(this.database);
     }
 
     /**
