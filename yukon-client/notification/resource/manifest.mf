@@ -16,6 +16,7 @@ Class-Path: ./
  yukonappserver.jar 
  jtds.jar 
  jta.jar 
+ mail.jar 
  jdom.jar 
  SqlServer.jar 
  classes12.jar 
