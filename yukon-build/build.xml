@@ -144,7 +144,11 @@
 	<target name="build-clientTarget">
 		<echo message="building module yukon-client"/>
 		<mkdir dir="${log.dir}"/>
-		<exec failonerror="true" dir="${yukon.dir}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log">
+		<exec failonerror="true" 
+			  dir="${yukon.dir}/yukon-client/build" 
+			  executable="cmd.exe" 
+			  error="${log.dir}/client-error.log"
+			  output="${log.dir}/client-output.log">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</exec>
 
