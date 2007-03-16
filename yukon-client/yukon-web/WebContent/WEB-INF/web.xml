@@ -214,6 +214,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>loadProfile</servlet-name>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet>
         <description>Handles user authentication.</description>
         <servlet-name>LoginController</servlet-name>
         <servlet-class>com.cannontech.servlet.LoginController</servlet-class>
@@ -522,6 +528,11 @@
     <servlet-mapping>
         <servlet-name>httpRemote</servlet-name>
         <url-pattern>/remote/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>loadProfile</servlet-name>
+        <url-pattern>/spring/loadProfile/*</url-pattern>
     </servlet-mapping>
     
     <!--  The following mappings used to be handled by the invoker servlet -->

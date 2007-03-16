@@ -12,6 +12,15 @@ body {
   height: 53px;
 }
 
+.smallText {
+  font-size: .8em;
+}
+
+.formErrorSummary {
+  color: red;
+  font-size: .8em;
+}
+
 
 #Header img {
   margin: 0 0 1em 0;

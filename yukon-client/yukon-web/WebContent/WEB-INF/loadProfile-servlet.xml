@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+                /*=loadProfileController
+            </value>
+        </property>
+    </bean>
+    
+    <bean id="jsonViewResolver"
+      class="com.cannontech.web.util.JsonViewResolver">
+    </bean>
+    
+    <bean id="testpage" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName" value="test"/>
+    </bean>
+  
+    <bean id="loadProfileController" class="com.cannontech.web.loadprofile.LoadProfileController" >
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="emailService" ref="emailService"/>
+        <property name="loadProfileService" ref="porterService"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="contactDao" ref="contactDao"/>
+    </bean>
+</beans>
