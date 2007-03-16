@@ -55,7 +55,7 @@
 	<classpathentry path="/third-party/commons-pool-1.3.jar" kind="lib"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/logging-log4j-1.2.14.zip" path="/third-party/log4j-1.2.14.jar" kind="lib"/>
 	<classpathentry path="/third-party/commons-beanutils-1.7.0.jar" kind="lib"/>
-	<classpathentry path="/third-party/jsp-api.jar" kind="lib"/>
-	<classpathentry path="/third-party/servlet-api.jar" kind="lib"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip" path="/third-party/jsp-api.jar" kind="lib"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip" path="/third-party/servlet-api.jar" kind="lib"/>
 	<classpathentry path="WebContent/WEB-INF/classes" kind="output"/>
 </classpath>
