@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/03/08 21:56:10 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/03/16 19:10:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ void CtiInterpreter::stopEval()
 {
     _dostop = true;
 
-    while ( _isevaluating )
+    while ( _isevaluating && isRunning() )
         rwSleep( 50 );
     
     _dostop = false;
@@ -243,6 +243,8 @@ void CtiInterpreter::run()
                 _eval_barrier.wait();
             }            
         }
+
+        Tcl_DeleteInterp(_interp);
     }
     catch(...)
     {
@@ -254,8 +256,6 @@ void CtiInterpreter::run()
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " Interpreter shutting down." << endl;
     }
-
-    Tcl_DeleteInterp(_interp);
 
 
     {

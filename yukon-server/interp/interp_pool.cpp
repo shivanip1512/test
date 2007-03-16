@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp_pool.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:17:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/03/16 19:10:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,6 +109,8 @@ void CtiInterpreterPool::stopAndDestroyAllInterpreters()
          iter != _available_interps.end();
          iter++ )
     {
+        (*iter)->interrupt(CtiThread::SHUTDOWN);
+        (*iter)->join();
         delete *iter;
     }
 
