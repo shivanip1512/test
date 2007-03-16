@@ -25,3 +25,5 @@ Class-Path: ./
  jtds.jar 
  classes12.jar 
  jta.jar 
+ activation.jar 
+ mail.jar 
