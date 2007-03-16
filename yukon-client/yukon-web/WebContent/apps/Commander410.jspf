@@ -1,5 +1,6 @@
 <%@ page import="com.cannontech.database.data.lite.LitePointUnit"%>
 <%@ page import="com.cannontech.yukon.IDatabaseCache"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <jsp:directive.page import="com.cannontech.core.dao.DaoFactory"/>
 <%
 
@@ -119,13 +120,14 @@ function setCommand(cmd)
       <% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>
       <table width="530" border="0" cellspacing="0" cellpadding="0">
         <tr>             
+          <td> 
 <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
   <input type="hidden" name="deviceID" value="<%=deviceID%>">
   <input type="hidden" name="command" value="">
   <input type="hidden" name="timeOut" value="8000">
   <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
   <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
-          <td> 
+  
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
@@ -623,7 +625,7 @@ function setCommand(cmd)
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
               <tr><td height="10"></td></tr>
               <tr> 
-                <td align="center" rowspan="2"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
+                <td align="center" rowspan="3"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
                 <% String gotoLink = "";
                 if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
                   gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
@@ -641,9 +643,14 @@ function setCommand(cmd)
                   }%>
                   <td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
               </tr>               
+              <tr>
+                  <td class="bottomLink">
+                    <tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}">Long Load Profile</tags:longLoadProfile>
+                  </td>
+              </tr>               
             </table>
+            </form>
           </td>
-		</form>
         </tr>
         <tr>
           <td>&nbsp;</td>
