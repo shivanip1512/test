@@ -239,10 +239,11 @@
 		<delete dir="${yukon.dir}/yukon-database"/>
     </target>
 	
-	
-	
 	<target name="publish">
-		<echo message="Error: ${error.log}"/>
+		<loadresource property="message">
+		       <file file="${error.log}"/>
+		</loadresource>
+		<echo message="FAILURE: ${message}"/>
 	</target>
 	
 <!--	
