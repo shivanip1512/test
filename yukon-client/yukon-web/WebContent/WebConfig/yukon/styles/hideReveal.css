@@ -1,0 +1,7 @@
+span.hideRevealLink {
+  cursor: pointer;
+}
+
+span.hideRevealLink img {
+  vertical-align: bottom;
+}
