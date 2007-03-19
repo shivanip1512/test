@@ -466,7 +466,6 @@ go
 create table DEVICEREADLOG (
    DeviceReadLogID      numeric              not null,
    DeviceID             numeric              not null,
-   RequestID            numeric              not null,
    Timestamp            datetime             not null,
    StatusCode           smallint             not null,
    DeviceReadRequestLogID numeric              not null

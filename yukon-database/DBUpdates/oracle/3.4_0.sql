@@ -366,7 +366,6 @@ alter table DEVICEREADREQUESTLOG
 create table DEVICEREADLOG  (
    DeviceReadLogID      NUMBER                          not null,
    DeviceID             NUMBER                          not null,
-   RequestID            NUMBER                          not null,
    Timestamp            DATE                            not null,
    StatusCode           SMALLINT                        not null,
    DeviceReadRequestLogID NUMBER                        not null
