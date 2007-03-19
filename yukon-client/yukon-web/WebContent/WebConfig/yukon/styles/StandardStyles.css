@@ -157,6 +157,7 @@ table.resizeRoundTable  td.upperLeft{
     background-image: url(../Header_left.gif);
     background-repeat: no-repeat;
     width: 6px;
+    background-color: #888;
 }
 
 table.roundedTable td.upperRight,
@@ -166,6 +167,7 @@ table.resizeRoundTable td.upperRight{
     background-image: url(../Header_right.gif);
     background-repeat: no-repeat;
     width: 6px;
+	background-color: #888;
 }
 
 table.roundedTable td.lowerLeft,
