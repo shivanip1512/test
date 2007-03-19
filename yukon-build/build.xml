@@ -165,7 +165,9 @@
 	    <loadfile property="erroroutput"
 	         	  srcFile="${log.dir}/client-output.log"/>
 	    
-	    <fail message="${erroroutput}">
+	    <echo message="${erroroutput}"/>
+	    
+	    <fail>
 	    	<condition>
 	        	<isfailure code="${errorcode}"/>
 		    </condition>
