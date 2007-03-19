@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2007/03/12 22:24:01 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2007/03/19 20:26:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1598,6 +1598,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
 
             function = Emetcon::GetConfig_IEDTime;
             found = getOperation(function, OutMessage->Buffer.BSt);
+            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
         }
         else if( parse.isKeyValid("scan"))
         {

@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/12/11 16:36:57 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2007/03/19 20:26:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -783,6 +783,11 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             if(cnt == outList.size())
             {
                 bLastFail = true;
+            }
+            else
+            {
+                // if blastfail is not set, we need to decrement the message we are retrying here.
+                decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             }
 
             delete pReq;
