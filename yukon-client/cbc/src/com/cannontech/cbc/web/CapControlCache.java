@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -322,7 +321,7 @@ public synchronized LiteWrapper[] getOrphanedFeeders()
 	
 	for( int i = 0 ; i < unassignedFeeders.length; i++ )
 	{
-		CapControlFeeder feeder = (CapControlFeeder)unassignedFeeders[i];		
+		CapControlFeeder feeder = unassignedFeeders[i];		
 		retVal[i] = new LiteWrapper(
 				DaoFactory.getPaoDao().getLiteYukonPAO(feeder.getFeederID().intValue()) );
 	}
@@ -548,7 +547,7 @@ private void addSubIDToAreaMap( final SubBus subBus )
  */
 private void removeSubIDToAreaMap( Integer subID )
 {
-	SubBus subBus = (SubBus)getSubBus( subID );
+	SubBus subBus = getSubBus( subID );
 	if( subBus == null ) return;
 
 	NativeIntVector subIDs = null;

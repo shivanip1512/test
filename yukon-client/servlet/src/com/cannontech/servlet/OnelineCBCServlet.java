@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.cbc.oneline.CapControlDrawingUpdater;
 import com.cannontech.cbc.oneline.CapControlSVGGenerator;
+import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.oneline.tag.CBCTagHandler;
 import com.cannontech.cbc.oneline.tag.OnelineTags;
@@ -47,35 +48,54 @@ public class OnelineCBCServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         ServletContext config = req.getSession().getServletContext();
+        initHandler(config);
+        cache = (CapControlCache) config.getAttribute("capControlCache");
+        currentSubId = ParamUtil.getInteger(req, "id");
+        String redirectURL = ParamUtil.getString(req, "redirectURL", null);
+        SubBus subBusMsg = cache.getSubBus(currentSubId);
+        String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);
+        registerPointsWithDispatch(config, subBusMsg);
+        String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath);
+        resp.sendRedirect(subName + ".html");
+        
+        
+    }
+
+    private void initHandler(ServletContext config) {
         CBCTagHandler handler = (CBCTagHandler) config.getAttribute(TAGHANDLER);
         if (handler != null) {
             config.removeAttribute(TAGHANDLER);
         }
+    }
 
-        cache = (CapControlCache) config.getAttribute("capControlCache");
-        currentSubId = ParamUtil.getInteger(req, "id");
-
-        SubBus subBusMsg = cache.getSubBus(currentSubId);
-        String absPath = req.getSession()
-                            .getServletContext()
-                            .getRealPath(CBCWebUtils.ONE_LINE_DIR);
-        OnelineCBCBroker util = new OnelineCBCBroker();
-        util.setDirBase(absPath);
-        String subName = subBusMsg.getCcName();
-        String dirAndFileExt = util.createFileName(subName);
-        Dimension d = OnelineUtil.getDrawingDimension(subBusMsg);
-        CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
-        emptyCanvas.createDrawing(subBusMsg,
-                                  CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
-
-        util.createHTMLFile(dirAndFileExt, emptyCanvas);
-
-        resp.sendRedirect(subName + ".html");
-
-        //register dispatch for all points for this sub
+    private void registerPointsWithDispatch(ServletContext config, SubBus subBusMsg) {
+        CBCTagHandler handler;
         List<LitePoint> pointsToRegister = getPointsToRegister(subBusMsg);
         handler = OnelineTags.createTagHandler(pointsToRegister);
         config.setAttribute(TAGHANDLER, handler);
+    }
+
+    private String createSubBusDrawing(String redirectURL, SubBus subBusMsg, String absPath) {
+        OnelineCBCBroker util = new OnelineCBCBroker();
+        //set dir base
+        util.setDirBase(absPath);
+        //create file name
+        String subName = subBusMsg.getCcName();
+        String dirAndFileExt = util.createFileName(subName);
+        //create lay out params
+        Dimension d = OnelineUtil.getDrawingDimension(subBusMsg);
+        boolean isSingleFeeder = subBusMsg.getCcFeeders().size() == 1;
+        int height = (int)d.getHeight();
+        int width = (int)d.getWidth();
+        OneLineParams param = new OneLineParams(height, width, isSingleFeeder);
+        param.setRedirectURL(redirectURL);
+        //create drawing
+        CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
+        emptyCanvas.setLayoutParams(param);
+        emptyCanvas.createDrawing(subBusMsg,
+                                  CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
+        util.createHTMLFile(dirAndFileExt, emptyCanvas);
+        return subName;
     }
 
     private List<LitePoint> getPointsToRegister(SubBus subBusMsg) {

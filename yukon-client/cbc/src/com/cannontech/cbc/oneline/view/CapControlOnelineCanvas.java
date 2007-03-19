@@ -23,32 +23,34 @@ public class CapControlOnelineCanvas {
     private OneLineParams layoutParams;
     private OneLineDrawing drawing;
 
-    
-    public CapControlOnelineCanvas () {
+    public CapControlOnelineCanvas() {
     }
-   
-    public CapControlOnelineCanvas (Dimension d)
-    {
+
+    public CapControlOnelineCanvas(Dimension d) {
         drawingHeight = (int) d.getHeight();
         drawingWidth = (int) d.getWidth();
     }
+
     public CapControlOnelineCanvas(int h, int w) {
         drawingHeight = h;
         drawingWidth = w;
     }
 
-    public  Drawing createDrawing(SubBus subBusMessage, String fileName) {
+    public Drawing createDrawing(SubBus subBusMessage, String fileName) {
         boolean isSingleFeeder = subBusMessage.getCcFeeders().size() == 1;
-        layoutParams = new OneLineParams(drawingHeight,
-                                         drawingWidth,
-                                         isSingleFeeder);
+        if (layoutParams == null) {
+            layoutParams = new OneLineParams(drawingHeight,
+                                             drawingWidth,
+                                             isSingleFeeder);
+        }
         if (fileName != null)
             drawing = new OneLineDrawing(layoutParams, fileName);
         else
-            drawing = new OneLineDrawing (layoutParams);
+            drawing = new OneLineDrawing(layoutParams);
 
         drawing.addLogos();
         drawing.addSub(subBusMessage);
+        drawing.addNavigationPanel();
 
         Vector feederVector = subBusMessage.getCcFeeders();
         for (int i = 0; i < feederVector.size(); i++) {

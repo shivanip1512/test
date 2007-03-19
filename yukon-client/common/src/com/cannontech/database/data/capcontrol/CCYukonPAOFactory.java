@@ -18,7 +18,12 @@ public final static YukonPAObject createCapControlPAO( int type )
 
 	switch( type )
 	{
-		case CapControlTypes.CAP_CONTROL_SUBBUS:
+        case CapControlTypes.CAP_CONTROL_AREA:
+            retBase = new CapControlArea();
+            ((CapControlYukonPAOBase)retBase).setCapControlType( CapControlTypes.STRING_CAPCONTROL_AREA );
+            break;
+        
+        case CapControlTypes.CAP_CONTROL_SUBBUS:
 			retBase = new CapControlSubBus();
 			((CapControlYukonPAOBase)retBase).setCapControlType( CapControlTypes.STRING_CAPCONTROL_SUBBUS );
 			break;

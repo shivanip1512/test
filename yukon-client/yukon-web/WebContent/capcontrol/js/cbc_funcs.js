@@ -791,7 +791,7 @@ function showStaticOneLine () {
    }
 }
 function showOneLine () {
-
+   var currLoc = window.location.href;
    var elemSubs = document.getElementsByName('cti_chkbxSubs');
    var validElems = new Array();
    getValidChecks( elemSubs, validElems );
@@ -806,7 +806,7 @@ function showOneLine () {
          //there is an id for the sub name
          if (document.getElementById (anc_id)) {
             id = anc_id.split('_')[1];
-            url = "/capcontrol/oneline/OnelineCBCServlet?id=" + id;
+            url = "/capcontrol/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + currLoc;
             post(url);
             }
          else {

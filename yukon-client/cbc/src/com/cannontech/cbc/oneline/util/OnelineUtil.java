@@ -46,11 +46,16 @@ public class OnelineUtil {
     public static final double CAP_IMG_WIDTH = 20;
     public static final int SUB_IMG_HEIGHT = 60;
 
-    public static final String YUKON_LOGO_WHITE = "YukonLogoWhite.gif";
-    public static final String CAP_CONTROL_LOGO = "CapControlLogo.gif";
+    public static final String IMG_YUKON_LOGO_WHITE = "YukonLogoWhite.gif";
+    public static final String IMG_CAP_CONTROL_LOGO = "CapControlLogo.gif";
+    public static final String IMG_BACKBUTTON = "arrow.gif";
+    public static final String IMG_EDITOR = "edit.gif";
+    public static final String IMG_QUESTION = "question.gif";
+    
 
     public static final String ONELN_STATE_GROUP = "1LNSUBSTATE";
     public static final String ONELN_VERIFY_GROUP = "1LNVERIFY";
+    
     public static final Font SMALL_FONT = new java.awt.Font("arial",
                                                             java.awt.Font.BOLD,
                                                             10);
@@ -59,6 +64,9 @@ public class OnelineUtil {
                                                             java.awt.Font.BOLD,
                                                             14);
     public static final Color TAG_COLOR = new Color(159, 187, 172);
+    
+    public static final int EDITOR_CAPCONTROL = 2;
+
 
     public static LiteStateGroup getOnelineStateGroup(String groupName) {
         LiteStateGroup[] groups = DaoFactory.getStateDao().getAllStateGroups();
@@ -196,5 +204,10 @@ public class OnelineUtil {
         if (allStrings.length == 2)
             return allStrings[1];
         return "ID_PLACEHOLDER";
+    }
+
+    public static String createEditLink(int id) {
+        String link = "/editor/cbcBase.jsf?type=" + EDITOR_CAPCONTROL + "&itemid=" + id;
+        return link;
     }
 }

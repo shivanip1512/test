@@ -9,6 +9,7 @@ import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.states.DynamicLineState;
+import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.esub.element.LineElement;
@@ -40,6 +41,8 @@ public class OnelineFeeder implements OnelineObject {
     private StaticText feederName;
 
     UpdatableTextList tag = new UpdatableTextList();
+    private StaticImage editorImage;
+    private StaticImage infoImage;
 
     public void draw() {
 
@@ -58,8 +61,13 @@ public class OnelineFeeder implements OnelineObject {
 
         LineElement feederLn = createFeederLn(fdrYCoord, subInjLnX);
 
+        initEditorImage();
+        initInformationImage();
+        
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(feederLn);
+        graph.add(editorImage);
+        graph.add(infoImage);
         UpdatableStats stats = new FeederUpdatableStats(graph, this);
         stats.draw();
         HiddenStates feederStates = new FeederHiddenStates(graph, this);
@@ -67,6 +75,28 @@ public class OnelineFeeder implements OnelineObject {
         tagView.draw();
 
         feederStates.draw();
+    }
+
+    private void initInformationImage() {
+        infoImage = new StaticImage();
+        String link = OnelineUtil.createEditLink(getCurrentFeederIdFromMessage().intValue());
+        infoImage.setLinkTo(link);
+        infoImage.setYukonImage(OnelineUtil.IMG_QUESTION);
+        infoImage.setX(editorImage.getX() + 20);
+        infoImage.setY(editorImage.getY());
+            
+    }
+
+    private void initEditorImage() {
+        editorImage = new StaticImage();
+        String link = OnelineUtil.createEditLink(getCurrentFeederIdFromMessage().intValue());
+        editorImage.setLinkTo(link);
+        editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
+        double nameX = getFeederName().getX();
+        int nameWidth = getFeederName().getText().length() * OnelineUtil.PXLS_PER_CHAR;
+        editorImage.setX(nameX + + nameWidth + 5);
+        editorImage.setY(getFeederName().getY());
+    
     }
 
     private LineElement createFeederLn(double fdrYCoord, double currFdrX) {

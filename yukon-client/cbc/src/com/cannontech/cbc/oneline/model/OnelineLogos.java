@@ -39,7 +39,7 @@ public class OnelineLogos {
     public StaticImage getYukonLogo() {
         if (yukonLogo == null) {
             yukonLogo = new StaticImage();
-            yukonLogo.setYukonImage(OnelineUtil.YUKON_LOGO_WHITE);
+            yukonLogo.setYukonImage(OnelineUtil.IMG_YUKON_LOGO_WHITE);
             yukonLogo.setX(layoutParams.getWidth() - yukonLogo.getWidth());
             yukonLogo.setY(ccLogo.getY());
         }
@@ -49,7 +49,7 @@ public class OnelineLogos {
     public StaticImage getCcLogo() {
         if (ccLogo == null) {
             ccLogo = new StaticImage();
-            ccLogo.setYukonImage(OnelineUtil.CAP_CONTROL_LOGO);
+            ccLogo.setYukonImage(OnelineUtil.IMG_CAP_CONTROL_LOGO);
             ccLogo.setX(layoutParams.getWidth() / 51.2);
             ccLogo.setY(layoutParams.getHeight() / 40.0);
         }

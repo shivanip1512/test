@@ -736,9 +736,21 @@ public class CapControlForm extends DBEditorForm{
 		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
 		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
 
-		switch (paoType) {
+		//here you go ... this is the new era. we decide to create an area
+        //We can't call area an area because area already exists in our code.
+        //We will call that capcontrolarea
+        //Don't confuse area (description of the sub in the yukonpaobject table) with an actual
+        //capcontrolarea object
+        switch (paoType) {
 
-		case PAOGroups.CAP_CONTROL_SUBBUS:
+        case PAOGroups.CAP_CONTROL_AREA:
+            setEditorTitle("Substation Area");
+            setPaoDescLabel("Substation Area");
+            setChildLabel("Substation");
+            getVisibleTabs().put("CBCArea", Boolean.TRUE);
+            break;
+
+        case PAOGroups.CAP_CONTROL_SUBBUS:
 			setEditorTitle("Substation Bus");
 			setPaoDescLabel("Geographical Name");
 			setChildLabel("Feeders");

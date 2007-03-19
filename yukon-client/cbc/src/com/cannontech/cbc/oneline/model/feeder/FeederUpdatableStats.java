@@ -172,7 +172,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
         StaticText label = OnelineUtil.createTextElement(strLabel,
                                                          OnelineUtil.getStartPoint(getFeederName()),
                                                          null,
-                                                         new Integer((int) getFeederName().getHeight() + 10));
+                                                         new Integer((int) getFeederName().getHeight() + 20));
 
         double vars = getStreamable().getCurrentVarLoadPointValue()
                                      .doubleValue();

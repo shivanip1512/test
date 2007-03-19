@@ -42,7 +42,9 @@ public final static int getCapControlType(String typeString)
 		return CAP_CONTROL_SUBBUS;
 	else if( typeString.equalsIgnoreCase( STRING_CAPCONTROL_FEEDER ) )
 		return CAP_CONTROL_FEEDER;
-	else
+    else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_AREA))
+        return CAP_CONTROL_AREA;
+    else
 		return INVALID;
 }
 /**

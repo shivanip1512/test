@@ -1,15 +1,10 @@
 package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.point.Point;
 
 /**

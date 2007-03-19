@@ -5,6 +5,7 @@ public class OneLineParams {
     private int height;
     private int width;
     private boolean isSingleFeeder = false;
+    private String redirectURL;
 
     public OneLineParams(int h, int w, boolean singleFdr) {
         height = h;
@@ -86,6 +87,16 @@ public class OneLineParams {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    
+
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
+    public void setRedirectURL(String redirectURL) {
+        this.redirectURL = redirectURL;
     }
 
 }

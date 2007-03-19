@@ -34,6 +34,7 @@ public class OnelineSub implements OnelineObject {
     private DynamicLineElement injectionLine;
     private DynamicLineElement distributionLn;
     public Integer paoId;
+    private StaticImage editorImage;
 
 
     public OnelineSub(SubBus subBusMessage) {
@@ -51,11 +52,15 @@ public class OnelineSub implements OnelineObject {
         LxGraph graph = d.getLxGraph();
 
         getTransformerImg().setPointID(-100000000);
+        
         graph.add(getTransformerImg());
         graph.add(getName());
 
         graph.add(getInjectionLine());
         graph.add(getDistributionLn());
+        initEditorImage();
+        graph.add(editorImage);
+
         UpdatableStats stats = new SubUpdatableStats(graph, this);
         stats.draw();
         //tag info
@@ -63,6 +68,16 @@ public class OnelineSub implements OnelineObject {
         TagView tagView = new SubTagView(graph, this, states);
         tagView.draw();
         states.draw();
+    }
+
+    private void initEditorImage() {
+        editorImage = new StaticImage();
+        String link = OnelineUtil.createEditLink(subBusMsg.getCcId().intValue());
+        editorImage.setLinkTo(link);
+        editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
+        editorImage.setX(getInjectionLine().getPoint1().getX() + 5);
+        editorImage.setY(getInjectionLine().getPoint1().getY() - 25);
+            
     }
 
     public LineElement getInjectionLine() {
