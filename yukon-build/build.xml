@@ -167,7 +167,7 @@
 	    
 	    <echo message="${erroroutput}"/>
 	    
-	    <fail>
+	    <fail message="exec task returned non zero status">
 	    	<condition>
 	        	<isfailure code="${errorcode}"/>
 		    </condition>
