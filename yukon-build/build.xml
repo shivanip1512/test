@@ -162,13 +162,16 @@
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</exec>
 	   
-	    <condition property="result">
-	        <isfailure code="${errorcode}">
-	        	<echo file="${log.dir}/client-output.log}"/>
-	            <fail/>
-	        </isfailure>
-	    </condition>
-	        
+	    <loadfile property="erroroutput"
+	         	  srcFile="${log.dir}/client-output.log"/>
+	    
+	    <fail message="${erroroutput}">
+	    	<condition>
+	        	<isfailure code="${errorcode}"/>
+		    </condition>
+		</fail>    
+	
+	    
 		<exec failonerror="true" dir="${yukon.dir}/yukon-client/build" executable="cmd.exe">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
 		</exec>	
