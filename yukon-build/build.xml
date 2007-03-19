@@ -147,7 +147,7 @@
 		<taskdef name="ccexec"
 		         classname="CCTask"
 		         classpath="yukon-build/lib"/>
-		<ccexec dir="${basedir}}/${yukon.dir}/yukon-client/build" executable="cmd.exe" failonerror="true">
+		<ccexec dir="${basedir}/${yukon.dir}/yukon-client/build" executable="cmd.exe" failonerror="true">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</ccexec>
 <!--
