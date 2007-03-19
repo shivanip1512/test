@@ -144,23 +144,31 @@
 	<target name="build-clientTarget">
 		<echo message="building module yukon-client"/>
 		<mkdir dir="${log.dir}"/>
+<!--	    
 		<taskdef name="ccexec"
 		         classname="CCTask"
 		         classpath="yukon-build/lib"/>
-<!--		<ccexec dir="${basedir}/${yukon.dir}/yukon-client/build" executable="cmd.exe" failonerror="true">
+		<ccexec dir="${basedir}/${yukon.dir}/yukon-client/build" executable="cmd.exe" failonerror="true">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</ccexec>
-		-->
-	    <echo message="here I am"/>
-<!--
-		<exec failonerror="true" 
+-->	
+	    
+		<exec failonerror="false" 
 			  dir="${yukon.dir}/yukon-client/build" 
 			  executable="cmd.exe" 
 			  error="${log.dir}/client-error.log"
-			  output="${log.dir}/client-output.log">
+			  output="${log.dir}/client-output.log"
+		      resultproperty="errorcode">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</exec>
--->
+	   
+	    <condition property="result">
+	        <isfailure code="${errorcode}">
+	        	<echo file="${log.dir}/client-output.log}"/>
+	            <fail/>
+	        </isfailure>
+	    </condition>
+	        
 		<exec failonerror="true" dir="${yukon.dir}/yukon-client/build" executable="cmd.exe">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
 		</exec>	
