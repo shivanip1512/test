@@ -362,54 +362,78 @@ create table UserPaoPermission (
    UserID               numeric              not null,
    PaoID                numeric              not null,
    Permission           varchar(50)          not null
-)
-go
-
-/*
-Still need to add transfer from UserPaoOwner to userPaoPermission so can't activate these constraints yet
-alter table UserPaoPermission
-   add constraint PK_USERPAOPERMISSION primary key  (UserPaoPermissionID)
+);
 go
 
 alter table UserPaoPermission
-   add constraint AK_USRPAOPERM unique  (UserID, PaoID, Permission)
+   add constraint PK_USERPAOPERMISSION primary key  (UserPaoPermissionID);
+go
+
+/**********************USERPAOOWNER MIGRATION*****************************/
+declare @userid numeric;
+declare @paoid numeric;
+declare @counterid numeric;
+SET @counterid = 1;
+
+declare userpaoowner_curs cursor for select userid,paoid from userpaoowner;
+
+open userpaoowner_curs;
+
+fetch userpaoowner_curs into @userid,@paoid;
+
+while (@@fetch_status = 0)
+  begin 
+     insert into UserPaoPermission values (@counterid, @userid, @paoid, 'allow LM visibility');
+     fetch userpaoowner_curs into @userid,@paoid;
+     set @counterid = @counterid + 1;
+  end
+
+close userpaoowner_curs;
+
+deallocate userpaoowner_curs;
+/*************************************************************************/
+go
+
+alter table UserPaoPermission
+   add constraint AK_USRPAOPERM unique  (UserID, PaoID, Permission);
 go
 
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YKUSR_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID)
+      references YukonUser (UserID);
 go
 
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
-*/
+
+drop table UserPaoOwner;
 
 create table GroupPaoPermission (
    GroupPaoPermissionID numeric              not null,
    GroupID              numeric              not null,
    PaoID                numeric              not null,
    Permission           varchar(50)          not null
-)
+);
 go
 
 alter table GroupPaoPermission
-   add constraint PK_GROUPPAOPERMISSION primary key  (GroupPaoPermissionID)
+   add constraint PK_GROUPPAOPERMISSION primary key  (GroupPaoPermissionID);
 go
 
 alter table GroupPaoPermission
-   add constraint AK_GRPPAOPERM unique  (GroupID, PaoID, Permission)
+   add constraint AK_GRPPAOPERM unique  (GroupID, PaoID, Permission);
 go
 
 alter table GroupPaoPermission
    add constraint FK_GROUPPAO_REF_YKGRP_YUKONGRO foreign key (GroupID)
-      references YukonGroup (GroupID)
+      references YukonGroup (GroupID);
 go
 
 alter table GroupPaoPermission
    add constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 
 /* @error ignore-begin */
@@ -432,16 +456,16 @@ create table DEVICEREADJOBLOG (
    ScheduleID           numeric              not null,
    StartTime            datetime             not null,
    StopTime             datetime             not null
-)
+);
 go
 
 alter table DEVICEREADJOBLOG
-   add constraint PK_DEVICEREADJOBLOG primary key  (DeviceReadJobLogID)
+   add constraint PK_DEVICEREADJOBLOG primary key  (DeviceReadJobLogID);
 go
 
 alter table DEVICEREADJOBLOG
    add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
+      references MACSchedule (ScheduleID);
 go
 
 create table DEVICEREADREQUESTLOG (
@@ -451,16 +475,16 @@ create table DEVICEREADREQUESTLOG (
    StartTime            datetime             not null,
    StopTime             datetime             not null,
    DeviceReadJobLogID   numeric              not null
-)
+);
 go
 
 alter table DEVICEREADREQUESTLOG
-   add constraint PK_DEVICEREADREQUESTLOG primary key  (DeviceReadRequestLogID)
+   add constraint PK_DEVICEREADREQUESTLOG primary key  (DeviceReadRequestLogID);
 go
 
 alter table DEVICEREADREQUESTLOG
    add constraint FK_DEVICERE_FK_DRREQL_DEVICERE foreign key (DeviceReadJobLogID)
-      references DEVICEREADJOBLOG (DeviceReadJobLogID)
+      references DEVICEREADJOBLOG (DeviceReadJobLogID);
 go
       
 create table DEVICEREADLOG (
@@ -469,16 +493,16 @@ create table DEVICEREADLOG (
    Timestamp            datetime             not null,
    StatusCode           smallint             not null,
    DeviceReadRequestLogID numeric              not null
-)
+);
 go
 
 alter table DEVICEREADLOG
-   add constraint PK_DEVICEREADLOG primary key  (DeviceReadLogID)
+   add constraint PK_DEVICEREADLOG primary key  (DeviceReadLogID);
 go
 
 alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
-      references DEVICEREADREQUESTLOG (DeviceReadRequestLogID)
+      references DEVICEREADREQUESTLOG (DeviceReadRequestLogID);
 go      
       
 insert into SequenceNumber values (1,'DeviceReadLog');
