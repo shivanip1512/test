@@ -144,6 +144,13 @@
 	<target name="build-clientTarget">
 		<echo message="building module yukon-client"/>
 		<mkdir dir="${log.dir}"/>
+		<taskdef name="ccexec"
+		         classname="CCTask"
+		         classpath="lib"/>
+		<ccexec dir="." executable="cmd.exe">
+			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
+		</ccexec>
+<!--
 		<exec failonerror="true" 
 			  dir="${yukon.dir}/yukon-client/build" 
 			  executable="cmd.exe" 
@@ -151,7 +158,7 @@
 			  output="${log.dir}/client-output.log">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</exec>
-
+-->
 		<exec failonerror="true" dir="${yukon.dir}/yukon-client/build" executable="cmd.exe">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
 		</exec>	
