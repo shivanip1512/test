@@ -100,19 +100,28 @@
 	
 </cti:checkRole>
 
-<!-- Commercial Metering section -->
-<cti:checkMultiRole roles="CommercialMeteringRole.ROLEID, BillingRole.ROLEID">
+<!-- Metering section -->
+<cti:checkRole role="CommercialMeteringRole.ROLEID">
 	
-	<tags:operationSection sectionName="Commercial Metering" sectionImageName="CommercialMeteringLogo">
-		<tags:sectionLink>
-        	<a href="Metering/Billing.jsp"><cti:getProperty property="BillingRole.HEADER_LABEL" defaultvalue="Billing"/></a>
-        </tags:sectionLink>
-		<tags:sectionLink>
-        	<a href="Metering/Metering.jsp">All Trends</a>
-        </tags:sectionLink>
+	<tags:operationSection sectionName="Metering" sectionImageName="CommercialMeteringLogo">
+		<cti:checkProperty property="CommercialMeteringRole.BILLING_ENABLED">
+			<tags:sectionLink>
+	        	<a href="Metering/Billing.jsp"><cti:getProperty property="BillingRole.HEADER_LABEL" defaultvalue="Billing"/></a>
+	        </tags:sectionLink>
+        </cti:checkProperty>
+		<cti:checkProperty property="CommercialMeteringRole.TRENDING_ENABLED">
+			<tags:sectionLink>
+	        	<a href="Metering/Metering.jsp">All Trends</a>
+	        </tags:sectionLink>
+        </cti:checkProperty>
+		<cti:checkProperty property="CommercialMeteringRole.IMPORTER_ENABLED">
+			<tags:sectionLink>
+	        	<a href="../bulk/importer.jsp">Bulk Importer</a>
+	        </tags:sectionLink>
+        </cti:checkProperty>
 	</tags:operationSection>
 
-</cti:checkMultiRole>
+</cti:checkRole>
 
 <!-- Client Launcher section -->
 <cti:checkProperty property="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED">
