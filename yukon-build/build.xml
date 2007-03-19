@@ -162,12 +162,15 @@
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
 		</exec>
 	   
+	    <loadfile property="errormessage"
+	    		  srcFile="${log.dir}/client-error.log"/>
+	    
 	    <loadfile property="erroroutput"
 	         	  srcFile="${log.dir}/client-output.log"/>
 	    
 	    <echo message="${erroroutput}"/>
 	    
-	    <fail message="exec task returned non zero status">
+	    <fail message="${errormessage}">
 	    	<condition>
 	        	<isfailure code="${errorcode}"/>
 		    </condition>
