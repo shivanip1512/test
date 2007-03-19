@@ -208,11 +208,11 @@
 	<target name="buildquick-install" depends="update-install,update-database,build-installTarget"/>
 	<target name="build-installTarget">
 		<mkdir dir="${log.dir}"/>
-		<copy todir="c:/software/install/lib/server">
+		<copy todir="d:/software/install/lib/server">
 	    	<fileset dir="${yukon.dir}/yukon-server/bin" includes="*.exe,*.dll"/>
 	    </copy>
 
-		<copy todir="c:/software/install/lib/client">
+		<copy todir="d:/software/install/lib/client">
 	    	<fileset dir="${yukon.dir}/yukon-client/lib"/>
 	    </copy>
 
