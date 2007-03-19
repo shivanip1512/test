@@ -144,15 +144,7 @@
 	<target name="build-clientTarget">
 		<echo message="building module yukon-client"/>
 		<mkdir dir="${log.dir}"/>
-<!--	    
-		<taskdef name="ccexec"
-		         classname="CCTask"
-		         classpath="yukon-build/lib"/>
-		<ccexec dir="${basedir}/${yukon.dir}/yukon-client/build" executable="cmd.exe" failonerror="true">
-			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
-		</ccexec>
--->	
-	    
+    
 		<exec failonerror="false" 
 			  dir="${yukon.dir}/yukon-client/build" 
 			  executable="cmd.exe" 
@@ -175,8 +167,7 @@
 	        	<isfailure code="${errorcode}"/>
 		    </condition>
 		</fail>    
-	
-	    
+
 		<exec failonerror="true" dir="${yukon.dir}/yukon-client/build" executable="cmd.exe">
 			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
 		</exec>	
@@ -188,9 +179,29 @@
 	<target name="build-serverTarget">
 		<echo message="building module yukon-server"/>
 		<mkdir dir="${log.dir}"/>
-		<exec failonerror="true" dir="${yukon.dir}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log">
+
+		<exec failonerror="false" 
+			  dir="${yukon.dir}/yukon-server/" 
+			  executable="cmd.exe" 
+			  error="${log.dir}/server-error.log"
+			  output="${log.dir}/server-output.log"
+		      resultproperty="errorcode">
 			<arg line="/c buildhereexit.cmd ${build.label}"/>
-		</exec>	
+		</exec>
+	   
+	    <loadfile property="errormessage"
+	    		  srcFile="${log.dir}/server-error.log"/>
+	    
+	    <loadfile property="erroroutput"
+	         	  srcFile="${log.dir}/server-output.log"/>
+	    
+	    <echo message="${erroroutput}"/>
+	    
+	    <fail message="${errormessage}">
+	    	<condition>
+	        	<isfailure code="${errorcode}"/>
+		    </condition>
+		</fail>  	       
 	</target>
 	
 	<target name="buid-install" depends="clean-install,clean-database,checkout-install,checkout-database,build-installTarget"/>
@@ -207,9 +218,28 @@
 
 	   <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe"/>
 	   <property name="isfile" location='${yukon.dir}\yukon-install\YukonSetupX\Yukon Installer.ism'/>
-	   <exec failonerror="true" executable="${isshield}" error="${log.dir}/install-error.log">
-	   	<arg line="-p '${isfile}'"/>
-	   </exec>		
+	    
+		<exec failonerror="false" 
+			  executable="${isshield}" 
+			  error="${log.dir}/install-error.log"
+			  output="${log.dir}/install-output.log"
+		      resultproperty="errorcode">
+			<arg line="-p '${isfile}'"/>
+		</exec>
+	   
+	    <loadfile property="errormessage"
+	    		  srcFile="${log.dir}/install-error.log"/>
+	    
+	    <loadfile property="erroroutput"
+	         	  srcFile="${log.dir}/install-output.log"/>
+	    
+	    <echo message="${erroroutput}"/>
+	    
+	    <fail message="${errormessage}">
+	    	<condition>
+	        	<isfailure code="${errorcode}"/>
+		    </condition>
+		</fail> 	    	
 	</target>
 
 
