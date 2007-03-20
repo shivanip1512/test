@@ -285,10 +285,30 @@ create table UserPaoPermission  (
    Permission           VARCHAR2(50)                    not null
 );
 
-/*
-Still need to add transfer from UserPaoOwner to userPaoPermission so can't activate these constraints yet
 alter table UserPaoPermission
    add constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID);
+
+/**********************USERPAOOWNER MIGRATION*****************************/
+declare
+v_userid number;
+v_paoid number;
+v_counterid number := 1;
+cursor c_userpaoowner is select userid, paoid from userpaoowner;
+
+begin
+     open c_userpaoowner;
+     loop
+          fetch c_userpaoowner into v_userid, v_paoid;
+          insert into userpaopermission values (v_counterid, v_userid, v_paoid, 'allow LM visibility');
+	  v_counterid := v_counterid + 1; 
+	  exit when c_userpaoowner%notfound; 
+     end loop;
+
+     close c_userpaoowner;
+
+end;
+/*commit;*/
+/*************************************************************************/
 
 alter table UserPaoPermission
    add constraint AK_USRPAOPERM unique (UserID, PaoID, Permission);
@@ -300,7 +320,8 @@ alter table UserPaoPermission
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
-*/
+
+drop table UserPaoOwner;
    
 create table GroupPaoPermission  (
    GroupPaoPermissionID NUMBER                          not null,
