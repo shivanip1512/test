@@ -61,6 +61,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.tou.TOUSchedule;
@@ -1546,6 +1547,13 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 			//handle the DBChangeMsg locally
 			com.cannontech.database.data.lite.LiteBase lBase = 
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+
+            // Special case for point deletion
+            if (lBase == null && dbChange[i].getDatabase() == DBChangeMsg.CHANGE_POINT_DB
+			        && changeType == DBChangeMsg.CHANGE_TYPE_DELETE && object instanceof PointBase) {
+			    
+			    lBase = LiteFactory.createLite(object);
+			}
 
 			//tell our tree we may need to change the display
 			updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
