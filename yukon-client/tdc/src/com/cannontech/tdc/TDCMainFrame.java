@@ -4667,6 +4667,8 @@ public void messageReceived( MessageEvent e )
 
 	}
 	
+    /*TODO We need to find a better place/way to handle the version warning.  This 
+     * warning should not pop up EVERY time a command is received.
 	if( in instanceof Command
 		 && ((Command)in).getOperation() == Command.ARE_YOU_THERE )
 	{
@@ -4682,7 +4684,7 @@ public void messageReceived( MessageEvent e )
 				JOptionPane.OK_OPTION );
 		}
 	}
-
+	*/
 }
 
 
