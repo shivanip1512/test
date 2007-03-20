@@ -44,7 +44,7 @@ public class UpdateDB
 
 
 		for( int i = 0; i < DBMSDefines.IGNORE_STRINGS.length; i++ )
-			if( DBMSDefines.IGNORE_STRINGS[i].equalsIgnoreCase(str_) )
+			if( DBMSDefines.IGNORE_STRINGS[i].equalsIgnoreCase(str_.trim()) )
 				return false;
 		
 		return true;
