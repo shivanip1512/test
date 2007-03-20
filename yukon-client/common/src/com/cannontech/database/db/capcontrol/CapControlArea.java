@@ -7,7 +7,7 @@ import com.cannontech.database.db.DBPersistent;
 @SuppressWarnings("serial")
 public class CapControlArea extends DBPersistent {
     private Integer areaID;
-    private Integer strategyID;
+    private Integer strategyID = new Integer (0); //default strategy
 
     public static final String SETTER_COLUMNS[] = { "StrategyId" };
 

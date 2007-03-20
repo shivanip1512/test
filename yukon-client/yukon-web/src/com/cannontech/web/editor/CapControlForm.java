@@ -1085,7 +1085,7 @@ public class CapControlForm extends DBEditorForm{
 				itemID = ((PAOSchedule) dbObj).getScheduleID().intValue();
 				editorType = DBEditorTypes.EDITOR_SCHEDULE;
 			} else {
-				dbObj = (YukonPAObject) CCYukonPAOFactory
+				dbObj = CCYukonPAOFactory
 						.createCapControlPAO(paoType);
                 
 
