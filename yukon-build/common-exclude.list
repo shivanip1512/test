@@ -1,6 +1,6 @@
 *.conf
 monitor.jar
-dbeditor.jar,
+dbeditor.jar
 esub-editor.jar
 commercialcurtailment.jar
 graph.jar
