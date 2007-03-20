@@ -25,14 +25,15 @@ public class CapControlArea extends DBPersistent {
     }
 
     public void retrieve() throws SQLException {
-
+        
         Object constraintValues[] = { getAreaID() };
-        Object results[] = retrieve(SETTER_COLUMNS,
+        String[] cols = new String[] {"AreaId","StrategyId"};
+        Object results[] = retrieve(cols,
                                     TABLE_NAME,
                                     CONSTRAINT_COLUMNS,
                                     constraintValues);
 
-        if (results.length == SETTER_COLUMNS.length) {
+        if (results.length == cols.length) {
             setAreaID((Integer) results[0]);
             setStrategyID((Integer) results[1]);
 

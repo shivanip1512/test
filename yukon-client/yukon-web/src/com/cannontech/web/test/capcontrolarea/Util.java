@@ -12,6 +12,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 
 public class Util {
 
@@ -65,6 +66,20 @@ public class Util {
             break;
         }
         return newSubID;
+    }
+
+    public static Integer getStratIDToUpdate() {
+        CapControlStrategy[] allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
+        Integer newStratID = null;
+        for (int i = 0; i < allCBCStrategies.length; i++) {
+            CapControlStrategy strategy = allCBCStrategies[i];
+            if (!strategy.getStrategyID().equals(getStrategyID())) {
+                newStratID = strategy.getStrategyID();
+                break;
+            }
+
+        }
+        return newStratID;
     }
 
 }

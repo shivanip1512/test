@@ -3,6 +3,7 @@ package com.cannontech.database.data.capcontrol;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.core.dao.DaoFactory;
@@ -15,26 +16,37 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         EditorPanel {
 
     private com.cannontech.database.db.capcontrol.CapControlArea capControlArea;
-    private ArrayList areaSubs;
+    private ArrayList<CCSubAreaAssignment> areaSubs;
 
     public CapControlArea() {
         super();
-        setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
-        setPAOClass( PAOGroups.STRING_CAT_CAPCONTROL );
+        setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
+        setPAOClass(PAOGroups.STRING_CAT_CAPCONTROL);
         getYukonPAObject().setType(PAOGroups.STRING_CAPCONTROL_AREA);
+    }
+
+    public void retrieve() throws SQLException {
+        super.retrieve();
+
+        getCapControlArea().retrieve();
+        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(getCapControlPAOID());
+        for (CCSubAreaAssignment assignment : allAreaSubs) {
+            areaSubs.add(assignment);
+        }
     }
 
     public void delete() throws SQLException {
 
-        //remove all the associations of Subs to this Area
-        com.cannontech.database.db.capcontrol.CCSubAreaAssignment.deleteSubs( 
-                        getAreaID(), null, getDbConnection() );
+        // remove all the associations of Subs to this Area
+        com.cannontech.database.db.capcontrol.CCSubAreaAssignment.deleteSubs(getAreaID(),
+                                                                             null,
+                                                                             getDbConnection());
 
-
-        //Delete from all dynamic objects
+        // Delete from all dynamic objects
         delete("DynamicCapControlArea ", "AreaID", getAreaID());
 
-        //delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
+        // delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2],
+        // getCapControlPAOID());
 
         getCapControlArea().delete();
         super.delete();
@@ -93,7 +105,6 @@ public class CapControlArea extends CapControlYukonPAOBase implements
 
     }
 
-
     public void setAreaSubs(ArrayList areaSubs) {
         this.areaSubs = areaSubs;
     }
@@ -101,6 +112,19 @@ public class CapControlArea extends CapControlYukonPAOBase implements
     public void setCapControlArea(
             com.cannontech.database.db.capcontrol.CapControlArea capControlArea) {
         this.capControlArea = capControlArea;
+    }
+
+    public void update() throws java.sql.SQLException {
+        super.update();
+
+        getCapControlArea().update();
+
+        CCSubAreaAssignment.deleteSubs(getCapControlPAOID(),
+                                       null,
+                                       getDbConnection());
+
+        for (int i = 0; i < getChildList().size(); i++)
+            ((CCSubAreaAssignment) getChildList().get(i)).add();
     }
 
 }

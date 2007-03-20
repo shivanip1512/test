@@ -35,6 +35,45 @@ public class TestCapControlArea extends TestCase {
         assertNotNull(area);
     }
 
+
+
+   
+    
+    public void testRetrieveArea () {
+        CapControlArea area = retrieve();
+        assertNotNull(area);
+    }
+
+
+
+    private CapControlArea retrieve() {
+        CapControlArea area = new CapControlArea();
+        area.setCapControlPAOID(Util.getAreaID());
+        area.setDbConnection(connection);
+        try {
+            area.retrieve();
+        } catch (SQLException e) {
+            area = null;
+        }
+        return area;
+    }
+
+    public void testUpdateArea () {
+        CapControlArea area = retrieve();
+        Integer oldStrategyID = area.getCapControlArea().getStrategyID();
+        Integer newStratID = Util.getStratIDToUpdate();
+        area.getCapControlArea().setStrategyID(newStratID);
+        try {
+            area.update();
+        } catch (SQLException e) {
+            area = null;
+        }
+        area = retrieve();
+        assertNotNull(area);
+        assertEquals(newStratID, area.getCapControlArea().getStrategyID());
+        assertNotSame(oldStrategyID, area.getCapControlArea());
+        
+    }
     public void testDeleteArea() {
         CapControlArea area = new CapControlArea();
         area.setCapControlPAOID(areaID);
@@ -53,6 +92,7 @@ public class TestCapControlArea extends TestCase {
                 connection.close();
             } catch (SQLException e) {}
         }
+        
     }
 
 }
