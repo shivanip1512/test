@@ -370,6 +370,7 @@ alter table UserPaoPermission
 go
 
 /**********************USERPAOOWNER MIGRATION*****************************/
+/* @start-block */
 declare @userid numeric;
 declare @paoid numeric;
 declare @counterid numeric;
@@ -391,6 +392,7 @@ while (@@fetch_status = 0)
 close userpaoowner_curs;
 
 deallocate userpaoowner_curs;
+/* @end-block */
 /*************************************************************************/
 go
 

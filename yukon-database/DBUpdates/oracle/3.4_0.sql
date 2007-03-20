@@ -289,6 +289,7 @@ alter table UserPaoPermission
    add constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID);
 
 /**********************USERPAOOWNER MIGRATION*****************************/
+/* @start-block */
 declare
 v_userid number;
 v_paoid number;
@@ -307,6 +308,7 @@ begin
      close c_userpaoowner;
 
 end;
+/* @end-block */
 /*commit;*/
 /*************************************************************************/
 
