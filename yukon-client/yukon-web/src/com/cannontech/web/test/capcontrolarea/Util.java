@@ -84,7 +84,7 @@ public class Util {
         return newStratID;
     }
 
-    public static ArrayList<CCSubAreaAssignment> getFirstFiveSubs(Integer areaID) {
+    public static ArrayList<CCSubAreaAssignment> getFirstFourSubs(Integer areaID) {
         List<LiteYukonPAObject> buses = DaoFactory.getPaoDao()
                                                   .getAllCapControlSubBuses();
         ArrayList<CCSubAreaAssignment> subArea = new ArrayList<CCSubAreaAssignment>();

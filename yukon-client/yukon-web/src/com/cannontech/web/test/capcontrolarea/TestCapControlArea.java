@@ -63,7 +63,7 @@ public class TestCapControlArea extends TestCase {
         Integer oldStrategyID = area.getCapControlArea().getStrategyID();
         Integer newStratID = Util.getStratIDToUpdate();
         area.getCapControlArea().setStrategyID(newStratID);
-        area.setAreaSubs(Util.getFirstFiveSubs(area.getCapControlPAOID()));
+        area.setAreaSubs(Util.getFirstFourSubs(area.getCapControlPAOID()));
         try {
             area.update();
         } catch (SQLException e) {
