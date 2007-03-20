@@ -2,6 +2,7 @@ package com.cannontech.web.test.capcontrolarea;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
@@ -12,6 +13,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 
 public class Util {
@@ -80,6 +82,20 @@ public class Util {
 
         }
         return newStratID;
+    }
+
+    public static ArrayList<CCSubAreaAssignment> getFirstFiveSubs(Integer areaID) {
+        List<LiteYukonPAObject> buses = DaoFactory.getPaoDao()
+                                                  .getAllCapControlSubBuses();
+        ArrayList<CCSubAreaAssignment> subArea = new ArrayList<CCSubAreaAssignment>();
+        for (LiteYukonPAObject bus : buses.subList(0, 4)) {
+            CCSubAreaAssignment newAssignment = new CCSubAreaAssignment();
+            newAssignment.setAreaID(areaID);
+            newAssignment.setSubstationBusID(new Integer (bus.getLiteID()));
+            newAssignment.setDisplayOrder(buses.indexOf(bus));
+            subArea.add(newAssignment);
+        }
+        return subArea;
     }
 
 }

@@ -123,8 +123,11 @@ public class CapControlArea extends CapControlYukonPAOBase implements
                                        null,
                                        getDbConnection());
 
-        for (int i = 0; i < getChildList().size(); i++)
-            ((CCSubAreaAssignment) getChildList().get(i)).add();
+        for (int i = 0; i < getChildList().size(); i++) {
+            CCSubAreaAssignment subAreaAssignment = ((CCSubAreaAssignment) getChildList().get(i));
+            subAreaAssignment.setDbConnection(getDbConnection());
+            subAreaAssignment.add();
+        }
     }
 
 }
