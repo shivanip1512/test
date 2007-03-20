@@ -40,6 +40,9 @@ public interface DBMSDefines
 	public static final String STARS_INC				= "StarsUpdate";
 	public static final double MIN_VERSION				= 2.40;
 	
+    /*For use with T-SQL or PL/SQL transaction blocks*/
+    public static final String START_BLOCK              = "/* @start-block */";
+    public static final String END_BLOCK                = "/* @end-block */";
 
 	/** What strings should be ignored by the App for all DBMS's */	
 	public static final String[] IGNORE_STRINGS =

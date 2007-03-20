@@ -259,7 +259,7 @@ public class UpdateDB
 				String token = "";
 				UpdateLine updLine = new UpdateLine();
 				boolean commentState = false;
-
+				boolean blockState = false;
 
 				while( fileReader.getFilePointer() < fileReader.length() )
 				{
@@ -267,8 +267,38 @@ public class UpdateDB
 
 					if( isValidString(token) )
 					{
-						//are we handling a comment
-						if( commentState )
+						if ( blockState ) {
+                            blockState = !token.endsWith(DBMSDefines.END_BLOCK);
+                            if(blockState) {
+                                updLine.getValue().append( token );
+                                updLine.getValue().append(" ");
+                            }
+                            //block is done, move on
+                            else {
+                                updLine.getValue().append(DBMSDefines.END_BLOCK);
+                                validLines.add( updLine );
+                                updLine = new UpdateLine();
+                                continue;
+                            }
+                        }
+                        else if( token.startsWith(DBMSDefines.START_BLOCK) ) {
+                            //if we have a END_BLOCK, this comment is terminated
+                            blockState = !token.endsWith(DBMSDefines.END_BLOCK);
+                            if(blockState) {
+                                updLine = new UpdateLine();
+                                updLine.getValue().append(DBMSDefines.START_BLOCK + " ");
+                                continue;
+                            }
+                            //single line block, so must be from a *valids file.
+                            else {
+                                updLine.getValue().append(token);
+                                validLines.add( updLine );
+                                updLine = new UpdateLine();
+                                continue;
+                            }
+                        }
+                        //are we handling a comment
+					    else if( commentState )
 						{
 							commentState = !token.endsWith(DBMSDefines.COMMENT_END);
 							handleComment( token, updLine );
@@ -304,11 +334,9 @@ public class UpdateDB
 								updLine = new UpdateLine();
 							}
 							else
-								updLine.getValue().append(" "); //add a blank to seperate the lines (just in case)
+								updLine.getValue().append(" "); //add a blank to separate the lines (just in case)
 						}
-
 					}
-
 				}	
 
 				fileReader.close();

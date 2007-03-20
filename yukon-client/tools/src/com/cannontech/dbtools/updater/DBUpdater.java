@@ -285,13 +285,18 @@ public class DBUpdater extends MessageFrameAdaptor
 		{
 			Statement stat = conn.createStatement();
 			
-			cmd = line_.getValue().toString().substring( 
-						0,
-						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
+            if(line_.getValue().toString().startsWith(DBMSDefines.START_BLOCK)) {
+                cmd = line_.getValue().toString();
+            }
+            else {
+    			cmd = line_.getValue().toString().substring( 
+    						0,
+    						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
+            }
 
+            getIMessageFrame().addOutput( "EXECUTING: " + cmd ); 
             //set any error ignore flags
             setIgnoreState( line_ );
-
 
 			if( line_.isIgnoreError() 
                 || isIgnoreAllErrors
@@ -299,7 +304,7 @@ public class DBUpdater extends MessageFrameAdaptor
 			{
 				try
 				{
-					stat.execute( cmd );
+                    stat.execute( cmd );
 					line_.setSuccess( true );
 					getIMessageFrame().addOutput( "   SUCCESS : " + cmd );				
 				}
