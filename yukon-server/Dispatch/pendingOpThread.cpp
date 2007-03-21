@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/09/08 20:18:05 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2007/03/21 21:51:19 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.33  2007/03/21 21:51:19  mfisher
+* Changed to say "pendingOpThread" instead of "verification thread" on shutdown
+*
 * Revision 1.32  2006/09/08 20:18:05  jotteson
 * Fixed a bug that would cause delayed limits to not be ack-able.
 *
@@ -263,7 +266,7 @@ void CtiPendingOpThread::run( void )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Verification thread received shutdown - writing all pending codes to DB" << endl;
+            dout << CtiTime() << " PendingOperationThread received shutdown - processing all remaining items" << endl;
         }
 
         processPendableQueue();
