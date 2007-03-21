@@ -84,8 +84,4 @@
       <property name="authDao" ref="authDao"/>
       <property name="propertySearcher"><bean class="com.cannontech.util.ReflectivePropertySearcher" factory-method="getRoleProperty"/></property>
     </bean>
-
-    <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl">
-      <property name="roleDao" ref="roleDao"/>
-    </bean>
 </beans>

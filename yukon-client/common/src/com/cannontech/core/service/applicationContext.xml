@@ -3,6 +3,10 @@
 
 <beans>
 <description>Yukon Server Services</description>
+  <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl">
+    <property name="roleDao" ref="roleDao"/>
+  </bean>
+ 
   <bean id="porterService" class="com.cannontech.core.service.impl.PorterConnectionServiceImpl" init-method="initialize">
     <property name="emailService" ref="emailService"/>
     <property name="executor" ref="globalScheduledExecutor"/>
