@@ -1,12 +1,16 @@
-package com.cannontech.core.service.impl;
+package com.cannontech.core.dynamic.impl;
 
 import java.util.Iterator;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.service.PointService;
+import com.cannontech.core.dynamic.PointService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.message.dispatch.message.Signal;
@@ -21,6 +25,10 @@ import com.cannontech.spring.YukonSpringHook;
 public class PointServiceImpl implements PointService
 {
     
+    private DynamicDataSource dynamicDataSource;
+    private PointDao pointDao;
+    private StateDao stateDao;
+
     /**
      * Used to retrieve the state this point is currently in
      * @return LiteState the current state of this point
@@ -29,8 +37,7 @@ public class PointServiceImpl implements PointService
     public LiteState getCurrentState(int pointId)
     {
         
-        DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-        LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointId);
+        LitePoint lp = pointDao.getLitePoint(pointId);
         Set<Signal>  signalSet = dynamicDataSource.getSignals(pointId);
         if(!signalSet.isEmpty())
         {
@@ -49,12 +56,27 @@ public class PointServiceImpl implements PointService
                     }
                 }
             }
-            LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), highestPriorityCondition + 1);
+            LiteState ls = stateDao.getLiteState(lp.getStateGroupID(), highestPriorityCondition + 1);
             return ls;
         }else 
         {
-            LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), 0);
+            LiteState ls = stateDao.getLiteState(lp.getStateGroupID(), 0);
             return ls;
         }
+    }
+
+    @Required
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
+
+    @Required
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+
+    @Required
+    public void setStateDao(StateDao stateDao) {
+        this.stateDao = stateDao;
     }
 }

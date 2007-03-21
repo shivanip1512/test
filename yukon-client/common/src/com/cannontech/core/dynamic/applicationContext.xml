@@ -23,4 +23,10 @@
 	 	<property name="dispatchConnection" ref="dispatchConnection"/>
 	 	<property name="serverRequest" ref="serverRequest"/>
 	 </bean>
+     <bean id="pointService" class="com.cannontech.core.dynamic.impl.PointServiceImpl" >
+         <property name="dynamicDataSource" ref="dynamicDataSource"/>
+         <property name="pointDao" ref="pointDao"/>
+         <property name="stateDao" ref="stateDao"/>
+     </bean>
+  
 </beans>

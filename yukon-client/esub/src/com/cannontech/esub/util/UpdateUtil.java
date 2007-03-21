@@ -7,8 +7,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.core.service.PointService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
@@ -52,7 +52,7 @@ public class UpdateUtil {
                 }
             }else
             {
-                PointService pointService = (PointService) YukonSpringHook.getBean("pointService");
+                PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
                 LiteState ls = pointService.getCurrentState(lp.getPointID());
                 if( ls != null ) {          
                     text += ls.getStateRawState();
@@ -240,7 +240,7 @@ public class UpdateUtil {
                     
                 }else {
                     
-                    PointService pointService = (PointService) YukonSpringHook.getBean("pointService");
+                    PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
                     LiteState ls = pointService.getCurrentState(lp.getLiteID());
                     if( ls != null ) {          
                         text += ls.getStateText();
@@ -265,7 +265,7 @@ public class UpdateUtil {
                     }
                 }else
                 {
-                    PointService pointService = (PointService) YukonSpringHook.getBean("pointService");
+                    PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
                     LiteState ls = pointService.getCurrentState(lp.getPointID());
                     if( ls != null ) {          
                         text += ls.getStateRawState();
@@ -302,7 +302,7 @@ public class UpdateUtil {
     		img = DaoFactory.getYukonImageDao().getLiteYukonImage(ls.getImageID());
         }else 
         {
-            PointService pointService = (PointService) YukonSpringHook.getBean("pointService");
+            PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
             LiteState ls = pointService.getCurrentState(pointID);
             img = DaoFactory.getYukonImageDao().getLiteYukonImage(ls.getImageID());
         }

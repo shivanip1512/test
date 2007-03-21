@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.service.PointService;
+import com.cannontech.core.dynamic.PointService;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -42,7 +42,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     // generating svg
     private boolean updateGraphs = false;
 
-    private PointService pointService;
+    private PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);;
 
     private DynamicDataSource dynamicDataSource;
 
@@ -74,7 +74,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 // keep track if we changed anything
                 boolean change = false;
 
-                pointService = (PointService) YukonSpringHook.getBean("pointService");
                 dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
                 LxComponent[] comp = drawing.getLxGraph().getComponents();
                 if (comp != null) {

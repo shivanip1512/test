@@ -1,4 +1,4 @@
-package com.cannontech.core.service;
+package com.cannontech.core.dynamic;
 
 import com.cannontech.database.data.lite.LiteState;
 

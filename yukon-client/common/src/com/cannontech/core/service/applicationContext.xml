@@ -2,10 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-<description>Yukon Core Services</description>
-  <bean id="pointService" class="com.cannontech.core.service.impl.PointServiceImpl" >
-  </bean>
-  
+<description>Yukon Server Services</description>
   <bean id="porterService" class="com.cannontech.core.service.impl.PorterConnectionServiceImpl" init-method="initialize">
     <property name="emailService" ref="emailService"/>
     <property name="executor" ref="globalScheduledExecutor"/>
