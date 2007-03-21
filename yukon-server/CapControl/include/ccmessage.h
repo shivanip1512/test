@@ -20,10 +20,11 @@
 #include "ctitime.h"
 
 #include "message.h"
-#include "ccsubstationbus.h"
+#include "ccarea.h"
 #include "ccstate.h"
 //#include "rwutil.h"
 
+typedef std::vector<CtiCCArea*> CtiCCArea_vec;
 typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
 typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
 typedef std::vector<CtiCCState*> CtiCCState_vec;
@@ -97,6 +98,8 @@ public:
         ENABLE_AREA,  //22
         DISABLE_AREA,  //23
         SCAN_2WAY_DEVICE,  //24
+        ENABLE_SYSTEM,  //25
+        DISABLE_SYSTEM,  //26
         FLIP_7010_CAPBANK  //25
     };
 

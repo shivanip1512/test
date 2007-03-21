@@ -5123,6 +5123,8 @@ void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
     _controlunits = strategy->getControlUnits();             
     _controldelaytime = strategy->getControlDelayTime();     
     _controlsendretries = strategy->getControlSendRetries(); 
+    _integrateflag = strategy->getIntegrateFlag();
+    _integrateperiod = strategy->getIntegratePeriod();
 }
 void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
 {

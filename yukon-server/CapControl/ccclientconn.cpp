@@ -118,6 +118,9 @@ void CtiCCClientConnection::close()
         return;
 
     _valid = FALSE;
+
+    oStream->vflush();
+
     delete sinbuf;
     delete soubuf;
     delete oStream;
@@ -328,7 +331,7 @@ void CtiCCClientConnection::_recvthr()
             //cout << CtiTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
              try
-                {
+             {
                  *iStream >> current;
                  
              }

@@ -61,7 +61,8 @@ mgr_paosched.obj \
 ccstrategy.obj \
 ccmonitorpoint.obj \
 ccpointresponse.obj \
-cctwowaycbcpoints.obj
+cctwowaycbcpoints.obj \
+ccarea.obj
 
 TARGS = capcontrol.exe
 

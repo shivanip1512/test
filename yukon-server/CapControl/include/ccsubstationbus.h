@@ -150,7 +150,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getWaitForReCloseDelayFlag() const;
     BOOL getWaitToFinishRegularControlFlag() const;
     const string& getSolution() const;
-
+    const string& getParentControlUnits() const;
+    const string& getParentName() const;
+    LONG getDisplayOrder() const;        
+    
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
 
@@ -235,6 +238,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setWaitToFinishRegularControlFlag(BOOL flag);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
     CtiCCSubstationBus& setSolution(const string& text);
+    CtiCCSubstationBus& setParentControlUnits(const string& parentControlUnits);
+    CtiCCSubstationBus& setParentName(const string& parentName);
+    CtiCCSubstationBus& setDisplayOrder(LONG displayOrder);
+
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
@@ -423,6 +430,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _currentwattpointquality;
     LONG _currentvoltpointquality;
     BOOL _waivecontrolflag;
+    BOOL _integrateflag;
+    LONG _integrateperiod;
 
     string _additionalFlags;
     LONG _currentVerificationCapBankId;
@@ -445,7 +454,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _capBankToVerifyInactivityTime;
 
     string _solution;  //text field to be added to messaging indicating status/thinking
-
+    string _parentControlUnits;
+    string _parentName;
+    LONG _displayOrder;
+    
 
     DOUBLE _altSubVoltVal;
     DOUBLE _altSubVarVal;

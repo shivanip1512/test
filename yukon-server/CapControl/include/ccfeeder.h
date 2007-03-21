@@ -389,6 +389,8 @@ private:
     LONG _currentwattpointquality;
     LONG _currentvoltpointquality;
     BOOL _waivecontrolflag;
+    BOOL _integrateflag;
+    LONG _integrateperiod;
 
     string _parentControlUnits;
     string _parentName;

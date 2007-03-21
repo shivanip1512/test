@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2007/01/26 19:56:14 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2007/03/21 23:12:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,6 +150,7 @@
 
 #define TYPE_CC_SUBSTATION_BUS               2300  // CC category objects...
 #define TYPE_CC_FEEDER                       2301
+#define TYPE_CC_AREA                         2302
 
 // A macro device that can contain other devices - basically a generalized group of devices
 #define TYPE_MACRO                           2900

@@ -1623,95 +1623,6 @@ void CtiCCCommandExecutor::DisableArea()
     }
 }
 
-/*---------------------------------------------------------------------------
-    Scan2WayDevice
----------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::Scan2WayDevice()
-{
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-    LONG controlID = 0;
-    LONG bankID = _command->getId();
-    BOOL found = FALSE;
-    CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg_vec& pointChanges = multi->getData();
-    CtiMultiMsg* eventMulti = new CtiMultiMsg();
-    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
-
-    CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    CtiCCFeederPtr currentFeeder = NULL;
-
-    CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankID);
-    if (currentCapBank != NULL)
-    {   long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPAOId());
-        if (subBusId != NULL)
-        {
-            currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
-            if (currentSubstationBus != NULL)
-            {
-                long feederId = store->findFeederIDbyCapBankID(currentCapBank->getPAOId());
-                if (feederId != NULL)
-                {
-                    currentFeeder = store->findFeederByPAObjectID(feederId);
-                }
-            }
-        }
-
-        if (currentSubstationBus != NULL && currentFeeder != NULL)
-        {
-            if (currentCapBank->getControlDeviceId() > 0 &&
-                stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702")) 
-            {
-
-                CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
-
-                if(pAltRate)
-                {
-                    pAltRate->insert(-1);                       // token, not yet used.
-                    pAltRate->insert( currentCapBank->getControlDeviceId() );       // Device to poke.
-
-                    pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
-
-                    pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
-
-                    CtiCapController::getInstance()->sendMessageToDispatch(pAltRate);
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Requesting scans at the alternate scan rate for " << currentCapBank->getPAOName() << endl;
-                    }
-                }
-
-                string text = string("Manual Scan 2-Way CBC attached to CapBank: ");
-                text += currentCapBank->getPAOName();
-                string additional = string("CBC: ");
-                CHAR devID[20];
-                additional += string (ltoa(currentCapBank->getControlDeviceId(),devID,10));
-
-                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-
-                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
-
-            }
-
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - CapBank Not attached to Feeder/Sub.  Cannot Scan Control Device " << endl;
-            }
-        }
-  
-
-    }
-    if (eventMulti->getCount() > 0)
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-    if (multi->getCount() > 0)
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
-  
-}
 
 /*---------------------------------------------------------------------------
     Scan2WayDevice
@@ -1964,6 +1875,219 @@ void CtiCCCommandExecutor::Flip7010Device()
         dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
+
+/*---------------------------------------------------------------------------
+    EnableSystem
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::EnableSystem()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* enableMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    string text1 = string("Manual Enable System");
+    string additional1 = "";
+    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, SYS_PID_CAPCONTROL, 0, capControlManualCommand, -1, 0, text1, _command->getUser()));
+    
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    {
+        CtiCCSubstationBusPtr currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        
+        if (currentSubstationBus->getReEnableBusFlag()) 
+        {
+            currentSubstationBus->setDisableFlag(FALSE);
+            currentSubstationBus->setReEnableBusFlag(FALSE);
+        
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+            store->UpdateBusDisableFlagInDB(currentSubstationBus);
+            string text = string("Substation Bus Enabled");
+            string additional = string("Bus: ");
+            additional += currentSubstationBus->getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += currentSubstationBus->getMapLocationId();
+                additional += " (";
+                additional += currentSubstationBus->getPAODescription();
+                additional += ")";
+            }
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+           
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
+        }            
+        
+    }
+    
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    
+}
+
+/*---------------------------------------------------------------------------
+    DisableSystem
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::DisableSystem()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* disableMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    string text1 = string("Manual Disable System");
+    string additional1 = "";
+
+    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, SYS_PID_CAPCONTROL, 0, capControlManualCommand, -1, 0, text1, _command->getUser()));
+
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    {
+        CtiCCSubstationBusPtr currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        
+        if (!currentSubstationBus->getDisableFlag() )//&& !currentSubstationBus->getReEnableBusFlag()) 
+        {
+            currentSubstationBus->setDisableFlag(TRUE);
+            currentSubstationBus->setReEnableBusFlag(TRUE);
+        
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+            store->UpdateBusDisableFlagInDB(currentSubstationBus);
+            string text = string("Substation Bus Disabled");
+            string additional = string("Bus: ");
+            additional += currentSubstationBus->getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += currentSubstationBus->getMapLocationId();
+                additional += " (";
+                additional += currentSubstationBus->getPAODescription();
+                additional += ")";
+            }
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+           
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
+        }
+        
+    }
+    
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    
+}
+
+
+/*---------------------------------------------------------------------------
+    Scan2WayDevice
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::Scan2WayDevice()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    LONG bankID = _command->getId();
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    CtiCCFeederPtr currentFeeder = NULL;
+
+    CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankID);
+    if (currentCapBank != NULL)
+    {   long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPAOId());
+        if (subBusId != NULL)
+        {
+            currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
+            if (currentSubstationBus != NULL)
+            {
+                long feederId = store->findFeederIDbyCapBankID(currentCapBank->getPAOId());
+                if (feederId != NULL)
+                {
+                    currentFeeder = store->findFeederByPAObjectID(feederId);
+                }
+            }
+        }
+
+        if (currentSubstationBus != NULL && currentFeeder != NULL)
+        {
+            if (currentCapBank->getControlDeviceId() > 0 &&
+                stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702")) 
+            {
+
+                CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
+
+                if(pAltRate)
+                {
+                    pAltRate->insert(-1);                       // token, not yet used.
+                    pAltRate->insert( currentCapBank->getControlDeviceId() );       // Device to poke.
+
+                    pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
+
+                    pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
+
+                    CtiCapController::getInstance()->sendMessageToDispatch(pAltRate);
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Requesting scans at the alternate scan rate for " << currentCapBank->getPAOName() << endl;
+                    }
+                }
+
+                string text = string("Manual Scan 2-Way CBC attached to CapBank: ");
+                text += currentCapBank->getPAOName();
+                string additional = string("CBC: ");
+                CHAR devID[20];
+                additional += string (ltoa(currentCapBank->getControlDeviceId(),devID,10));
+
+                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
+
+            }
+
+            //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                       
+            //CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - CapBank Not attached to Feeder/Sub.  Cannot Scan Control Device " << endl;
+            }
+        }
+  
+
+    }
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+  
+}
+
 
 /*---------------------------------------------------------------------------
     ConfirmOpen
@@ -3925,27 +4049,6 @@ void CtiCCMultiMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/
 void CtiCCShutdownExecutor::Execute()
 {
-    try
-    {
-        if( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
-        }
-
-        CtiCCClientListener::getInstance()->stop();
-
-        if( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Client listener thread shutdown." << endl;
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
 
     try
     {
@@ -3968,7 +4071,27 @@ void CtiCCShutdownExecutor::Execute()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+    try
+    {
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
+        }
 
+        CtiCCClientListener::getInstance()->stop();
+
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Client listener thread shutdown." << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
     try
     {
         if( _CC_DEBUG & CC_DEBUG_STANDARD )

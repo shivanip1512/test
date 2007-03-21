@@ -68,6 +68,8 @@ public:
     const string& getMapLocationId() const;
     LONG getRecloseDelay() const;
     LONG getControlOrder() const;
+    LONG getTripOrder() const;
+    LONG getCloseOrder() const;
     LONG getStatusPointId() const;
     LONG getControlStatus() const;
     LONG getOperationAnalogPointId() const;
@@ -118,6 +120,8 @@ public:
     CtiCCCapBank& setMapLocationId(const string& maplocation);
     CtiCCCapBank& setRecloseDelay(LONG reclose);
     CtiCCCapBank& setControlOrder(LONG order);
+    CtiCCCapBank& setTripOrder(LONG order);
+    CtiCCCapBank& setCloseOrder(LONG order);
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
     CtiCCCapBank& setControlStatus(LONG status);
     CtiCCCapBank& setOperationAnalogPointId(LONG operationpoint);
@@ -216,6 +220,8 @@ private:
     string _maplocationid;
     LONG _reclosedelay;
     LONG _controlorder;
+    LONG _triporder;
+    LONG _closeorder;
     LONG _statuspointid;
     LONG _controlstatus;
     LONG _operationanalogpointid;

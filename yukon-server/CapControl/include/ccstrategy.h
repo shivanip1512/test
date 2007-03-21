@@ -66,6 +66,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     const string& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
+    BOOL getIntegrateFlag() const;
+    LONG getIntegratePeriod() const;
 
     CtiCCStrategy& setStrategyId(LONG id);
     CtiCCStrategy& setStrategyName(const string& strategyname);
@@ -92,8 +94,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setControlUnits(const string& contunit);
     CtiCCStrategy& setControlDelayTime(LONG delay);
     CtiCCStrategy& setControlSendRetries(LONG retries);
-
-
+    CtiCCStrategy& setIntegrateFlag(BOOL flag);
+    CtiCCStrategy& setIntegratePeriod(LONG period);
 
 
     BOOL isDirty() const;
@@ -150,6 +152,9 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     DOUBLE _offpkVARlead;
     DOUBLE _peakPFSetPoint;
     DOUBLE _offpkPFSetPoint;
+    BOOL  _integrateFlag;
+    LONG _integratePeriod;
+
 
 
     //don't stream

@@ -357,6 +357,26 @@ LONG CtiCCCapBank::getControlOrder() const
 }
 
 /*---------------------------------------------------------------------------
+    getTripOrder
+
+    Returns the trip order of the cap bank in the list of a feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCCapBank::getTripOrder() const
+{
+    return _triporder;
+}
+
+/*---------------------------------------------------------------------------
+    getCloseOrder
+
+    Returns the close order of the cap bank in the list of a feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCCapBank::getCloseOrder() const
+{
+    return _closeorder;
+}
+
+/*---------------------------------------------------------------------------
     getStatusPointId
 
     Returns the status point id of the cap bank
@@ -801,6 +821,32 @@ CtiCCCapBank& CtiCCCapBank::setControlOrder(LONG order)
 
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setTripOrder
+
+    Sets the trip order of the capbank in the list of the parent feeder
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setTripOrder(LONG order)
+{
+    _triporder = order;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setCloseOrder
+
+    Sets the close order of the capbank in the list of the parent feeder
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setCloseOrder(LONG order)
+{
+    _closeorder = order;
+
+    return *this;
+}
+
+
 
 /*---------------------------------------------------------------------------
     setStatusPointId

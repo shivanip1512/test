@@ -157,6 +157,38 @@ LONG CtiCCSubstationBus::getParentId() const
 }
 
 /*---------------------------------------------------------------------------
+    getParentControlUnits
+
+    Returns the ParentControlUnits of the substation bus
+---------------------------------------------------------------------------*/
+const string& CtiCCSubstationBus::getParentControlUnits() const
+{
+    return _parentControlUnits;
+}
+
+/*---------------------------------------------------------------------------
+    getParentName
+
+    Returns the ParentName of the substation bus
+---------------------------------------------------------------------------*/
+const string& CtiCCSubstationBus::getParentName() const
+{
+    return _parentName;
+}
+
+
+/*---------------------------------------------------------------------------
+    getDisplayOrder
+
+    Returns the DisplayOrder of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getDisplayOrder() const
+{
+    return _displayOrder;
+}
+
+
+/*---------------------------------------------------------------------------
     getStrategyId
 
     Returns the StrategyId of the substation
@@ -985,6 +1017,47 @@ CtiCCSubstationBus& CtiCCSubstationBus::setParentId(LONG parentId)
     return *this;
 }
 
+
+/*---------------------------------------------------------------------------
+    setParentControlUnits
+
+    Sets the ParentControlUnits in the substation bus
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
+{
+    if (_parentControlUnits != parentControlUnits)
+    {
+        _dirty = TRUE;
+    }
+    _parentControlUnits = parentControlUnits;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setParentName
+
+    Sets the ParentName in the substation bus
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setParentName(const string& parentName)
+{
+    if (_parentName != parentName)
+    {
+        _dirty = TRUE;
+    }
+    _parentName = parentName;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setDisplayOrder
+
+    Sets the DisplayOrder of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setDisplayOrder(LONG displayOrder)
+{
+    _displayOrder = displayOrder;
+    return *this;
+}
 /*---------------------------------------------------------------------------
     setStrategyId
 
@@ -7710,7 +7783,9 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
     _daysofweek = strategy->getDaysOfWeek();                          
     _controlunits = strategy->getControlUnits();                      
     _controldelaytime = strategy->getControlDelayTime();              
-    _controlsendretries = strategy->getControlSendRetries();          
+    _controlsendretries = strategy->getControlSendRetries();
+    _integrateflag = strategy->getIntegrateFlag();
+    _integrateperiod = strategy->getIntegratePeriod();
 
 }
 

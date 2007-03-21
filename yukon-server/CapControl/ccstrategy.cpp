@@ -141,6 +141,8 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         _offpkVARlead = right._offpkVARlead;
         _peakPFSetPoint = right._peakPFSetPoint;
         _offpkPFSetPoint = right._offpkPFSetPoint;
+        _integrateFlag = right._integrateFlag;
+        _integratePeriod = right._integratePeriod;
     }
     return *this;
 
@@ -224,6 +226,11 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     {
         _offpkPFSetPoint = -(200 - _offpkPFSetPoint);
     }
+    rdr["integrateflag"] >> tempBoolString;
+    CtiToLower(tempBoolString);
+    _integrateFlag = (tempBoolString=="y"?TRUE:FALSE);
+
+    rdr["integrateperiod"] >> _integratePeriod;
 }
 
 /*---------------------------------------------------------------------------
@@ -357,6 +364,15 @@ LONG CtiCCStrategy::getControlSendRetries() const
     return _controlsendretries;
 }
 
+BOOL CtiCCStrategy::getIntegrateFlag() const
+{
+    return _integrateFlag;
+}
+
+LONG CtiCCStrategy::getIntegratePeriod() const
+{
+    return _integratePeriod;
+}
 
 CtiCCStrategy& CtiCCStrategy::setStrategyId(LONG id)
 {
@@ -505,9 +521,17 @@ CtiCCStrategy& CtiCCStrategy::setControlSendRetries(LONG retries)
     return *this;
 }
 
+CtiCCStrategy& CtiCCStrategy::setIntegrateFlag(BOOL flag)
+{
+    _integrateFlag = flag;
+    return *this;
+}
 
-
-
+CtiCCStrategy& CtiCCStrategy::setIntegratePeriod(LONG period)
+{
+    _integratePeriod = period;
+    return *this;
+}
 
 
 /* Public Static members */

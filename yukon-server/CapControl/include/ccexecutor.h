@@ -84,6 +84,8 @@ private:
     void ConfirmArea();
     void EnableArea();
     void DisableArea();
+    void EnableSystem();
+    void DisableSystem();
     void Scan2WayDevice();
     void Flip7010Device();
 
