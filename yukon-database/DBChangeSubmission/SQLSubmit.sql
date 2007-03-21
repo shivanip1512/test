@@ -80,6 +80,46 @@ deallocate subarea_curs;
 /* END JULIE                                                                 */
 /*****************************************************************************/
 
+/*****************************************************************************/
+/* JULIE: This is to update the ccfeederbanklist table and to assign the     */
+/* additional close and trip sequences to the capbanks                       */
+/*****************************************************************************/
+alter table ccfeederbanklist add closeOrder numeric;
+go
+update ccfeederbanklist set closeOrder = ControlOrder;
+go
+alter table ccfeederbanklist  alter column closeOrder numeric not null;
+go 
+alter table ccfeederbanklist add tripOrder numeric;
+go
+declare @tripOrder numeric;
+declare @devid numeric;
+declare @feedid numeric;
+declare @maxclose numeric;
+declare deviceid_curs cursor for (select deviceid from ccfeederbanklist);
+open deviceid_curs;
+fetch deviceid_curs into @devid;
+
+while (@@fetch_status = 0)
+begin
+    set @feedid = (select feederid from ccfeederbanklist where deviceid = @devid);
+    set @maxclose = (select max(closeOrder)as maxclose from ccfeederbanklist where feederid = @feedid group by feederid);
+    set @tripOrder = (select (@maxclose - fb.controlorder + 1) from ccfeederbanklist fb where fb.deviceid = @devid);
+    update ccfeederbanklist set triporder = @tripOrder where deviceid = @devid; 
+            
+    fetch deviceid_curs into @devid;
+end
+close deviceid_curs;
+deallocate deviceid_curs;
+go
+alter table ccfeederbanklist  alter column tripOrder numeric not null;
+/*****************************************************************************/
+/* END JULIE                                                                 */
+/*****************************************************************************/
+
+
+
+
 /********** Adding metering role properties ************/
 insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
 insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
