@@ -17,7 +17,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +29,6 @@ import java.util.Vector;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.zip.ZipException;
 
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -1668,16 +1666,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         return sw.toString();
     }
     
-    static String[] getAllJarExceptions = {"castor-xml.jar"}; 
-    static {
-        // must be kept in order
-        Arrays.sort(getAllJarExceptions);
-    }
-    
     public static Collection<String> getAllJars(File base, String jarName) throws IOException {
-        if (Arrays.binarySearch(getAllJarExceptions, jarName) >= 0) {
-            return Collections.emptyList();
-        }
         LinkedHashSet<String> result = new LinkedHashSet<String>();
         File mainJarFile = new File(base, jarName);
         JarFile jar = null;
@@ -1698,14 +1687,17 @@ public static double convertTemperature(double temperature, String fromUnit, Str
                 if (!string.toLowerCase().endsWith(".jar")) {
                     continue;
                 }
-                result.add(string);
-                result.addAll(getAllJars(base, string));
+                try {
+                    Collection<String> allJars = getAllJars(base, string);
+                    // if the above fails, we won't add ourself because we probably don't exist
+                    result.add(string);
+                    result.addAll(allJars);
+                } catch (IOException e) {
+                    // the jar must not exist
+                }
             }
             
             return result;
-        } catch (ZipException e) {
-            // not much we can do here
-            return Collections.emptyList();
         } finally {
             if (jar != null) {
                 jar.close();
