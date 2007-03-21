@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/03/21 21:52:19 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -281,9 +281,15 @@ void CtiPorterVerification::verificationThread( void )
             processWorkQueue();
         }
 
+        if( _work_queue.empty() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Verification thread received shutdown - writing all pending codes to DB" << endl;
+            dout << CtiTime() << " Verification thread received shutdown - no pending codes" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Verification thread received shutdown - writing " << _work_queue.size() << " pending codes to DB" << endl;
         }
 
         processWorkQueue(true);
