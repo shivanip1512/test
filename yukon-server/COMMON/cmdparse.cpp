@@ -695,8 +695,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 {
                     cmdtok();  //  channel number;  this is parsed above, and we get it from _cmd["channel"]
                 }
-
-                _cmd["daily_read_date_begin"] = cmdtok();
+				else
+				{
+					_cmd["daily_read_date_begin"] = temp;
+				}
 
                 if( !(temp = cmdtok()).empty() )
                 {
