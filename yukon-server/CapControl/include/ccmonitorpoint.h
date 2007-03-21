@@ -23,11 +23,12 @@
 #include <rw/thr/recursiv.h> 
 #include <list>
 
+#include "msg_cmd.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "ctitime.h"
+#include "ctidate.h"
 
-                
 class CtiCCMonitorPoint : public RWCollectable
 {
 

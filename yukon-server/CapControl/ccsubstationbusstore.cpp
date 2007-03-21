@@ -41,7 +41,7 @@
 
 #include "ctistring.h"
 #include <string>
-#include <rwutil.h>
+//#include <rwutil.h>
 
 
 extern ULONG _CC_DEBUG;

@@ -38,6 +38,7 @@ extern BOOL _USE_FLIP_FLAG;
 extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
+extern BOOL _END_DAY_ON_TRIP;
 extern BOOL _LOG_MAPID_INFO;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
@@ -1770,7 +1771,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     }
                 }
 
-                if( !currentCapBank->getDisableFlag() )
+                if( !currentCapBank->getDisableFlag() || _END_DAY_ON_TRIP)
                     returnCapBank = currentCapBank;
                 break;
             }

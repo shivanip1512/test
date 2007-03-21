@@ -15,14 +15,14 @@
 #include "yukon.h"
 
 #include "dbaccess.h"
-#include "ccmonitorpoint.h"
 #include "ccid.h"
+#include "ccmonitorpoint.h"
 #include "pointdefs.h"
 #include "device.h"
 #include "logger.h"
 #include "resolvers.h"
 #include "utility.h"
-#include "rwutil.h"
+
 using namespace std;
 extern ULONG _CC_DEBUG;
 

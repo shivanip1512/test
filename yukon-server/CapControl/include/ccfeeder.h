@@ -27,6 +27,7 @@
 #include "connection.h"
 #include "types.h"
 #include "observe.h"
+#include "ccmonitorpoint.h"
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"

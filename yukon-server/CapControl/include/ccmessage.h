@@ -22,7 +22,7 @@
 #include "message.h"
 #include "ccsubstationbus.h"
 #include "ccstate.h"
-#include "rwutil.h"
+//#include "rwutil.h"
 
 typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
 typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
