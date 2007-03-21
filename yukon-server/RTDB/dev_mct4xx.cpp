@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2007/03/12 22:24:04 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2007/03/21 21:50:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3628,6 +3628,8 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 ReturnMsg->setUserMessageId(InMessage->Return.UserID);
                 ReturnMsg->setResultString("Load profile retry submitted");
+
+                ReturnMsg->setExpectMore(true);
 
                 retList.push_back(ReturnMsg);
             }
