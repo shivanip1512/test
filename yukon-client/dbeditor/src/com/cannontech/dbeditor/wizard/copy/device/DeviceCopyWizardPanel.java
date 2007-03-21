@@ -21,6 +21,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.DatabaseEditor;
+import com.cannontech.dbeditor.wizard.device.DeviceRoutePanel;
 import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel;
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 
@@ -39,6 +40,7 @@ public class DeviceCopyWizardPanel extends com.cannontech.common.wizard.WizardPa
 	private GoldSilverPanel goldSilverPanel; 
 	private EmetconRelayPanel emetconRelayPanel;
 
+	private DeviceRoutePanel deviceRoutePanel = null;
 	
 	private com.cannontech.database.db.DBPersistent copyObject = null;
 	private int deviceType;
@@ -111,6 +113,17 @@ protected DeviceMeterGroupPanel getDeviceMeterGroupPanel() {
         deviceMeterGroupPanel = new DeviceMeterGroupPanel();
         
     return deviceMeterGroupPanel;
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.device.DeviceRoutePanel
+ */
+protected DeviceRoutePanel getDeviceRoutePanel() {
+    if( deviceRoutePanel  == null )
+        deviceRoutePanel = new DeviceRoutePanel();
+        
+    return deviceRoutePanel;
 }
 
 protected com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel getCapBankCntrlCreationPanel() {
@@ -206,8 +219,18 @@ protected DataInputPanel getNextInputPanel(
 		return getDeviceCopyNameAddressPanel();
 	}	
 	else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
-				&& getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM )
-	{	
+				&& (getDeviceType() == DeviceTypes.REPEATER 
+                || getDeviceType() == DeviceTypes.REPEATER_800
+                || getDeviceType() == DeviceTypes.REPEATER_801
+                || getDeviceType() == DeviceTypes.REPEATER_921))
+	{
+        getDeviceRoutePanel().setValue(null);
+        getDeviceRoutePanel().setFirstFocus();
+	    return getDeviceRoutePanel();
+    }
+    else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
+            && getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM )
+    {	
 		getLmGroupVersacomEditorPanel().setAddresses(((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getUtilityAddress(),
 												((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getSectionAddress(),
 												((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getClassAddress(),
@@ -414,7 +437,11 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
                                                                  || getDeviceType() == DeviceTypes.MCT248
                                                                  || getDeviceType() == DeviceTypes.MCT240
                                                                  || getDeviceType() == DeviceTypes.MCT213
-                                                                 || getDeviceType() == DeviceTypes.MCT210))
+                                                                 || getDeviceType() == DeviceTypes.MCT210
+                                                                 || getDeviceType() == DeviceTypes.REPEATER
+                                                                 || getDeviceType() == DeviceTypes.REPEATER_800
+                                                                 || getDeviceType() == DeviceTypes.REPEATER_801
+                                                                 || getDeviceType() == DeviceTypes.REPEATER_921))
     {
         return false;
     }else if((currentPanel == getRoutePanel()) && (getDeviceType() == DeviceTypes.MCT470
@@ -447,6 +474,9 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	}else if( currentPanel == getDeviceMeterGroupPanel() )
     {
 	    return true;
+    }else if( currentPanel == getDeviceRoutePanel() )
+    {
+        return true;
     }else 
 	{ 
 		return currentPanel == getDeviceCopyNameAddressPanel();

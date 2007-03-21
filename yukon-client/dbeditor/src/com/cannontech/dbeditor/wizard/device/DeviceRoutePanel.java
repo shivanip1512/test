@@ -153,6 +153,13 @@ public class DeviceRoutePanel
         Object value = null;
         if (val instanceof SmartMultiDBPersistent) {
             value = ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
+        } else if (val instanceof MultiDBPersistent
+                && MultiDBPersistent.getFirstObjectOfType(RepeaterBase.class,
+                                                          (MultiDBPersistent) val) != null) {
+
+            value = MultiDBPersistent.getFirstObjectOfType(RepeaterBase.class,
+                                                           (MultiDBPersistent) val);
+            
         } else {
             value = val;
         }
@@ -357,27 +364,10 @@ public class DeviceRoutePanel
 
 			int routeType = 0;
 			for (int i = 0; i < allRoutes.size(); i++) {
-				routeType =
-					((com
-						.cannontech
-						.database
-						.data
-						.lite
-						.LiteYukonPAObject) allRoutes
-						.get(i))
-						.getType();
-				if (routeType
-					== com.cannontech.database.data.pao.RouteTypes.ROUTE_CCU
-					|| routeType
-						== com
-							.cannontech
-							.database
-							.data
-							.pao
-							.RouteTypes
-							.ROUTE_MACRO) {
-					getRouteComboBox().addItem(allRoutes.get(i));
-				}
+                routeType = ((LiteYukonPAObject) allRoutes.get(i)).getType();
+                if (routeType == RouteTypes.ROUTE_CCU || routeType == RouteTypes.ROUTE_MACRO) {
+                    getRouteComboBox().addItem(allRoutes.get(i));
+                }
 
 			}
 		}
