@@ -42,10 +42,6 @@
       <link>/analysis/Reports.jsp</link>
       <requireRole value="application.ReportingRole.ROLEID"/>
     </option>
-     <option name="Launcher">
-      <link>/jws/</link>
-      <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED"/>
-    </option>
   </quicklinks>
   
   <module name="amr">    
