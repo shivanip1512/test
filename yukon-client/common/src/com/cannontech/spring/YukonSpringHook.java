@@ -69,17 +69,22 @@ public class YukonSpringHook {
         return getContext().getBean(name);
     }
     
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(String name, Class<T> expectedType) {
+        return (T) getContext().getBean(name, expectedType);
+    }
+    
     public static NextValueHelper getNextValueHelper() {
         // I'm not sure if this is the best spot for this...
         return (NextValueHelper) getBean("nextValueHelper");
     }
     
     public static TransactionTemplate getTransactionTemplate() {
-        return (TransactionTemplate) getBean("transactionTemplate");
+        return getBean("transactionTemplate", TransactionTemplate.class);
     }
 
     public static Timer getGlobalTimer() {
-        return (Timer) getBean("globalTimer");
+        return getBean("globalTimer", Timer.class);
     }    
     
     public static ScheduledExecutorService getGlobalExecutor() {
