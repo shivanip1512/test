@@ -499,8 +499,8 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     CtiDate startDate(startTime);
     startTime = CtiTime(startDate);
 
-    ULONG startSecondsFromDayBegin = proposed_start_from_1901 - startTime.seconds();
-    ULONG stopSecondsFromDayBegin = proposed_stop_from_1901 - startTime.seconds();
+    LONG startSecondsFromDayBegin = proposed_start_from_1901 - startTime.seconds();
+    LONG stopSecondsFromDayBegin = proposed_stop_from_1901 - startTime.seconds();
 
     if(controlArea.getCurrentDailyStopTime() == 0 && controlArea.getCurrentDailyStopTime() == 0)
     {
@@ -679,7 +679,7 @@ bool CtiLMGroupConstraintChecker::checkCycle(LONG& counts, ULONG period, ULONG p
     LONG control_duration = (period * (((double) percent/100.0)) * counts);
     LONG full_duration = period * counts;
 
-    if(!checkControl(control_duration, adjust_counts) && !checkProgramControlWindow(full_duration, adjust_counts) )
+    if(!checkControl(control_duration, adjust_counts) || !checkProgramControlWindow(full_duration, adjust_counts) )
     {
         return false;
     }
