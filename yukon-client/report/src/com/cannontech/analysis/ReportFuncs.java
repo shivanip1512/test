@@ -10,6 +10,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.PageDefinition;
@@ -22,6 +24,7 @@ import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.CapControlCurrentStatusReport;
 import com.cannontech.analysis.report.CapControlEventLogReport;
 import com.cannontech.analysis.report.CapControlNewActivityReport;
+import com.cannontech.analysis.report.CapControlStateComparisonReport;
 import com.cannontech.analysis.report.CarrierDBReport;
 import com.cannontech.analysis.report.DailyPeaksReport;
 import com.cannontech.analysis.report.DisconnectReport;
@@ -57,6 +60,7 @@ import com.cannontech.analysis.tablemodel.CapBankListModel;
 import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
 import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
+import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -85,6 +89,13 @@ import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.model.ModelFactory;
+import com.cannontech.yukon.IDatabaseCache;
 import com.keypoint.PngEncoder;
 
 /**
@@ -226,5 +237,99 @@ public class ReportFuncs
     	dialog.setModal(true);
     	dialog.pack();
     	dialog.setVisible(true);
+    }
+    
+    public static List<? extends Object> getObjectsByModelType(int model) {
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        switch (model)
+        {
+            case ModelFactory.LMCONTROLAREA:
+                return cache.getAllLMControlAreas();
+            case ModelFactory.LMGROUPS:
+                return cache.getAllLMGroups();
+            case ModelFactory.DEVICE:
+                return cache.getAllDevices();
+            case ModelFactory.COLLECTIONGROUP:
+                return cache.getAllDMG_CollectionGroups();
+            case ModelFactory.TESTCOLLECTIONGROUP:
+                return cache.getAllDMG_AlternateGroups();
+            case ModelFactory.BILLING_GROUP:
+                return cache.getAllDMG_BillingGroups();
+            case ModelFactory.ROUTE:
+                return cache.getAllRoutes();
+            case ModelFactory.TRANSMITTER:
+            {
+                List allPaos = cache.getAllYukonPAObjects();
+                List trans = null;
+                if( allPaos != null)
+                {
+                    trans = new ArrayList();
+                    for (int i = 0; i < allPaos.size(); i++)
+                    {
+                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+                        if (lPao.getPaoClass() == DeviceClasses.TRANSMITTER)
+                            trans.add(lPao);
+                    }
+                }
+                return trans; 
+            }
+            case ModelFactory.RECEIVERS:    //for LoadControlVerification report
+            {
+                List allPaos = cache.getAllYukonPAObjects();
+                List receivers = null;
+                if( allPaos != null)
+                {
+                    receivers = new ArrayList();
+                    for (int i = 0; i < allPaos.size(); i++)
+                    {
+                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+                        if(DeviceTypesFuncs.isReceiver(lPao.getType()) )
+                            receivers.add(lPao);
+                    }
+                }
+                return receivers; 
+            }
+            case ModelFactory.RTU:
+            {
+                List allPaos = cache.getAllYukonPAObjects();
+                List rtus = null;
+                if( allPaos != null)
+                {
+                    rtus= new ArrayList();
+                    for (int i = 0; i < allPaos.size(); i++)
+                    {
+                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+                        if((DeviceTypesFuncs.isRTU(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER)
+                            && !DeviceTypesFuncs.isIon(lPao.getType()) )                        
+                        rtus.add(lPao);
+                    }
+                }
+                return rtus; 
+            }
+            case ModelFactory.CAPCONTROLSTRATEGY:
+                return cache.getAllCapControlSubBuses();
+                
+            case ModelFactory.CAPCONTROLFEEDER:
+                return cache.getAllCapControlFeeders();
+                
+            case ModelFactory.CAPBANK:
+                List allPaos = cache.getAllYukonPAObjects();
+                List caps = null;
+                if( allPaos != null)
+                {
+                    caps= new ArrayList();
+                    for (int i = 0; i < allPaos.size(); i++)
+                    {
+                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+                        if(lPao.getType() == PAOGroups.CAPBANK) {                        
+                            caps.add(lPao);
+                        }
+                    }
+                }
+                return caps;
+                
+            default:
+                return new ArrayList(0);    //and empty list of nothing objects. 
+        }
     }
 }

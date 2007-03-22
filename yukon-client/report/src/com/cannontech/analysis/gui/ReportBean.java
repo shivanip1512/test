@@ -8,6 +8,8 @@ package com.cannontech.analysis.gui;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
@@ -23,6 +25,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.user.UserUtils;
@@ -183,21 +186,23 @@ public class ReportBean
 	 */
 	public ReportModelBase getModel()
 	{
-        // TEM: I didn't want to change too much about how this class worked
-        // so I still use the nullness of the model to determine when the 
-        // controller should be set.
-	    if (model == null || isChanged())
-	    {
-	        reportController = ReportTypes.create(getType());
-            if (reportController == null) {
-                setModel(null);
-            } else {
-                setModel(reportController.getReport().getModel());
-            }
-	        setChanged(false);
-	    }
 		return model;
 	}
+    
+    public boolean hasFilter() {
+        //getModel();
+        if(reportController == null) {
+            return false;
+        }else {
+            return !reportController.getFilterObjectsMap().isEmpty();
+        }
+    }
+    
+    public Map<Integer,List<? extends Object>> getFilterObjectsMap() {
+       // getModel();
+        return reportController.getFilterObjectsMap();
+    }
+    
 	/**
 	 * Returns a JFreeReport instance using a YukonReportBase parameter.
 	 * Uses the getModel() field value to create the YukonReportBase parameter.
@@ -243,13 +248,7 @@ public class ReportBean
 
 		return reportController.getHTMLOptionsTable();
 	}
-	
-	public String buildBaseOptionsHTML()
-	{
-		if (getModel() == null)
-			return "";
-		return reportController.getHTMLBaseOptionsTable();
-	}
+
     /**
      * @param model The model to set.
      */
@@ -337,4 +336,19 @@ public class ReportBean
 		else
 			availReportTypes = ReportTypes.getGroupReportTypes(getGroupType());
 	}
+    
+    public ReportController getReportController() {
+        //getModel();
+        return reportController;
+    }
+
+    public void createController() {
+        reportController = ReportTypes.create(getType());
+        if (reportController == null) {
+            setModel(null);
+        } else {
+            setModel(reportController.getReport().getModel());
+        }
+        setChanged(true);
+    }
 }

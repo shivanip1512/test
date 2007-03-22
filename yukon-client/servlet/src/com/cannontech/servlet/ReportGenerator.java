@@ -121,8 +121,10 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			else
 				isKeyIncomplete = true;
 			
+            reportBean.createController();
 			reportBean.getModel().setTimeZone(tz);
-			reportBean.getModel().setParameters(req);
+			//reportBean.getModel().setParameters(req);
+            reportBean.getReportController().setRequestParameters(req);
 			reportBean.getModel().setEnergyCompanyID(energyCompanyID);
             reportBean.getModel().setUserID(liteYukonUser.getUserID());
 

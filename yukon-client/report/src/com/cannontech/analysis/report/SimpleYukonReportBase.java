@@ -134,7 +134,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         return items;
     }
     
-    private void applyElementProperties(TextElementFactory factory, ColumnLayoutData layoutData) {
+    protected void applyElementProperties(TextElementFactory factory, ColumnLayoutData layoutData) {
         Point2D point2D = columnProperties.get(layoutData);
         factory.setAbsolutePosition(point2D);
         factory.setMinimumSize(new FloatDimension(layoutData.getWidth(), 12));
@@ -147,7 +147,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         
     }
 
-    private void applyFieldProperties(TextFieldElementFactory factory, ColumnLayoutData layoutData) {
+    protected void applyFieldProperties(TextFieldElementFactory factory, ColumnLayoutData layoutData) {
         applyElementProperties(factory, layoutData);
         factory.setNullString("  ---  ");
     }

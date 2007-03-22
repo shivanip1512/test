@@ -152,20 +152,12 @@ public final class ReportModelDelegate extends ReportModelBase {
         return reportModelBase.getFilterModelTypes();
     }
 
-    public String getHTMLBaseOptionsTable() {
-        return reportModelBase.getHTMLBaseOptionsTable();
-    }
-
     public String getHTMLOptionsTable() {
         return reportModelBase.getHTMLOptionsTable();
     }
 
     public <T extends EventListener> T[] getListeners(Class<T> listenerType) {
         return reportModelBase.getListeners(listenerType);
-    }
-
-    public List getObjectsByModelType(int model) {
-        return reportModelBase.getObjectsByModelType(model);
     }
 
     public int[] getPaoIDs() {

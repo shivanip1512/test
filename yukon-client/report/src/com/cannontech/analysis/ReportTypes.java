@@ -6,16 +6,22 @@
  */
 package com.cannontech.analysis;
 
+import com.cannontech.analysis.controller.CBCInventoryController;
+import com.cannontech.analysis.controller.CapControlOperationsController;
+import com.cannontech.analysis.controller.CapControlStateComparisonController;
 import com.cannontech.analysis.controller.CurtailmentEventSummaryController;
 import com.cannontech.analysis.controller.CurtailmentInterruptionSummaryController;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.controller.ReportControllerAdapter;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
+import com.cannontech.analysis.tablemodel.CBCInventoryModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
 import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
 import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
+import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
+import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -110,7 +116,10 @@ public class ReportTypes
     public static final int CCURT_INTERRUPTION_SUMMARY_DATA = 34;
     
     public static final int MAX_DAILY_OPERATIONS = 35;
-	
+    public static final int CAP_CONTROL_STATE_COMPARISON = 36;
+    public static final int CAP_CONTROL_OPERATIONS = 37;
+    public static final int CBC_INVENTORY = 38;
+    
 	private static Class[] typeToClassMap =
 	{
 		StatisticModel.class,
@@ -156,6 +165,9 @@ public class ReportTypes
 		CurtailmentEventSummaryController.class,
         CurtailmentInterruptionSummaryController.class,
         MaxDailyOpsModel.class,
+        CapControlStateComparisonController.class,
+        CapControlOperationsController.class,
+        CBCInventoryController.class,
 	};
 		
 	/** String names for report types */
@@ -207,6 +219,9 @@ public class ReportTypes
 	public static final String CCURT_INTERRUPTION_SUMMARY_STRING = "Interruption Summary";
     
     public static final String MAX_DAILY_OPERATIONS_STRING = "Max Daily Operations";
+    public static final String CAP_CONTROL_STATE_COMPARISON_STRING= "CapControl State Comparison";
+    public static final String CAP_CONTROL_OPERATIONS_STRING= "CapControl Operations";
+    public static final String CBC_INVENTORY_STRING= "CBC Inventory";
     
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -256,6 +271,9 @@ public class ReportTypes
 		CCURT_EVENT_SUMMARY_STRING,
 		CCURT_INTERRUPTION_SUMMARY_STRING,
         MAX_DAILY_OPERATIONS_STRING,
+        CAP_CONTROL_STATE_COMPARISON_STRING,
+        CAP_CONTROL_OPERATIONS_STRING,
+        CBC_INVENTORY_STRING,
 	};
 
 
@@ -302,7 +320,7 @@ public class ReportTypes
 	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
-	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA, MAX_DAILY_OPERATIONS};
+	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA, MAX_DAILY_OPERATIONS, CAP_CONTROL_STATE_COMPARISON, CAP_CONTROL_OPERATIONS, CBC_INVENTORY};
 	private static int[] databaseGroupReportTypes = new int[]{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA};
 	private static int[] starsGroupReportTypes = new int[]{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
 			STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,

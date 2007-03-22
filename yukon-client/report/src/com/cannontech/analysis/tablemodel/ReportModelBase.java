@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -97,10 +98,10 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	protected static final String ATT_PAOBJECT_IDS = "paoIDs";
 	protected static final String ATT_SORT_ORDER = "sortOrder";	
 	
-	protected static final String ATT_FILTER_MODEL_TYPE = "filterModelType";
-	protected static final String ATT_FILTER_MODEL_VALUES = "filterValues";
-	protected static final String ATT_FILTER_METER_VALUES = "filterMeterValues";
-	protected static final String ATT_FILTER_DEVICE_VALUES = "filterDevice Values";
+	public static final String ATT_FILTER_MODEL_TYPE = "filterModelType";
+    public static final String ATT_FILTER_MODEL_VALUES = "filterValues";
+    public static final String ATT_FILTER_METER_VALUES = "filterMeterValues";
+    public static final String ATT_FILTER_DEVICE_VALUES = "filterDeviceValues";
 
 	public  static final int ASCENDING = 0;
 	public static final int DESCENDING = 1;
@@ -347,133 +348,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		return html;
 	}
 	
-	/**
-	 * Generatest the HTML for base options used at the ReportModelBase level (aka options for all reports)
-	 * @return
-	 */
-	public String getHTMLBaseOptionsTable()
-	{
-		String html = "";
-		
-		html += "<SCRIPT>" + LINE_SEPARATOR;
-		html += "function selectNoneFilter(group){" + LINE_SEPARATOR;
-		html += "  group.selectedIndex = -1;" + LINE_SEPARATOR;
-		html += "  group.disabled = false;" + LINE_SEPARATOR;
-		html += "  document.reportForm.selectAll.checked = false;" + LINE_SEPARATOR;
-		html += "}" + LINE_SEPARATOR;
-		
-		html += "function selectAllFilter(selectVal, group){" + LINE_SEPARATOR;
-		html += "  if (selectVal) {" + LINE_SEPARATOR;
-		html += "    group.disabled = true;" + LINE_SEPARATOR;
-		html += "    for (var i = 0; i < group.length; i++) {" + LINE_SEPARATOR;
-		html += "      group[i].selected = true;" + LINE_SEPARATOR;		
-		html += "    }" + LINE_SEPARATOR;
-		html += "  } else {" + LINE_SEPARATOR;
-		html += "    group.disabled = false;" + LINE_SEPARATOR;
-		html += "  }" + LINE_SEPARATOR;
-		html += "}" + LINE_SEPARATOR;
-				
-		if (getFilterModelTypes() != null)
-		{
-			html += "function changeFilter(filterBy) {" + LINE_SEPARATOR;
-			html += "  document.getElementById('selectAll').disabled = (filterBy == -1);" + LINE_SEPARATOR;
-			html += "  var filterModelValues = document.reportForm." + ATT_FILTER_MODEL_VALUES+";" + LINE_SEPARATOR;
-			html += "  for (var i = 0; i < filterModelValues.length; i++) {" + LINE_SEPARATOR;
-			html += "    filterModelValues[i].selectedIndex = -1;" + LINE_SEPARATOR;
-			html += "  }" + LINE_SEPARATOR + LINE_SEPARATOR;
-			
-			for(int i = 0; i < getFilterModelTypes().length; i++)
-			{
-				html += "  document.getElementById('Div"+ ModelFactory.getModelString(getFilterModelTypes()[i])+"').style.display = (filterBy == " + getFilterModelTypes()[i] + ")? \"\" : \"none\";" + LINE_SEPARATOR;			    
-			}
-			html += "}" + LINE_SEPARATOR + LINE_SEPARATOR;
-		}
-		html += "</SCRIPT>" + LINE_SEPARATOR + LINE_SEPARATOR;
-
-		html += "<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
-		html += "    <td class='main' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
-		
-		if( getFilterModelTypes() != null )
-		{
-			html += "      <div id='DivFilterModelType' style='display:true'>" + LINE_SEPARATOR;
-
-			if (getFilterModelTypes() != null)
-			{
-				html += "        <select id='" + ATT_FILTER_MODEL_TYPE+ "' name='" + ATT_FILTER_MODEL_TYPE + "' onChange='changeFilter(this.value)'>" + LINE_SEPARATOR;
-				for (int i = 0; i < getFilterModelTypes().length; i++)
-				{
-					html += "          <option value='" + getFilterModelTypes()[i] +"'>" + ModelFactory.getModelString(getFilterModelTypes()[i]).toString() + "</option>"  + LINE_SEPARATOR;
-				}
-				html += "        </select>" + LINE_SEPARATOR;
-			}
-			html += "      </div>" + LINE_SEPARATOR;
-		}
-		html += "    </td>" + LINE_SEPARATOR;
-		html += "  </tr>" + LINE_SEPARATOR;
-		html += "  <tr><td height='9'></td></tr>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
-		html += "    <td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
-		
-		if( getFilterModelTypes() != null)
-		{
-			for(int i = 0; i < getFilterModelTypes().length; i++)
-			{
-                if( getFilterModelTypes()[i] == ModelFactory.MCT || getFilterModelTypes()[i] == ModelFactory.METER ){
-                    html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
-                    html += " ";
-                    html += "        <input type='text' name='" + ATT_FILTER_METER_VALUES+ "' style='width:650px;'/>" + LINE_SEPARATOR;
-                    html += "      " + LINE_SEPARATOR;
-                    html += "<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>" + LINE_SEPARATOR;                    
-                } else if( getFilterModelTypes()[i] == ModelFactory.DEVICE){
-                    html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
-                    html += " ";
-                    html += "        <input type='text' name='" + ATT_FILTER_DEVICE_VALUES+ "' style='width:650px;'/>" + LINE_SEPARATOR;
-                    html += "      " + LINE_SEPARATOR;
-                    html += "<BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>" + LINE_SEPARATOR;                    
-                }
-                else {
-    				html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
-    				html += "        <select name='" + ATT_FILTER_MODEL_VALUES+ "' size='10' multiple style='width:350px;'>" + LINE_SEPARATOR;
-    				List objects = getObjectsByModelType(getFilterModelTypes()[i]);
-    				if (objects != null)
-    				{
-    					for (int j = 0; j < objects.size(); j++)
-    					{
-    					    if( objects.get(j) instanceof String)
-    					        html += "          <option value='" + objects.get(j).toString()+ "'>" + objects.get(j).toString() + "</option>" + LINE_SEPARATOR;
-    					    else if (objects.get(j) instanceof LiteYukonPAObject)
-    					        html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
-    						else if (objects.get(j) instanceof LiteDeviceMeterNumber)
-    							html += "          <option value='" + ((LiteDeviceMeterNumber)objects.get(j)).getDeviceID() + "'>" + ((LiteDeviceMeterNumber)objects.get(j)).getMeterNumber() + "</option>" + LINE_SEPARATOR;
-    					}
-    				}
-				html += "        </select>" + LINE_SEPARATOR;
-                html += "<BR><span class='NavText'>* Hold &ltCTRL&gt key down to select multiple values</span><br>" + LINE_SEPARATOR;
-                html += "<span class='NavText'>* Hold &ltShift&gt key down to select range of values</span>" + LINE_SEPARATOR;
-                html += "      <div id='DivSelectAll' style='display:true'>" + LINE_SEPARATOR;
-                html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All" + LINE_SEPARATOR;
-                html += "      </div>" + LINE_SEPARATOR;
-                html += "      <div id='DivSelectNone' style='display:true'>" + LINE_SEPARATOR;         
-                html += "        <input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>";
-                html += "      </div>" + LINE_SEPARATOR;                
-				html += "      </div>" + LINE_SEPARATOR;
-                }
-
-			}
-		}
-		html += "    </td>" + LINE_SEPARATOR;
-		html += "  </tr>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
-		html += "    <td class='main' height='10' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
-		
-		html += "    </td>" + LINE_SEPARATOR;
-		html += "  </tr>" + LINE_SEPARATOR;
-		html += "</table>" + LINE_SEPARATOR;
-
-		return html;
-	}
-
 	public void setParameters( HttpServletRequest req )
 	{
 		if( req != null)
@@ -655,104 +529,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	    filterModelTypes = models;
 	}
 
-	/*
-	 * Returns a List of Objects (Strings for DeviceMeterGroup stuff, and LiteYukonPaobjects for pao stuff)
-	 * List is from cache.
-	 */
-	public List getObjectsByModelType(int model)
-	{
-		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		switch (model)
-        {
-	        case ModelFactory.LMCONTROLAREA:
-	            return cache.getAllLMControlAreas();
-	        case ModelFactory.LMGROUPS:
-	            return cache.getAllLMGroups();
-	        case ModelFactory.DEVICE:
-	            return cache.getAllDevices();
-	        case ModelFactory.COLLECTIONGROUP:
-	            return cache.getAllDMG_CollectionGroups();
-	        case ModelFactory.TESTCOLLECTIONGROUP:
-	            return cache.getAllDMG_AlternateGroups();
-	        case ModelFactory.BILLING_GROUP:
-	            return cache.getAllDMG_BillingGroups();
-	        case ModelFactory.ROUTE:
-	        	return cache.getAllRoutes();
-	        case ModelFactory.TRANSMITTER:
-	        {
-	        	List allPaos = cache.getAllYukonPAObjects();
-	        	List trans = null;
-	        	if( allPaos != null)
-	        	{
-					trans = new ArrayList();
-		        	for (int i = 0; i < allPaos.size(); i++)
-		        	{
-		        		LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-		        		if (lPao.getPaoClass() == DeviceClasses.TRANSMITTER)
-		        			trans.add(lPao);
-		        	}
-	        	}
-	        	return trans; 
-	        }
-			case ModelFactory.RECEIVERS:	//for LoadControlVerification report
-			{
-				List allPaos = cache.getAllYukonPAObjects();
-				List receivers = null;
-				if( allPaos != null)
-				{
-					receivers = new ArrayList();
-					for (int i = 0; i < allPaos.size(); i++)
-					{
-						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-						if(DeviceTypesFuncs.isReceiver(lPao.getType()) )
-							receivers.add(lPao);
-					}
-				}
-				return receivers; 
-			}
-			case ModelFactory.RTU:
-			{
-				List allPaos = cache.getAllYukonPAObjects();
-				List rtus = null;
-				if( allPaos != null)
-				{
-					rtus= new ArrayList();
-					for (int i = 0; i < allPaos.size(); i++)
-					{
-						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-						if((DeviceTypesFuncs.isRTU(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER)
-							&& !DeviceTypesFuncs.isIon(lPao.getType()) )						
-						rtus.add(lPao);
-					}
-				}
-				return rtus; 
-			}
-			case ModelFactory.CAPCONTROLSTRATEGY:
-			    return cache.getAllCapControlSubBuses();
-                
-            case ModelFactory.CAPCONTROLFEEDER:
-                return cache.getAllCapControlFeeders();
-                
-            case ModelFactory.CAPBANK:
-                List allPaos = cache.getAllYukonPAObjects();
-                List caps = null;
-                if( allPaos != null)
-                {
-                    caps= new ArrayList();
-                    for (int i = 0; i < allPaos.size(); i++)
-                    {
-                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-                        if(lPao.getType() == PAOGroups.CAPBANK) {                        
-                            caps.add(lPao);
-                        }
-                    }
-                }
-                return caps;
-                
-			default:
-				return new ArrayList(0);	//and empty list of nothing objects. 
-        }
-	}
 	public static String getBillingGroupDatabaseString(int modelType)
 	{
 	    if ( modelType == ModelFactory.TESTCOLLECTIONGROUP)

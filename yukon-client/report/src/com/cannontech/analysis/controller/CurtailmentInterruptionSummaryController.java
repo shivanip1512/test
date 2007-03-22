@@ -4,10 +4,7 @@ import com.cannontech.analysis.report.CurtailmentInterruptionSummaryReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CurtailmentInterruptionSummaryModel;
 
-public class CurtailmentInterruptionSummaryController implements ReportController {
-
-    private CurtailmentInterruptionSummaryModel model;
-    private CurtailmentInterruptionSummaryReport report;
+public class CurtailmentInterruptionSummaryController extends ReportControllerBase {
 
     public CurtailmentInterruptionSummaryController() {
         super();

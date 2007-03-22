@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -386,7 +387,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.TRANSMITTER) +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "              <select name='" + ATT_TRANSMITTER_IDS + "' size='10' multiple style='width:300px;'>" + LINE_SEPARATOR;
 
-		List objects = getObjectsByModelType(ModelFactory.TRANSMITTER);
+		List objects = ReportFuncs.getObjectsByModelType(ModelFactory.TRANSMITTER);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)
@@ -412,7 +413,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.RECEIVERS) +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "            <select name='" + ATT_RECEIVER_IDS + "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
 
-		objects = getObjectsByModelType(ModelFactory.RECEIVERS);
+		objects = ReportFuncs.getObjectsByModelType(ModelFactory.RECEIVERS);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)

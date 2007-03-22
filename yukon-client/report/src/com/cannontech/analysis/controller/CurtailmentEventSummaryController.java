@@ -5,10 +5,7 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CurtailmentEventSummaryModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 
-public class CurtailmentEventSummaryController implements ReportController {
-
-    private CurtailmentEventSummaryModel model;
-    private CurtailmentEventSummaryReport report;
+public class CurtailmentEventSummaryController extends ReportControllerBase {
 
     public CurtailmentEventSummaryController() {
         super();

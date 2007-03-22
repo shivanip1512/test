@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
+<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.model.ModelFactory"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
@@ -10,10 +11,12 @@
 <%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
-<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
+<%@ page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
+<%@ page import= "java.util.List;" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:standardPage module="reporting" title="Reports"> 
 <cti:standardMenu/>
@@ -225,13 +228,104 @@ function enableDates(value)
             <%=REPORT_BEAN.buildOptionsHTML()%>
       </cti:titledContainer>
       
-	  <%if (REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().getFilterModelTypes() != null)
+	  <%if (REPORT_BEAN.hasFilter())
 	  {%>
 		  <br>	  
 		  
           <cti:titledContainer title="Filter">
-				<%=REPORT_BEAN.buildBaseOptionsHTML()%>
-          </cti:titledContainer>
+			<SCRIPT>
+        function selectNoneFilter(group){
+          group.selectedIndex = -1;
+          group.disabled = false;
+          document.reportForm.selectAll.checked = false;
+        }
+        
+        function selectAllFilter(selectVal, group){
+          if (selectVal) {
+            group.disabled = true;
+            for (var i = 0; i < group.length; i++) {
+              group[i].selected = true;     
+            }
+          } else {
+            group.disabled = false;
+          }
+        }
+        
+        function changeFilter(filterBy) {
+          document.getElementById('selectAll').disabled = (filterBy == -1);
+          var filterModelValues = document.reportForm.filterValues;
+          for (var i = 0; i < filterModelValues.length; i++) {
+            filterModelValues[i].selectedIndex = -1;
+          }
+        
+        <%for(int modelType : REPORT_BEAN.getFilterObjectsMap().keySet())  {%>
+              document.getElementById('Div<%= ModelFactory.getModelString(modelType)%>').style.display = (filterBy == <%= modelType %>) ?  "block" : "none";
+        <% }  %>
+        }
+    
+        </SCRIPT>
+
+		<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
+        	<tr>
+            	<td class='main' style='padding-left:5; padding-top:5'>
+					<div id='DivFilterModelType' style='display:true'>
+						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
+        					<%for (int modelType : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+                    			<option value='<%=modelType%>'>  <%=ModelFactory.getModelString(modelType).toString() %></option>
+        					<% } %>
+                		</select>
+					</div>
+        		</td>
+          	</tr>
+          	<tr><td height='9'></td></tr>
+          	<tr>
+            	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
+        			<% int isFirst = 0; %>
+        			<%for(int modelType : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+            			<%if( modelType == ModelFactory.MCT || modelType == ModelFactory.METER ) {%>
+                    		<div id="Div<%=ModelFactory.getModelString(modelType)%>" style="display:<%=isFirst==0?"true":"none"%>">
+                    		<input type='text' name="filterMeterValues" style='width:650px;'/>
+                    		<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>
+            			<%}else if( modelType == ModelFactory.DEVICE) {%>
+                    		<div id="Div<%=ModelFactory.getModelString(modelType)%>" style="display:<%=isFirst==0?"true":"none"%>">
+		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
+        		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>                    
+            			<% }else {%>
+            				<div id="Div<%=ModelFactory.getModelString(modelType)%>" style="display:<%=isFirst==0?"true":"none"%>">
+                    		<select name='filterValues' size='10' multiple style='width:350px;'>
+                			<%List objects = REPORT_BEAN.getFilterObjectsMap().get(modelType);%>
+                			<%if (objects != null) {
+                    			for (Object object : objects) {
+                        			if( object instanceof String) {%>
+                                    	<option value='<%=object.toString()%>'><%=object.toString()%></option>
+                        			<%}else if (object instanceof LiteYukonPAObject) {%>
+                                    	<option value='<%=((LiteYukonPAObject)object).getYukonID()%>'><%=((LiteYukonPAObject)object).getPaoName()%></option>
+                        			<%}else if (object instanceof LiteDeviceMeterNumber){%>
+                                    	<option value='<%=((LiteDeviceMeterNumber)object).getDeviceID()%>'><%=((LiteDeviceMeterNumber)object).getMeterNumber()%></option>
+                        		<%}
+                    			}
+                			}%>
+                        	</select>
+                			<BR><span class='NavText'>* Hold &ltCTRL&gt key down to select multiple values</span><br>
+                			<span class='NavText'>* Hold &ltShift&gt key down to select range of values</span>
+                      		<div id='DivSelectAll' style='display:true'>
+                        	<input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All
+                      		</div>
+                      		<div id='DivSelectNone' style='display:true'>         
+                        	<input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>";
+                      		</div>                
+                      	</div>
+            			<% } %>
+            		<% isFirst++; %>
+        			<% }%>
+        		</td>
+        	</tr>
+          	<tr>
+            	<td class='main' height='10' style='padding-left:5; padding-top:5'>
+        		</td>
+          	</tr>
+        </table>
+        </cti:titledContainer>
 		<%}%>	  	  	  
       </form>
 </cti:standardPage>
