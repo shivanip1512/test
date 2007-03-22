@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/06/20 18:52:36 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/03/22 22:18:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1581,7 +1581,7 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 
 bool CtiDeviceTapPagingTerminal::blockedByPageRate() const
 {
-    return (_pagesPerMinute > pagesPerMinute);
+    return (_pagesPerMinute >= pagesPerMinute);
 }
 
 bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
@@ -1591,12 +1591,11 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
     if(pagesPerMinute > 0)
     {
         CtiTime now;
-        CtiTime newbatch = nextScheduledTimeAlignedOnRate(_pacingTimeStamp, 60);
 
-        if(now >= newbatch)
+        if(now >= _pacingTimeStamp)
         {
             _pagesPerMinute = 1;
-            _pacingTimeStamp = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
+            _pacingTimeStamp = nextScheduledTimeAlignedOnRate( now, 60 );
             _pacingReport = false;
         }
         else if(_pagesPerMinute >= pagesPerMinute)   // This time is allowed for the paging company to clear buffers.
@@ -1605,7 +1604,7 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
             {
                 _pacingReport = true;
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
+                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << _pacingTimeStamp << endl;
             }
 
             toofast = true;
