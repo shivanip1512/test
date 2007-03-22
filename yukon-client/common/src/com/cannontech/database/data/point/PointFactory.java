@@ -7,6 +7,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
@@ -465,15 +466,27 @@ public static synchronized PointBase createTagPoint(Integer objectID, Integer of
 }
 
 public static synchronized void addPoint(PointBase point) {
+    Connection connection = null;
     try {
-        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         point.setDbConnection(connection);
         point.add();
-        if (connection != null) connection.close();
+        DaoFactory.getDbPersistentDao().performDBChange(point, DBChangeMsg.CHANGE_TYPE_ADD);
+
     } catch (SQLException e) {
         CTILogger.error(e);
     }
-    DaoFactory.getDbPersistentDao().performDBChange(point, DBChangeMsg.CHANGE_TYPE_ADD);
+    catch (PersistenceException te) {
+        CTILogger.error(te);
+    }
+    if (connection != null)
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            CTILogger.error(e);
+        }
+
+
     
 }
 
