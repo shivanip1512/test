@@ -376,8 +376,8 @@ function executeSubCommand (paoId, command, cmd_name) {
 	new Ajax.Request ('/servlet/CBCServlet', 
 	{method:'post', 
 	parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=SUB_TYPE',
-	onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green"); },
-	onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+	onSuccess: function () { display_status(cmd_name, "Success", "green"); },
+	onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 	asynchronous:true });
 	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
 	cmdDiv.style.display = 'none';
@@ -389,8 +389,8 @@ function executeFeederCommand (paoId, command, cmd_name) {
 	new Ajax.Request ('/servlet/CBCServlet', 
 	{method:'post', 
 	 parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=FEEDER_TYPE', 
-	 onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-	 onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+	 onSuccess: function () { display_status(cmd_name, "Success", "green"); },
+	 onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 	 asynchronous:true });
 	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
 	cmdDiv.style.display = 'none';
@@ -404,8 +404,8 @@ function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_d
 		new Ajax.Request ('/servlet/CBCServlet', 
 		{method:'post', 
 		parameters:'opt='+command+'&cmdID='+30+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
-	 	onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+	 	onSuccess: function () { display_status(cmd_name, "Success", "green"); },
+		onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 		asynchronous:true });		
 	}
 	else {
@@ -418,8 +418,8 @@ function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_d
 			new Ajax.Request ('/servlet/CBCServlet', 
 			{method:'post', 
 			parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
-			onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-			onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+			onSuccess: function () { display_status(cmd_name, "Success", "green"); },
+			onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 			asynchronous:true });
 			cmdDiv = document.getElementById (unique_id);
 		}
@@ -439,7 +439,7 @@ function execute_CapBankMoveBack (paoId, command, redirect) {
 	  parameters:'paoID='+ paoId +'&cmdID=' + command + '&controlType=CAPBANK_TYPE&redirectURL=' + red,
 		onSuccess: function () { window.location.replace (replace);
 	},
-		onFailure: function () { display_status('Move Bank', "Command failed", "red"); },
+		onFailure: function () { display_status('Move Bank', "Failed", "red"); },
 	asynchronous:true
 	});
 	var cmdDiv = document.getElementById ('cb_move_back_' + paoId);
@@ -452,8 +452,8 @@ function execute_SubAreaCommand (pao_id, cmd_id, cmd_name) {
     new Ajax.Request('/servlet/CBCServlet', 
     { method:'post', 
       parameters:'paoID='+ pao_id +'&cmdID=' + cmd_id + '&controlType=AREA_TYPE',
-        onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-        onFailure: function () { display_status(cmd_name, "Command failed", "red"); },
+        onSuccess: function () { display_status(cmd_name, "Success", "green"); },
+        onFailure: function () { display_status(cmd_name, "Failed", "red"); },
     asynchronous:true
     });
     var cmdDiv = document.getElementById ('area' + pao_id);
@@ -507,41 +507,37 @@ return endTag;
 //'msg' in the body that with 'color' for background
 
 function display_status(cmd_name, msg, color) {
-
 var msg_div = $('cmd_msg_div');
 msg_div.style.color = color;
-//msg_div.style.backgroundColor = 'green';
-msg_div.style.position = 'absolute';
+$("outerDiv").style.position = 'absolute';
 var last_titled_cont  = $('last_titled_container'); 
 if (last_titled_cont != null) {
-	msg_div.style.left = last_titled_cont.width;
-	msg_div.style.top =  last_titled_cont.height;
+	$("outerDiv").style.left = last_titled_cont.width;
+	$("outerDiv").style.top =  last_titled_cont.height;
 }
 else {
-	msg_div.style.left = 0;
-	msg_div.style.top =  0;
+	$("outerDiv").style.left = 0;
+	$("outerDiv").style.top =  0;
 }
+$("outerDiv").style.width = 200; 
 var titledCont = new CTITitledContainer (cmd_name);
 
-msg_div.innerHTML = titledCont.startTag() +  
-					msg + 	 
-					titledCont.endTag();
+msg_div.innerHTML = cmd_name + ":" + msg;
 var timeout = 0;
-
 if (color == "red") {
-	msg_div.style.display = 'block';
-	Effect.Pulsate('cmd_msg_div', {duration: 8});
+	$("outerDiv").style.display = 'block';
+	Effect.Pulsate('outerDiv', {duration: 8});
 	timeout = 8000;
 	}
  else {
- 	Effect.Appear('cmd_msg_div');
+ 	Effect.Appear('outerDiv');
 	timeout = 2000;
 	}
 	setTimeout ('hideMsgDiv()', timeout);	
 }
 
 function hideMsgDiv() {
-Effect.Fade('cmd_msg_div');
+	Effect.Fade('outerDiv');
 }
 
 function getMoveBackMenu() {

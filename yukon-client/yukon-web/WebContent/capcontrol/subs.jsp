@@ -148,5 +148,8 @@ for( int i = 0; i < areaSubs.length; i++ )
 Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
 </script>
 </cti:titledContainer>
-	<div id="cmd_msg_div" style="display: none;" />
+<div style = "display:none" id = "outerDiv">
+<cti:titledContainer title="Current Status">
+    <div id="cmd_msg_div" />
+</cti:titledContainer>
 </cti:standardPage>

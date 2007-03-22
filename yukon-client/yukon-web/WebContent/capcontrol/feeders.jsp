@@ -412,7 +412,9 @@ Event.observe(window, 'load', function() {
 </script>
             
             </cti:titledContainer>
-
-	<div id="cmd_msg_div" style="display: none;" />
-
+            <div style = "display:none" id = "outerDiv">
+                <cti:titledContainer title="Current Status">
+                    <div id="cmd_msg_div" />
+                </cti:titledContainer>
+            </div>
 </cti:standardPage>
