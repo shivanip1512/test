@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_loadprofile.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/03/22 17:22:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,17 +45,17 @@ public:
         MaxCollectedChannel = 4
     };
 
+private:
+
 protected:
 
-   LONG     _deviceID;
-   INT      _lastIntervalDemandRate;
-   INT      _loadProfileDemandRate;
-   INT      _voltageDemandInterval;
-   INT      _voltageProfileRate;
+   LONG  _deviceID;
+   INT   _lastIntervalDemandRate;
+   INT   _loadProfileDemandRate;
+   INT   _voltageDemandInterval;
+   INT   _voltageProfileRate;
 
-   BOOL     _channelValid[MaxCollectedChannel];
-
-private:
+   bool  _channelValid[MaxCollectedChannel];
 
 public:
 
@@ -70,14 +70,8 @@ public:
    INT  getLastIntervalDemandRate() const;
    INT  getLoadProfileDemandRate()  const;
    INT  getVoltageDemandInterval()  const;
-   INT  getVoltageProfileRate() const;
-/*
-   CtiTableDeviceLoadProfile& setLoadProfileDemandRate( const INT aRate );
-   CtiTableDeviceLoadProfile& setLastIntervalDemandRate( const INT aDemandInterval );
-*/
-   BOOL isChannelValid(const INT ch) const;
-
-   CtiTableDeviceLoadProfile& setChannelValid( const INT ch, const BOOL val = TRUE );
+   INT  getVoltageProfileRate()     const;
+   bool isChannelValid(int channel) const;
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
@@ -86,12 +80,11 @@ public:
    static string getTableName();
 
    LONG getDeviceID() const;
-   CtiTableDeviceLoadProfile& setDeviceID( const LONG did);
 
    virtual RWDBStatus Restore();
    virtual RWDBStatus Update();
    virtual RWDBStatus Insert();
    virtual RWDBStatus Delete();
-
 };
+
 #endif // #ifndef __TBL_LOADPROFILE_H__

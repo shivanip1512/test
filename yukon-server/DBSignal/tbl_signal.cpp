@@ -10,35 +10,35 @@
 #define DEFAULT_USERLENGTH          64
 
 CtiTableSignal::CtiTableSignal() :
-_logID(0),
-_pointID(0),
-_time((ULONG)0),
-_soe(0),
-_logType(InvalidLogType),
-_logPriority(0)
+    _logID(0),
+    _pointID(0),
+    _time((ULONG)0),
+    _soe(0),
+    _logType(InvalidLogType),
+    _logPriority(0)
 {
 }
 
-CtiTableSignal::CtiTableSignal(LONG              id,
-                               const CtiTime      &tme,
-                               INT               millis,
+CtiTableSignal::CtiTableSignal(LONG            id,
+                               const CtiTime  &tme,
+                               INT             millis,
                                const string   &text,
                                const string   &addl,
-                               INT               lp,
-                               INT               lt,
-                               INT               soe,
+                               INT             lp,
+                               INT             lt,
+                               INT             soe,
                                const string   &user,
-                               const INT         lid) :
-_logID(lid),
-_pointID(id),
-_time(tme),
-_millis(millis),
-_soe(soe),
-_logType(lt),
-_logPriority(lp),
-_text(text),
-_additional(addl),
-_user(user)
+                               const INT       lid) :
+    _logID(lid),
+    _pointID(id),
+    _time(tme),
+    _millis(millis),
+    _soe(soe),
+    _logType(lt),
+    _logPriority(lp),
+    _text(text),
+    _additional(addl),
+    _user(user)
 {
     if(!_logID) _logID = SystemLogIdGen();
 }
@@ -73,16 +73,16 @@ CtiTableSignal& CtiTableSignal::operator=(const CtiTableSignal& aRef)
 {
     if(this != &aRef)
     {
-        _logID            = aRef.getLogID();
-        _pointID          = aRef.getPointID();
-        _time             = aRef.getTime();
-        _millis           = aRef.getMillis();
-        _soe              = aRef.getSOE();
-        _logType          = aRef.getLogType();
-        _logPriority      = aRef.getPriority();
-        _additional       = aRef.getAdditionalInfo();
-        _text             = aRef.getText();
-        _user             = aRef.getUser();
+        _logID        = aRef.getLogID();
+        _pointID      = aRef.getPointID();
+        _time         = aRef.getTime();
+        _millis       = aRef.getMillis();
+        _soe          = aRef.getSOE();
+        _logType      = aRef.getLogType();
+        _logPriority  = aRef.getPriority();
+        _additional   = aRef.getAdditionalInfo();
+        _text         = aRef.getText();
+        _user         = aRef.getUser();
     }
     return *this;
 }
@@ -106,38 +106,37 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
-    if(::mblen(getAdditionalInfo().c_str(), MB_CUR_MAX ) > DEFAULT_ACTIONLENGTH)
+    if(getAdditionalInfo().length() > DEFAULT_ACTIONLENGTH)
     {
         string temp = getAdditionalInfo();
         temp.resize(DEFAULT_ACTIONLENGTH - 1);
         setAdditionalInfo(temp);
     }
 
-    if(::mblen(getText().c_str(), MB_CUR_MAX ) > DEFAULT_DESCRIPTIONLENGTH)
+    if(getText().length() > DEFAULT_DESCRIPTIONLENGTH)
     {
         string temp = getText();
         temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
         setText(temp);
     }
 
-    if(::mblen(getUser().c_str(), MB_CUR_MAX) > DEFAULT_USERLENGTH)
+    if(getUser().length() > DEFAULT_USERLENGTH)
     {
         string temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
         setUser(temp);
     }
 
-    inserter <<
-    getLogID() <<
-    getPointID() <<
-    getTime() <<
-    getSOE() <<
-    getLogType() <<
-    getPriority() <<
-    getAdditionalInfo() <<
-    getText() <<
-    getUser() <<
-    getMillis();
+    inserter << getLogID()
+             << getPointID()
+             << getTime()
+             << getSOE()
+             << getLogType()
+             << getPriority()
+             << getAdditionalInfo()
+             << getText()
+             << getUser()
+             << getMillis();
 
     RWDBStatus stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
@@ -173,15 +172,15 @@ void CtiTableSignal::Restore()
     RWDBSelector selector = getDatabase().selector();
 
     selector << table["logid"]
-    << table["pointid"]
-    << table["datetime"]
-    << table["soe_tag"]
-    << table["type"]
-    << table["priority"]
-    << table["action"]
-    << table["description"]
-    << table["username"]
-    << table["millis"];
+             << table["pointid"]
+             << table["datetime"]
+             << table["soe_tag"]
+             << table["type"]
+             << table["priority"]
+             << table["action"]
+             << table["description"]
+             << table["username"]
+             << table["millis"];
 
     selector.where( table["logid"] == getLogID() );
 
@@ -199,12 +198,12 @@ void CtiTableSignal::Restore()
 
 void CtiTableSignal::Update()
 {
-    if(::mblen(getAdditionalInfo().c_str(), MB_CUR_MAX ) > DEFAULT_ACTIONLENGTH)
+    if(getAdditionalInfo().length() > DEFAULT_ACTIONLENGTH)
     {
         getAdditionalInfo().resize(DEFAULT_ACTIONLENGTH - 1);
     }
 
-    if(::mblen(getText().c_str(), MB_CUR_MAX ) > DEFAULT_DESCRIPTIONLENGTH)
+    if(getText().length() > DEFAULT_DESCRIPTIONLENGTH)
     {
         getText().resize(DEFAULT_DESCRIPTIONLENGTH - 1);
     }
@@ -216,15 +215,15 @@ void CtiTableSignal::Update()
     RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
-    updater << table["pointid"].assign(getPointID())
-    << table["datetime"].assign( toRWDBDT(getTime()) )
-    << table["soe_tag"].assign(getSOE())
-    << table["type"].assign(getLogType())
-    << table["priority"].assign( getPriority() )
-    << table["action"].assign(getAdditionalInfo().c_str())
-    << table["description"].assign(getText().c_str())
-    << table["username"].assign(getUser().c_str())
-    << table["millis"].assign(getMillis());
+    updater << table["pointid" ].assign(getPointID())
+            << table["datetime"].assign(toRWDBDT(getTime()))
+            << table["soe_tag" ].assign(getSOE())
+            << table["type"    ].assign(getLogType())
+            << table["priority"].assign(getPriority())
+            << table["action"  ].assign(getAdditionalInfo().c_str())
+            << table["description"].assign(getText().c_str())
+            << table["username"].assign(getUser().c_str())
+            << table["millis"  ].assign(getMillis());
 
     updater.where( table["logid"] == getLogID() );
 
@@ -430,17 +429,16 @@ void CtiTableSignal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
 {
     keyTable = db.table("SystemLog");
 
-    selector <<
-    keyTable["logid"] <<
-    keyTable["pointid"] <<
-    keyTable["datetime"] <<
-    keyTable["soe_tag"] <<
-    keyTable["type"] <<
-    keyTable["priority"] <<
-    keyTable["action"] <<
-    keyTable["description"] <<
-    keyTable["username"] <<
-    keyTable["millis"];
+    selector << keyTable["logid"]
+             << keyTable["pointid"]
+             << keyTable["datetime"]
+             << keyTable["soe_tag"]
+             << keyTable["type"]
+             << keyTable["priority"]
+             << keyTable["action"]
+             << keyTable["description"]
+             << keyTable["username"]
+             << keyTable["millis"];
 
 
     selector.from(keyTable);
