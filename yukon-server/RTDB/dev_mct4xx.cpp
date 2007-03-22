@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2007/03/21 21:50:41 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2007/03/22 21:05:27 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2972,6 +2972,17 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
             InterlockedExchange(&_llpInterest.in_progress, false);
 
             CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+
+            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            ReturnMsg->setResultString("Error (" + CtiNumStr(status) + ") received - load profile retry submitted");
+
+            ReturnMsg->setExpectMore(true);
+
+            retList.push_back(ReturnMsg);
+
+            status = NORMAL;
         }
         else
         {
@@ -3585,7 +3596,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         {
             int interval_len, block_len;
 
-            //  this code is replicated in decodeGetValueLoadProfile()
+            //  this code is replicated in decodeGetValueLoadProfile(), but likely is never used, if we're properly handling it there
             if( !_llpInterest.retry )
             {
                 interval_len = getLoadProfileInterval(_llpInterest.channel);
