@@ -118,18 +118,19 @@ alter table ccfeederbanklist  alter column tripOrder numeric not null;
 /*****************************************************************************/
 
 /************* Adding data integration option to strategy ********************/
-alter table capcontrolstrategy add integrateflag char(1);
-go
-update capcontrolstrategy set integrateflag = 'N';
-go
-alter table capcontrolstrategy  alter column integrateflag char(1) not null;
-go 
-alter table capcontrolstrategy add integrateperiod numeric;
-go
-update capcontrolstrategy set integrateperiod = 0;
-go
-alter table capcontrolstrategy  alter column integrateperiod numeric not null;
-go 
+/**TEMPORARILY COMMENTING THIS OUT..... for weekly build client/server compatibility*/
+--alter table capcontrolstrategy add integrateflag char(1);
+--go
+--update capcontrolstrategy set integrateflag = 'N';
+--go
+--alter table capcontrolstrategy  alter column integrateflag char(1) not null;
+--go 
+--alter table capcontrolstrategy add integrateperiod numeric;
+--go
+--update capcontrolstrategy set integrateperiod = 0;
+--go
+--alter table capcontrolstrategy  alter column integrateperiod numeric not null;
+--go 
 /*****************************************************************************/
 
 
