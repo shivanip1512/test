@@ -49,7 +49,7 @@ import com.cannontech.yukon.conns.ConnPool;
 public class CapControlCache implements MessageListener, CapControlDAO
 {
 	private static final int STARTUP_REF_RATE = 15 * 1000;
-	private static final int NORMAL_REF_RATE = 5 * 1000; //5 minutes
+	private static final int NORMAL_REF_RATE = 5 * 60* 1000; //5 minutes
 	private ScheduledExecutorService refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
 	// Map<suBusID(Integer), sub(SubBus)>
