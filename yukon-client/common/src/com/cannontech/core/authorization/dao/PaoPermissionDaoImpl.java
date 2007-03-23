@@ -117,6 +117,45 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
 
     }
 
+    public List<Integer> getPaosForUserPermission(LiteYukonUser user, Permission permission) {
+        return this.getPaosForUserPermission(user.getUserID(), permission);
+    }
+
+    public List<Integer> getPaosForGroupPermission(List<LiteYukonGroup> groupList,
+            Permission permission) {
+
+        List<Integer> idList = new ArrayList<Integer>();
+        for (LiteYukonGroup group : groupList) {
+            idList.add(group.getGroupID());
+        }
+
+        String groupIds = SqlStatementBuilder.convertToSqlLikeList(idList);
+
+        return this.getPaosForGroupPermission(groupIds, permission);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Integer> getPaosForUserPermission(int userID, Permission permission) {
+
+        String sql = "select paoid from userpaopermission where userid = ? and permission = ?";
+
+        List<Integer> paoIdList = jdbcTemplate.queryForList(sql, new Object[] { userID,
+                permission.toString() }, Integer.class);
+        return paoIdList;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Integer> getPaosForGroupPermission(String groupIds, Permission permission) {
+
+        String sql = "select paoid from userpaopermission where groupid in (" + groupIds
+                + ") and permission = ?";
+
+        List<Integer> paoIdList = jdbcTemplate.queryForList(sql,
+                                                            new Object[] { permission.toString() },
+                                                            Integer.class);
+        return paoIdList;
+    }
+
     @SuppressWarnings("unchecked")
     private List<GroupPaoPermission> getGroupPermissions(String groupIds) {
 

@@ -124,4 +124,22 @@ public interface PaoPermissionDao {
      * @param paoId - Id of pao to remove permissions for
      */
     public void removeAllPaoPermissions(int paoId);
+
+    /**
+     * Method to get all paoids for which the user has the given permission
+     * @param user - User to get paoids for
+     * @param permission - Permission in question
+     * @return A list of paoids
+     */
+    public List<Integer> getPaosForUserPermission(LiteYukonUser user, Permission permission);
+
+    /**
+     * Method to get all paoids for which any of the groups have the given
+     * permission
+     * @param groupList - List of groups to get paoids for
+     * @param permission - Permission in question
+     * @return A list of paoids
+     */
+    public List<Integer> getPaosForGroupPermission(List<LiteYukonGroup> groupList,
+            Permission permission);
 }

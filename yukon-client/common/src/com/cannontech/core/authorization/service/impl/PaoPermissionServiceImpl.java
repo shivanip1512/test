@@ -1,6 +1,8 @@
 package com.cannontech.core.authorization.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.authorization.model.GroupPaoPermission;
@@ -92,18 +94,34 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return paoPermissionDao.getGroupPermissionsForPao(group, pao);
     }
 
-    public boolean hasPermission(LiteYukonGroup group, LiteYukonPAObject pao,
-            Permission permission) {
+    public boolean hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
         return paoPermissionDao.isGroupHasPermissionForPao(group, pao, permission);
     }
 
-    public boolean hasPermission(List<LiteYukonGroup> groupList,
-            LiteYukonPAObject pao, Permission permission) {
+    public boolean hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
+            Permission permission) {
         return paoPermissionDao.isGroupHasPermissionForPao(groupList, pao, permission);
     }
 
     public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission) {
         paoPermissionDao.removeGroupPermission(group, pao, permission);
+    }
+
+    public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission) {
+
+        // Get paos for user
+        List<Integer> userPaoIdList = paoPermissionDao.getPaosForUserPermission(user, permission);
+        Set<Integer> paoIdSet = new HashSet<Integer>(userPaoIdList);
+
+        // Get paos for user's groups
+        List<Integer> groupPaoIdList = paoPermissionDao.getPaosForGroupPermission(groupDao.getGroupsForUser(user.getUserID()),
+                                                                                  permission);
+        Set<Integer> groupPaoIdSet = new HashSet<Integer>(groupPaoIdList);
+
+        // Combine the user's paos with all of the paos from the groups
+        paoIdSet.addAll(groupPaoIdSet);
+
+        return paoIdSet;
     }
 }

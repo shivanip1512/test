@@ -1,6 +1,7 @@
 package com.cannontech.core.authorization.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.core.authorization.model.GroupPaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
@@ -118,4 +119,13 @@ public interface PaoPermissionService {
      */
     public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission);
+
+    /**
+     * Method to get a list of pao ids for a given user and permission
+     * @param user - User to get pao ids for
+     * @param permission - Permission in question
+     * @return All pao ids with the given permission for the user and all of the
+     *         groups the user is in
+     */
+    public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission);
 }
