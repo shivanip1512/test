@@ -42,7 +42,7 @@ deallocate areaname_curs;
 /* correct subs to the ccsubareaassignment table                             */
 /*****************************************************************************/
 declare @areaid numeric;
-declare @areaname varchar(60);
+declare @areaname1 varchar(60);
 declare @subid numeric;
 declare @subdesc varchar(60);
 declare @order numeric;
@@ -52,7 +52,7 @@ declare areaid_curs cursor for (select paobjectid, paoname from yukonpaobject wh
 declare subarea_curs cursor for (select paobjectid as subid, description from yukonpaobject where type = 'CCSUBBUS');
 
 open areaid_curs;
-fetch areaid_curs into @areaid, @areaname;
+fetch areaid_curs into @areaid, @areaname1;
 
 while (@@fetch_status = 0)
     begin
@@ -62,7 +62,7 @@ while (@@fetch_status = 0)
        fetch subarea_curs into @subid, @subdesc;      
        while (@@fetch_status = 0)
             begin
-              if (@areaname = @subdesc)
+              if (@areaname1 = @subdesc)
                 begin
                 insert into ccsubareaassignment values (@areaid, @subid, @order);
                 set @order = @order + 1;
@@ -70,7 +70,7 @@ while (@@fetch_status = 0)
               fetch subarea_curs into @subid, @subdesc;      
             end
        close subarea_curs;
-    fetch areaid_curs into @areaid, @areaname;
+    fetch areaid_curs into @areaid, @areaname1;
     end
 
 close areaid_curs;
