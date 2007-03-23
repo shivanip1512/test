@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2007/03/22 21:05:27 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2007/03/23 15:36:27 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -524,11 +524,14 @@ int CtiDeviceMCT4xx::makeDynamicDemand(double input) const
 bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
 {
     bool pointdata_inserted = false;
+    string pointname;
     CtiPointSPtr p;
     CtiPointDataMsg *pdm = 0;
 
     if( p = getDevicePointOffsetTypeEqual(offset, type) )
     {
+        pointname = p->getName();
+
         if( p->isNumeric() )
         {
             pi.value = boost::static_pointer_cast<CtiPointNumeric>(p)->computeValueForUOM(pi.value);
@@ -550,9 +553,13 @@ bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, Cti
             pointdata_inserted = true;
         }
     }
+    else
+    {
+        pointname = default_pointname;
+    }
 
     //  if there's no default pointname, we don't insert a message if the point doesn't exist
-    if( !pointdata_inserted && !default_pointname.empty() )
+    if( !pointdata_inserted && !pointname.empty() )
     {
         string result_string = rm->ResultString();
 
@@ -565,7 +572,7 @@ bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, Cti
         else
         {
             pi.value *= default_multiplier;
-            result_string += valueReport(default_pointname, pi, timestamp);
+            result_string += valueReport(pointname, pi, timestamp);
         }
 
         rm->setResultString(result_string.c_str());
@@ -3233,14 +3240,23 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
             if( timestamp == _lp_info[channel].current_request )
             {
-                for( int offset = 5; offset >= 0; offset-- )
+                if( !getDevicePointOffsetTypeEqual(PointOffset_LoadProfileOffset + channel + 1, DemandAccumulatorPointType) )
                 {
-                    pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
-
-                    if( !insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
-                                               ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA) )
                     {
-                        ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - no load profile point defined for \"" << getName() << "\" in CtiDeviceMCT4xx::decodeScanLoadProfile() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
+                }
+                else
+                {
+                    for( int offset = 5; offset >= 0; offset-- )
+                    {
+                        pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
+
+                        insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
+                                              ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
                     }
                 }
 
