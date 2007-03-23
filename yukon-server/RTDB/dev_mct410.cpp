@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.129 $
-* DATE         :  $Date: 2007/03/12 22:24:00 $
+* REVISION     :  $Revision: 1.130 $
+* DATE         :  $Date: 2007/03/23 15:38:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2181,6 +2181,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             if( valid_data )
             {
                 string point_name;
+                bool reported = false;
 
                 if( !i )    point_name = "Meter Reading";
 
@@ -2188,7 +2189,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 insertPointDataReport(PulseAccumulatorPointType, i + 1,
                                       ReturnMsg, pi, point_name, pointTime, 0.1, tags);
 
-                if( pi.quality == InvalidQuality )
+                //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
+                if( pi.quality == InvalidQuality && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                 {
                     status = NOTNORMAL;
                 }
@@ -2764,6 +2766,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
             {
                 resultString  = getName() + " / Invalid day/month returned by daily read ";
                 resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr(((d.month() - 1) % 4) + 1) + ")";
+
+                _daily_read_interest.single_day = 86400;  //  reset it - it doesn't match what the MCT has
             }
             else
             {
