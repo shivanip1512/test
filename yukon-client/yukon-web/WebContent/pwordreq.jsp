@@ -99,7 +99,7 @@
 	%>
 	              		<table width="290" border="0" cellspacing="0" cellpadding="3" align="center">
 	                		<tr> 
-	                  			<td align="right">User Name:</td>
+	                  			<td align="right">Username:</td>
 	                  			<td align="left" valign="bottom"> 
 	                    			<input type="text" id="USERNAME" name="USERNAME" size="26">
 	                  			</td>

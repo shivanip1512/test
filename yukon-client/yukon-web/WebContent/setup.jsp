@@ -8,221 +8,224 @@
 <%@ page import="java.util.Arrays" %>
 <%@ page import="com.cannontech.user.UserUtils" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%@ page import="com.cannontech.clientutils.CTILogger" %>
 <%@ page import="org.springframework.jdbc.support.JdbcUtils" %>
 
 
-<script language="JavaScript">
-<!--
-function dispStatusMsg(msgStr) { //v1.0
-  status=msgStr;
-  document.statVal = true;
-}
-//-->
-</script>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-<title>Yukon Setup</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <head>
+        <title>Energy Services Operations Center</title>           
+
+        
+<!-- Layout CSS files -->
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
 <link rel="stylesheet" href="WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" />
 
-</head>
+<!-- Individual files from includeCss tag on the request page -->
+<!--  (none)  -->
 
-<body class="Background" text="#000000" leftmargin="0" topmargin="0">
-<br>
-<table width="650" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
-  <tr> 
-    <td colspan = "2" align = "center" height="51" valign = "bottom"> 
-      <table width="400" border="0" height="43">
-        <tr> 
-          <td width="34%" align = "center"><span class="TableCell"><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#999999"><b><font face="Arial, Helvetica, sans-serif" color="#666666" size="4">Welcome 
-            to</font></b></font> </span></td>
-          <td width="66%">&nbsp;</td>
-        </tr>
-        <tr> 
-          <td colspan = "2" align = "center"><span class="TableCell"><b><font size="4">Yukon 
-            Administration Setup
-            </font></b></span>
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-  <tr> 
-    <td valign = "top" class = "MainText">    
-    <div align="center">
-		<span class="defaultText">Blue</span> items are default values.
-		<span class="redMsg">Red</span> items are required.<br><br>
-    <p>Database settings are now configured via the master.cfg file.<br> Seperate configuration for client
-       and server is no longer required.</p>
+<!-- Energy Company specific style sheets (EnergyCompanyRole)-->
+
+<!-- Consolidated Script Files -->
+<script type="text/javascript" src="/JavaScript/prototype.js" ></script>
+<script type="text/javascript" src="/JavaScript/CtiMenu.js" ></script>
+
+    </head>
+
+	<script type="text/javascript" language="">
+		<!--
+		var ctiMenu = new CtiMenu('subMenu');
+		// -->
+	</script>
+	
+	<script language="JavaScript">
+		<!--
+		function dispStatusMsg(msgStr) { //v1.0
+		  status=msgStr;
+		  document.statVal = true;
+		}
+		//-->
+	</script>
+
+	<body class="blank_module">
+			
+		<div id="Header">
+		    <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
+		    <div class="stdhdr_right"><div id="TopRightLogo"></div></div>
+		    <div class="stdhdr_clear"></div>
+		</div>
+		<div id="Menu">
+			<div id="topMenu">
+				<div>
+					<div class="stdhdr_leftSide"></div>
+					<div class="stdhdr_rightSide"></div>
+					<div style="clear: both"></div>
+				</div>
+			</div>
+		</div>
+	
+		<div class="loginTopSection">
+			<div class="loginTitleIntroText">Welcome to</div>
+			<div class="loginTitleText">Yukon Administration Setup</div>
+		</div>
+  
+  		<div class="loginMainSection">
+			
+			<cti:titledContainer title="Database">
+    			<div align="center" class="redMsg"><p>Database settings are now configured via the master.cfg file.<br> 
+    			Seperate configuration for client and server is no longer required.</p></div>
+			</cti:titledContainer>
+			
+			<br/>
+			
+			<cti:titledContainer title="Server">
+
+				<div class="loginIntroText">
+    			
 <%
 	String retMsg = "";
 	String temp = null;
 	if(request.getParameter("invalid") != null) 
 		retMsg = "<span class=\"ErrorMsg\">* Invalid password entered, unable to save ANY changes</span><br>";
 	
-	if( (temp = request.getParameter("dbprop")) != null) 
-	{
+	if( (temp = request.getParameter("dbprop")) != null) {
 		if( Boolean.valueOf(temp).booleanValue() )
 			retMsg += "<span class=\"MainText\">* Saved DATABASE properties successfully</span><br>";
 		else
 			retMsg += "<span class=\"ErrorMsg\">* Unable to save DATABASE properties changes</span><br>";
 	}
 
-	if( (temp = request.getParameter("yukprop")) != null) 
-	{
+	if( (temp = request.getParameter("yukprop")) != null) {
 		if( Boolean.valueOf(temp).booleanValue() )
 			retMsg += "<span class=\"MainText\">* Saved SERVER properties successfully</span><br>";
 		else
 			retMsg += "<span class=\"ErrorMsg\">* Unable to save SERVER properties changes</span><br>";
 	}
 
-	if( (temp = request.getParameter("disp")) != null) 
-	{
+	if( (temp = request.getParameter("disp")) != null) {
 		if( Boolean.valueOf(temp).booleanValue() )
 			retMsg += "<span class=\"MainText\">* Connected to the DISPATCH service successfully</span><br>";
 		else
 			retMsg += "<span class=\"ErrorMsg\">* Unable to connect to the DISPATCH service</span><br>";
 	}
 
+	if (retMsg != null) {
+		out.write(retMsg + "<br/>" );
+	}
 %>
-	  <% if (retMsg != null)
-	  		out.write(retMsg ); %>
-	 </div>
+			
+					<span class="MainText"><span class="defaultText">Blue</span> items are default values.<br/>
+					<span class="redMsg">Red</span> items are required.</span>
+				</div>
+			
+				<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
+					<table align="center" >
 	  
-      <table width="640"  height="186" border="0" align="center" cellpadding="0" cellspacing="0">
-        <tr> 
-          <td rowspan = "3" width="555" height="102" valign="top" ><br>
-            <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
-              <table width="635" border="0" cellspacing="0" cellpadding="3" align="center">
-			  
-                <tr> 
-                  <td align="center" colspan=2>
-				  <img src="WebConfig/yukon/serverProps.jpg" align="center"></td>
-				</tr>
-			  
 <%
-
-boolean isValidConn = false;
-try
-{
-	java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	isValidConn = (c != null);
-	JdbcUtils.closeConnection(c);
-}
-catch( Throwable t ) {}
-
-
-LiteYukonUser admin = null;
-
-if( isValidConn )
-{
-	LiteYukonRoleProperty[] props = 
-			DaoFactory.getRoleDao().getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
-
-	Arrays.sort( props, LiteComparators.liteStringComparator );
-
-	for( int i = 0; i < props.length; i++ )
-	{
-		LiteYukonRoleProperty p = props[i];
+	boolean isValidConn = false;
+	try {
+		java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		isValidConn = (c != null);
+		JdbcUtils.closeConnection(c);
+	} catch( Throwable t ) {}
+	
+	LiteYukonUser admin = null;
+	
+	if( isValidConn ) {
+		LiteYukonRoleProperty[] props = 
+				DaoFactory.getRoleDao().getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
+	
+		Arrays.sort( props, LiteComparators.liteStringComparator );
+	
+		for( int i = 0; i < props.length; i++ )
+		{
+			LiteYukonRoleProperty p = props[i];
 %>
-            <tr> 
-              <td width="200" class = "MainText" align="right" 
-				  onMouseOver="dispStatusMsg('<%= p.getDescription() %>');return document.statVal" 
-				  onMouseOut="dispStatusMsg('');return document.statVal">
-				  <%= p.getKeyName() %></td>
-                  <td width="435" valign="bottom" class="MainText"> 
-                    <input type="text" name="<%= p.getKeyName() %>" 
-					value="<%= DaoFactory.getAuthDao().getRolePropValueGroup(
-					DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>">
-
-					<span class="defaultText"> <%= p.getDefaultValue()%></span> 
-              </td>
-				</tr>
+				        <tr> 
+					    	<td class = "MainText" align="right"  
+					    		onMouseOver="dispStatusMsg('<%= p.getDescription() %>');return document.statVal" 
+					    		onMouseOut="dispStatusMsg('');return document.statVal">
+								<%= p.getKeyName() %>
+							</td>
+					        <td valign="bottom" class="MainText"> 
+					        	<input type="text" name="<%= p.getKeyName() %>" 
+										value="<%= DaoFactory.getAuthDao().getRolePropValueGroup(
+										DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>" />
+								<span class="defaultText"> <%= p.getDefaultValue()%></span> 
+							</td>
+						</tr>
 <%
+		}
+		
+		admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
+		if( admin != null )
+		{
+%>
+						<tr>
+				             <td class="redMsg" align="right" 
+				             	onMouseOver="dispStatusMsg('For security reasons, enter the password for the admin account');return document.statVal" 
+				             	onMouseOut="dispStatusMsg('');return document.statVal">
+							 	<%= admin.getUsername() %> password:</td>
+				             <td valign="bottom" class="MainText">
+				             	<input type="password" name="admin_password" />
+				             </td>
+						</tr>
+
+<%
+		}
 	}
 	
-	admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
-	if( admin != null )
-	{
+	if( !isValidConn ) {
 %>
-				<tr>
-              <td width="200" class="redMsg" align="right" onMouseOver="dispStatusMsg('For security reasons, enter the password for the admin account');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  <%= admin.getUsername() %> password:</td>
-              <td width="435" valign="bottom" class="MainText">
-                <input type="password" name="admin_password">
-              </td>
-            </tr>
-
+						<tr> 
+				        	<td class = "ErrorMsg" align="right" 
+								onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
+							  	onMouseOut="dispStatusMsg('');return document.statVal">
+						  		UNABLE TO 
+						  	</td>
+				            <td valign="bottom" class="ErrorMsg"
+								onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
+								onMouseOut="dispStatusMsg('');return document.statVal">                  
+						  		CONNECT TO THE DATABASE
+				            </td>
+						</tr>
+<%
+	} else if( admin == null ) {
+%>
+						<tr> 
+					    	<td class = "ErrorMsg" align="right" 
+								onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
+								onMouseOut="dispStatusMsg('');return document.statVal">
+						  		NO ADMIN 
+						  	</td>
+					        <td valign="bottom" class="ErrorMsg"
+								onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
+							  	onMouseOut="dispStatusMsg('');return document.statVal">                  
+						  		USER FOUND IN DATABASE
+							</td>
+						</tr>
 <%
 	}
-}
-
-if( !isValidConn )
-{
-%>
-            <tr> 
-                  <td width="200" class = "ErrorMsg" align="right" 
-					  onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
-					  onMouseOut="dispStatusMsg('');return document.statVal">
-				  UNABLE TO </td>
-                  <td width="435" valign="bottom" class="ErrorMsg"
-					  onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
-					  onMouseOut="dispStatusMsg('');return document.statVal">                  
-				  CONNECT TO THE DATABASE
-                  </td>
-				</tr>
-<%
-}
-else if( admin == null )
-{
-%>
-            <tr> 
-                  <td width="200" class = "ErrorMsg" align="right" 
-					  onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
-					  onMouseOut="dispStatusMsg('');return document.statVal">
-				  NO ADMIN </td>
-                  <td width="435" valign="bottom" class="ErrorMsg"
-					  onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
-					  onMouseOut="dispStatusMsg('');return document.statVal">                  
-				  USER FOUND IN DATABASE
-                  </td>
-				</tr>
-<%
-}
 %>
 
-                <tr> 
-                  <td width="200">&nbsp;</td>
-                  <td width="435">
-                    <div align="left"> 
-                      <input type="submit" name="Submit2" value="Submit">
-                    </div>
-				  </td>
-				  
-                </tr>
-              </table>			  
-			  
-			  
-			  
-			  
-              <div align="center" class="MainText"><br>
-                If you need help or have forgotten your password, click <a href="<%=request.getContextPath()%>/pwordreq.jsp">here</a>.
-                <br>
-                <br>
-              </div>
-            </form>
-</td>
-        </tr>
-        </table>
-      <div align="center"> </div>
-    </td>
-  </tr>
-</table>
-<br>
-<div align="center" class="TableCell1"><img src="YukonLogo.gif" width="139" height="29"></div>
-</body>
+					</table>	
+							  
+	            	<div align="center"> 
+	            		<br/>
+	                	<input type="submit" name="Submit2" value="Submit">
+	              	</div>
+						  
+					<div align="center" class="MainText"><br>
+						<a href="<%=request.getContextPath()%>/pwordreq.jsp">Forgot your password?</a>
+						<br/><br/>
+					</div>
+				</form>
 
+			</cti:titledContainer>
+		</div>
+	</body>
 </html>

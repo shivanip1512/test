@@ -69,7 +69,7 @@
 			<div class="loginMainSection">
 				<cti:titledContainer title="Login">
 					<c:if test="${!empty param.failed}">
-						<div class="loginErrorMsg">* Invalid Username/Password</div>
+						<div class="loginErrorMsg">* Invalid username/password</div>
 					</c:if>
 					
 					<div class="loginIntroText">
@@ -80,7 +80,7 @@
 		            	<input type="hidden" name="ACTION" value="LOGIN">
 		              	<table class="loginTable">
 		                	<tr> 
-			                  	<td align="right">User Name:</td>
+			                  	<td align="right">Username:</td>
 			                  	<td align="left" valign="bottom"> 
 			                    	<input type="text" id="USERNAME" name="USERNAME" class="loginTextInput">
 			                  	</td>
@@ -98,7 +98,7 @@
 		                	</tr>
 		              	</table>
 		              	<div class="loginHelp">
-		              		If you need help or have forgotten your password, click <a href="<c:url value="/pwordreq.jsp"/>">here</a>.
+		              		<a href="<c:url value="/pwordreq.jsp"/>">Forgot your password?</a>.
 		              	</div>
 					</form>
 					
