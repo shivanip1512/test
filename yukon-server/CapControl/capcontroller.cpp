@@ -2418,8 +2418,16 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                 additional += currentFeeder->getPAOName();
 
                                 string text = string("Porter Return caused a Cap Bank to go into Failed State!");
+                                string text1 = string("Var: Porter Fail Msg, ");
+                                if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) 
+                                {
+                                    text1 += "CloseFail";
+                                }
+                                else
+                                    text1 += "OpenFail";
                                 sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,"cap control"));
                                 sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control"));
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
                             }
                             else

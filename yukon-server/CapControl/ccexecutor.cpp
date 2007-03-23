@@ -2891,7 +2891,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                             kvarChange = 0;
                         }
 
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm, Close", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
 
                     }
                     else
@@ -2927,7 +2927,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                             kvarChange = 0;
                         }
 
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Open by manual confirm, Open", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
                     }
                     else
                     {
@@ -3014,7 +3014,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                                     kvarChange = 0;
                                 }
 
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm, Close", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
                             }
                             else
                             {
@@ -3050,7 +3050,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                                     kvarChange = 0;
                                 }
 
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Open by manual confirm, Open", _command->getUser(), kvarBefore, kvarAfter, kvarChange));
                             }
                             else
                             {
@@ -3921,6 +3921,7 @@ void CtiCCPointDataMsgExecutor::Execute()
 	}
 
     BOOL found = FALSE;
+    BOOL logToCCEvent = FALSE;
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -3969,6 +3970,12 @@ void CtiCCPointDataMsgExecutor::Execute()
                                     }
                                 }
                             }
+                            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||  
+                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) 
+                            { 
+                                logToCCEvent = TRUE; 
+                            } 
+
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setControlStatus((LONG)value);
                             currentCapBank->setTagsControlStatus((LONG)tags);
@@ -3976,6 +3983,25 @@ void CtiCCPointDataMsgExecutor::Execute()
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                            if (logToCCEvent)  
+                            { 
+                                string text = string("Var: Cancelled by Pending Override, "); 
+                                if (currentCapBank->getControlStatus() == CtiCCCapBank::Open)  
+                                    text += "Open"; 
+                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)  
+                                    text += "OpenQuestionable"; 
+                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail)  
+                                    text += "OpenFail"; 
+                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::Close)  
+                                    text += "Close"; 
+                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)  
+                                    text += "CloseQuestionable"; 
+                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail)  
+                                    text += "CloseFail"; 
+
+                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "unknown user" )); 
+                            } 
+
                         }
                         found = TRUE;
                         break;

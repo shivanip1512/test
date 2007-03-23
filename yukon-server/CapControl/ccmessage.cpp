@@ -447,6 +447,128 @@ CtiMessage* CtiCCEventLogMsg::replicateMessage() const
 {
     return new CtiCCEventLogMsg(*this);
 }
+/*===========================================================================
+    CtiCCAreaMsg
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCAreaMsg, CTICCAREA_MSG_ID )
+
+/*---------------------------------------------------------------------------
+    Constuctors
+---------------------------------------------------------------------------*/
+CtiCCAreaMsg::CtiCCAreaMsg(CtiCCArea_vec& areas, ULONG bitMask) : CtiCCMessage("CCAreas"), _ccAreas(NULL), _msgInfoBitMask(bitMask)
+{
+    _ccAreas = new CtiCCArea_vec;
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCAreaMsg has "<< areas.size()<<" entries." << endl;
+    }
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    {
+        for (int h=0;h < areas.size(); h++) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Area: "<<((CtiCCArea*)areas[h])->getPAOName()<< endl;
+            }
+            CtiCCSubstationBus_vec& subs =   ((CtiCCArea*)areas[h])->getCCSubs();
+            for (int hh = 0; hh < subs.size(); hh++) 
+            {
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " -    Sub: "<<((CtiCCSubstationBus*)subs[hh])->getPAOName()<<" "<<((CtiCCSubstationBus*)subs[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCSubstationBus*)subs[hh])->getEstimatedVarLoadPointValue() << endl;
+                }
+            }
+        }
+    }
+    for(int i=0;i<areas.size();i++)
+    {
+        _ccAreas->push_back(((CtiCCArea*)areas.at(i))->replicate());
+    }
+}
+
+CtiCCAreaMsg::CtiCCAreaMsg(const CtiCCAreaMsg& areaMsg) : CtiCCMessage("CCAreas"), _ccAreas(NULL), _msgInfoBitMask(0)
+{
+    operator=(areaMsg);
+}
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCAreaMsg::~CtiCCAreaMsg()
+{
+    if( _ccAreas != NULL &&
+        _ccAreas->size() > 0 )
+    {
+        delete_vector(_ccAreas);
+        _ccAreas->clear();
+        delete _ccAreas;
+    }
+}
+
+/*---------------------------------------------------------------------------
+    replicateMessage
+---------------------------------------------------------------------------*/
+CtiMessage* CtiCCAreaMsg::replicateMessage() const
+{
+    return new CtiCCAreaMsg(*this);
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCAreaMsg& CtiCCAreaMsg::operator=(const CtiCCAreaMsg& right)
+{
+    if( this != &right )
+    {
+        _msgInfoBitMask = right.getMsgInfoBitMask();
+        if( _ccAreas != NULL &&
+            _ccAreas->size() > 0 )
+        {
+            delete_vector(_ccAreas);
+            _ccAreas->clear();
+            delete _ccAreas;
+        }
+		if ( _ccAreas == NULL )
+			_ccAreas = new CtiCCArea_vec;
+        for(int i=0;i<(right.getCCAreas())->size();i++)
+        {
+            _ccAreas->push_back(((CtiCCArea*)(*right.getCCAreas()).at(i))->replicate());
+        }
+    }
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self fromt he given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCAreaMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+	strm >> _msgInfoBitMask
+         >> _ccAreas;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCAreaMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+    strm << _msgInfoBitMask
+         << _ccAreas;
+}
+
+// Static Members
+ULONG CtiCCAreaMsg::AllAreasSent = 0x00000001;
+ULONG CtiCCAreaMsg::AreaDeleted   = 0x00000002;
+ULONG CtiCCAreaMsg::AreaAdded     = 0x00000004;
 
 
 /*===========================================================================
