@@ -401,6 +401,16 @@ alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID);
 
+/* @error ignore-begin */
+create table SequenceNumber  (
+   LastValue            number                          not null,
+   SequenceName         VARCHAR2(20)                    not null
+);
+
+alter table SequenceNumber
+   add constraint PK_SEQUENCENUMBER primary key (SequenceName);
+/* @error ignore-end */
+
 insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');

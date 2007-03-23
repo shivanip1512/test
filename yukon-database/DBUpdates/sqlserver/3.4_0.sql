@@ -286,6 +286,18 @@ alter table MeterReadLog
    add constraint PK_METERREADLOG primary key  (MeterReadLogID);
 go
 
+/* @error ignore-begin */
+create table SequenceNumber  (
+   LastValue            numeric                         not null,
+   SequenceName         VARCHAR(20)                    not null
+);
+go
+
+alter table SequenceNumber
+   add constraint PK_SEQUENCENUMBER primary key (SequenceName);
+go
+/* @error ignore-end */
+
 insert into sequencenumber values (1,'MeterReadLog');
 go
 
