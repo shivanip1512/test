@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.model.UserGroupPermissionList;
+import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -17,6 +21,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -28,7 +33,7 @@ import com.cannontech.database.db.device.lm.LMGroupVersacom;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.YukonPAObject;
-import com.cannontech.database.db.user.UserPaoOwner;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -1252,31 +1257,21 @@ public class CommandDeviceBean
 			StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID FROM " + YukonPAObject.TABLE_NAME  + " PAO " +
 				" WHERE PAO.PAOBJECTID IN ( " +
 					" SELECT DISTINCT GM.CHILDID FROM " + GenericMacro.TABLE_NAME + " GM ");
-					if( userID != -1 ) 
-						sql.append(", " + UserPaoOwner.TABLE_NAME + " UPO ");
-					
 					sql.append(" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "' ");
-				
-					if( userID != -1){
-						sql.append(" AND UPO.USERID = " + userID +
-						" AND GM.OWNERID = UPO.PAOID) ");
-					}
-				
 				sql.append(" OR PAO.PAOBJECTID IN ( " +
 					" SELECT DISTINCT LMG.DEVICEID FROM " + LMGroup.TABLE_NAME + " LMG");
-					if( userID != -1 )
-					{
-						sql.append(", " + UserPaoOwner.TABLE_NAME + " UPO " +
-						" WHERE LMG.DEVICEID = UPO.PAOID " +
-						" AND UPO.USERID = " + userID + ")");
-					}
-
+                
 			java.sql.Connection conn = null;
 			java.sql.PreparedStatement stmt = null;
 			java.sql.ResultSet rset = null;
-	
-			try
-			{
+			Set<Integer> permittedPaos = null;
+            LiteYukonUser user = new LiteYukonUser(userID);
+            if( userID != -1 ) {
+                PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+                permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+            }
+            
+			try {
 				conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 				if( conn == null )
@@ -1288,10 +1283,18 @@ public class CommandDeviceBean
 				{
 					stmt = conn.prepareStatement(sql.toString());
 					rset = stmt.executeQuery();
-					groupIDs = new Vector();
-					while( rset.next())
-						groupIDs.add(new Integer( rset.getInt(1) ) );
-						
+					Integer paoID = 0;
+                    groupIDs = new Vector();
+					while( rset.next()) {
+                        paoID = rset.getInt(1);
+                        //no permissions for this user, they can see them all
+					    if(permittedPaos == null || permittedPaos.isEmpty())
+					        groupIDs.add(new Integer( paoID ) );
+                        /*there are permissions for this user, only allow them to see this pao if
+                        it is permitted*/
+                        else if(permittedPaos.contains(paoID)) 
+                            groupIDs.add(new Integer( paoID ) );
+                    }	
 					if( stmt != null )	//close the statement after every use.
 						stmt.close();
 
