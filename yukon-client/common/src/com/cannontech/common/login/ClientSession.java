@@ -149,7 +149,10 @@ public class ClientSession {
         CookieHandler.setDefault(null);
         
 		boolean success = false;
-		if(MasterConfigHelper.isLocalConfigAvailable()) {
+        
+        boolean isJws = StringUtils.isNotBlank(System.getProperty("yukon.jws.host"));
+        CTILogger.info("Java Web Start property found: " + isJws);
+		if(!isJws && MasterConfigHelper.isLocalConfigAvailable()) {
 			CTILogger.info("Attempting local load of database properties...");
 			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
             localLogin = success;
