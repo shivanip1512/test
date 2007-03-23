@@ -56,10 +56,10 @@ public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
     }
 
     public LiteUnitMeasure getLiteUnitMeasure(String uomName)  {        
-        String sql = liteUoMSql + " where LongName=?";
+        String sql = liteUoMSql + " where lower(LongName)=?";
         
         LiteUnitMeasure lum = (LiteUnitMeasure)
-        jdbcOps.queryForObject(sql, new Object[] { uomName }, liteUnitMeasureRowMapper);
+            jdbcOps.queryForObject(sql, new Object[] { uomName.toLowerCase() }, liteUnitMeasureRowMapper);
         
         return lum;
     }
