@@ -56,7 +56,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
     }
     
     public String getTitle() {
-        return "CapControl State Comparison Report";
+        return "CBC Inventory Report";
     }
 
     public int getRowCount() {
