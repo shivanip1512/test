@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-
-import javax.mail.MessagingException;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.RandomUtils;
@@ -18,8 +18,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CompletionCallback;
 import com.cannontech.common.util.MapQueue;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.service.LongLoadProfileService;
+import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.porter.message.Request;
@@ -27,33 +30,20 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.tools.email.DelayedEmailRunner;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.yukon.BasicServerConnection;
 
-public class PorterConnectionServiceImpl implements LongLoadProfileService {
+public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     private BasicServerConnection porterConnection;
-    private EmailService emailService;
-    Logger log = YukonLogManager.getLogger(PorterConnectionServiceImpl.class);
-    private Executor executor;
-    private Map<Long, Runnable> currentRequestIds = new HashMap<Long, Runnable>();
+    private PorterQueueDataService queueDataService;
+    Logger log = YukonLogManager.getLogger(LongLoadProfileServiceImpl.class);
+    private ScheduledExecutor executor;
+    private Set<Long> recentlyReceivedRequestIds = new HashSet<Long>();
+    private Map<Long, CompletionCallback> currentRequestIds = new HashMap<Long, CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
     private DateFormat cmdDateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 
-    public void initiateLongLoadProfile(final LiteYukonPAObject device, int channel, Date start, Date stop, String emailAddress) {
-        try {
-            DelayedEmailRunner runner = new DelayedEmailRunner(emailService);
-            runner.setRecipient(emailAddress);
-            runner.setSubject("Long Load Profile is Complete");
-            runner.setBody("Long load profile collection for " + device.getPaoName() + " is complete.");
-            initiateLongLoadProfile(device, channel, start, stop, runner);
-        } catch (MessagingException e) {
-            log.error(e);
-        }
-    }
-
-    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, Runnable runner) {
+    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, CompletionCallback runner) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(DeviceTypesFuncs.isLoadProfile4Channel(device.getType()), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
@@ -93,22 +83,92 @@ public class PorterConnectionServiceImpl implements LongLoadProfileService {
             log.info("ongoing request for device id " + deviceId + " already in progress, queueing command");
             pendingDeviceRequests.offer(deviceId,info);
         } else {
-            queueRequest(deviceId, info);
+            queueRequest(deviceId, info, false);
         }
     }
 
-    private void queueRequest(int deviceId, ProfileRequestInfo info) {
+    /**
+     * Sends the request to porter, fills out the start variables, and sets the timer.
+     * 
+     * <p>The queue parameter should be set to false when this method is called in
+     * response to a user action (clicking the start button). When this method
+     * is called in one of the callbacks, it should be set to true. When used in 
+     * a callback situation, we don't care if porter is down, we just don't want to
+     * stall processing.
+     * @param deviceId
+     * @param info
+     * @param queue
+     */
+    private void queueRequest(int deviceId, final ProfileRequestInfo info, boolean queue) {
         try {
             log.debug("sending request id " + info.request.getUserMessageID() 
                       + " for device id " + deviceId + ": " + info.request.getCommandString());
-            porterConnection.write(info.request);
+            if (queue) {
+                porterConnection.queue(info.request);
+            } else {
+                porterConnection.write(info.request);
+            }
             // if write fails we don't want this to happen
             currentDeviceRequests.put(deviceId, info);
+            // start timer to monitor request
+            executor.schedule(new Runnable() {
+                public void run() {
+                    checkRequestStatus(info);
+                }
+            }, 5 * 60, TimeUnit.SECONDS);
         } catch (RuntimeException e) {
             // clear out pending requests
             currentRequestIds.remove(info.request.getUserMessageID());
             throw e;
         }        
+    }
+    
+    public synchronized void checkRequestStatus(final ProfileRequestInfo info) {
+        long requestId = info.request.getUserMessageID();
+        // see if request is still pending
+        if (!currentRequestIds.containsKey(requestId)) {
+            // request has already completed
+            return;
+        }
+        
+        // see if a message was heard recently
+        boolean containedIt = recentlyReceivedRequestIds.remove(requestId);
+        if (!containedIt) {
+            // haven't heard anything, lets ask porter about our request
+            long countForRequest;
+            try {
+                countForRequest = queueDataService.getMessageCountForRequest(requestId);
+            } catch (RuntimeException e) {
+                log.error("Exception from porter in timer thread",e);
+                countForRequest = 0;
+            }
+            if (countForRequest == 0) {
+                // our request has probably died, cancel it
+                currentRequestIds.remove(requestId);
+                int deviceId = info.request.getDeviceID();
+                currentDeviceRequests.remove(deviceId);
+                executor.execute(new Runnable() {
+                    public void run() {
+                        info.runner.onFailure();
+                    }
+                });
+                
+                // see if we have a pending command to send
+                ProfileRequestInfo foundInfo = pendingDeviceRequests.poll(deviceId);
+                if (foundInfo != null) {
+                    log.info("sending queued request for device id " + deviceId);
+                    queueRequest(deviceId, foundInfo, true);
+                }
+                return;
+            }
+        }
+        // good news, lets restart the timer for another 5 minutes
+        executor.schedule(new Runnable() {
+            public void run() {
+                checkRequestStatus(info);
+            }
+        }, 5 * 60, TimeUnit.SECONDS);
+
     }
 
     public void initialize() {
@@ -128,20 +188,27 @@ public class PorterConnectionServiceImpl implements LongLoadProfileService {
         long requestId = returnMsg.getUserMessageID();
         if (currentRequestIds.containsKey(requestId)) {
             log.debug("received return message for request id " + requestId);
+            //TODO restore 
+            recentlyReceivedRequestIds.add(requestId);
             // check for expect more
             boolean expectMore = returnMsg.getExpectMore() == 1;
             if (!expectMore) {
                 int deviceId = returnMsg.getDeviceID();
+                recentlyReceivedRequestIds.remove(requestId);
                 currentDeviceRequests.remove(deviceId);
                 // get runner and execute it on the global thread pool
-                Runnable runnable = currentRequestIds.remove(requestId);
-                executor.execute(runnable);
+                final CompletionCallback runnable = currentRequestIds.remove(requestId);
+                executor.execute(new Runnable() {
+                    public void run() {
+                        runnable.onSuccess();
+                    }
+                });
 
                 // see if we have a pending command to send
                 ProfileRequestInfo foundInfo = pendingDeviceRequests.poll(deviceId);
                 if (foundInfo != null) {
                     log.info("sending queued request for device id " + deviceId);
-                    queueRequest(deviceId, foundInfo);
+                    queueRequest(deviceId, foundInfo, true);
                 }
             }
         }
@@ -163,8 +230,15 @@ public class PorterConnectionServiceImpl implements LongLoadProfileService {
         return result;
     }
 
+    int debugSizeOfCollections() {
+        return recentlyReceivedRequestIds.size()
+            + currentRequestIds.size()
+            + pendingDeviceRequests.size()
+            + currentDeviceRequests.size();
+    }
+    
     @Required
-    public void setExecutor(Executor executor) {
+    public void setExecutor(ScheduledExecutor executor) {
         this.executor = executor;
     }
 
@@ -173,9 +247,8 @@ public class PorterConnectionServiceImpl implements LongLoadProfileService {
         this.porterConnection = porterConnection;
     }
 
-    @Required
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
+    public void setQueueDataService(PorterQueueDataService queueDataService) {
+        this.queueDataService = queueDataService;
     }
 
 }

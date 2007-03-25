@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +30,8 @@ import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.tools.email.DelayedEmailRunner;
+import com.cannontech.tools.email.DefaultEmailMessage;
+import com.cannontech.tools.email.EmailCompletionCallback;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.util.ServletUtil;
 
@@ -60,10 +60,10 @@ public class LoadProfileController extends MultiActionController {
 
             LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
             
-            DelayedEmailRunner emailer = new DelayedEmailRunner(emailService);
-            emailer.setRecipient(email);
+            DefaultEmailMessage successEmailer = new DefaultEmailMessage();
+            successEmailer.setRecipient(email);
             String subject = "Long Load Profile for " + device.getPaoName() + " completed";
-            emailer.setSubject(subject);
+            successEmailer.setSubject(subject);
             StringBuilder body = new StringBuilder();
             body.append("Your long load profile request has completed.\n\n");
             body.append("device: ");
@@ -73,9 +73,28 @@ public class LoadProfileController extends MultiActionController {
             body.append("\nstop: " );
             body.append(dateFormat.format(stopDate));
             body.append("\n");
-            emailer.setBody(body.toString());
+            successEmailer.setBody(body.toString());
             
-            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, emailer);
+            DefaultEmailMessage failureEmailer = new DefaultEmailMessage();
+            failureEmailer.setRecipient(email);
+            subject = "Long Load Profile for " + device.getPaoName() + " failed";
+            failureEmailer.setSubject(subject);
+            body = new StringBuilder();
+            body.append("Your long load profile request has encountered an unknown error.\n\n");
+            body.append("device: ");
+            body.append(device.getPaoName());
+            body.append("\nstart: ");
+            body.append(dateFormat.format(startDate));
+            body.append("\nstop: " );
+            body.append(dateFormat.format(stopDate));
+            body.append("\n");
+            failureEmailer.setBody(body.toString());
+            
+            EmailCompletionCallback callback = new EmailCompletionCallback(emailService);
+            callback.setSuccessMessage(successEmailer);
+            callback.setFailureMessage(failureEmailer);
+            
+            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback);
             
             mav.addObject("success", true);
             
@@ -85,9 +104,6 @@ public class LoadProfileController extends MultiActionController {
         } catch (ParseException e) {
             mav.addObject("success", false);
             mav.addObject("errString", "Unable to parse: " + e.getMessage());
-        } catch (MessagingException e) {
-            mav.addObject("success", false);
-            mav.addObject("errString", "Problem with email: " + e.getMessage());
         }
         
         return mav;

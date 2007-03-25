@@ -4,20 +4,21 @@ import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executor;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.Assert;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.util.CompletionCallback;
+import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.service.LongLoadProfileService;
+import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.message.porter.message.Request;
@@ -26,20 +27,16 @@ import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.tools.email.TestEmailService;
-import com.cannontech.tools.email.TestEmailService.TestMessage;
 import com.cannontech.yukon.BasicServerConnection;
 
-public class PorterConnectionServiceImplTest {
+public class LongLoadProfileServiceImplTest {
     private final class PorterConnection implements BasicServerConnection {
-        public MessageListener listener;
-        public int listeners = 0;
-        private List<Message> writtenOut = new ArrayList<Message>();
+        public Set<MessageListener> listeners = new HashSet<MessageListener>();
+        private BlockingQueue<Message> writtenOut = new LinkedBlockingQueue<Message>();
         private boolean failMode = false;
 
         public void addMessageListener(MessageListener listener) {
-            listeners++;
-            this.listener = listener;
+            listeners.add(listener);
         }
 
         public boolean isValid() {
@@ -51,7 +48,7 @@ public class PorterConnectionServiceImplTest {
         }
 
         public void removeMessageListener(MessageListener l) {
-            fail("remove should never be called");
+            listeners.remove(l);
         }
 
         public void write(Object o) {
@@ -64,72 +61,57 @@ public class PorterConnectionServiceImplTest {
         }
         
         public void respond(Message m) {
-            listener.messageReceived(new MessageEvent(this,m));
+            for (MessageListener listener : listeners) {
+                listener.messageReceived(new MessageEvent(this,m));
+            }
+        }
+    }
+    
+    private class PorterQueueDataServiceMock implements PorterQueueDataService {
+        private long returnValue = 0;
+        public void setReturnValue(long returnValue) {
+            this.returnValue = returnValue;
+        }
+        public long getMessageCountForRequest(long requestId) {
+            return returnValue;
         }
     }
 
-    LongLoadProfileService service;
+    private LongLoadProfileService service;
+    private LongLoadProfileServiceImpl serviceDebug;
     private PorterConnection porterConnection;
-    private int runnerRan = 0;
-    private Runnable incrementingRunner = new Runnable() {
-        public void run() {
-            runnerRan++;
+    private int successRan = 0;
+    private int failureRan = 0;
+    private CompletionCallback incrementingRunner = new CompletionCallback() {
+        public void onFailure() {
+            failureRan++;
+        }
+
+        public void onSuccess() {
+            successRan++;
         }
     };
-    private TestEmailService emailFactory;
+    private ScheduledExecutorMock scheduledExecutorMock;
+    private PorterQueueDataServiceMock queueDataService;
 
     @Before
     public void setUp() throws Exception {
-        PorterConnectionServiceImpl service = new PorterConnectionServiceImpl();
-        emailFactory = new TestEmailService();
-        service.setEmailService(emailFactory);
-        service.setExecutor(new Executor() {
-            public void execute(Runnable command) {
-                // just do it
-                command.run();
-            }
-        });
+        serviceDebug = new LongLoadProfileServiceImpl();
+        scheduledExecutorMock = new ScheduledExecutorMock(true);
+        serviceDebug.setExecutor(scheduledExecutorMock);
+        queueDataService = new PorterQueueDataServiceMock();
+        serviceDebug.setQueueDataService(queueDataService);
         porterConnection = new PorterConnection();
-        service.setPorterConnection(porterConnection);
-        service.initialize();
-        runnerRan = 0;
-        this.service = service;
+        serviceDebug.setPorterConnection(porterConnection);
+        serviceDebug.initialize();
+        successRan = 0;
+        failureRan = 0;
+        this.service = serviceDebug;
     }
     
     public void testInitialize() {
         // initialize was already called
-        Assert.assertEquals("wrong number of listeners", 1, porterConnection.listeners);
-        Assert.assertNotNull("listener is null", porterConnection.listener);
-    }
-    
-    @Test
-    public void testSendEmail() throws ParseException {
-        LiteYukonPAObject myDevice = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice.setType(DeviceTypes.MCT410IL);
-        int channel = 4;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        Date start = dateTimeInstance.parse("5/05/2005 4:30 pm");
-        Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, "test@example.com");
-        
-        // get message that was written
-        Message message = porterConnection.writtenOut.get(0);
-        Request reqMsg = (Request)message; // implicit instanceof check
-        
-        // send final response
-        Return retMsg = createReturn(reqMsg, false);
-        porterConnection.respond(retMsg);
-        
-        List<TestMessage> sentMessages = emailFactory.getSentMessages();
-        Assert.assertEquals("only one message should be sent", 1, sentMessages.size());
-        
-        // check addressee
-        TestMessage testMessage = sentMessages.get(0);
-        Assert.assertEquals("message to wrong person", "test@example.com", testMessage.address);
-        
-        // check content
-        Assert.assertFalse("subject was blank", StringUtils.isBlank(testMessage.subject));
-        Assert.assertFalse("body was blank", StringUtils.isBlank(testMessage.body));
+        Assert.assertEquals("wrong number of listeners", 1, porterConnection.listeners.size());
     }
     
     @Test
@@ -143,7 +125,7 @@ public class PorterConnectionServiceImplTest {
         service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner);
         
         // get message that was written
-        Message message = porterConnection.writtenOut.get(0);
+        Message message = porterConnection.writtenOut.remove();
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
@@ -167,10 +149,10 @@ public class PorterConnectionServiceImplTest {
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
         // check that runner hasn't run
-        Assert.assertEquals("runner should not have run", 0, runnerRan);
+        Assert.assertEquals("runner should not have run", 0, successRan);
         
         // get message that was written
-        Message message = porterConnection.writtenOut.get(0);
+        Message message = porterConnection.writtenOut.remove();
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
@@ -182,14 +164,14 @@ public class PorterConnectionServiceImplTest {
         porterConnection.respond(retMsg);
         
         // check that runner hasn't run
-        Assert.assertEquals("runner should not have run", 0, runnerRan);
+        Assert.assertEquals("runner should not have run", 0, successRan);
         
         // send final response
         retMsg.setExpectMore(0);
         porterConnection.respond(retMsg);
         
         // check that runner has run
-        Assert.assertEquals("runner should have run", 1, runnerRan);
+        Assert.assertEquals("runner should have run", 1, successRan);
     }
 
     private Return createReturn(Request reqMsg, boolean expectMore) {
@@ -216,7 +198,7 @@ public class PorterConnectionServiceImplTest {
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
         // check that runner hasn't run
-        Assert.assertEquals("runner should not have run", 0, runnerRan);
+        Assert.assertEquals("runner should not have run", 0, successRan);
         
         // attempt to request again
         service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
@@ -232,21 +214,21 @@ public class PorterConnectionServiceImplTest {
         // attempt to request again for device 1
         service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
         
-        // check that outQueue still has one message
-        Assert.assertEquals("out queue should have one message", 2, porterConnection.writtenOut.size());
+        // check that outQueue still has two messages
+        Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
         
         // check that runner still hasn't run
-        Assert.assertEquals("runner should not have run", 0, runnerRan);
+        Assert.assertEquals("runner should not have run", 0, successRan);
         
-        Assert.assertEquals("pending list should have four messages", 3, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("pending list should have four messages", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("pending list should have three messages", 3, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("pending list should have one message", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
 
         int responses = 0;
         Set<Long> usedIds = new HashSet<Long>();
         // suck up all messages
         while (!porterConnection.writtenOut.isEmpty()) {
             // get message that was written
-            Message message = porterConnection.writtenOut.remove(0);
+            Message message = porterConnection.writtenOut.remove();
             Request reqMsg = (Request)message; // implicit instanceof check
             
             // check that id is unique
@@ -259,10 +241,13 @@ public class PorterConnectionServiceImplTest {
             responses++;
             
             // check that runner has run
-            Assert.assertEquals("runner should have run", responses, runnerRan);
+            Assert.assertEquals("runner should have run", responses, successRan);
         }
         
         Assert.assertEquals("wrong number of responses sent", 4, responses);
+
+        // did we leak anything?
+        Assert.assertEquals("still holding data", 0, serviceDebug.debugSizeOfCollections());
     }
     
     @Test
@@ -301,6 +286,90 @@ public class PorterConnectionServiceImplTest {
         
         Assert.assertEquals("pending list should have one message", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
         
-        Assert.assertEquals("runner should not have run", 0, runnerRan);
+        Assert.assertEquals("runner should not have run", 0, successRan);
+    }
+
+    @Test
+    public void testPorterTimeout() throws ParseException, Exception {
+        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
+        myDevice1.setType(DeviceTypes.MCT410IL);
+        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
+        myDevice2.setType(DeviceTypes.MCT410IL);
+        int channel = 1;
+        Date start = null;
+        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
+
+
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner);
+        Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
+        Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        Assert.assertEquals("runner should not have run", 0, failureRan);
+        
+        // eat the two requests
+        Request temp1 = (Request) porterConnection.writtenOut.remove(); 
+        Request temp2 = (Request) porterConnection.writtenOut.remove(); 
+        
+        // some time has passed and porter hasn't responded, run timers
+        queueDataService.setReturnValue(0); // forgotten messagess...
+        scheduledExecutorMock.doAllTasks();
+
+        // this should have queued two LLP request
+        Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        Assert.assertEquals("runner should not have run", 2, failureRan);
+        
+        // respond to each
+        Message message = porterConnection.writtenOut.remove();
+        Request reqMsg = (Request)message; // implicit instanceof check
+        Return retMsg = createReturn(reqMsg, true);
+        porterConnection.respond(retMsg);
+
+        message = porterConnection.writtenOut.remove();
+        reqMsg = (Request)message; // implicit instanceof check
+        retMsg = createReturn(reqMsg, true);
+        porterConnection.respond(retMsg);
+        
+        scheduledExecutorMock.doAllTasks();
+        // even though the queueDataService is still set to return 0, nothing should change
+        Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        Assert.assertEquals("runner should not have run", 2, failureRan);
+        
+        // more time has passed, but this time no expect more messages have been received, however porter is still working...
+        queueDataService.setReturnValue(1);
+        scheduledExecutorMock.doAllTasks();
+       
+        // nothing should change
+        Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        Assert.assertEquals("runner should not have run", 2, failureRan);
+
+        
+        // but all good things must come to an end
+        queueDataService.setReturnValue(0);
+        scheduledExecutorMock.doAllTasks();
+        
+        // nothing should be left
+        Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
+        Assert.assertEquals("messages weren't queued", 0, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 0, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        Assert.assertEquals("runner should not have run", 4, failureRan);
+
+        // did we leak anything?
+        Assert.assertEquals("still holding data", 0, serviceDebug.debugSizeOfCollections());
     }
 }
+
