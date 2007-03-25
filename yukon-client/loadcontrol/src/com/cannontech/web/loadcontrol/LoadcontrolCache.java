@@ -17,15 +17,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -49,7 +46,7 @@ public class LoadcontrolCache implements java.util.Observer {
 		
 	private static int startupRefreshRate = 15 * 1000;
 	private static int normalRefreshRate = 60 * 5 * 1000; //5 minutes
-	private ScheduledExecutorService refreshTimer = YukonSpringHook.getGlobalExecutor();
+	private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
 	private com.cannontech.loadcontrol.LoadControlClientConnection conn = null;
 	 

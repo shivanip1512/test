@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class YukonSpringHook {
@@ -87,8 +88,8 @@ public class YukonSpringHook {
         return getBean("globalTimer", Timer.class);
     }    
     
-    public static ScheduledExecutorService getGlobalExecutor() {
-        return (ScheduledExecutorService) getBean("globalScheduledExecutor");
+    public static ScheduledExecutor getGlobalExecutor() {
+        return getBean("globalScheduledExecutor", ScheduledExecutor.class);
     }
     
     public static void shutdownContext() {

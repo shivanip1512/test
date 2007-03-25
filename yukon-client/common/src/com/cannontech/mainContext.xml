@@ -74,10 +74,14 @@
        <constructor-arg value="true"/> <!--  create as daemon  -->
     </bean>
     
-    
-    <bean id="globalScheduledExecutor" class="java.util.concurrent.Executors"
-          factory-method="newScheduledThreadPool" destroy-method="shutdownNow">
-       <constructor-arg value="2"/>
+    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
+       <property name="service">
+		    <bean class="java.util.concurrent.Executors"
+		    	factory-method="newScheduledThreadPool"
+		    	destroy-method="shutdownNow">
+		    	<constructor-arg value="2" />
+		    </bean>
+       </property>
     </bean>
 
     <bean id="rolePropertyUserCheckerFactory" class="com.cannontech.user.checker.RolePropertyUserCheckerFactory">

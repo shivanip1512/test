@@ -14,7 +14,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
@@ -23,6 +22,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -50,7 +50,7 @@ public class CapControlCache implements MessageListener, CapControlDAO
 {
 	private static final int STARTUP_REF_RATE = 15 * 1000;
 	private static final int NORMAL_REF_RATE = 5 * 60* 1000; //5 minutes
-	private ScheduledExecutorService refreshTimer = YukonSpringHook.getGlobalExecutor();
+	private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
 	// Map<suBusID(Integer), sub(SubBus)>
 	private Hashtable subBusMap = new Hashtable();

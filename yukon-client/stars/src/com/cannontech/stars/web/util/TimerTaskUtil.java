@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.task.DailyTimerTask;
 import com.cannontech.stars.util.task.HourlyTimerTask;
@@ -24,7 +25,7 @@ import com.cannontech.stars.util.task.StarsTimerTask;
 public class TimerTaskUtil implements ApplicationListener {
 
 	// Timer object for less frequently happened tasks
-	private ScheduledExecutorService timer;
+	private ScheduledExecutor timer;
 	
 	private void runTimerTask(StarsTimerTask timerTask) {
         // This class used to go to great lengths to clear and reschedule all of the classes.
@@ -81,11 +82,11 @@ public class TimerTaskUtil implements ApplicationListener {
         }
     }
 
-    public ScheduledExecutorService getTimer() {
+    public ScheduledExecutor getTimer() {
         return timer;
     }
 
-    public void setTimer(ScheduledExecutorService timer) {
+    public void setTimer(ScheduledExecutor timer) {
         this.timer = timer;
     }
 }
