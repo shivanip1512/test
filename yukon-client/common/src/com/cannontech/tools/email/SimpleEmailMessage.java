@@ -19,7 +19,7 @@ import com.cannontech.roles.yukon.SystemRole;
  * it allows the same object to be used over and over by setting
  * a new recipient.
  */
-public class SimpleEmailMessage implements EmailMessageHolder {
+public class SimpleEmailMessage {
     private Message _message;
 
     @Deprecated
