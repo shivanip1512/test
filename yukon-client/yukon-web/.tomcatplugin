@@ -37,6 +37,7 @@
         <webClassPathEntry>/third-party/asm.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/axis.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/batik.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/bsf-2.3.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/bsh.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/cglib-2.1.3.jar</webClassPathEntry>
