@@ -414,6 +414,22 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                         }
+                                        try
+                                        {
+                                            if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702") )
+                                            {
+                                                CtiCCTwoWayPoints* twoWayPts = currentCapBank->getTwoWayPoints();
+                                                if (twoWayPts->isDirty()) 
+                                                {
+                                                    twoWayPts->dumpDynamicData(conn,currentDateTime);
+                                                }
+                                            }
+                                        }
+                                        catch(...)
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                        }
                                     }
                                     vector <CtiCCMonitorPointPtr>& monPoints = currentCapBank->getMonitorPoint();
                                     for (LONG l = 0; l < monPoints.size(); l++)
@@ -4106,6 +4122,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     RWDBTable ccMonitorBankListTable = db.table("ccmonitorbanklist");
                     RWDBTable dynamicCCMonitorBankHistoryTable = db.table("dynamicccmonitorbankhistory");
                     RWDBTable dynamicCCMonitorPointResponseTable = db.table("dynamicccmonitorpointresponse");
+                    RWDBTable dynamicCCTwoWayTable = db.table("dynamiccctwowaycbc");
+
 
                     {
                         RWDBSelector selector = db.selector();
@@ -4532,6 +4550,87 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         }
                     }
                 }
+                                //load dynamiccctwowaycbc (two way device points)
+                {
+                    RWDBSelector selector = db.selector();
+                    selector << dynamicCCTwoWayTable["deviceid"]
+                             << dynamicCCTwoWayTable["recloseblocked"]
+                             << dynamicCCTwoWayTable["controlmode"] 
+                             << dynamicCCTwoWayTable["autovoltcontrol"]
+                             << dynamicCCTwoWayTable["lastcontrol"]
+                             << dynamicCCTwoWayTable["condition"]
+                             << dynamicCCTwoWayTable["opfailedneutralcurrent"]
+                             << dynamicCCTwoWayTable["neutralcurrentfault"]
+                             << dynamicCCTwoWayTable["badrelay"]
+                             << dynamicCCTwoWayTable["dailymaxops"]
+                             << dynamicCCTwoWayTable["voltagedeltaabnormal"]
+                             << dynamicCCTwoWayTable["tempalarm"]
+                             << dynamicCCTwoWayTable["dstactive"]
+                             << dynamicCCTwoWayTable["neutrallockout"]
+                             << dynamicCCTwoWayTable["ignoredindicator"]
+                             << dynamicCCTwoWayTable["voltage"]
+                             << dynamicCCTwoWayTable["highvoltage"]
+                             << dynamicCCTwoWayTable["lowvoltage"]
+                             << dynamicCCTwoWayTable["deltavoltage"]
+                             << dynamicCCTwoWayTable["analoginputone"]
+                             << dynamicCCTwoWayTable["temp"]
+                             << dynamicCCTwoWayTable["rssi"] 
+                             << dynamicCCTwoWayTable["ignoredreason"]
+                             << dynamicCCTwoWayTable["rssi"]
+                             << dynamicCCTwoWayTable["uvopcount"]
+                             << dynamicCCTwoWayTable["ovopcount"]
+                             << dynamicCCTwoWayTable["ovuvcountresetdate"]
+                             << dynamicCCTwoWayTable["uvsetpoint"]
+                             << dynamicCCTwoWayTable["ovsetpoint"]
+                             << dynamicCCTwoWayTable["ovuvtracktime"]
+                             << dynamicCCTwoWayTable["lastovuvdatetime"]
+                             << dynamicCCTwoWayTable["neutralcurrentsensor"]
+                             << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"];
+
+
+                    selector.from(dynamicCCTwoWayTable);
+                    selector.from(capBankTable);
+                    if (capBankId > 0)
+                    {                
+                        selector.where(capBankTable["controldeviceid"] == dynamicCCTwoWayTable["deviceid"] &&
+                                   capBankTable["deviceid"] == capBankId);
+                    }
+                    else
+                        selector.where(capBankTable["controldeviceid"] == dynamicCCTwoWayTable["deviceid"] &&
+                                       capBankTable["controldeviceid"] != 0);
+
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    RWDBNullIndicator isNull;
+                    while ( rdr() )
+                    {
+                        long currentCbcId;
+                        long currentCapBankId;
+                        rdr["deviceid"] >> currentCbcId;
+
+                        CtiCCCapBankPtr currentCCCapBank = NULL;
+
+                        if (cbc_capbank_map->find(currentCbcId) != cbc_capbank_map->end())
+                            currentCapBankId = cbc_capbank_map->find(currentCbcId)->second;
+                        if (paobject_capbank_map->find(currentCapBankId) != paobject_capbank_map->end())
+                            currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
+
+
+                        if ( currentCCCapBank != NULL )
+                        {
+                            if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702")) 
+                            {
+                                ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setDynamicData(rdr);
+                            }
+                        }
+                    }
+                }
+
 
             }
         }

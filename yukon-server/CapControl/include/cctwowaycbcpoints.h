@@ -90,6 +90,10 @@ public:
     LONG getDSTActive() const;
     LONG getNeutralLockoutId() const;
     LONG getNeutralLockout() const;
+    LONG getRSSIId() const;
+    LONG getRSSI() const;
+    LONG getIgnoredIndicatorId() const;
+    LONG getIgnoredIndicator() const;
     LONG getVoltageId() const;       
     LONG getVoltage() const;         
     LONG getHighVoltageId() const;   
@@ -101,7 +105,20 @@ public:
     LONG getAnalogInput1Id() const;  
     LONG getAnalogInput1() const;    
     LONG getTemperatureId() const;   
-    LONG getTemperature() const;      
+    LONG getTemperature() const; 
+
+    LONG getIgnoredReasonId() const;
+    LONG getIgnoredReason() const;
+    LONG getUvSetPointId() const;
+    LONG getUvSetPoint() const;
+    LONG getOvSetPointId() const;
+    LONG getOvSetPoint() const;
+    LONG getOVUVTrackTimeId() const;
+    LONG getOVUVTrackTime() const;
+    LONG getNeutralCurrentSensorId() const;
+    LONG getNeutralCurrentSensor() const;
+    LONG getNeutralCurrentAlarmSetPointId() const;
+    LONG getNeutralCurrentAlarmSetPoint() const;
     LONG getUDPIpAddressId() const;
     ULONG getUDPIpAddress() const;
     LONG getUDPPortNumberId() const;
@@ -111,7 +128,10 @@ public:
     LONG getOvCountId() const;       
     LONG getOvCount() const;         
     LONG getUvCountId() const;       
-    LONG getUvCount() const;         
+    LONG getUvCount() const; 
+    const CtiTime& getOvUvCountResetDate() const;
+    const CtiTime& getLastOvUvDateTime() const;
+
     
     
     CtiCCTwoWayPoints& setCapacitorBankStateId(LONG pointId);
@@ -158,6 +178,10 @@ public:
     CtiCCTwoWayPoints& setDSTActive(LONG value);
     CtiCCTwoWayPoints& setNeutralLockoutId(LONG pointId);
     CtiCCTwoWayPoints& setNeutralLockout(LONG value);
+    CtiCCTwoWayPoints& setRSSIId(LONG pointId);
+    CtiCCTwoWayPoints& setRSSI(LONG value);
+    CtiCCTwoWayPoints& setIgnoredIndicatorId(LONG pointId);
+    CtiCCTwoWayPoints& setIgnoredIndicator(LONG value);
     CtiCCTwoWayPoints& setVoltageId(LONG pointId);
     CtiCCTwoWayPoints& setVoltage(LONG value);    
     CtiCCTwoWayPoints& setHighVoltageId(LONG pointId);
@@ -169,7 +193,19 @@ public:
     CtiCCTwoWayPoints& setAnalogInput1Id(LONG pointId);
     CtiCCTwoWayPoints& setAnalogInput1(LONG value);    
     CtiCCTwoWayPoints& setTemperatureId(LONG pointId);
-    CtiCCTwoWayPoints& setTemperature(LONG value);    
+    CtiCCTwoWayPoints& setTemperature(LONG value); 
+    CtiCCTwoWayPoints& setIgnoredReasonId(LONG pointId);
+    CtiCCTwoWayPoints& setIgnoredReason(LONG value); 
+    CtiCCTwoWayPoints& setUvSetPointId(LONG pointId);
+    CtiCCTwoWayPoints& setUvSetPoint(LONG value); 
+    CtiCCTwoWayPoints& setOvSetPointId(LONG pointId);
+    CtiCCTwoWayPoints& setOvSetPoint(LONG value); 
+    CtiCCTwoWayPoints& setOVUVTrackTimeId(LONG pointId);
+    CtiCCTwoWayPoints& setOVUVTrackTime(LONG value);
+    CtiCCTwoWayPoints& setNeutralCurrentSensorId(LONG pointId);
+    CtiCCTwoWayPoints& setNeutralCurrentSensor(LONG value); 
+    CtiCCTwoWayPoints& setNeutralCurrentAlarmSetPointId(LONG pointId);
+    CtiCCTwoWayPoints& setNeutralCurrentAlarmSetPoint(LONG value); 
     CtiCCTwoWayPoints& setUDPIpAddressId(LONG pointId);
     CtiCCTwoWayPoints& setUDPIpAddress(ULONG value);
     CtiCCTwoWayPoints& setUDPPortNumberId(LONG pointId);
@@ -179,8 +215,11 @@ public:
     CtiCCTwoWayPoints& setOvCountId(LONG pointId);
     CtiCCTwoWayPoints& setOvCount(LONG value);    
     CtiCCTwoWayPoints& setUvCountId(LONG pointId);
-    CtiCCTwoWayPoints& setUvCount(LONG value);    
-    
+    CtiCCTwoWayPoints& setUvCount(LONG value);  
+    CtiCCTwoWayPoints& setOvUvCountResetDate(const CtiTime eventTime);
+    CtiCCTwoWayPoints& setLastOvUvDateTime(const CtiTime eventTime);
+
+   
     BOOL setTwoWayPointId(int pointtype, int offset, LONG pointId);
     BOOL setTwoWayStatusPointValue(LONG pointID, LONG value);
     BOOL setTwoWayAnalogPointValue(LONG pointID, LONG value);
@@ -190,7 +229,7 @@ public:
     CtiCCTwoWayPoints& addAllCBCPointsToMsg(CtiCommandMsg *pointAddMsg);
     BOOL isDirty();
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     void restore(RWDBReader& rdr);
     void setDynamicData(RWDBReader& rdr);
@@ -258,7 +297,10 @@ private:
     LONG _DSTActive;        
     LONG _neutralLockoutId; 
     LONG _neutralLockout;   
+    LONG _ignoredIndicatorId;
+    LONG _ignoredIndicator;
 
+    //analog inputs
     LONG _voltageId;
     LONG _voltage;
     LONG _highVoltageId;
@@ -271,6 +313,22 @@ private:
     LONG _analogInput1;
     LONG _temperatureId;
     LONG _temperature;
+    LONG _rssiId; 
+    LONG _rssi;
+    LONG _ignoredReasonId;
+    LONG _ignoredReason;
+
+    //analog outputs
+    LONG _ovSetPointId;
+    LONG _ovSetPoint;
+    LONG _uvSetPointId;
+    LONG _uvSetPoint;
+    LONG _ovuvTrackTimeId;
+    LONG _ovuvTrackTime;
+    LONG _neutralCurrentSensorId;
+    LONG _neutralCurrentSensor;
+    LONG _neutralCurrentAlarmSetPointId;
+    LONG _neutralCurrentAlarmSetPoint;
     LONG _udpIpAddressId;
     ULONG _udpIpAddress;
     LONG _udpPortNumberId;
@@ -283,6 +341,9 @@ private:
     LONG _ovCount;
     LONG _uvCountId;
     LONG _uvCount;
+
+    CtiTime _ovuvCountResetDate;
+    CtiTime _lastOvUvDateTime;
 
 
     //don't stream

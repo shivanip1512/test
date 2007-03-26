@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "resolvers.h"
 
+extern ULONG _CC_DEBUG;
 
 //RWDEFINE_COLLECTABLE( CtiCCTwoWayPoints, CtiCCTwoWayPoints_ID )
 
@@ -73,6 +74,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
     _neutralLockoutId = 0;          
     _neutralLockout = 0;  
 
+    //analog inputs
     _voltageId = 0;      
     _voltage = 0;        
     _highVoltageId = 0;  
@@ -84,7 +86,19 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
     _analogInput1Id = 0; 
     _analogInput1 = 0;   
     _temperatureId = 0;  
-    _temperature = 0; 
+    _temperature = 0;
+
+    //analog outputs
+    _ovSetPointId = 0;
+    _ovSetPoint = 0;
+    _uvSetPointId = 0;
+    _uvSetPoint = 0;
+    _ovuvTrackTimeId = 0;
+    _ovuvTrackTime = 0;
+    _neutralCurrentSensorId = 0;
+    _neutralCurrentSensor = 0;
+    _neutralCurrentAlarmSetPointId = 0;
+    _neutralCurrentAlarmSetPoint = 0;
     _udpIpAddressId = 0;          
     _udpIpAddress = 0;  
     _udpPortNumberId = 0;          
@@ -97,7 +111,9 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
     _uvCountId = 0;      
     _uvCount = 0;        
 
-                               
+    _ovuvCountResetDate = gInvalidCtiTime;                          
+    _lastOvUvDateTime = gInvalidCtiTime;
+
     _insertDynamicDataFlag = FALSE;     
     _dirty = FALSE;   
 
@@ -106,7 +122,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
 
 CtiCCTwoWayPoints::CtiCCTwoWayPoints(RWDBReader& rdr)
 {
-    restore(rdr);
+    //restore(rdr);
 }
 
 CtiCCTwoWayPoints::CtiCCTwoWayPoints(const CtiCCTwoWayPoints& twoWayPt)
@@ -301,7 +317,72 @@ LONG CtiCCTwoWayPoints::getNeutralLockoutId() const
 LONG CtiCCTwoWayPoints::getNeutralLockout() const
 {
     return _neutralLockout;
-} 
+}
+LONG CtiCCTwoWayPoints::getIgnoredIndicatorId() const
+{
+    return _ignoredIndicatorId;
+}
+LONG CtiCCTwoWayPoints::getIgnoredIndicator() const
+{
+    return _ignoredIndicator;
+}
+LONG CtiCCTwoWayPoints::getRSSIId() const
+{
+    return _rssiId;
+}
+LONG CtiCCTwoWayPoints::getRSSI() const
+{
+    return _rssi;
+}
+
+LONG CtiCCTwoWayPoints::getIgnoredReasonId() const
+{
+    return _ignoredReasonId;
+}
+LONG CtiCCTwoWayPoints::getIgnoredReason() const
+{
+    return _ignoredReason;
+}
+LONG CtiCCTwoWayPoints::getUvSetPointId() const
+{
+    return _uvSetPointId;
+}
+LONG CtiCCTwoWayPoints::getUvSetPoint() const
+{
+    return _uvSetPoint;
+}
+LONG CtiCCTwoWayPoints::getOvSetPointId() const
+{
+    return _ovSetPointId;
+}
+LONG CtiCCTwoWayPoints::getOvSetPoint() const
+{
+    return _ovSetPoint;
+}
+LONG CtiCCTwoWayPoints::getOVUVTrackTimeId() const
+{
+    return _ovuvTrackTimeId;
+}
+LONG CtiCCTwoWayPoints::getOVUVTrackTime() const
+{
+    return _ovuvTrackTime;
+}
+LONG CtiCCTwoWayPoints::getNeutralCurrentSensorId() const
+{
+    return _neutralCurrentSensorId;
+}
+LONG CtiCCTwoWayPoints::getNeutralCurrentSensor() const
+{
+    return _neutralCurrentSensor;
+}
+LONG CtiCCTwoWayPoints::getNeutralCurrentAlarmSetPointId() const
+{
+    return _neutralCurrentAlarmSetPointId;
+}
+LONG CtiCCTwoWayPoints::getNeutralCurrentAlarmSetPoint() const
+{
+    return _neutralCurrentAlarmSetPoint;
+}
 LONG CtiCCTwoWayPoints::getUDPIpAddressId() const
 {
     return _udpIpAddressId;
@@ -389,6 +470,15 @@ LONG CtiCCTwoWayPoints::getUvCountId() const
 LONG CtiCCTwoWayPoints::getUvCount() const
 {
     return _uvCount;
+}
+
+const CtiTime& CtiCCTwoWayPoints::getOvUvCountResetDate() const
+{
+    return _ovuvCountResetDate;
+}
+const CtiTime& CtiCCTwoWayPoints::getLastOvUvDateTime() const
+{
+    return _lastOvUvDateTime;
 }
 
 
@@ -825,6 +915,170 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralLockout(LONG value)
     _neutralLockout = value;
     return *this;
 }
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setRSSIId(LONG pointId)
+{
+    if (pointId != _rssiId)
+    {
+        _dirty = TRUE;
+    }
+    _rssiId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setRSSI(LONG value) 
+{
+    if (value != _rssi)
+    {
+        _dirty = TRUE;
+    }
+    _rssi = value;
+    return *this;
+
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredIndicatorId(LONG pointId)
+{
+    if (pointId != _ignoredIndicatorId)
+    {
+        _dirty = TRUE;
+    }
+    _ignoredIndicatorId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredIndicator(LONG value) 
+{
+    if (value != _ignoredIndicator)
+    {
+        _dirty = TRUE;
+    }
+    _ignoredIndicator = value;
+    return *this;
+
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredReasonId(LONG pointId)
+{
+    if (pointId != _ignoredReasonId)
+    {
+        _dirty = TRUE;
+    }
+    _ignoredReasonId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredReason(LONG value) 
+{
+    if (value != _ignoredReason)
+    {
+        _dirty = TRUE;
+    }
+    _ignoredReason = value;
+    return *this;
+
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvSetPointId(LONG pointId)
+{
+    if (pointId != _uvSetPointId)
+    {
+        _dirty = TRUE;
+    }
+    _uvSetPointId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvSetPoint(LONG value) 
+{
+    if (value != _uvSetPoint)
+    {
+        _dirty = TRUE;
+    }
+    _uvSetPoint = value;
+    return *this;
+
+}
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvSetPointId(LONG pointId)
+{
+    if (pointId != _ovSetPointId)
+    {
+        _dirty = TRUE;
+    }
+    _ovSetPointId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvSetPoint(LONG value) 
+{
+    if (value != _ovSetPoint)
+    {
+        _dirty = TRUE;
+    }
+    _ovSetPoint = value;
+    return *this;
+
+}
+
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOVUVTrackTimeId(LONG pointId)
+{
+    if (pointId != _ovuvTrackTimeId)
+    {
+        _dirty = TRUE;
+    }
+    _ovuvTrackTimeId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOVUVTrackTime(LONG value) 
+{
+    if (value != _ovuvTrackTime)
+    {
+        _dirty = TRUE;
+    }
+    _ovuvTrackTime = value;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentSensorId(LONG pointId)
+{
+    if (pointId != _neutralCurrentSensorId)
+    {
+        _dirty = TRUE;
+    }
+    _neutralCurrentSensorId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentSensor(LONG value) 
+{
+    if (value != _neutralCurrentSensor)
+    {
+        _dirty = TRUE;
+    }
+    _neutralCurrentSensor = value;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentAlarmSetPointId(LONG pointId)
+{
+    if (pointId != _neutralCurrentAlarmSetPointId)
+    {
+        _dirty = TRUE;
+    }
+    _neutralCurrentAlarmSetPointId = pointId;
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentAlarmSetPoint(LONG value) 
+{
+    if (value != _neutralCurrentAlarmSetPoint)
+    {
+        _dirty = TRUE;
+    }
+    _neutralCurrentAlarmSetPoint = value;
+    return *this;
+}
 
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddressId(LONG pointId)
 {
@@ -1037,6 +1291,24 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvCount(LONG value)
     _uvCount = value;
     return *this;
 }  
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvUvCountResetDate(const CtiTime eventTime)
+{
+    if (eventTime != _ovuvCountResetDate)
+    {
+        _dirty = TRUE;
+    }
+    _ovuvCountResetDate = eventTime;
+    return *this;
+}  
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastOvUvDateTime(const CtiTime eventTime)
+{
+    if (eventTime != _uvCount)
+    {
+        _dirty = TRUE;
+    }
+    _lastOvUvDateTime = eventTime;
+    return *this;
+}  
 
                    
 
@@ -1046,10 +1318,177 @@ BOOL CtiCCTwoWayPoints::isDirty()
 }
 void CtiCCTwoWayPoints::dumpDynamicData()
 {
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
+    dumpDynamicData(conn,CtiTime());
 }
-void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
+
+    {
+
+        RWDBTable dynamicCCTwoWayTable = getDatabase().table( "dynamiccctwowaycbc" );
+        if( !_insertDynamicDataFlag )
+        {
+            INT lastControl = ( ( _lastControlLocal & 0x01)||         
+                                (_lastControlRemote & 0x02 ) ||
+                                (_lastControlOvUv & 0x04 ) ||          
+                                (_lastControlNeutralFault & 0x08 ) ||  
+                                (_lastControlScheduled & 0x10 ) ||     
+                                (_lastControlDigital & 0x20 ) ||       
+                                (_lastControlAnalog & 0x40 ) ||        
+                                (_lastControlTemperature & 0x80 ) );  
+            INT condition = 0;
+            if (_uvCondition)
+                condition = 1;
+            else if (_ovCondition)
+                condition = 2;
+            else
+                condition = 0;
+
+            RWDBUpdater updater = dynamicCCTwoWayTable.updater();
+
+            updater.where(dynamicCCTwoWayTable["deviceid"] == _paoid);
+
+            updater << dynamicCCTwoWayTable["recloseblocked"].assign( _reCloseBlocked )
+            << dynamicCCTwoWayTable["controlmode"].assign( _controlMode) 
+            << dynamicCCTwoWayTable["autovoltcontrol"].assign( _autoVoltControl )
+            << dynamicCCTwoWayTable["lastcontrol"].assign( lastControl )
+            << dynamicCCTwoWayTable["condition"].assign( condition )
+            << dynamicCCTwoWayTable["opfailedneutralcurrent"].assign( _opFailedNeutralCurrent )
+            << dynamicCCTwoWayTable["neutralcurrentfault"].assign(_neutralCurrentFault)
+            << dynamicCCTwoWayTable["badrelay"].assign(_badRelay)
+            << dynamicCCTwoWayTable["dailymaxops"].assign(_dailyMaxOps)
+            << dynamicCCTwoWayTable["voltagedeltaabnormal"].assign(_voltageDeltaAbnormal)
+            << dynamicCCTwoWayTable["tempalarm"].assign( _tempAlarm )
+            << dynamicCCTwoWayTable["dstactive"].assign(_DSTActive)
+            << dynamicCCTwoWayTable["neutrallockout"].assign( _neutralLockout )
+            << dynamicCCTwoWayTable["ignoredindicator"].assign( _ignoredIndicator )
+            << dynamicCCTwoWayTable["voltage"].assign( _voltage )
+            << dynamicCCTwoWayTable["highvoltage"].assign( _highVoltage )
+            << dynamicCCTwoWayTable["lowvoltage"].assign( _lowVoltage )
+            << dynamicCCTwoWayTable["deltavoltage"].assign( _deltaVoltage )
+            << dynamicCCTwoWayTable["analoginputone"].assign( _analogInput1 )
+            << dynamicCCTwoWayTable["temp"].assign( _temperature )
+            << dynamicCCTwoWayTable["rssi"].assign( _rssi )
+            
+            << dynamicCCTwoWayTable["ignoredreason"].assign( _ignoredReason )
+            << dynamicCCTwoWayTable["rssi"].assign( _totalOpCount )
+            << dynamicCCTwoWayTable["uvopcount"].assign( _uvCount )
+            << dynamicCCTwoWayTable["ovopcount"].assign( _ovCount)
+            << dynamicCCTwoWayTable["ovuvcountresetdate"].assign( toRWDBDT((CtiTime)_ovuvCountResetDate) ) //toADD
+            << dynamicCCTwoWayTable["uvsetpoint"].assign( _uvSetPoint )
+            << dynamicCCTwoWayTable["ovsetpoint"].assign( _ovSetPoint )
+            
+            << dynamicCCTwoWayTable["ovuvtracktime"].assign( _ovuvTrackTime )
+            << dynamicCCTwoWayTable["lastovuvdatetime"].assign( toRWDBDT((CtiTime)_lastOvUvDateTime) ) //toAdd
+            << dynamicCCTwoWayTable["neutralcurrentsensor"].assign( _neutralCurrentSensor )
+            << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"].assign( _neutralCurrentAlarmSetPoint );
+
+            updater.execute( conn );
+
+            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+                _dirty = FALSE;
+            }
+            else
+            {
+                _dirty = TRUE;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << updater.asString() << endl;
+                }
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId() << endl;
+            }
+            RWDBInserter inserter = dynamicCCTwoWayTable.inserter();
+            INT lastControl = ( ( _lastControlLocal & 0x01)||         
+                                (_lastControlRemote & 0x02 ) ||
+                                (_lastControlOvUv & 0x04 ) ||          
+                                (_lastControlNeutralFault & 0x08 ) ||  
+                                (_lastControlScheduled & 0x10 ) ||     
+                                (_lastControlDigital & 0x20 ) ||       
+                                (_lastControlAnalog & 0x40 ) ||        
+                                (_lastControlTemperature & 0x80 ) );  
+            INT condition = 0;
+            if (_uvCondition)
+                condition = 1;
+            else if (_ovCondition)
+                condition = 2;
+            else
+                condition = 0;
+
+
+            inserter << _paoid  
+                     << _reCloseBlocked 
+                     << _controlMode
+                     << _autoVoltControl 
+                     << lastControl
+                     << condition
+                     << _opFailedNeutralCurrent
+                     << _neutralCurrentFault
+                     << _badRelay
+                     << _dailyMaxOps
+                     << _voltageDeltaAbnormal
+                     << _tempAlarm
+                     << _DSTActive
+                     << _neutralLockout
+                     << _ignoredIndicator
+                     << _voltage
+                     << _highVoltage
+                     << _lowVoltage
+                     << _deltaVoltage
+                     << _analogInput1
+                     << _temperature
+                     << _rssi
+                     << _ignoredReason
+                     << _totalOpCount
+                     << _uvCount
+                     << _ovCount
+                     << _ovuvCountResetDate //toADD
+                     << _uvSetPoint
+                     << _ovSetPoint
+                     << _ovuvTrackTime
+                     << _lastOvUvDateTime //toAdd
+                     << _neutralCurrentSensor
+                     << _neutralCurrentAlarmSetPoint;
+           
+            if( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
+            }
+
+            inserter.execute( conn );
+
+            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+                _insertDynamicDataFlag = FALSE;
+                _dirty = FALSE;
+            }
+            else
+            {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }*/
+                _dirty = TRUE;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << inserter.asString() << endl;
+                }
+            }
+        }
+    }
+
 }
 
 BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId)
@@ -1195,7 +1634,12 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                     retVal = TRUE;
                     break;
                 }
-
+                case 34:
+                {
+                    setIgnoredIndicatorId(pointId);            
+                    retVal = TRUE;
+                    break;
+                }
 
                 default:
                     break;
@@ -1244,15 +1688,58 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                      retVal = TRUE;
                      break;                           
                  }
+                 case 13:                             
+                 {        
+                     setRSSIId(pointId);        
+                     retVal = TRUE;
+                     break;                           
+                 }
+                 case 14:                             
+                 {        
+                     setIgnoredReasonId(pointId);        
+                     retVal = TRUE;
+                     break;                           
+                 }
 
-                 case 20000:
+                 //dnp analog output points have offsets starting with 10000
+                 case 10002:
+                 {
+                     setUvSetPointId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 10003:
+                 {
+                     setOvSetPointId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 10004:
+                 {
+                     setOVUVTrackTimeId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 10010:
+                 {
+                     setNeutralCurrentSensorId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 10011:
+                 {
+                     setNeutralCurrentAlarmSetPointId(pointId);            
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 20001:
                  {
                      setUDPIpAddressId(pointId);            
                      retVal = TRUE;
                      break;
                  }
               
-                 case 20001:
+                 case 20002:
                  {
                      setUDPPortNumberId(pointId);            
                      retVal = TRUE;
@@ -1413,6 +1900,11 @@ BOOL CtiCCTwoWayPoints::setTwoWayStatusPointValue(LONG pointID, LONG value)
         setNeutralLockout(value);
         retVal = TRUE;
     }
+    else if ( getIgnoredIndicatorId() == pointID ) 
+    {
+        setIgnoredIndicator(value);
+        retVal = TRUE;
+    }
 
     return retVal;
     
@@ -1451,11 +1943,47 @@ BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value)
         setTemperature(value);
         retVal = TRUE;
     }
+    else if ( getRSSIId() == pointID ) 
+    {
+        setRSSI(value);
+        retVal = TRUE;
+    }
+    else if ( getIgnoredReasonId() == pointID ) 
+    {
+        setIgnoredReason(value);
+        retVal = TRUE;
+    }
+    else if ( getUvSetPointId() == pointID ) 
+    {
+        setUvSetPoint(value);
+        retVal = TRUE;
+    }
+    else if ( getOvSetPointId() == pointID ) 
+    {
+        setOvSetPoint(value);
+        retVal = TRUE;
+    }
+    else if ( getOVUVTrackTimeId() == pointID ) 
+    {
+        setOVUVTrackTime(value);
+        retVal = TRUE;
+    }
+    else if ( getNeutralCurrentSensorId() == pointID ) 
+    {
+        setNeutralCurrentSensor(value);
+        retVal = TRUE;
+    }
+    else if ( getNeutralCurrentAlarmSetPointId() == pointID ) 
+    {
+        setNeutralCurrentAlarmSetPoint(value);
+        retVal = TRUE;
+    }
     else if ( getUDPIpAddressId() == pointID ) 
     {
         setUDPIpAddress(value);
         retVal = TRUE;
-    }else if ( getUDPPortNumberId() == pointID ) 
+    }
+    else if ( getUDPPortNumberId() == pointID ) 
     {
         setUDPPortNumber(value);
         retVal = TRUE;
@@ -1580,6 +2108,38 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToMsg(CtiCommandMsg *pointA
     {
         pointAddMsg->insert(getNeutralLockoutId());
     }
+    if ( getIgnoredIndicatorId()  > 0 ) 
+    {
+        pointAddMsg->insert(getIgnoredIndicatorId());
+    }
+    if ( getRSSIId()  > 0 ) 
+    {
+        pointAddMsg->insert(getRSSIId());
+    }
+    if ( getIgnoredReasonId()  > 0 ) 
+    {
+        pointAddMsg->insert(getIgnoredReasonId());
+    }
+    if ( getUvSetPointId()  > 0 ) 
+    {
+        pointAddMsg->insert(getUvSetPointId());
+    }
+    if ( getOvSetPointId() > 0 ) 
+    {
+        pointAddMsg->insert(getOvSetPointId());
+    }
+    if ( getOVUVTrackTimeId() > 0 ) 
+    {
+        pointAddMsg->insert(getOVUVTrackTimeId());
+    } 
+    if ( getNeutralCurrentSensorId() > 0 ) 
+    {
+        pointAddMsg->insert(getNeutralCurrentSensorId());
+    }
+    if ( getNeutralCurrentAlarmSetPointId() > 0 ) 
+    {
+        pointAddMsg->insert(getNeutralCurrentAlarmSetPointId());
+    }
     if ( getUDPIpAddressId() > 0 ) 
     {
         pointAddMsg->insert(getUDPIpAddressId());
@@ -1629,8 +2189,58 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToMsg(CtiCommandMsg *pointA
     return *this;
 }
 
-void CtiCCTwoWayPoints::restore(RWDBReader& rdr)
+void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
 {
+    INT lastControl;  
+    INT condition = 0;
+
+    //rdr["deviceid"] >> _paoid;
+    rdr["recloseblocked"] >> _reCloseBlocked;
+    rdr["controlmode"] >> _controlMode;
+    rdr["autovoltcontrol"] >> _autoVoltControl;
+    rdr["lastcontrol"] >> lastControl;
+    rdr["condition"] >> condition;
+    rdr["opfailedneutralcurrent"] >> _opFailedNeutralCurrent;
+    rdr["neutralcurrentfault"] >> _neutralCurrentFault;
+    rdr["badrelay"] >> _badRelay;
+    rdr["dailymaxops"] >> _dailyMaxOps;
+    rdr["voltagedeltaabnormal"] >> _voltageDeltaAbnormal;
+    rdr["tempalarm"] >> _tempAlarm;
+    rdr["dstactive"] >> _DSTActive;
+    rdr["neutrallockout"] >> _neutralLockout;
+    rdr["ignoredindicator"] >> _ignoredIndicator;
+    rdr["voltage"] >> _voltage;
+    rdr["highvoltage"] >> _highVoltage;
+    rdr["lowvoltage"] >> _lowVoltage;
+    rdr["deltavoltage"] >> _deltaVoltage;
+    rdr["analoginputone"] >> _analogInput1;
+    rdr["temp"] >> _temperature;
+    rdr["rssi"] >> _rssi;
+    rdr["ignoredreason"] >> _ignoredReason;
+    rdr["totalopcount"] >> _totalOpCount;
+    rdr["uvopcount"] >> _uvCount;
+    rdr["ovopcount"] >> _ovCount;
+    rdr["ovuvcountresetdate"] >> _ovuvCountResetDate; //toADD
+    rdr["uvsetpoint"] >> _uvSetPoint;
+    rdr["ovsetpoint"] >> _ovSetPoint;
+    rdr["ovuvtracktime"] >> _ovuvTrackTime;
+    rdr["lastovuvdatetime"] >> _lastOvUvDateTime; //toAdd
+    rdr["neutralcurrentsensor"] >> _neutralCurrentSensor;
+    rdr["neutralcurrentalarmsetpoint"] >> _neutralCurrentAlarmSetPoint;
+
+
+    _lastControlLocal = lastControl & 0x01;         
+    _lastControlRemote = lastControl & 0x02;
+    _lastControlOvUv = lastControl & 0x04;          
+    _lastControlNeutralFault = lastControl & 0x08;  
+    _lastControlScheduled = lastControl & 0x10;     
+    _lastControlDigital = lastControl & 0x20;       
+    _lastControlAnalog = lastControl & 0x40;        
+    _lastControlTemperature = lastControl & 0x80;
+
+    _uvCondition = condition & 0x01;
+    _ovCondition = condition & 0x02;
+
 
 }
 /*---------------------------------------------------------------------------
@@ -1706,6 +2316,17 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _analogInput1 = right._analogInput1;
         _temperatureId = right._temperatureId;
         _temperature = right._temperature;
+
+        _ovSetPointId = right._ovSetPointId;                 
+        _ovSetPoint = right._ovSetPoint;                   
+        _uvSetPointId = right._uvSetPointId;                 
+        _uvSetPoint = right._uvSetPoint;                   
+        _ovuvTrackTimeId = right._ovuvTrackTimeId;              
+        _ovuvTrackTime =right._ovuvTrackTime;                
+        _neutralCurrentSensorId = right._neutralCurrentSensorId;       
+        _neutralCurrentSensor = right._neutralCurrentSensor;         
+        _neutralCurrentAlarmSetPointId = right._neutralCurrentAlarmSetPointId;
+        _neutralCurrentAlarmSetPoint = right. _neutralCurrentAlarmSetPoint;  
         _udpIpAddressId = right._udpIpAddressId;         
         _udpIpAddress = right._udpIpAddress; 
         _udpPortNumberId = right._udpPortNumberId;         

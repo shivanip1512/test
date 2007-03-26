@@ -133,6 +133,106 @@ alter table ccfeederbanklist  alter column tripOrder numeric not null;
 --go 
 /*****************************************************************************/
 
+/************* Adding dynamic two-way cbc info table for Progress FL *********/
+create table dynamiccctwowaycbc
+(     
+      deviceid				numeric		not null,
+      recloseBlocked		char(1)		not null,
+      controlMode			char(1)		not null,  
+      autoVoltControl		char(1)     not null,
+      lastControl			numeric     not null,     
+      condition				numeric     not null,  
+      opFailedNeutralCurrent char(1)	not null,
+      neutralCurrentFault    char(1)	not null,
+      badRelay				char(1)     not null,
+      dailyMaxOps			char(1)     not null,
+      voltageDeltaAbnormal  char(1)		not null,
+      tempAlarm				char(1)		not null,
+      dstActive				char(1)     not null,
+      neutralLockout		char(1)     not null,
+      ignoredIndicator		char(1)		not null, 
+      voltage               float		not null,
+      highvoltage			float		not null,
+      lowvoltage			float		not null,
+      deltavoltage			float		not null,
+      analogInputOne		numeric     not null,  
+      temp					float		not null,
+      rssi					numeric		not null,  
+      ignoredReason			numeric		not null,  
+      totalOpCount			numeric     not null,
+      uvOpCount				numeric     not null,
+      ovOpCount				numeric     not null,
+      ovUvCountResetDate    datetime    not null, 
+      uvSetPoint			numeric		not null,  
+      ovSetPoint			numeric		not null,  
+      ovuvTrackTime			numeric		not null,  
+      lastOvUvDateTime      datetime	not null,   
+      neutralCurrentSensor  numeric		not null, 
+      neutralCurrentAlarmSetPoint  numeric      not null,  
+      ipAddress				numeric     not null, 
+      udpPort               numeric     not null  
+)
+/*****************************************************************************/
+/************* Adding capbank additional info table for Progress FL *********/
+insert into YukonRoleProperty values(-10814, -108,'Show Cap Bank Add Info', 'false', 'Show Cap Bank Addititional Info tab');
+go
+
+create table capbankadditional
+(
+	  deviceid            numeric       not null,
+      maintenanceAreaId numeric			not null,  
+      poleNumber        numeric         not null, 
+      driveDirections   varchar(120)	not null, 
+      latitude          float           not null,
+      longitude         float           not null,
+      capBankConfig     varchar(10)		not null, 
+      commMedium        varchar(20)		not null, 
+      commStrength      numeric         not null, 
+      extAntenna        char(1)         not null, 
+      antennaType       varchar(10)		not null,
+      lastMaintVisit    datetime		not null,
+      lastInspVisit     datetime		not null,
+      opCountResetDate  datetime		not null,
+      potentialTransformer    varchar(10) not null, 
+      maintenanceReqPend      char(1)   not null,   
+      otherComments     varchar(150)    not null,
+      opTeamComments    varchar(150)    not null,
+      cbcBattInstallDate      datetime  not null
+)
+
+declare @capid numeric
+declare capid_curs cursor for (select deviceid as capid from capbank);
+open capid_curs;
+
+fetch capid_curs into @capid;
+while (@@fetch_status = 0)
+  begin
+     insert into capbankadditional
+                  select @capid,
+                   0,
+                   0,
+                   '(none)',
+                   0.0,
+                   0.0,
+                   '(none)',
+                   '(none)',
+				   0,
+				  'N',
+				  '(none)',
+				  '1/1/1900',
+				  '1/1/1900',
+				  '1/1/1900',
+				  '(none)',
+				  'N',
+				  '(none)',
+				  '(none)',
+				  '1/1/1900';  		
+ 	fetch capid_curs into @capid;
+  end
+
+close capid_curs;
+deallocate capid_curs;
+/*****************************************************************************/
 
 /********** Adding metering role properties ************/
 insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
