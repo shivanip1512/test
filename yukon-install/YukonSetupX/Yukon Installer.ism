@@ -471,6 +471,7 @@
 		<row><td>fdrtextimport.dll</td><td>Foreign Data Router</td><td>fdrtextimport.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrtextimport.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>fdrtristate.dll</td><td>Foreign Data Router</td><td>fdrtristate.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrtristate.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>fdrvalmet.dll</td><td>Foreign Data Router</td><td>fdrvalmet.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrvalmet.dll</td><td>1</td><td>NewSubFolder79</td></row>
+		<row><td>fdrwabash.dll</td><td>Foreign Data Router</td><td>fdrwabash.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\fdrwabash.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>graph.jar</td><td>Tabular Data Console</td><td>graph.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\graph.jar</td><td>1</td><td>NewSubFolder90</td></row>
 		<row><td>graphicon.ico</td><td>Common Bin</td><td>GraphIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\GraphIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>hibernate3.jar</td><td>Common Bin</td><td>hibernate3.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\hibernate3.jar</td><td>1</td><td>NewSubFolder85</td></row>
