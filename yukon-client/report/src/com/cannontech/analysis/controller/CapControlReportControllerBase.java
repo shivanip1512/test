@@ -23,12 +23,18 @@ public abstract class CapControlReportControllerBase extends ReportControllerBas
         switch(filterModelType) {
         
         case ModelFactory.CAPCONTROLFEEDER:
+            filterableModel.setCapBankIdsFilter(null);
+            filterableModel.setSubbusIdsFilter(null);
             filterableModel.setFeederIdsFilter(idsSet);
             break;
         case ModelFactory.CAPBANK:
+            filterableModel.setFeederIdsFilter(null);
+            filterableModel.setSubbusIdsFilter(null);
             filterableModel.setCapBankIdsFilter(idsSet);
             break;
         case ModelFactory.CAPCONTROLSTRATEGY:
+            filterableModel.setCapBankIdsFilter(null);
+            filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
             break;
         }

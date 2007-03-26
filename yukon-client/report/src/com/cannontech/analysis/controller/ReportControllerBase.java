@@ -16,10 +16,14 @@ public abstract class ReportControllerBase implements ReportController {
 
     public Map<Integer,List<? extends Object>> getFilterObjectsMap() {
         HashMap<Integer, List<? extends Object>> result = new HashMap<Integer, List<? extends Object>>();
-        for (Integer modelId : getFilterModelTypes()) {
-            result.put(modelId, ReportFuncs.getObjectsByModelType(modelId));
+        if(getFilterModelTypes() == null) {
+            return result;
+        }else {
+            for (Integer modelId : getFilterModelTypes()) {
+                result.put(modelId, ReportFuncs.getObjectsByModelType(modelId));
+            }
+            return result;
         }
-        return result;
     }
 
     public int[] getFilterModelTypes() {
