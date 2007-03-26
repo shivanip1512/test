@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/10/16 17:38:10 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2007/03/26 21:41:12 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.47  2007/03/26 21:41:12  jotteson
+* Bug Id: 892
+* Fixed problem with uninitialized pointer being used and throwing exceptions
+*
 * Revision 1.46  2006/10/16 17:38:10  jotteson
 * Adding sa305 and saDigital to verification process.
 *
@@ -761,17 +765,17 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 }
                 work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, code, seconds(60));
             }
-            else if( rtcOutMessage->Buffer.SASt._groupType == SADIG )
+            else if( OutMessage->Buffer.SASt._groupType == SADIG )
             {
-                strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 7);
-                codestr[8] = 0;
-                cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
+                strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 7);
+                codestr[7] = 0;
+                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
                 if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << cmdStr << endl;
                 }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *rtcOutMessage, cmdStr, codestr, seconds(60));
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *OutMessage, cmdStr, codestr, seconds(60));
             }
             else
             {
@@ -819,7 +823,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     else if( rtcOutMessage->Buffer.SASt._groupType == SADIG )
                     {
                         strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 7);
-                        codestr[8] = 0;
+                        codestr[7] = 0;
                         cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
@@ -830,15 +834,15 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     }
                     else
                     {
-                        strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
+                        strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
                         codestr[6] = 0;
-                        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, seconds(60));
                     }
 
                     if(work) _verification_objects.push(work);
