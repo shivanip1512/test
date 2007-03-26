@@ -119,7 +119,11 @@ bool FDRWabash::loadTranslationLists()
                             //the filename and path will need to be added into CtiFDRPoint or tracked per point by another method.
                             _fileName = filename;
                             _path = drivePath;
-
+                            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Filename and Path: " << _fileName << " " << _path << std::endl;
+                            }
                             //Also the last point loaded gets the final say in the path and filename
                         }
                     }
