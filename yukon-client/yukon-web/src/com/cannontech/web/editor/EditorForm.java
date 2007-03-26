@@ -51,4 +51,8 @@ public class EditorForm extends DBEditorForm
         
     }
 
+    public void resetForm() {
+        
+    }
+
 }

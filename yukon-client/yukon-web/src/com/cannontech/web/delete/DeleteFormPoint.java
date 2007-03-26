@@ -27,5 +27,9 @@ public class DeleteFormPoint extends DeleteForm
         
     }
 
+    public void resetForm() {
+        
+    }
+
 
 }

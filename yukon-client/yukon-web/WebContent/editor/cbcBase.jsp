@@ -3,6 +3,10 @@
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
+<jsp:directive.page import="com.cannontech.core.dao.DaoFactory"/>
+<jsp:directive.page import="com.cannontech.database.data.lite.LiteYukonUser"/>
+<jsp:directive.page import="com.cannontech.common.constants.LoginController"/>
+<jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
 
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
@@ -25,8 +29,7 @@
     //****
     // Entry point file for all operations that edit a PAObject
     //****
-
-    int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
+        int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
 
     if( id != PAOGroups.INVALID ) {
@@ -130,6 +133,10 @@ addLockButtonForButtonGroup("foot_buttons");
                     <jsp:include page="/WEB-INF/pages/cbc/cbcCapBankAdvanced.jsp"/>                   
                     </x:panelTab>
 
+		    		<x:panelTab id="tabCBAddInfo" label="Additional Info" rendered="#{capControlForm.visibleTabs['CBAddInfo']}">
+                    <jsp:include page="/WEB-INF/pages/cbc/capBankAddInfo.jsp"/>                   
+                    </x:panelTab>
+
 
                 </x:panelTabbedPane>
 
@@ -141,7 +148,7 @@ addLockButtonForButtonGroup("foot_buttons");
                         styleClass="stdButton" title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank']}"/>
                         <x:commandButton id="submit_button2" value="Submit" action="#{capBankEditor.update}" 
                         styleClass="stdButton" title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank']}"/>
-                        <x:commandButton  id="reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
+                        <x:commandButton  id="reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton"  title="Resets all the data to the original settings" />
                         <x:commandButton id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
                             <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                         </x:commandButton>

@@ -46,6 +46,7 @@ import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
@@ -66,6 +67,7 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
@@ -84,7 +86,9 @@ import com.cannontech.web.model.capcontrol.CapControlStrategyModel;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
+import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
+import com.cannontech.yukon.cbc.CBCUtils;
 
 /**
  * @author ryan
@@ -672,6 +676,7 @@ public class CapControlForm extends DBEditorForm{
 		resetCurrentDivOffset();
 		resetCurrentAltSubDivOffset();
 		resetUOFMTreeData();
+        resetCapBankEditor();
 		isDualSubBusEdited = false;
 		editingCBCStrategy = false;
 		unassignedBanks = null;
@@ -686,7 +691,14 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	//function that restores the setting of the dual bus ctl 
+	private void resetCapBankEditor() {
+	    if (getDbPersistent() instanceof CapBank) {
+	        JSFUtil.resetForm("capBankEditor");
+        }
+    }
+
+
+    //function that restores the setting of the dual bus ctl 
 	private void resetDualBusEnabled() {
 
 		if (getDbPersistent() instanceof CapControlSubBus) {
@@ -736,6 +748,7 @@ public class CapControlForm extends DBEditorForm{
 		getVisibleTabs().put("CBCController", Boolean.FALSE);
 		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
 		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
+        getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
 
 		//here you go ... this is the new era. we decide to create an area
         //We can't call area an area because area already exists in our code.
@@ -769,6 +782,9 @@ public class CapControlForm extends DBEditorForm{
 			setEditorTitle("Capacitor Bank");
 			setPaoDescLabel("Street Location");
 			getVisibleTabs().put("CBCCapBank", Boolean.TRUE);
+            LiteYukonUser user = JSFUtil.getYukonUser();
+            boolean showCapBankAddInfo = CBCUtils.isCBAdditionalInfoAllowed(user);
+            getVisibleTabs().put ("CBAddInfo", Boolean.TRUE && showCapBankAddInfo);
 			break;
 
 		case PAOGroups.CAPBANKCONTROLLER:

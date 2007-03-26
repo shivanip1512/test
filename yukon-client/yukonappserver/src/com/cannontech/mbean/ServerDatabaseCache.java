@@ -1707,7 +1707,13 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
         
         //Do nothing for now...
     }
-	else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB )
+    else if ( database == DBChangeMsg.CHANGE_CBC_ADDINFO_DB)
+    {
+        
+        //Do nothing for now...
+    }	
+    
+    else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB )
 	{
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
 	}	

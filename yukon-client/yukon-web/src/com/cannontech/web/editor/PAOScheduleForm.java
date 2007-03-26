@@ -143,4 +143,9 @@ public class PAOScheduleForm extends DBEditorForm {
         
     }
 
+
+    public void resetForm() {
+        
+    }
+
 }

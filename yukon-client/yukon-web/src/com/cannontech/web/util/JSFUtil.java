@@ -6,13 +6,19 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.editor.CapBankEditorForm;
+import com.cannontech.web.editor.DBEditorForm;
 
 public abstract class JSFUtil {
 
@@ -91,6 +97,21 @@ public abstract class JSFUtil {
                     .getApplication()
                     .createValueBinding("#{" + beanName + "}")
                     .setValue(FacesContext.getCurrentInstance(), null);
+    }
+
+    public static LiteYukonUser getYukonUser() {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        LiteYukonUser liteYukonUser = (LiteYukonUser) externalContext.getSessionMap().get(LoginController.YUKON_USER);
+        return liteYukonUser;
+    }
+
+    public static void resetForm(String name) {
+        Object bean =  JSFParamUtil.getJSFVar(name);
+        if (bean instanceof DBEditorForm) {
+            DBEditorForm form = (DBEditorForm) bean;
+            form.resetForm();
+        }
+    
     }
 
 }

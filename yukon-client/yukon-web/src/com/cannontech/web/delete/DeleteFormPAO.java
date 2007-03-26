@@ -24,4 +24,8 @@ public class DeleteFormPAO extends DeleteForm
         
     }
 
+    public void resetForm() {
+        
+    }
+
 }

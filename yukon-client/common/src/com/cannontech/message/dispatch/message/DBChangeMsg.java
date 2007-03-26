@@ -57,6 +57,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_SERVICE_COMPANY_DB = 28;
 	public static final int CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB = 29;
 	public static final int CHANGE_WORK_ORDER_DB = 30;
+    public static final int CHANGE_CBC_ADDINFO_DB = 31;
 
 
 	public static final String CAT_POINT = "Point";
@@ -95,6 +96,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_SERVICE_COMPANY = "ServiceCompany";
 	public static final String CAT_SERVICE_COMPANY_DESIGNATION_CODE = "ServiceCompany";
 	public static final String CAT_WORK_ORDER = "WorkOrder";
+    public static final String CAT_CBC_ADDINFO = "CB Additional Info";
 
 	
 	//THE FOLLOWING EXIST ONLY IN THE JAVA VERSION OF THIS MESSAGE!
@@ -108,6 +110,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_TYPE_UPDATE = 2;
 	
 	public static final int RELOAD_ALL = 0;
+
+
 /**
  * DBChangeMsg constructor comment.
  */

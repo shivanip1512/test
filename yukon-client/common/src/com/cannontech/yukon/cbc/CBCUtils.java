@@ -24,9 +24,11 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.roles.application.WebClientRole;
 
 /**
  * @author ryan
@@ -304,5 +306,10 @@ public final class CBCUtils
                 liteStates+= ",";
         }
         return liteStates;
+    }
+
+    public static boolean isCBAdditionalInfoAllowed(LiteYukonUser user) {
+        boolean showCapBankAddInfo = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.SHOW_CB_ADDINFO)).booleanValue();
+        return showCapBankAddInfo;
     }
 }

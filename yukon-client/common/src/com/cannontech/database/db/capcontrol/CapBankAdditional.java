@@ -4,11 +4,14 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 @SuppressWarnings("serial")
-public class CapBankAdditional extends DBPersistent {
+public class CapBankAdditional extends DBPersistent implements CTIDbChange{
 
+    public static final String STR_Y = "Y";
     public static final String TABLE_NAME = "CapBankAdditional";
     private static final Date BEGINNING_TIME = getBeginningTime();
     private static final String STR_N = new String("N");
@@ -36,6 +39,9 @@ public class CapBankAdditional extends DBPersistent {
     private String otherComments = STR_NONE;
     private String opTeamComments = STR_NONE;
     private Date cbcBattInstallDate = BEGINNING_TIME;
+
+    private Boolean extAnt = Boolean.TRUE;
+    private Boolean reqPend = Boolean.TRUE;
 
     public String[] CONSTRAINT_COLUMNS = { "DeviceID" };
     public String[] SETTER_COLUMNS = { "MaintenanceAreaID", "PoleNumber",
@@ -265,6 +271,53 @@ public class CapBankAdditional extends DBPersistent {
 
     public void setPotentTransformer(String potentTransformer) {
         this.potentTransformer = potentTransformer;
+    }
+
+    public Boolean getExtAnt() {
+        if (getExtAntenna().equalsIgnoreCase(STR_N)) {
+            extAnt = Boolean.FALSE;
+            setAntennaType(STR_NONE);
+
+        }
+        return extAnt;
+    }
+
+    public void setExtAnt(Boolean extAnt) {
+        if (extAnt.equals(Boolean.TRUE)) {
+            setExtAntenna(STR_Y);
+        } else {
+            setExtAntenna(STR_N);
+            setAntennaType(STR_NONE);
+        }
+        this.extAnt = extAnt;
+    }
+
+    public Boolean getReqPend() {
+        if (getMaintReqPending().equalsIgnoreCase(STR_N)) {
+            reqPend = Boolean.FALSE;
+        }
+        return reqPend;
+    }
+
+    public void setReqPend(Boolean reqPend) {
+        if (reqPend.equals(Boolean.TRUE)) {
+            setMaintReqPending(STR_Y);
+        } else {
+            setMaintReqPending(STR_N);
+        }
+        this.reqPend = reqPend;
+    }
+
+    public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
+        DBChangeMsg[] dbChange = new DBChangeMsg[1];
+
+        dbChange[0] = new DBChangeMsg(
+                        getDeviceID().intValue(),
+                        DBChangeMsg.CHANGE_CBC_ADDINFO_DB,
+                        DBChangeMsg.CAT_CBC_ADDINFO,
+                        typeOfChange );
+
+        return dbChange;
     }
 
 }

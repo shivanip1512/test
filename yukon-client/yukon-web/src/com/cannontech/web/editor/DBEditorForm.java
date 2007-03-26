@@ -44,9 +44,7 @@ public abstract class DBEditorForm
 	/**
 	 * Resets this form with the original values from the database
 	 */
-//	public void resetForm() {		
-//		initItem();
-//	}
+	public abstract void resetForm();
 
 
 	/**
