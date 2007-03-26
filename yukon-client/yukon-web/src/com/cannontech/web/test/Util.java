@@ -1,4 +1,4 @@
-package com.cannontech.web.test.capcontrolarea;
+package com.cannontech.web.test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -96,6 +96,14 @@ public class Util {
             subArea.add(newAssignment);
         }
         return subArea;
+    }
+
+    public static Integer getValidCapBankId() {
+        SqlStatementBuilder stratID = new SqlStatementBuilder();
+        stratID.append("SELECT MAX(deviceID)FROM ");
+        stratID.append("CapBank");
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        return yukonTemplate.queryForInt(stratID.toString());
     }
 
 }

@@ -2,10 +2,13 @@ package com.cannontech.web.editor;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
@@ -427,7 +430,7 @@ public class CBControllerEditor {
             String val = JSFParamUtil.getJSFReqParam("parentId");
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             String location = "pointWizBase.jsf?parentId=" + val;
-            new CBCNavigationUtil().bookmarkLocation(location,session);            
+            CBCNavigationUtil.bookmarkLocation(location,session);            
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
@@ -437,6 +440,32 @@ public class CBControllerEditor {
         finally{
             if(fm.getDetail() != null) {
                 FacesContext.getCurrentInstance().addMessage("add_point_click", fm);
+            }
+        }
+    }
+    public void deletePointClick (ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        //save the state of the point tree before changing the page
+        saveState(getPointTree());        
+        try {
+            Integer paoID = getPaoCBC().getPAObjectID();
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID.intValue());
+            String attribVal  = "";
+            for (LitePoint point : points) {
+                attribVal += "value=" + point.getLiteID() + "&";
+            }
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            String location = "deleteBasePoint.jsf?" + attribVal;
+            CBCNavigationUtil.bookmarkLocation(location,session);            
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            FacesContext.getCurrentInstance().responseComplete();
+        } 
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:deletePointClick. " + e.getMessage());
+        }
+        finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("delete_point_click", fm);
             }
         }
     }

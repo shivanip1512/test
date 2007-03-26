@@ -59,6 +59,7 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.device.DeviceScanRate;
@@ -1029,32 +1030,40 @@ public class CapControlForm extends DBEditorForm{
 		
 		addDBObject(smartMulti, facesMsg);
 
-		// set the parent to use the newly created supporting items
-		if (dbObj instanceof CapBank && getWizData().isCreateNested()) {
-			// set the CapBanks ControlDeviceID to be the ID of the CBC we just
-			// created
-			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
-            ((CapBank) dbObj).getCapBank().setControlDeviceID(pao.getPAObjectID());
-            StatusPoint statusPt;
-            if (pao instanceof CapBankController702x) {
-                   MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
-                   CBControllerEditor.insertPointsIntoDB(pointVector);  
-                   statusPt = (StatusPoint) MultiDBPersistent
-                   .getFirstObjectOfType(StatusPoint.class, pointVector);
-            }	
-            // find the first status point in our CBC and assign its ID to our
-			// CapBank
-			// for control purposes
-            else {
-                statusPt = (StatusPoint) SmartMultiDBPersistent
-					.getFirstObjectOfType(StatusPoint.class, smartMulti);
-            }
-			((CapBank) dbObj).getCapBank().setControlPointID(
-					statusPt.getPoint().getPointID());
-
-		}
-
-	}
+		if  (dbObj instanceof CapBank)
+        {
+        // set the parent to use the newly created supporting items
+    		if (getWizData().isCreateNested()) {
+    			// set the CapBanks ControlDeviceID to be the ID of the CBC we just
+    			// created
+    			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
+                ((CapBank) dbObj).getCapBank().setControlDeviceID(pao.getPAObjectID());
+                StatusPoint statusPt;
+                if (pao instanceof CapBankController702x) {
+                       MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
+                       CBControllerEditor.insertPointsIntoDB(pointVector);  
+                       statusPt = (StatusPoint) MultiDBPersistent
+                       .getFirstObjectOfType(StatusPoint.class, pointVector);
+                }
+                //create addtional info
+                // find the first status point in our CBC and assign its ID to our
+    			// CapBank
+    			// for control purposes
+                else {
+                    statusPt = (StatusPoint) SmartMultiDBPersistent
+    					.getFirstObjectOfType(StatusPoint.class, smartMulti);
+                }
+    			((CapBank) dbObj).getCapBank().setControlPointID(
+    					statusPt.getPoint().getPointID());
+    
+    		   }
+               //create addtional info
+               CapBankAdditional additionalInfo = new CapBankAdditional();
+               additionalInfo.setDeviceID(((CapBank)dbObj).getDevice().getDeviceID());
+               additionalInfo.setDbConnection(getDbPersistent().getDbConnection());
+               addDBObject(additionalInfo, facesMsg);
+        }
+    }
 
 	/**
 	 * Executes the creation of the current DB object. We stuff the current DB

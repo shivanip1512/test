@@ -239,7 +239,13 @@ CapControlForm capControlForm =
                       <x:commandLink  id="addPtLnk" value="Add Point" actionListener="#{capControlForm.CBControllerEditor.addPointClick}">
                            <f:param name="parentId" value="#{capControlForm.CBControllerEditor.paoCBC.PAObjectID}" />
                       </x:commandLink>
-            </h:column>
+ 						<f:verbatim>
+ 							&nbsp; <bold>|</bold>&nbsp;
+ 						</f:verbatim>                     
+                      <x:commandLink  id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.CBControllerEditor.deletePointClick}">
+                      </x:commandLink>
+ 
+                      </h:column>
                 
 
 

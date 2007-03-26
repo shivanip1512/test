@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapControlArea;
+import com.cannontech.web.test.Util;
 
 public class TestCapControlArea extends TestCase {
     Integer areaID;

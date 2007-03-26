@@ -14,6 +14,7 @@ public class Deleteable {
 	private boolean deleteAllowed = false;
 	private boolean wasDeleted = false;
 	private boolean deleteError = false;
+    private Boolean checked = Boolean.FALSE;
 
 
 	/**
@@ -104,5 +105,13 @@ public class Deleteable {
 	public void setDeleteError(boolean b) {
 		deleteError = b;
 	}
+
+    public Boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
+    }
 
 }

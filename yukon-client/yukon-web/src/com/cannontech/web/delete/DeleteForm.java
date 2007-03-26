@@ -1,6 +1,8 @@
 package com.cannontech.web.delete;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DBDeleteResult;
@@ -44,10 +46,11 @@ public abstract class DeleteForm extends DBEditorForm
 				//this message will be filled in by the super class
 				FacesMessage facesMsg = new FacesMessage();
 				try {				
-					//be sure we can attempt to delete this item
-					if( deletables[i].isDeleteAllowed() ) {
-						deleteDBObject( deletables[i].getDbPersistent(), facesMsg );
-						deletables[i].setWasDeleted( true );
+					Deleteable deleteable = deletables[i];
+                    //be sure we can attempt to delete this item
+					if( deleteable.isDeleteAllowed() && deleteable.getChecked().booleanValue() ) {
+						deleteDBObject( deleteable.getDbPersistent(), facesMsg );
+                        deleteable.setWasDeleted( true );
 						facesMsg.setDetail( "...deleted" );
 					}
 					else
@@ -68,7 +71,8 @@ public abstract class DeleteForm extends DBEditorForm
 	public void initItem() {
 
 		//must be int[] paoIDs
-		String[] ids = JSFParamUtil.getReqParamsVar("value");
+        ExternalContext ex = FacesContext.getCurrentInstance().getExternalContext();
+		String[] ids =   JSFParamUtil.getReqParamsVar("value");
 		if( ids == null ) return;
 		
 		itemIDs = new int[ids.length];
@@ -101,7 +105,7 @@ public abstract class DeleteForm extends DBEditorForm
 			int res = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
 			delItem.setDeleteAllowed(
 				DaoFactory.getDbDeletionDao().STATUS_DISALLOW != res );
-
+			
 			delItem.setWarningMsg(
 				delItem.isDeleteAllowed()
 					? delRes.getConfirmMessage().toString()

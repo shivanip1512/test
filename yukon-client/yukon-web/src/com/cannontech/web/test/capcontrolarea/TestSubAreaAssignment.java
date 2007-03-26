@@ -10,6 +10,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.web.test.Util;
 
 public class TestSubAreaAssignment extends TestCase {
 

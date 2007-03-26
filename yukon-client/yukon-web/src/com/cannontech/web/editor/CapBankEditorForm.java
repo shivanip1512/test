@@ -37,6 +37,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.web.util.JSFComparators;
@@ -59,6 +60,7 @@ private List unassignedPoints = null;
  //this cap bank that we are editing
  private CapBank capBank = null;
  private String[] DYNAMIC_TABLE_NAMES = {"DynamicCCMonitorBankHistory","DynamicCCMonitorPointResponse"};
+ private CapBankAdditional additionalInfo;
  
 	public CapBankEditorForm() {
 		super();
@@ -255,12 +257,28 @@ private List unassignedPoints = null;
 			if (dbPersistent instanceof CapBank) {
 				capBank = (CapBank)getDbPersistent();		
 				initController(capBank);
+                initAdditionalInfo();
 			}
 		}
 	}
 
 
-	/**
+	private void initAdditionalInfo() {
+	    if (additionalInfo == null)
+        {
+	        additionalInfo = new CapBankAdditional();   
+	        additionalInfo.setDbConnection(capBank.getDbConnection());
+            additionalInfo.setDeviceID (capBank.getPAObjectID());
+            try {
+                additionalInfo.retrieve();
+            } catch (SQLException e) {
+                CTILogger.error(e);
+            }
+        }        
+    }
+
+
+    /**
 	 * @param capBank
 	 */
 	private void initController(CapBank capBank) {
@@ -511,5 +529,15 @@ private List unassignedPoints = null;
         else
             resetAdvancedTab();
 
+    }
+
+
+    public CapBankAdditional getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+
+    public void setAdditionalInfo(CapBankAdditional additionalInfo) {
+        this.additionalInfo = additionalInfo;
     }    
 }
