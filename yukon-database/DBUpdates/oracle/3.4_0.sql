@@ -105,7 +105,7 @@ insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Con
 
 insert into YukonRoleProperty values(-10922,-109,'C&I Curtailment Reports Group Label','Stars','Label (header) for C&I Curtailment group reports.');
 insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
-insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'false', 'Allow access to the Java Web Start Launcher for client applications.');
+insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
 
 create table TemplateDisplay (
    DisplayNum           number              not null,
