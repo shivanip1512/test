@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
@@ -16,6 +17,8 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.RoleDao;
@@ -27,6 +30,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -342,24 +346,18 @@ public class AuthDaoImpl implements AuthDao {
      */
     public boolean userHasAccessPAO( LiteYukonUser user, int paoID )
     {
-        synchronized (databaseCache) 
-        {
-            // Notice: The paoIDs array must be sorted for the BinarySearch to work
-            int[] paoIDs = (int[])databaseCache.getYukonUserPaoOwners().get( user );
-
-            if( paoIDs != null )
-            {
-                int res = Arrays.binarySearch( paoIDs, paoID );                
-                if( res >= 0 )
-                    return true;
-            }
-            else //if the user is not found, we assume they have access to all PAOs
+        PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+        Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+            
+        if( permittedPaos != null && ! permittedPaos.isEmpty()) {
+            if(permittedPaos.contains(new Integer(paoID)))
                 return true;
+            /*the user has permissions found, but the ID was not in the set of
+            given IDs, they are not permitted to see this given paoID*/
+            else
+                return false;
         }
-
-        //the user was found, but the ID was not in the set of
-        //  given IDs, they are not permitted to see this given paoID
-        return false;
+        return true;
     }
     
     /* (non-Javadoc)
@@ -367,19 +365,12 @@ public class AuthDaoImpl implements AuthDao {
      */
     public boolean hasExlusiveAccess( LiteYukonUser user, int paoID )
     {
-        synchronized (databaseCache) 
-        {
-            // Notice: The paoIDs array must be sorted for the BinarySearch to work
-            int[] paoIDs = (int[])databaseCache.getYukonUserPaoOwners().get( user );
-
-            if( paoIDs != null )
-            {
-                int res = Arrays.binarySearch( paoIDs, paoID );                
-                if( res >= 0 )
-                    return true;
-            }
-        }
-
+        PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+        Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+            
+        if( permittedPaos != null && permittedPaos.contains(new Integer(paoID))) 
+            return true;
+            
         return false;
     }    
 
@@ -471,14 +462,12 @@ public class AuthDaoImpl implements AuthDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.AuthDao#hasPAOAccess(com.cannontech.database.data.lite.LiteYukonUser)
      */
-	public boolean hasPAOAccess( LiteYukonUser user )
+	public boolean hasPAOAccess( LiteYukonUser user ) 
 	{
-		synchronized (databaseCache) 
-		{
-			int[] paoIDs = (int[])databaseCache.getYukonUserPaoOwners().get( user );
-			
-			return paoIDs != null && paoIDs.length > 0;
-		}
+        PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+        Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+            
+        return permittedPaos != null && ! permittedPaos.isEmpty(); 
 	}
     
 	public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId)

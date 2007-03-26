@@ -7,7 +7,6 @@ import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
@@ -114,10 +113,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			((DBPersistent)getYukonUserRoles().get(i)).add();
 		}
 		
-		//add the UserPAOwner info to the db
-		UserPaoOwner ownedByUser = new UserPaoOwner();
-		ownedByUser.addForUser(getUserID(), getUserOwnedPAOs());
-		
 		//This is not null if this login has been linked to an energy company
 		if(company != null)
 		{
@@ -133,7 +128,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	{
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );
 		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
-        delete( UserPaoOwner.TABLE_NAME, "UserID", getYukonUser().getUserID() );
         delete( EnergyCompanyOperatorLoginList.tableName, "OperatorLoginID", getYukonUser().getUserID() );
         
 		getYukonUser().delete();
@@ -161,9 +155,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		getYukonUserRoles().clear();
  		for( int i = 0; i < roles.length; i++ )
  			getYukonUserRoles().add( roles[i] );
- 			
- 		//add the objects this user owns
-		setUserOwnedPAOs(UserPaoOwner.getUserOwnedPaos(getUserID().intValue(), getDbConnection()));
 	}
 
 	/**
@@ -194,11 +185,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			((DBPersistent)getYukonUserRoles().get(i)).add();
 		}
 		
-		delete( UserPaoOwner.TABLE_NAME, "UserID", getYukonUser().getUserID());
-		UserPaoOwner ownedByUser = new UserPaoOwner();
-        ownedByUser.setDbConnection(getDbConnection());
-		ownedByUser.addForUser( getYukonUser().getUserID(), getUserOwnedPAOs());
-		
 		//This is not null if this login has been linked to an energy company
 		if(company != null)
 		{
@@ -222,7 +208,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			
 			user.delete( "EnergyCompanyOperatorLoginList", "OperatorLoginID", userID );
 			user.delete( "OperatorLoginGraphList", "OperatorLoginID", userID );
-			user.delete( UserPaoOwner.TABLE_NAME, "UserID", userID );
 			user.delete();
 		}
 		catch (java.sql.SQLException e) {
