@@ -62,6 +62,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _ccCapBankStates = new CtiCCState_vec;
     _ccGeoAreas = new CtiCCGeoArea_vec;
 
+    _paobject_area_map.clear();
     _paobject_subbus_map.clear();
     _paobject_feeder_map.clear();
     _paobject_capbank_map.clear();
@@ -736,8 +737,12 @@ void CtiCCSubstationBusStore::reset()
                     }
                     
 
+                    if (!_paobject_area_map.empty())
+                        _paobject_area_map.clear();
+
                     if (!_paobject_subbus_map.empty())
                         _paobject_subbus_map.clear();
+
 
                     if (!_paobject_feeder_map.empty())
                         _paobject_feeder_map.clear();
@@ -770,6 +775,7 @@ void CtiCCSubstationBusStore::reset()
                     try
                     {
                         _altsub_sub_idmap = temp_altsub_sub_idmap;
+                        _paobject_area_map = temp_paobject_area_map;
                         _paobject_subbus_map = temp_paobject_subbus_map;
                         _paobject_feeder_map = temp_paobject_feeder_map;
                         _paobject_capbank_map = temp_paobject_capbank_map;
@@ -4273,9 +4279,9 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         RWDBSelector selector = db.selector();
                         selector << ccFeederBankListTable["deviceid"]
                               << ccFeederBankListTable["feederid"]
-                              << ccFeederBankListTable["controlorder"]
-                              << ccFeederBankListTable["closeorder"]
-                              << ccFeederBankListTable["triporder"];
+                              << ccFeederBankListTable["controlorder"];
+                             // << ccFeederBankListTable["closeorder"]
+                             // << ccFeederBankListTable["triporder"];
 
 
                         selector.from(capBankTable);
@@ -4305,14 +4311,14 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                             long deviceid;
                             long feederid;
                             long controlOrder;
-                            long tripOrder;
-                            long closeOrder;
+                            long tripOrder = 0;
+                            long closeOrder = 0;
 
                             rdr["deviceid"] >> deviceid;
                             rdr["feederid"] >> feederid;
                             rdr["controlorder"] >> controlOrder;
-                            rdr["closeorder"] >> closeOrder;
-                            rdr["triporder"] >> tripOrder;
+                           // rdr["closeorder"] >> closeOrder;
+                           // rdr["triporder"] >> tripOrder;
 
                             CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(deviceid)->second;
                             currentCCCapBank->setControlOrder(controlOrder);
