@@ -18,7 +18,6 @@ import java.io.IOException;
 
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author nmeverden
@@ -26,41 +25,23 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class CSV2PointData {
     private DynamicDataSource dataSource;
+    private Timer timer;
     
     public CSV2PointData() {
         
     }
     
-    public CSV2PointData(DynamicDataSource dataSource) {
+    public CSV2PointData(DynamicDataSource dataSource, Timer timer) {
         this.dataSource = dataSource;
+        this.timer = timer;
     }
 
     public void setDataSource(DynamicDataSource dataSource) {
         this.dataSource = dataSource;
     }
     
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("args[0] Specifiy path to csv file");
-            System.out.println("args[1] Specifiy time deplay, options are minutes | seconds default is minutes");
-            System.exit(0);
-        }
-        
-        DynamicDataSource dds = YukonSpringHook.getBean("dynamicDataSource", DynamicDataSource.class);
-        CSV2PointData cpd = new CSV2PointData(dds);
-        
-        try {
-            boolean inSeconds = false;
-            if ("seconds".equalsIgnoreCase(args[1])) inSeconds = true;
-            
-            List<PointData> list = cpd.parseFile(new File(args[0]));
-            cpd.writeOut(list, inSeconds);
-        } catch (IOException e) {
-            System.out.println("Unable to parse csv file " + args[0]);
-        }
+    public void setTimer(Timer timer) {
+        this.timer = timer;
     }
 
     public List<PointData> parseFile(File file) throws IOException {
@@ -96,28 +77,29 @@ public class CSV2PointData {
         return list;
     }
 
-    public void writeOut(List<PointData> list, boolean inSeconds) {
-        long lastTime = 0;
-        long delay = 0;
+    public void writeOut(List<PointData> list, int multi) {
+        long time = 0;
+        long lastLoggedDate = 0;
         
         for (final PointData pData : list) {
-            Date date = pData.getPointDataTimeStamp();
-            long time = date.getTime();
-
-            if (lastTime == 0) {
-                lastTime = time;
-            } else {
-                delay += (inSeconds) ? ((time - lastTime)/100) : (time - lastTime);
-                lastTime = time;
-            }
+            long loggedDate = pData.getPointDataTimeStamp().getTime();
+            long diff = loggedDate - lastLoggedDate;
+            lastLoggedDate = loggedDate;
             
-            System.out.println("sending next PointData in " + delay + " milliseconds"); //DEBUG INFO
+            if (list.indexOf(pData) == 0) {
+                time = System.currentTimeMillis();
+            } else {
+                time += (multi !=  0) ? (diff / multi) : diff;
+            }
 
-            new Timer().schedule(new TimerTask() {
+            final long scheduledTime = time;
+            timer.schedule(new TimerTask() {
                 public void run() {
+                    System.out.println("sending PointData id number: " + pData.getId()); //DEBUG INFO
+                    pData.setTime(new Timestamp(scheduledTime));
                     dataSource.putValue(pData);
                 }
-            }, delay);
+            }, 5);
         }
     }
     
