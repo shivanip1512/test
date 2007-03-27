@@ -1,4 +1,8 @@
 
+<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
+<jsp:directive.page import="com.cannontech.core.authorization.service.PaoPermissionService"/>
+<jsp:directive.page import="java.util.Set"/>
+<jsp:directive.page import="com.cannontech.core.authorization.support.Permission"/>
 <%
 	/*
 	 *oper_direct.jsp
@@ -63,10 +67,25 @@
 	 * Determine which macs schedules we need to display
 	 */
     Class[] types2 = { Integer.class  };
+    String sql = new String();
+    PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+    if(permittedPaoIDs.isEmpty()) {
+    	sql = "SELECT scheduleid FROM MACSchedule ORDER BY scheduleid";
+    }
+    else {
+        sql = "SELECT scheduleid FROM MACSchedule WHERE scheduleid IN (";
+        Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
+        permittedIDs = permittedPaoIDs.toArray(permittedIDs);
+        for(Integer paoID : permittedIDs) {
+        	sql += paoID.toString() + ", ";
+       	}
+        sql = sql.substring(0, sql.length() - 1);
+        sql += ") ORDER BY scheduleid";
+    }
+    
     Object[][] schedIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias,
-    	"SELECT up.paoid FROM UserPaoOwner up, MACSchedule mac WHERE mac.scheduleid=up.paoid " +
-    	"and up.userid=" + user.getUserID() +
-    	"ORDER BY up.paoid", types2 );
+    	sql, types2 );
     
     com.cannontech.servlet.ConnServlet connContainer = (com.cannontech.servlet.ConnServlet)
         application.getAttribute(com.cannontech.servlet.ConnServlet.SERVLETS_CONTEXT_ID);
@@ -78,7 +97,6 @@
         conn = connContainer.getIMACSConnection();
     }
     
-         
     if( conn != null && schedIDs != null )
     {
         Schedule[] allSchedules = conn.retrieveSchedules();
