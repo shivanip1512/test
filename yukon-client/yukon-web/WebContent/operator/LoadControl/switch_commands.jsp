@@ -11,11 +11,26 @@
     int serialNumberDropDownIndex = 0;
 
     int textFieldRouteID = -1;
-    
-    String sql = "select gm.CHILDID from UserPaoOwner us, GENERICMACRO gm " + 
-    	"WHERE gm.OWNERID=us.PaoID AND us.UserID=" + user.getUserID()  +
-    	" AND gm.MacroType = '" + MacroTypes.GROUP + "'" +
-    	" ORDER BY gm.CHILDORDER";
+
+	PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(getUserID()), Permission.LM_VISIBLE);
+    if(permittedPaoIDs.isEmpty()) {
+    	sql = "select CHILDID from GENERICMACRO " +
+        	"WHERE MacroType = '" + MacroTypes.GROUP + "'" +
+            " ORDER BY CHILDORDER";
+    }
+    else {
+    	sql = "select CHILDID from GENERICMACRO " +
+        	"WHERE MacroType = '" + MacroTypes.GROUP + 
+            "' AND OWNERID IN (";
+   		Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
+        permittedIDs = permittedPaoIDs.toArray(permittedIDs);
+        for(Integer paoID : permittedIDs) {
+        	sql += paoID.toString() + ", ";
+        }
+        sql = sql.substring(0, sql.length() - 1);
+        sql += ") ORDER BY CHILDORDER";
+    }
 
     Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { Integer.class } );
 	Object[][] versacomNameSerial = null;
@@ -40,7 +55,7 @@
         sql += " )";
 
 	versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
-
+use permissions
   	// get expresscom serial groups 
       
 	sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID ";
@@ -58,7 +73,7 @@
         sql += " )";
     
     expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
-	
+use permissions	
 	int numSerial = 0;
 	if(versacomNameSerial != null) numSerial += versacomNameSerial.length;
 	if(expresscomNameSerial != null) numSerial += expresscomNameSerial.length;
