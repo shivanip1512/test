@@ -37,7 +37,6 @@ import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.message.util.MessageUtils;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
@@ -4666,25 +4665,7 @@ public void messageReceived( MessageEvent e )
 		getAlarmHandler().handleSignal( sig );
 
 	}
-	
-    /*TODO We need to find a better place/way to handle the version warning.  This 
-     * warning should not pop up EVERY time a command is received.
-	if( in instanceof Command
-		 && ((Command)in).getOperation() == Command.ARE_YOU_THERE )
-	{
-		String retStr = null;
-		if( (retStr = MessageUtils.getVersionComp((Command)in)) != null )
-		{
-			//we have a version mismatch, alert the user
-			JOptionPane.showMessageDialog(
-				this,
-				"The client you are running is of a different version than the server. Please update your client software." + System.getProperty("line.separator") +
-				retStr,
-				"Client/Server Version Mismatch",
-				JOptionPane.OK_OPTION );
-		}
-	}
-	*/
+
 }
 
 
