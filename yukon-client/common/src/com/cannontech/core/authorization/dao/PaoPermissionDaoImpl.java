@@ -147,7 +147,7 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
     @SuppressWarnings("unchecked")
     private List<Integer> getPaosForGroupPermission(String groupIds, Permission permission) {
 
-        String sql = "select paoid from userpaopermission where groupid in (" + groupIds
+        String sql = "select paoid from grouppaopermission where groupid in (" + groupIds
                 + ") and permission = ?";
 
         List<Integer> paoIdList = jdbcTemplate.queryForList(sql,
