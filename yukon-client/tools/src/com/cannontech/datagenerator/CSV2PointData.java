@@ -86,7 +86,7 @@ public class CSV2PointData {
                 pData.setValue(Double.parseDouble(split[3]));
                 list.add(pData);
             } catch (Exception e) {
-                log.error("invalid line: " + line);
+                log.error("invalid line: " + line, e);
                 continue;
             }
         }
@@ -101,7 +101,7 @@ public class CSV2PointData {
         long lastLoggedDate = 0;
         long delay = 0;
         
-        for (int x = 0; x < list.size(); x++, delay += 2) {
+        for (int x = 0; x < list.size(); x++) {
             final PointData pData = list.get(x);
             long loggedDate = pData.getPointDataTimeStamp().getTime();
             long diff = loggedDate - lastLoggedDate;
