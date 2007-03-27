@@ -1,5 +1,8 @@
 package com.cannontech.cbc.oneline.model.cap;
 
+import java.util.ArrayList;
+
+import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
@@ -27,6 +30,7 @@ public class OnelineCap implements OnelineObject {
     public static final String NAME_PREFIX = "CapBank_";
 
 
+    
     public OneLineDrawing drawing = null;
     private SubBus subBusMsg = null;
     private int currentCapIdx = -1;
@@ -41,10 +45,13 @@ public class OnelineCap implements OnelineObject {
 
     private StaticImage editorImage;
 
+    private StaticImage infoImage;
+
     public void draw() {
 
         currFdrIndex = drawing.getFeeders().size() - 1;
         OnelineFeeder f = getParentFeeder();
+        
         double nameX = f.getFeederName().getX();
         int nameWidth = OnelineUtil.getFeederOffset(f.getFeederName().getText());
         double nameOffset = nameX + nameWidth;
@@ -58,17 +65,21 @@ public class OnelineCap implements OnelineObject {
         initConnector(xImgYPos, imgXPos);
         initStateImage(xImgYPos, imgXPos);
         initEditorImage();
+        initInformationImage();
         
         graph.add(stateImage);
         graph.add(connectorLn);
         graph.add(editorImage);
+        graph.add(infoImage);
+
         
         UpdatableStats capStats = new CapBankUpdatableStats(graph, this);
         capStats.draw();
         HiddenStates hiddenStates = new CapBankHiddenStates(graph, this);
         CapBankTagView tagView = new CapBankTagView(graph, this, hiddenStates);
-        
+        HiddenStates capBankInfo = new CapBankAdditionalInfo (graph, this);
         hiddenStates.draw();
+        capBankInfo.draw();
         tagView.draw();
 
     }
@@ -97,6 +108,14 @@ public class OnelineCap implements OnelineObject {
         stateImage.setLinkTo("javascript:void(0)");
     }
 
+    private void initInformationImage() {
+        infoImage = new StaticImage();
+        infoImage.setYukonImage(OnelineUtil.IMG_QUESTION);
+        infoImage.setX(editorImage.getX()  - 20);
+        infoImage.setY(editorImage.getY());
+        infoImage.setLinkTo("javascript:void(0)");
+        infoImage.setName(CommandPopups.CAP_INFO + "_" + getCurrentCapIdFromMessage());
+    }
 
 
     private void initEditorImage() {

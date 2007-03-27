@@ -7,11 +7,14 @@ var ALL_POPUP_TYPES = {
 	subTag: "SubTag",
 	feederTag: "FeederTag",
 	capTag: "CapTag",
+	capInfo: "CapInfo",	
 	//types that are not known on the server
 	//because they are the children 
 	childCapMaint: "CapBankMaint",
 	childCapDBChange:"CapDBChange"
 };
+
+
 
 
 function openPopupWin(elem, compositeIdType) {
@@ -32,7 +35,7 @@ function openPopupWin(elem, compositeIdType) {
 	
 	type = compositeIdType.split("_")[0];
 	id = compositeIdType.split("_")[1];
-
+	var url;
 	if (type == ALL_POPUP_TYPES.subCommand) {
 		url = createSubMenu();
 	}
@@ -52,6 +55,11 @@ function openPopupWin(elem, compositeIdType) {
 	else if (type == ALL_POPUP_TYPES.capTag) {
 						url = createCapTagMenu(id);
 	}
+	
+	else if (type == ALL_POPUP_TYPES.capInfo) {
+						url = createCapInfoMenu(id);
+	}
+	
 	else if (type == ALL_POPUP_TYPES.childCapMaint) {
 					url = createCapbankMaint(id);
 	}
@@ -69,11 +77,54 @@ function openPopupWin(elem, compositeIdType) {
 	window.parent.document.getElementById("controlrequest").style.backgroundColor = "black";
 }
 
+function createCapInfoTable (paoName, testData) {
+
+var allRows = "";
+var str = '';
+str+='				<table >';
+str+='						<tr style="color:#9FBBAC; font-weight: bold; font-size: 18;" >';
+str+='							<td align="center" colspan="3" > <u>';
+str+= paoName;
+str+= '<\/u> <\/td>';
+str+='							<td align="right" valign="top" id = "popupplaceholder">';
+str+='								<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
+str+='							<\/td>';
+str+='						<\/tr>';
+for (var key in REF_LABELS)
+{
+	label = REF_LABELS[key];
+	data  = testData[key];
+	str+='<tr >';
+	str+='			<td align="left" style="color:gray">';
+	str+='				' + label;
+	str+='			<\/td>';
+	str+='			<td align="right" style="color:gray"> ' + data +' <\/td>';
+	str+='		<\/tr>';
+
+}
+str+='<\/table>';
+return str;
+
+}
+
+function createCapInfoMenu (capID) {	
+	var testData = new Object();
+	var paoName = getState("CapState_" + capID, "paoName");
+	allAttribs = getHiddenAttributes("CapHiddenInfo_" + capID);
+	for(var i=0; i<allAttribs.length; i++){
+		element = allAttribs.item(i);
+		name = element.getName();
+		val = element.getValue();
+		if (findValueByKey(name, REF_LABELS)){
+			testData[name] = val;
+		}
+	}
+	return createCapInfoTable (paoName, testData);
+}
 
 function createFeederTagMenu(feederID) {
 	//state var
 	var isDis = getState("FeederState_" + feederID, "isDisable");
-	
 	var disFeederTag;
 
 	if (isDis == "true")
@@ -196,7 +247,6 @@ function createCapTagMenu (paoID) {
 	var paoName = getState("CapState_" + paoID, "paoName");
 	var disCapTag;
 	debug = 1;
-	//TODO: Dispatch TagManager doesn't work yet - therefore all teh "reasoning" is off 
 	if (isDis == "true")
 	{
 		disableCap = new Command (paoID, ALL_CAP_CMDS.enable_capbank, ALL_CMD_TYPES.cap);

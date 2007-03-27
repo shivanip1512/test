@@ -67,7 +67,7 @@ public class OnelineFeeder implements OnelineObject {
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(feederLn);
         graph.add(editorImage);
-        graph.add(infoImage);
+        //graph.add(infoImage);
         UpdatableStats stats = new FeederUpdatableStats(graph, this);
         stats.draw();
         HiddenStates feederStates = new FeederHiddenStates(graph, this);
@@ -79,8 +79,8 @@ public class OnelineFeeder implements OnelineObject {
 
     private void initInformationImage() {
         infoImage = new StaticImage();
-        String link = OnelineUtil.createEditLink(getCurrentFeederIdFromMessage().intValue());
-        infoImage.setLinkTo(link);
+        //String link = OnelineUtil.createEditLink(getCurrentFeederIdFromMessage().intValue());
+        //infoImage.setLinkTo(link);
         infoImage.setYukonImage(OnelineUtil.IMG_QUESTION);
         infoImage.setX(editorImage.getX() + 20);
         infoImage.setY(editorImage.getY());

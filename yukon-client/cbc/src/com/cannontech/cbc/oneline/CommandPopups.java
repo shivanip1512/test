@@ -17,6 +17,7 @@ public class CommandPopups {
     public static final String  SUB_TAG = "SubTag";
     public static final String  FEEDER_TAG = "FeederTag";
     public static final String  CAP_TAG = "CapTag";
+    public static final String CAP_INFO = "CapInfo";
 
 
 }

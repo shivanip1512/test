@@ -7,9 +7,29 @@ function initCC() {
 	updateDrawing();
 }
 
+var REF_LABELS = {
+				 	maintArea: "Maintenance Area ID:",
+				 	poleNum:"Pole Number:",
+				 	dir:"Driving Directions:",
+				 	latit:"Latitude:",
+				 	longit:"Longitude:",
+					config:"Cap Bank Config:",
+					medium:"Comm. Medium",
+					strength:"Comm.Strength",
+					isAntenna:"External Antenna?",
+					antType:"Antenna Type:",
+					maintVis:"Last Maintenance Visit:",
+					inspVis:"Last Inspection Visit:",
+					opRstDt:"Op Count Reset Date:",
+					potentTrfmr:"Potential Transformer:",
+					maintReqPend:"Maintenance Request Pending:",
+					otrCmnts:"Other Comments:",
+					opTmCmnts:"Op Team Comments:",
+					cbcInsDt:"CBC Install Date:"		
+				};
 
 
-//AJAX
+
 function batchExecute (cmdStr) {
 	var tags = new Array();
 	var cmds = new Array();
@@ -47,10 +67,6 @@ function batchExecute (cmdStr) {
 		}
 		
 
-	//str = "The following will be executed: ";
-	//str += cmds.toString();
-	//str += ",";
-	//str += tags.toString();
 	question += ". Is this OK?";
 	
 	if (confirm(question))
@@ -141,6 +157,26 @@ function updateFeeders(xml) {
 	updateVisibleText("FeederStat", xml, true);
 	updateVisibleText("FeederTag", xml, false);
 }
+
+function updateCaps(xml) {
+	var images = document.getElementsByTagName("image");
+	for (var i = 0; i < images.length; i++) {
+		image = images.item(i);
+		idAttr = image.getAttribute("id");
+		if (idAttr.split("_")[0] == "CapBank") {
+			update_Image(idAttr, xml);
+		}
+	}
+	var capBankInfo = new Array();
+	for(var key in REF_LABELS) {
+		capBankInfo.push (key);
+	}
+	updateHiddenTextElements("CapHiddenInfo", xml, capBankInfo);
+	updateHiddenTextElements("CapState", xml, ["isDisable", "isOVUVDis", "isStandalone", "standAloneReason", "disableCapReason", "paoName"]);
+	updateVisibleText("CapStat", xml, false);
+	updateVisibleText("CapTag", xml, false);
+}
+
 function updateVisibleText(prefix, xml, updPairs) {
 	var textEls = document.getElementsByTagName("text");
 	for (var i = 0; i < textEls.length; i++) {
@@ -168,19 +204,7 @@ function updateVisibleText(prefix, xml, updPairs) {
 		}
 	}
 }
-function updateCaps(xml) {
-	var images = document.getElementsByTagName("image");
-	for (var i = 0; i < images.length; i++) {
-		image = images.item(i);
-		idAttr = image.getAttribute("id");
-		if (idAttr.split("_")[0] == "CapBank") {
-			update_Image(idAttr, xml);
-		}
-	}
-	updateHiddenTextElements("CapState", xml, ["isDisable", "isOVUVDis", "isStandalone", "standAloneReason", "disableCapReason", "paoName"]);
-	updateVisibleText("CapStat", xml, false);
-	updateVisibleText("CapTag", xml, false);
-}
+
 function getSubId() {
 	var textEls = document.getElementsByTagName("text");
 	var subID = -1;
@@ -278,6 +302,18 @@ function getState(name, s) {
 			return txtNode.getAttribute(s);
 		}
 	}
+}
+
+function getHiddenAttributes (name){
+	var textEls = document.getElementsByTagName("text");
+	for (var i = 0; i < textEls.length; i++) {
+		txtNode = textEls.item(i);
+		id = txtNode.getAttribute("id");
+		if ((id == name) && txtNode.getAttribute("elementID") == "HiddenTextElement") {
+			return txtNode.getAttributes();
+		}
+	}
+
 }
 function getAllManualStatesForCap(paoID) {
 	allstates = window.parent.document.getElementById("capmanualstates").value.split(",");
@@ -441,6 +477,15 @@ function reflect (obj, value) {
 	{
 		if (obj[key] == value) {
 			return key;
+		}
+	}
+	return null;
+}
+
+function findValueByKey(key, map){
+	for(var k in map){
+		if (key == k){
+			return map[k];
 		}
 	}
 	return null;

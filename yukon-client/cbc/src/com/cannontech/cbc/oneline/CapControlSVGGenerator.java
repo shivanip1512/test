@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
+import com.cannontech.cbc.oneline.model.cap.CapBankAdditionalInfo;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
@@ -15,6 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
+import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.svg.BaseSVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.esub.util.DrawingUpdater;
@@ -105,7 +107,7 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
             }
 
-        } else if (comp instanceof LxAbstractImage && getGenOptions().isScriptingEnabled() && !isCap(comp)) {
+        } else if (comp instanceof LxAbstractImage && getGenOptions().isScriptingEnabled() && !isCapBankImage(comp)) {
             if (comp instanceof StateImage) {
                 StateImage newImage = (StateImage) comp;
                 if (isSub(newImage)) {
@@ -123,14 +125,27 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
                                 "onmouseout",
                                 "noUnderLine(evt.getTarget())");
 
-        } else if (isCap(comp) && getGenOptions().isScriptingEnabled()) {
+        } else if (isCapBankImage(comp) && getGenOptions().isScriptingEnabled()) {
             String str = comp.getName();
             String id = OnelineUtil.extractObjectIdFromString(str);
             addDynamicAttributes(elem, CommandPopups.CAP_COMMAND + "_" + id);
         }
+        if (isCapBankInfoImage(comp) && getGenOptions().isScriptingEnabled()) {
+            String str = comp.getName();
+            String id = OnelineUtil.extractObjectIdFromString(str);
+            addDynamicAttributes(elem, CommandPopups.CAP_INFO + "_" + id);
+        }
 
     }
 
+
+    private boolean isCapBankInfoImage(LxComponent comp) {
+        if ((comp instanceof StaticImage) && StringUtils.contains(comp.getName(),
+                                                                 CommandPopups.CAP_INFO)) {
+            return true;
+        }
+        return false;
+    }
 
     private void addDynamicAttributes(Element elem, String typeString) {
         elem.setAttributeNS(null,
@@ -140,7 +155,7 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
         elem.setAttributeNS(null, "onmouseout", "noBorder(evt.getTarget())");
     }
 
-    private boolean isCap(LxComponent comp) {
+    private boolean isCapBankImage(LxComponent comp) {
         if ((comp instanceof StateImage) && StringUtils.contains(comp.getName(),
                                                                  OnelineCap.NAME_PREFIX)) {
             return true;
