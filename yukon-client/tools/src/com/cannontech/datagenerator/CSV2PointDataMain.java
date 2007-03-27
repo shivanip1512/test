@@ -30,9 +30,11 @@ public class CSV2PointDataMain {
         CSV2PointData cpd = YukonSpringHook.getBean("csv2PointData", CSV2PointData.class);
         
         try {
-            int multi = (args[1] != null) ? Integer.parseInt(args[1]) : 0;
-            List<PointData> list = cpd.parseFile(new File(args[0]));
-            cpd.writeOut(list, multi);
+            if (args[1] != null) {
+                int multi = Integer.parseInt(args[1]);
+                cpd.setMultiplier(multi);
+            }
+            cpd.parseFile(new File(args[0]));
         } catch (IOException e) {
             System.out.println("Unable to parse csv file " + args[0]);
         } catch (NumberFormatException ex) {

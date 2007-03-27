@@ -4,8 +4,9 @@
 <beans>
 
 	<bean id="csv2PointData" class="com.cannontech.datagenerator.CSV2PointData">
-		<property name="dataSource"><ref bean="dataSource"/></property>
+		<property name="dataSource"><ref bean="dynamicDataSource"/></property>
 		<property name="timer"><ref bean="globalTimer"/></property>
+		<property name="multiplier" value="0"/>
 	</bean>
 
 </beans>
