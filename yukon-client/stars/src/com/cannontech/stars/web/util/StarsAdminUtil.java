@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.cannontech.clientutils.CTILogger;
@@ -24,6 +25,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -36,6 +39,7 @@ import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -119,26 +123,34 @@ public class StarsAdminUtil {
 				grpSerial.getMacroGroupVector().add( macro );
 				grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
-				
-				String sql = "INSERT INTO UserPaoOwner VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
+                
+                PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID()), Permission.LM_VISIBLE);
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;
 				
-				String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, UserPaoOwner us " +
-						"WHERE us.UserID = " + energyCompany.getUserID() +
-						" AND us.PaoID = macro.OwnerID " +
-						"AND macro.MacroType = '" + MacroTypes.GROUP +
+                PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+                Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.LM_VISIBLE);
+                String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
+						"WHERE macro.MacroType = '" + MacroTypes.GROUP +
 						"' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+                if(! permittedPaoIDs.isEmpty()) {
+                    sql += " AND macro.OwnerID in (";
+                    Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
+                    permittedIDs = permittedPaoIDs.toArray(permittedIDs);
+                    for(Integer paoID : permittedIDs) {
+                        sql += paoID.toString() + ", ";
+                    }
+                    sql = sql.substring(0, sql.length() - 1);
+                    sql += ")";
+                }
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 				
 				if (stmt.getRowCount() == 0)
 					throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
 				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-				
 				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
 				group.setLMGroupID( new Integer(groupID) );
 				group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
@@ -154,17 +166,30 @@ public class StarsAdminUtil {
 	}
 	
 	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
-		String sql = "SELECT exc.LMGroupID, us.PaoID FROM LMGroupExpressCom exc, GenericMacro macro, UserPaoOwner us " +
-				"WHERE us.UserID = " + energyCompany.getUserID() + " AND us.PaoID = macro.OwnerID " +
-				"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+        PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+        Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.LM_VISIBLE);
+        String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
+				"WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+        if(! permittedPaoIDs.isEmpty()) {
+            sql += " AND macro.OwnerID in (";
+            Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
+            permittedIDs = permittedPaoIDs.toArray(permittedIDs);
+            for(Integer paoID : permittedIDs) {
+                sql += paoID.toString() + ", ";
+            }
+            sql = sql.substring(0, sql.length() - 1);
+            sql += ")";
+        }
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		stmt.execute();
 		
 		if (stmt.getRowCount() > 0) {
 			int dftRtGrpID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
 			int serialGrpID = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
-			
-			sql = "DELETE FROM UserPaoOwner WHERE PaoID = " + serialGrpID;
+            /*Load groups are only assigned to users, so for now we only have to worry about removing from
+             * the user.
+             */
+            pService.removePermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(serialGrpID), Permission.LM_VISIBLE);
 			stmt.setSQLString( sql );
 			stmt.execute();
 			
