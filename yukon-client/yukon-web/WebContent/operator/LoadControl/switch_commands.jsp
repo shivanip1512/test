@@ -1,4 +1,8 @@
 
+<jsp:directive.page import="com.cannontech.core.authorization.service.PaoPermissionService"/>
+<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
+<jsp:directive.page import="java.util.Set"/>
+<jsp:directive.page import="com.cannontech.core.authorization.support.Permission"/>
 <%@ include file="include/oper_header.jspf" %>                                   
 <!-- Find all the versacom serial groups associated with this operator -->
 <!-- a serial address of 0 indicates that we should display the serial number text field -->
@@ -12,8 +16,9 @@
 
     int textFieldRouteID = -1;
 
+	String sql = new String();
 	PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(getUserID()), Permission.LM_VISIBLE);
+    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
     if(permittedPaoIDs.isEmpty()) {
     	sql = "select CHILDID from GENERICMACRO " +
         	"WHERE MacroType = '" + MacroTypes.GROUP + "'" +
@@ -55,7 +60,6 @@
         sql += " )";
 
 	versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
-use permissions
   	// get expresscom serial groups 
       
 	sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID ";
@@ -73,7 +77,6 @@ use permissions
         sql += " )";
     
     expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
-use permissions	
 	int numSerial = 0;
 	if(versacomNameSerial != null) numSerial += versacomNameSerial.length;
 	if(expresscomNameSerial != null) numSerial += expresscomNameSerial.length;
