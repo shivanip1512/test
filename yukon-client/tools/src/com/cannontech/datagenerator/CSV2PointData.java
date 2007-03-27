@@ -57,7 +57,7 @@ public class CSV2PointData {
     }
     
     public void setFile(File file) {
-        Validate.isTrue(file.exists() && file.isFile(), "csv file must exist", file);
+        Validate.isTrue(!file.exists() || !file.isFile(), "csv file must exist", file);
         this.file = file;
     }
 
