@@ -177,11 +177,6 @@ public interface IDatabaseCache {
 
     public Map<LiteYukonUser, LiteEnergyCompany> getAllUserEnergyCompanies();
 
-    /**
-     * @return  Map of LiteYukonUser to int array of paoIDs 
-     */
-    public Map<LiteYukonUser, int[]> getYukonUserPaoOwners();
-
     public List<LiteCustomer> getAllCustomers();
 
     public List<LiteDeviceTypeCommand> getAllDeviceTypeCommands();

@@ -86,7 +86,6 @@ import com.cannontech.yukon.server.cache.TOUDayLoader;
 import com.cannontech.yukon.server.cache.TOUScheduleLoader;
 import com.cannontech.yukon.server.cache.TagLoader;
 import com.cannontech.yukon.server.cache.UserEnergyCompanyLoader;
-import com.cannontech.yukon.server.cache.UserPoaOwnerLoader;
 import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
 import com.cannontech.yukon.server.cache.YukonImageLoader;
@@ -187,7 +186,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
 	private Map<LiteYukonUser, LiteEnergyCompany> allUserEnergyCompaniesMap = null;
-	private Map<LiteYukonUser, int[]> userPaoOwnersMap = null;
     
 	private ArrayList<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
 	private ArrayList<LiteCommand> allCommands = null;
@@ -1238,18 +1236,6 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
-	 */
-	public synchronized Map<LiteYukonUser, int[]> getYukonUserPaoOwners() {
-		if(userPaoOwnersMap == null) {
-			userPaoOwnersMap = new java.util.HashMap<LiteYukonUser, int[]>();
-			UserPoaOwnerLoader l = new UserPoaOwnerLoader( userPaoOwnersMap, getAllYukonUsers(), databaseAlias);
-			l.run();
-		}
-		return userPaoOwnersMap;
-	}
-
-	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
 	 */
 	@SuppressWarnings("unchecked")
@@ -1683,8 +1669,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		allYukonUserGroupsMap = null;
 		allYukonGroupUsersMap = null;
 		allUserEnergyCompaniesMap = null;
-
-		userPaoOwnersMap = null;
 	}
 	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
 	{
@@ -2913,7 +2897,6 @@ public synchronized void releaseAllCache()
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
 	allUserEnergyCompaniesMap = null;
-	userPaoOwnersMap = null;
 }
 /**
  * Insert the method's description here.

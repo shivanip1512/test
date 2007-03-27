@@ -77,10 +77,6 @@ public void delete() throws java.sql.SQLException
 	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
     delete ("DynamicLMControlHistory","PAObjectID", getPAObjectID() );
 	delete( "PAOOwner", "ChildID", getPAObjectID() );
-    try {
-        delete( "UserPaoOwner", "PaoID", getPAObjectID() );
-    }
-    catch (SQLException e) {}
     // Remove pao permissions
     PaoPermissionDao paoPermissionDao = (PaoPermissionDao) YukonSpringHook.getBean("paoPermissionDao");
     paoPermissionDao.removeAllPaoPermissions(getPAObjectID());
