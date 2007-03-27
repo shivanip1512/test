@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -31,6 +32,7 @@ public class CSV2PointData {
     private DynamicDataSource dataSource;
     private Timer timer;
     private int multiplier;
+    private File file;
     
     public CSV2PointData() {
         
@@ -50,10 +52,16 @@ public class CSV2PointData {
     }
     
     public void setMultiplier(int multiplier) {
+        Validate.isTrue(multiplier <= 0, "multiplier must be > 0", multiplier);
         this.multiplier = multiplier;
     }
+    
+    public void setFile(File file) {
+        Validate.isTrue(file.exists() && file.isFile(), "csv file must exist", file);
+        this.file = file;
+    }
 
-    public void parseFile(File file) throws IOException {
+    private List<PointData> parseFile(File file) throws IOException {
         List<PointData> list = new ArrayList<PointData>();
 
         BufferedReader in = 
@@ -83,10 +91,12 @@ public class CSV2PointData {
             }
         }
         
-        writeOut(list);
+        return list;
     }
 
-    private void writeOut(List<PointData> list) {
+    public void writeOut() throws IOException {
+        List<PointData> list = parseFile(file);
+        
         long time = 0;
         long lastLoggedDate = 0;
         long delay = 0;
@@ -97,16 +107,16 @@ public class CSV2PointData {
             long diff = loggedDate - lastLoggedDate;
             lastLoggedDate = loggedDate;
             
-            time = (x == 0) ? System.currentTimeMillis() : (multiplier != 0) ? (diff / multiplier) : diff;
+            time = (x == 0) ? System.currentTimeMillis() : (diff / multiplier);
 
-            final long scheduledTime = time;
+            final Date date = new Date(time);
             timer.schedule(new TimerTask() {
                 public void run() {
                     log.info("sending PointData id number: " + pData.getId());
-                    pData.setTime(new Date(scheduledTime));
+                    pData.setTime(date);
                     dataSource.putValue(pData);
                 }
-            }, delay);
+            }, date);
             
         }
     }

@@ -5,9 +5,7 @@ package com.cannontech.datagenerator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -34,7 +32,8 @@ public class CSV2PointDataMain {
                 int multi = Integer.parseInt(args[1]);
                 cpd.setMultiplier(multi);
             }
-            cpd.parseFile(new File(args[0]));
+            cpd.setFile(new File(args[0]));
+            cpd.writeOut();
         } catch (IOException e) {
             System.out.println("Unable to parse csv file " + args[0]);
         } catch (NumberFormatException ex) {
