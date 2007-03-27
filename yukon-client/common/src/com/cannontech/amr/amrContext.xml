@@ -6,5 +6,14 @@
       <property name="template" ref="simpleJdbcTemplate"/>
 	  <property name="paoDao" ref="paoDao"/>
     </bean>
+    
+    <bean id="deviceErrorTranslator" class="com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl" singleton="true">
+	  	<property name="errorDefinitions">
+	  		<value type="java.io.InputStream">
+	  			com/cannontech/common/device/errors/impl/error-code.xml
+	  		</value>
+	  	</property>
+	</bean>
+    
 </beans>
 
