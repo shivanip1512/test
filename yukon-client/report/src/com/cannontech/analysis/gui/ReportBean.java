@@ -15,17 +15,16 @@ import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.util.IntList;
 
-import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.user.UserUtils;
@@ -182,11 +181,13 @@ public class ReportBean
 	 * Returns the ReportModelBase, creates a new ReportModelBase if isChanged flag is true.
 	 * Resets the isChanged flag on new model creation.
 	 * @return
-     * @deprecated This class should only use the reportController where possible.
+     * @ deprecated This class should only use the reportController where possible.
 	 */
 	public ReportModelBase getModel()
 	{
-		return model;
+		if( getReportController() == null)
+			return null;
+		return getReportController().getReport().getModel();
 	}
     
     public boolean hasFilter() {
@@ -198,7 +199,7 @@ public class ReportBean
         }
     }
     
-    public Map<Integer,List<? extends Object>> getFilterObjectsMap() {
+    public Map<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
        // getModel();
         return reportController.getFilterObjectsMap();
     }
@@ -338,7 +339,8 @@ public class ReportBean
 	}
     
     public ReportController getReportController() {
-        //getModel();
+    	if (reportController == null || isChanged())
+    		createController();
         return reportController;
     }
 
@@ -349,6 +351,6 @@ public class ReportBean
         } else {
             setModel(reportController.getReport().getModel());
         }
-        setChanged(true);
+        setChanged(false);
     }
 }
