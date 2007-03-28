@@ -10,15 +10,16 @@ import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
+import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSubAreaNames;
+import com.cannontech.yukon.cbc.CBCSubAreas;
 import com.cannontech.yukon.conns.ConnPool;
 
 public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, TableModelListener
 {
 	//a band aid to always allow us to insert the last CBCSubAreaNames we received
-	private CBCSubAreaNames lastSubAreaMsg = null;
+	private CBCSubAreas lastSubAreaMsg = null;
 	
 	public final static String CBC_NAME = "Cap Bank Control";
 	public final static String CBC_VERSION = 
@@ -114,7 +115,7 @@ public void executeRefreshButton()
 
 	try
 	{
-		getConnectionWrapper().executeCommand( 0, com.cannontech.yukon.cbc.CBCCommand.REQUEST_ALL_SUBS );
+		getConnectionWrapper().executeCommand( 0, com.cannontech.yukon.cbc.CBCCommand.REQUEST_ALL_AREAS );
 	}
 	catch( java.io.IOException e )
 	{
@@ -174,7 +175,7 @@ private void requestAllData()
 {
 	try
 	{
-		getConnectionWrapper().executeCommand(0, CBCCommand.REQUEST_ALL_SUBS );
+		getConnectionWrapper().executeCommand(0, CBCCommand.REQUEST_ALL_AREAS );
 	}
 	catch( Exception e)
 	{
@@ -452,7 +453,7 @@ public void silenceAlarms()
  * Creation date: (4/12/2002 1:53:27 PM)
  * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
  */
-private void updateAreaList(CBCSubAreaNames areaNames) 
+private void updateAreaList(CBCSubAreas areaNames) 
 {
 	if( getJComboBox() == null || areaNames == null )
 		return;
@@ -472,7 +473,7 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 			// add all area names to the JComboBox	
 			for( int i = 0; i < areaNames.getNumberOfAreas(); i++ )
 			{
-				getJComboBox().addItem( areaNames.getAreaName(i) );
+				getJComboBox().addItem( (areaNames.getArea(i).getPaoName()) );
 			}
 
 			if( obj != null )
@@ -528,8 +529,8 @@ public synchronized void handleAreaChange()
             // add all area names to the JComboBox  
             for( int i = 0; i < mainPanel.getSubBusTableModel().getAreaNames().size(); i++ )
             {
-                getJComboBox().addItem(
-                        mainPanel.getSubBusTableModel().getAreaNames().get(i) );
+                CBCArea area = ((CBCArea)(mainPanel.getSubBusTableModel().getAreaNames().get(i)) );
+                getJComboBox().addItem( area.getPaoName() );
             }
 
             if( obj != null )

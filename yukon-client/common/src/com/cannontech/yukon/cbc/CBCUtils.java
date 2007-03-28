@@ -43,6 +43,26 @@ public final class CBCUtils
 	public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
 	
 	
+    public static final Comparator CBC_AREA_COMPARATOR = new Comparator()
+    {
+        public int compare(Object o1, Object o2)
+        {
+            try
+            {
+                String thisArea = ((CBCArea)o1).getPaoName();
+                String anotherArea = ((CBCArea)o2).getPaoName();
+                
+                return( thisArea.compareToIgnoreCase(anotherArea) );
+                
+            }
+            catch( Exception e )
+            {
+                CTILogger.error( "Something went wrong with sorting, ignoring sorting rules", e );
+                return 0; 
+            }
+            
+        }
+    };
 
 	public static final Comparator SUB_AREA_COMPARATOR = new Comparator()
 	{

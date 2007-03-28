@@ -42,14 +42,14 @@
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 		String css = "tableCell";
-		for( int i = 0; i < userOwner.getAreaNames().size(); i++ )
+		for( int i = 0; i < userOwner.getCbcAreas().size(); i++ )
 		{
 			css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-			String areaStr = (String)userOwner.getAreaNames().get(i);
-			SubBus[] areaBuses = userOwner.getSubsByArea(areaStr);
+			CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
+			SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoName());
 			//Feeder[] areaFeeders = userOwner.getFeedersByArea(areaStr);
 			if (areaBuses.length > 0) {
-			CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(areaStr);
+			CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoName());
 			
 			String totalVars =
 				CBCUtils.format( CBCUtils.calcTotalVARS(areaCapBanks) );
@@ -60,26 +60,27 @@
 								CBCUtils.calcAvgPF(areaBuses), true);
 			String estPF = CBCDisplay.getPowerFactorText(
 								CBCUtils.calcAvgEstPF(areaBuses), true);
-            String areaState = ((Boolean)(userOwner.getAreaStateMap().get(areaStr)))?"ENABLED":"DISABLED";
+            String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
 %>
 	        <tr class="<%=css%>">
 				<td>				
+				<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
 				<input type="image" id="showAreas<%=i%>"
 					src="images/nav-plus.gif"
 					onclick="showRowElems( 'allAreas<%=i%>', toggleImg('showAreas<%=i%>') ); return false;"/>
-				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=areaStr%>')">
-				<%=areaStr%></a>
+				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=area.getPaoName()%>')">
+				<%=area.getPaoName()%></a>
 				</td>
                 <td>
                 <!--Create  popup menu html-->               
                 <div id = "serverMessage<%=i%>" style="display:none" > </div>
                 
-                <input id="cmd_area_<%=areaBuses[0].getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
+                <input id="cmd_area_<%=area.getPaoID()%>" type="hidden" name = "cmd_dyn" value= "" />
                 <a id="area_state_<%=i%>" name="area_state" 
                     style="<%=css%>"
                     href="javascript:void(0);"
                     <%= popupEvent %> ="return overlib(
-                        $F('cmd_area_<%=areaBuses[0].getCcId()%>'),
+                        $F('cmd_area_<%=area.getPaoID()%>'),
                         STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
                         MOUSEOFF, FULLHTML);"
                     onmouseout= <%=nd%> >
@@ -139,15 +140,15 @@ function updateAreaMenu (resp) {
 var msgs = resp.responseText.split(':');
 var areaname = msgs[0];
 var areaindex = msgs[1];
-var sub0ID = msgs[2];
+var areaID = msgs[2];
 var areastate = msgs[3];
 //update state
 document.getElementById ('area_state_' + areaindex).innerHTML = areastate;
 //update menu
 if (areastate == 'ENABLED')
-    document.getElementById('cmd_area_' + sub0ID).value = generate_SubAreaMenu(sub0ID,areaname, 0);
+    document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 0);
 if (areastate == 'DISABLED')
-    document.getElementById('cmd_area_' + sub0ID).value = generate_SubAreaMenu(sub0ID,areaname, 1);
+    document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 1);
 }
 
 

@@ -390,7 +390,7 @@ function getUrlType( selElems, type ) {
 
         elemName = selElems[0].getAttribute('name');
 
-        if( elemName == 'cti_chkbxSubs' || elemName == 'cti_chkbxFdrs'
+        if( elemName == 'cti_chkbxAreas' ||elemName == 'cti_chkbxSubs' || elemName == 'cti_chkbxFdrs'
                 || elemName == 'cti_chkbxBanks' ) {
             return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=capcontrol';
         }
@@ -409,13 +409,14 @@ function getUrlType( selElems, type ) {
 // -------------------------------------------
 function editorPost()
 {
-
+    var elemAreas = document.getElementsByName('cti_chkbxAreas');	
     var elemSubs = document.getElementsByName('cti_chkbxSubs');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
     var validElems = new Array();
+    getValidChecks( elemAreas, validElems );
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
     getValidChecks( elemBanks, validElems );

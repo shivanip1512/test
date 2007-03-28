@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSubAreaNames;
+import com.cannontech.yukon.cbc.CBCSubAreas;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.SubBus;
@@ -109,7 +109,7 @@ public Vector getAreaNames()
 * 
 * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
 */
-private synchronized void updateAreaList(CBCSubAreaNames areaNames_) 
+private synchronized void updateAreaList(CBCSubAreas areaNames_) 
 {
   // remove all the values in the list
   getAreaNames().removeAllElements();
@@ -123,8 +123,8 @@ private synchronized void updateAreaList(CBCSubAreaNames areaNames_)
   
   // add all area names to the list   
   for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )
-      if( areaMap.containsKey(areaNames_.getAreaName(i)) )
-          getAreaNames().add( areaNames_.getAreaName(i) );
+      if( areaMap.containsKey(areaNames_.getArea(i).getPaoName()) )
+          getAreaNames().add( areaNames_.getArea(i).getPaoName() );
 }
 
 /**
@@ -468,9 +468,9 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 
 		updateSubBuses( allBuses );
 	}
-    else if( in instanceof CBCSubAreaNames )
+    else if( in instanceof CBCSubAreas )
     {
-        updateAreaList( (CBCSubAreaNames)in );
+        updateAreaList( (CBCSubAreas)in );
 
         CBCGenericTableModelEvent areasChng = 
             new CBCGenericTableModelEvent( 

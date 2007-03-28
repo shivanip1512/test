@@ -249,7 +249,7 @@ public class ConnPool
 				//start the conn!!!
 				cbcConn.connect( 15000 );
 				
-				cbcConn.executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+				cbcConn.executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
 			}
 			catch( java.io.IOException ex )
 			{

@@ -20,7 +20,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 	public static final int CLOSE_CAPBANK = 7;	
 	public static final int CONFIRM_OPEN = 8;
 	public static final int CONFIRM_CLOSE = 9;	
-	public static final int REQUEST_ALL_SUBS = 10;
+	public static final int REQUEST_ALL_AREAS = 10;
 	public static final int RETURN_BANK_TO_FEEDER = 11;
 	public static final int RESET_OPCOUNT = 12;
 

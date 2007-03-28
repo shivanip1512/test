@@ -33,6 +33,7 @@ import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -181,10 +182,10 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 }
 
 private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOException {
-    String area = (String) getCapControlCache().getAreaNames().get(areaIndex);
-    Boolean state = (Boolean) getCapControlCache().getAreaStateMap().get(area);
-    Integer sub0ID = getCapControlCache().getSubsByArea(area)[0].getCcId();
-    String msg = area + ":" + areaIndex + ":" + sub0ID + ":";
+    CBCArea area = (CBCArea) getCapControlCache().getCbcAreas().get(areaIndex);
+    Boolean state = (Boolean) getCapControlCache().getAreaStateMap().get(area.getPaoName());
+    Integer areaID = area.getPaoID();
+    String msg = area.getPaoName() + ":" + areaIndex + ":" + areaID + ":";
     msg += (state)?"ENABLED":"DISABLED";
     writer.write (msg);
     writer.flush();

@@ -29,8 +29,9 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableSubBus(),
 		new DefineCollectableFeeder(),
 		new DefineCollectableState(),
+		new DefineCollectableCBCArea(),
 		
-		//Collectable Mappings
+        //Collectable Mappings
 		com.roguewave.vsj.streamer.CollectableMappings.OrderedVector,
 		com.roguewave.vsj.streamer.CollectableMappings.CollectableString,
 		
@@ -38,12 +39,13 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableCBCStateGroupMessage(),
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
 		new DefineCollectableCBCCommand(),
-		new DefineCollectableCBCSubAreaName(),
+		new DefineCollectableCBCSubAreas(),
 		new DefineCollectableCBCSubstationBuses(),
 		new DefineCollectableCBCMessage(), // not used except as a superclass
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
 		new DefineCollectableCBCTempMoveCapBank(),
-		new DefineCollectableVerifySub()
+		new DefineCollectableVerifySub(),
+        new DefineCollectableCBCSubAreas()
 	};
 	
 	/**
@@ -56,7 +58,7 @@ public class CBCClientConnection extends ClientConnection
 		super("CBC");// "127.0.0.1", 1910 );
 		initialize();
 		getExternalResources();
-		setRegistrationMsg(new CBCCommand ( CBCCommand.REQUEST_ALL_SUBS, 0) );
+		setRegistrationMsg(new CBCCommand ( CBCCommand.REQUEST_ALL_AREAS, 0) );
 	}
 	
 	/**

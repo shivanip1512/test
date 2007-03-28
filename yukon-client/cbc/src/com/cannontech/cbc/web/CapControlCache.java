@@ -35,9 +35,10 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
+import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSubAreaNames;
+import com.cannontech.yukon.cbc.CBCSubAreas;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -49,7 +50,7 @@ import com.cannontech.yukon.conns.ConnPool;
 public class CapControlCache implements MessageListener, CapControlDAO
 {
 	private static final int STARTUP_REF_RATE = 15 * 1000;
-	private static final int NORMAL_REF_RATE = 5 * 60* 1000; //5 minutes
+	private static final int NORMAL_REF_RATE = 5 * 60 * 1000; //5 minutes
 	private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
 	// Map<suBusID(Integer), sub(SubBus)>
@@ -63,17 +64,12 @@ public class CapControlCache implements MessageListener, CapControlDAO
 	private HashMap subToBankMap = new HashMap();
 	// Map<areaName(String), subIDs(NativeIntVector)>
 	private HashMap subIDToAreaMap = new HashMap();
-	
-//	private LiteYukonUser yukonUser = null;
-	
 	private CBCWebUpdatedObjectMap updatedObjMap = null;
 
+	// Vector:CBCArea
+	private Vector cbcAreas = new Vector();
 
-	// Vector:String
-	private Vector areaNames = new Vector(16);
-
-//Map<areaName(String)>, <state (Boolean)>
-
+	//Map<areaName(String)>, <state (Boolean)>
     private HashMap areaStateMap = new HashMap();
     /**
  * CapControlCache constructor.
@@ -351,9 +347,9 @@ public synchronized SubBus[] getAllSubBuses()
  * 
  * @return List
  */
-public List getAreaNames()
+public List getCbcAreas()
 {
-	return areaNames;
+	return cbcAreas;
 }
 
 /**
@@ -388,30 +384,24 @@ public int getParentSubBusID( int childID ) {
 * have at least 1 subbus. We derive the current areas from the message and the
 * current SubBuses
 * 
-* @param CBCSubAreaNames
+* @param CBCSubAreas
 */
-private synchronized void handleAreaList(CBCSubAreaNames areaNames_) 
+private synchronized void handleAreaList(CBCSubAreas areas) 
 {
-	// remove all the values in the list
-	areaNames.removeAllElements();
-	
-	//create the temporary map to have the needed areas in it, use a map to ensure we
-	// only have 1 area string for each area, better performance than list.contains()
-	SubBus[] subBuses = getAllSubBuses();
-	HashMap areaMap = new HashMap( areaNames_.getNumberOfAreas() );
-	for( int i = 0; i < subBuses.length; i++ )
-		areaMap.put( subBuses[i].getCcArea(), "temp" );
+    //search through the existing list if there is an area that doesn't exist than 
+    //copy the area, add it to the list
+    //if area already exists:
+    //remove the current object, copy the new area add new area to the list
+    for (Iterator iter = areas.getAreas().iterator(); iter.hasNext();) {
+        CBCArea area = (CBCArea) iter.next();
+        CBCArea copy = area.copy();
+        if (cbcAreas.contains(area)) {
+            cbcAreas.remove(copy);
+        }
+        cbcAreas.add(copy);
+    }
+    Collections.sort(cbcAreas, CBCUtils.CBC_AREA_COMPARATOR);
 
-	//add all area names to the list
-	Iterator it = areaMap.keySet().iterator();
-	while( it.hasNext() ) {
-		String area = (String) it.next();
-        areaNames.add( area );
-	}
-	
-	//before returning, sort our Areas based on the name
-	Collections.sort( areaNames );
-    //add the new area to the area state map
     resetAreaStateMap();
 }
 
@@ -461,7 +451,6 @@ private void handleSubBuses( CBCSubstationBuses busesMsg )
 	for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
 		handleSubBus( busesMsg.getSubBusAt(i) );
 	
-    handleAreaStateMap();
 }
 
 /**
@@ -578,7 +567,7 @@ public synchronized void refresh()
 	CTILogger.debug("Refreshing CapControl Cache");
 	
 	try  {
-		getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+		getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
 	} catch ( IOException ioe ) {
 		CTILogger.error( "Exception occured during a refresh_cache operation", ioe );
 	}
@@ -596,8 +585,8 @@ public void messageReceived( MessageEvent e )
 	if( in instanceof CBCSubstationBuses ) {
 		handleSubBuses( (CBCSubstationBuses)in );
 	}
-	else if( in instanceof CBCSubAreaNames ) {
-		handleAreaList( (CBCSubAreaNames)in );
+	else if( in instanceof CBCSubAreas ) {
+		handleAreaList( (CBCSubAreas)in );
 	}	
 	else if( in instanceof CBCCommand ) {		
 		handleCBCCommand( (CBCCommand)in );
@@ -643,59 +632,18 @@ public HashMap getAreaStateMap() {
 }
 
 private void initAreaStateMap() {
-    List areaNames = getAreaNames();
+    List areaNames = getCbcAreas();
     for (Iterator iter = areaNames.iterator(); iter.hasNext();) {
-        String area = (String) iter.next();
-        areaStateMap.put(area, Boolean.FALSE);
-        SubBus[] subs = getSubsByArea(area);
-        for (int i = 0; i < subs.length; i++) {
-            SubBus bus = subs[i];
-            if (!bus.getCcDisableFlag()) {
-                areaStateMap.put(area, Boolean.TRUE);
-                break;
-            }
-        }
+        CBCArea area = (CBCArea) iter.next();
+        areaStateMap.put(area.getPaoName(), !area.getDisableFlag());
+
     }
 }
 
-private void handleAreaStateMap() {
-HashMap map = getAreaStateMap();
-    for (Iterator iter = areaNames.iterator(); iter.hasNext();) {
-        String area = (String) iter.next();
-        Boolean isAreaEnabled = (Boolean) map.get(area);
-        SubBus[] subs = getSubsByArea(area);
-        if (!isAreaEnabled)
-            handleAreaDisabled (area, subs);        
-        else
-            handleAreaEnabled (area, subs);
-    }
-}
-//state will only change if all subs in area are disabled
-private void handleAreaEnabled(String area, SubBus[] subs) {
-    boolean disableArea = true;
-    for (int i = 0; i < subs.length; i++) {
-        SubBus bus = subs[i];
-        disableArea = bus.getCcDisableFlag() && disableArea;             
-    }
-    getAreaStateMap().put(area, !disableArea);
-}
-
-//state will change if at least 1 sub is enabled
-private void handleAreaDisabled(String area, SubBus[] subs) {
-    for (int i = 0; i < subs.length; i++) {
-        SubBus bus = subs[i];
-        if (!bus.getCcDisableFlag())
-        {
-            getAreaStateMap().put(area, Boolean.TRUE);
-            break;
-        }
-    }
-}
 
 private void resetAreaStateMap() {
-    HashMap map = getAreaStateMap();
-    map = new HashMap();
-    initAreaStateMap();
+    areaStateMap = new HashMap();
+    getAreaStateMap();
 }
 
 

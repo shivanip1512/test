@@ -31,11 +31,11 @@ String nd = "\"return nd();\"";
 LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 if (popupEvent == null) popupEvent = "onmouseover";
-List areas = capControlCache.getAreaNames();
+List areas = capControlCache.getCbcAreas();
 List movedCaps = new ArrayList(10);   
    for (Iterator iter = areas.iterator(); iter.hasNext();) {
-	String area = (String) iter.next();
-	CapBankDevice[] capBanks = capControlCache.getCapBanksByArea(area);
+    CBCArea area = (CBCArea) iter.next();
+	CapBankDevice[] capBanks = capControlCache.getCapBanksByArea(area.getPaoName());
 	for (int i=0; i < capBanks.length; i++) {
 		CapBankDevice capBank = capBanks[i];
 		if (capBank.isBankMoved())

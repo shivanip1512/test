@@ -37,6 +37,7 @@ import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -71,6 +72,7 @@ import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.editor.model.DataModelFactory;
 import com.cannontech.web.editor.model.EditorDataModel;
 import com.cannontech.web.editor.model.EditorDataModelImpl;
 import com.cannontech.web.editor.point.PointLists;
@@ -659,9 +661,11 @@ public class CapControlForm extends DBEditorForm{
 
     //initiatiates data model for our specific object
 	private void initDataModel(DBPersistent dbPersistent) {
-            if ((dbPersistent instanceof CapControlSubBus) 
+            if ((dbPersistent instanceof CapControlArea) || 
+                    (dbPersistent instanceof CapControlSubBus) 
                     || (dbPersistent instanceof CapControlFeeder))
-                dataModel = new EditorDataModelImpl (dbPersistent);
+                
+                dataModel = DataModelFactory.createModel(dbPersistent);
     }
 
 
@@ -740,6 +744,7 @@ public class CapControlForm extends DBEditorForm{
 
 		// all type specifc panels
 		getVisibleTabs().put("GeneralPAO", Boolean.TRUE);
+        getVisibleTabs().put("CBCArea", Boolean.FALSE);
 		getVisibleTabs().put("BaseCapControl", Boolean.FALSE);
 		getVisibleTabs().put("CBCSubstation", Boolean.FALSE);
 		getVisibleTabs().put("CBCFeeder", Boolean.FALSE);
@@ -760,7 +765,7 @@ public class CapControlForm extends DBEditorForm{
         case PAOGroups.CAP_CONTROL_AREA:
             setEditorTitle("Substation Area");
             setPaoDescLabel("Substation Area");
-            setChildLabel("Substation");
+            setChildLabel("Substations");
             getVisibleTabs().put("CBCArea", Boolean.TRUE);
             break;
 

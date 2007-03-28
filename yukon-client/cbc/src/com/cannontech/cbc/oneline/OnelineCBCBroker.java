@@ -225,7 +225,7 @@ public class OnelineCBCBroker implements MessageListener {
         CTILogger.info("Starting CBC One-Line ....");
         try {
             getConnection().addMessageListener(this);
-            getConnection().executeCommand(0, CBCCommand.REQUEST_ALL_SUBS);
+            getConnection().executeCommand(0, CBCCommand.REQUEST_ALL_AREAS);
             CTILogger.info("CBC One-Line successfully started...");
         } catch (Exception e) {
 

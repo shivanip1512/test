@@ -122,7 +122,7 @@ public interface CapControlDAO {
 	 * 
 	 * @return List
 	 */
-	public abstract List getAreaNames();
+	public abstract List getCbcAreas();
 
 	/**
 	 * State group & states to use for CapBanks

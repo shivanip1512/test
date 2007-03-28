@@ -158,7 +158,7 @@ public class CapControlWebAnnex implements java.util.Observer
 		{
 			//we must tell our connection we want all the SUBs right away
 			// for our SubTableModel
-			getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+			getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
 			
 			//FIXME: since this is asynchronous, the page is returned before we have any SubBuses, thus
 			// causing a blank page to be displayed. This is a hack around it.

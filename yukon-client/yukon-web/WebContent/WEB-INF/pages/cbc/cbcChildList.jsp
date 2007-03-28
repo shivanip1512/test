@@ -3,7 +3,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 
-<f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
+<f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
 
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
 	    <f:verbatim><br/><br/><fieldset><legend>Feeder Assignment</legend></f:verbatim>

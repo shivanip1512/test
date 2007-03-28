@@ -35,8 +35,8 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getAllSubBuses();
 	}
 
-	public List getAreaNames() {
-		List names = _ccDao.getAreaNames();
+	public List getCbcAreas() {
+		List names = _ccDao.getCbcAreas();
 		return names;
 	}
 
