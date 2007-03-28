@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/10/16 17:38:10 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/03/28 21:18:42 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.21  2007/03/28 21:18:42  jotteson
+* Memory leak's fixed.
+*
 * Revision 1.20  2006/10/16 17:38:10  jotteson
 * Adding sa305 and saDigital to verification process.
 *
@@ -409,15 +412,6 @@ INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                     string(InMessage->Return.CommandStr),
-                                                     string(),
-                                                     InMessage->EventCode & 0x7fff,
-                                                     InMessage->Return.RouteID,
-                                                     InMessage->Return.MacroOffset,
-                                                     InMessage->Return.Attempt,
-                                                     InMessage->Return.TrxID,
-                                                     InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
 
@@ -428,28 +422,25 @@ INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
     resetScanFlag();
 
-    if( pPIL != NULL )
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+
+    if(pMsg != NULL)
     {
-        CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+        pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+        pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+        pMsg->insert(getID());          // The id (device or point which failed)
+        pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(pMsg != NULL)
+        if(InMessage->EventCode != 0)
         {
-            pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(getID());          // The id (device or point which failed)
-            pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-
-            if(InMessage->EventCode != 0)
-            {
-                pMsg->insert(InMessage->EventCode);
-            }
-            else
-            {
-                pMsg->insert(GeneralScanAborted);
-            }
-
-            retList.push_back( pMsg );
+            pMsg->insert(InMessage->EventCode);
         }
+        else
+        {
+            pMsg->insert(GeneralScanAborted);
+        }
+
+        retList.push_back( pMsg );
     }
     else
     {

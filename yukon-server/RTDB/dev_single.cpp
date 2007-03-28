@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2007/03/19 20:26:25 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/03/28 21:18:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -467,6 +467,14 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
 
                     // Do the devices general scan!
                     nRet = GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
+
+                    if( !vgList.empty() || !retList.empty() )
+                    {
+                        delete_list( vgList  );
+                        delete_list( retList );
+                        vgList.clear();
+                        retList.clear();
+                    }
 
                     OutMessage = NULL;      // Memory may be forgotten
 
