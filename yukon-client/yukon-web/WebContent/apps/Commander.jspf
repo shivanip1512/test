@@ -4,6 +4,10 @@
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 
+<style type="text/css">
+div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #666; text-align:left; padding: 8px;}
+</style>
+
 <%
 	//set the deviceID of the YC_BEAN
 	YC_BEAN.setDeviceID(deviceID);
@@ -62,7 +66,7 @@
 		<%=name%>
 	</div>
 	
-	<div class="errorMsg">
+	<div class="ErrorMsg">
 <% if (errorMsg != null) { %>
 		<%=errorMsg %><br />
 <% } %>
@@ -148,16 +152,17 @@
 	            	<input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
 	            </td>
 			</tr>
+			<tr>
+				<td colspan="3">
+	    		<div class="scroll">
+    	    		<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
+	        	</div>
+	    		<input type="submit" name="clearText" value="Clear Results">
+        		<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
+				</td>
+			</tr>
 		</table>
-	
-    	<div class="scroll">
-        	<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
-        </div>
-        
-        <input type="submit" name="clearText" value="Clear Results">
-        <input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
 	</form>
-	
 <% 
 	String gotoLink = "";
 	if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
