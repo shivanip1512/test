@@ -6,19 +6,10 @@
     <head>
         <title>Energy Services Operations Center</title>           
 
-        
-<!-- Layout CSS files -->
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/StandardStyles.css" >
 <link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" />
-
-<!-- Individual files from includeCss tag on the request page -->
-<!--  (none)  -->
-
-<!-- Energy Company specific style sheets (EnergyCompanyRole)-->
-
-<!-- Consolidated Script Files -->
-<script type="text/javascript" src="/JavaScript/prototype.js" ></script>
-<script type="text/javascript" src="/JavaScript/CtiMenu.js" ></script>
+<script type="text/javascript" src="JavaScript/prototype.js" ></script>
+<script type="text/javascript" src="JavaScript/CtiMenu.js" ></script>
 
     </head>
 
