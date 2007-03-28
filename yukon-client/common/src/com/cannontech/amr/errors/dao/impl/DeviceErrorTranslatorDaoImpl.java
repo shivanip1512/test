@@ -70,7 +70,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             }
         }
         Validate.notNull(defaultTranslation, "No default translation found");
-        log.info("Friend device error codes loaded: " + children.size());
+        log.info("Device error code descriptions loaded: " + children.size());
     }
 
     public void setErrorDefinitions(InputStream errorDefinitions) {
