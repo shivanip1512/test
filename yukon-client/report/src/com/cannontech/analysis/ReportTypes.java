@@ -15,13 +15,10 @@ import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.controller.ReportControllerAdapter;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
-import com.cannontech.analysis.tablemodel.CBCInventoryModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
 import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
 import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
-import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
-import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -44,6 +41,7 @@ import com.cannontech.analysis.tablemodel.ProgramDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteDBModel;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
+import com.cannontech.analysis.tablemodel.ScheduledMeterReadModel;
 import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
 import com.cannontech.analysis.tablemodel.StarsAMRSummaryModel;
 import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
@@ -120,6 +118,8 @@ public class ReportTypes
     public static final int CAP_CONTROL_OPERATIONS = 37;
     public static final int CBC_INVENTORY = 38;
     
+    public static final int SCHEDULED_METER_READ_DATA = 39;
+    
 	private static Class[] typeToClassMap =
 	{
 		StatisticModel.class,
@@ -168,6 +168,8 @@ public class ReportTypes
         CapControlStateComparisonController.class,
         CapControlOperationsController.class,
         CBCInventoryController.class,
+        
+        ScheduledMeterReadModel.class
 	};
 		
 	/** String names for report types */
@@ -223,6 +225,8 @@ public class ReportTypes
     public static final String CAP_CONTROL_OPERATIONS_STRING= "CapControl Operations";
     public static final String CBC_INVENTORY_STRING= "CBC Inventory";
     
+    public static final String SCHEDULED_METER_READ_STRING = "Scheduled Meter Reads";
+    
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
 		STATISTIC_DATA_STRING, 
@@ -274,6 +278,8 @@ public class ReportTypes
         CAP_CONTROL_STATE_COMPARISON_STRING,
         CAP_CONTROL_OPERATIONS_STRING,
         CBC_INVENTORY_STRING,
+        
+        SCHEDULED_METER_READ_STRING
 	};
 
 
@@ -317,7 +323,8 @@ public class ReportTypes
 	};
 
 	private static int[] adminGroupReportTypes = new int[]{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA};
-	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
+	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, SCHEDULED_METER_READ_DATA, METER_OUTAGE_DATA, 
+						POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
 	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA, MAX_DAILY_OPERATIONS, CAP_CONTROL_STATE_COMPARISON, CAP_CONTROL_OPERATIONS, CBC_INVENTORY};
