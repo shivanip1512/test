@@ -989,7 +989,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                         additional += " changed because point value: ";
                         _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
                         additional += tempchar;
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -1152,7 +1152,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     text += getPAOName();
                     string additional = *getAutomaticallyStartedSignalString();
                     //additional += getAutomaticallyStartedSignalString();
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                     signal->setSOE(1);  
 
                     multiDispatchMsg->insert(signal);
@@ -1185,7 +1185,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                     additional += " New Priority: ";
                                     _ltoa(lmProgramDirect->getStartPriority(),tempchar,10);
                                     additional += tempchar;
-                                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                                     multiDispatchMsg->insert(signal);
                                     {
@@ -1340,7 +1340,7 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
             text += getPAOName();
             string additional = "Stop Priority: ";
             additional += CtiNumStr(cur_stop_priority);
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.c_str(),additional.c_str(),GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.c_str(),additional.c_str(),GeneralLogType,SignalEvent);
             signal->setSOE(1);
             multiDispatchMsg->insert(signal);
 
@@ -1383,7 +1383,7 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
         string text("Automatic Stop, LM Control Area: ");
         text += getPAOName();
         string additional("");//someday we can say why we auto stopped
-        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+        CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
         signal->setSOE(1);
 
         multiDispatchMsg->insert(signal);
@@ -1430,7 +1430,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                     text += getPAOName();
                     string additional = *getAutomaticallyStartedSignalString();
                     //additional += getAutomaticallyStartedSignalString();
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                     signal->setSOE(1);
 
                     multiDispatchMsg->insert(signal);
@@ -1463,7 +1463,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                                 additional += " New Priority: ";
                                 _ltoa(currentLMProgram->getStartPriority(),tempchar,10);
                                 additional += tempchar;
-                                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                                 multiDispatchMsg->insert(signal);
                                 {
@@ -1582,7 +1582,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                         text += getPAOName();
                         string additional = *getAutomaticallyStartedSignalString();
                         //additional += getAutomaticallyStartedSignalString();
-                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                        CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                         signal->setSOE(1);
     
                         multiDispatchMsg->insert(signal);
@@ -1604,7 +1604,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                         {
                             CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram);
-                            CtiLMManualControlRequest* manual_req = new CtiLMManualControlRequest(
+                            CtiLMManualControlRequest* manual_req = CTIDBG_new CtiLMManualControlRequest(
                                 CtiLMManualControlRequest::START_NOW,
                                 lmProgramDirect->getPAOId(),
                                 gEndOfCtiTime,
@@ -1680,7 +1680,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
             text += getPAOName();
             string additional = *getAutomaticallyStartedSignalString();
             //additional += getAutomaticallyStartedSignalString();
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
             signal->setSOE(1);
 
             multiDispatchMsg->insert(signal);
@@ -1697,7 +1697,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
                 if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
                     CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram);
-                    CtiLMManualControlRequest* manual_req = new CtiLMManualControlRequest(
+                    CtiLMManualControlRequest* manual_req = CTIDBG_new CtiLMManualControlRequest(
                         CtiLMManualControlRequest::STOP_NOW,
                         lmProgramDirect->getPAOId(),
                         gEndOfCtiTime,
@@ -1797,7 +1797,7 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
                     additional += CtiNumStr(lm_trigger->getProjectedPointValue());
                 }
 
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
                 signal->setSOE(1);
                 multiDispatchMsg->insert(signal);
 
@@ -1902,7 +1902,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             additional += " New Priority: ";
             _ltoa(newPriority,tempchar,10);
             additional += tempchar;
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
             multiDispatchMsg->insert(signal);
             {
@@ -1960,7 +1960,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                     string text("Automatic Stop, LM Control Area: ");
                     text += getPAOName();
                     string additional("");//someday we can say why we auto stopped
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                     signal->setSOE(1);
 
                     multiDispatchMsg->insert(signal);
@@ -1975,7 +1975,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                     string text("Automatic Stop, LM Program: ");
                     text += currentLMProgram->getPAOName();
                     string additional("");//someday we can say why we auto stopped
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                     signal->setSOE(i+2);
 
                     multiDispatchMsg->insert(signal);
@@ -2014,7 +2014,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                 additional += " New Priority: ";
                 _ltoa(newPriority,tempchar,10);
                 additional += tempchar;
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                 multiDispatchMsg->insert(signal);
                 {
@@ -2082,7 +2082,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                 string text("Manual Start, LM Control Area: ");
                 text += getPAOName();
                 string additional("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
@@ -2102,7 +2102,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
             string text("Manual Stop, LMControl Area: ");
             text += getPAOName();
             string additional("");
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
             signal->setSOE(1);
 
             multiDispatchMsg->insert(signal);
@@ -2124,7 +2124,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                 string text("Manual Start, LM Control Area: ");
                 text += getPAOName();
                 string additional("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
@@ -2192,7 +2192,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
                 string text("Timed Start, LM Control Area: ");
                 text += getPAOName();
                 string additional("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
@@ -2212,7 +2212,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
             string text("Timed Stop, LMControl Area: ");
             text += getPAOName();
             string additional("");
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
             signal->setSOE(1);
 
             multiDispatchMsg->insert(signal);
@@ -2237,7 +2237,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
                 string text("Timed Start, LM Control Area: ");
                 text += getPAOName();
                 string additional("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
@@ -2300,11 +2300,11 @@ void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
             getControlAreaState() == CtiLMControlArea::FullyActiveState ||
             getControlAreaState() == CtiLMControlArea::ManualActiveState )
         {//controlling
-            multiDispatchMsg->insert(new CtiPointDataMsg(getControlAreaStatusPointId(),STATEONE,NormalQuality,StatusPointType));
+            multiDispatchMsg->insert(CTIDBG_new CtiPointDataMsg(getControlAreaStatusPointId(),STATEONE,NormalQuality,StatusPointType));
         }
         else
         {//not controlling
-            multiDispatchMsg->insert(new CtiPointDataMsg(getControlAreaStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
+            multiDispatchMsg->insert(CTIDBG_new CtiPointDataMsg(getControlAreaStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
         }
     }
 
@@ -2590,7 +2590,7 @@ int CtiLMControlArea::operator!=(const CtiLMControlArea& right) const
 ---------------------------------------------------------------------------*/
 CtiLMControlArea* CtiLMControlArea::replicate() const
 {
-    return(new CtiLMControlArea(*this));
+    return(CTIDBG_new CtiLMControlArea(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -2686,7 +2686,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 string* CtiLMControlArea::getAutomaticallyStartedSignalString()
 {
-    string* returnString = new string("");
+    string* returnString = CTIDBG_new string("");
 
     for(int i=0;i<_lmcontrolareatriggers.size();i++)
     {

@@ -174,7 +174,7 @@ void CtiLMCommandExecutor::ChangeThreshold()
                         additional += " to: ";
                         _snprintf(tempchar,80,"%.*f",3,_command->getValue());
                         additional += tempchar;
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser(), NULL));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser(), NULL));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -227,7 +227,7 @@ void CtiLMCommandExecutor::ChangeRestoreOffset()
                         additional += " to: ";
                         _snprintf(tempchar,80,"%.*f",3,_command->getValue());
                         additional += tempchar;
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -271,7 +271,7 @@ void CtiLMCommandExecutor::EnableControlArea()
                 _ltoa(currentLMControlArea->getPAOId(),tempchar,10);
                 additional += tempchar;
 
-                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -308,7 +308,7 @@ void CtiLMCommandExecutor::DisableControlArea()
                 _ltoa(currentLMControlArea->getPAOId(),tempchar,10);
                 additional += tempchar;
 
-                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -336,7 +336,7 @@ void CtiLMCommandExecutor::DisableControlArea()
                         _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                         additional += tempchar;
 
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -379,7 +379,7 @@ void CtiLMCommandExecutor::EnableProgram()
                     _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                     additional += tempchar;
 
-                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -430,7 +430,7 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                     additional += tempchar;
                     
 
-                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -468,7 +468,7 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                         _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                         additional += tempchar;
 
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -496,7 +496,7 @@ void CtiLMCommandExecutor::SendAllControlAreas()
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    CtiLMControlAreaMsg* msg = new CtiLMControlAreaMsg(*store->getControlAreas(CtiTime().seconds()),CtiLMControlAreaMsg::AllControlAreasSent);
+    CtiLMControlAreaMsg* msg = CTIDBG_new CtiLMControlAreaMsg(*store->getControlAreas(CtiTime().seconds()),CtiLMControlAreaMsg::AllControlAreasSent);
 
     CtiLMConnectionPtr connection = _command->getConnection();
     if(connection)
@@ -545,7 +545,7 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
                     additional += " PAO ID: ";
                     _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
                     additional += tempchar;
-                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -593,7 +593,7 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
                     additional += " PAO ID: ";
                     _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
                     additional += tempchar;
-                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -638,7 +638,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             _ltoa(currentLMGroup->getPAOId(),tempchar,10);
                             additional += tempchar;
 
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -717,7 +717,7 @@ void CtiLMCommandExecutor::CycleGroup()
                             _ltoa(currentLMGroup->getPAOId(),tempchar,10);
                             additional += tempchar;
 
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -799,7 +799,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                             _ltoa(currentLMGroup->getPAOId(),tempchar,10);
                             additional += tempchar;
 
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -807,7 +807,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                         }
                         int priority = 11;
                         string controlString = "control restore";
-                        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
@@ -872,7 +872,7 @@ void CtiLMCommandExecutor::EnableGroup()
                             _ltoa(currentLMGroup->getPAOId(),tempchar,10);
                             additional += tempchar;
 
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -927,7 +927,7 @@ void CtiLMCommandExecutor::DisableGroup()
                             _ltoa(currentLMGroup->getPAOId(),tempchar,10);
                             additional += tempchar;
 
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -946,7 +946,7 @@ void CtiLMCommandExecutor::DisableGroup()
                                 _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                                 additional += tempchar;
 
-                                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -955,7 +955,7 @@ void CtiLMCommandExecutor::DisableGroup()
 
                             int priority = 11;
                             string controlString = "control restore";
-                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
@@ -1041,7 +1041,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
                                 _ltoa(currentLMGroup->getPAOId(),tempchar,10);
                                 additional += tempchar;
 
-                                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -1049,7 +1049,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
                             }
                             int priority = 11;
                             string controlString = currentLMGroup->getLastControlString();
-                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
@@ -1110,7 +1110,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
                         string text = ("User Peak Point Value Reset");
                         string additional = ("Peak Point Value Reset for Trigger: ");
                         _snprintf(tempchar,80,"%d",triggerNumber);
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -1176,7 +1176,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     CtiServerResponseMsg* response = NULL; 
     if(_request != NULL)
     {
-        response = new CtiServerResponseMsg();
+        response = CTIDBG_new CtiServerResponseMsg();
 
     }
     
@@ -1321,7 +1321,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     if(response != NULL)
     {
         response->setMessagePriority(1);
-        CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
+        CtiLMManualControlResponse* lmResp = CTIDBG_new CtiLMManualControlResponse();
         lmResp->setPAOId(_controlMsg->getPAOId());
         lmResp->setConstraintViolations(checker.getViolations());       
         response->setPayload(lmResp);
@@ -1370,7 +1370,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
         additional += directProgram->getDirectStartTime().asString();
         additional += ", Stop: ";
         additional += directProgram->getDirectStopTime().asString();
-        CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
+        CtiLoadManager::getInstance()->sendMessageToDispatch( CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -1448,7 +1448,7 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
         text += lmProgramDirect->getPAOName();
         string additional = ("Stop: ");
         additional += lmProgramDirect->getDirectStopTime().asString();
-        CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
+        CtiLoadManager::getInstance()->sendMessageToDispatch( CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -1768,7 +1768,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
                     lmProgramEnergyExchange->setProgramState(CtiLMProgramBase::ManualActiveState);
                     std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     {
-                        CtiLMEnergyExchangeOffer* newOffer = new CtiLMEnergyExchangeOffer();
+                        CtiLMEnergyExchangeOffer* newOffer = CTIDBG_new CtiLMEnergyExchangeOffer();
                         newOffer->setPAOId(energyExchangeProgramID);
                         newOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
                         newOffer->setOfferId(0);// This forces the program to create a new ref id
@@ -1777,7 +1777,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
                         energyExchangeOffers.push_back(newOffer);
 
                         std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = newOffer->getLMEnergyExchangeOfferRevisions();
-                        CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
+                        CtiLMEnergyExchangeOfferRevision* newRevision = CTIDBG_new CtiLMEnergyExchangeOfferRevision();
 
                         newRevision->setOfferId(newOffer->getOfferId());// This forces the program to create a new ref id
                         newRevision->setRevisionNumber(0);
@@ -1798,7 +1798,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
                         vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
                         for(LONG k=0;k<HOURS_IN_DAY;k++)
                         {
-                            CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
+                            CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = CTIDBG_new CtiLMEnergyExchangeHourlyOffer();
                             newHourlyOffer->setOfferId(newRevision->getOfferId());
                             newHourlyOffer->setRevisionNumber(0);
                             newHourlyOffer->setHour(k);
@@ -1996,7 +1996,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
                                 currentRevision->updateLMEnergyExchangeOfferRevisionTable();
                             }
                             std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = revisionOffer->getLMEnergyExchangeOfferRevisions();
-                            CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
+                            CtiLMEnergyExchangeOfferRevision* newRevision = CTIDBG_new CtiLMEnergyExchangeOfferRevision();
 
                             newRevision->setOfferId(revisionOffer->getOfferId());
                             newRevision->setRevisionNumber( currentRevision->getRevisionNumber() + 1 );
@@ -2017,7 +2017,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
                             vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
                             for(LONG k=0;k<HOURS_IN_DAY;k++)
                             {
-                                CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
+                                CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = CTIDBG_new CtiLMEnergyExchangeHourlyOffer();
                                 newHourlyOffer->setOfferId(newRevision->getOfferId());
                                 newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
                                 newHourlyOffer->setHour(k);
@@ -2497,7 +2497,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                             currentLMEnergyExchangeCustomerReply->updateLMEnergyExchangeCustomerReplyTable();
                                             for(LONG m=0;m<HOURS_IN_DAY;m++)
                                             {
-                                                CtiLMEnergyExchangeHourlyCustomer* newHourlyCustomer = new CtiLMEnergyExchangeHourlyCustomer();
+                                                CtiLMEnergyExchangeHourlyCustomer* newHourlyCustomer = CTIDBG_new CtiLMEnergyExchangeHourlyCustomer();
                                                 newHourlyCustomer->setCustomerId(customerID);
                                                 newHourlyCustomer->setOfferId(offerID);
                                                 newHourlyCustomer->setRevisionNumber(revisionNumber);
@@ -2531,7 +2531,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                         lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
 
                                         std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentOffer->getLMEnergyExchangeOfferRevisions();
-                                        CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
+                                        CtiLMEnergyExchangeOfferRevision* newRevision = CTIDBG_new CtiLMEnergyExchangeOfferRevision();
 
                                         newRevision->setOfferId(currentOffer->getOfferId());
                                         newRevision->setRevisionNumber( currentRevision->getRevisionNumber() + 1 );
@@ -2552,7 +2552,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                         LONG currentOverCommittedHourPosition = 0;
                                         for(LONG y=0;y<HOURS_IN_DAY;y++)
                                         {
-                                            CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
+                                            CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = CTIDBG_new CtiLMEnergyExchangeHourlyOffer();
                                             newHourlyOffer->setOfferId(newRevision->getOfferId());
                                             newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
                                             newHourlyOffer->setHour(y);
@@ -2769,40 +2769,40 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
     switch ( classId )
     {
         case CTILMCOMMAND_ID:
-            ret_val = new CtiLMCommandExecutor( (CtiLMCommand*)message );
+            ret_val = CTIDBG_new CtiLMCommandExecutor( (CtiLMCommand*)message );
             break;
     
         case CTILMCONTROLAREA_MSG_ID:
-            ret_val = new CtiLMControlAreaMsgExecutor( (CtiLMControlAreaMsg*)message );
+            ret_val = CTIDBG_new CtiLMControlAreaMsgExecutor( (CtiLMControlAreaMsg*)message );
             break;
     
         case CTILMMANUALCONTROLREQUEST_ID:
-            ret_val = new CtiLMManualControlRequestExecutor( (CtiLMManualControlRequest*)message, request );
+            ret_val = CTIDBG_new CtiLMManualControlRequestExecutor( (CtiLMManualControlRequest*)message, request );
             break;
 
         case CTILMENERGYEXCHANGECONTROLMSG_ID:
-            ret_val = new CtiLMEnergyExchangeControlMsgExecutor( (CtiLMEnergyExchangeControlMsg*)message );
+            ret_val = CTIDBG_new CtiLMEnergyExchangeControlMsgExecutor( (CtiLMEnergyExchangeControlMsg*)message );
             break;
     
         case CTILMCURTAILMENTACK_MSG_ID:
-            ret_val = new CtiLMCurtailmentAcknowledgeMsgExecutor( (CtiLMCurtailmentAcknowledgeMsg*)message );
+            ret_val = CTIDBG_new CtiLMCurtailmentAcknowledgeMsgExecutor( (CtiLMCurtailmentAcknowledgeMsg*)message );
             break;
     
         case CTILMENERGYEXCHANGEACCEPTMSG_ID:
-            ret_val = new CtiLMEnergyExchangeAcceptMsgExecutor( (CtiLMEnergyExchangeAcceptMsg*)message );
+            ret_val = CTIDBG_new CtiLMEnergyExchangeAcceptMsgExecutor( (CtiLMEnergyExchangeAcceptMsg*)message );
             break;
     
         case MSG_POINTDATA:
         case MSG_COMMAND:
-            ret_val = new CtiLMForwardMsgToDispatchExecutor( (CtiMessage*)message );
+            ret_val = CTIDBG_new CtiLMForwardMsgToDispatchExecutor( (CtiMessage*)message );
             break;
     
         case MSG_MULTI:
-            ret_val = new CtiLMMultiMsgExecutor( (CtiMultiMsg*)message );
+            ret_val = CTIDBG_new CtiLMMultiMsgExecutor( (CtiMultiMsg*)message );
             break;
         
         case CTILMSHUTDOWN_ID:
-            ret_val = new CtiLMShutdownExecutor();
+            ret_val = CTIDBG_new CtiLMShutdownExecutor();
             break;
     
         default:

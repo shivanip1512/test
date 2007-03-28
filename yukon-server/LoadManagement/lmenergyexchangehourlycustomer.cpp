@@ -212,7 +212,7 @@ void CtiLMEnergyExchangeHourlyCustomer::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer* CtiLMEnergyExchangeHourlyCustomer::replicate() const
 {
-    return(new CtiLMEnergyExchangeHourlyCustomer(*this));
+    return(CTIDBG_new CtiLMEnergyExchangeHourlyCustomer(*this));
 }
 
 /*---------------------------------------------------------------------------

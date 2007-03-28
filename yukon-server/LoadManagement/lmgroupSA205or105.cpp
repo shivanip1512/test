@@ -100,7 +100,7 @@ CtiRequestMsg* CtiLMGroupSA205OR105::createRotationRequestMsg(LONG sendRate, LON
 /*-------------------------------------------------------------------------
   createMasterCycleRequestMsg
 
-  Creates a new CtiRequestMsg pointer for a program gear with a control
+  Creates a CTIDBG_new CtiRequestMsg pointer for a program gear with a control
   method of master cycle with the appropriate off time, period length.
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupSA205OR105::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
@@ -166,7 +166,7 @@ int CtiLMGroupSA205OR105::operator!=(const CtiLMGroupSA205OR105& right) const
   ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupSA205OR105::replicate() const
 {
-    return (new CtiLMGroupSA205OR105(*this));
+    return (CTIDBG_new CtiLMGroupSA205OR105(*this));
 }
 
 /*---------------------------------------------------------------------------

@@ -734,7 +734,7 @@ int CtiLMControlAreaTrigger::operator!=(const CtiLMControlAreaTrigger& right) co
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger* CtiLMControlAreaTrigger::replicate() const
 {
-    return(new CtiLMControlAreaTrigger(*this));
+    return(CTIDBG_new CtiLMControlAreaTrigger(*this));
 }
 
 /*---------------------------------------------------------------------------

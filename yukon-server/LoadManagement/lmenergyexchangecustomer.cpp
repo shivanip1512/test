@@ -118,7 +118,7 @@ void CtiLMEnergyExchangeCustomer::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer* CtiLMEnergyExchangeCustomer::replicate() const
 {
-    return (new CtiLMEnergyExchangeCustomer(*this));
+    return (CTIDBG_new CtiLMEnergyExchangeCustomer(*this));
 }
 
 /*---------------------------------------------------------------------------

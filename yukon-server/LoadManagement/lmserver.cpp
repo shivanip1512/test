@@ -32,7 +32,7 @@ int CtiLMServer::_defaultport = 1920;
 CtiLMServer* CtiLMServer::getInstance()
 {
     if ( _instance == NULL )
-        _instance = new CtiLMServer();
+        _instance = CTIDBG_new CtiLMServer();
 
     return _instance;
 }
@@ -111,7 +111,7 @@ void CtiLMServer::start()
         func.start();
 
         if ( _listener == NULL )
-            _listener = new CtiLMClientListener( _defaultport );
+            _listener = CTIDBG_new CtiLMClientListener( _defaultport );
 
         _listener->start();
     }

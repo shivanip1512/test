@@ -597,7 +597,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         string text("Automatic Start, LM Program: ");
                         text += getPAOName();
                         string additional("");
-                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                        CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                         signal->setSOE(2);
 
                         multiDispatchMsg->insert(signal);
@@ -2210,7 +2210,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                     additional += currentGearObject->getGearName();
                     additional += " New Gear: ";
                     additional += ((CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber])->getGearName();
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                     multiDispatchMsg->insert(signal);
                     {
@@ -2235,7 +2235,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                     additional += currentGearObject->getGearName();
                     additional += " New Gear: ";
                     additional += ((CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber])->getGearName();
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                     multiDispatchMsg->insert(signal);
                     {
@@ -2268,7 +2268,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         additional += currentGearObject->getGearName();
                         additional += " New Gear: ";
                         additional += ((CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber])->getGearName();
-                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                        CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                         multiDispatchMsg->insert(signal);
                         {
@@ -2292,7 +2292,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         additional += currentGearObject->getGearName();
                         additional += " New Gear: ";
                         additional += prevGearObject->getGearName();
-                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                        CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                         multiDispatchMsg->insert(signal);
                         {
@@ -2357,7 +2357,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         additional += ((CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber])->getGearName();
                         additional += " New Gear: ";
                         additional += previousGearObject->getGearName();
-                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                        CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                         multiDispatchMsg->insert(signal);
                         {
@@ -2388,7 +2388,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                             additional += ((CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber])->getGearName();
                             additional += " New Gear: ";
                             additional += previousGearObject->getGearName();
-                            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                             multiDispatchMsg->insert(signal);
                             {
@@ -3288,7 +3288,7 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
         _ltoa(currentLMGroup->getPAOId(),tempchar,10);
         additional += tempchar;
 
-        multiDispatchMsg->insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+        multiDispatchMsg->insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -4130,7 +4130,7 @@ bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMu
             string text = "Stopping subordinate program: ";
             text += (*sub_iter)->getPAOName();
             string additional = "";
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
             signal->setSOE(2);
             multiDispatchMsg->insert(signal);
         {
@@ -4416,7 +4416,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 string text("Manual Start, LM Program: ");
                 text += getPAOName();
                 string additional("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(2);
 
                 multiDispatchMsg->insert(signal);
@@ -4447,7 +4447,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 string text =  ("Manual Stop, LM Program: ");
                 text += getPAOName();
                 string additional =  ("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(2);
 
                 multiDispatchMsg->insert(signal);
@@ -4473,7 +4473,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 string text =  ("Manual Stop, LM Program: ");
                 text += getPAOName();
                 string additional =  ("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(2);
 
                 multiDispatchMsg->insert(signal);
@@ -4501,7 +4501,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                     string text =  ("Finshed Ramping Out, LM Program: ");
                     text += getPAOName();
                     string additional =  ("");
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                     signal->setSOE(2);
 
                     multiDispatchMsg->insert(signal);
@@ -4527,7 +4527,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 string text =  ("Manual Stop, LM Program: ");
                 text += getPAOName();
                 string additional =  ("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
                 signal->setSOE(2);
 
                 multiDispatchMsg->insert(signal);
@@ -4554,7 +4554,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
             string text =  ("Manual Stop, LM Program: ");
             text += getPAOName();
             string additional =  ("");
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
             signal->setSOE(2);
 
             multiDispatchMsg->insert(signal);
@@ -4629,7 +4629,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
             {
                 string text = "Finished ramping out, LM Program: ";
                 text += getPAOName();
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.c_str(),"",GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.c_str(),"",GeneralLogType,SignalEvent);
                 multiDispatchMsg->insert(signal);
 
             {
@@ -4648,7 +4648,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
                 string text = "Timed Stop, LM Program: ";
                 text += getPAOName();
                 string additional = "";
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.c_str(),additional.c_str(),GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.c_str(),additional.c_str(),GeneralLogType,SignalEvent);
                 signal->setSOE(2);
 
                 multiDispatchMsg->insert(signal);
@@ -4714,7 +4714,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
                         additional += *iter;
                         additional += "\n";
                     }
-                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                    CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
                     signal->setSOE(2);
                     multiDispatchMsg->insert(signal);
 
@@ -4732,7 +4732,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
                 string text = "Timed Start, LM Program: ";
                 text += getPAOName();
                 string additional = "";
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
                 signal->setSOE(2);
 
                 multiDispatchMsg->insert(signal);
@@ -5111,7 +5111,7 @@ int CtiLMProgramDirect::operator!=(const CtiLMProgramDirect& right) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramDirect::replicate() const
 {
-    return(new CtiLMProgramDirect(*this));
+    return(CTIDBG_new CtiLMProgramDirect(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -5391,7 +5391,7 @@ bool CtiLMProgramDirect::restoreGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm
             dout << CtiTime() << " Sending restore command to  LM Group: " << lm_group->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
         }
 
-        CtiRequestMsg* requestMsg = new CtiRequestMsg(lm_group->getPAOId(), controlString,0,0,0,0,0,0,priority);
+        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(), controlString,0,0,0,0,0,0,priority);
         lm_group->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         setLastControlSent(CtiTime());
@@ -5418,7 +5418,7 @@ bool CtiLMProgramDirect::terminateGroup(ULONG seconds_from_1901, CtiLMGroupPtr& 
             dout << CtiTime() << " Sending terminate to LM Group: " << lm_group->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
         }
 
-        CtiRequestMsg* requestMsg = new CtiRequestMsg(lm_group->getPAOId(), controlString,0,0,0,0,0,0,priority);
+        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(), controlString,0,0,0,0,0,0,priority);
         lm_group->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         CtiTime now;
@@ -5652,7 +5652,7 @@ bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
 {
     vector<int> notif_groups;// = _notificationgroupids;
 //    std::copy(_notificationgroupids.begin(), _notificationgroupids.end(), notif_groups.begin());
-    CtiNotifLMControlMsg* notif_msg = new CtiNotifLMControlMsg(_notificationgroupids, type, getPAOId(), getDirectStartTime(), getDirectStopTime());
+    CtiNotifLMControlMsg* notif_msg = CTIDBG_new CtiNotifLMControlMsg(_notificationgroupids, type, getPAOId(), getDirectStartTime(), getDirectStopTime());
     multiNotifMsg->insert(notif_msg);
     return true;
 }

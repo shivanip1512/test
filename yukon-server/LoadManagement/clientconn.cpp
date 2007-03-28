@@ -26,7 +26,7 @@ extern ULONG _LM_DEBUG;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RWPortal(portal) )
+CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(CTIDBG_new RWPortal(portal) )
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -37,10 +37,10 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
     {
         _max_out_queue_size = gConfigParms.getValueAsInt("LOAD_MANAGEMENT_MAX_OUT_QUEUE", 0);
         
-        sinbuf  = new RWPortalStreambuf(*_portal);
-        soubuf  = new RWPortalStreambuf(*_portal);
-        oStream = new RWpostream(soubuf);
-        iStream = new RWpistream(sinbuf);
+        sinbuf  = CTIDBG_new RWPortalStreambuf(*_portal);
+        soubuf  = CTIDBG_new RWPortalStreambuf(*_portal);
+        oStream = CTIDBG_new RWpostream(soubuf);
+        iStream = CTIDBG_new RWpistream(sinbuf);
 
         RWThreadFunction send_thr = rwMakeThreadFunction(*this, &CtiLMConnection::_sendthr);
         RWThreadFunction recv_thr = rwMakeThreadFunction(*this, &CtiLMConnection::_recvthr);
@@ -124,7 +124,7 @@ void CtiLMConnection::close()
     _portal = NULL;
 
     //unblock the in and out thread
-    RWCollectable* unblocker = new RWCollectable();
+    RWCollectable* unblocker = CTIDBG_new RWCollectable();
     _queue.write(unblocker);
     _sendrunnable.requestCancellation();
     _recvrunnable.requestCancellation();

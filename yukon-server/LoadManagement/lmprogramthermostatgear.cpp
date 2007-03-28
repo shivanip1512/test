@@ -274,7 +274,7 @@ int CtiLMProgramThermoStatGear::operator!=(const CtiLMProgramThermoStatGear& rig
 ---------------------------------------------------------------------------*/
 CtiLMProgramThermoStatGear* CtiLMProgramThermoStatGear::replicate() const
 {
-    return (new CtiLMProgramThermoStatGear(*this));
+    return (CTIDBG_new CtiLMProgramThermoStatGear(*this));
 }
 
 /*---------------------------------------------------------------------------

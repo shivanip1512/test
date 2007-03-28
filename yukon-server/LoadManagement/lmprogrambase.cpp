@@ -1058,13 +1058,13 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
         {//controlling
             if( _lastsentstate != STATEONE )
             {
-                multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEONE,NormalQuality,StatusPointType));
+                multiDispatchMsg->insert(CTIDBG_new CtiPointDataMsg(getProgramStatusPointId(),STATEONE,NormalQuality,StatusPointType));
                 _lastsentstate = STATEONE;
             }
         }
         else if( _lastsentstate != STATEZERO )
         {//not controlling
-            multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
+            multiDispatchMsg->insert(CTIDBG_new CtiPointDataMsg(getProgramStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
             _lastsentstate = STATEZERO;
         }
     }

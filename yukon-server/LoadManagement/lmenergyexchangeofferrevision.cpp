@@ -329,7 +329,7 @@ void CtiLMEnergyExchangeOfferRevision::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOfferRevision* CtiLMEnergyExchangeOfferRevision::replicate() const
 {
-    return(new CtiLMEnergyExchangeOfferRevision(*this));
+    return(CTIDBG_new CtiLMEnergyExchangeOfferRevision(*this));
 }
 
 /*---------------------------------------------------------------------------

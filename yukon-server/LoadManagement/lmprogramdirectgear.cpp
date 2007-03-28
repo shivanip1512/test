@@ -698,7 +698,7 @@ int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) cons
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 {
-    return (new CtiLMProgramDirectGear(*this));
+    return (CTIDBG_new CtiLMProgramDirectGear(*this));
 }
 
 /*---------------------------------------------------------------------------

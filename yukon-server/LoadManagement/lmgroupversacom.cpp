@@ -65,7 +65,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate,
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -92,7 +92,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -111,7 +111,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -130,7 +130,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LON
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -192,7 +192,7 @@ int CtiLMGroupVersacom::operator!=(const CtiLMGroupVersacom& right) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupVersacom::replicate() const
 {
-    return (new CtiLMGroupVersacom(*this));
+    return (CTIDBG_new CtiLMGroupVersacom(*this));
 }
 
 /*---------------------------------------------------------------------------

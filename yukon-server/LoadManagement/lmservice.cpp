@@ -160,6 +160,10 @@ void CtiLMService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    SET_CRT_OUTPUT_MODES;
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
+        ENABLE_CRT_SHUTDOWN_CHECK;
+
     _quit = false;
 }
 
@@ -186,7 +190,7 @@ void CtiLMService::OnStop()
     //Time to quit - send a shutdown message through the system
     CtiLMExecutorFactory f;
 
-    CtiLMShutdown* msg = new CtiLMShutdown();
+    CtiLMShutdown* msg = CTIDBG_new CtiLMShutdown();
     CtiLMExecutor* executor = f.createExecutor(msg);
     executor->Execute();
 

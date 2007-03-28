@@ -204,7 +204,7 @@ void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer* CtiLMCurtailCustomer::replicate() const
 {
-    return(new CtiLMCurtailCustomer(*this));
+    return(CTIDBG_new CtiLMCurtailCustomer(*this));
 }
 
 /*---------------------------------------------------------------------------

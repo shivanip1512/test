@@ -54,7 +54,7 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        _instance = new CtiLMClientListener(loadmanagementclientsport);
+        _instance = CTIDBG_new CtiLMClientListener(loadmanagementclientsport);
     }
 
     return _instance;
@@ -175,7 +175,7 @@ void CtiLMClientListener::_listen()
 
     try
     {
-        _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
+        _socketListener = CTIDBG_new RWSocketListener( RWInetAddr( (int) _port )  );
         /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime()  << " - Listening for clients..." << endl;
@@ -187,7 +187,7 @@ void CtiLMClientListener::_listen()
             {
                 {
                     RWPortal portal = (*_socketListener)();
-                    CtiLMConnectionPtr conn(new CtiLMConnection(portal));
+                    CtiLMConnectionPtr conn(CTIDBG_new CtiLMConnection(portal));
 
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
@@ -211,7 +211,7 @@ void CtiLMClientListener::_listen()
                         dout << "CtiLMClientListener hickup: " << msg.errorNumber() << endl;
                     }
                     delete _socketListener;
-                    _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
+                    _socketListener = CTIDBG_new RWSocketListener( RWInetAddr( (int) _port )  );
                 }
             }
             catch(RWxmsg& msg)

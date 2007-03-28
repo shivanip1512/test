@@ -475,7 +475,7 @@ int CtiLMEnergyExchangeOffer::operator!=(const CtiLMEnergyExchangeOffer& right) 
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer* CtiLMEnergyExchangeOffer::replicate() const
 {
-    return(new CtiLMEnergyExchangeOffer(*this));
+    return(CTIDBG_new CtiLMEnergyExchangeOffer(*this));
 }
 
 /*---------------------------------------------------------------------------

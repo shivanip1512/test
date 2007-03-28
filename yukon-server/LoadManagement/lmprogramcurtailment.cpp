@@ -595,7 +595,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiNotificationMsg)
         }
         currentCustomer->addLMCurtailCustomerActivityTable();
 
-        CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+        CtiCustomerNotifEmailMsg* emailMsg = CTIDBG_new CtiCustomerNotifEmailMsg();
     emailMsg->setCustomerId(currentCustomer->getCustomerId());
         emailMsg->setSubject(getHeading());
 
@@ -651,7 +651,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
         CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
         currentCustomer->dumpDynamicData();
 
-        CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+        CtiCustomerNotifEmailMsg* emailMsg = CTIDBG_new CtiCustomerNotifEmailMsg();
     emailMsg->setCustomerId(currentCustomer->getCustomerId());
         emailMsg->setSubject(getHeading());
 
@@ -1058,7 +1058,7 @@ int CtiLMProgramCurtailment::operator!=(const CtiLMProgramCurtailment& right) co
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramCurtailment::replicate() const
 {
-    return(new CtiLMProgramCurtailment(*this));
+    return(CTIDBG_new CtiLMProgramCurtailment(*this));
 }
 
 /*---------------------------------------------------------------------------

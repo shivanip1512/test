@@ -46,40 +46,40 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
     switch(resolvePAOType(category, paotype))
     {
     case TYPE_LMGROUP_VERSACOM:
-        lm_group = new CtiLMGroupVersacom(rdr);
+        lm_group = CTIDBG_new CtiLMGroupVersacom(rdr);
         break;
     case TYPE_LMGROUP_EMETCON:
-        lm_group = new CtiLMGroupEmetcon(rdr);
+        lm_group = CTIDBG_new CtiLMGroupEmetcon(rdr);
         break;
     case TYPE_LMGROUP_RIPPLE:
-        lm_group = new CtiLMGroupRipple(rdr);
+        lm_group = CTIDBG_new CtiLMGroupRipple(rdr);
         break;
     case TYPE_LMGROUP_POINT:
-        lm_group = new CtiLMGroupPoint(rdr);
+        lm_group = CTIDBG_new CtiLMGroupPoint(rdr);
         break;
     case TYPE_LMGROUP_EXPRESSCOM:
-        lm_group = new CtiLMGroupExpresscom(rdr);
+        lm_group = CTIDBG_new CtiLMGroupExpresscom(rdr);
         break;
     case TYPE_LMGROUP_MCT:
-        lm_group = new CtiLMGroupMCT(rdr);
+        lm_group = CTIDBG_new CtiLMGroupMCT(rdr);
         break;
     case TYPE_LMGROUP_SA105:
-        lm_group = new CtiLMGroupSA105(rdr);
+        lm_group = CTIDBG_new CtiLMGroupSA105(rdr);
         break;
     case TYPE_LMGROUP_SA205:
-        lm_group = new CtiLMGroupSA205(rdr);
+        lm_group = CTIDBG_new CtiLMGroupSA205(rdr);
         break;
     case TYPE_LMGROUP_SA305:
-        lm_group = new CtiLMGroupSA305(rdr);
+        lm_group = CTIDBG_new CtiLMGroupSA305(rdr);
         break;
     case TYPE_LMGROUP_SADIGITAL:
-        lm_group = new CtiLMGroupSADigital(rdr);
+        lm_group = CTIDBG_new CtiLMGroupSADigital(rdr);
         break;
     case TYPE_LMGROUP_GOLAY:
-        lm_group = new CtiLMGroupGolay(rdr);
+        lm_group = CTIDBG_new CtiLMGroupGolay(rdr);
         break;
     case TYPE_MACRO:
-        lm_group = new CtiLMGroupMacro(rdr);
+        lm_group = CTIDBG_new CtiLMGroupMacro(rdr);
         break;
     default:
     {

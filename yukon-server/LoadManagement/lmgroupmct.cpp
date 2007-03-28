@@ -105,7 +105,7 @@ int CtiLMGroupMCT::operator!=(const CtiLMGroupMCT& right) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupMCT::replicate() const
 {
-    return (new CtiLMGroupMCT(*this));
+    return (CTIDBG_new CtiLMGroupMCT(*this));
 }
 
 

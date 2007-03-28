@@ -46,7 +46,7 @@ void CtiLMGroupMacro::setChildren(const vector<CtiLMGroupBase*>& children)
 
 CtiLMGroupBase* CtiLMGroupMacro::replicate() const
 {
-    return (new CtiLMGroupMacro(*this));
+    return (CTIDBG_new CtiLMGroupMacro(*this));
 }
 
 void CtiLMGroupMacro::restore(RWDBReader& rdr)

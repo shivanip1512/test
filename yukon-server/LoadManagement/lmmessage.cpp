@@ -366,7 +366,7 @@ LONG CtiLMManualControlRequest::getConstraintCmd() const
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMManualControlRequest::replicateMessage() const
 {
-    return new CtiLMManualControlRequest(*this);
+    return CTIDBG_new CtiLMManualControlRequest(*this);
 }
 
 /*-------------------------------------------------------------------------
@@ -460,7 +460,7 @@ CtiLMManualControlResponse::CtiLMManualControlResponse(const CtiLMManualControlR
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 {
-    return new CtiLMManualControlResponse(*this);
+    return CTIDBG_new CtiLMManualControlResponse(*this);
 }
 
 /*-------------------------------------------------------------------------
@@ -471,7 +471,7 @@ CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-    vector<RWCollectableString*>* rw_ordered = new vector<RWCollectableString*>;
+    vector<RWCollectableString*>* rw_ordered = CTIDBG_new vector<RWCollectableString*>;
 
     strm >> _paoid;
     strm >> rw_ordered;
@@ -494,12 +494,12 @@ void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 
 /* NEW */
    CtiLMMessage::saveGuts(strm);
-    vector<RWCollectableString*>* vect = new vector<RWCollectableString*>;
+    vector<RWCollectableString*>* vect = CTIDBG_new vector<RWCollectableString*>;
     for(std::vector< std::string >::const_iterator iter = _constraintViolations.begin();
 	iter != _constraintViolations.end();
 	iter++)
     {
-	vect->push_back(new RWCollectableString(iter->c_str()));
+	vect->push_back(CTIDBG_new RWCollectableString(iter->c_str()));
     }
     strm << _paoid;
     strm << vect;
@@ -1012,7 +1012,7 @@ RWDEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaMsg::CtiLMControlAreaMsg(vector<CtiLMControlArea*>& contAreas, ULONG bitMask) : CtiLMMessage("ControlArea"), _controlAreas(NULL), _msgInfoBitMask(bitMask)
 {
-    _controlAreas = new vector<CtiLMControlArea*>;
+    _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
     for(int i=0;i<contAreas.size();i++)
     {
         _controlAreas->push_back(((CtiLMControlArea*)contAreas[i])->replicate());
@@ -1039,7 +1039,7 @@ CtiLMControlAreaMsg::~CtiLMControlAreaMsg()
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMControlAreaMsg::replicateMessage() const
 {
-    return new CtiLMControlAreaMsg(*this);
+    return CTIDBG_new CtiLMControlAreaMsg(*this);
 }
 
 /*---------------------------------------------------------------------------
@@ -1057,7 +1057,7 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
             _controlAreas->clear();
             delete _controlAreas;
         }
-        _controlAreas = new vector<CtiLMControlArea*>;
+        _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
         for(int i=0;i<(right.getControlAreas())->size();i++)
         {
             _controlAreas->push_back(((CtiLMControlArea*)(*right.getControlAreas())[i])->replicate());

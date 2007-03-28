@@ -824,7 +824,7 @@ CtiRequestMsg* CtiLMGroupBase::createLatchingRequestMsg(bool do_shed, int priori
         control_str = "control restore";
     }
     
-    CtiRequestMsg* req_msg = new CtiRequestMsg(getPAOId(), control_str, 0,0,0,0,0,0, priority);
+    CtiRequestMsg* req_msg = CTIDBG_new CtiRequestMsg(getPAOId(), control_str, 0,0,0,0,0,0, priority);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD)
     {

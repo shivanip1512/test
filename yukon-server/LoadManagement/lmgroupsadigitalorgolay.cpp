@@ -166,7 +166,7 @@ int CtiLMGroupSADigitalORGolay::operator!=(const CtiLMGroupSADigitalORGolay& rig
   ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupSADigitalORGolay::replicate() const
 {
-    return (new CtiLMGroupSADigitalORGolay(*this));
+    return (CTIDBG_new CtiLMGroupSADigitalORGolay(*this));
 }
 
 /*---------------------------------------------------------------------------

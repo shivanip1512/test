@@ -334,7 +334,7 @@ void CtiLMEnergyExchangeCustomerReply::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply* CtiLMEnergyExchangeCustomerReply::replicate() const
 {
-    return(new CtiLMEnergyExchangeCustomerReply(*this));
+    return(CTIDBG_new CtiLMEnergyExchangeCustomerReply(*this));
 }
 
 /*---------------------------------------------------------------------------

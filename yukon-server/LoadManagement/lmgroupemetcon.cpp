@@ -80,7 +80,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(LONG refreshRate, 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -115,7 +115,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(LONG sendRate, LONG s
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -165,7 +165,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*---------------------------------------------------------------------------
@@ -263,7 +263,7 @@ int CtiLMGroupEmetcon::operator!=(const CtiLMGroupEmetcon& right) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
 {
-    return (new CtiLMGroupEmetcon(*this));
+    return (CTIDBG_new CtiLMGroupEmetcon(*this));
 }
 
 /*---------------------------------------------------------------------------

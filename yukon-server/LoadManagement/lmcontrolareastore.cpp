@@ -80,7 +80,7 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
 CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidCtiTime), _wascontrolareadeletedflag(false)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    _controlAreas = new vector<CtiLMControlArea*>;
+    _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
     //Start the reset thread
     RWThreadFunction func = rwMakeThreadFunction( *this, &CtiLMControlAreaStore::doResetThr );
     _resetthr = func;
@@ -882,7 +882,7 @@ void CtiLMControlAreaStore::reset()
                             if( !currentLMProgramDirect ||
                                 tempProgramId != currentLMProgramDirect->getPAOId() )
                             {
-                                currentLMProgramDirect.reset(new CtiLMProgramDirect(rdr));
+                                currentLMProgramDirect.reset(CTIDBG_new CtiLMProgramDirect(rdr));
                                 CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
 
                                 //Inserting this program's groups
@@ -1047,11 +1047,11 @@ void CtiLMControlAreaStore::reset()
                             CtiLMProgramDirectGear* newDirectGear = NULL;
                             if( isNull )
                             {
-                                newDirectGear = new CtiLMProgramDirectGear(rdr);
+                                newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
                             }
                             else
                             {
-                                newDirectGear = new CtiLMProgramThermoStatGear(rdr);
+                                newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
                             }
                             if( newDirectGear != NULL )
                             {
@@ -1195,7 +1195,7 @@ void CtiLMControlAreaStore::reset()
                             if( !currentLMProgramCurtailment ||
                                 tempProgramId != currentLMProgramCurtailment->getPAOId() )
                             {
-                                currentLMProgramCurtailment.reset(new CtiLMProgramCurtailment(rdr));
+                                currentLMProgramCurtailment.reset(CTIDBG_new CtiLMProgramCurtailment(rdr));
                                 if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
                                 {
                                     currentLMProgramCurtailment->restoreDynamicData(rdr);
@@ -1262,7 +1262,7 @@ void CtiLMControlAreaStore::reset()
                             RWDBReader rdr = selector.reader(conn);
                             while( rdr() )
                             {
-                                lmProgramCurtailmentCustomers.push_back(new CtiLMCurtailCustomer(rdr));
+                                lmProgramCurtailmentCustomers.push_back(CTIDBG_new CtiLMCurtailCustomer(rdr));
                             }
 
                             if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.size() > 0 )
@@ -1359,7 +1359,7 @@ void CtiLMControlAreaStore::reset()
                             if( !currentLMProgramEnergyExchange ||
                                 tempProgramId != currentLMProgramEnergyExchange->getPAOId() )
                             {
-                                currentLMProgramEnergyExchange.reset(new CtiLMProgramEnergyExchange(rdr));
+                                currentLMProgramEnergyExchange.reset(CTIDBG_new CtiLMProgramEnergyExchange(rdr));
                                 //Inserting this curtailment program into hash map
                                 energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
                             }
@@ -1419,7 +1419,7 @@ void CtiLMControlAreaStore::reset()
                                 std::vector<CtiLMEnergyExchangeOffer*>& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
                                 while( rdr() )
                                 {
-                                    offers.push_back(new CtiLMEnergyExchangeOffer(rdr));
+                                    offers.push_back(CTIDBG_new CtiLMEnergyExchangeOffer(rdr));
                                 }
 
                                 for(LONG r=0;r<offers.size();r++)
@@ -1451,7 +1451,7 @@ void CtiLMControlAreaStore::reset()
                                     vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
                                     while( rdr() )
                                     {
-                                        offerRevisions.push_back(new CtiLMEnergyExchangeOfferRevision(rdr));
+                                        offerRevisions.push_back(CTIDBG_new CtiLMEnergyExchangeOfferRevision(rdr));
                                     }
 
                                     for(LONG s=0;s<offerRevisions.size();s++)
@@ -1483,7 +1483,7 @@ void CtiLMControlAreaStore::reset()
                                         vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
                                         while( rdr() )
                                         {
-                                            hourlyOffers.push_back(new CtiLMEnergyExchangeHourlyOffer(rdr));
+                                            hourlyOffers.push_back(CTIDBG_new CtiLMEnergyExchangeHourlyOffer(rdr));
                                         }
                                     }
                                 }
@@ -1523,7 +1523,7 @@ void CtiLMControlAreaStore::reset()
                                 RWDBReader rdr = selector.reader(conn);
                                 while( rdr() )
                                 {
-                                    lmEnergyExchangeCustomers.push_back(new CtiLMEnergyExchangeCustomer(rdr));
+                                    lmEnergyExchangeCustomers.push_back(CTIDBG_new CtiLMEnergyExchangeCustomer(rdr));
                                 }
 
                                 if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.size() > 0 )
@@ -1568,7 +1568,7 @@ void CtiLMControlAreaStore::reset()
                                         vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
                                         while( rdr() )
                                         {
-                                            lmEnergyExchangeCustomerReplies.push_back(new CtiLMEnergyExchangeCustomerReply(rdr));
+                                            lmEnergyExchangeCustomerReplies.push_back(CTIDBG_new CtiLMEnergyExchangeCustomerReply(rdr));
                                         }
 
                                         for(LONG b=0;b<lmEnergyExchangeCustomerReplies.size();b++)
@@ -1610,7 +1610,7 @@ void CtiLMControlAreaStore::reset()
                                             vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
                                             while( rdr() )
                                             {
-                                                hourlyCustomers.push_back(new CtiLMEnergyExchangeHourlyCustomer(rdr));
+                                                hourlyCustomers.push_back(CTIDBG_new CtiLMEnergyExchangeHourlyCustomer(rdr));
                                             }
                                         }
                                     }
@@ -1651,7 +1651,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
                         {
-                            CtiLMProgramControlWindow* newWindow = new CtiLMProgramControlWindow(rdr);
+                            CtiLMProgramControlWindow* newWindow = CTIDBG_new CtiLMProgramControlWindow(rdr);
                             CtiLMProgramBaseSPtr programToPutWindowIn;
                             if( directProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
                                 curtailmentProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
@@ -1747,7 +1747,7 @@ void CtiLMControlAreaStore::reset()
                             if( currentLMControlArea == NULL ||
                                 tempControlAreaId != currentLMControlArea->getPAOId() )
                             {
-                                currentLMControlArea = new CtiLMControlArea(rdr);
+                                currentLMControlArea = CTIDBG_new CtiLMControlArea(rdr);
                                 temp_control_areas.push_back(currentLMControlArea);
                             }
 
@@ -1878,7 +1878,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
                         {
-                            CtiLMControlAreaTrigger* newTrigger = new CtiLMControlAreaTrigger(rdr);
+                            CtiLMControlAreaTrigger* newTrigger = CTIDBG_new CtiLMControlAreaTrigger(rdr);
                             attachProjectionData(newTrigger);
 			    newTrigger->calculateProjectedValue();
 
@@ -1970,7 +1970,7 @@ void CtiLMControlAreaStore::reset()
         _wascontrolareadeletedflag = false;
 
         // Make sure all the clients get the new control areas, let the main thread do it
-        CtiLoadManager::getInstance()->handleMessage(new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
+        CtiLoadManager::getInstance()->handleMessage(CTIDBG_new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
     }
     catch(...)
     {
@@ -2105,7 +2105,7 @@ CtiLMControlAreaStore* CtiLMControlAreaStore::getInstance()
 {
     if( _instance == NULL )
     {
-        _instance = new CtiLMControlAreaStore();
+        _instance = CTIDBG_new CtiLMControlAreaStore();
     }
 
     return _instance;
@@ -2210,7 +2210,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
 
         updater.execute( conn );
 
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
                                                       controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
                                                       ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
@@ -2249,7 +2249,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
 
         updater.execute( conn );
 
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
                                                       program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
                                                       ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
@@ -2288,7 +2288,7 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 
         updater.execute( conn );
 
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
                                                       group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
                                                       ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
@@ -2329,7 +2329,7 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 
         updater.execute( conn );
 
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
                                                       controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
                                                       ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
@@ -2370,7 +2370,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                     additional += " was automatically ";
                     additional += currentControlArea->getDefOperationalState();
                     additional += ".";
-                    CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+                    CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -2407,7 +2407,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 _snprintf(tempchar,80,"%d",currentStartTimeMinutes);
                 additional += tempchar;
                 additional += ".";
-                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
@@ -2436,7 +2436,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 _snprintf(tempchar,80,"%d",currentStopTimeMinutes);
                 additional += tempchar;
                 additional += ".";
-                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+                CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << text << ", " << additional << endl;

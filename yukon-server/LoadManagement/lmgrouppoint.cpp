@@ -252,7 +252,7 @@ int CtiLMGroupPoint::operator!=(const CtiLMGroupPoint& right) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupPoint::replicate() const
 {
-    return (new CtiLMGroupPoint(*this));
+    return (CTIDBG_new CtiLMGroupPoint(*this));
 }
 
 /*---------------------------------------------------------------------------

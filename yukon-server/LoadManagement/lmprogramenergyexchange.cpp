@@ -400,7 +400,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
         {
             vector<CtiLMEnergyExchangeCustomerReply*>& customerReplies = currentCustomer->getLMEnergyExchangeCustomerReplies();
 
-            CtiLMEnergyExchangeCustomerReply* newCustomerReply = new CtiLMEnergyExchangeCustomerReply();
+            CtiLMEnergyExchangeCustomerReply* newCustomerReply = CTIDBG_new CtiLMEnergyExchangeCustomerReply();
 
             newCustomerReply->setCustomerId(currentCustomer->getCustomerId());
             newCustomerReply->setOfferId(offer->getOfferId());
@@ -414,7 +414,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
             newCustomerReply->addLMEnergyExchangeCustomerReplyTable();
             customerReplies.push_back(newCustomerReply);
 
-            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+            CtiCustomerNotifEmailMsg* emailMsg = CTIDBG_new CtiCustomerNotifEmailMsg();
     emailMsg->setCustomerId(currentCustomer->getCustomerId());
             emailMsg->setSubject(getHeading());
 
@@ -463,7 +463,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
         CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
         if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
         {
-            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+            CtiCustomerNotifEmailMsg* emailMsg = CTIDBG_new CtiCustomerNotifEmailMsg();
     emailMsg->setCustomerId(currentCustomer->getCustomerId());
             emailMsg->setSubject(getHeading());
 
@@ -702,7 +702,7 @@ CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(LONG offeri
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramEnergyExchange::replicate() const
 {
-    return (new CtiLMProgramEnergyExchange(*this));
+    return (CTIDBG_new CtiLMProgramEnergyExchange(*this));
 }
 
 /*---------------------------------------------------------------------------

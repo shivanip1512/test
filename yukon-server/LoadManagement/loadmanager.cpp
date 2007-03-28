@@ -59,7 +59,7 @@ CtiLoadManager* CtiLoadManager::_instance = NULL;
 CtiLoadManager* CtiLoadManager::getInstance()
 {
     if ( _instance == NULL )
-        _instance = new CtiLoadManager();
+        _instance = CTIDBG_new CtiLoadManager();
 
     return _instance;
 }
@@ -138,7 +138,7 @@ void CtiLoadManager::stop()
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
         if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
         {
-            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
         _dispatchConnection->ShutdownConnection();
     }
@@ -153,7 +153,7 @@ void CtiLoadManager::stop()
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
         if( _pilConnection!=NULL && _pilConnection->valid() )
         {
-            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _pilConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
         _pilConnection->ShutdownConnection();
     }
@@ -195,9 +195,9 @@ void CtiLoadManager::controlLoop()
 
     CtiTime currentDateTime;
     vector<CtiLMControlArea*> controlAreaChanges;
-    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();    
+    CtiMultiMsg* multiDispatchMsg = CTIDBG_new CtiMultiMsg();
+    CtiMultiMsg* multiPilMsg = CTIDBG_new CtiMultiMsg();
+    CtiMultiMsg* multiNotifMsg = CTIDBG_new CtiMultiMsg();    
 
     CtiMessage* msg = NULL;
     CtiLMExecutorFactory executorFactory;
@@ -434,7 +434,7 @@ void CtiLoadManager::controlLoop()
             {
                 multiDispatchMsg->resetTime();                              // CGP 5/21/04 Update its time to current time.
                 getDispatchConnection()->WriteConnQue(multiDispatchMsg);
-                multiDispatchMsg = new CtiMultiMsg();
+                multiDispatchMsg = CTIDBG_new CtiMultiMsg();
             }
         }
         catch(...)
@@ -450,7 +450,7 @@ void CtiLoadManager::controlLoop()
                 multiPilMsg->setMessagePriority(13);
                 multiPilMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
                 getPILConnection()->WriteConnQue(multiPilMsg);
-                multiPilMsg = new CtiMultiMsg();
+                multiPilMsg = CTIDBG_new CtiMultiMsg();
             }
         }
         catch(...)
@@ -466,7 +466,7 @@ void CtiLoadManager::controlLoop()
 		multiNotifMsg->setMessagePriority(13); 
 		multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time. 
 		getNotificationConnection()->WriteConnQue(multiNotifMsg); 
-		multiNotifMsg = new CtiMultiMsg(); 
+		multiNotifMsg = CTIDBG_new CtiMultiMsg(); 
 	    } 
 	} 
 	catch(...) 
@@ -503,7 +503,7 @@ void CtiLoadManager::controlLoop()
                 if(controlAreaChanges.size() > 0)
                 {
                     CtiLMExecutorFactory f;
-                    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
+                    CtiLMExecutor* executor = f.createExecutor(CTIDBG_new CtiLMControlAreaMsg(controlAreaChanges));
 
                     try
                     {
@@ -604,10 +604,10 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
             if( _dispatchConnection == NULL )
             {
                 //Connect to Dispatch
-                _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
+                _dispatchConnection = CTIDBG_new CtiConnection( dispatch_port, dispatch_host );
 
                 //Send a registration message to Dispatch
-                CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("LoadManagement", 0, false );
+                CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
                 _dispatchConnection->WriteConnQue( registrationMsg );
             }
         }
@@ -682,10 +682,10 @@ CtiConnection* CtiLoadManager::getPILConnection()
             if( _pilConnection == NULL )
             {
                 //Connect to Pil
-                _pilConnection = new CtiConnection( pil_port, pil_host );
+                _pilConnection = CTIDBG_new CtiConnection( pil_port, pil_host );
 
                 //Send a registration message to Pil
-                CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("LoadManagement", 0, false );
+                CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
                 _pilConnection->WriteConnQue( registrationMsg );
             }
         }
@@ -732,7 +732,7 @@ CtiConnection* CtiLoadManager::getNotificationConnection()
             if( _notificationConnection == NULL )
             {
                 //Connect to Pil
-                _notificationConnection  = new CtiConnection( notification_port, notification_host.c_str() );
+                _notificationConnection  = CTIDBG_new CtiConnection( notification_port, notification_host.c_str() );
             }
         } 
 
@@ -829,11 +829,11 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
     string simple_registration = gConfigParms.getValueAsString("LOAD_MANAGEMENT_SIMPLE_REGISTRATION", "false");
     if(simple_registration == "true" || simple_registration == "TRUE")
     { //register for all points
-        regMsg = new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        regMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
     }
     else
     { //register for each point specifically
-        regMsg = new CtiPointRegistrationMsg();
+        regMsg = CTIDBG_new CtiPointRegistrationMsg();
 
         for(LONG i=0;i<controlAreas.size();i++)
         {
@@ -1132,7 +1132,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 {
                     try
                     {
-                        getDispatchConnection()->WriteConnQue(new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                        getDispatchConnection()->WriteConnQue(CTIDBG_new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << " (" << currentControlArea->getPAOName() << ")" << endl;
@@ -1185,7 +1185,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             additional += " changed because peak point value: ";
             _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
             additional += tempchar;
-            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+            CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
             {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - " << text << ", " << additional << endl;

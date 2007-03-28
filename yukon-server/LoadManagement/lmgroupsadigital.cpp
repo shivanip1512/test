@@ -61,7 +61,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createTimeRefreshRequestMsg(LONG refreshRate
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -106,7 +106,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createRotationRequestMsg(LONG sendRate, LONG
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -124,7 +124,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createMasterCycleRequestMsg(LONG offTime, LO
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 

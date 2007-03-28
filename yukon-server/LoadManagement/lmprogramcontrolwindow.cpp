@@ -232,7 +232,7 @@ int CtiLMProgramControlWindow::operator!=(const CtiLMProgramControlWindow& right
 ---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow* CtiLMProgramControlWindow::replicate() const
 {
-    return (new CtiLMProgramControlWindow(*this));
+    return (CTIDBG_new CtiLMProgramControlWindow(*this));
 }
 
 /*---------------------------------------------------------------------------
