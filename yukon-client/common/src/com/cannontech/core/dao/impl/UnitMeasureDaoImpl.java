@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
@@ -16,73 +16,60 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
  * @author: alauinger
  */
 public final class UnitMeasureDaoImpl implements UnitMeasureDao {
-    private JdbcOperations jdbcOps;
+    private SimpleJdbcOperations jdbcOps;
   
-    String liteUoMSql = 
-        "select UoMID, UoMName, CalcType, LongName from UnitMeasure ";
-    
-    private static final RowMapper liteUnitMeasureRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createLiteUnitMeasure(rs);
+    private static final ParameterizedRowMapper<LiteUnitMeasure> liteUnitMeasureRowMapper = 
+        new ParameterizedRowMapper<LiteUnitMeasure>() {
+        public LiteUnitMeasure mapRow(ResultSet rs, int rowNum) throws SQLException {
+            int uomID = rs.getInt("UoMID");
+            String unitMeasureName = rs.getString("UoMName").trim();
+            int unitMeasureCalcType = rs.getInt("CalcType");
+            String longName = rs.getString("LongName").trim();
+            
+            LiteUnitMeasure lum =
+                new LiteUnitMeasure( uomID, unitMeasureName, unitMeasureCalcType, longName );
+            
+            return lum;
         }
     };
     
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.UnitMeasureDao#getLiteUnitMeasureByPointID(int)
- */
-public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
-    
-    String sql =
-    "select u.UoMID, u.UoMName, u.CalcType, u.LongName  from " +
-    "unitmeasure u inner join pointunit pu " +
-    "on u.uomid=pu.uomid " +
-    "where pu.pointid=?";
-    
-    LiteUnitMeasure lum = (LiteUnitMeasure)
-        jdbcOps.queryForObject(sql, new Object[] {pointID}, liteUnitMeasureRowMapper);
-    return lum;
-}
+    public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.UnitMeasureDao#getLiteUnitMeasure(int)
-     */
+        String sql =
+            "select u.UoMID, u.UoMName, u.CalcType, u.LongName  from " +
+            "unitmeasure u inner join pointunit pu " +
+            "on u.uomid=pu.uomid " +
+            "where pu.pointid=?";
+
+        LiteUnitMeasure lum =
+            jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, pointID);
+        return lum;
+    }
+
     public LiteUnitMeasure getLiteUnitMeasure(int uomid)  {        
-        String sql = liteUoMSql + " where uomid=?";
+        String sql = "select UoMID, UoMName, CalcType, LongName from UnitMeasure where uomid=?";
         
         LiteUnitMeasure lum = (LiteUnitMeasure)
-            jdbcOps.queryForObject(sql, new Object[] { uomid }, liteUnitMeasureRowMapper);
+            jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, uomid);
         
         return lum;
     }
 
     public LiteUnitMeasure getLiteUnitMeasure(String uomName)  {        
-        String sql = liteUoMSql + " where lower(LongName)=?";
+        String sql = "select UoMID, UoMName, CalcType, LongName from UnitMeasure where lower(LongName)=?";
         
-        LiteUnitMeasure lum = (LiteUnitMeasure)
-            jdbcOps.queryForObject(sql, new Object[] { uomName.toLowerCase() }, liteUnitMeasureRowMapper);
-        
+        LiteUnitMeasure lum =
+            jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, uomName.toLowerCase());
         return lum;
     }
     
     public List<LiteUnitMeasure> getLiteUnitMeasures() {
         List<LiteUnitMeasure> unitMeasures = 
-            jdbcOps.query(liteUoMSql, liteUnitMeasureRowMapper);
+            jdbcOps.query("select UoMID, UoMName, CalcType, LongName from UnitMeasure", liteUnitMeasureRowMapper);
         return unitMeasures;
     }
     
-    public void setJdbcOps(JdbcOperations jdbcOperations) {
+    public void setJdbcOps(SimpleJdbcOperations jdbcOperations) {
         this.jdbcOps = jdbcOperations;
-    }
-    
-    private static LiteUnitMeasure createLiteUnitMeasure(ResultSet rset) throws SQLException{
-        int uomID = rset.getInt(1);
-        String unitMeasureName = rset.getString(2).trim();
-        int unitMeasureCalcType = rset.getInt(3);
-        String longName = rset.getString(4).trim();
-
-        LiteUnitMeasure lum =
-            new LiteUnitMeasure( uomID, unitMeasureName, unitMeasureCalcType, longName );
-        
-        return lum;
     }
 }
