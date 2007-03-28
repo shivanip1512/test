@@ -30,7 +30,7 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
     private static final String RECORD_INDICATOR = "M";
 
     public NISC_TOU_kVarHRecordFormatter() {
-        FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
+        FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
     }
 
     @Override

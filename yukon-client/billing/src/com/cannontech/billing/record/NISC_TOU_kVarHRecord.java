@@ -60,6 +60,7 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 	public NISC_TOU_kVarHRecord(String newMeterNumber)
 	{
 		super(newMeterNumber);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * NISC_TOU_KVARHRecord constructor comment.
@@ -67,6 +68,7 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 	public NISC_TOU_kVarHRecord(String newMeterNumber, double reading, java.sql.Timestamp newTimestamp)
 	{
 		super(newMeterNumber, reading, newTimestamp);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * NISC_TOU_KVARHRecord constructor comment.
@@ -74,6 +76,7 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 	public NISC_TOU_kVarHRecord(String newMeterNumber, java.sql.Timestamp newTimestamp)
 	{
 		super(newMeterNumber, newTimestamp);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * Converts data in a NISC_TOU_kVarHFormat to a formatted StringBuffer for stream use.
