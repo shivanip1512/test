@@ -239,3 +239,31 @@ insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows
 insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
 /********** end metering role properties ************/
+
+
+/****************** ORACLE **************************/
+/*** JON... THIS DON"T WORKK!!!  ********************/
+declare
+v_paoid number := select max(paobjectid) + 1 from yukonpaobject;
+v_areaname varchar2(60);
+cursor c_areaname  is select distinct(description) as areaname from yukonpaobject where type = 'ccsubbus';
+begin
+    open c_areaname;
+   while(c_areaname%notfound)
+      loop
+          fetch c_areaname into v_areaname;
+          insert into yukonpaobject(paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+                  select v_paoid,
+                   'CAPCONTROL',
+                   'CAPCONTROL',
+                   v_areaname,
+                   'CCAREA',
+                   '(none)',
+                   'N',
+                   '-----' from yukonpaobject;
+            v_paoid := v_paoid + 1;
+     end loop;
+close c_areaname;
+end;
+/****************** END ORACLE **************************/
+
