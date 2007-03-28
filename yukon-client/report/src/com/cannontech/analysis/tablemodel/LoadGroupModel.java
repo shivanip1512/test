@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.model.UserPaoPermission;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.company.EnergyCompany;
@@ -17,7 +19,6 @@ import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.LMControlHistory;
-import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.database.model.ModelFactory;
 
 /**
@@ -206,13 +207,20 @@ public class LoadGroupModel extends ReportModelBase
 //				if(!isShowAllActiveRestore())
 //					sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M') ");
 
-				if( getEnergyCompanyID() != null && getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID )
+				
+                /*
+                 * We should not get in the habit of calling directly into the UserPaoPermission table
+                 * This should only be considered a cowboy strategy
+                 * Calls for permissions should always be done through the PaoPermissionService
+                 */
+                if( getEnergyCompanyID() != null && getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID )
 				{
 					sql.append("AND (LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
-					" FROM " + UserPaoOwner.TABLE_NAME + " us, " +
+					" FROM UserPaoPermission us, " +
 					LMProgramDirectGroup.TABLE_NAME + " DG " +
 					" WHERE us.PaoID = DG.LMGROUPDEVICEID " +
+                    " AND us.permission = " + Permission.LM_VISIBLE +
 					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
 					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )");					
@@ -220,9 +228,10 @@ public class LoadGroupModel extends ReportModelBase
 					//Get all groups that are part of a macroGroup
 					sql.append("OR LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT GM.CHILDID " +
-					" FROM " + UserPaoOwner.TABLE_NAME + " us, " +
+					" FROM UserPaoPermission us, " +
 					GenericMacro.TABLE_NAME + " GM " +
 					" WHERE US.PAOID = GM.OWNERID " +
+                    " AND us.permission = " + Permission.LM_VISIBLE +
 					" AND GM.MACROTYPE = '" + MacroTypes.GROUP + "' " +  
 					" AND US.USERID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
