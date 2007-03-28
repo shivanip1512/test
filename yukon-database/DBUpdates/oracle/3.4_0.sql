@@ -138,11 +138,18 @@ insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
 alter table DeviceMeterGroup modify MeterNumber VARCHAR2(50);
 /* @error ignore-end */
 
-update yukonpaobject set type = 'MCT-430EL' where type = 'MCT-430A' or type = 'MCT430A'
-update yukonpaobject set type = 'MCT-430LG' where type = 'MCT-430S' or type = 'MCT430S'
+update yukonpaobject set type = 'MCT-430EL' where type = 'MCT-430A' or type = 'MCT430A';
+update yukonpaobject set type = 'MCT-430LG' where type = 'MCT-430S' or type = 'MCT430S';
 
-update devicetypecommand set devicetype = 'MCT-430EL' where devicetype = 'MCT-430A' or devicetype = 'MCT430A'
-update devicetypecommand set devicetype = 'MCT-430LG' where devicetype = 'MCT-430S' or devicetype = 'MCT430S'
+update devicetypecommand set devicetype = 'MCT-430EL' where devicetype = 'MCT-430A' or devicetype = 'MCT430A';
+update devicetypecommand set devicetype = 'MCT-430LG' where devicetype = 'MCT-430S' or devicetype = 'MCT430S';
+
+/* @error ignore-begin */
+insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Read two outages per read.  Specify 1 (returns 1&2), 3 (returns 3&4), 5 (returns 5&6)', 'MCT-410IL');
+insert into command values(-107, 'getvalue peak frozen', 'Read frozen demand - kW and kWh', 'MCT-410IL');
+insert into command values(-108, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
+insert into command values(-109, 'getvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
+/* @error ignore-end */
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-501, -34, 'CCU-721', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-502, -35, 'CCU-721', 2, 'Y', -1);
@@ -256,21 +263,21 @@ insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\\yukon\\server\\export\\' );
 insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
 
-insert into yukonroleproperty values (-10306, -103, 'Read device', 'true', 'Allow the ability to read values from a device')
-insert into yukonroleproperty values (-10307, -103, 'Write to device', 'true', 'Allow the ability to write values to a device')
-insert into yukonroleproperty values (-10308, -103, 'Read disconnect', 'true', 'Allow the ability to read disconnect from a device')
-insert into yukonroleproperty values (-10309, -103, 'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device')
+insert into yukonroleproperty values (-10306, -103, 'Read device', 'true', 'Allow the ability to read values from a device');
+insert into yukonroleproperty values (-10307, -103, 'Write to device', 'true', 'Allow the ability to write values to a device');
+insert into yukonroleproperty values (-10308, -103, 'Read disconnect', 'true', 'Allow the ability to read disconnect from a device');
+insert into yukonroleproperty values (-10309, -103, 'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device');
 
-insert into yukonroleproperty values (-10310, -103, 'Read LM device', 'true', 'Allow the ability to read values from an LM device')
-insert into yukonroleproperty values (-10311, -103, 'Write to LM device', 'true', 'Allow the ability to write values to an LM device')
-insert into yukonroleproperty values (-10312, -103, 'Control LM device', 'true', 'Allow the ability to control an LM device')
+insert into yukonroleproperty values (-10310, -103, 'Read LM device', 'true', 'Allow the ability to read values from an LM device');
+insert into yukonroleproperty values (-10311, -103, 'Write to LM device', 'true', 'Allow the ability to write values to an LM device');
+insert into yukonroleproperty values (-10312, -103, 'Control LM device', 'true', 'Allow the ability to control an LM device');
 
-insert into yukonroleproperty values (-10313, -103, 'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device')
-insert into yukonroleproperty values (-10314, -103, 'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device')
-insert into yukonroleproperty values (-10315, -103, 'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device')
+insert into yukonroleproperty values (-10313, -103, 'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device');
+insert into yukonroleproperty values (-10314, -103, 'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device');
+insert into yukonroleproperty values (-10315, -103, 'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device');
 
-insert into yukonroleproperty values (-10316, -103, 'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.')
-insert into yukonroleproperty values (-10317, -103, 'Execute Manual Command', 'true', 'Allow the ability to execute manual commands')
+insert into yukonroleproperty values (-10316, -103, 'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
+insert into yukonroleproperty values (-10317, -103, 'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
 
 alter table YukonUser add AuthType varchar2(16);
 update YukonUser set AuthType = 'PLAIN';
@@ -298,11 +305,12 @@ cursor c_userpaoowner is select userid, paoid from userpaoowner;
 
 begin
      open c_userpaoowner;
+     
+     while(c_userpaoowner%found)
      loop
           fetch c_userpaoowner into v_userid, v_paoid;
           insert into userpaopermission values (v_counterid, v_userid, v_paoid, 'allow LM visibility');
 	  v_counterid := v_counterid + 1; 
-	  exit when c_userpaoowner%notfound; 
      end loop;
 
      close c_userpaoowner;

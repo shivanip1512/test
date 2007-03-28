@@ -67,23 +67,23 @@ alter table SubstationToRouteMapping
       references Route (RouteID);
 
 alter table ImportData add BillGrp varchar2(64);
-update ImportData set BillGrp = '';
+update ImportData set BillGrp = ' ';
 alter table ImportData modify BillGrp varchar2(64) not null;
 
 alter table ImportData add SubstationName varchar2(50);
-update ImportData set SubstationName = '';
+update ImportData set SubstationName = ' ';
 alter table ImportData modify SubstationName varchar2(50) not null;
 
 alter table ImportFail add BillGrp varchar2(64);
-update ImportFail set BillGrp = '';
+update ImportFail set BillGrp = ' ';
 alter table ImportFail modify BillGrp varchar2(64) not null;
 
 alter table ImportFail add SubstationName varchar2(50);
-update ImportFail set SubstationName = '';
+update ImportFail set SubstationName = ' ';
 alter table ImportFail modify SubstationName varchar2(50) not null;
 
 alter table ImportFail add FailType varchar2(64);
-update ImportFail set FailType = '';
+update ImportFail set FailType = ' ';
 alter table ImportFail modify FailType varchar2(64) not null;
 
 /*==============================================================*/

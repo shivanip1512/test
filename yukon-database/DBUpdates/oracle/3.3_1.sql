@@ -1,10 +1,11 @@
 /******************************************/
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
-
-alter table DeviceMeterGroup alter column CollectionGroup varchar(50) not null;
-alter table DeviceMeterGroup alter column TestCollectionGroup varchar(50) not null;
-alter table DeviceMeterGroup alter column BillingGroup varchar(50) not null;
+/* @error ignore-begin */
+alter table DeviceMeterGroup modify CollectionGroup varchar(50) not null;
+alter table DeviceMeterGroup modify TestCollectionGroup varchar(50) not null;
+alter table DeviceMeterGroup modify BillingGroup varchar(50) not null;
+/* @error ignore-end */
 
 delete MSPInterface where vendorid = 1 and interface = 'CB_MR';
 delete MSPInterface where vendorid = 1 and interface = 'EA_MR';
@@ -146,7 +147,7 @@ alter table DCItemValue
 
 alter table DCItemValue
    add constraint FK_DCIITEMVALUE_DCITEMTYPE foreign key (ItemTypeID)
-      references DCItemType (ItemTypeID)
+      references DCItemType (ItemTypeID);
 
 /*==============================================================*/
 /* Table: DCCategoryType                                        */

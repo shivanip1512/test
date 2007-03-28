@@ -5,13 +5,18 @@
 package com.cannontech.dbtools.updater;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.tools.gui.IMessageFrame;
 
 /**
@@ -26,6 +31,9 @@ public class UpdateDB
 {
 	//private static double dbVersion = 0.0;
 	private IMessageFrame output = null;
+    
+    private Double version = null;
+    private int build = 0;
 
 	/**
 	 * 
@@ -64,26 +72,135 @@ public class UpdateDB
 		
 		return false;
 	}
+    
+    /**
+     * Helper method to determine if stars tables exist
+     * @return True if tables exist
+     */
+    private boolean starsExists() {
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
+        try {
 
-	public static double getDBVersion()
-	{
-		//do not lazy init this, just in case!!
-		return Double.parseDouble( 
-                        VersionTools.getDBVersionRefresh().getVersion() );
+            String sql = "select count(*) from APPLIANCECATEGORY";
 
-		//return dbVersion;					
-	}
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            stmt = conn.prepareStatement(sql);
+            stmt.executeQuery();
 
-	public static int getDBBuild()
-	{
-		//do not lazy init this, just in case!!
-		Integer bldInt = VersionTools.getDBVersionRefresh().getBuild();
+            return true;
 
-		if( bldInt == null )
-			return 0;
-		else
-			return bldInt.intValue();
+        } catch (SQLException e) {
+            // do nothing - stars table does not exist
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                // Double version = null;
+            }
+        }
+
+        return false;
+    }
+
+	/**
+     * Helper method to get the current database version
+     * @return Database version
+     */
+    private double getDBVersion() {
+
+        if(version != null){
+            return version;
+        }
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            String sql = "select max(version) as version from " + CTIDatabase.TABLE_NAME;
+
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            rs.next();
+
+            version = Double.valueOf(rs.getString("version"));
+
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                // do nothing - tried to close
+            }
+        }
+
+        return version;
+    }
+
+    /**
+     * Helper method to get the current database version build
+     * @return Database version build
+     */
+	public int getDBBuild() {
+        
+        int build = 0;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            String sql = "select max(build) as build from " + CTIDatabase.TABLE_NAME
+                    + " where version = ?";
+
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            stmt = conn.prepareStatement(sql);
+            stmt.setDouble(1, this.getDBVersion());
+            
+            rs = stmt.executeQuery();
+            rs.next();
+
+            build = Integer.valueOf(rs.getString("build"));
+
+        } catch (SQLException e) {
+            // do nothing - build column may not exist on old databases
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                // do nothing - tried to close
+            }
+        }
+
+        return build;
 	}
 
 	/**
@@ -212,7 +329,7 @@ public class UpdateDB
 		UpdateLine[] starsLines = null;
 
 		if( token.indexOf(DBMSDefines.STARS_INC) > 0 
-			 && VersionTools.starsExists() )
+			 && starsExists() )
 		{
 			getIMessageFrame().addOutput( "    <-=======================================->" );
 			getIMessageFrame().addOutput( "            Loading STARS updates" );
@@ -369,5 +486,12 @@ public class UpdateDB
 	{
 		return output;
 	}
+    
+    public static void main(String[] args) {
+        UpdateDB udb = new UpdateDB(null);
+        
+        System.out.println(udb.getDBVersion());
+        System.out.println(udb.getDBBuild());
+    }
 
 }
