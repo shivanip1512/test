@@ -99,7 +99,6 @@ public class CSV2PointData {
         
         long time = 0;
         long lastLoggedDate = 0;
-        long delay = 0;
         
         for (int x = 0; x < list.size(); x++) {
             final PointData pData = list.get(x);
