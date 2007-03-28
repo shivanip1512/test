@@ -18,7 +18,7 @@ public final class TDCDefines
 {
 	// main things of TDC
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath()
-			+ "Tabular Data Console Help.chm";
+			+ "Tabular_Data_Console_Help.chm";
 
 	public static String DBALIAS = "yukon";
 
@@ -36,7 +36,7 @@ public final class TDCDefines
 	public static int MAX_ROWS = 500;
 	public static final String BOOKMARK_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "/TDCBookMarks.txt";
 
-   //hex value representing the privelages of the user on this machine
+   //hex value representing the privileges of the user on this machine
    public static final long USER_RIGHTS = Long.parseLong( 
 			ClientSession.getInstance().getRolePropertyValue(
          TDCRole.TDC_RIGHTS, "0"), 16 );
