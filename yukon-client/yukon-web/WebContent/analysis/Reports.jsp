@@ -1,11 +1,12 @@
-<html>
+
+<jsp:directive.page import="com.cannontech.amr.deviceread.model.DeviceReadJobLog"/><html>
 <%@ page import="com.cannontech.analysis.*" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%@ page import="com.cannontech.database.model.ModelFactory"%>
+<%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.application.ReportingRole" %>
@@ -258,8 +259,8 @@ function enableDates(value)
             filterModelValues[i].selectedIndex = -1;
           }
         
-        <%for(int modelType : REPORT_BEAN.getFilterObjectsMap().keySet())  {%>
-              document.getElementById('Div<%= ModelFactory.getModelString(modelType)%>').style.display = (filterBy == <%= modelType %>) ?  "block" : "none";
+        <%for (ReportFilter filter : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+				document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
         <% }  %>
         }
     
@@ -270,8 +271,8 @@ function enableDates(value)
             	<td class='main' style='padding-left:5; padding-top:5'>
 					<div id='DivFilterModelType' style='display:true'>
 						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
-        					<%for (int modelType : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
-                    			<option value='<%=modelType%>'>  <%=ModelFactory.getModelString(modelType).toString() %></option>
+							<%for (ReportFilter filter : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+                    			<option value='<%=filter.ordinal()%>'>  <%=filter.getFilterTitle() %></option>
         					<% } %>
                 		</select>
 					</div>
@@ -281,19 +282,19 @@ function enableDates(value)
           	<tr>
             	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
         			<% int isFirst = 0; %>
-        			<%for(int modelType : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
-            			<%if( modelType == ModelFactory.MCT || modelType == ModelFactory.METER ) {%>
-                    		<div id="Div<%=ModelFactory.getModelString(modelType)%>" style="display:<%=isFirst==0?"true":"none"%>">
+        			<%for(ReportFilter filter: REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+            			<%if( filter.equals(ReportFilter.METER ) ){%>
+                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>
                     		<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>
-            			<%}else if( modelType == ModelFactory.DEVICE) {%>
-                    		<div id="Div<%=ModelFactory.getModelString(modelType)%>" style="display:<%=isFirst==0?"true":"none"%>">
+            			<%} else if( filter.equals(ReportFilter.DEVICE)) {%>
+                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
 		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
         		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>                    
             			<% }else {%>
-            				<div id="Div<%=ModelFactory.getModelString(modelType)%>" style="display:<%=isFirst==0?"true":"none"%>">
+            				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<select name='filterValues' size='10' multiple style='width:350px;'>
-                			<%List objects = REPORT_BEAN.getFilterObjectsMap().get(modelType);%>
+                			<%List objects = REPORT_BEAN.getFilterObjectsMap().get(filter);%>
                 			<%if (objects != null) {
                     			for (Object object : objects) {
                         			if( object instanceof String) {%>
@@ -302,6 +303,8 @@ function enableDates(value)
                                     	<option value='<%=((LiteYukonPAObject)object).getYukonID()%>'><%=((LiteYukonPAObject)object).getPaoName()%></option>
                         			<%}else if (object instanceof LiteDeviceMeterNumber){%>
                                     	<option value='<%=((LiteDeviceMeterNumber)object).getDeviceID()%>'><%=((LiteDeviceMeterNumber)object).getMeterNumber()%></option>
+                        			<%}else if (object instanceof DeviceReadJobLog){%>
+                                    	<option value='<%=((DeviceReadJobLog)object).getDeviceReadJobLogID()%>'><%=((DeviceReadJobLog)object).toString()%></option>
                         		<%}
                     			}
                 			}%>
