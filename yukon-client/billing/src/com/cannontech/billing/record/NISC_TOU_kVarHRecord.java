@@ -53,6 +53,7 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 	 */
 	public NISC_TOU_kVarHRecord() {
 		super();
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * NISC_TOU_KVARHRecord constructor comment.
