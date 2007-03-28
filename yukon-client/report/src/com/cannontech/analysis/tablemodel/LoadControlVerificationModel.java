@@ -16,7 +16,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DynamicVerification;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Oct 20, 2005
@@ -163,9 +162,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		return sql;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -224,9 +221,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		return getDateFormat().format( getStartDate()) +  "  -  " +
@@ -346,6 +341,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 	{
 		return title;
 	}
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -384,10 +380,10 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>" +LINE_SEPARATOR;
 
-		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.TRANSMITTER) +"' style='display:true'>" + LINE_SEPARATOR;
+		html += "            <div id='Div"+ ReportFilter.TRANSMITTER.getFilterTitle() +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "              <select name='" + ATT_TRANSMITTER_IDS + "' size='10' multiple style='width:300px;'>" + LINE_SEPARATOR;
 
-		List objects = ReportFuncs.getObjectsByModelType(ModelFactory.TRANSMITTER);
+		List objects = ReportFuncs.getObjectsByModelType(ReportFilter.TRANSMITTER);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)
@@ -410,10 +406,10 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>" +LINE_SEPARATOR;
 
-		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.RECEIVERS) +"' style='display:true'>" + LINE_SEPARATOR;
+		html += "            <div id='Div"+ ReportFilter.RECEIVER.getFilterTitle() +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "            <select name='" + ATT_RECEIVER_IDS + "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
 
-		objects = ReportFuncs.getObjectsByModelType(ModelFactory.RECEIVERS);
+		objects = ReportFuncs.getObjectsByModelType(ReportFilter.RECEIVER);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)
@@ -450,7 +446,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-	
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

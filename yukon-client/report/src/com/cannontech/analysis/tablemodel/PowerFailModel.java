@@ -4,14 +4,11 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -53,11 +50,11 @@ public class PowerFailModel extends ReportModelBase
 	public PowerFailModel()
 	{
 		super();
-		setFilterModelTypes(new int[]{
-		        ModelFactory.METER,
-    			ModelFactory.COLLECTIONGROUP, 
-    			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP}
+		setFilterModelTypes(new ReportFilter[]{
+				ReportFilter.METER,
+				ReportFilter.COLLECTIONGROUP, 
+    			ReportFilter.ALTERNATEGROUP, 
+    			ReportFilter.BILLINGGROUP}
 				);
 	}
 	
@@ -125,10 +122,7 @@ public class PowerFailModel extends ReportModelBase
 	
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -284,15 +278,5 @@ public class PowerFailModel extends ReportModelBase
 	public String getTitleString()
 	{
 		return title;
-	}
-	
-	public String getHTMLOptionsTable()
-	{
-		return super.getHTMLOptionsTable();
-	}
-
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
 	}
 }

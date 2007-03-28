@@ -147,9 +147,7 @@ public class LPSetupDBModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -212,9 +210,7 @@ public class LPSetupDBModel extends ReportModelBase
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		//Use current date 
@@ -333,17 +329,13 @@ public class LPSetupDBModel extends ReportModelBase
 		return title + " - LP Meter Data";
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-	 */
+	@Override
 	public boolean useStartDate()
 	{
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
+	@Override
 	public boolean useStopDate()
 	{
 		return false;
@@ -378,7 +370,7 @@ public class LPSetupDBModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-	
+	@Override
 	public String getHTMLOptionsTable()
 	{
 	    String html = "";
@@ -406,7 +398,7 @@ public class LPSetupDBModel extends ReportModelBase
 		return html;
 
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

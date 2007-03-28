@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
@@ -27,7 +25,6 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.device.lm.LMControlArea;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.point.RawPointHistory;
-import com.cannontech.database.model.ModelFactory;
 /**
  * @author stacey
  *
@@ -145,14 +142,12 @@ public class DailyPeaksModel extends ReportModelBase
 	{
 		super(start_, stop_);
 		setPaoIDs(paoIDs_);
-		setFilterModelTypes(new int[]{ 
-    			ModelFactory.LMCONTROLAREA}
+		setFilterModelTypes(new ReportFilter[]{ 
+    			ReportFilter.LMCONTROLAREA}
 				);
 		}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#collectData()
-	 */
+	@Override
 	@SuppressWarnings("unchecked")
     public void collectData()
 	{
@@ -523,17 +518,4 @@ public class DailyPeaksModel extends ReportModelBase
 	{
 		currentPeakValue = double1;
 	}
-	
-	
-	public String getHTMLOptionsTable()
-	{
-		return super.getHTMLOptionsTable();
-	}
-	
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
-
-	}
-
 }

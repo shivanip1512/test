@@ -17,7 +17,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Nov 11, 2005
@@ -94,8 +93,8 @@ public class CapControlEventLogModel extends ReportModelBase
 	public CapControlEventLogModel()
 	{
 		super();
-		setFilterModelTypes(new int[]{
-		        ModelFactory.CAPCONTROLSTRATEGY}
+		setFilterModelTypes(new ReportFilter[]{
+		        ReportFilter.CAPCONTROLSUBBUS}
 			);
 	}
 
@@ -140,9 +139,7 @@ public class CapControlEventLogModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -414,7 +411,7 @@ public class CapControlEventLogModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}*/	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 	    String html = "";
@@ -490,7 +487,7 @@ public class CapControlEventLogModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 	    super.setParameters(req);

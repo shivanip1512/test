@@ -149,9 +149,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
         custCurtailLoads = null;
     }
     
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+    @Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -483,7 +481,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

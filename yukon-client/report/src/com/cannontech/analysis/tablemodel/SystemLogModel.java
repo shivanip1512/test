@@ -189,10 +189,7 @@ public class SystemLogModel extends ReportModelBase
 
 		return sql;
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -296,9 +293,7 @@ public class SystemLogModel extends ReportModelBase
 		pointID = pointID_;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		return getDateFormat().format( getStartDate()) +  "  -  " +
@@ -409,6 +404,7 @@ public class SystemLogModel extends ReportModelBase
 	{
 		return title;
 	}
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -463,7 +459,7 @@ public class SystemLogModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-	
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

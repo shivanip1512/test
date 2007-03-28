@@ -11,7 +11,6 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -57,10 +56,10 @@ public class CarrierDBModel extends ReportModelBase
 	public CarrierDBModel()
 	{
 		super();
-		setFilterModelTypes(new int[]{ 
-		        			ModelFactory.COLLECTIONGROUP, 
-		        			ModelFactory.TESTCOLLECTIONGROUP, 
-		        			ModelFactory.BILLING_GROUP}
+		setFilterModelTypes(new ReportFilter[]{ 
+		        			ReportFilter.COLLECTIONGROUP, 
+		        			ReportFilter.ALTERNATEGROUP, 
+		        			ReportFilter.BILLINGGROUP}
 							);
 	}
 
@@ -98,9 +97,7 @@ public class CarrierDBModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -157,9 +154,7 @@ public class CarrierDBModel extends ReportModelBase
 		return;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		//Use current date 
@@ -272,30 +267,15 @@ public class CarrierDBModel extends ReportModelBase
 		return title + " - Carrier";
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-	 */
+	@Override
 	public boolean useStartDate()
 	{
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
+	@Override
 	public boolean useStopDate()
 	{
 		return false;
 	}
-
-	public String getHTMLOptionsTable()
-	{
-		return super.getHTMLOptionsTable();
-	}
-
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
-	}
-
 }

@@ -4,14 +4,14 @@ import com.cannontech.analysis.report.CapControlOperationsReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class CapControlOperationsController extends CapControlReportControllerBase {
     
-    private int[] filterModelTypes = new int[]{
-            ModelFactory.CAPCONTROLSTRATEGY,
-            ModelFactory.CAPBANK,
-            ModelFactory.CAPCONTROLFEEDER};
+    private ReportFilter[] filterModelTypes = new ReportFilter[]{
+    		ReportFilter.CAPCONTROLSUBBUS,
+    		ReportFilter.CAPBANK,
+    		ReportFilter.CAPCONTROLFEEDER};
     
     public CapControlOperationsController() {
         super();
@@ -31,7 +31,7 @@ public class CapControlOperationsController extends CapControlReportControllerBa
         return report.getModel();
     }
     
-    public int[] getFilterModelTypes() {
+    public ReportFilter[] getFilterModelTypes() {
         return filterModelTypes;
     }
     

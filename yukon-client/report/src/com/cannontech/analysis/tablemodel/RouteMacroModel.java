@@ -2,8 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.CarrierRouteMacro;
 import com.cannontech.clientutils.CTILogger;
@@ -115,9 +113,7 @@ public class RouteMacroModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -182,10 +178,7 @@ public class RouteMacroModel extends ReportModelBase
 		return DeviceClasses.STRING_CLASS_CARRIER;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		return "Run Date: " + getDateFormat().format(new java.util.Date());
@@ -314,26 +307,12 @@ public class RouteMacroModel extends ReportModelBase
 		return title;
 	}
 
-	public String getHTMLOptionsTable()
-	{
-		return super.getHTMLOptionsTable();
-	}
-
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-	 */
+	@Override
 	public boolean useStartDate()
 	{
 		return false;
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
+	@Override
 	public boolean useStopDate()
 	{
 		return false;

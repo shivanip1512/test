@@ -15,7 +15,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Nov 11, 2005
@@ -88,8 +87,8 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	public CapControlCurrentStatusModel()
 	{
 		super();
-		setFilterModelTypes(new int[]{
-		        ModelFactory.CAPCONTROLSTRATEGY}
+		setFilterModelTypes(new ReportFilter[]{
+		        ReportFilter.CAPCONTROLSUBBUS}
 			);
 	}
 
@@ -148,9 +147,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -213,9 +210,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		return;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		//Use current date 
@@ -314,17 +309,13 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		return title;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-	 */
+	@Override
 	public boolean useStartDate()
 	{
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
+	@Override
 	public boolean useStopDate()
 	{
 		return false;
@@ -357,7 +348,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}*/	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 	    String html = "";
@@ -399,7 +390,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 	    super.setParameters(req);

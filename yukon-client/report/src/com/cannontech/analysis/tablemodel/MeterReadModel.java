@@ -18,7 +18,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -87,13 +86,11 @@ public class MeterReadModel extends ReportModelBase
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
 		    //Always sort by group first
-			if (getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
-			{
+			if (getFilterModelType().equals(ReportFilter.ALTERNATEGROUP)) {
 			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getTestCollGroup());
 			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getTestCollGroup());
 			}
-			else if ( getFilterModelType() == ModelFactory.BILLING_GROUP)
-			{
+			else if ( getFilterModelType().equals(ReportFilter.BILLINGGROUP)) {
 			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getBillGroup());
 			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getBillGroup());
 			}
@@ -168,11 +165,11 @@ public class MeterReadModel extends ReportModelBase
 	{
 		//Long.MIN_VALUE is the default (null) value for time
 		super(start_, null);
-		setFilterModelTypes(new int[]{
-                ModelFactory.METER,
-    			ModelFactory.COLLECTIONGROUP, 
-    			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP
+		setFilterModelTypes(new ReportFilter[]{
+				ReportFilter.METER,
+				ReportFilter.COLLECTIONGROUP, 
+				ReportFilter.ALTERNATEGROUP, 
+				ReportFilter.BILLINGGROUP
 				} 
 		);
 	}
@@ -275,10 +272,7 @@ public class MeterReadModel extends ReportModelBase
 		return sql;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -373,11 +367,11 @@ public class MeterReadModel extends ReportModelBase
 				{
 				    if( ldmn == null)
 				        return null;
-				    if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+				    if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
 				        return ldmn.getTestCollGroup();
-				    else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
+				    else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 				        return ldmn.getBillGroup();
-				    else //if( getFilterModelType() == ModelFactory.COLLECTION_GROUP)
+				    else //ReportFilter.COLLECTION_GROUP)
 				        return ldmn.getCollGroup();
 				}
 				case DEVICE_NAME_COLUMN:
@@ -402,7 +396,7 @@ public class MeterReadModel extends ReportModelBase
 				        
 				    if( ldmn == null)
 				        return null;
-				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+				    if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 				        return ldmn.getTestCollGroup();
 				    else 
 				        return ldmn.getCollGroup();
@@ -414,7 +408,7 @@ public class MeterReadModel extends ReportModelBase
 				    
 				    if( ldmn == null)
 				        return null;
-				    if( getFilterModelType() == ModelFactory.BILLING_GROUP)
+				    if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 				        return ldmn.getTestCollGroup();
 				    else 
 				        return ldmn.getBillGroup();
@@ -435,19 +429,19 @@ public class MeterReadModel extends ReportModelBase
 		    String tempStr2;
 		    String tempStr3;
 		    
-		    if(getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+		    if(getFilterModelType().equals(ReportFilter.ALTERNATEGROUP ))
 		    {
 		        tempStr1 = ALT_GROUP_NAME_STRING;
 		    	tempStr2 = COLL_GROUP_NAME_STRING;
 		    	tempStr3 = BILLING_GROUP_NAME_STRING;
 		    }
-			else if(getFilterModelType() == ModelFactory.BILLING_GROUP)
+			else if(getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 			{
 			    tempStr1 = BILLING_GROUP_NAME_STRING;
 		        tempStr2 = ALT_GROUP_NAME_STRING;
 		    	tempStr3 = COLL_GROUP_NAME_STRING;
 		    }
-			else //if(getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+			else //ReportFilter.COLLECTIONGROUP)
 			{
 			    tempStr1 = COLL_GROUP_NAME_STRING;
 		        tempStr2 = ALT_GROUP_NAME_STRING;
@@ -564,11 +558,11 @@ public class MeterReadModel extends ReportModelBase
     	    title += "Missed ";
 	    	    
 		title += "Meter Data";
-		if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+		if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 		    title += " By Collection Group";
-		else if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+		else if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
 		    title += " By Alternate Group";
-		else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
+		else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 		    title += " By Billing Group";
 		return title;
 	}
@@ -626,7 +620,7 @@ public class MeterReadModel extends ReportModelBase
 		}		
 		meterReadType = i;
 	}
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -644,7 +638,7 @@ public class MeterReadModel extends ReportModelBase
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
 */
-		html += "    <td valign='top' align='center'>" + LINE_SEPARATOR;		
+		html += "    <td valign='top'>" + LINE_SEPARATOR;		
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>Meter Read Status</td>" +LINE_SEPARATOR;
@@ -694,7 +688,7 @@ public class MeterReadModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
@@ -713,15 +707,13 @@ public class MeterReadModel extends ReportModelBase
 				setOrderBy(ORDER_BY_DEVICE_NAME);
 		}
 	}
-	/**
-	 * Override ReportModelBase in order to reset the column headings.
-	 * @param i
-	 */
-	public void setFilterModelType(int billGroupType)
+
+	@Override
+	public void setFilterModelType(ReportFilter filterModelType)
 	{
-		if( getFilterModelType() != billGroupType)
+		if( getFilterModelType() != filterModelType )
 			columnNames = null;
-	    super.setFilterModelType(billGroupType);
+	    super.setFilterModelType(filterModelType);
 	}
 
 }

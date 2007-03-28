@@ -9,7 +9,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.model.CBCOrderByTreeModel;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -62,8 +61,8 @@ public class CapBankListModel extends ReportModelBase
 	public CapBankListModel()
 	{
 		super();
-        setFilterModelTypes(new int[]{
-                ModelFactory.CAPCONTROLSTRATEGY
+        setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.CAPCONTROLSUBBUS
                 }
             );
 	}	
@@ -134,9 +133,7 @@ public class CapBankListModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -192,9 +189,7 @@ public class CapBankListModel extends ReportModelBase
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
@@ -300,7 +295,7 @@ public class CapBankListModel extends ReportModelBase
 		this.orderBy = orderBy;
 	}
 	
-	
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -326,7 +321,8 @@ public class CapBankListModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
@@ -337,16 +333,12 @@ public class CapBankListModel extends ReportModelBase
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-	 */
+	@Override
 	public boolean useStartDate()
 	{
 		return false;	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
+	@Override
 	public boolean useStopDate()
 	{
 		return false;

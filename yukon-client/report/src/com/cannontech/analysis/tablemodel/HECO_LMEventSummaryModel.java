@@ -304,7 +304,7 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 		}
 		return columnProperties;
 	}
-	
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -332,7 +332,7 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

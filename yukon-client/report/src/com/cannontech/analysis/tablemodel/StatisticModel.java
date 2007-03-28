@@ -120,9 +120,7 @@ public class StatisticModel extends ReportModelBase
 		setStatType(statType_);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -351,9 +349,7 @@ public class StatisticModel extends ReportModelBase
 		statPeriodType = statPeriodType_;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	public String getDateRangeString()
 	{
 		if( getStatPeriodType().equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING) ||
@@ -560,6 +556,7 @@ public class StatisticModel extends ReportModelBase
 	        columnTypes = null;
 	    }
 	}
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -600,7 +597,7 @@ public class StatisticModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-	
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
@@ -620,16 +617,12 @@ public class StatisticModel extends ReportModelBase
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
+	@Override
 	public boolean useStopDate()
 	{
 		return false;
 	}
-	/* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-     */
+	@Override
     public boolean useStartDate()
     {
         return false;

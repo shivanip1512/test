@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class ReportControllerAdapter extends ReportControllerBase  {
 
@@ -24,7 +25,7 @@ public class ReportControllerAdapter extends ReportControllerBase  {
     }
     
     @Override
-    public int[] getFilterModelTypes() {
+    public ReportFilter[] getFilterModelTypes() {
         return reportModelbase.getFilterModelTypes();
     }
     

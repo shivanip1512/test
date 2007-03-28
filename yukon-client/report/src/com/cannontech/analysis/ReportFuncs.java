@@ -20,11 +20,11 @@ import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.modules.output.pageable.pdf.PDFReportUtil;
 
+import com.cannontech.amr.deviceread.dao.DeviceReadJobLogDao;
 import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.CapControlCurrentStatusReport;
 import com.cannontech.analysis.report.CapControlEventLogReport;
 import com.cannontech.analysis.report.CapControlNewActivityReport;
-import com.cannontech.analysis.report.CapControlStateComparisonReport;
 import com.cannontech.analysis.report.CarrierDBReport;
 import com.cannontech.analysis.report.DailyPeaksReport;
 import com.cannontech.analysis.report.DisconnectReport;
@@ -47,6 +47,7 @@ import com.cannontech.analysis.report.PowerFailReport;
 import com.cannontech.analysis.report.ProgramDetailReport;
 import com.cannontech.analysis.report.RouteDBReport;
 import com.cannontech.analysis.report.RouteMacroReport;
+import com.cannontech.analysis.report.ScheduledMeterReadReport;
 import com.cannontech.analysis.report.StarsAMRDetailReport;
 import com.cannontech.analysis.report.StarsLMDetailReport;
 import com.cannontech.analysis.report.StarsLMSummaryReport;
@@ -60,7 +61,6 @@ import com.cannontech.analysis.tablemodel.CapBankListModel;
 import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
 import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
-import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -83,18 +83,19 @@ import com.cannontech.analysis.tablemodel.ProgramDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteDBModel;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
+import com.cannontech.analysis.tablemodel.ScheduledMeterReadModel;
 import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.keypoint.PngEncoder;
 
@@ -177,6 +178,8 @@ public class ReportFuncs
 			returnVal = new HECO_DSMISReport(); 	        
         else if( model instanceof MaxDailyOpsModel)
             returnVal = new MaxDailyOpsReport();
+        else if( model instanceof ScheduledMeterReadModel)
+        	returnVal = new ScheduledMeterReadReport();
         else
 	        return null;
 
@@ -239,97 +242,90 @@ public class ReportFuncs
     	dialog.setVisible(true);
     }
     
-    public static List<? extends Object> getObjectsByModelType(int model) {
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        switch (model)
-        {
-            case ModelFactory.LMCONTROLAREA:
-                return cache.getAllLMControlAreas();
-            case ModelFactory.LMGROUPS:
-                return cache.getAllLMGroups();
-            case ModelFactory.DEVICE:
-                return cache.getAllDevices();
-            case ModelFactory.COLLECTIONGROUP:
-                return cache.getAllDMG_CollectionGroups();
-            case ModelFactory.TESTCOLLECTIONGROUP:
-                return cache.getAllDMG_AlternateGroups();
-            case ModelFactory.BILLING_GROUP:
-                return cache.getAllDMG_BillingGroups();
-            case ModelFactory.ROUTE:
-                return cache.getAllRoutes();
-            case ModelFactory.TRANSMITTER:
-            {
-                List allPaos = cache.getAllYukonPAObjects();
-                List trans = null;
-                if( allPaos != null)
-                {
-                    trans = new ArrayList();
-                    for (int i = 0; i < allPaos.size(); i++)
-                    {
-                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-                        if (lPao.getPaoClass() == DeviceClasses.TRANSMITTER)
-                            trans.add(lPao);
-                    }
-                }
-                return trans; 
-            }
-            case ModelFactory.RECEIVERS:    //for LoadControlVerification report
-            {
-                List allPaos = cache.getAllYukonPAObjects();
-                List receivers = null;
-                if( allPaos != null)
-                {
-                    receivers = new ArrayList();
-                    for (int i = 0; i < allPaos.size(); i++)
-                    {
-                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-                        if(DeviceTypesFuncs.isReceiver(lPao.getType()) )
-                            receivers.add(lPao);
-                    }
-                }
-                return receivers; 
-            }
-            case ModelFactory.RTU:
-            {
-                List allPaos = cache.getAllYukonPAObjects();
-                List rtus = null;
-                if( allPaos != null)
-                {
-                    rtus= new ArrayList();
-                    for (int i = 0; i < allPaos.size(); i++)
-                    {
-                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-                        if((DeviceTypesFuncs.isRTU(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER)
-                            && !DeviceTypesFuncs.isIon(lPao.getType()) )                        
-                        rtus.add(lPao);
-                    }
-                }
-                return rtus; 
-            }
-            case ModelFactory.CAPCONTROLSTRATEGY:
-                return cache.getAllCapControlSubBuses();
-                
-            case ModelFactory.CAPCONTROLFEEDER:
-                return cache.getAllCapControlFeeders();
-                
-            case ModelFactory.CAPBANK:
-                List allPaos = cache.getAllYukonPAObjects();
-                List caps = null;
-                if( allPaos != null)
-                {
-                    caps= new ArrayList();
-                    for (int i = 0; i < allPaos.size(); i++)
-                    {
-                        LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-                        if(lPao.getType() == PAOGroups.CAPBANK) {                        
-                            caps.add(lPao);
-                        }
-                    }
-                }
-                return caps;
-                
-            default:
-                return new ArrayList(0);    //and empty list of nothing objects. 
+    public static List<? extends Object> getObjectsByModelType(ReportFilter filter) {
+    	IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
+        
+        if( filter.equals(ReportFilter.DEVICE)){
+			return cache.getAllDevices();
+		} else if( filter.equals(ReportFilter.COLLECTIONGROUP)){
+			return cache.getAllDMG_CollectionGroups();
+		} else if( filter.equals(ReportFilter.ALTERNATEGROUP)){
+			return cache.getAllDMG_AlternateGroups();
+		} else if( filter.equals(ReportFilter.BILLINGGROUP)){
+			return cache.getAllDMG_AlternateGroups();
+		} else if( filter.equals(ReportFilter.ROUTE)){
+			return cache.getAllRoutes();
+		} else if( filter.equals(ReportFilter.LMCONTROLAREA)){
+			return cache.getAllLMControlAreas();
+		} else if( filter.equals(ReportFilter.LMGROUP)) {
+			return cache.getAllLMGroups();
+		} else if( filter.equals(ReportFilter.TRANSMITTER)) {
+			List allPaos = cache.getAllYukonPAObjects();
+        	List trans = null;
+        	if( allPaos != null)
+        	{
+				trans = new ArrayList();
+	        	for (int i = 0; i < allPaos.size(); i++)
+	        	{
+	        		LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+	        		if (lPao.getPaoClass() == DeviceClasses.TRANSMITTER)
+	        			trans.add(lPao);
+	        	}
+        	}
+        	return trans;
+		} else if( filter.equals(ReportFilter.RECEIVER)) {
+			List allPaos = cache.getAllYukonPAObjects();
+			List receivers = null;
+			if( allPaos != null)
+			{
+				receivers = new ArrayList();
+				for (int i = 0; i < allPaos.size(); i++)
+				{
+					LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+					if(DeviceTypesFuncs.isReceiver(lPao.getType()) )
+						receivers.add(lPao);
+				}
+			}
+			return receivers;
+		} else if( filter.equals(ReportFilter.RTU)) {
+			List allPaos = cache.getAllYukonPAObjects();
+			List rtus = null;
+			if( allPaos != null)
+			{
+				rtus= new ArrayList();
+				for (int i = 0; i < allPaos.size(); i++)
+				{
+					LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+					if((DeviceTypesFuncs.isRTU(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER)
+						&& !DeviceTypesFuncs.isIon(lPao.getType()) )						
+					rtus.add(lPao);
+				}
+			}
+			return rtus;			
+		} else if( filter.equals(ReportFilter.CAPCONTROLSUBBUS)) {
+		    return cache.getAllCapControlSubBuses();
+		} else if( filter.equals(ReportFilter.CAPCONTROLFEEDER)) {
+            return cache.getAllCapControlFeeders();
+        } else if( filter.equals(ReportFilter.CAPBANK)) {
+	        List allPaos = cache.getAllYukonPAObjects();
+	        List caps = null;
+	        if( allPaos != null)
+	        {
+	            caps= new ArrayList();
+	            for (int i = 0; i < allPaos.size(); i++)
+	            {
+	                LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+	                if(lPao.getType() == PAOGroups.CAPBANK) {                        
+	                    caps.add(lPao);
+	                }
+	            }
+	        }
+	        return caps;
+		} else if( filter.equals(ReportFilter.SCHEDULE)) {
+			DeviceReadJobLogDao deviceReadJobLogDao = (DeviceReadJobLogDao) YukonSpringHook.getBean("deviceReadJobLogDao");
+			return deviceReadJobLogDao.getAllSchedules();
+		}else {
+			return new ArrayList(0);	//and empty list of nothing objects. 
         }
     }
 }

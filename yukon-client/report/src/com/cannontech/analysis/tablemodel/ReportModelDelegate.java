@@ -144,11 +144,11 @@ public final class ReportModelDelegate extends ReportModelBase {
         return reportModelBase.getFieldSeparator();
     }
 
-    public int getFilterModelType() {
+    public ReportFilter getFilterModelType() {
         return reportModelBase.getFilterModelType();
     }
 
-    public int[] getFilterModelTypes() {
+    public ReportFilter[] getFilterModelTypes() {
         return reportModelBase.getFilterModelTypes();
     }
 
@@ -240,11 +240,11 @@ public final class ReportModelDelegate extends ReportModelBase {
         reportModelBase.setFieldSeparator(string);
     }
 
-    public void setFilterModelType(int modelType) {
+    public void setFilterModelType(ReportFilter modelType) {
         reportModelBase.setFilterModelType(modelType);
     }
 
-    public void setFilterModelTypes(int[] models) {
+    public void setFilterModelTypes(ReportFilter[] models) {
         reportModelBase.setFilterModelTypes(models);
     }
 

@@ -3,11 +3,8 @@ package com.cannontech.analysis.tablemodel;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.database.db.point.SystemLog;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -68,8 +65,8 @@ public class LMControlLogModel extends SystemLogModel
 	public LMControlLogModel()
 	{
 		super();
-		setFilterModelTypes(new int[]{ 
-				ModelFactory.LMGROUPS}
+		setFilterModelTypes(new ReportFilter[]{ 
+				ReportFilter.LMGROUP}
 				);
 	}	
 	/**
@@ -166,7 +163,7 @@ public class LMControlLogModel extends SystemLogModel
 	{
 		return title;
 	}
-	
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -192,9 +189,4 @@ public class LMControlLogModel extends SystemLogModel
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-	
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
-	}	
 }

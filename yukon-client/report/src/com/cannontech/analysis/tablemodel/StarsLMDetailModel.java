@@ -187,10 +187,7 @@ public class StarsLMDetailModel extends ReportModelBase
 		return sql;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -250,9 +247,7 @@ public class StarsLMDetailModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	 public String getDateRangeString()
 	 {
 	     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMM dd, yyyy  HH:mm:ss");
@@ -422,7 +417,7 @@ public class StarsLMDetailModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -478,7 +473,7 @@ public class StarsLMDetailModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

@@ -19,7 +19,7 @@ import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 /**
  * Created on May 22, 2005
@@ -98,7 +98,7 @@ public class StarsAMRDetailReport extends YukonReportBase
 	private Group createSortByGroup()
 	{
 	    final Group sortByGroup = new Group();
-	    if ( getModel().getFilterModelType() == ModelFactory.ROUTE)
+	    if ( getModel().getFilterModelType().equals(ReportFilter.ROUTE))
 	    {
 		    sortByGroup.setName(StarsAMRDetailModel.ROUTE_NAME_STRING + ReportFactory.NAME_GROUP);
 		    sortByGroup.addField(StarsAMRDetailModel.ROUTE_NAME_STRING);

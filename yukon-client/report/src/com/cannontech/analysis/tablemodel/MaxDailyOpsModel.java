@@ -1,24 +1,16 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.device.capcontrol.MaxDailyOpsData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.model.ModelFactory;
 
 public class MaxDailyOpsModel extends ReportModelBase {
     
@@ -62,10 +54,10 @@ public class MaxDailyOpsModel extends ReportModelBase {
     public MaxDailyOpsModel()
     {
         super();
-        setFilterModelTypes(new int[]{
-                ModelFactory.CAPCONTROLSTRATEGY,
-                ModelFactory.CAPBANK,
-                ModelFactory.CAPCONTROLFEEDER}
+        setFilterModelTypes(new ReportFilter[]{
+        		ReportFilter.CAPCONTROLSUBBUS,
+        		ReportFilter.CAPBANK,
+        		ReportFilter.CAPCONTROLFEEDER}
             );
     }
     
@@ -127,7 +119,7 @@ public class MaxDailyOpsModel extends ReportModelBase {
         );
         
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
-            if(getFilterModelType() == ModelFactory.CAPCONTROLFEEDER) {
+            if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) {
                 sql.append( "where yp2.paobjectid in ('" + getPaoIDs()[0]);
                 for (int i = 1; i < getPaoIDs().length; i++) {
                     sql.append("', '" + getPaoIDs()[i]);
@@ -135,7 +127,7 @@ public class MaxDailyOpsModel extends ReportModelBase {
                 sql.append("') ");
             }
         
-            if(getFilterModelType() == ModelFactory.CAPBANK) {
+            if(getFilterModelType().equals(ReportFilter.CAPBANK)) {
                 sql.append( "where yp1.paobjectid in ('" + getPaoIDs()[0]);
                 for (int i = 1; i < getPaoIDs().length; i++) {
                     sql.append("', '" + getPaoIDs()[i]);
@@ -143,7 +135,7 @@ public class MaxDailyOpsModel extends ReportModelBase {
                 sql.append("') ");
             }
         
-            if(getFilterModelType() == ModelFactory.CAPCONTROLSTRATEGY) {
+            if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
                 sql.append( "where yp3.paobjectid in ('" + getPaoIDs()[0]);
                 for (int i = 1; i < getPaoIDs().length; i++) {
                     sql.append("', '" + getPaoIDs()[i]);
@@ -453,15 +445,4 @@ public class MaxDailyOpsModel extends ReportModelBase {
     public String getTitleString() {
         return title ;
     }
-    
-    public String getHTMLOptionsTable()
-    {
-        return super.getHTMLOptionsTable();
-    }
-
-    public void setParameters( HttpServletRequest req )
-    {
-        super.setParameters(req);
-    }
-
 }

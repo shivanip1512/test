@@ -51,9 +51,7 @@ public class DisabledCBCDevicesModel extends ReportModelBase
 		super();		
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!

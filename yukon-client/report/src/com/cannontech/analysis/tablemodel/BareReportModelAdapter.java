@@ -11,7 +11,7 @@ public final class BareReportModelAdapter extends ReportModelBase {
         this.model = model;
         this.layout = layout;
     }
-
+    @Override
     public void collectData() {
         if (model instanceof CommonModelAttributes) {
             CommonModelAttributes commonModel = (CommonModelAttributes) model;

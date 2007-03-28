@@ -9,25 +9,26 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.BareReportModel;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public abstract class ReportControllerBase implements ReportController {
     protected BareReportModel model;
     protected YukonReportBase report;
 
-    public Map<Integer,List<? extends Object>> getFilterObjectsMap() {
-        HashMap<Integer, List<? extends Object>> result = new HashMap<Integer, List<? extends Object>>();
+    public Map<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
+        HashMap<ReportFilter, List<? extends Object>> result = new HashMap<ReportFilter, List<? extends Object>>();
         if(getFilterModelTypes() == null) {
             return result;
         }else {
-            for (Integer modelId : getFilterModelTypes()) {
-                result.put(modelId, ReportFuncs.getObjectsByModelType(modelId));
+            for (ReportFilter filter: getFilterModelTypes()) {
+                result.put(filter, ReportFuncs.getObjectsByModelType(filter));
             }
             return result;
         }
     }
 
-    public int[] getFilterModelTypes() {
-        return new int[] {};
+    public ReportFilter[] getFilterModelTypes() {
+        return new ReportFilter[] {};
     }
     
     public void setRequestParameters(HttpServletRequest request) {

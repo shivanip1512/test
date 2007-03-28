@@ -154,9 +154,7 @@ public class ActivityDetailModel extends ReportModelBase
 		setEnergyCompanyID(ecID_);
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -600,7 +598,7 @@ public class ActivityDetailModel extends ReportModelBase
 		return totals;
 	}
 	
-	
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -619,7 +617,7 @@ public class ActivityDetailModel extends ReportModelBase
 		
 		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
-		html += "    <td align='center'>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
@@ -655,6 +653,7 @@ public class ActivityDetailModel extends ReportModelBase
 		return html;
 	}
 
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

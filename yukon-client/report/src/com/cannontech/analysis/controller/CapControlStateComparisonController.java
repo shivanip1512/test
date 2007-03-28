@@ -4,14 +4,14 @@ import com.cannontech.analysis.report.CapControlStateComparisonReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class CapControlStateComparisonController extends CapControlReportControllerBase {
 
-    private int[] filterModelTypes = new int[]{
-            ModelFactory.CAPCONTROLSTRATEGY,
-            ModelFactory.CAPBANK,
-            ModelFactory.CAPCONTROLFEEDER};
+    private ReportFilter[] filterModelTypes = new ReportFilter[]{
+            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLFEEDER};
     
     public CapControlStateComparisonController() {
         super();
@@ -31,7 +31,7 @@ public class CapControlStateComparisonController extends CapControlReportControl
         return report.getModel();
     }
     
-    public int[] getFilterModelTypes() {
+    public ReportFilter[] getFilterModelTypes() {
         return filterModelTypes;
     }
 

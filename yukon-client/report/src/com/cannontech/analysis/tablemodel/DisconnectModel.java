@@ -170,9 +170,7 @@ public class DisconnectModel extends ReportModelBase
 		super();
 		setShowHistory(showHist);
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -309,9 +307,7 @@ public class DisconnectModel extends ReportModelBase
 			return INVALID_STRING;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	 public String getDateRangeString()
 	 {
 	 	if( isShowHistory())
@@ -319,7 +315,6 @@ public class DisconnectModel extends ReportModelBase
 	 	else 
 			return ( getDateFormat().format(new Date()));	//use current date
 	 }
-
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
@@ -525,7 +520,7 @@ public class DisconnectModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-	
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -598,7 +593,7 @@ public class DisconnectModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

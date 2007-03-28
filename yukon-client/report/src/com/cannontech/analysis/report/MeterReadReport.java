@@ -24,7 +24,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 /**
  * Created on Dec 15, 2003
@@ -78,7 +78,7 @@ public class MeterReadReport extends YukonReportBase
 		Date start = cal.getTime();
 		
 		MeterReadModel model = new MeterReadModel(start);
-		model.setFilterModelType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
+		model.setFilterModelType(ReportFilter.ALTERNATEGROUP);
 		YukonReportBase meterReadReport =new MeterReadReport(model);
 		meterReadReport.getModel().collectData();
 		

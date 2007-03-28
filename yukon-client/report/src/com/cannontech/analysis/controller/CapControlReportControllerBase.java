@@ -1,11 +1,14 @@
 package com.cannontech.analysis.controller;
 
 import java.util.HashSet;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.ServletRequestUtils;
+
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.database.model.ModelFactory;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public abstract class CapControlReportControllerBase extends ReportControllerBase {
     @Override
@@ -19,24 +22,19 @@ public abstract class CapControlReportControllerBase extends ReportControllerBas
         }
 
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
-        
-        switch(filterModelType) {
-        
-        case ModelFactory.CAPCONTROLFEEDER:
+
+        if (filterModelType == ReportFilter.CAPCONTROLFEEDER.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setFeederIdsFilter(idsSet);
-            break;
-        case ModelFactory.CAPBANK:
+        } else if (filterModelType == ReportFilter.CAPBANK.ordinal()) {
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setCapBankIdsFilter(idsSet);
-            break;
-        case ModelFactory.CAPCONTROLSTRATEGY:
+        } else if (filterModelType == ReportFilter.CAPCONTROLSUBBUS.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
-            break;
         }
     }
     

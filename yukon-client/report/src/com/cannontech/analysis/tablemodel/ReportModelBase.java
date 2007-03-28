@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -19,19 +17,11 @@ import org.apache.commons.lang.StringUtils;
 import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.model.ModelFactory;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.IDatabaseCache;
 
 
 /**
@@ -53,6 +43,34 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
 {
+	public enum ReportFilter{ NONE(""),
+			METER("Meter"),
+			DEVICE("Device"),
+			COLLECTIONGROUP("Collection Group"),
+			ALTERNATEGROUP("Alternate Group"),
+			BILLINGGROUP("Billing Group"),
+			ROUTE("Route"),
+			RECEIVER("Receiver"),
+			LMGROUP("LM Group"),
+			LMCONTROLAREA("LM Control Area"),
+			TRANSMITTER("Transmitter"),
+			RTU("RTU"),
+			CAPCONTROLSUBBUS("Substation Bus"),
+			CAPCONTROLFEEDER("Cap Feeder"),
+			CAPBANK("Cap Bank"),
+			SCHEDULE("Schedule");
+
+		private String filterTitle;
+		
+		private ReportFilter(String filterTitle) {
+		this.filterTitle = filterTitle;
+		}
+		
+		public String getFilterTitle() {
+		return filterTitle;
+		}
+	}
+	
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private String fieldSeparator = ",";
 	
@@ -74,8 +92,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/** String for the title for the table model */
 	protected String title;
 	
-	private int[] filterModelTypes = null;	//all models for a report type (ModelFactory.xxx)
-	private int filterModelType = -1;	//default to invalid?  The currently selected model.
+	private ReportFilter[] filterModelTypes = null;
+	private ReportFilter filterModelType = null;	//default to invalid?  The currently selected model.
 	
 	/** Yukon.DeviceMeterGroup's to query for, null means all */
 	private String [] billingGroups = null;
@@ -371,15 +389,22 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 				setStopDate(null);
 				
 			param = req.getParameter(ATT_FILTER_MODEL_TYPE);
-			if( param != null)
-				setFilterModelType(Integer.valueOf(param).intValue());
+			if( param != null) {
+				int filterOrdinal = Integer.valueOf(param).intValue();
+				for (ReportFilter filter : ReportFilter.values()) {
+					if( filter.ordinal() == filterOrdinal) {
+						setFilterModelType(filter);
+						break;
+					}
+				}
+			}
 			else
-				setFilterModelType(-1);	//default to nothing selected?
+				setFilterModelType(ReportFilter.NONE);	//default to nothing selected?
 			
 			//Load billingGroup model values
-			if ( getFilterModelType() == ModelFactory.COLLECTIONGROUP ||
-		        getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP ||
-		        getFilterModelType() == ModelFactory.BILLING_GROUP )
+			if ( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP) ||
+		        getFilterModelType().equals(ReportFilter.ALTERNATEGROUP) ||
+		        getFilterModelType().equals(ReportFilter.BILLINGGROUP) )
 			{
 				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
 				if( paramArray != null)
@@ -389,8 +414,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 					
 				//Unload paoIDs
 				setPaoIDs(null);
-			} else if( getFilterModelType() == ModelFactory.MCT ||
-                    getFilterModelType() == ModelFactory.METER ) {
+			} else if( getFilterModelType().equals(ReportFilter.METER)) {
              
                 String filterValueList = req.getParameter(ATT_FILTER_METER_VALUES).trim();
                 StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
@@ -409,7 +433,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
                     setPaoIDs(null);
                 //Unload billingGroups
                 setBillingGroups(null);
-            } else if( getFilterModelType() == ModelFactory.DEVICE ) {
+            } else if( getFilterModelType().equals(ReportFilter.DEVICE)) {
              
                 String filterValueList = req.getParameter(ATT_FILTER_DEVICE_VALUES).trim();
                 StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
@@ -484,17 +508,17 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * @return
 	 */
-	public int getFilterModelType()
+	public ReportFilter getFilterModelType()
 	{
 	    return filterModelType;
 	}
 	/**
 	 * @param i
 	 */
-	public void setFilterModelType(int modelType)
+	public void setFilterModelType(ReportFilter filterModelType)
 	{
-	    if( filterModelType != modelType)
-	        filterModelType = modelType;
+	    if( this.filterModelType != filterModelType)
+	        this.filterModelType = filterModelType;
 	}
 	
 	/**
@@ -517,25 +541,25 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * @return
 	 */
-	public int[] getFilterModelTypes()
+	public ReportFilter[] getFilterModelTypes()
 	{
 	    return filterModelTypes;
 	}
 	/**
 	 * @param is
 	 */
-	public void setFilterModelTypes(int[] models)
+	public void setFilterModelTypes(ReportFilter[] filters)
 	{
-	    filterModelTypes = models;
+	    filterModelTypes = filters;
 	}
 
-	public static String getBillingGroupDatabaseString(int modelType)
+	public static String getBillingGroupDatabaseString(ReportFilter filter)
 	{
-	    if ( modelType == ModelFactory.TESTCOLLECTIONGROUP)
+	    if ( filter.equals(ReportFilter.ALTERNATEGROUP) )
 	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.TEST_COLLECTION_GROUP];
-	    else if ( modelType == ModelFactory.BILLING_GROUP)
+	    else if ( filter.equals(ReportFilter.BILLINGGROUP) )
 	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.BILLING_GROUP];
-	    else	// if ( modelType == ModelFactory.COLLECTIONGROUP)
+	    else	// ReportFilter.COLLECTIONGROUP)
 	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.COLLECTION_GROUP];
 	}
 	public int getSortOrder()

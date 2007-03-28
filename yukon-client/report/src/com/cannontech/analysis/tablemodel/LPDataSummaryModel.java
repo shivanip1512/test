@@ -8,8 +8,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.Date;
 
-import com.cannontech.database.model.ModelFactory;
-
 /**
  * @author stacey
  *
@@ -31,11 +29,11 @@ public class LPDataSummaryModel extends PointDataSummaryModel
 	public LPDataSummaryModel(Date start_, Date stop_)
 	{
 		super(start_, stop_);
-		setFilterModelTypes(new int[]{ 
-		        ModelFactory.METER,
-    			ModelFactory.COLLECTIONGROUP, 
-    			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP}
+		setFilterModelTypes(new ReportFilter[]{ 
+				ReportFilter.METER,
+				ReportFilter.COLLECTIONGROUP, 
+				ReportFilter.ALTERNATEGROUP, 
+				ReportFilter.BILLINGGROUP}
 				);
 		setPointType(LOAD_PROFILE_POINT_TYPE);
 	}

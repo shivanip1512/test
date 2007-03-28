@@ -13,15 +13,11 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LitePoint;
-//import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -134,13 +130,13 @@ public class PointDataIntervalModel extends ReportModelBase
 		setPointType(intervalPointType);
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
-		setFilterModelTypes(new int[]{
-				ModelFactory.METER,
-				ModelFactory.DEVICE,
-    			ModelFactory.COLLECTIONGROUP, 
-    			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP,
-    			ModelFactory.RTU}
+		setFilterModelTypes(new ReportFilter[]{
+				ReportFilter.METER,
+				ReportFilter.DEVICE,
+				ReportFilter.COLLECTIONGROUP, 
+				ReportFilter.ALTERNATEGROUP, 
+				ReportFilter.BILLINGGROUP,
+				ReportFilter.RTU}
 				);
 	}
 	/**
@@ -245,10 +241,7 @@ public class PointDataIntervalModel extends ReportModelBase
 					sql.append(" DESC " );
 		return sql;
 	}
-		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -486,7 +479,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -542,7 +535,7 @@ public class PointDataIntervalModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-	
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

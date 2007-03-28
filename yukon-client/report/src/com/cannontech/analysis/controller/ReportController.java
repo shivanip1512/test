@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 
 public interface ReportController {
@@ -14,7 +14,7 @@ public interface ReportController {
     public String getHTMLOptionsTable();
     public YukonReportBase getReport();
     
-    public Map<Integer, List<? extends Object>> getFilterObjectsMap();
+    public Map<ReportFilter, List<? extends Object>> getFilterObjectsMap();
     public void setRequestParameters(HttpServletRequest request);
     
 }

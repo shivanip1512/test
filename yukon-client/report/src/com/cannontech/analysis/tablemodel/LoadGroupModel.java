@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authorization.model.UserPaoPermission;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -19,7 +18,6 @@ import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.LMControlHistory;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -133,8 +131,8 @@ public class LoadGroupModel extends ReportModelBase
 	{
 		super(start_, stop_);
 		setPaoIDs(paoIDs_);
-		setFilterModelTypes(new int[]{ 
-    			ModelFactory.LMGROUPS}
+		setFilterModelTypes(new ReportFilter[]{ 
+				ReportFilter.LMGROUP}
 				);
 	}	
 		
@@ -262,9 +260,7 @@ public class LoadGroupModel extends ReportModelBase
 
 		return sql;
 	}	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.LoadGroupReportData#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -516,7 +512,7 @@ public class LoadGroupModel extends ReportModelBase
 	public void setShowSeasonalTotal(boolean showSeasonalTotal) {
 		this.showSeasonalTotal = showSeasonalTotal;
 	}
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -592,7 +588,7 @@ public class LoadGroupModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-	
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

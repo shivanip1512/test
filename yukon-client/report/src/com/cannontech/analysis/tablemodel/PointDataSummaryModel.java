@@ -25,7 +25,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -269,13 +268,13 @@ public class PointDataSummaryModel extends ReportModelBase
 	public PointDataSummaryModel(Date start_, Date stop_, int summaryPointType)
 	{
 		super(start_, stop_);
-		setFilterModelTypes(new int[]{
-                ModelFactory.METER,
-                ModelFactory.DEVICE,
-    			ModelFactory.COLLECTIONGROUP, 
-    			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP,
-		        ModelFactory.RTU}
+		setFilterModelTypes(new ReportFilter[]{
+				ReportFilter.METER,
+				ReportFilter.DEVICE,
+				ReportFilter.COLLECTIONGROUP, 
+				ReportFilter.ALTERNATEGROUP, 
+				ReportFilter.BILLINGGROUP,
+				ReportFilter.RTU}
 				);
 		setPointType(summaryPointType);
 	}
@@ -374,9 +373,7 @@ public class PointDataSummaryModel extends ReportModelBase
 		return sql;
 	}
 		
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -1065,14 +1062,14 @@ public class PointDataSummaryModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
 		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
 		
-		html += "    <td align='center'>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
@@ -1121,7 +1118,7 @@ public class PointDataSummaryModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

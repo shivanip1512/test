@@ -18,7 +18,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -89,12 +88,12 @@ public class StarsAMRDetailModel extends ReportModelBase
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
 		    //Always sort by group first
-			if (getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+			if (getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 			{
 			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getCollGroup());
 			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getCollGroup());
 			}
-			else if( getFilterModelType() == ModelFactory.ROUTE)
+			else if( getFilterModelType().equals(ReportFilter.ROUTE))
 			{
 		        thisVal = DaoFactory.getPaoDao().getYukonPAOName( ((StarsAMRDetail)o1).getLitePaobject().getRouteID());
 		        anotherVal = DaoFactory.getPaoDao().getYukonPAOName( ((StarsAMRDetail)o2).getLitePaobject().getRouteID());
@@ -187,9 +186,9 @@ public class StarsAMRDetailModel extends ReportModelBase
 	{
 		super();
 		setShowHistory(showHistory_);
-		setFilterModelTypes(new int[]{ 
-    			ModelFactory.COLLECTIONGROUP,
-    			ModelFactory.ROUTE}
+		setFilterModelTypes(new ReportFilter[]{ 
+				ReportFilter.COLLECTIONGROUP,
+				ReportFilter.ROUTE}
 				);
 	}
 
@@ -234,7 +233,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 		if( getBillingGroups() != null && getBillingGroups().length > 0)
 			    sql.append(", DEVICEMETERGROUP DMG ");
 		if (getPaoIDs() != null && getPaoIDs().length > 0)
-		    if(getFilterModelType() == ModelFactory.ROUTE)//these are Route IDS
+		    if(getFilterModelType().equals(ReportFilter.ROUTE))//these are Route IDS
 		        sql.append(", YUKONPAOBJECT PAO2, DEVICEROUTES DR ");
 
 				sql.append(" WHERE CUST.CUSTOMERID = CA.CUSTOMERID " +
@@ -264,7 +263,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 
 		if (getPaoIDs() != null && getPaoIDs().length > 0)
 		{
-		    if(getFilterModelType() == ModelFactory.ROUTE)//these are Route IDS
+		    if(getFilterModelType().equals(ReportFilter.ROUTE))//these are Route IDS
 		    {
 		        sql.append( " AND PAO1.PAOBJECTID = DR.DEVICEID " +
 		        		" AND DR.ROUTEID = PAO2.PAOBJECTID " +
@@ -277,10 +276,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 		return sql;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -348,9 +344,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
+	@Override
 	 public String getDateRangeString()
 	 {
 	 	if( isShowHistory())
@@ -371,9 +365,9 @@ public class StarsAMRDetailModel extends ReportModelBase
 			{
 				case SORT_BY_COLUMN:
 				{
-				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+				    if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
-				    else if( getFilterModelType() == ModelFactory.ROUTE)
+				    else if( getFilterModelType().equals(ReportFilter.ROUTE))
 				        return DaoFactory.getPaoDao().getYukonPAOName(detail.getLitePaobject().getRouteID());
 				    return null;	//UNKNOWN????
 				}
@@ -392,9 +386,9 @@ public class StarsAMRDetailModel extends ReportModelBase
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return String.valueOf(detail.getLitePaobject().getAddress());
 				case ROUTE_NAME_OR_COLL_GROUP_COLUMN:	//return the opposite of the SORT_BY_COLUMN attribute
-				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+				    if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 				        return DaoFactory.getPaoDao().getYukonPAOName(detail.getLitePaobject().getRouteID());
-				    else if( getFilterModelType() == ModelFactory.ROUTE)
+				    else if( getFilterModelType().equals(ReportFilter.ROUTE))
 				    	return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
 				    return NULL_STRING;	//UNKNOWN????
 				case LAST_KWH_READING_COLUMN:
@@ -413,7 +407,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
-		    if (getFilterModelType() == ModelFactory.ROUTE)
+		    if (getFilterModelType().equals(ReportFilter.ROUTE))
 			{
 				columnNames = new String[]{
 				    ROUTE_NAME_STRING,
@@ -429,7 +423,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 				    DATE_TIME_STRING
 				};
 		    }
-		    else //if(getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+		    else //ReportFilter.COLLECTIONGROUP)
 		    {
 				columnNames = new String[]{
 				    COLLECTION_GROUP_STRING,
@@ -509,9 +503,9 @@ public class StarsAMRDetailModel extends ReportModelBase
 			title += "Historical ";
 		title += "AMR Detail - ";
 		
-		if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+		if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 		    title += " By Collection Group";
-		else if( getFilterModelType() == ModelFactory.ROUTE)
+		else if( getFilterModelType().equals(ReportFilter.ROUTE))
 			title += " By Route";
 		return title;
 	}
@@ -560,7 +554,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -604,7 +598,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
@@ -621,18 +615,12 @@ public class StarsAMRDetailModel extends ReportModelBase
 		}
 	}
 	
-	/**
-	 * Override ReportModelBase in order to reset the column headings.
-	 * @param i
-	 */
-	/* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.ReportModelBase#setFilterModelType(int)
-     */
-    public void setFilterModelType(int modelType)
+	@Override
+    public void setFilterModelType(ReportFilter filterModelType)
     {
-        if( getFilterModelType() != modelType)
+        if( getFilterModelType() != filterModelType)
             columnNames = null;
-        super.setFilterModelType(modelType);
+        super.setFilterModelType(filterModelType);
     }
     /**
      * @return Returns the showHistory.

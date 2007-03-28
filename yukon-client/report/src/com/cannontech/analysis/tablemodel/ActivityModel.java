@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
@@ -165,9 +163,7 @@ public class ActivityModel extends ReportModelBase
 		setEnergyCompanyID(ecID_);
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -555,15 +551,5 @@ public class ActivityModel extends ReportModelBase
 			}
 		}
 		return totals;
-	}
-	
-	public String getHTMLOptionsTable()
-	{
-		return super.getHTMLOptionsTable();
-	}
-
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
 	}
 }

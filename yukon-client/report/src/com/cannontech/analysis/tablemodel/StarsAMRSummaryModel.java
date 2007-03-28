@@ -17,7 +17,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -93,12 +92,12 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
 		    //Always sort by group first
-			if (getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+			if (getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
 			{
 			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getTestCollGroup());
 			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getTestCollGroup());
 			}
-			else if ( getFilterModelType() == ModelFactory.BILLING_GROUP)
+			else if ( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 			{
 			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getBillGroup());
 			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getBillGroup());
@@ -187,9 +186,9 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	{
 		//Long.MIN_VALUE is the default (null) value for time
 		super(start_, stop_);
-		setFilterModelTypes(new int[]{ 
-    			ModelFactory.COLLECTIONGROUP,
-    			ModelFactory.ROUTE}
+		setFilterModelTypes(new ReportFilter[]{ 
+				ReportFilter.COLLECTIONGROUP,
+				ReportFilter.ROUTE}
 				);
 	}
 	/**
@@ -254,9 +253,9 @@ public class StarsAMRSummaryModel extends ReportModelBase
 				sql.append("', '" + getBillingGroups()[i]);
 			sql.append("') ");
 		
-		if (getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+		if (getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
 			sql.append(" ORDER BY DMG.TESTCOLLECTIONGROUP");
-		else if ( getFilterModelType() == ModelFactory.BILLING_GROUP)
+		else if ( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 	    	sql.append(" ORDER BY DMG.BILLINGGROUP");
 		else	//CollectionGroup
 		    sql.append(" ORDER BY DMG.COLLECTIONGROUP");
@@ -264,10 +263,7 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		return sql;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -339,11 +335,11 @@ public class StarsAMRSummaryModel extends ReportModelBase
 			{
 				case SORT_BY_COLUMN:	//TODO ADD route sort column
 				{
-				    if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+				    if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
 				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getTestCollGroup());
-				    else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
+				    else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getBillGroup());
-				    else //if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+				    else //ReportFilter.COLLECTIONGROUP)
 				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
 				}
 				case ACCOUNT_NUMBER_COLUMN:
@@ -471,11 +467,11 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	public String getTitleString()
 	{
 	    String title = "Stars AMR Detail - ";
-		if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+		if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
 		    title += " By Collection Group";
-		else if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
+		else if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
 		    title += " By Alternate Group";
-		else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
+		else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
 		    title += " By Billing Group";
 //		else if( ROUTE)
 //			title += " By Route";
@@ -522,7 +518,7 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -550,7 +546,7 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
@@ -565,17 +561,12 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		}
 	}
 	
-	/**
-	 * Override ReportModelBase in order to reset the column headings.
-	 * @param i
-	 */
-	/* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.ReportModelBase#setFilterModelType(int)
-     */
-    public void setFilterModelType(int modelType)
+
+	@Override
+    public void setFilterModelType(ReportFilter filterModelType)
     {
-        if( getFilterModelType() != modelType)
+        if( ! (getFilterModelType().equals(filterModelType)) )
             columnNames = null;
-        super.setFilterModelType(modelType);
+        super.setFilterModelType(filterModelType);
     } 
 }

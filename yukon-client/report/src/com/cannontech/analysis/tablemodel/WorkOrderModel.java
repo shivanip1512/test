@@ -472,9 +472,7 @@ public class WorkOrderModel extends ReportModelBase {
 		}
 		return meterNumber;
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData() {
 		
 		//Reset all objects, new data being collected!
@@ -961,7 +959,7 @@ public class WorkOrderModel extends ReportModelBase {
 	public String getTitleString() {
 		return title;
 	}
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -996,7 +994,7 @@ public class WorkOrderModel extends ReportModelBase {
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);

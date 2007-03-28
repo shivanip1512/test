@@ -14,7 +14,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -70,8 +69,8 @@ public class CapControlNewActivityModel extends ReportModelBase
 	public CapControlNewActivityModel(Date start_, Date stop_)
 	{
 		super(start_, stop_);
-        setFilterModelTypes(new int[]{
-                ModelFactory.CAPCONTROLSTRATEGY}
+        setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.CAPCONTROLSUBBUS}
             );
 	}	
 	/**
@@ -140,9 +139,7 @@ public class CapControlNewActivityModel extends ReportModelBase
 	}
 	
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
-	 */
+	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -341,7 +338,7 @@ public class CapControlNewActivityModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}	
-
+	@Override
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -384,7 +381,7 @@ public class CapControlNewActivityModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
-
+	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
