@@ -9117,7 +9117,7 @@ insert into YukonGroupRole values(-1084,-2,-206,-20600,'(none)');
 insert into YukonGroupRole values(-1085,-2,-206,-20601,'true');
 insert into YukonGroupRole values(-1086,-2,-206,-20602,'false');
 
-insert into YukonGroupRole values (-1090,-2, -108, -10800, '/user/CILC/user_trending.jsp');
+insert into YukonGroupRole values (-1090,-2, -108, -10800, '/operator/Operations.jsp');
 insert into YukonGroupRole values (-1091,-2, -108, -10802, '(none)');
 insert into YukonGroupRole values (-1092,-2, -108, -10803, '(none)');
 insert into YukonGroupRole values (-1093,-2, -108, -10804, '(none)');
@@ -10269,7 +10269,7 @@ insert into YukonRoleProperty values(-10600,-106,'Header Label','Billing','The h
 insert into YukonRoleProperty values(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
-insert into YukonRoleProperty values(-10800,-108,'home_url','/default.jsp','The url to take the user immediately after logging into the Yukon web applicatoin');
+insert into YukonRoleProperty values(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
 insert into YukonRoleProperty values(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
 insert into YukonRoleProperty values(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
 insert into YukonRoleProperty values(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
@@ -10831,7 +10831,7 @@ insert into YukonUserRole values(-351,-1,-206,-20601,'true');
 insert into YukonUserRole values(-352,-1,-206,-20602,'false');
 
 /* Web Client Customers Web Client role */
-insert into YukonUserRole values (-400, -1, -108, -10800, '/user/CILC/user_trending.jsp');
+insert into YukonUserRole values (-400, -1, -108, -10800, '/operator/Operations.jsp');
 insert into YukonUserRole values (-402, -1, -108, -10802, '(none)');
 insert into YukonUserRole values (-403, -1, -108, -10803, '(none)');
 insert into YukonUserRole values (-404, -1, -108, -10804, '(none)');
