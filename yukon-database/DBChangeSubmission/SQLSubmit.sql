@@ -242,10 +242,10 @@ insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','
 
 
 /****************** ORACLE **************************/
-/*** JON... THIS DON"T WORKK!!!  ********************/
 declare
-v_paoid number := select max(paobjectid) + 1 from yukonpaobject;
+v_paoid number;
 v_areaname varchar2(60);
+select max(paobjectid) + 1 into v_paoid from yukonpaobject;
 cursor c_areaname  is select distinct(description) as areaname from yukonpaobject where type = 'ccsubbus';
 begin
     open c_areaname;
