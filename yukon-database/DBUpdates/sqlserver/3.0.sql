@@ -138,6 +138,7 @@ insert into YukonRoleProperty values(-20003,-200,'Manage Members','false','Contr
 
 /* operator consumer info role properties */
 update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-20152;
+/* @error ignore */
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
 update YukonRoleProperty set DefaultValue='PROGRAMS - CONTROL HISTORY', Description='Title of the programs control history page' where RolePropertyID=-20850;
 

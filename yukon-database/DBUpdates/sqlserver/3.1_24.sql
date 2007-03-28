@@ -1,8 +1,9 @@
 /******************************************/
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
-
+/* @error ignore */
 insert into YukonRoleProperty values(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
+/* @error ignore */
 insert into YukonRoleProperty values(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
 go
 

@@ -12,7 +12,7 @@ PrimaryContactID
 )
 go
 
-
+/* @error ignore-begin */
 insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
 insert into YukonRoleProperty values(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
@@ -20,6 +20,7 @@ insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','
 insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
 go
+/* @error ignore-end */
 
 insert into YukonListEntry values (1326,1053,0,'Member',2906);
 insert into YukonListEntry values (1327,1053,0,'Warehouse',2907);
