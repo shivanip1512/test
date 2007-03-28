@@ -4,7 +4,6 @@
 <beans>
     <bean id="deviceReadJobLogDao" class="com.cannontech.amr.deviceread.dao.impl.DeviceReadJobLogDaoImpl">
       <property name="template" ref="simpleJdbcTemplate"/>
-	  <property name="paoDao" ref="paoDao"/>
     </bean>
 
     <bean id="deviceErrorTranslator" class="com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl" 
