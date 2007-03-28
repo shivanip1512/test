@@ -23,9 +23,11 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
@@ -114,6 +116,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			
 			//Remove data from other devices..we don't care about it anymore
 			clearResultText();
+			try {
+				setCommandString("");
+			} catch (PaoAuthorizationException e) {
+				//IGNORE, we're clearing it out, we have the right to do this.
+			}
 			setErrorMsg("");
 		}
 	}
@@ -459,19 +466,24 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	}
 
 	/**
-	 * Return PointData value from pointIDToPointdataMap.
-	 * The pointID (KEY) is determined by the deviceid, pointoffset, and pointtype parameters
-	 * @param deviceID
-	 * @param pointOffset
-	 * @param pointType
+	 * Return PointData value from DynamicDataSource
+	 * @param pointID
 	 * @return
 	 */
-	public PointData getPointDataReg(int deviceID, int pointOffset, int pointType)
+	public PointData getPointData(int pointID)
 	{
-		int pointID_ = DaoFactory.getPointDao().getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
-        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-        PointData pointData = dds.getPointData(pointID_);
-        return pointData;		
+		try {
+	        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+	        PointData pointData = dds.getPointData(pointID);
+	        //This is a HORRIBLY BAD HACK to remove any dispatch errors from the error message.
+	        //We can't simply clear out the error message because we made need other information in it.
+	        //TODO Fix this.  Needed fast hack for 3.4 SLN
+	        setErrorMsg(getErrorMsg().replaceAll("Connection to dispatch is invalid", ""));
+	        return pointData;
+		} catch(DynamicDataAccessException ddae) {
+			setErrorMsg(ddae.getMessage());
+		}
+       	return null;
 	}
 	
 	/**
@@ -499,8 +511,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		 */
 		int pointID_ = DaoFactory.getPointDao().getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType); 
 		PointData pd = (PointData)getPointIDToRecentPDMap().get(new Integer( pointID_));
-		if(pd == null)
-		{
+		if(pd == null) {
+			
+//			pd = getPointData(pointID_);	//load from pointChangeCache
+//			if (pd == null) {
+			
 			//Try getting it from somewhere else?
 			if( pointOffset == 20 && pointType == PointTypes.PULSE_ACCUMULATOR_POINT)
 			{
@@ -661,7 +676,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			else if( pointOffset == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && pointType == PointTypes.LP_ARCHIVED_DATA)
 			{
 				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"DataChannel 4");
-			}			
+			}
+//			}
 		}
 		return pd;
 	}
@@ -714,8 +730,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 				energyPtToPrevTSMapToValueMap.put(new Integer(pointID_), tsToValMap);
 		}
         //Always add the most recent one from PointChangeCache.  If it already exists, it will simply be overwritten
-        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-        PointData pointData = dds.getPointData(pointID_);
+		PointData pointData = getPointData(pointID_);
+		
         if (pointData != null)
         {
             TreeMap tsToValMap = (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID_));
