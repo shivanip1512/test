@@ -2706,6 +2706,7 @@
             </point>
         </points>
     </device>
+    <!--
     <device>
         <type value="1098" javaConstant="CCU721" changeGroup="transmitter"/>
         <displayName value="CCU-721"/>
@@ -2718,6 +2719,7 @@
             </point>
         </points>
     </device>
+     -->
     <device>
         <type value="1005" javaConstant="LCU415" changeGroup="transmitter"/>
         <displayName value="LCU-415"/>
