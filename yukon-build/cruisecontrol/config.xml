@@ -136,7 +136,7 @@
                 	<artifactspublisher dest="artifacts/${project.name}" dir="checkout/dist/"/>
 	        </onsuccess>           
 		<email mailhost="10.106.32.52"
-                       returnaddress="nmeverden@cannontech.com"
+                       returnaddress="cc-noreply@cannontech.com"
                        buildresultsurl="http://swbuild:8088/buildresults/yukon-install" 
                        spamwhilebroken="false"
 		       reportsuccess="never">
