@@ -93,6 +93,7 @@ go
 insert into LMProgramWebPublishing values (0,0,0,0,0,0);
 go
 
+/* @error ignore */
 alter table ApplianceBase drop constraint FK_AppBs_LMPr;
 go
 sp_rename 'ApplianceBase.LMProgramID', 'ProgramID', 'COLUMN';
@@ -102,6 +103,7 @@ alter table ApplianceBase
       references LMProgramWebPublishing (ProgramID);
 go
 
+/* @error ignore */
 alter table LMProgramEvent drop constraint FK_LMPrg_LMPrEv;
 go
 sp_rename 'LMProgramEvent.LMProgramID', 'ProgramID', 'COLUMN';

@@ -2,6 +2,30 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+/* @error ignore-begin */
+CREATE proc removeColumn
+(@tablename nvarchar(100), @columnname nvarchar(100))
+AS
+BEGIN
+DECLARE @tab VARCHAR(100),@defname varchar(100),@cmd varchar(100)
+
+select @defname = name
+FROM sysobjects so JOIN sysconstraints sc
+ON so.id = sc.constid
+WHERE object_name(so.parent_obj) = @tablename
+AND so.xtype = 'D'
+AND sc.colid =
+(SELECT colid FROM syscolumns
+WHERE id = object_id(@tablename) AND
+name = @columnname)
+
+select @cmd='alter table '+@tablename+ ' drop constraint '+@defname
+exec (@cmd)
+select @cmd='alter table '+@tablename+ ' drop column '+@columnname
+exec (@cmd)
+END
+/* @error ignore-end */
+
 /* @error ignore */
 alter table command alter column command varchar(256);
 /* @error ignore */
@@ -483,7 +507,7 @@ go
 alter table capcontrolfeeder drop column PEAKSETPOINT;
 alter table capcontrolfeeder drop column OFFPEAKSETPOINT;
 alter table capcontrolfeeder drop column UpperBandwidth;
-alter table capcontrolfeeder drop column LowerBandwidth;
+exec dbo.removeColumn 'capcontrolfeeder', 'LowerBandwidth';
 go
 
 alter table CapControlSubstationBus drop column ControlMethod;
@@ -499,8 +523,8 @@ alter table CapControlSubstationBus drop column MINRESPONSETIME;
 alter table CapControlSubstationBus drop column MINCONFIRMPERCENT;
 alter table CapControlSubstationBus drop column FAILUREPERCENT;
 alter table CapControlSubstationBus drop column DAYSOFWEEK;
-alter table CapControlSubstationBus drop column LowerBandwidth;
-alter table CapControlSubstationBus drop column ControlUnits;
+exec dbo.removeColumn 'CapControlSubstationBus', 'LowerBandwidth';
+exec dbo.removeColumn 'CapControlSubstationBus', 'ControlUnits';
 alter table CapControlSubstationBus drop column ControlDelayTime;
 alter table CapControlSubstationBus drop column ControlSendRetries;
 go
