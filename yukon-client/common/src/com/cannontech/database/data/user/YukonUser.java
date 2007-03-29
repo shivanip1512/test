@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.user.YukonGroup;
@@ -12,6 +13,7 @@ import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.YukonGroupRoleDefs;
+import com.cannontech.spring.YukonSpringHook;
 
 /*** 
  * @author alauinger
@@ -129,6 +131,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );
 		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
         delete( EnergyCompanyOperatorLoginList.tableName, "OperatorLoginID", getYukonUser().getUserID() );
+        PaoPermissionDao paoPermissionDao = (PaoPermissionDao) YukonSpringHook.getBean("paoPermissionDao");
+        paoPermissionDao.removeAllUserPermissions(getUserID());
         
 		getYukonUser().delete();
 	}
