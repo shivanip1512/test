@@ -300,9 +300,9 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * Build the SQL statement to retrieve DatabaseModel data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
-	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, DMG.METERNUMBER, DCS.ADDRESS, " + 
+    public StringBuffer buildSQLStatement()
+    {
+        StringBuffer sql = new StringBuffer ("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.CATEGORY, PAO.TYPE, DMG.METERNUMBER, DCS.ADDRESS, " + 
                                              " P.POINTNAME, RPH.POINTID, TIMESTAMP, VALUE, QUALITY ");
 		
 		if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)
@@ -464,10 +464,10 @@ public class PointDataSummaryModel extends ReportModelBase
 					voltageDemandInterval = null;
 					if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)					
 					{
-					    lpDemandRate = String.valueOf( rset.getInt(10));
-					    voltageDemandRate = String.valueOf(rset.getInt(11));
-					    liDemandRate = String.valueOf(rset.getInt(12));
-					    voltageDemandInterval = String.valueOf(rset.getInt(13));
+					    lpDemandRate = String.valueOf( rset.getInt(12));
+					    voltageDemandRate = String.valueOf(rset.getInt(13));
+					    liDemandRate = String.valueOf(rset.getInt(14));
+					    voltageDemandInterval = String.valueOf(rset.getInt(15));
 					}
 								
 					MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, pointName, new Date(ts.getTime()), value, quality);
