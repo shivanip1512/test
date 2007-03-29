@@ -1311,6 +1311,9 @@ public class CapControlForm extends DBEditorForm{
 			else if (getDbPersistent() instanceof CapControlSubBus)
 				((CapControlSubBus) getDbPersistent())
 						.getCapControlSubstationBus().setStrategyID(newID);
+            else if (getDbPersistent() instanceof CapControlArea)
+                ((CapControlArea) getDbPersistent())
+                        .getCapControlArea().setStrategyID(newID);
 
 			// clear out the memory of the any list of Strategies
 			resetStrategies();
@@ -1353,6 +1356,16 @@ public class CapControlForm extends DBEditorForm{
 						.getCapControlSubstationBus().setStrategyID(
 								new Integer(CtiUtilities.NONE_ZERO_ID));
 			}
+            else if (getDbPersistent() instanceof CapControlArea){
+
+                stratID = ((CapControlArea) getDbPersistent())
+                        .getCapControlArea().getStrategyID()
+                        .intValue();
+                ((CapControlArea) getDbPersistent())
+                        .getCapControlArea().setStrategyID(
+                                new Integer(CtiUtilities.NONE_ZERO_ID));
+            
+            }
 
 			// decide if we need to do any special handling of this transaction
 			// based on what other PAOs use this Strategy
