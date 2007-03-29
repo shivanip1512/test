@@ -117,6 +117,20 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
 
     }
 
+    public void removeAllGroupPermissions(int groupId) {
+
+        String sql = "delete from GroupPaoPermission where groupid = ?";
+        jdbcTemplate.update(sql, new Object[] { groupId });
+
+    }
+
+    public void removeAllUserPermissions(int userId) {
+
+        String sql = "delete from UserPaoPermission where userid = ?";
+        jdbcTemplate.update(sql, new Object[] { userId });
+
+    }
+
     public List<Integer> getPaosForUserPermission(LiteYukonUser user, Permission permission) {
         return this.getPaosForUserPermission(user.getUserID(), permission);
     }
@@ -286,5 +300,4 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
             return gpp;
         }
     }
-
 }

@@ -126,6 +126,20 @@ public interface PaoPermissionDao {
     public void removeAllPaoPermissions(int paoId);
 
     /**
+     * Method to remove all permissions for a given user. (Can be used when
+     * deleting a user)
+     * @param userId - Id of user to remove permissions for
+     */
+    public void removeAllUserPermissions(int userId);
+
+    /**
+     * Method to remove all permissions for a given group. (Can be used when
+     * deleting a group)
+     * @param groupId - Id of user to remove permissions for
+     */
+    public void removeAllGroupPermissions(int groupId);
+
+    /**
      * Method to get all paoids for which the user has the given permission
      * @param user - User to get paoids for
      * @param permission - Permission in question
