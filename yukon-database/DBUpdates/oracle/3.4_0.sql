@@ -212,7 +212,7 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430IN', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430IN', 2, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430IN', 3, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430IN', 4, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430IN', 5, 'Y', -1);
+
 INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430IN', 6, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430IN', 7, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430IN', 8, 'N', -1);
@@ -430,6 +430,25 @@ insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcol
 update YukonGroupRole set Value = '/operator/Operations.jsp' where GroupRoleID = -1090 and GroupID = -2 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
 update YukonUserRole set Value = '/operator/Operations.jsp' where UserRoleID = -400 and UserID = -1 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
 update YukonRoleProperty set DefaultValue = '/operator/Operations.jsp' where RolePropertyID = -10800 and DefaultValue = '/default.jsp';
+
+
+
+create table capcontrolarea (
+    areaid         numeric        not null,
+    strategyid     numeric       not null
+);
+alter table capcontrolarea
+   add constraint PK_capcontrolarea primary key  (areaid);
+
+
+create table CCSubAreaAssignment (
+   AreaID               numeric              not null,
+   SubStationBusID      numeric              not null,
+   DisplayOrder         numeric              not null
+);
+alter table CCSubAreaAssignment
+   add constraint PK_CCSubAreaAssignment primary key  (AreaID, SubStationBusID);
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
