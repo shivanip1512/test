@@ -17,6 +17,23 @@ public class CapControlStrategyModel {
     private HashMap enableTable = new HashMap(10);
     private HashMap valueTable = new HashMap(10);
     
+    
+
+    public Boolean getIntegrateFlag() {
+        return strategy.getIntegrateFlag().equalsIgnoreCase("Y");
+    }
+
+    public void setIntegrateFlag(Boolean integrateFlag) {
+        strategy.setIntegrateFlag((integrateFlag) ? "Y" : "N");
+    }
+
+    public Integer getIntegratePeriod() {
+        return strategy.getIntegratePeriod();
+    }
+
+    public void setIntegratePeriod(Integer integratePeriod) {
+        strategy.setIntegratePeriod(integratePeriod);
+    }
 
     public CapControlStrategyModel(CapControlStrategy s) {
         super();

@@ -441,4 +441,27 @@ public class CBCSelectionLists {
 
 		return TIME_INTERVAL;
 	}
+    
+    public SelectItem[] getIntegrationPeriods () {
+        return getIntegrationPeriods;
+    }
+    
+    private static final SelectItem[] getIntegrationPeriods =  {
+        new SelectItem(new Integer (60), "1 minute"),
+        new SelectItem(new Integer (120), "2 minutes"),
+        new SelectItem(new Integer (180), "3 minutes"),
+        new SelectItem(new Integer (240), "4 minutes"),
+        new SelectItem(new Integer (300), "5 minutes"),
+        new SelectItem(new Integer (360), "6 minutes"),
+        new SelectItem(new Integer (420), "7 minutes"),
+        new SelectItem(new Integer (480), "8 minutes"),
+        new SelectItem(new Integer (540), "9 minutes"),
+        new SelectItem(new Integer (600), "10 minutes"),
+        new SelectItem(new Integer (660), "11 minutes"),
+        new SelectItem(new Integer (720), "12 minutes"),
+        new SelectItem(new Integer (780), "13 minutes"),
+        new SelectItem(new Integer (840), "14 minutes"),
+        new SelectItem(new Integer (900), "15 minutes")
+        
+    };
 }

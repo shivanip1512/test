@@ -44,6 +44,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 
 	private Double pkPFPoint = new Double (0.0);
 	private Double offPkPFPoint = new Double (0.0);
+    
+    private String integrateFlag = "N";
+    private Integer integratePeriod = new Integer (0);
 
 
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
@@ -61,7 +64,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		"ControlUnits", "ControlDelayTime", "ControlSendRetries",
 		"PeakLag", "PeakLead", "OffPkLag", "OffPkLead", 
         "PeakVARLag", "PeakVARLead" , "OffPkVARLag", "OffPkVARLead",
-        "PeakPFSetPoint", "OffPkPFSetPoint"
+        "PeakPFSetPoint", "OffPkPFSetPoint", "IntegrateFlag", "IntegratePeriod"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "StrategyID" };
@@ -89,7 +92,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getControlDelayTime(), getControlSendRetries(),
 			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
             getPkVarLag(), getPkVarLead(), getOffPkLag(), getOffPkLead(),
-            getPkPFPoint(), getOffPkPFPoint()
+            getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -271,6 +274,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
             
             setPkPFPoint((Double) results[22]);
             setOffPkPFPoint((Double) results [23]);
+            setIntegrateFlag((String)results[24]);
         }   
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -399,7 +403,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getControlDelayTime(), getControlSendRetries(),
 			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
             getPkVarLag(), getPkVarLead(), getOffpkVarLag(), getOffpkVarLead(),
-            getPkPFPoint(), getOffPkPFPoint()
+            getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod()
 		};
 	
 	
@@ -455,7 +459,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		   "ControlUnits, ControlDelayTime, ControlSendRetries," +
 		   "PeakLag, PeakLead, OffPkLag, OffPkLead, " + 
            "PeakVARLag, PeakVARLead , OffPkVARLag , OffPkVARLead," + 
-           "PeakPFSetPoint, OffPkPFSetPoint" +
+           "PeakPFSetPoint, OffPkPFSetPoint, IntegrateFlag, IntegratePeriod" +
 		   " from " + TABLE_NAME + " order by StrategyName";
 
 		try {		
@@ -499,7 +503,8 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
                     
                     cbcStrat.setPkPFPoint(new Double (rset.getDouble(24)));
                     cbcStrat.setOffPkPFPoint(new Double (rset.getDouble(25)));
-                    
+                    cbcStrat.setIntegrateFlag(new String (rset.getString(26)));
+                    cbcStrat.setIntegratePeriod(new Integer (rset.getInt(27)));
 					vect.add( cbcStrat );				
 				}
 
@@ -732,5 +737,25 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
     public void setPkPFPoint(Double d) {
         pkPFPoint = d;
     }
+
+
+
+    public Integer getIntegratePeriod() {
+        return integratePeriod;
+    }
+
+    public void setIntegratePeriod(Integer integratedPeriod) {
+        this.integratePeriod = integratedPeriod;
+    }
+
+    public String getIntegrateFlag() {
+        return integrateFlag;
+    }
+
+    public void setIntegrateFlag(String integratedFlad) {
+        this.integrateFlag = integratedFlad;
+    }
+
+
 
 }

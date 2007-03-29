@@ -124,7 +124,16 @@
 				<f:selectItem itemValue="0" itemLabel="(none)" />
 				<f:selectItems value="#{capControlForm.timeInterval}" />
 			</x:selectOneMenu>
-	
+			
+			<f:verbatim><br/></f:verbatim>
+			<x:outputLabel for="IntegrateFlag" value="Integrate Control?"/>
+			<x:selectBooleanCheckbox  id="IntegrateFlag" value="#{capControlForm.currentStratModel.integrateFlag}" 
+					disabled="#{!capControlForm.editingCBCStrategy}" onclick="submit();"/>
+			<f:verbatim>&nbsp;&nbsp;&nbsp;</f:verbatim>
+			<x:selectOneMenu id="IntegratePeriods" disabled="#{!capControlForm.editingCBCStrategy || !capControlForm.currentStratModel.integrateFlag}"
+					value="#{capControlForm.currentStratModel.integratePeriod}" >
+				<f:selectItems value="#{selLists.integrationPeriods}" />
+			</x:selectOneMenu>
 	
 			<f:verbatim></fieldset></f:verbatim>
 	
