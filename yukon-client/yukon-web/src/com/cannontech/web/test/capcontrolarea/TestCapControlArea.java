@@ -20,7 +20,17 @@ public class TestCapControlArea extends TestCase {
         areaID = Util.getAreaID ();
     }
 
-    
+    public void testDeleteArea() {
+        CapControlArea area = new CapControlArea();
+        area.setCapControlPAOID(62);
+        area.setDbConnection(connection);
+        try {
+            area.delete();
+        } catch (SQLException e) {
+            area = null;
+        }
+        assertNotNull(area);
+    }
 
     public void testCapControlAreaCreate() {
         CapControlArea area = new CapControlArea();
@@ -76,9 +86,9 @@ public class TestCapControlArea extends TestCase {
         assertNotSame(oldStrategyID, area.getCapControlArea());
         
     }
-    public void testDeleteArea() {
+/*    public void testDeleteArea() {
         CapControlArea area = new CapControlArea();
-        area.setCapControlPAOID(areaID);
+        area.setCapControlPAOID(31);
         area.setDbConnection(connection);
         try {
             area.delete();
@@ -86,7 +96,7 @@ public class TestCapControlArea extends TestCase {
             area = null;
         }
         assertNotNull(area);
-    }
+    }*/
 
     protected void tearDown() throws Exception {
         if (connection != null) {

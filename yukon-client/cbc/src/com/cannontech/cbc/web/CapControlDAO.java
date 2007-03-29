@@ -73,19 +73,19 @@ public interface CapControlDAO {
 	 * Returns all SubBuses for a given Area
 	 * 
 	 */
-	public abstract SubBus[] getSubsByArea(String area);
+	public abstract SubBus[] getSubsByArea(Integer areaID);
 
 	/**
 	 * Returns all CapBanks for a given Area
 	 * 
 	 */
-	public abstract CapBankDevice[] getCapBanksByArea(String area);
+	public abstract CapBankDevice[] getCapBanksByArea(Integer areaID);
 
 	/**
 	 * Returns all Feeders for a given Area
 	 * 
 	 */
-	public abstract Feeder[] getFeedersByArea(String area);
+	public abstract Feeder[] getFeedersByArea(Integer areaID);
 
 	/**
 	 * Find all the orphaned CBC's in the system. This requires a database hit since

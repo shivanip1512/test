@@ -46,10 +46,10 @@
 		{
 			css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 			CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
-			SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoName());
-			//Feeder[] areaFeeders = userOwner.getFeedersByArea(areaStr);
-			if (areaBuses.length > 0) {
-			CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoName());
+			
+			SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
+			
+			CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
 			
 			String totalVars =
 				CBCUtils.format( CBCUtils.calcTotalVARS(areaCapBanks) );
@@ -96,7 +96,8 @@
 
 			<a id="allAreas<%=i%>">
 <%
-		for( int j = 0; j < areaBuses.length; j++ )
+if (areaBuses.length > 0) {		
+	for( int j = 0; j < areaBuses.length; j++ )
 		{
 			SubBus subBus = areaBuses[j];
 			Feeder[] subFeeders = userOwner.getFeedersBySub(subBus.getCcId());

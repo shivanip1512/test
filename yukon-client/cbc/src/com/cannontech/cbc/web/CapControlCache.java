@@ -25,8 +25,10 @@ import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.CapControlFeeder;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -62,8 +64,8 @@ public class CapControlCache implements MessageListener, CapControlDAO
 
 	// Map<subBusID(Integer), capBankIDs(int[])>
 	private HashMap subToBankMap = new HashMap();
-	// Map<areaName(String), subIDs(NativeIntVector)>
-	private HashMap subIDToAreaMap = new HashMap();
+	// Map<areaName(Integer), subIDs(NativeIntVector)>
+	//private HashMap subIDToAreaMap = new HashMap();
 	private CBCWebUpdatedObjectMap updatedObjMap = null;
 
 	// Vector:CBCArea
@@ -205,30 +207,35 @@ public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
 /* (non-Javadoc)
  * @see com.cannontech.cbc.web.CapControlDAO#getSubsByArea(java.lang.String)
  */
-public synchronized SubBus[] getSubsByArea(String area)
+public  SubBus[] getSubsByArea(Integer areaID)
 {
-	NativeIntVector subIDs = (NativeIntVector)subIDToAreaMap.get( area );
-	if( subIDs == null )
-		subIDs = new NativeIntVector();
-
-	SubBus[] retVal = new SubBus[ subIDs.size() ];
-	
-	for( int i = 0; i < subIDs.size(); i++ )
-		retVal[i] = getSubBus( new Integer(subIDs.elementAt(i)) );
-
+    List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaID);
+    List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
+    SubBus[] subs = new SubBus[intList.size()];
+    int i=0;
+    synchronized (subs)
+    {
+        for (Integer id : intList) {
+            SubBus sub = (SubBus) subBusMap.get(id);
+            subs[i] = sub;
+            i++;
+        }
+    }
 	//before returning, sort our SubBuses based on the name
-	Arrays.sort( retVal, CBCUtils.CCNAME_COMPARATOR );
+	Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
 
-	return retVal;
+	return subs;
+
+
 }
 
 /**
  * Returns all CapBanks for a given Area
  * 
  */
-public synchronized CapBankDevice[] getCapBanksByArea(String area)
+public synchronized CapBankDevice[] getCapBanksByArea(Integer areaID)
 {
-	SubBus[] subs = getSubsByArea( area );
+	SubBus[] subs = getSubsByArea( areaID );
 	if( subs == null )
 		subs = new SubBus[0];
 
@@ -247,9 +254,9 @@ public synchronized CapBankDevice[] getCapBanksByArea(String area)
  * Returns all Feeders for a given Area
  * 
  */
-public synchronized Feeder[] getFeedersByArea(String area)
+public synchronized Feeder[] getFeedersByArea(Integer areaID)
 {
-	SubBus[] subs = getSubsByArea( area );
+	SubBus[] subs = getSubsByArea( areaID);
 	if( subs == null )
 		subs = new SubBus[0];
 
@@ -325,6 +332,20 @@ public synchronized LiteWrapper[] getOrphanedFeeders()
 	return retVal;
 }
 
+public synchronized LiteWrapper[] getOrphanedSubstations()
+{
+    //hits the DB
+    List<Integer> allUnassignedBuses = CapControlSubBus.getAllUnassignedBuses();
+    LiteWrapper[] retVal = new LiteWrapper[ allUnassignedBuses.size() ];
+    for (Integer id : allUnassignedBuses) {
+        retVal[allUnassignedBuses.indexOf(id)] = new LiteWrapper(
+            DaoFactory.getPaoDao().getLiteYukonPAO(id) );
+                        
+    }
+
+    return retVal;
+}
+
 /**
  * Create an array of SubBuses. Best usage is to store the results of this call
  * instead of repeatingly calling this method. Never returns null.
@@ -380,26 +401,40 @@ public int getParentSubBusID( int childID ) {
 }
 
 /**
-* Stores all areas in memory. We need to ensure that the areas we make available
-* have at least 1 subbus. We derive the current areas from the message and the
-* current SubBuses
+* Stores all areas in memory. 
 * 
 * @param CBCSubAreas
 */
 private synchronized void handleAreaList(CBCSubAreas areas) 
 {
-    //search through the existing list if there is an area that doesn't exist than 
-    //copy the area, add it to the list
-    //if area already exists:
-    //remove the current object, copy the new area add new area to the list
-    for (Iterator iter = areas.getAreas().iterator(); iter.hasNext();) {
-        CBCArea area = (CBCArea) iter.next();
-        CBCArea copy = area.copy();
-        if (cbcAreas.contains(area)) {
-            cbcAreas.remove(copy);
+    //for every area in the currently in cache
+    List<CBCArea> cachedAreas = getCbcAreas();
+    for (CBCArea area : cachedAreas) {
+        Vector allAreas = areas.getAreas();
+        //if current cache has an area and sent object doesn't 
+        //discard the cached object
+        if (!allAreas.contains(area))
+        {
+            cachedAreas.remove(area);
         }
-        cbcAreas.add(copy);
+        //if the object is cached currently - then replace the object
+        else if (allAreas.contains(area))
+        {
+            int idx = cachedAreas.indexOf(area);
+            cachedAreas.set(idx, (CBCArea) allAreas.get( allAreas.indexOf(area)));
+        }
+        
     }
+    //if the object is not in cache add it to cache
+    Vector<CBCArea> sentAreas = areas.getAreas();
+    for (CBCArea area : sentAreas) {
+        if (!cachedAreas.contains(area))
+        {
+            cachedAreas.add(area);
+        }
+    }
+    
+
     Collections.sort(cbcAreas, CBCUtils.CBC_AREA_COMPARATOR);
 
     resetAreaStateMap();
@@ -411,21 +446,14 @@ private synchronized void handleAreaList(CBCSubAreas areas)
  * @param msg
  */
 private void handleDeletedSubs( int itemID )
-{
+{   
 	Integer id = new Integer(itemID);
-	String area = getSubBus(id).getCcArea();
-
 	subBusMap.remove( id );
 	subToBankMap.remove( id );
 
-
-	//remove mapping of subs to areas by subId
-	NativeIntVector subIDs =
-		(NativeIntVector)subIDToAreaMap.get( area );
-	subIDs.removeElement( id.intValue() );
-	if( subIDs.isEmpty() )
-		subIDToAreaMap.remove( area );
 }
+
+
 
 /**
  * Process multiple SubBuses
@@ -476,7 +504,6 @@ private synchronized void handleSubBus( SubBus subBus )
 {	
 	Validate.notNull(subBus, "subBus can't be null");
 	//remove the old subBus from the area hashmap just in case the area changed
-	removeSubIDToAreaMap( subBus.getCcId() );
 
 	subBusMap.put( subBus.getCcId(), subBus );
 	Vector feeders = subBus.getCcFeeders();
@@ -499,7 +526,6 @@ private synchronized void handleSubBus( SubBus subBus )
 	//map all capbanks to their parent SubBus
 	subToBankMap.put( subBus.getCcId(), capBankIDs.toArray() );
 
-	addSubIDToAreaMap( subBus );
 	//server side update to the objMap
 	getUpdatedObjMap().handleCBCChangeEvent(subBus, new Date());
 }
@@ -509,45 +535,14 @@ private synchronized void handleSubBus( SubBus subBus )
  * Adds or replaces and element inside a hashmap
  * @param subBus
  */
-private void addSubIDToAreaMap( final SubBus subBus )
-{
-	//map all SubBuses to their parent Area by subID
-	NativeIntVector subIDs = null;
-	if( (subIDs = (NativeIntVector)subIDToAreaMap.get(subBus.getCcArea())) != null )		
-	{
-		int indx = subIDs.indexOf( subBus.getCcId().intValue() );
-		if( indx >= 0 )
-			subIDs.setElementAt(subBus.getCcId().intValue(), indx);
-		else
-			subIDs.add( subBus.getCcId().intValue() );
-	}		
-	else
-	{
-		subIDs = new NativeIntVector(32);
-		subIDs.add( subBus.getCcId().intValue() );
-		subIDToAreaMap.put( subBus.getCcArea(), subIDs );
-	}
-}
+
 
 
 /**
  * Removes an element inside the subIDtoArea hashmap
  * @param subBus
  */
-private void removeSubIDToAreaMap( Integer subID )
-{
-	SubBus subBus = getSubBus( subID );
-	if( subBus == null ) return;
 
-	NativeIntVector subIDs = null;
-	if( (subIDs = (NativeIntVector)subIDToAreaMap.get(subBus.getCcArea())) != null )		
-	{
-		int indx = subIDs.indexOf( subBus.getCcId().intValue() );
-		if( indx >= 0 )
-			subIDs.remove( indx );
-	}		
-
-}
 
 /**
  * Allows access the a CBCClientConnection instance
@@ -645,6 +640,8 @@ private void resetAreaStateMap() {
     areaStateMap = new HashMap();
     getAreaStateMap();
 }
+
+
 
 
 }

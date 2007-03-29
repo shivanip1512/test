@@ -3,8 +3,10 @@ package com.cannontech.database.db.capcontrol;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -52,16 +54,19 @@ public class CCSubAreaAssignment extends DBPersistent {
         allSubs.append("CCSubAreaAssignment");
         allSubs.append("WHERE AreaID = ?");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.query(allSubs.toString(), new Integer[] {areaID}, new RowMapper () {
-            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                CCSubAreaAssignment assign = new CCSubAreaAssignment();
-                assign.setAreaID(rs.getInt(1));
-                assign.setSubstationBusID(rs.getInt(2));
-                assign.setDisplayOrder(rs.getInt(3));
-                return assign;
-            }
-            
-        });
+        return yukonTemplate.query(allSubs.toString(),
+                                   new Integer[] { areaID },
+                                   new RowMapper() {
+                                       public Object mapRow(ResultSet rs,
+                                               int rowNum) throws SQLException {
+                                           CCSubAreaAssignment assign = new CCSubAreaAssignment();
+                                           assign.setAreaID(rs.getInt(1));
+                                           assign.setSubstationBusID(rs.getInt(2));
+                                           assign.setDisplayOrder(rs.getInt(3));
+                                           return assign;
+                                       }
+
+                                   });
 
     }
 
@@ -118,6 +123,56 @@ public class CCSubAreaAssignment extends DBPersistent {
 
     public void setSubstationBusID(Integer substationBusID) {
         this.substationBusID = substationBusID;
+    }
+
+    public static Integer getAreaIDForSub(Integer subID) {
+        SqlStatementBuilder allSubs = new SqlStatementBuilder();
+        allSubs.append("SELECT AreaID FROM");
+        allSubs.append("CCSubAreaAssignment");
+        allSubs.append("WHERE SubstationBusID = ?");
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        Integer areaID;
+        try {
+            areaID = yukonTemplate.queryForInt(allSubs.toString(),
+                                               new Integer[] { subID });
+        } catch (EmptyResultDataAccessException erda) {
+            areaID = null;
+        }
+        return areaID;
+    }
+
+    public static ArrayList<Integer> getAsIntegerList(
+            List<CCSubAreaAssignment> allAreaSubs) {
+        ArrayList<Integer> returnList = new ArrayList<Integer>();
+        for (CCSubAreaAssignment assgn : allAreaSubs) {
+            returnList.add(assgn.getSubstationBusID());
+        }
+        return returnList;
+    }
+
+    public static List<CCSubAreaAssignment> asList(List<Integer> newIntList,
+            Integer areaID) {
+        List<CCSubAreaAssignment> returnList = new ArrayList<CCSubAreaAssignment>();
+        for (Integer subID : newIntList) {
+            CCSubAreaAssignment temp = new CCSubAreaAssignment();
+            temp.setAreaID(areaID);
+            temp.setSubstationBusID(subID);
+            temp.setDisplayOrder(newIntList.indexOf(subID));
+            returnList.add(temp);
+        }
+        return returnList;
+    }
+
+    public static void deleteSubs(ArrayList<Integer> idsToRemove, Integer areaID) {
+        SqlStatementBuilder deleteStmt = new SqlStatementBuilder();
+        deleteStmt.append("DELETE FROM ");
+        deleteStmt.append(TABLE_NAME);
+        deleteStmt.append(" WHERE SubstationBusID in (");
+        deleteStmt.append(idsToRemove);
+        deleteStmt.append(")");
+        deleteStmt.append("AND AreaID = ?");
+        yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        yukonTemplate.update(deleteStmt.toString(), new Integer[] {areaID});
     }
 
 }

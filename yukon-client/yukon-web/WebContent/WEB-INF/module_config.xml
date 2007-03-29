@@ -110,6 +110,9 @@
       </option>
       <option name="View">
         <sublinks>
+         <option name="Orphaned Substations">
+            <link>results.jsp?cbc_lastSearch=__cti_oSubs__</link>
+          </option>
           <option name="Orphaned Feeders">
             <link>results.jsp?cbc_lastSearch=__cti_oFeeders__</link>
           </option>

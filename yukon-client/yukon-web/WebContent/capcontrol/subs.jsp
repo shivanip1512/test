@@ -1,5 +1,6 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.cbc.web.CapControlUserOwnerDAO" %>
+<jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlArea"/>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -18,10 +19,10 @@
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
-    //SubBus[] areaSubs =
-    //    capControlCache.getSubsByArea( cbcSession.getLastArea() );
 	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
-	SubBus[] areaSubs = userOwner.getSubsByArea(cbcSession.getLastArea());
+	String area = cbcSession.getLastArea();
+	Integer areaID = CapControlArea.getAreaIdByName (area);
+	SubBus[] areaSubs = userOwner.getSubsByArea(areaID);
     boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 

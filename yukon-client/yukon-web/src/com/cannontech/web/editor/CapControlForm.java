@@ -1,6 +1,7 @@
 package com.cannontech.web.editor;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +86,7 @@ import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.web.exceptions.SerialNumberExistsException;
 import com.cannontech.web.model.capcontrol.CapControlStrategyModel;
+import com.cannontech.web.test.Util;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
@@ -886,7 +888,7 @@ public class CapControlForm extends DBEditorForm{
 
 		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
-
+        Connection connection = null;
 		try {
 			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy()) {
@@ -951,7 +953,13 @@ public class CapControlForm extends DBEditorForm{
                     }
                 }
             }
-                
+            getDataModel().updateDataModel();    
+            
+            if (getDbPersistent().getDbConnection() == null)
+            {
+                connection = Util.getConnection();
+                getDbPersistent().setDbConnection(connection);
+            }
             updateDBObject(getDbPersistent(), facesMsg);
             
 		} catch (TransactionException te) {
@@ -961,7 +969,10 @@ public class CapControlForm extends DBEditorForm{
 		} finally {
 			FacesContext.getCurrentInstance().addMessage("cti_db_update",
 					facesMsg);
-		}
+            Util.closeConnection(connection);
+        }
+        
+
 	}
 
 

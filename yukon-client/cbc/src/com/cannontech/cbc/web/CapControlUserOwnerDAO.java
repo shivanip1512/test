@@ -26,7 +26,6 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 
 	public CapControlUserOwnerDAO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public SubBus[] getAllSubBuses() {
@@ -44,7 +43,7 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getCapBankDevice(capBankDeviceID);
 	}
 
-	public CapBankDevice[] getCapBanksByArea(String area) {
+	public CapBankDevice[] getCapBanksByArea(Integer area) {
 		return _ccDao.getCapBanksByArea(area);
 	}
 
@@ -68,7 +67,7 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getFeeder(feederID);
 	}
 
-	public Feeder[] getFeedersByArea(String area) {
+	public Feeder[] getFeedersByArea(Integer area) {
 		return _ccDao.getFeedersByArea(area);
 	}
 
@@ -100,8 +99,8 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getSubBus(subID);
 	}
 
-	public SubBus[] getSubsByArea(String area) {
-		SubBus[] subs =  _ccDao.getSubsByArea(area);
+	public SubBus[] getSubsByArea(Integer areaID) {
+		SubBus[] subs =  _ccDao.getSubsByArea(areaID);
 		SubBus[] retArray = new SubBus[subs.length];
 		List subsAllowedToView = new ArrayList(10);
 		for (int i=0; i < subs.length; i++) {
@@ -127,6 +126,10 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
     public HashMap getAreaStateMap() {
         return _ccDao.getAreaStateMap();
     }
+    
+
+
+
 
 
 

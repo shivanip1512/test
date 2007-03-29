@@ -7,10 +7,12 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 public abstract class JSFAssignmentModel {
-    private static final String ID = "ID";
+    private static final String ID = "id";
     List<Integer> assignedSubs;
     List<Integer> unassignedSubs;
     JSFAssignmentModel assignmentModel;
+    //exists for testing purposes
+    private Integer settableID;
 
     public JSFAssignmentModel() {
         super();
@@ -44,20 +46,37 @@ public abstract class JSFAssignmentModel {
     abstract void populateAssigned();
 
     public void add() {
-        assignedSubs.add(getSelectedID());
-        unassignedSubs.remove(getSelectedID());
+        getAssigned().add(getSelectedID());
+        getUnassigned().remove(getSelectedID());
     }
 
     public void remove() {
-        assignedSubs.remove(getSelectedID());
-        unassignedSubs.add(getSelectedID());
+        getAssigned().remove(getSelectedID());
+        getUnassigned().add(getSelectedID());
 
     }
 
-    public int getSelectedID() {
-        Map paramMap = getContext().getExternalContext()
-                                   .getRequestParameterMap();
-        int elemID = new Integer((String) paramMap.get(ID)).intValue();
+    public Integer getSelectedID() {
+        Integer elemID = getSelectedThroughJSFContext();
+        if (elemID == null)
+        {
+            elemID = getSettableID();
+        }
+        return elemID;
+    }
+
+    public Integer getSettableID() {
+        return settableID;
+    }
+
+    private Integer getSelectedThroughJSFContext() {
+        Integer elemID = null;
+        if (getContext() != null)
+        {
+            Map paramMap = getContext().getExternalContext()
+                                       .getRequestParameterMap();
+            elemID = new Integer((String) paramMap.get(ID)).intValue();
+        }
         return elemID;
     }
 
@@ -66,5 +85,9 @@ public abstract class JSFAssignmentModel {
         assignedSubs = null;
         getUnassigned();
         getAssigned();
+    }
+
+    public void setSettableID(Integer settableID) {
+        this.settableID = settableID;
     }
 }

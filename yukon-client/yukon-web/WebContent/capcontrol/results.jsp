@@ -24,7 +24,11 @@
 
 	LiteWrapper[] items = new LiteWrapper[0];
 
-	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
+	if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
+		items = capControlCache.getOrphanedSubstations();
+		label = "Orphaned Substations";
+	}
+	else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
 		items = capControlCache.getOrphanedFeeders();
 		label = "Orphaned Feeders";
 	}
@@ -91,7 +95,8 @@ for( int i = 0; i < items.length; i++ )
 		
 		int parID = item.getParentID();
 		
-		if( parID > CtiUtilities.NONE_ZERO_ID ) { %>				<%if (capControlCache.isCapBank(parID)) { //check to see if point has a parent%>
+		if( parID > CtiUtilities.NONE_ZERO_ID ) { %>
+				<%if (capControlCache.isCapBank(parID)) { //check to see if point has a parent%>
 				<%=capControlCache.getParentNames(parID)%>
 				<% }else { %>
 				<%= item.getParent()%>

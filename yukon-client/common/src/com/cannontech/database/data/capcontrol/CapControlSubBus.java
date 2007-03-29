@@ -1,9 +1,15 @@
 package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.point.Point;
@@ -165,5 +171,15 @@ public void update() throws java.sql.SQLException
 
 	for( int i = 0; i < getChildList().size(); i++ )
 		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).add();
+}
+
+public static List<Integer> getAllUnassignedBuses () {
+    SqlStatementBuilder allSubs = new SqlStatementBuilder();
+    allSubs.append("select paobjectid from yukonpaobject where type like 'CCSUBBUS' ");
+    allSubs.append("and ");
+    allSubs.append("paobjectid not in (select substationbusid from ccsubareaassignment)");
+    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+    return yukonTemplate.queryForList(allSubs.toString(), Integer.class);
+
 }
 }
