@@ -1485,7 +1485,7 @@ void CtiCCCommandExecutor::EnableArea()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subId = _command->getId();
+    LONG areaId = _command->getId();
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -1494,59 +1494,32 @@ void CtiCCCommandExecutor::EnableArea()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
-
-    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subId);
-    if (currentSubstationBus != NULL)
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    
+    CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
+    if (currentArea != NULL)
     {
         string text1 = string("Manual Enable Area");
         string additional1 = string("Area: ");
-        additional1 += currentSubstationBus->getPAODescription();
-        if (_LOG_MAPID_INFO) 
-        {
-            additional1 += " MapID: ";
-            additional1 += currentSubstationBus->getMapLocationId();
-        }
-        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
-
-
-        string areaName = currentSubstationBus->getPAODescription();
-        CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
-
-        for(LONG i=0;i<ccSubstationBuses.size();i++)
-        {
-            currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-            if (!stringCompareIgnoreCase(currentSubstationBus->getPAODescription(), areaName))
-            {
-                if (currentSubstationBus->getReEnableBusFlag()) 
-                {
-                    currentSubstationBus->setDisableFlag(FALSE);
-                    currentSubstationBus->setReEnableBusFlag(FALSE);
-                
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    store->UpdateBusDisableFlagInDB(currentSubstationBus);
-                    string text = string("Substation Bus Enabled");
-                    string additional = string("Bus: ");
-                    additional += currentSubstationBus->getPAOName();
-                    if (_LOG_MAPID_INFO) 
-                    {
-                        additional += " MapID: ";
-                        additional += currentSubstationBus->getMapLocationId();
-                        additional += " (";
-                        additional += currentSubstationBus->getPAODescription();
-                        additional += ")";
-                    }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-                   
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
-                }            
-            }
-        }
+        additional1 += currentArea->getPAOName();
         
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+        currentArea->setDisableFlag(FALSE);
+        store->UpdateAreaDisableFlagInDB(currentArea);
+
+               
         if (eventMulti->getCount() > 0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+        
+        CtiCCExecutorFactory f;
+        CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+        executor->Execute();
+        delete executor;
     }
 }
 
@@ -1558,7 +1531,7 @@ void CtiCCCommandExecutor::DisableArea()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subId = _command->getId();
+    LONG areaId = _command->getId();
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -1567,59 +1540,32 @@ void CtiCCCommandExecutor::DisableArea()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
 
-    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subId);
-    if (currentSubstationBus != NULL)
+    CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
+    if (currentArea != NULL)
     {
         string text1 = string("Manual Disable Area");
         string additional1 = string("Area: ");
-        additional1 += currentSubstationBus->getPAODescription();
-        if (_LOG_MAPID_INFO) 
-        {
-            additional1 += " MapID: ";
-            additional1 += currentSubstationBus->getMapLocationId();
-        }
+        additional1 += currentArea->getPAOName();
+        
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-
-        string areaName = currentSubstationBus->getPAODescription();
-        CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
-
-        for(LONG i=0;i<ccSubstationBuses.size();i++)
-        {
-            currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-            if (!stringCompareIgnoreCase(currentSubstationBus->getPAODescription(),areaName))
-            {
-                if (!currentSubstationBus->getDisableFlag() )//&& !currentSubstationBus->getReEnableBusFlag()) 
-                {
-                    currentSubstationBus->setDisableFlag(TRUE);
-                    currentSubstationBus->setReEnableBusFlag(TRUE);
-                
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    store->UpdateBusDisableFlagInDB(currentSubstationBus);
-                    string text = string("Substation Bus Disabled");
-                    string additional = string("Bus: ");
-                    additional += currentSubstationBus->getPAOName();
-                    if (_LOG_MAPID_INFO) 
-                    {
-                        additional += " MapID: ";
-                        additional += currentSubstationBus->getMapLocationId();
-                        additional += " (";
-                        additional += currentSubstationBus->getPAODescription();
-                        additional += ")";
-                    }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-                   
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
-                }
-            }
-        }
+        currentArea->setDisableFlag(TRUE);
+        store->UpdateAreaDisableFlagInDB(currentArea);
+        
         
         if (eventMulti->getCount() > 0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+        CtiCCExecutorFactory f;
+        CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+        executor->Execute();
+        delete executor;
+
     }
 }
 
@@ -2261,7 +2207,7 @@ void CtiCCCommandExecutor::ConfirmArea()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    LONG subId = _command->getId();
+    LONG areaId = _command->getId();
     LONG controlID = 0;
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -2270,32 +2216,26 @@ void CtiCCCommandExecutor::ConfirmArea()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
 
-    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subId);
-    if (currentSubstationBus != NULL)
+    CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
+
+    if (currentArea != NULL) 
     {
         string text1 = string("Manual Confirm Area");
         string additional1 = string("Area: ");
-        additional1 += currentSubstationBus->getPAODescription();
-        if (_LOG_MAPID_INFO) 
-        {
-            additional1 += " MapID: ";
-            additional1 += currentSubstationBus->getMapLocationId();
-        }
+        additional1 += currentArea->getPAOName();
+        
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-       // currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-
-
-        string areaName = currentSubstationBus->getPAODescription();
         CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
-
+        CtiCCSubstationBus* currentSubstationBus = NULL;
         for(LONG i=0;i<ccSubstationBuses.size();i++)
         {
             currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
 
-            if (!stringCompareIgnoreCase(currentSubstationBus->getPAODescription(), areaName))
+            if (currentSubstationBus->getParentId() == areaId)
             {
                 if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                 {
@@ -2308,11 +2248,21 @@ void CtiCCCommandExecutor::ConfirmArea()
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor(confirmMulti);
             executor->Execute();
+
+
+            executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
+            executor->Execute();
+            delete executor;
+
+
         }
         if (eventMulti->getCount() > 0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+
+
     }
 }
 

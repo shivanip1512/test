@@ -60,7 +60,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
     _ccCapBankStates = new CtiCCState_vec;
-    _ccGeoAreas = new CtiCCGeoArea_vec;
+    _ccGeoAreas = new CtiCCArea_vec;
 
     _paobject_area_map.clear();
     _paobject_subbus_map.clear();
@@ -73,6 +73,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
 
     _strategyid_strategy_map.clear();
 
+    _subbus_area_map.clear();
     _feeder_subbus_map.clear(); 
     _capbank_subbus_map.clear();
     _capbank_feeder_map.clear();
@@ -116,6 +117,8 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
     shutdown();
 }
 
+
+
 /*---------------------------------------------------------------------------
     getSubstationBuses
 
@@ -153,7 +156,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
 
     Returns a CtiCCGeoArea_vec of CtiCCGeoAreas
 ---------------------------------------------------------------------------*/
-CtiCCGeoArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
+CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -481,6 +484,8 @@ void CtiCCSubstationBusStore::reset()
     try
     {                                
         CtiCCSubstationBus_vec tempCCSubstationBuses;
+        CtiCCArea_vec tempCCGeoAreas;
+
 
         map< long, CtiCCAreaPtr > temp_paobject_area_map;
         map< long, CtiCCSubstationBusPtr > temp_paobject_subbus_map;
@@ -571,7 +576,7 @@ void CtiCCSubstationBusStore::reset()
                     *******  Loading Areas                               *******
                     ************************************************************/
 
-                    reloadAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_area_map, &temp_point_area_map);
+                    reloadAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_area_map, &temp_point_area_map, &tempCCGeoAreas);
 
 
                     /***********************************************************
@@ -632,7 +637,7 @@ void CtiCCSubstationBusStore::reset()
                    ********    Loading Geo Areas                       ********
                    ************************************************************/
                    {
-                       reloadGeoAreasFromDatabase();
+                   //    reloadGeoAreasFromDatabase();
                    }
 
                    {
@@ -758,6 +763,9 @@ void CtiCCSubstationBusStore::reset()
                     if (!_pointid_capbank_map.empty())
                        _pointid_capbank_map.clear();
 
+                    
+                    if (!_subbus_area_map.empty())
+                        _subbus_area_map.clear();
                     if (!_feeder_subbus_map.empty())
                         _feeder_subbus_map.clear();
                     if (!_capbank_subbus_map.empty())
@@ -801,6 +809,15 @@ void CtiCCSubstationBusStore::reset()
                         _pointid_capbank_map = temp_point_capbank_map;
                     }
                     catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+                    try
+                    {
+                        _subbus_area_map = temp_subbus_area_map;
+                    }
+                    catch (...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -855,6 +872,7 @@ void CtiCCSubstationBusStore::reset()
                     try
                     {
                         *_ccSubstationBuses = tempCCSubstationBuses;
+                        *_ccGeoAreas = tempCCGeoAreas;
                     }
                     catch (...)
                     {
@@ -2524,7 +2542,42 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
     return false;
 }
 
-                                                            
+/*---------------------------------------------------------------------------
+    UpdateBusDisableFlagInDB
+
+    Updates a disable flag in the yukonpaobject table in the database for
+    the substation bus.
+---------------------------------------------------------------------------*/
+bool CtiCCSubstationBusStore::UpdateAreaDisableFlagInDB(CtiCCArea* area)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        if (conn.isValid()) 
+        {
+            RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
+            RWDBUpdater updater = yukonPAObjectTable.updater();
+
+            updater.where( yukonPAObjectTable["paobjectid"] == area->getPAOId() );
+
+            updater << yukonPAObjectTable["disableflag"].assign( (area->getDisableFlag()?"Y":"N") );
+
+            updater.execute( conn );
+
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPAOId(), ChangePAODb,
+                                                          area->getPAOCategory(), area->getPAOType(),
+                                                          ChangeTypeUpdate);
+            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+            CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+            return updater.status().isValid();
+        }
+    }
+    return false;
+} 
+
 /*---------------------------------------------------------------------------
     UpdateBusDisableFlagInDB
 
@@ -2964,7 +3017,8 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
-                                  multimap< long, CtiCCAreaPtr > *pointid_area_map )
+                                  multimap< long, CtiCCAreaPtr > *pointid_area_map, 
+                                  CtiCCArea_vec *ccGeoAreas)
 {
     CtiCCAreaPtr areaToUpdate = NULL;
 
@@ -3010,12 +3064,12 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                         if (areaId > 0)
                         {                
-                            selector.where(yukonPAObjectTable["type"]=="CCAREA" && 
-                                     yukonPAObjectTable["paobjectid"] == areaId);
+                            selector.where(yukonPAObjectTable["paobjectid"]==capControlAreaTable["areaid"] && 
+                                          yukonPAObjectTable["paobjectid"] == areaId);
                         }
                         else
-                            selector.where(yukonPAObjectTable["type"]=="CCAREA" && 
-                                     yukonPAObjectTable["paobjectid"]==capControlAreaTable["areaid"]);
+                            selector.where(yukonPAObjectTable["paobjectid"]==capControlAreaTable["areaid"]);
+                            
                         
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
@@ -3048,6 +3102,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                                currentCCStrategy = strategy_map->find(currentCCArea->getStrategyId())->second;
                                currentCCArea->setStrategyValues(currentCCStrategy);
                             }
+                            ccGeoAreas->push_back( currentCCArea );
+
 
                         }
 
@@ -3303,7 +3359,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     }
                                 }
                            
-                                CtiCCSubstationBus_vec& tempSubs = currentCCArea->getCCSubs();
+                                /*CtiCCSubstationBus_vec& tempSubs = currentCCArea->getCCSubs();
                                 CtiCCSubstationBusPtr tempSubBus;
                                 int insertPoint = tempSubs.size();
                                 int j = insertPoint;
@@ -3320,6 +3376,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 }
                                 CtiCCSubstationBus_vec& ccS = currentCCArea->getCCSubs();
                                 ccS.insert( ccS.begin()+insertPoint, currentCCSubstationBus );
+                                */
                                 subbus_area_map->insert(make_pair(currentSubBusId, currentAreaId));
                             }
                         }
@@ -3408,7 +3465,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             {                                 
                                 rdr["decimalplaces"] >> tempDecimalPlaces;
                                 currentCCSubstationBus->setDecimalPlaces(tempDecimalPlaces);
-                                currentCCSubstationBus->setParentId(0);
+                             
                             }
                         }
 
@@ -3850,7 +3907,9 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     
                     selector << ccFeederBankListTable["deviceid"]
                           << ccFeederBankListTable["feederid"]
-                          << ccFeederBankListTable["controlorder"];
+                          << ccFeederBankListTable["controlorder"]
+                          << ccFeederBankListTable["closeorder"]
+                          << ccFeederBankListTable["triporder"];
 
 
                     selector.from(ccFeederBankListTable);
@@ -3864,13 +3923,15 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                     RWDBReader rdr = selector.reader(conn);
                     RWDBNullIndicator isNull;
-                    long capbankid, feedid, controlorder;
+                    long capbankid, feedid, controlorder, closeorder, triporder;
 
                     while ( rdr() )
                     {
                         rdr["deviceid"] >> capbankid;
                         rdr["feederid"] >> feedid;
                         rdr["controlorder"] >> controlorder;
+                        rdr["closeorder"] >> closeorder;
+                        rdr["triporder"] >> triporder;
                         reloadCapBankFromDatabase(capbankid, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                                   &_pointid_capbank_map, &_capbank_subbus_map,
                                                   &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
@@ -4279,9 +4340,9 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         RWDBSelector selector = db.selector();
                         selector << ccFeederBankListTable["deviceid"]
                               << ccFeederBankListTable["feederid"]
-                              << ccFeederBankListTable["controlorder"];
-                             // << ccFeederBankListTable["closeorder"]
-                             // << ccFeederBankListTable["triporder"];
+                              << ccFeederBankListTable["controlorder"]
+                              << ccFeederBankListTable["closeorder"]
+                              << ccFeederBankListTable["triporder"];
 
 
                         selector.from(capBankTable);
@@ -4311,14 +4372,14 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                             long deviceid;
                             long feederid;
                             long controlOrder;
-                            long tripOrder = 0;
-                            long closeOrder = 0;
+                            long tripOrder;
+                            long closeOrder;
 
                             rdr["deviceid"] >> deviceid;
                             rdr["feederid"] >> feederid;
                             rdr["controlorder"] >> controlOrder;
-                           // rdr["closeorder"] >> closeOrder;
-                           // rdr["triporder"] >> tripOrder;
+                            rdr["closeorder"] >> closeOrder;
+                            rdr["triporder"] >> tripOrder;
 
                             CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(deviceid)->second;
                             currentCCCapBank->setControlOrder(controlOrder);
@@ -4956,69 +5017,6 @@ void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
-void CtiCCSubstationBusStore::reloadGeoAreasFromDatabase()
-{
-    try
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            {
-                if ( conn.isValid() )
-                {   
-                    if ( _ccGeoAreas->size() > 0 )
-                    {
-                        delete_vector(_ccGeoAreas );
-                        _ccGeoAreas->clear();
-                        if (_ccGeoAreas->size() > 0)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " _ccGeoAreas did NOT get destroyed " << endl;
-                        }
-                    }
-
-
-                    RWDBDatabase db = getDatabase();
-                    RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                    RWDBTable capControlSubstationBusTable = db.table("capcontrolsubstationbus");
-                    RWDBSelector selector = db.selector();
-                    selector.distinct();
-                    selector << yukonPAObjectTable["description"];
-
-                    selector.from(yukonPAObjectTable);
-                    selector.from(capControlSubstationBusTable);
-
-                    selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"]);
-
-                    selector.orderBy(yukonPAObjectTable["description"]);
-
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
-                    }
-
-                    RWDBReader rdr = selector.reader(conn);
-
-                    while ( rdr() )
-                    {
-                        RWCollectableString* areaString = NULL;
-                        string tempStr;
-                        rdr["description"] >> tempStr;
-                        areaString = new RWCollectableString( string2RWCString(tempStr) );
-                        _ccGeoAreas->push_back( areaString );
-                    }
-                }
-            }
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-}
 
 
 void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
@@ -5233,78 +5231,46 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
         if (areaToDelete != NULL)
         {
             //subToDelete->dumpDynamicData();
-
-            CtiCCSubstationBus_vec& ccSubs = areaToDelete->getCCSubs();
-            long subCount = ccSubs.size();
-            for (LONG h=0;h<subCount;h++) 
+            if( _ccSubstationBuses->size() > 0 )
             {
-                CtiCCSubstationBusPtr subToDelete = (CtiCCSubstationBus*)ccSubs.begin();
-                CtiFeeder_vec& ccFeeders = subToDelete->getCCFeeders();
-                long feedCount = ccFeeders.size();
-
-                for(LONG i=0;i<subCount;i++)
+                for(LONG h=0;h<_ccSubstationBuses->size();h++)
                 {
-                    CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.begin();
-                    CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
-                    long capCount = ccCapBanks.size();
-                    for (LONG j = 0; j < capCount; j++)
+                    CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(h);
+
+                    if (currentCCSubstationBus->getParentId() == areaId) 
                     {
-                        CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
-
-                        deleteCapBank(capBankToDelete->getPAOId());
+                         CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+                         long feedCount = ccFeeders.size();
+                      
+                         for(LONG i=0;i<feedCount;i++)
+                         {
+                             CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.begin();
+                             CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
+                             long capCount = ccCapBanks.size();
+                             for (LONG j = 0; j < capCount; j++)
+                             {
+                                 CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
+                      
+                                 deleteCapBank(capBankToDelete->getPAOId());
+                             }
+                             deleteFeeder(feederToDelete->getPAOId());
+                         }
+                         deleteSubBus(currentCCSubstationBus->getPAOId());
                     }
-                    deleteFeeder(feederToDelete->getPAOId());
                 }
-                deleteSubBus(subToDelete->getPAOId());
             }
-
-/*           try
-           {
-
-               //Delete pointids on this sub
-               list <LONG> *pointIds  = subToDelete->getPointIds();
-               while (!pointIds->empty())
-               {
-                   LONG pointid = pointIds->front();
-                   pointIds->pop_front();
-                   int ptCount = getNbrOfSubBusesWithPointID(pointid);
-                   if (ptCount > 1)
-                   {
-                       multimap< long, CtiCCSubstationBusPtr >::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
-                       while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
-                       {
-                           if (((CtiCCSubstationBusPtr)iter1->second)->getPAOId() == subToDelete->getPAOId())
-                           {
-                               _pointid_subbus_map.erase(iter1);
-                               break;
-                           }
-                           iter1++;
-                       }   
-                   } 
-                   else
-                       _pointid_subbus_map.erase(pointid);
-               }
-               subToDelete->getPointIds()->clear();
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            
-            */
 
             try
             {
                 string areaName = areaToDelete->getPAOName();
                 _paobject_area_map.erase(areaToDelete->getPAOId());
-                CtiCCArea_vec::iterator itr = _areas->begin();
-                while ( itr != _areas->end() )
+                CtiCCArea_vec::iterator itr = _ccGeoAreas->begin();
+                while ( itr != _ccGeoAreas->end() )
                 {
                     CtiCCArea *area = *itr;
                     if (area->getPAOId() == areaId)
                     {
-                        itr = _areas->erase(itr);
+                        itr = _ccGeoAreas->erase(itr);
                         break;
                     }else
                         ++itr;
@@ -5313,7 +5279,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "SUBBUS: " << areaName <<" has been deleted." << endl;
+                    dout << CtiTime() << "AREA: " << areaName <<" has been deleted." << endl;
                 }
             }
             catch(...)
@@ -5443,6 +5409,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
             {
                 string subBusName = subToDelete->getPAOName();
                 _paobject_subbus_map.erase(subToDelete->getPAOId());
+                _subbus_area_map.erase(subToDelete->getPAOId());
                 CtiCCSubstationBus_vec::iterator itr = _ccSubstationBuses->begin();
                 while ( itr != _ccSubstationBuses->end() )
                 {
@@ -5952,6 +5919,40 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             if (tempSub != NULL) 
                             {
                                 modifiedSubsList.push_back(tempSub);
+                            }
+                        }
+                        break;
+                    }
+                    //area
+                    case Area:
+                    {
+                        if (reloadTemp.action == ChangeTypeDelete)
+                        {
+                            deleteArea(reloadTemp.objectId); 
+
+                            CtiCCExecutorFactory f;
+                            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
+                            executor->Execute();
+                            delete executor;
+
+                        }
+                        else  // ChangeTypeAdd, ChangeTypeUpdate
+                        {
+                            reloadAreaFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, 
+                                                     &_paobject_area_map, &_pointid_area_map, _ccGeoAreas);
+
+                            CtiCCAreaPtr tempArea = findAreaByPAObjectID(reloadTemp.objectId);
+                            if (tempArea != NULL) 
+                            {
+                                for(LONG i=0;i<_ccSubstationBuses->size();i++)
+                                {
+                                    CtiCCSubstationBus* tempSub = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+                                    if (tempSub->getParentId() == tempArea->getPAOId()) 
+                                    {
+                                        modifiedSubsList.push_back(tempSub);
+                                    }
+                                }
+                                    
                             }
                         }
                         break;

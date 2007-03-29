@@ -345,40 +345,269 @@ void CtiCapController::controlLoop()
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
 
+                    CtiCCArea* currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
+
                     try
                     {
-                        //currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
-
-                        if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
-                        {                      
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
-                                currentSubstationBus->analyzeMultiVoltBus1(currentDateTime, pointChanges, ccEvents, pilMessages);
-                            else
-                                currentSubstationBus->analyzeMultiVoltBus(currentDateTime, pointChanges, ccEvents, pilMessages);
-
-                        }
-                        else if (currentSubstationBus->isBusAnalysisNeeded(currentDateTime))
+                        if (currentArea != NULL && !currentArea->getDisableFlag()) 
                         {
-                            if( currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getWaitToFinishRegularControlFlag())
+                            //currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
+
+                            if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
+                            {                      
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                                    currentSubstationBus->analyzeMultiVoltBus1(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                else
+                                    currentSubstationBus->analyzeMultiVoltBus(currentDateTime, pointChanges, ccEvents, pilMessages);
+
+                            }
+                            else if (currentSubstationBus->isBusAnalysisNeeded(currentDateTime))
                             {
-                                try
+                                if( currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getWaitToFinishRegularControlFlag())
                                 {
-                                    if( currentSubstationBus->isAlreadyControlled() ||
-                                        currentSubstationBus->isPastMaxConfirmTime(currentDateTime) )
+                                    try
                                     {
-                                        if( (currentSubstationBus->getControlSendRetries() > 0 ||
-                                             currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
-                                            !currentSubstationBus->isAlreadyControlled() &&
-                                            currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages) )
+                                        if( currentSubstationBus->isAlreadyControlled() ||
+                                            currentSubstationBus->isPastMaxConfirmTime(currentDateTime) )
                                         {
-                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                            if( (currentSubstationBus->getControlSendRetries() > 0 ||
+                                                 currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
+                                                !currentSubstationBus->isAlreadyControlled() &&
+                                                currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages) )
+                                            {
+                                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                            }
+                                            else if( currentSubstationBus->capBankControlStatusUpdate(pointChanges, ccEvents) )
+                                            {
+                                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                            }
                                         }
-                                        else if( currentSubstationBus->capBankControlStatusUpdate(pointChanges, ccEvents) )
+                                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                                         {
-                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                            if( !currentSubstationBus->getDisableFlag() &&
+                                                !currentSubstationBus->getWaiveControlFlag() &&
+                                                stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
+                                            {
+                                                currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                            }
                                         }
                                     }
-                                    else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                                    catch(...)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
+                                }
+                                else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
+                                {
+                                    try
+                                    {
+                                        if (currentSubstationBus->isBusPerformingVerification())
+                                        {
+                                            currentSubstationBus->setLastVerificationCheck(currentDateTime);
+                                            if (currentSubstationBus->isVerificationAlreadyControlled() ||
+                                                currentSubstationBus->isVerificationPastMaxConfirmTime(currentDateTime))
+                                            {
+                                                if( (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                                                     !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
+                                                     _ALLOW_PARALLEL_TRUING)
+                                                {
+                                                    try
+                                                    {
+                                                        currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                }
+                                                else if( (currentSubstationBus->getControlSendRetries() > 0 ||
+                                                         currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
+                                                         !currentSubstationBus->isVerificationAlreadyControlled() &&
+                                                         (currentDateTime.seconds() < currentSubstationBus->getLastOperationTime().seconds() + currentSubstationBus->getMaxConfirmTime()))
+                                                         
+                                                {
+                                                    try
+                                                    {
+                                                        if (currentSubstationBus->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages))
+                                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                }
+                                                else if(  currentSubstationBus->getWaitForReCloseDelayFlag() ||
+                                                        ( !currentSubstationBus->capBankVerificationStatusUpdate(pointChanges, ccEvents)  && 
+                                                           currentSubstationBus->getCurrentVerificationCapBankId() != -1)  )
+                                                {
+                                                    try
+                                                    {
+
+                                                        if (currentSubstationBus->sendNextCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages))
+                                                        {
+                                                            currentSubstationBus->setWaitForReCloseDelayFlag(FALSE);
+                                                        }
+                                                        else
+                                                            currentSubstationBus->setWaitForReCloseDelayFlag(TRUE);
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    try
+                                                    {
+                                                        if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
+                                                        {
+                                                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                                                            {
+                                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                                    dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                                            }
+
+                                                            currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                                        }
+                                                        else
+                                                        {
+                                                            if( ccEvents.size() > 0)
+                                                            {
+                                                                _ccEventMsgQueue.write(multiCCEventMsg);
+                                                                processCCEventMsgs();
+                                                                multiCCEventMsg = new CtiMultiMsg();
+                                                            }
+
+                                                            //reset VerificationFlag
+                                                            currentSubstationBus->setVerificationFlag(FALSE);
+                                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                                            capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                                                            capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+                                                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                                                            {
+                                                               CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                               dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) "<<endl;
+                                                            } 
+                                                        }
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                }
+
+                                            } 
+                                            else // WAIT!!!
+                                            {
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            currentSubstationBus->setLastVerificationCheck(currentDateTime);
+
+                                            try
+                                            {
+                                                if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                                                {
+                                                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                   dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
+                                                }
+                                                int strategy = (long)currentSubstationBus->getVerificationStrategy();
+
+                                                currentSubstationBus->setCapBanksToVerifyFlags(strategy, ccEvents);
+
+                                                if( (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                                                     !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
+                                                     _ALLOW_PARALLEL_TRUING)
+                                                {
+                                                    try
+                                                    {
+                                                        currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                }
+                                                else if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
+                                                {
+                                                    try
+                                                    {
+                                                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                                                        {
+                                                             CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                                        }
+                                                        currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    try
+                                                    {
+                                                        if( ccEvents.size() > 0)
+                                                        {
+                                                            _ccEventMsgQueue.write(multiCCEventMsg);
+                                                            processCCEventMsgs();
+                                                            multiCCEventMsg = new CtiMultiMsg();
+                                                        }
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                    try
+                                                    {
+                                                        //reset VerificationFlag
+                                                        currentSubstationBus->setVerificationFlag(FALSE);
+                                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                                                        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+
+                                                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                                                        {                 
+                                                           CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
+                                                        } 
+                                                    }
+                                                    catch(...)
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                    }
+                                                }
+                                            }
+                                            catch(...)
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            }
+                                        }
+                                    }
+                                    catch(...)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
+                                }  
+                                else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                                {//not recently controlled and var check needed
+                                    try
                                     {
                                         if( !currentSubstationBus->getDisableFlag() &&
                                             !currentSubstationBus->getWaiveControlFlag() &&
@@ -387,212 +616,21 @@ void CtiCapController::controlLoop()
                                             currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, ccEvents, pilMessages);
                                         }
                                     }
+                                    catch(...)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
                                 }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                            }
-                            else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
-                            {
+
                                 try
                                 {
-                                    if (currentSubstationBus->isBusPerformingVerification())
+                                    //so we don't do this over and over we need to clear out
+                                    currentSubstationBus->clearOutNewPointReceivedFlags();
+                                    if( currentSubstationBus->isVarCheckNeeded(currentDateTime) &&
+                                        currentSubstationBus->getControlInterval() > 0 )
                                     {
-                                        currentSubstationBus->setLastVerificationCheck(currentDateTime);
-                                        if (currentSubstationBus->isVerificationAlreadyControlled() ||
-                                            currentSubstationBus->isVerificationPastMaxConfirmTime(currentDateTime))
-                                        {
-                                            if( (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
-                                                 _ALLOW_PARALLEL_TRUING)
-                                            {
-                                                try
-                                                {
-                                                    currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                            }
-                                            else if( (currentSubstationBus->getControlSendRetries() > 0 ||
-                                                     currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
-                                                     !currentSubstationBus->isVerificationAlreadyControlled() &&
-                                                     (currentDateTime.seconds() < currentSubstationBus->getLastOperationTime().seconds() + currentSubstationBus->getMaxConfirmTime()))
-                                                     
-                                            {
-                                                try
-                                                {
-                                                    if (currentSubstationBus->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages))
-                                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                            }
-                                            else if(  currentSubstationBus->getWaitForReCloseDelayFlag() ||
-                                                    ( !currentSubstationBus->capBankVerificationStatusUpdate(pointChanges, ccEvents)  && 
-                                                       currentSubstationBus->getCurrentVerificationCapBankId() != -1)  )
-                                            {
-                                                try
-                                                {
-
-                                                    if (currentSubstationBus->sendNextCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages))
-                                                    {
-                                                        currentSubstationBus->setWaitForReCloseDelayFlag(FALSE);
-                                                    }
-                                                    else
-                                                        currentSubstationBus->setWaitForReCloseDelayFlag(TRUE);
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                try
-                                                {
-                                                    if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
-                                                    {
-                                                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-                                                        {
-                                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                                dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
-                                                        }
-
-                                                        currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
-                                                    }
-                                                    else
-                                                    {
-                                                        if( ccEvents.size() > 0)
-                                                        {
-                                                            _ccEventMsgQueue.write(multiCCEventMsg);
-                                                            processCCEventMsgs();
-                                                            multiCCEventMsg = new CtiMultiMsg();
-                                                        }
-
-                                                        //reset VerificationFlag
-                                                        currentSubstationBus->setVerificationFlag(FALSE);
-                                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
-                                                        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
-                                                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-                                                        {
-                                                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) "<<endl;
-                                                        } 
-                                                    }
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                            }
-
-                                        } 
-                                        else // WAIT!!!
-                                        {
-
-                                        }
-                                    }
-                                    else
-                                    {
-                                        currentSubstationBus->setLastVerificationCheck(currentDateTime);
-
-                                        try
-                                        {
-                                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-                                            {
-                                               CtiLockGuard<CtiLogger> logger_guard(dout);
-                                               dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
-                                            }
-                                            int strategy = (long)currentSubstationBus->getVerificationStrategy();
-
-                                            currentSubstationBus->setCapBanksToVerifyFlags(strategy, ccEvents);
-
-                                            if( (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
-                                                 _ALLOW_PARALLEL_TRUING)
-                                            {
-                                                try
-                                                {
-                                                    currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                            }
-                                            else if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
-                                            {
-                                                try
-                                                {
-                                                    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-                                                    {
-                                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                         dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
-                                                    }
-                                                    currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
-                                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                try
-                                                {
-                                                    if( ccEvents.size() > 0)
-                                                    {
-                                                        _ccEventMsgQueue.write(multiCCEventMsg);
-                                                        processCCEventMsgs();
-                                                        multiCCEventMsg = new CtiMultiMsg();
-                                                    }
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                                try
-                                                {
-                                                    //reset VerificationFlag
-                                                    currentSubstationBus->setVerificationFlag(FALSE);
-                                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                    capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
-                                                    capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
-
-                                                    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-                                                    {                 
-                                                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                       dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
-                                                    } 
-                                                }
-                                                catch(...)
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                                }
-                                            }
-                                        }
-                                        catch(...)
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                        }
+                                        currentSubstationBus->figureNextCheckTime();
                                     }
                                 }
                                 catch(...)
@@ -600,39 +638,6 @@ void CtiCapController::controlLoop()
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
-                            }  
-                            else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
-                            {//not recently controlled and var check needed
-                                try
-                                {
-                                    if( !currentSubstationBus->getDisableFlag() &&
-                                        !currentSubstationBus->getWaiveControlFlag() &&
-                                        stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
-                                    {
-                                        currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, ccEvents, pilMessages);
-                                    }
-                                }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                            }
-
-                            try
-                            {
-                                //so we don't do this over and over we need to clear out
-                                currentSubstationBus->clearOutNewPointReceivedFlags();
-                                if( currentSubstationBus->isVarCheckNeeded(currentDateTime) &&
-                                    currentSubstationBus->getControlInterval() > 0 )
-                                {
-                                    currentSubstationBus->figureNextCheckTime();
-                                }
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
                     }
@@ -1492,7 +1497,8 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
 
                         if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
-                            resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS )
+                            ( resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS ||
+                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA ) )
                         {
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
@@ -1511,6 +1517,12 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                  dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
                             }
                             objType = CtiCCSubstationBusStore::CapBank;
+                        }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
+                        {
+                            objType = CtiCCSubstationBusStore::Area;
+
+                            CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
                         {

@@ -57,8 +57,8 @@ CtiCCArea::~CtiCCArea()
 {  
     _pointIds.clear();
     try
-    {   delete_vector(_ccsubs);
-        _ccsubs.clear();
+    {  /* delete_vector(_ccsubs);
+        _ccsubs.clear();   */
     }
     catch (...)
     {
@@ -83,9 +83,9 @@ void CtiCCArea::restoreGuts(RWvistream& istrm)
     >> _paoname
     >> _paotype
     >> _paodescription
-    >> _disableflag
+    >> _disableflag;
 
-    >> _ccsubs;
+    //>> _ccsubs;
 }
 
 /*---------------------------------------------------------------------------
@@ -103,9 +103,9 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
     << _paoname
     << _paotype
     << _paodescription
-    << _disableflag
+    << _disableflag;
 
-    << _ccsubs;
+   // << _ccsubs;
 }
 
 /*---------------------------------------------------------------------------
@@ -123,13 +123,13 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
 
-        delete_vector(_ccsubs);
+       /* delete_vector(_ccsubs);
      
         _ccsubs.clear();
         for(LONG i=0;i<right._ccsubs.size();i++)
         {
             _ccsubs.push_back(((CtiCCSubstationBus*)right._ccsubs.at(i))->replicate());
-        }
+        }  */
     }
     return *this;
 }
@@ -304,16 +304,6 @@ void CtiCCArea::setStrategyValues(CtiCCStrategyPtr strategy)
 
 }
 
-/*---------------------------------------------------------------------------
-    getCCSubs
-
-    Returns the list of substations in the area
----------------------------------------------------------------------------*/
-CtiCCSubstationBus_vec& CtiCCArea::getCCSubs()
-{
-    return _ccsubs;
-}
-
 
 /*---------------------------------------------------------------------------
     setPAOId
@@ -406,7 +396,7 @@ CtiCCArea& CtiCCArea::setStrategyId(LONG strategyId)
 
 
 
-void CtiCCArea::deleteCCSubs(long subId)
+/*void CtiCCArea::deleteCCSubs(long subId)
 {
     CtiCCSubstationBus_vec& ccSubs = getCCSubs();
     CtiCCSubstationBus_vec::iterator itr = ccSubs.begin();
@@ -421,5 +411,5 @@ void CtiCCArea::deleteCCSubs(long subId)
             ++itr;
     }
     return;
-}
+}   */
 

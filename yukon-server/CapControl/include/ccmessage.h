@@ -26,7 +26,7 @@
 
 typedef std::vector<CtiCCArea*> CtiCCArea_vec;
 typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
-typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
+//typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
 typedef std::vector<CtiCCState*> CtiCCState_vec;
 enum CtiCCEventType_t
 {
@@ -390,12 +390,13 @@ class CtiCCGeoAreasMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
 public:
-    CtiCCGeoAreasMsg(CtiCCGeoArea_vec& areaList);
+    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList);
+    CtiCCGeoAreasMsg(CtiCCArea* ccArea);
     CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
     virtual ~CtiCCGeoAreasMsg();
 
-    CtiCCGeoArea_vec* getCCGeoAreas() const     { return _ccGeoAreas; }
+    CtiCCArea_vec* getCCGeoAreas() const     { return _ccGeoAreas; }
 
     virtual CtiMessage* replicateMessage() const;
 
@@ -406,7 +407,7 @@ public:
 private:
     CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL){};
     
-    CtiCCGeoArea_vec* _ccGeoAreas;
+    CtiCCArea_vec* _ccGeoAreas;
 };
 
 class CtiCCShutdown : public CtiCCMessage

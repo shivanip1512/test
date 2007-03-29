@@ -1372,7 +1372,6 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             << dynamicCCTwoWayTable["analoginputone"].assign( _analogInput1 )
             << dynamicCCTwoWayTable["temp"].assign( _temperature )
             << dynamicCCTwoWayTable["rssi"].assign( _rssi )
-            
             << dynamicCCTwoWayTable["ignoredreason"].assign( _ignoredReason )
             << dynamicCCTwoWayTable["rssi"].assign( _totalOpCount )
             << dynamicCCTwoWayTable["uvopcount"].assign( _uvCount )
@@ -1380,7 +1379,6 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             << dynamicCCTwoWayTable["ovuvcountresetdate"].assign( toRWDBDT((CtiTime)_ovuvCountResetDate) ) //toADD
             << dynamicCCTwoWayTable["uvsetpoint"].assign( _uvSetPoint )
             << dynamicCCTwoWayTable["ovsetpoint"].assign( _ovSetPoint )
-            
             << dynamicCCTwoWayTable["ovuvtracktime"].assign( _ovuvTrackTime )
             << dynamicCCTwoWayTable["lastovuvdatetime"].assign( toRWDBDT((CtiTime)_lastOvUvDateTime) ) //toAdd
             << dynamicCCTwoWayTable["neutralcurrentsensor"].assign( _neutralCurrentSensor )
@@ -1452,11 +1450,11 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                      << _totalOpCount
                      << _uvCount
                      << _ovCount
-                     << _ovuvCountResetDate //toADD
+                     << _ovuvCountResetDate 
                      << _uvSetPoint
                      << _ovSetPoint
                      << _ovuvTrackTime
-                     << _lastOvUvDateTime //toAdd
+                     << _lastOvUvDateTime 
                      << _neutralCurrentSensor
                      << _neutralCurrentAlarmSetPoint;
            

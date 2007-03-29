@@ -472,14 +472,6 @@ CtiCCAreaMsg::CtiCCAreaMsg(CtiCCArea_vec& areas, ULONG bitMask) : CtiCCMessage("
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Area: "<<((CtiCCArea*)areas[h])->getPAOName()<< endl;
             }
-            CtiCCSubstationBus_vec& subs =   ((CtiCCArea*)areas[h])->getCCSubs();
-            for (int hh = 0; hh < subs.size(); hh++) 
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " -    Sub: "<<((CtiCCSubstationBus*)subs[hh])->getPAOName()<<" "<<((CtiCCSubstationBus*)subs[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCSubstationBus*)subs[hh])->getEstimatedVarLoadPointValue() << endl;
-                }
-            }
         }
     }
     for(int i=0;i<areas.size();i++)
@@ -806,16 +798,42 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCGeoArea_vec& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
 {
-    _ccGeoAreas = new CtiCCGeoArea_vec;
+    _ccGeoAreas = new CtiCCArea_vec;
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
+    }
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    {
+        for (int h=0;h < ccGeoAreas.size(); h++) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Area: "<<((CtiCCArea*)ccGeoAreas[h])->getPAOName()<< endl;
+            }
+        }
+    }
+
     for(int i=0;i<ccGeoAreas.size();i++)
     {
-        RWCollectableString* tempStringPtr = new RWCollectableString();
-        RWCollectableString* tempStringPtr2 = (RWCollectableString*)(ccGeoAreas.at(i));
-        *tempStringPtr = *tempStringPtr2;
-        _ccGeoAreas->push_back(tempStringPtr);
+        CtiCCArea* tempAreaPtr = new CtiCCArea();
+        CtiCCArea* tempAreaPtr2 = (CtiCCArea*)(ccGeoAreas.at(i));
+        *tempAreaPtr = *tempAreaPtr2;
+        _ccGeoAreas->push_back(tempAreaPtr);
     }
+}
+
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea* ccArea) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
+{
+    _ccGeoAreas = new CtiCCArea_vec;
+
+    CtiCCArea* tempAreaPtr = new CtiCCArea();
+    CtiCCArea* tempAreaPtr2 = ccArea;
+    *tempAreaPtr = *tempAreaPtr2;
+    _ccGeoAreas->push_back(tempAreaPtr);
 }
 
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
@@ -863,16 +881,16 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
             delete _ccGeoAreas;
         }
 		if ( _ccGeoAreas == NULL )
-			_ccGeoAreas = new CtiCCGeoArea_vec;
+			_ccGeoAreas = new CtiCCArea_vec;
         //for(int i=0;i<(right.getCCGeoAreas())->size();i++)
-		for(CtiCCGeoArea_vec::iterator itr = right.getCCGeoAreas()->begin(); 
+		for(CtiCCArea_vec::iterator itr = right.getCCGeoAreas()->begin(); 
 		    itr != right.getCCGeoAreas()->end(); 
 			itr++ )
         {
-            RWCollectableString* tempStringPtr = new RWCollectableString();
-            RWCollectableString* tempStringPtr2 = *itr;
-            *tempStringPtr = *tempStringPtr2;
-            _ccGeoAreas->push_back(tempStringPtr);
+            CtiCCArea* tempAreaPtr = new CtiCCArea();
+            CtiCCArea* tempAreaPtr2 = *itr;
+            *tempAreaPtr = *tempAreaPtr2;
+            _ccGeoAreas->push_back(tempAreaPtr);
         }
     }
 

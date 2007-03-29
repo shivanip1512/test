@@ -53,6 +53,7 @@ public:
         CapBank,
         Feeder,
         SubBus,
+        Area,
         Strategy,
         Schedule
     } CtiCapControlObjectType;
@@ -73,10 +74,9 @@ public:
     } CtiCapControlMapType;
 
 
-    CtiCCArea_vec* getCCAreas(ULONG secondsFrom1901);
     CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901);
     CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
-    CtiCCGeoArea_vec* getCCGeoAreas(ULONG secondsFrom1901);
+    CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901);
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();
@@ -96,6 +96,7 @@ public:
     void verifySubBusAndFeedersStates();
     void resetDailyOperations();
 
+    bool UpdateAreaDisableFlagInDB(CtiCCArea* bus);
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
@@ -161,7 +162,8 @@ public:
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
-                                  multimap< long, CtiCCAreaPtr > *pointid_area_map);
+                                  multimap< long, CtiCCAreaPtr > *pointid_area_map,
+                                  CtiCCArea_vec *ccGeoAreas);
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
@@ -227,10 +229,9 @@ private:
     void doResetThr();
     void doAMFMThr();
 
-    CtiCCArea_vec  *_areas;
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
     CtiCCState_vec  *_ccCapBankStates;
-    CtiCCGeoArea_vec *_ccGeoAreas;
+    CtiCCArea_vec *_ccGeoAreas;
 
     RWThread _resetthr;
     RWThread _amfmthr;
