@@ -69,13 +69,11 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.model.DataModelFactory;
 import com.cannontech.web.editor.model.EditorDataModel;
-import com.cannontech.web.editor.model.EditorDataModelImpl;
 import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
 import com.cannontech.web.exceptions.CBCExceptionMessages;
@@ -1014,6 +1012,10 @@ public class CapControlForm extends DBEditorForm{
 		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
 
+        if (dbObj instanceof CapBank)
+        {
+            createCapBankAdditional(dbObj, facesMsg);
+        }
         if  (paoType == CapControlTypes.CAP_CONTROL_FEEDER || paoType == CapControlTypes.CAP_CONTROL_SUBBUS) {
             smartMulti = CBCPointFactory.createPointsForPAO(dbObj);
         }
@@ -1092,12 +1094,15 @@ public class CapControlForm extends DBEditorForm{
     					statusPt.getPoint().getPointID());
     
     		   }
-               //create addtional info
-               CapBankAdditional additionalInfo = new CapBankAdditional();
-               additionalInfo.setDeviceID(((CapBank)dbObj).getDevice().getDeviceID());
-               additionalInfo.setDbConnection(getDbPersistent().getDbConnection());
-               addDBObject(additionalInfo, facesMsg);
+               
         }
+    }
+
+	//  create addtional info
+    private void createCapBankAdditional(DBPersistent dbObj, final FacesMessage facesMsg) throws TransactionException {
+        CapBankAdditional additionalInfo = new CapBankAdditional();
+           additionalInfo.setDeviceID(((CapBank)dbObj).getDevice().getDeviceID());
+           addDBObject(additionalInfo, facesMsg);
     }
 
 	/**

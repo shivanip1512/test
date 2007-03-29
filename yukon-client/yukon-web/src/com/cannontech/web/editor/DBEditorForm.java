@@ -18,6 +18,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.web.test.Util;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -68,7 +69,7 @@ public abstract class DBEditorForm
 	 * Updates a given DB object.
 	 */
 	protected void updateDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
-
+	    getConnection(db);
 		if( facesMsg == null ) facesMsg = new FacesMessage();
         
 		try {
@@ -93,13 +94,26 @@ public abstract class DBEditorForm
             }
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
+        finally {
+            Connection dbConnection = db.getDbConnection();
+            Util.closeConnection(dbConnection);
+        }
 		
 	}
+
+
+    private void getConnection(DBPersistent db) {
+        if (db.getDbConnection() == null)
+        {
+	        db.setDbConnection(Util.getConnection());
+        }
+    }
 
 	/**
 	 * Add a given DB object.
 	 */
 	protected void addDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
+        getConnection(db);
 
 		if( facesMsg == null ) facesMsg = new FacesMessage();
 
@@ -125,13 +139,18 @@ public abstract class DBEditorForm
 
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
-		
+        finally {
+            Connection dbConnection = db.getDbConnection();
+            Util.closeConnection(dbConnection);
+        }
+
 	}
 
 	/**
 	 * Delete a given DB object.
 	 */
 	protected void deleteDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
+        getConnection(db);
 
 		if( db == null ) return;
 		if( facesMsg == null ) facesMsg = new FacesMessage();
@@ -156,7 +175,11 @@ public abstract class DBEditorForm
 
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
-		
+        finally {
+            Connection dbConnection = db.getDbConnection();
+            Util.closeConnection(dbConnection);
+        }
+
 	}
 
 

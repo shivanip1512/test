@@ -409,22 +409,26 @@ private synchronized void handleAreaList(CBCSubAreas areas)
 {
     //for every area in the currently in cache
     List<CBCArea> cachedAreas = getCbcAreas();
+    List<CBCArea> workCopy = new Vector<CBCArea>();
+    workCopy.addAll(cachedAreas);
     for (CBCArea area : cachedAreas) {
         Vector allAreas = areas.getAreas();
         //if current cache has an area and sent object doesn't 
         //discard the cached object
         if (!allAreas.contains(area))
         {
-            cachedAreas.remove(area);
+            workCopy.remove(area);
         }
         //if the object is cached currently - then replace the object
         else if (allAreas.contains(area))
         {
-            int idx = cachedAreas.indexOf(area);
-            cachedAreas.set(idx, (CBCArea) allAreas.get( allAreas.indexOf(area)));
+            int idx = workCopy.indexOf(area);
+            workCopy.set(idx, (CBCArea) allAreas.get( allAreas.indexOf(area)));
         }
         
     }
+    cachedAreas.clear();
+    cachedAreas.addAll(workCopy);
     //if the object is not in cache add it to cache
     Vector<CBCArea> sentAreas = areas.getAreas();
     for (CBCArea area : sentAreas) {

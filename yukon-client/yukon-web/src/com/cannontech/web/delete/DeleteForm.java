@@ -9,6 +9,7 @@ import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.JSFParamUtil;
@@ -135,8 +136,13 @@ public abstract class DeleteForm extends DBEditorForm
 					CTILogger.warn("Unable to find item ID = " + getItemIDs()[i] + " in cache, ignoring entry");
 					continue;
 				}
-				
-				getDeletables()[i].setDbPersistent( dbObj );
+				//when we delete points we have a check box that confirms the deletion,
+                //on the paos we don't
+				if (!(dbObj instanceof PointBase))
+                {
+                    getDeletables()[i].setChecked(true);
+                }
+                getDeletables()[i].setDbPersistent( dbObj );
 				
 				try {
 					Transaction.createTransaction(
