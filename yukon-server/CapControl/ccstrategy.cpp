@@ -226,13 +226,12 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     {
         _offpkPFSetPoint = -(200 - _offpkPFSetPoint);
     }
-    //rdr["integrateflag"] >> tempBoolString;
-    //CtiToLower(tempBoolString);
-   // _integrateFlag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["integrateflag"] >> tempBoolString;
+    CtiToLower(tempBoolString);
+    _integrateFlag = (tempBoolString=="y"?TRUE:FALSE);
 
-    //rdr["integrateperiod"] >> _integratePeriod;
-    _integrateFlag = FALSE;
-    _integratePeriod = 0;
+    rdr["integrateperiod"] >> _integratePeriod;
+
 }
 
 /*---------------------------------------------------------------------------
