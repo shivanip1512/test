@@ -35,7 +35,7 @@ List areas = capControlCache.getCbcAreas();
 List movedCaps = new ArrayList(10);   
    for (Iterator iter = areas.iterator(); iter.hasNext();) {
     CBCArea area = (CBCArea) iter.next();
-	CapBankDevice[] capBanks = capControlCache.getCapBanksByArea(area.getPaoName());
+	CapBankDevice[] capBanks = capControlCache.getCapBanksByArea(area.getPaoID());
 	for (int i=0; i < capBanks.length; i++) {
 		CapBankDevice capBank = capBanks[i];
 		if (capBank.isBankMoved())
