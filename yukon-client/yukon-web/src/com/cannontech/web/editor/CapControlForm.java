@@ -276,6 +276,9 @@ public class CapControlForm extends DBEditorForm{
 		else if (getDbPersistent() instanceof CapControlSubBus)
 			stratID = ((CapControlSubBus) getDbPersistent())
 					.getCapControlSubstationBus().getStrategyID().intValue();
+        else if (getDbPersistent() instanceof CapControlArea)
+            stratID = ((CapControlArea) getDbPersistent())
+                    .getCapControlArea().getStrategyID().intValue();
 
 		return stratID;
 	}

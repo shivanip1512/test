@@ -4,7 +4,20 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 
-<f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
+<f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] ||capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
+
+    <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
+		<f:verbatim><br/></f:verbatim>
+		
+		<x:outputLabel for="Area_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
+		<x:selectOneMenu id="Area_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
+				value="#{capControlForm.PAOBase.capControlArea.strategyID}" 
+                valueChangeListener="#{capControlForm.newStrategySelected}">
+			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
+		</x:selectOneMenu>
+		
+    </f:subview>
+
 
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
 		<f:verbatim><br/></f:verbatim>
