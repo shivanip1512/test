@@ -104,15 +104,23 @@ public class JSFParamUtil
 	public static LiteYukonUser getYukonUser()
 	{
 		FacesContext fc = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession)fc.getExternalContext().getSession(false);
-
-		if( session == null ) {
-			CTILogger.warn("The current HttpSession is NULL");
-			return null;
-		}
-		else 
-			return (LiteYukonUser)session.getAttribute(LoginController.YUKON_USER);
-	}
+		if (fc != null)
+        {
+            ExternalContext externalContext = fc.getExternalContext();
+            {
+                HttpSession session = (HttpSession)externalContext.getSession(false);
+        
+        		if( session == null ) {
+        			CTILogger.warn("The current HttpSession is NULL");
+        			return null;
+        		}
+        		else 
+        			return (LiteYukonUser)session.getAttribute(LoginController.YUKON_USER);
+        	
+            }
+        }
+        return null;
+    }
     
     public static void goToPointEditor (Integer parentID, final FacesMessage fm) {
         try {

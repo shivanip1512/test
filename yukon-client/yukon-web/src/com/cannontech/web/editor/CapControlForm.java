@@ -1187,9 +1187,13 @@ public class CapControlForm extends DBEditorForm{
 		catch (TransactionException te) {
 			// do nothing since the appropriate actions was taken in the super
 		} finally {
-			FacesContext.getCurrentInstance()
-					.addMessage("cti_db_add", facesMsg);
-		}
+			FacesContext currentInstance = FacesContext.getCurrentInstance();
+            if (currentInstance != null)
+            {
+                currentInstance
+    					.addMessage("cti_db_add", facesMsg);
+            }
+            }
 
 		return ""; // go nowhere since this action failed
 	}
