@@ -211,15 +211,16 @@
 	            </h:panelGrid>
 			</x:panelGroup>
 			
-			<x:panelGroup>
+			<x:panelGroup >
 	            <h:dataTable id="bankAssignData" var="capBank"
-	                    styleClass="scrollerTable" headerClass="scrollerTableHeader"
+	                    styleClass="bigScrollerTable" headerClass="scrollerTableHeader"
 	                    footerClass="scrollerTableHeader"
 	                    rowClasses="tableRow,altTableRow"
 	                    rendered="#{capControlForm.visibleTabs['CBCFeeder']}"	                    
 	            		value="#{capControlForm.PAOBase.childList}"
-						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" >
-	               <h:column>
+						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered,
+							scrollerCentered,scrollerCentered" >
+	               <h:column >
 	                   <f:facet name="header">
 	                   </f:facet>
 	                   <x:commandLink value="<< Remove" action="#{capControlForm.treeSwapRemoveAction}">
@@ -237,9 +238,27 @@
 	
 	               <h:column>
 	                   <f:facet name="header">
-							<x:outputText value="Order" title="Order used for control (Range: 1 to 1000 )" />
+							<x:outputText value="Control Order" title="Order used for control (Range: 1 to 1000 )" />
 	                   </f:facet>
 	                   <x:inputText value="#{capBank.controlOrder}" styleClass="char4Label" required="true" >
+	                   		<f:validateLongRange minimum="1" maximum="1000" />
+	                   </x:inputText>
+	                   
+	               </h:column>
+	               <h:column>
+	                   <f:facet name="header">
+							<x:outputText value="Close Order" title="Order used for control (Range: 1 to 1000 )" />
+	                   </f:facet>
+	                   <x:inputText value="#{capBank.closeOrder}" styleClass="char4Label" required="true" >
+	                   		<f:validateLongRange minimum="1" maximum="1000" />
+	                   </x:inputText>
+	                   
+	               </h:column>
+	               <h:column>
+	                   <f:facet name="header">
+							<x:outputText value="Trip Order" title="Order used for control (Range: 1 to 1000 )" />
+	                   </f:facet>
+	                   <x:inputText value="#{capBank.tripOrder}" styleClass="char4Label" required="true" >
 	                   		<f:validateLongRange minimum="1" maximum="1000" />
 	                   </x:inputText>
 	                   

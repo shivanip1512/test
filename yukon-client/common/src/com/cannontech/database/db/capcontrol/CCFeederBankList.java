@@ -8,11 +8,13 @@ public class CCFeederBankList extends com.cannontech.database.db.DBPersistent
 	private Integer feederID = null;
 	private Integer deviceID = null;
 	private Integer controlOrder = null;
+    private Integer closeOrder = null;
+    private Integer tripOrder = null;
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"ControlOrder"
+		"ControlOrder", "TripOrder", "ControlOrder"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "FeederID", "DeviceID" };
@@ -20,20 +22,22 @@ public class CCFeederBankList extends com.cannontech.database.db.DBPersistent
 	public static final String TABLE_NAME= "CCFeederBankList";
 /**
  */
-public CCFeederBankList(Integer feedID, Integer devID, Integer order) 
+public CCFeederBankList(Integer feedID, Integer devID, Integer order, Integer clsOrd, Integer trpOrd) 
 {
 	super();
 	
 	setFeederID( feedID );
 	setDeviceID( devID );
 	setControlOrder( order );
+    setCloseOrder(clsOrd);
+    setTripOrder(trpOrd);
 }
 /**
  * add method comment.
  */
 public void add() throws java.sql.SQLException 
 {
-	Object[] addValues = { getFeederID(), getDeviceID(), getControlOrder() };
+	Object[] addValues = { getFeederID(), getDeviceID(), getControlOrder(), getCloseOrder(), getTripOrder() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -109,7 +113,7 @@ public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = "SELECT DeviceID, ControlOrder FROM " + TABLE_NAME +
+	String sql = "SELECT DeviceID, ControlOrder, CloseOrder, TripOrder FROM " + TABLE_NAME +
  				 " WHERE FeederID = ? ORDER BY ControlOrder";
 
 	try
@@ -132,7 +136,12 @@ public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java
 						new CCFeederBankList(
 							feederId, 
 							new Integer( rset.getInt("DeviceID") ),
-							new Integer( rset.getInt("ControlOrder")) ) );
+							new Integer( rset.getInt("ControlOrder")) ,
+                            new Integer (rset.getInt("CloseOrder")),
+                            new Integer (rset.getInt("TripOrder")))
+                        );
+                            
+                        
 			}
 					
 		}		
@@ -224,5 +233,17 @@ public void update() throws java.sql.SQLException
 
 	update( this.tableName, setColumns, setValues, constraintColumns, constraintValues );
 */
+}
+public Integer getCloseOrder() {
+    return closeOrder;
+}
+public void setCloseOrder(Integer closeOrder) {
+    this.closeOrder = closeOrder;
+}
+public Integer getTripOrder() {
+    return tripOrder;
+}
+public void setTripOrder(Integer tripOrder) {
+    this.tripOrder = tripOrder;
 }
 }

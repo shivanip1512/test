@@ -1451,10 +1451,14 @@ public class CapControlForm extends DBEditorForm{
 						// Add the mapping for the given CapBank id to this
 						// Feeder
 						CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
-						currFdr.getChildList().add(
+                        int order = maxDispOrderOnList (currFdr.getChildList()) + 1;
+                        currFdr.getChildList().add(
 								new CCFeederBankList(new Integer(itemID),
 										new Integer(elemID),
-										new Integer(maxDispOrderOnList (currFdr.getChildList()) + 1)));
+										new Integer(order),
+                                        new Integer(order),
+                                        new Integer(order)));
+                        updateTripOrder (currFdr);
 						unassignedBanks.remove(i);
 							
 						
@@ -1489,7 +1493,18 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	private void reorderList(ArrayList childList) {
+	//iterates through the bank list and reverses the trip order 
+    //for the cap
+    private void updateTripOrder(CapControlFeeder currFdr) {
+     ArrayList<CCFeederBankList> childList = currFdr.getChildList();
+     for (Iterator iter = childList.iterator(); iter.hasNext();) {
+        CCFeederBankList assign = (CCFeederBankList) iter.next();
+        assign.setTripOrder(childList.size() + 1 - assign.getControlOrder());
+     }
+    }
+
+
+    private void reorderList(ArrayList childList) {
 		for (int i = 0; i < childList.size(); i++) {
 			Object element = childList.get(i);
 			if (element instanceof CCFeederSubAssignment) {
@@ -1499,6 +1514,8 @@ public class CapControlForm extends DBEditorForm{
 			else if (element instanceof CCFeederBankList) {
 				CCFeederBankList capBank = (CCFeederBankList) element;
 				capBank.setControlOrder(new Integer ( i  + 1));
+                capBank.setCloseOrder(new Integer ( i + 1));
+                capBank.setTripOrder(new Integer ( i + 1));
 			}
 			else
 				return;
@@ -1509,7 +1526,7 @@ public class CapControlForm extends DBEditorForm{
 	private int maxDispOrderOnList(ArrayList childList) {
 		int max = 0;
 		for (Iterator iter = childList.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element = iter.next();
 			if (element instanceof CCFeederSubAssignment) {
 				CCFeederSubAssignment feeder = (CCFeederSubAssignment) element;
 				if (feeder.getDisplayOrder().intValue() > max)
@@ -1531,6 +1548,7 @@ public class CapControlForm extends DBEditorForm{
 		return max;
 	}
 
+    
 
 	/**
 	 * Removed an element from one table to another by the given id
