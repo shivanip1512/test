@@ -95,7 +95,7 @@ public class ImporterServlet extends HttpServlet {
                 if(lineNo == 1)
                     continue;
                 String[] columns = StarsUtils.splitString( line, "," );
-                if (columns.length > ImportData.SETTER_COLUMNS.length)
+                if (columns.length != ImportData.SETTER_COLUMNS.length)
                     session.setAttribute("LOAD_IMPORTDATA_ERROR", "Incorrect number of fields.");
                 ImportData currentEntry = new ImportData();
                 currentEntry.setAddress( ((String) columns[0]).trim() );
