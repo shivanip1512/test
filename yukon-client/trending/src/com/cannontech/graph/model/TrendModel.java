@@ -877,8 +877,6 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 				{
 					Date tempDate = new Date(Long.valueOf(getTrendSeries()[serieIndex].getMoreData()).longValue());
 					day = TimeUtil.differenceInDays(getStartDate(), tempDate);
-					if ( tempDate.getTime() > getStartDate().getTime())
-						day = -day;
 				}
 			}
 

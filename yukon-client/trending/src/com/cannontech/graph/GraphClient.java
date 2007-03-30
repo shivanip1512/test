@@ -354,6 +354,17 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		ResetPeaksPanel peaksPanel = new ResetPeaksPanel();
 		boolean hasChanged = peaksPanel.showResetDialog(getGraphParentFrame());
 		getGraph().setUpdateTrend(hasChanged);
+//		 The rest of this if statement are done to ensure reloading of the graphDataSeries since the moreData column may have changed. 
+		getGraph().setUpdateTrend(hasChanged);
+		if (hasChanged) {
+			Object item = getTreeViewPanel().getSelectedItem();
+			if( item == null || !( item instanceof LiteBase) )
+				return;
+			
+			// Item is an instance of LiteBase...(from previous statement)	
+			getGraph().setGraphDefinition( ((LiteBase)item).getLiteID());
+			refresh();
+		}
 	}
 	else if( event.getSource() == getOptionsMenu().getResetPeakSelectedTrendMenuItem())
 	{
@@ -369,6 +380,17 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 				ResetPeaksPanel peaksPanel = new ResetPeaksPanel(GraphDataSeries.getAllGraphDataSeries(new Integer(((LiteGraphDefinition)selected).getGraphDefinitionID())));
 				boolean hasChanged = peaksPanel.showResetDialog(getGraphParentFrame());
 				getGraph().setUpdateTrend(hasChanged);
+//				 The rest of this if statement are done to ensure reloading of the graphDataSeries since the moreData column may have changed. 
+				getGraph().setUpdateTrend(hasChanged);
+				if (hasChanged) {
+					Object item = getTreeViewPanel().getSelectedItem();
+					if( item == null || !( item instanceof LiteBase) )
+						return;
+					
+					// Item is an instance of LiteBase...(from previous statement)	
+					getGraph().setGraphDefinition( ((LiteBase)item).getLiteID());
+					refresh();
+				}
 			}
 		}
 	}
