@@ -4,7 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
@@ -17,6 +19,7 @@ import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 
 public class AlarmMessageHandler extends NotifHandler {
+    private Logger log = YukonLogManager.getLogger(AlarmMessageHandler.class);
     
     public AlarmMessageHandler(OutputHandlerHelper helper) {
         super(helper);
@@ -32,6 +35,11 @@ public class AlarmMessageHandler extends NotifHandler {
         for (int i = 0; i < msg.notifGroupIds.length; i++) {
             int notifGroupId = msg.notifGroupIds[i];
             LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(notifGroupId);
+            if (liteNotifGroup.isDisabled()) {
+                log.warn("Ignoring notification request because notification group is disabled: group=" + liteNotifGroup);
+                continue;
+            }
+            
             NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
             outputNotification(notifFormatter, liteNotifGroup);
         }

@@ -4,6 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -17,6 +20,7 @@ import com.cannontech.notif.server.NotifServerConnection;
  * 
  */
 public class LoadManagementMessageHandler extends NotifHandler {
+    private Logger log = YukonLogManager.getLogger(LoadManagementMessageHandler.class);
 
     private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
@@ -103,6 +107,12 @@ public class LoadManagementMessageHandler extends NotifHandler {
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
             LiteNotificationGroup notificationGroup = 
                 DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(msg.notifGroupIds[i]);
+            
+            if (notificationGroup.isDisabled()) {
+                log.warn("Ignoring notification request because notification group is disabled: group=" + notificationGroup);
+                continue;
+            }
+            
             
             outputNotification(notifFormatter, notificationGroup);
         }

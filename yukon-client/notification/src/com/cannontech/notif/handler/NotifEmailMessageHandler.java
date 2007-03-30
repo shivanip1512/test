@@ -5,7 +5,10 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.log4j.Logger;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -16,6 +19,7 @@ import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
 public class NotifEmailMessageHandler extends MessageHandler {
+    private Logger log = YukonLogManager.getLogger(NotifEmailMessageHandler.class);
 
 	public NotifEmailMessageHandler() {
 	}
@@ -35,6 +39,12 @@ public class NotifEmailMessageHandler extends MessageHandler {
 			int notifGroupId = msg.getNotifGroupID();
 			LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao()
 					.getLiteNotificationGroup(notifGroupId);
+            
+            if (liteNotifGroup.isDisabled()) {
+                log.warn("Ignoring notification request because notification group is disabled: group=" + liteNotifGroup);
+                return true; // we "handled" it, by not sending anything
+            }
+            
 			List contactables = NotifMapContactable
 					.getContactablesForGroup(liteNotifGroup);
 
