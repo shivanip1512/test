@@ -431,23 +431,137 @@ update YukonGroupRole set Value = '/operator/Operations.jsp' where GroupRoleID =
 update YukonUserRole set Value = '/operator/Operations.jsp' where UserRoleID = -400 and UserID = -1 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
 update YukonRoleProperty set DefaultValue = '/operator/Operations.jsp' where RolePropertyID = -10800 and DefaultValue = '/default.jsp';
 
-
-
-create table capcontrolarea (
-    areaid         numeric        not null,
-    strategyid     numeric       not null
+create table CAPCONTROLAREA  (
+   AreaID               NUMBER                          not null,
+   StrategyID           NUMBER                          not null
 );
-alter table capcontrolarea
-   add constraint PK_capcontrolarea primary key  (areaid);
 
+alter table CAPCONTROLAREA
+   add constraint PK_CAPCONTROLAREA primary key (AreaID);
 
-create table CCSubAreaAssignment (
-   AreaID               numeric              not null,
-   SubStationBusID      numeric              not null,
-   DisplayOrder         numeric              not null
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTAREA_CAPCONTRSTRAT foreign key (StrategyID)
+      references CapControlStrategy (StrategyID);
+
+create table CCSUBAREAASSIGNMENT  (
+   AreaID               number                          not null,
+   SubstationBusID      number                          not null,
+   DisplayOrder         number                          not null
 );
-alter table CCSubAreaAssignment
-   add constraint PK_CCSubAreaAssignment primary key  (AreaID, SubStationBusID);
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint PK_CCSUBAREAASSIGNMENT primary key (AreaID, SubstationBusID);
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID);
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+
+alter table ccfeederbanklist add closeOrder number;
+update ccfeederbanklist set closeOrder = ControlOrder;
+alter table ccfeederbanklist modify closeOrder number not null;
+
+alter table ccfeederbanklist add tripOrder number;
+/*Still need to add the PL/SQL loops for julie's cap control stuff before this column can be finalized*/
+/*alter table ccfeederbanklist modify tripOrder numeric not null;*/
+
+alter table capcontrolstrategy add integrateflag char(1);
+update capcontrolstrategy set integrateflag = 'N';
+alter table capcontrolstrategy modify integrateflag char(1) not null;
+
+alter table capcontrolstrategy add integrateperiod number;
+update capcontrolstrategy set integrateperiod = 0;
+alter table capcontrolstrategy modify integrateperiod number not null;
+
+create table DYNAMICCCTWOWAYCBC  (
+   DeviceID             NUMBER                          not null,
+   RecloseBlocked       CHAR(1)                         not null,
+   ControlMode          CHAR(1)                         not null,
+   AutoVoltControl      CHAR(1)                         not null,
+   LastControl          NUMBER                          not null,
+   Condition            NUMBER                          not null,
+   OpFailedNeutralCurrent CHAR(1)                         not null,
+   NeutralCurrentFault  CHAR(1)                         not null,
+   BadRelay             CHAR(1)                         not null,
+   DailyMaxOps          CHAR(1)                         not null,
+   VoltageDeltaAbnormal CHAR(1)                         not null,
+   TempAlarm            CHAR(1)                         not null,
+   DSTActive            CHAR(1)                         not null,
+   NeutralLockout       CHAR(1)                         not null,
+   IgnoredIndicator     CHAR(1)                         not null,
+   Voltage              FLOAT                           not null,
+   HighVoltage          FLOAT                           not null,
+   LowVoltage           FLOAT                           not null,
+   DeltaVoltage         FLOAT                           not null,
+   AnalogInputOne       NUMBER                          not null,
+   Temp                 FLOAT                           not null,
+   RSSI                 NUMBER                          not null,
+   IgnoredReason        NUMBER                          not null,
+   TotalOpCount         NUMBER                          not null,
+   UvOpCount            NUMBER                          not null,
+   OvOpCount            NUMBER                          not null,
+   OvUvCountResetDate   DATE                            not null,
+   UvSetPoint           NUMBER                          not null,
+   OvSetPoint           NUMBER                          not null,
+   OvUvTrackTime        NUMBER                          not null,
+   LastOvUvDateTime     DATE                            not null,
+   NeutralCurrentSensor NUMBER                          not null,
+   NeutralCurrentAlarmSetPoint NUMBER                          not null,
+   IPAddress            NUMBER                          not null,
+   UDPPort              NUMBER                          not null
+);
+
+alter table DYNAMICCCTWOWAYCBC
+   add constraint PK_DYNAMICCCTWOWAYCBC primary key (DeviceID);
+
+alter table DYNAMICCCTWOWAYCBC
+   add constraint FK_DYNAMICC_DEVICECB foreign key (DeviceID)
+      references DeviceCBC (DEVICEID);
+
+delete from YukonGroupRole where RolePropertyID = -10813;
+delete from YukonRoleProperty where RolePropertyID = -10813;
+
+create table CAPBANKADDITIONAL  (
+   DeviceID             NUMBER                          not null,
+   MaintenanceAreaID    NUMBER                          not null,
+   PoleNumber           NUMBER                          not null,
+   DriveDirections      VARCHAR2(120)                   not null,
+   Latitude             FLOAT                           not null,
+   Longitude            FLOAT                           not null,
+   CapBankConfig        VARCHAR2(10)                    not null,
+   CommMedium           VARCHAR2(20)                    not null,
+   CommStrength         NUMBER                          not null,
+   ExtAntenna           CHAR(1)                         not null,
+   AntennaType          VARCHAR2(10)                    not null,
+   LastMaintVisit       DATE                            not null,
+   LastInspVisit        DATE                            not null,
+   OpCountResetDate     DATE                            not null,
+   PotentialTransformer VARCHAR2(10)                    not null,
+   MaintenanceReqPend   CHAR(1)                         not null,
+   OtherComments        VARCHAR2(150)                   not null,
+   OpTeamComments       VARCHAR2(150)                   not null,
+   CBCBattInstallDate   DATE                            not null
+);
+
+alter table CAPBANKADDITIONAL
+   add constraint PK_CAPBANKADDITIONAL primary key (DeviceID);
+
+alter table CAPBANKADDITIONAL
+   add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
+      references CAPBANK (DEVICEID);
+      
+insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
+insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
+insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
+
+insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false','Show Cap Bank Addititional Info tab');
+
+/*Still need to add the PL/SQL loops for julie's cap control stuff*/
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

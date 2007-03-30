@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/12/2007 7:53:50 AM                         */
+/* Created on:     3/30/2007 4:11:51 PM                         */
 /*==============================================================*/
 
 
@@ -723,6 +723,22 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CAPBANKADDITIONAL')
+            and   type = 'U')
+   drop table CAPBANKADDITIONAL
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CAPCONTROLAREA')
+            and   type = 'U')
+   drop table CAPCONTROLAREA
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CAPCONTROLSUBSTATIONBUS')
             and   type = 'U')
    drop table CAPCONTROLSUBSTATIONBUS
@@ -758,6 +774,14 @@ if exists (select 1
            where  id = object_id('CCMONITORBANKLIST')
             and   type = 'U')
    drop table CCMONITORBANKLIST
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCSUBAREAASSIGNMENT')
+            and   type = 'U')
+   drop table CCSUBAREAASSIGNMENT
 go
 
 
@@ -1294,6 +1318,14 @@ if exists (select 1
            where  id = object_id('DYNAMICACCUMULATOR')
             and   type = 'U')
    drop table DYNAMICACCUMULATOR
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICCCTWOWAYCBC')
+            and   type = 'U')
+   drop table DYNAMICCCTWOWAYCBC
 go
 
 
@@ -2823,6 +2855,53 @@ go
 
 
 /*==============================================================*/
+/* Table: CAPBANKADDITIONAL                                     */
+/*==============================================================*/
+create table CAPBANKADDITIONAL (
+   DeviceID             numeric              not null,
+   MaintenanceAreaID    numeric              not null,
+   PoleNumber           numeric              not null,
+   DriveDirections      varchar(120)         not null,
+   Latitude             float                not null,
+   Longitude            float                not null,
+   CapBankConfig        varchar(10)          not null,
+   CommMedium           varchar(20)          not null,
+   CommStrength         numeric              not null,
+   ExtAntenna           char(1)              not null,
+   AntennaType          varchar(10)          not null,
+   LastMaintVisit       datetime             not null,
+   LastInspVisit        datetime             not null,
+   OpCountResetDate     datetime             not null,
+   PotentialTransformer varchar(10)          not null,
+   MaintenanceReqPend   char(1)              not null,
+   OtherComments        varchar(150)         not null,
+   OpTeamComments       varchar(150)         not null,
+   CBCBattInstallDate   datetime             not null
+)
+go
+
+
+alter table CAPBANKADDITIONAL
+   add constraint PK_CAPBANKADDITIONAL primary key  (DeviceID)
+go
+
+
+/*==============================================================*/
+/* Table: CAPCONTROLAREA                                        */
+/*==============================================================*/
+create table CAPCONTROLAREA (
+   AreaID               numeric              not null,
+   StrategyID           numeric              not null
+)
+go
+
+
+alter table CAPCONTROLAREA
+   add constraint PK_CAPCONTROLAREA primary key  (AreaID)
+go
+
+
+/*==============================================================*/
 /* Table: CAPCONTROLSUBSTATIONBUS                               */
 /*==============================================================*/
 create table CAPCONTROLSUBSTATIONBUS (
@@ -2887,7 +2966,9 @@ go
 create table CCFeederBankList (
    FeederID             numeric              not null,
    DeviceID             numeric              not null,
-   ControlOrder         numeric              not null
+   ControlOrder         numeric              not null,
+   CloseOrder           numeric              not null,
+   TripOrder            numeric              not null
 )
 go
 
@@ -2930,6 +3011,22 @@ go
 
 alter table CCMONITORBANKLIST
    add constraint PK_CCMONITORBANKLIST primary key  (BankID, PointID)
+go
+
+
+/*==============================================================*/
+/* Table: CCSUBAREAASSIGNMENT                                   */
+/*==============================================================*/
+create table CCSUBAREAASSIGNMENT (
+   AreaID               numeric              not null,
+   SubstationBusID      numeric              not null,
+   DisplayOrder         numeric              not null
+)
+go
+
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint PK_CCSUBAREAASSIGNMENT primary key  (AreaID, SubstationBusID)
 go
 
 
@@ -3500,12 +3597,14 @@ create table CapControlStrategy (
    OffPkVARLag          float                not null,
    OffPkVARLead         float                not null,
    PeakPFSetPoint       float                not null,
-   OffPkPFSetPoint      float                not null
+   OffPkPFSetPoint      float                not null,
+   IntegrateFlag        char(1)              not null,
+   IntegratePeriod      numeric              not null
 )
 go
 
 
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0);
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0);
 alter table CapControlStrategy
    add constraint PK_CAPCONTROLSTRAT primary key  (StrategyID)
 go
@@ -4770,6 +4869,54 @@ go
 
 alter table DYNAMICACCUMULATOR
    add constraint PK_DYNAMICACCUMULATOR primary key  (POINTID)
+go
+
+
+/*==============================================================*/
+/* Table: DYNAMICCCTWOWAYCBC                                    */
+/*==============================================================*/
+create table DYNAMICCCTWOWAYCBC (
+   DeviceID             numeric              not null,
+   RecloseBlocked       char(1)              not null,
+   ControlMode          char(1)              not null,
+   AutoVoltControl      char(1)              not null,
+   LastControl          numeric              not null,
+   Condition            numeric              not null,
+   OpFailedNeutralCurrent char(1)              not null,
+   NeutralCurrentFault  char(1)              not null,
+   BadRelay             char(1)              not null,
+   DailyMaxOps          char(1)              not null,
+   VoltageDeltaAbnormal char(1)              not null,
+   TempAlarm            char(1)              not null,
+   DSTActive            char(1)              not null,
+   NeutralLockout       char(1)              not null,
+   IgnoredIndicator     char(1)              not null,
+   Voltage              float                not null,
+   HighVoltage          float                not null,
+   LowVoltage           float                not null,
+   DeltaVoltage         float                not null,
+   AnalogInputOne       numeric              not null,
+   Temp                 float                not null,
+   RSSI                 numeric              not null,
+   IgnoredReason        numeric              not null,
+   TotalOpCount         numeric              not null,
+   UvOpCount            numeric              not null,
+   OvOpCount            numeric              not null,
+   OvUvCountResetDate   datetime             not null,
+   UvSetPoint           numeric              not null,
+   OvSetPoint           numeric              not null,
+   OvUvTrackTime        numeric              not null,
+   LastOvUvDateTime     datetime             not null,
+   NeutralCurrentSensor numeric              not null,
+   NeutralCurrentAlarmSetPoint numeric              not null,
+   IPAddress            numeric              not null,
+   UDPPort              numeric              not null
+)
+go
+
+
+alter table DYNAMICCCTWOWAYCBC
+   add constraint PK_DYNAMICCCTWOWAYCBC primary key  (DeviceID)
 go
 
 
@@ -10280,7 +10427,7 @@ insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/M
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
 insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
-insert into YukonRoleProperty values(-10813, -108,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
@@ -10354,8 +10501,11 @@ insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','fals
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Controls access to configure the Multispeak Interfaces.');
 
-/* Operator Commercial Metering Role Properties*/
+/* Operator Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
+insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
+insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
+insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
 
 /* Operator Direct Curtailment Role Properties */
 insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
@@ -10559,6 +10709,9 @@ insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','H
 insert into YukonRoleProperty values(-70008,-700,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The rate, in seconds, all CBC clients reload data from the CBC server');
 insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','Allows the user to view/modify the database set up for all CapControl items');
+insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false','Show Cap Bank Addititional Info tab');
+
 
 /* Notification / IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
@@ -10715,7 +10868,6 @@ go
 
 insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled', 'PLAIN' );
 insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN' );
-insert into yukonuser values ( -3, 'weboper', 'weboper', 'Enabled', 'PLAIN' );
 insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled', 'PLAIN' );
 insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled', 'PLAIN' );
 alter table YukonUser
@@ -11227,6 +11379,18 @@ alter table CAPBANK
 go
 
 
+alter table CAPBANKADDITIONAL
+   add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
+      references CAPBANK (DEVICEID)
+go
+
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTAREA_CAPCONTRSTRAT foreign key (StrategyID)
+      references CapControlStrategy (StrategyID)
+go
+
+
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references POINT (POINTID)
@@ -11296,6 +11460,18 @@ go
 alter table CCMONITORBANKLIST
    add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
       references POINT (POINTID)
+go
+
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID)
+go
+
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
 go
 
 
@@ -11824,6 +12000,12 @@ go
 alter table DYNAMICACCUMULATOR
    add constraint SYS_C0015129 foreign key (POINTID)
       references POINT (POINTID)
+go
+
+
+alter table DYNAMICCCTWOWAYCBC
+   add constraint FK_DYNAMICC_DEVICECB foreign key (DeviceID)
+      references DeviceCBC (DEVICEID)
 go
 
 
@@ -12993,4 +13175,16 @@ alter table YukonUserRole
       references YukonUser (UserID)
 go
 
+CREATE proc removeColumn (@tablename nvarchar(100), @columnname nvarchar(100))
+AS
+BEGIN
+    DECLARE @tab VARCHAR(100),@defname varchar(100),@cmd varchar(100)
+    select @defname = name FROM sysobjects so JOIN sysconstraints sc ON so.id = sc.constid WHERE object_name(so.parent_obj) = @tablename
+    AND so.xtype = 'D' AND sc.colid = (SELECT colid FROM syscolumns WHERE id = object_id(@tablename) AND name = @columnname)
 
+    select @cmd='alter table '+@tablename+ ' drop constraint '+@defname
+    exec (@cmd)
+    select @cmd='alter table '+@tablename+ ' drop column '+@columnname
+    exec (@cmd)
+END
+go

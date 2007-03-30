@@ -517,12 +517,12 @@ go
 alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID);
-go      
+go     
       
 insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
-go      
+go     
       
 insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1, 'TwoStateActive', 'Status' from stategroup;
 go
@@ -533,6 +533,307 @@ go
 update YukonGroupRole set Value = '/operator/Operations.jsp' where GroupRoleID = -1090 and GroupID = -2 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
 update YukonUserRole set Value = '/operator/Operations.jsp' where UserRoleID = -400 and UserID = -1 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
 update YukonRoleProperty set DefaultValue = '/operator/Operations.jsp' where RolePropertyID = -10800 and DefaultValue = '/default.jsp';
+go
+
+create table CAPCONTROLAREA (
+   AreaID               numeric              not null,
+   StrategyID           numeric              not null
+);
+go
+
+alter table CAPCONTROLAREA
+   add constraint PK_CAPCONTROLAREA primary key  (AreaID)
+go
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTAREA_CAPCONTRSTRAT foreign key (StrategyID)
+      references CapControlStrategy (StrategyID);
+go
+
+create table CCSUBAREAASSIGNMENT (
+   AreaID               numeric              not null,
+   SubstationBusID      numeric              not null,
+   DisplayOrder         numeric              not null
+);
+go
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint PK_CCSUBAREAASSIGNMENT primary key  (AreaID, SubstationBusID);
+go
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID);
+go
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+go
+
+/* @start-block */
+declare @areaname varchar(60);
+declare @paoid numeric;
+set @paoid = (select max(paobjectid) + 1 from yukonpaobject);
+declare areaname_curs cursor for (select distinct(description) as areaname from yukonpaobject where type = 'ccsubbus');
+
+open areaname_curs;
+
+fetch areaname_curs into @areaname;
+
+while (@@fetch_status = 0)
+  begin 
+     insert into yukonpaobject(paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+                  select @paoid,
+                   'CAPCONTROL', 
+                   'CAPCONTROL',
+                   @areaname, 
+                   'CCAREA', 
+                   '(none)',
+                   'N',
+                   '-----'
+     fetch areaname_curs into @areaname;
+     set @paoid = @paoid + 1;
+
+  end
+
+close areaname_curs;
+deallocate areaname_curs;
+/* @end-block */
+go
+
+/* @start-block */
+declare @areaid numeric;
+declare @areaname1 varchar(60);
+declare @subid numeric;
+declare @subdesc varchar(60);
+declare @order numeric;
+set @order = 1;
+
+declare areaid_curs cursor for (select paobjectid, paoname from yukonpaobject where type = 'CCAREA');
+declare subarea_curs cursor for (select paobjectid as subid, description from yukonpaobject where type = 'CCSUBBUS');
+
+open areaid_curs;
+fetch areaid_curs into @areaid, @areaname1;
+
+while (@@fetch_status = 0)
+    begin
+       insert into capcontrolarea values (@areaid, 0);
+       set @order = 1;
+       open subarea_curs;
+       fetch subarea_curs into @subid, @subdesc;      
+       while (@@fetch_status = 0)
+            begin
+              if (@areaname1 = @subdesc)
+                begin
+                insert into ccsubareaassignment values (@areaid, @subid, @order);
+                set @order = @order + 1;
+                end     
+              fetch subarea_curs into @subid, @subdesc;      
+            end
+       close subarea_curs;
+    fetch areaid_curs into @areaid, @areaname1;
+    end
+
+close areaid_curs;
+deallocate areaid_curs;
+deallocate subarea_curs;
+/* @end-block */
+go
+
+alter table ccfeederbanklist add closeOrder numeric;
+go
+update ccfeederbanklist set closeOrder = ControlOrder;
+go
+alter table ccfeederbanklist  alter column closeOrder numeric not null;
+go
+alter table ccfeederbanklist add tripOrder numeric;
+go
+
+/* @start-block */
+declare @tripOrder numeric;
+declare @devid numeric;
+declare @feedid numeric;
+declare @maxclose numeric;
+declare deviceid_curs cursor for (select deviceid from ccfeederbanklist);
+open deviceid_curs;
+fetch deviceid_curs into @devid;
+
+while (@@fetch_status = 0)
+begin
+    set @feedid = (select feederid from ccfeederbanklist where deviceid = @devid);
+    set @maxclose = (select max(closeOrder)as maxclose from ccfeederbanklist where feederid = @feedid group by feederid);
+    set @tripOrder = (select (@maxclose - fb.controlorder + 1) from ccfeederbanklist fb where fb.deviceid = @devid);
+    update ccfeederbanklist set triporder = @tripOrder where deviceid = @devid; 
+            
+    fetch deviceid_curs into @devid;
+end
+close deviceid_curs;
+deallocate deviceid_curs;
+/* @end-block */
+go
+
+alter table ccfeederbanklist  alter column tripOrder numeric not null;
+
+alter table capcontrolstrategy add integrateflag char(1);
+go
+update capcontrolstrategy set integrateflag = 'N';
+go
+alter table capcontrolstrategy  alter column integrateflag char(1) not null;
+go
+alter table capcontrolstrategy add integrateperiod numeric;
+go
+update capcontrolstrategy set integrateperiod = 0;
+go
+alter table capcontrolstrategy  alter column integrateperiod numeric not null;
+go
+
+create table DYNAMICCCTWOWAYCBC (
+   DeviceID             numeric              not null,
+   RecloseBlocked       char(1)              not null,
+   ControlMode          char(1)              not null,
+   AutoVoltControl      char(1)              not null,
+   LastControl          numeric              not null,
+   Condition            numeric              not null,
+   OpFailedNeutralCurrent char(1)              not null,
+   NeutralCurrentFault  char(1)              not null,
+   BadRelay             char(1)              not null,
+   DailyMaxOps          char(1)              not null,
+   VoltageDeltaAbnormal char(1)              not null,
+   TempAlarm            char(1)              not null,
+   DSTActive            char(1)              not null,
+   NeutralLockout       char(1)              not null,
+   IgnoredIndicator     char(1)              not null,
+   Voltage              float                not null,
+   HighVoltage          float                not null,
+   LowVoltage           float                not null,
+   DeltaVoltage         float                not null,
+   AnalogInputOne       numeric              not null,
+   Temp                 float                not null,
+   RSSI                 numeric              not null,
+   IgnoredReason        numeric              not null,
+   TotalOpCount         numeric              not null,
+   UvOpCount            numeric              not null,
+   OvOpCount            numeric              not null,
+   OvUvCountResetDate   datetime             not null,
+   UvSetPoint           numeric              not null,
+   OvSetPoint           numeric              not null,
+   OvUvTrackTime        numeric              not null,
+   LastOvUvDateTime     datetime             not null,
+   NeutralCurrentSensor numeric              not null,
+   NeutralCurrentAlarmSetPoint numeric              not null,
+   IPAddress            numeric              not null,
+   UDPPort              numeric              not null
+);
+go
+
+alter table DYNAMICCCTWOWAYCBC
+   add constraint PK_DYNAMICCCTWOWAYCBC primary key  (DeviceID);
+go
+
+alter table DYNAMICCCTWOWAYCBC
+   add constraint FK_DYNAMICC_DEVICECB foreign key (DeviceID)
+      references DeviceCBC (DEVICEID);
+go
+
+delete from YukonGroupRole where RolePropertyID = -10813;
+go
+delete from YukonRoleProperty where RolePropertyID = -10813;
+go
+
+create table CAPBANKADDITIONAL (
+   DeviceID             numeric              not null,
+   MaintenanceAreaID    numeric              not null,
+   PoleNumber           numeric              not null,
+   DriveDirections      varchar(120)         not null,
+   Latitude             float                not null,
+   Longitude            float                not null,
+   CapBankConfig        varchar(10)          not null,
+   CommMedium           varchar(20)          not null,
+   CommStrength         numeric              not null,
+   ExtAntenna           char(1)              not null,
+   AntennaType          varchar(10)          not null,
+   LastMaintVisit       datetime             not null,
+   LastInspVisit        datetime             not null,
+   OpCountResetDate     datetime             not null,
+   PotentialTransformer varchar(10)          not null,
+   MaintenanceReqPend   char(1)              not null,
+   OtherComments        varchar(150)         not null,
+   OpTeamComments       varchar(150)         not null,
+   CBCBattInstallDate   datetime             not null
+);
+go
+
+alter table CAPBANKADDITIONAL
+   add constraint PK_CAPBANKADDITIONAL primary key  (DeviceID);
+go
+
+alter table CAPBANKADDITIONAL
+   add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
+      references CAPBANK (DEVICEID);
+go
+
+/* @start-block */
+declare @capid numeric
+declare capid_curs cursor for (select deviceid as capid from capbank);
+open capid_curs;
+
+fetch capid_curs into @capid;
+while (@@fetch_status = 0)
+  begin
+     insert into capbankadditional
+                  select @capid,
+                   0,
+                   0,
+                   '(none)',
+                   0.0,
+                   0.0,
+                   '(none)',
+                   '(none)',
+				   0,
+				  'N',
+				  '(none)',
+				  '1/1/1900',
+				  '1/1/1900',
+				  '1/1/1900',
+				  '(none)',
+				  'N',
+				  '(none)',
+				  '(none)',
+				  '1/1/1900';  		
+ 	fetch capid_curs into @capid;
+  end
+
+close capid_curs;
+deallocate capid_curs;
+/* @end-block */
+go
+
+insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
+insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
+insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
+go
+
+/* @error ignore-begin */
+/* @start-block */
+CREATE proc removeColumn (@tablename nvarchar(100), @columnname nvarchar(100))
+AS
+BEGIN
+    DECLARE @tab VARCHAR(100),@defname varchar(100),@cmd varchar(100)
+    select @defname = name FROM sysobjects so JOIN sysconstraints sc ON so.id = sc.constid WHERE object_name(so.parent_obj) = @tablename
+    AND so.xtype = 'D' AND sc.colid = (SELECT colid FROM syscolumns WHERE id = object_id(@tablename) AND name = @columnname)
+
+    select @cmd='alter table '+@tablename+ ' drop constraint '+@defname
+    exec (@cmd)
+    select @cmd='alter table '+@tablename+ ' drop column '+@columnname
+    exec (@cmd)
+END
+/* @end-block */
+/* @error ignore-end */
+go
+
+insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
+insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false','Show Cap Bank Addititional Info tab');
 go
 
 /******************************************************************************/
