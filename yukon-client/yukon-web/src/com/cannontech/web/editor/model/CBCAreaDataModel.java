@@ -12,7 +12,7 @@ import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.web.editor.data.CBCAreaData;
-import com.cannontech.web.test.Util;
+import com.cannontech.web.util.CBCDBUtil;
 
 public class CBCAreaDataModel extends EditorDataModelImpl {
     CapControlArea areaPers;
@@ -75,12 +75,12 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
     public void updateDataModel() {
         List<Integer> assignedIDs = CBCAreaData.toIntegerList(getAssigned());
         List<Integer> unassignedIDs = CBCAreaData.toIntegerList(getUnassigned());
-        Connection connection = Util.getConnection();
+        Connection connection = CBCDBUtil.getConnection();
         handleAssignedIDs(assignedIDs, connection);
         handleUnassignedIDs(unassignedIDs, connection);
         assignNewSubs(assignedIDs, connection);
 
-        Util.closeConnection(connection);
+        CBCDBUtil.closeConnection(connection);
     }
 
     public void assignNewSubs(List<Integer> assignedIDs, Connection connection) {

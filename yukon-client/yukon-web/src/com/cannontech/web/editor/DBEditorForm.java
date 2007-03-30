@@ -18,7 +18,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.web.test.Util;
+import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -96,7 +96,7 @@ public abstract class DBEditorForm
 		}
         finally {
             Connection dbConnection = db.getDbConnection();
-            Util.closeConnection(dbConnection);
+            CBCDBUtil.closeConnection(dbConnection);
         }
 		
 	}
@@ -105,7 +105,7 @@ public abstract class DBEditorForm
     private void getConnection(DBPersistent db) {
         if (db.getDbConnection() == null)
         {
-	        db.setDbConnection(Util.getConnection());
+	        db.setDbConnection(CBCDBUtil.getConnection());
         }
     }
 
@@ -141,7 +141,7 @@ public abstract class DBEditorForm
 		}
         finally {
             Connection dbConnection = db.getDbConnection();
-            Util.closeConnection(dbConnection);
+            CBCDBUtil.closeConnection(dbConnection);
         }
 
 	}
@@ -177,7 +177,7 @@ public abstract class DBEditorForm
 		}
         finally {
             Connection dbConnection = db.getDbConnection();
-            Util.closeConnection(dbConnection);
+            CBCDBUtil.closeConnection(dbConnection);
         }
 
 	}

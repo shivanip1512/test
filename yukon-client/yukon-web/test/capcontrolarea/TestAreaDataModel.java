@@ -1,9 +1,11 @@
-package com.cannontech.web.test.capcontrolarea;
+package capcontrolarea;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import util.CBCTestUtil;
 
 import junit.framework.TestCase;
 
@@ -12,7 +14,6 @@ import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.web.editor.data.CBCAreaData;
 import com.cannontech.web.editor.model.CBCAreaDataModel;
 import com.cannontech.web.editor.model.JSFAssignmentModel;
-import com.cannontech.web.test.Util;
 
 public class TestAreaDataModel extends TestCase {
 
@@ -36,7 +37,7 @@ public class TestAreaDataModel extends TestCase {
     }
     
     public void testAdd () {
-        Integer settableID = Util.getSubIdNotInArea (area.getCapControlPAOID());
+        Integer settableID = CBCTestUtil.getSubIdNotInArea (area.getCapControlPAOID());
         model.getAssignmentModel().setSettableID(settableID);
         model.add();
         JSFAssignmentModel assignmentModel = model.getAssignmentModel();
@@ -59,7 +60,7 @@ public class TestAreaDataModel extends TestCase {
         model.updateDataModel();
     }
     protected void tearDown() throws Exception {
-        Util.closeConnection(connection);
+        CBCTestUtil.closeConnection(connection);
     }
 
     private void initModel() {
@@ -68,8 +69,8 @@ public class TestAreaDataModel extends TestCase {
 
     private void initArea() throws SQLException {
         area = new CapControlArea();
-        area.setCapControlPAOID(Util.getAreaID());
-        connection = Util.getConnection();
+        area.setCapControlPAOID(CBCTestUtil.getAreaID());
+        connection = CBCTestUtil.getConnection();
         area.setDbConnection(connection);
         area.retrieve();
     }

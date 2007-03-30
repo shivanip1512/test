@@ -1,4 +1,5 @@
-package com.cannontech.web.test;
+package miscl;
+
 
 import junit.framework.TestCase;
 
@@ -15,7 +16,7 @@ public class TestSubCreation extends TestCase {
 
     public void testCreateSub () {
         CapControlForm form = new CapControlForm();
-        form.getWizData().setName("Elliot's Sub 5");
+        form.getWizData().setName("Elliot's Sub 11");
         form.initWizard (4000);
         form.create();
     

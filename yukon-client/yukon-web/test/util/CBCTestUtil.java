@@ -1,23 +1,22 @@
-package com.cannontech.web.test;
+package util;
+
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.web.util.CBCDBUtil;
 
-public class Util {
+public class CBCTestUtil {
 
     public static Integer getAreaID() {
         SqlStatementBuilder areaID = new SqlStatementBuilder();
@@ -46,25 +45,23 @@ public class Util {
     }
 
     public static Connection getConnection() {
-        Connection connection = PoolManager.getInstance()
-                                           .getConnection(CtiUtilities.getDatabaseAlias());
-        return connection;
+        return CBCDBUtil.getConnection();
     }
 
+
+
     public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {}
-        }
+        CBCDBUtil.closeConnection(connection);
     }
+
+   
 
     public static Integer getSubIDToUpdate() {
         List<LiteYukonPAObject> buses = DaoFactory.getPaoDao()
                                                   .getAllCapControlSubBuses();
         Integer newSubID = null;
         for (LiteYukonPAObject bus : buses) {
-            if (bus.getLiteID() != Util.getValidSubId().intValue())
+            if (bus.getLiteID() != CBCTestUtil.getValidSubId().intValue())
                 newSubID = new Integer(bus.getLiteID());
             break;
         }

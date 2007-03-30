@@ -1,8 +1,10 @@
-package com.cannontech.web.test.capcontrolarea;
+package capcontrolarea;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+
+import util.CBCTestUtil;
 
 import junit.framework.TestCase;
 
@@ -10,7 +12,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
-import com.cannontech.web.test.Util;
 
 public class TestSubAreaAssignment extends TestCase {
 
@@ -53,14 +54,14 @@ public class TestSubAreaAssignment extends TestCase {
 
     public void testDeleteSubAssignment() {
         CCSubAreaAssignment newAssignment = createNewAssignment();
-        Connection connection = Util.getConnection();
+        Connection connection = CBCTestUtil.getConnection();
         newAssignment.setDbConnection(connection);
         try {
             newAssignment.delete();
         } catch (SQLException e) {
             newAssignment = null;
         } finally {
-            Util.closeConnection(connection);
+            CBCTestUtil.closeConnection(connection);
         }
         assertNotNull(newAssignment);
     }
@@ -68,12 +69,12 @@ public class TestSubAreaAssignment extends TestCase {
     public void testUpdateSubAssignment() {
         CCSubAreaAssignment newAssignment = createNewAssignment();
         Integer oldSubId = newAssignment.getSubstationBusID();
-        Integer newSubID = Util.getSubIDToUpdate();
+        Integer newSubID = CBCTestUtil.getSubIDToUpdate();
 
         if (newSubID != null) {
             newAssignment.setSubstationBusID(newSubID);
         }
-        newAssignment.setDbConnection(Util.getConnection());
+        newAssignment.setDbConnection(CBCTestUtil.getConnection());
         try {
             newAssignment.update();
         } catch (SQLException e) {
@@ -82,7 +83,7 @@ public class TestSubAreaAssignment extends TestCase {
         assertNotNull(newAssignment);
         assertEquals(newSubID, newAssignment.getSubstationBusID());
         assertNotSame(oldSubId, newAssignment.getSubstationBusID());
-        Util.closeConnection(newAssignment.getDbConnection());
+        CBCTestUtil.closeConnection(newAssignment.getDbConnection());
     }
 
     protected void tearDown() throws Exception {
@@ -96,16 +97,16 @@ public class TestSubAreaAssignment extends TestCase {
     private CCSubAreaAssignment createNewAssignment() {
         CCSubAreaAssignment newAssignment = new CCSubAreaAssignment();
         newAssignment.setAreaID(area.getCapControlPAOID());
-        newAssignment.setSubstationBusID(Util.getValidSubId());
+        newAssignment.setSubstationBusID(CBCTestUtil.getValidSubId());
         newAssignment.setDisplayOrder(1);
-        Connection connection = Util.getConnection();
+        Connection connection = CBCTestUtil.getConnection();
         newAssignment.setDbConnection(connection);
         try {
             newAssignment.add();
         } catch (SQLException e) {
             newAssignment = null;
         } finally {
-            Util.closeConnection(connection);
+            CBCTestUtil.closeConnection(connection);
         }
         return newAssignment;
     }

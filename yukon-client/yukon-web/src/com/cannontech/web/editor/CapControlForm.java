@@ -72,6 +72,7 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
 import com.cannontech.web.editor.model.EditorDataModel;
 import com.cannontech.web.editor.point.PointLists;
@@ -83,8 +84,7 @@ import com.cannontech.web.exceptions.PAODoesntHaveNameException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.web.exceptions.SerialNumberExistsException;
-import com.cannontech.web.model.capcontrol.CapControlStrategyModel;
-import com.cannontech.web.test.Util;
+import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
@@ -958,7 +958,7 @@ public class CapControlForm extends DBEditorForm{
             
             if (getDbPersistent().getDbConnection() == null)
             {
-                connection = Util.getConnection();
+                connection = CBCDBUtil.getConnection();
                 getDbPersistent().setDbConnection(connection);
             }
             updateDBObject(getDbPersistent(), facesMsg);
@@ -970,7 +970,7 @@ public class CapControlForm extends DBEditorForm{
 		} finally {
 			FacesContext.getCurrentInstance().addMessage("cti_db_update",
 					facesMsg);
-            Util.closeConnection(connection);
+            CBCDBUtil.closeConnection(connection);
         }
         
 
@@ -1114,6 +1114,7 @@ public class CapControlForm extends DBEditorForm{
 
 		// creates the DB object
 		FacesMessage facesMsg = new FacesMessage();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
 
 		try {
 
@@ -1176,8 +1177,15 @@ public class CapControlForm extends DBEditorForm{
                     CBControllerEditor.insertPointsIntoDB(pointVector);  
                 }
 
-			// redirect to this form as the editor for this new DB object
-			return "cbcEditor";
+			
+            // redirect to this form as the editor for this new DB object
+            if (facesContext != null)
+            {
+                HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+                String url = "/editor/cbcBase.jsf?type="+editorType+"&itemid="+itemID;
+                CBCNavigationUtil.bookmarkLocation(url, session);
+            }
+            return "cbcEditor";
 
 		} 
 		catch (PAODoesntHaveNameException noNameE){
@@ -1187,10 +1195,9 @@ public class CapControlForm extends DBEditorForm{
 		catch (TransactionException te) {
 			// do nothing since the appropriate actions was taken in the super
 		} finally {
-			FacesContext currentInstance = FacesContext.getCurrentInstance();
-            if (currentInstance != null)
+            if (facesContext != null)
             {
-                currentInstance
+                facesContext
     					.addMessage("cti_db_add", facesMsg);
             }
             }

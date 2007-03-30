@@ -1,4 +1,4 @@
-package com.cannontech.web.model.capcontrol;
+package com.cannontech.web.editor.model;
 
 import java.util.HashMap;
 

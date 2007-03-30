@@ -1,12 +1,13 @@
-package com.cannontech.web.test.capbankadditionalinfo;
+package capbankadditionalinfo;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import util.CBCTestUtil;
+
 import junit.framework.TestCase;
 
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
-import com.cannontech.web.test.Util;
 
 public class TestCapBankAddInfo extends TestCase {
 
@@ -14,14 +15,14 @@ public class TestCapBankAddInfo extends TestCase {
     private CapBankAdditional info;
 
     protected void setUp() throws Exception {
-        connection = Util.getConnection();
+        connection = CBCTestUtil.getConnection();
         info = new CapBankAdditional();
         info.setDbConnection(connection);
 
     }
 
     public void testAdd() {
-        info.setDeviceID(Util.getValidCapBankId());
+        info.setDeviceID(CBCTestUtil.getValidCapBankId());
         try {
             info.add();
         } catch (SQLException e) {
@@ -31,7 +32,7 @@ public class TestCapBankAddInfo extends TestCase {
     }
 
     public void testRetrieve() {
-        Integer validCapBankId = Util.getValidCapBankId();
+        Integer validCapBankId = CBCTestUtil.getValidCapBankId();
         retrieveAddInfo(validCapBankId);
         assertNotNull(info);
         assertEquals(validCapBankId, info.getDeviceID());
@@ -39,7 +40,7 @@ public class TestCapBankAddInfo extends TestCase {
 
     public void testUpdate() {
         String newDriveDirections = "123 New Opcount Drive, Capbankville MN 23345";
-        Integer validCapBankId = Util.getValidCapBankId();
+        Integer validCapBankId = CBCTestUtil.getValidCapBankId();
         retrieveAddInfo(validCapBankId);
         String oldDriveDir = info.getDriveDir();
         info.setDriveDir(newDriveDirections);
@@ -55,7 +56,7 @@ public class TestCapBankAddInfo extends TestCase {
     }
 
     public void testDelete() {
-        info.setDeviceID(Util.getValidCapBankId());
+        info.setDeviceID(CBCTestUtil.getValidCapBankId());
         try {
             info.delete();
         } catch (SQLException e) {
@@ -75,6 +76,6 @@ public class TestCapBankAddInfo extends TestCase {
     }
 
     protected void tearDown() throws Exception {
-        Util.closeConnection(connection);
+        CBCTestUtil.closeConnection(connection);
     }
 }
