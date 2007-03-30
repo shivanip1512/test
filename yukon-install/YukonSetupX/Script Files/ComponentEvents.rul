@@ -141,7 +141,7 @@ function Tomcat_Installed()
 STRING szCmdLine;     
 STRING configMsg1, configMsg2, configMsg3, configMsg4, configMsg5;
 string szServPath, szPath, TomcatPath, JavaPath;
-string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile, szValue, dateString;
+string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile, szValue, dateString, targetString;
 number nvResult, nvType, nvSize, foundVal, dirSearch, nSize;
 pointer pEnv;
         
