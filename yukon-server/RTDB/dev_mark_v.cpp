@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/10/04 19:13:26 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/03/30 17:43:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -807,7 +807,6 @@ CtiProtocolTransdata & CtiDeviceMarkV::getTransdataProtocol( void )
 void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 {
    CtiTransdataTracker::mark_v_lp   *lp = NULL;
-   CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg;
    CtiPointDataMsg                  *pData = NULL;
    CtiPointSPtr                     pPoint;
    BYTE                             *storage = NULL;
@@ -829,60 +828,82 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
       //move this down a layer
       lp = ( CtiTransdataTracker::mark_v_lp *)storage;
-      _llp.lastLP = lp->meterTime;
+
       CtiTime mTime( lp->meterTime );
 
-      for( index = 0; index < lp->numLpRecs; )
+      if( mTime > (CtiTime::now() + 86400) ||
+          mTime < (CtiTime::now() - 86400) )
       {
-          for( int x = 3; x >= 0; x-- )      // the 3 here should be a define, reps # of channels
-            {
-            if( lp->enabledChannels[x] )
-            {
-               pPoint = getDevicePointOffsetTypeEqual( getChannelOffset( x ) + LOAD_PROFILE, AnalogPointType );
-
-               if( pPoint )
-               {
-                  pData = CTIDBG_new CtiPointDataMsg();
-                  val = 0;
-                  qual = 0;
-
-                  pData->setId( pPoint->getID() );
-
-                  correctValue( lp->lpData[index], lp->lpFormat[1], val, qual );
-
-                  CtiPointNumericSPtr pTemp;
-                  pTemp = boost::static_pointer_cast<CtiPointNumeric>(pPoint);
-
-                  pData->setValue( pTemp->computeValueForUOM( val ) );
-                  pData->setQuality( qual );
-                  pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                  pData->setTime( mTime );
-                  pData->setType( pPoint->getType() );
-
-                  if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << mTime << " " << pTemp->computeValueForUOM( val ) << endl;
-                  }
-
-                  msgMulti->getData().push_back( pData );
-
-                  pTemp.reset();
-                  pData = NULL;
-                  pPoint.reset();
-               }
-
-               index++;
-            }
-         }
-
-         //decrement the time to the interval previous to the current one...
-         CtiTime tempTime( mTime.seconds() - ( lp->lpFormat[0] * 60 ) );
-         mTime = tempTime;
+          {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << CtiTime() << " **** Checkpoint - meter time = (" << mTime << ") in CtiDeviceMarkV::processDispatchReturnMessage() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+          }
       }
+      else if( lp->lpFormat[0] > 60 || lp->lpFormat[0] < 0 )
+      {
+          {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << CtiTime() << " **** Checkpoint - lp->lpFormat[0] = (" << lp->lpFormat[0] << ") in CtiDeviceMarkV::processDispatchReturnMessage() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+          }
+      }
+      else
+      {
+          _llp.lastLP = lp->meterTime;
 
-      msgPtr->insert( msgMulti );
-      msgMulti = NULL;
+          CtiMultiMsg *msgMulti = CTIDBG_new CtiMultiMsg;
+
+          for( index = 0; index < lp->numLpRecs; )
+          {
+              for( int x = 3; x >= 0; x-- )      // the 3 here should be a define, reps # of channels
+                {
+                if( lp->enabledChannels[x] )
+                {
+                   pPoint = getDevicePointOffsetTypeEqual( getChannelOffset( x ) + LOAD_PROFILE, AnalogPointType );
+
+                   if( pPoint )
+                   {
+                      pData = CTIDBG_new CtiPointDataMsg();
+                      val = 0;
+                      qual = 0;
+
+                      pData->setId( pPoint->getID() );
+
+                      correctValue( lp->lpData[index], lp->lpFormat[1], val, qual );
+
+                      CtiPointNumericSPtr pTemp;
+                      pTemp = boost::static_pointer_cast<CtiPointNumeric>(pPoint);
+
+                      pData->setValue( pTemp->computeValueForUOM( val ) );
+                      pData->setQuality( qual );
+                      pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+                      pData->setTime( mTime );
+                      pData->setType( pPoint->getType() );
+
+                      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
+                      {
+                         CtiLockGuard<CtiLogger> doubt_guard(dout);
+                         dout << mTime << " " << pTemp->computeValueForUOM( val ) << endl;
+                      }
+
+                      msgMulti->getData().push_back( pData );
+
+                      pTemp.reset();
+                      pData = NULL;
+                      pPoint.reset();
+                   }
+
+                   index++;
+                }
+              }
+
+              //decrement the time to the interval previous to the current one...
+              CtiTime tempTime( mTime.seconds() - ( lp->lpFormat[0] * 60 ) );
+              mTime = tempTime;
+          }
+
+          msgPtr->insert( msgMulti );
+          msgMulti = NULL;
+      }
 
       if( lp )
       {
@@ -908,12 +929,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime() << " ----No Data For Dispatch Message For " << getName() << "----" << endl;
       }
-   }
-
-   if( msgMulti != NULL )
-   {
-      delete msgMulti;
-      msgMulti = NULL;
    }
 }
 
