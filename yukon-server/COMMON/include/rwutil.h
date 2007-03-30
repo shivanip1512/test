@@ -35,9 +35,8 @@
  */
 inline RWDBDateTime toRWDBDT(const CtiTime& ct)
 {
-    struct tm ctime;
-	ct.extract(&ctime);
-    RWDBDateTime rwdb(&ctime);
+    RWTime temptime(ct.toRwSeconds());
+    RWDBDateTime rwdb(temptime);
     return rwdb;
 }
 
@@ -215,9 +214,7 @@ inline RWvostream& operator<<(RWvostream& strm, const CtiTime &ct)
         return strm << rwt;
     } else
     {
-        struct tm ctime;
-        ct.extract(&ctime);
-        RWTime rwt(&ctime);
+        RWTime rwt(ct.toRwSeconds());
         return strm << rwt;
     }
 }

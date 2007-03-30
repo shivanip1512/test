@@ -312,6 +312,11 @@ void CtiTime::extract(struct tm* ctm) const
     *ctm = *localtime(&_seconds);
 }
 
+unsigned long CtiTime::toRwSeconds() const
+{
+    return _seconds + rwEpoch;
+}
+
 
 string CtiTime::asString()  const
 {

@@ -75,6 +75,7 @@ public:
     CtiDate date() const;
 
     void extract(struct tm*) const; 
+    unsigned long toRwSeconds() const;
 
     bool isDST() const;
     bool isValid() const;

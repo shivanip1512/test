@@ -92,6 +92,16 @@ void test_ctitime_methods()
     BOOST_CHECK_EQUAL( rw_time.hourGMT(), d.hourGMT() );
     BOOST_CHECK_EQUAL( rw_time.isDST(), d.isDST() );
 
+    d.addDays(1);
+    rw_time = RWTime(d.toRwSeconds());
+    std::cout << "Current time: " << d.asString() << std::endl;
+    BOOST_CHECK_EQUAL( rw_time.hour(), d.hour() );
+    BOOST_CHECK_EQUAL( rw_time.minute(), d.minute() );
+    BOOST_CHECK_EQUAL( rw_time.second(), d.second() );
+    BOOST_CHECK_EQUAL( rw_time.minuteGMT(), d.minuteGMT() );
+    BOOST_CHECK_EQUAL( rw_time.hourGMT(), d.hourGMT() );
+    BOOST_CHECK_EQUAL( rw_time.isDST(), d.isDST() );
+
     // check the CtiTime.extract() method, to see if the extracted ctime is correct
     struct tm ctime;
     rw_time.extract(&ctime);
@@ -271,7 +281,7 @@ void test_ctitime_DST()
 
     // check the time duration calculation acrossing the DST boundary
     BOOST_CHECK_EQUAL( 2 * timeduration, cta.seconds() - ctb.seconds() );
-    CtiTime ctt(cta - 6*60*60);
+    CtiTime ctt(cta - 6*60*60 + 30);
     CtiTime ctt1(ct.date(), 1, 0, 0);
     BOOST_CHECK_EQUAL( ctt1.asString(), ctt.asString() );
     ctt = ctb + 6*60*60;
