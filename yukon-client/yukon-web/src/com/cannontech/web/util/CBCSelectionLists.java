@@ -11,6 +11,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
@@ -464,4 +465,17 @@ public class CBCSelectionLists {
         new SelectItem(new Integer (900), "15 minutes")
         
     };
+    
+    public Integer getSubstationType () {
+        return PAOGroups.CAP_CONTROL_SUBBUS;
+    }
+    
+    public Integer getFeederType () {
+        return PAOGroups.CAP_CONTROL_FEEDER;
+    }
+    
+    public Integer getCapType () {
+        return DeviceTypes.CAPBANK;
+    }
+
 }

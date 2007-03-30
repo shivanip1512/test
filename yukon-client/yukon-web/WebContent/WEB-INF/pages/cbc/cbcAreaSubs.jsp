@@ -119,6 +119,20 @@
 	               </h:column>
 	
 	            </h:dataTable>
+				<f:verbatim>
+					<br/> <br/>
+	    			<fieldset>
+	    				<legend>Links</legend>
+	    			</f:verbatim>
+	    				<f:verbatim><br/></f:verbatim>
+					<x:commandLink action="#{capControlForm.dataModel.createLink}" 
+								   value="Create Sub" 
+								   title="Click here to create a sub. Return after creation to assign the sub.">
+								   		<f:param  name="type" id="type" value="#{selLists.substationType}"/>
+								   </x:commandLink>
+					<f:verbatim>
+	    				</fieldset>
+	    			</f:verbatim>
 			</x:panelGroup>
 	
 	    </h:panelGrid>

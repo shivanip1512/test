@@ -121,6 +121,20 @@
 	               </h:column>
 	
 	            </h:dataTable>
+							<f:verbatim><br/><br/>
+	    			<fieldset>
+	    				<legend>Links</legend>
+	    			</f:verbatim>
+	    				<f:verbatim><br/></f:verbatim>
+					<x:commandLink action="#{capControlForm.dataModel.createLink}" 
+								   value="Create Feeder" 
+								   title="Click here to create a feeder. Return after creation to assign the feeder.">
+								   		<f:param  name="type" id="type" value="#{selLists.feederType}"/>
+								   </x:commandLink>
+					<f:verbatim>
+	    				</fieldset>
+	    			</f:verbatim>
+			
 			</x:panelGroup>
 	
 	    </h:panelGrid>
@@ -265,6 +279,20 @@
 	               </h:column>
 	
 	            </h:dataTable>
+	            	<f:verbatim>
+	            	<br/><br/>
+	            	<fieldset>
+	    				<legend>Links</legend>
+	    			</f:verbatim>
+	    				<f:verbatim><br/></f:verbatim>
+					<x:commandLink action="#{capControlForm.dataModel.createLink}" 
+								   value="Create CapBank" 
+								   title="Click here to create a CapBank. Return after creation to assign the CapBank.">
+								   		<f:param  name="type" id="type" value="#{selLists.capType}"/>
+								   </x:commandLink>
+					<f:verbatim>
+	    				</fieldset>
+	    			</f:verbatim>
 			</x:panelGroup>
 	
 	    </h:panelGrid>
