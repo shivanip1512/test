@@ -3,12 +3,10 @@ package com.cannontech.yukon.cbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -28,7 +26,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 
 /**
  * @author ryan
@@ -329,7 +327,7 @@ public final class CBCUtils
     }
 
     public static boolean isCBAdditionalInfoAllowed(LiteYukonUser user) {
-        boolean showCapBankAddInfo = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.SHOW_CB_ADDINFO)).booleanValue();
+        boolean showCapBankAddInfo = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_CB_ADDINFO)).booleanValue();
         return showCapBankAddInfo;
     }
 }

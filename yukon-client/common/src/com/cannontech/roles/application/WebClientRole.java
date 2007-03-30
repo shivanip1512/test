@@ -24,7 +24,4 @@ public interface WebClientRole {
 	public static final int POPUP_APPEAR_STYLE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 10;   // If the popups are on click or on mouseover
 	public static final int INBOUND_VOICE_HOME_URL = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 11;
 	public static final int JAVA_WEB_START_LAUNCHER_ENABLED = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 12;
-    public static final int SHOW_FLIP_COMMAND = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 13;
-    public static final int SHOW_CB_ADDINFO = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 14;
-
 }
