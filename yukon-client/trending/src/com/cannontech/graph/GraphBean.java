@@ -226,7 +226,7 @@ public class GraphBean extends Graph
 	 */
 	public int getNumDays()
 	{
-		int numDays = com.cannontech.common.util.TimeUtil.differenceInDays(getStartDate(), getStopDate());
+		int numDays = com.cannontech.common.util.TimeUtil.absDifferenceInDays(getStartDate(), getStopDate());
 		return numDays;
 	}
 	/**

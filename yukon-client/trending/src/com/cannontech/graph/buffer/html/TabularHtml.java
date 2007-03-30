@@ -73,7 +73,7 @@ public class TabularHtml extends HTMLBuffer
 		buf.append( model.getChartName());
 		buf.append("<br>\n");
 	
-		if( TimeUtil.differenceInDays( new java.util.Date(tabStDt), new java.util.Date(tabEndDt)) == 1 )
+		if( TimeUtil.absDifferenceInDays( new java.util.Date(tabStDt), new java.util.Date(tabEndDt)) == 1 )
 		{
 			buf.append( dateFormat.format( new java.util.Date(tabStDt)) );
 		}

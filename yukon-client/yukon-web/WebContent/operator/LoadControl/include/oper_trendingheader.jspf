@@ -95,7 +95,7 @@
    if( selectedPeriod == null )
       period = selectedPeriod = com.cannontech.util.ServletUtil.getPeriodFromDates(start, stop);
    
-   numDays = com.cannontech.common.util.TimeUtil.differenceInDays( start, stop );
+   numDays = com.cannontech.common.util.TimeUtil.absDifferenceInDays( start, stop );
 
    session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
   %>               

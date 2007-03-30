@@ -48,7 +48,7 @@ public class PeakHtml extends HTMLBuffer
 			buf.append( model.getChartName());
 			buf.append("<br>\n");
 			
-			if( TimeUtil.differenceInDays( model.getStartDate(), model.getStopDate() ) == 1 )
+			if( TimeUtil.absDifferenceInDays( model.getStartDate(), model.getStopDate() ) == 1 )
 			{
 				buf.append( dateFormat.format( model.getStartDate()) );
 			}

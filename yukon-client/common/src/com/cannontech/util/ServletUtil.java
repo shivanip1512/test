@@ -680,7 +680,7 @@ public static Date getEndingDateOfInterval(Date startingDate, String period) {
 
 		Date endOfInterval = c.getTime();
 
-		numDays = TimeUtil.differenceInDays(startingDate, endOfInterval);		
+		numDays = TimeUtil.absDifferenceInDays(startingDate, endOfInterval);		
 	}
 	else
     if( period.equalsIgnoreCase(EVENT) )
@@ -742,7 +742,7 @@ public static int getIntValue(String stringValue)
 		c.setTime(getToday());
 		c.add( Calendar.MONTH, 1 );
 		Date endOfInterval = c.getTime();
-		return TimeUtil.differenceInDays(getToday(), endOfInterval);		
+		return TimeUtil.absDifferenceInDays(getToday(), endOfInterval);		
 	}
 	else
 	if( stringValue.equalsIgnoreCase(FOURWEEKS) )

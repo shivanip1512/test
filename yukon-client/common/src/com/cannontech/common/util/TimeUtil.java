@@ -73,6 +73,18 @@ public static int differenceInDays(java.util.Date d1, java.util.Date d2 )
 		count++;
 	}
 */
+	return count;
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return int
+ * @param d1 java.util.Date
+ * @param d2 java.util.Date
+ */
+public static int absDifferenceInDays(java.util.Date d1, java.util.Date d2 ) 
+{
+	int count = differenceInDays(d1, d2);
 	return Math.abs(count);
 }
 /**
