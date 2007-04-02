@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -40,6 +41,7 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -61,6 +63,7 @@ import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yc.MessageType;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
 import com.cannontech.yc.gui.menu.YCFileMenu;
 import com.cannontech.yc.gui.menu.YCHelpMenu;
@@ -122,12 +125,14 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		}
 		private String getStyle()
 		{
-			if( message.getStatus() > 0 )
+			if( message.getMessageType() == MessageType.ERROR )
 				return "Red";
-			else if (message.getStatus() == 0)
+			else if (message.getMessageType() == MessageType.SUCCESS)
 				return "Blue";
+			else if( message.getMessageType() == MessageType.FRIEND)
+				return "Green";
 			else
-				return null;
+				return "Black";
 		}		
 		public void run()
 		{
@@ -219,7 +224,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     					getYC().executeCommand();
     				}
 				} catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
 				}
 			}
 		}
@@ -303,7 +308,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     					getYC().executeCommand();
     				}
                 } catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
                 }
 			}
 		}
@@ -328,7 +333,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     				if( isValidSetup() )
     					getYC().executeCommand();
                 } catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
                 }
 			}
 		}
@@ -342,7 +347,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     				getYC().executeCommand();
     			}
             } catch (PaoAuthorizationException e) {
-                update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
             }
 		}
 		else if (event.getSource() == getLocateRouteDialog().getRouteComboBox())
@@ -743,10 +748,16 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				ivjDebugOutputTextPane.setBounds(0, 0, 11, 6);
                 ivjDebugOutputTextPane.setContentType("text/html");
                 Style style = ivjDebugOutputTextPane.addStyle("Red", null);
-                StyleConstants.setForeground(style, Color.red);
+                StyleConstants.setForeground(style, Color.RED);
                 
                 style = ivjDebugOutputTextPane.addStyle("Blue", null);
-                StyleConstants.setForeground(style, Color.blue);
+                StyleConstants.setForeground(style, Color.BLUE);
+                
+                style = ivjDebugOutputTextPane.addStyle("Black", null);
+                StyleConstants.setForeground(style, Color.BLACK);
+                
+                style = ivjDebugOutputTextPane.addStyle("Green", null);
+                StyleConstants.setForeground(style, Color.GREEN);
                 
                 style = ivjDebugOutputTextPane.addStyle("Font", null);
                 StyleConstants.setFontSize(style, 12);
@@ -1444,7 +1455,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     					getYC().executeCommand();
     				}
                 } catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), 1));
+                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
                 }
 			}
 		}
@@ -2095,15 +2106,16 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		if( o instanceof YC && arg instanceof YC.OutputMessage)
 		{
 			YC.OutputMessage outMessage = (YC.OutputMessage)arg;
-			if( outMessage.getType() == YC.OutputMessage.DEBUG_MESSAGE)
+			if( outMessage.getDisplayAreaType() == YC.OutputMessage.DEBUG_MESSAGE)
 			{
 				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), outMessage) );
 				/*TODO: HACK TO ELIMINATE TOO MUCH MUMBLE JUMBLE IN DISPLAY (TOP) PANEL 
 				 * Parsing for " sent " helps eliminate the communication responses somewhat*/
-				if( outMessage.getStatus() == 0 && outMessage.getText().indexOf(" sent ")< 0)	//send message to display also?
+				if( outMessage.getMessageType() == MessageType.SUCCESS && 
+						outMessage.getText().indexOf(" sent ")< 0)	//send message to display also?
 					javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage) );
 			}
-			else if( outMessage.getType() == YC.OutputMessage.DISPLAY_MESSAGE)
+			else if( outMessage.getDisplayAreaType() == YC.OutputMessage.DISPLAY_MESSAGE)
 				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage) );
 		}
 		else if( arg instanceof String)

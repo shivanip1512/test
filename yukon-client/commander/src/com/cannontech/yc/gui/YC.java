@@ -5,6 +5,7 @@ package com.cannontech.yc.gui;
  * Creation date: (2/25/2002 3:24:43 PM)
  * @author: 
  */
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -17,6 +18,8 @@ import java.util.Vector;
 
 import javax.swing.Timer;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
@@ -56,6 +59,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yc.MessageType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -142,40 +146,31 @@ public class YC extends Observable implements MessageListener
     private LiteYukonUser user = null;
 	
 	public class OutputMessage{
+		public MessageType messageType = MessageType.INFO;
 		public static final int DISPLAY_MESSAGE = 0;	//YC defined text
 		public static final int DEBUG_MESSAGE = 1;		//Porter defined text
-		private int type = DEBUG_MESSAGE;
+		private int displayAreaType = DEBUG_MESSAGE;
 		private String text;
-		private int status = Integer.MIN_VALUE;
 		private boolean isUnderline = false;
 
-		public OutputMessage(int type_, String message_)
+		public OutputMessage(int displayAreaType_, String message_, MessageType messageType_)
 		{
-			this(type_, message_, Integer.MIN_VALUE, false);
+			this(displayAreaType_, message_, messageType_, false);
 		}
-		public OutputMessage(int type_, String message_, boolean underline_)
-		{
-			this(type_, message_, Integer.MIN_VALUE, underline_);
-		}
-		
-		public OutputMessage(int type_, String message_, int status_)
-		{
-			this(type_, message_, status_, false);
-		}
-		public OutputMessage(int type_, String message_, int status_, boolean underline_)
+		public OutputMessage(int displayAreaType_, String message_, MessageType messageType_, boolean underline_)
 		{
 			super();
-			type = type_;
+			displayAreaType = displayAreaType_;
 			text = message_;
             text = text.replaceAll("\n", "<BR>");
             text = text.replaceAll("<BR><BR>", "<BR>");
-			status = status_;
+			messageType = messageType_;
 			isUnderline = underline_;
 		}
 		public boolean isUnderline() { return isUnderline; }
-		public int getStatus(){ return status; }
+		public MessageType getMessageType(){ return messageType; }
 		public String getText(){ return text; }
-		public int getType(){ return type; }
+		public int getDisplayAreaType(){ return displayAreaType; }
 	}
 	/**
 	 * YC constructor comment.
@@ -913,11 +908,7 @@ public class YC extends Observable implements MessageListener
 		{
 			String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent - " + 
 				"connection to Yukon Port Control is not valid.";
-			OutputMessage message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, 1);
-			setChanged();
-			this.notifyObservers(message);
-			appendResultText( message);
-		
+			writeOutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, MessageType.ERROR);
 			CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 		}
 			
@@ -977,7 +968,6 @@ public class YC extends Observable implements MessageListener
 					}
 				}
 				CTILogger.debug("Total Messages: " + getRequestMessageIDs().size()+ " | Commands Executing: " + getRequestMessageIDs_Executing().size());
-				java.awt.Color textColor = getYCDefaults().getDisplayTextColor();
 				String debugOutput = "";
 				String displayOutput = "";
 
@@ -987,11 +977,8 @@ public class YC extends Observable implements MessageListener
 				if( prevUserID != returnMsg.getUserMessageID())
 				{
 					//textColor = java.awt.Color.black;
-					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";					
-					message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
-					setChanged();
-					this.notifyObservers(message);
-					appendResultText( message);
+					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";
+					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
 					debugOutput = "";
 					prevUserID = returnMsg.getUserMessageID();
 
@@ -1026,8 +1013,8 @@ public class YC extends Observable implements MessageListener
 						}
 					}
 				}
-				if( returnMsg.getExpectMore() == 0)
-				{
+				
+				if( returnMsg.getExpectMore() == 0) {
 					String routeName = null;
 					if (returnMsg.getRouteOffset() > 0)
 						routeName = DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getRouteOffset());																				
@@ -1047,32 +1034,33 @@ public class YC extends Observable implements MessageListener
 					{
 						if( returnMsg.getStatus() != 0)
 						{
-							textColor = getYCDefaults().getInvalidTextColor();
 							if( returnMsg.getExpectMore() == 0)
 								displayOutput += "Error  " + returnMsg.getStatus() + "\t( " + returnMsg.getResultString()+ " )";
+							writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, MessageType.ERROR);
 						}
 						else	//status == 0 == successfull
 						{
-							textColor = getYCDefaults().getValidTextColor();
 							if( returnMsg.getExpectMore() == 0)
 								displayOutput += "Valid";
+							writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, MessageType.SUCCESS);
 						}
-
-						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, returnMsg.getStatus());
-						setChanged();
-						this.notifyObservers(message);
-						appendResultText( message);									
 					}
 				}
-				if(returnMsg.getResultString().length() > 0)
-				{
+				
+				if(returnMsg.getResultString().length() > 0) {
 					debugOutput += returnMsg.getResultString();
 				}
-				
-				message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, returnMsg.getStatus());
-				setChanged();
-				this.notifyObservers(message);
-				appendResultText( message);
+
+				if (returnMsg.getStatus() > 1 ) {
+					if (returnMsg.getExpectMore() == 0) {
+						DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
+						DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
+						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, deviceErrorDesc.getDescription(), MessageType.FRIEND);
+					}
+						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.ERROR);
+				}else 
+					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.SUCCESS);
+
 				synchronized ( YukonCommander.class )
 				{
 					if( returnMsg.getExpectMore() == 0)	//Only send next message when ret expects nothing more
@@ -1114,11 +1102,7 @@ public class YC extends Observable implements MessageListener
 						else
 						{
 							debugOutput = "Command cancelled<BR>";
-							textColor = getYCDefaults().getInvalidTextColor();
-							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, returnMsg.getStatus());
-							setChanged();
-							this.notifyObservers(message);
-							appendResultText( message);
+							writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
 						}
 					}
 				}
@@ -1126,7 +1110,12 @@ public class YC extends Observable implements MessageListener
 		}
 	}
 
-		
+	public void writeOutputMessage(int displayAreaType, String outputStr, MessageType messageType) {
+		OutputMessage message = new OutputMessage(displayAreaType, outputStr, messageType);
+		setChanged();
+		this.notifyObservers(message);
+		appendResultText( message);	
+	}
 	/**
 	 * Returns result string from Return porter messages.
 	 * @return String resultText
@@ -1151,10 +1140,14 @@ public class YC extends Observable implements MessageListener
     public void appendResultText(OutputMessage message)
     {
         String color = null;
-        if( message.getStatus() > 0 )
+        if( message.getMessageType() == MessageType.ERROR)
             color = "red";
-        else if (message.getStatus() == 0)
+        else if (message.getMessageType() == MessageType.SUCCESS)
             color = "blue";
+        else if (message.getMessageType() == MessageType.FRIEND)
+            color = "green";
+        else 
+            color = "black";
 
         resultText = getResultText() + "<BR>" +
                     (color==null?"":"<span style='color:"+color+";'>") +
