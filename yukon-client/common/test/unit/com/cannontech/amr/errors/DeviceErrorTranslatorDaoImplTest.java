@@ -25,13 +25,13 @@ public class DeviceErrorTranslatorDaoImplTest {
 
     @Test
     public void testTraslateErrorCode() {
-        DeviceErrorDescription description = translator.traslateErrorCode(15);
+        DeviceErrorDescription description = translator.translateErrorCode(15);
         assertNotNull("returned null data", description);
         assertNotNull("returned null description", description.getDescription());
         assertNotNull("returned null trouble", description.getTroubleshooting());
         
         
-        description = translator.traslateErrorCode(23475845); // no way this is a real error!
+        description = translator.translateErrorCode(23475845); // no way this is a real error!
         assertNotNull("returned null data", description);
         assertNotNull("returned null description", description.getDescription());
         assertNotNull("returned null trouble", description.getTroubleshooting());
