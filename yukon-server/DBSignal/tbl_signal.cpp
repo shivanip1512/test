@@ -106,21 +106,21 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
-    if(getAdditionalInfo().length() > DEFAULT_ACTIONLENGTH)
+    if(getAdditionalInfo().length() >= DEFAULT_ACTIONLENGTH)
     {
         string temp = getAdditionalInfo();
         temp.resize(DEFAULT_ACTIONLENGTH - 1);
         setAdditionalInfo(temp);
     }
 
-    if(getText().length() > DEFAULT_DESCRIPTIONLENGTH)
+    if(getText().length() >= DEFAULT_DESCRIPTIONLENGTH)
     {
         string temp = getText();
         temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
         setText(temp);
     }
 
-    if(getUser().length() > DEFAULT_USERLENGTH)
+    if(getUser().length() >= DEFAULT_USERLENGTH)
     {
         string temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
@@ -198,12 +198,12 @@ void CtiTableSignal::Restore()
 
 void CtiTableSignal::Update()
 {
-    if(getAdditionalInfo().length() > DEFAULT_ACTIONLENGTH)
+    if(getAdditionalInfo().length() >= DEFAULT_ACTIONLENGTH)
     {
         getAdditionalInfo().resize(DEFAULT_ACTIONLENGTH - 1);
     }
 
-    if(getText().length() > DEFAULT_DESCRIPTIONLENGTH)
+    if(getText().length() >= DEFAULT_DESCRIPTIONLENGTH)
     {
         getText().resize(DEFAULT_DESCRIPTIONLENGTH - 1);
     }

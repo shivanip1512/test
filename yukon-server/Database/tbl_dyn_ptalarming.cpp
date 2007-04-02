@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/03/22 17:22:38 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/04/02 19:04:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,21 +164,21 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
         setUser("(none)");
     }
 
-    if(getAction().length() > DEFAULT_ACTIONLENGTH)
+    if(getAction().length() >= DEFAULT_ACTIONLENGTH)
     {
         string temp = getAction();
         temp.resize(DEFAULT_ACTIONLENGTH - 1);
         setAction(temp);
     }
 
-    if(getDescription().length() > DEFAULT_DESCRIPTIONLENGTH)
+    if(getDescription().length() >= DEFAULT_DESCRIPTIONLENGTH)
     {
         string temp = getDescription();
         temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
         setDescription(temp);
     }
 
-    if(getUser().length() > DEFAULT_USERLENGTH)
+    if(getUser().length() >= DEFAULT_USERLENGTH)
     {
         string temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
