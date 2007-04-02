@@ -3,9 +3,9 @@
 <portererrorcodes>
 
 <error code="3">
-    <description>The master station has received an unexpected response from the CCU.  (Bad Message Type)</description>
+    <description><b>Bulk Communications</b> -- The master station has received an unexpected response from the CCU.  (Bad Message Type)</description>
         <troubleshooting>
-      This is a <b>bulk communication</b> error associated with a logic problem internal to the CCU or possibly an echo on the communication channel.
+      This is a bulk communications error associated with a logic problem internal to the CCU or possibly an echo on the communication channel.
          <ul> 
          <li>Attempt the command again</li> 
          <li>From Commander, remotely reset the CCU and attempt the command again</li>
@@ -15,9 +15,9 @@
   </error>
 
 <error code="4">
-    <description>The master station has received an invalid response from the targeted device.  (Word wrong length)</description>
+    <description><b>Bulk Communications</b> -- The master station has received an invalid response from the targeted device.  (Word wrong length)</description>
         <troubleshooting>
-      This is a <b>bulk communication</b> error associated with the number of data packets received for a single communication.  This error code is returned when the CCU
+      This is a bulk communications error associated with the number of data packets received for a single communication.  This error code is returned when the CCU
       receives too many or too few packets based on the request.
          <ul> 
          <li>Attempt the command again</li> 
@@ -26,9 +26,9 @@
   </troubleshooting>
   </error>
 <error code="15">
-    <description>Checksum verification failed on communication between the master station and the targeted device (Parity Error)</description>
+    <description><b>Bulk Communications</b> -- Checksum verification failed on communication between the master station and the targeted device (Parity Error)</description>
     <troubleshooting>
-        This is a <b>bulk communications</b> error typically associated with systems using direct radio communications between the master station and a targeted device such as a CCU, RTU or dial up meter.
+        This is a bulk communications error typically associated with systems using direct radio communications between the master station and a targeted device such as a CCU, RTU or dial up meter.
         Communication timing setup usually plays a role in troubleshooting this problem. 
   <ul> 
   <li>Attempt the command again</li>
@@ -56,9 +56,9 @@
    </error>
 
 <error code="16">
-      <description>The CCU address in the response does not match the address of the targeted CCU (Bad CCU Specification)</description>
+      <description><b>Bulk Communications</b> -- The CCU address in the response does not match the address of the targeted CCU (Bad CCU Specification)</description>
     <troubleshooting>
-        This is a <b>bulk communications</b> error that is commonly due to timing or buffering problems with communication equipment such as portservers or radios.
+        This is a bulk communications error that is commonly due to timing or buffering problems with communication equipment such as portservers or radios.
     <ul> 
           <li>Attempt the command again</li>
           <li>Adjust the timings of the communication channel (Steps to find the settings are shown below) or the communication equipment itself.  If you are unfamiliar with the timing parameters available, 
@@ -76,9 +76,9 @@
   </error>
 
 <error code="17">      
-    <description>The CCU received a partial response from the targeted device (Word 1 Nack)</description>
+    <description><b>Powerline Carrier</b> -- The CCU received a partial response from the targeted device (Word 1 Nack)</description>
     <troubleshooting>
-        This is a <b>powerline carrier</b> error typically associated with marginal or corrupted signal received at the CCU.
+        This is a powerline carrier error typically associated with marginal or corrupted signal received at the CCU.
         <ul>
            <li>Attempt the command again</li>
            <li>Attempt the same command with a different device on the same route</li>
@@ -95,9 +95,9 @@
   </error>
 
 <error code="18">      
-      <description>The CCU received a partial response from the targeted device (Word 2 Nack)</description>
+      <description><b>Powerline Carrier</b> -- The CCU received a partial response from the targeted device (Word 2 Nack)</description>
       <troubleshooting>
-          This is a <b>powerline carrier</b> error typically associated with marginal or corrupted signal received at the CCU.
+          This is a powerline carrier error typically associated with marginal or corrupted signal received at the CCU.
         <ul>
            <li>Attempt the command again</li>
            <li>Attempt the same command with a different device on the same route</li>
@@ -114,9 +114,9 @@
    </error>
 
 <error code="19">      
-    <description>The CCU received a partial response from the targeted device (Word 3 Nack)</description>
+    <description><b>Powerline Carrier</b> -- The CCU received a partial response from the targeted device (Word 3 Nack)</description>
     <troubleshooting>
-      This is a <b>powerline carrier</b> error typically associated with marginal or corrupted signal received at the CCU.
+      This is a powerline carrier error typically associated with marginal or corrupted signal received at the CCU.
       <ul>
          <li>Attempt the command again</li>
          <li>Attempt the same command with a different device on the same route</li>
@@ -133,9 +133,9 @@
   </error>
 
 <error code="20">
-    <description>The CCU did not receive a response from the targeted device (Word 1 Nack Padded)</description>
+    <description><b>Powerline Carrier</b> -- The CCU did not receive a response from the targeted device (Word 1 Nack Padded)</description>
     <troubleshooting>
-      This is a <b>powerline carrier</b> error that is typically associated with marginal signal or a request to a non existent device.
+      This is a powerline carrier error that is typically associated with marginal signal or a request to a non existent device.
       <ul>
          <li>Attempt the command again</li>
          <li>Attempt communication on another route if available</li>
@@ -144,7 +144,7 @@
              <li>In the Database Editor, edit the device's communication route and select one of the successful routes from the 'locate' command</li>
             <li>Attempt the command again</li>
          </ol>
-        <li>Attempt the same command with a different device on the same route</li>
+        <li>Attempt the same command with a different device on the original route</li>
         <ul>
                 <li>If the second device is successful</li>
                 <ul>
@@ -157,9 +157,9 @@
   </troubleshooting>
   </error>
 <error code="21">
-    <description>The CCU did not receive a response from the targeted device (Word 2 Nack Padded)</description>
+    <description><b>Powerline Carrier</b> -- The CCU did not receive a response from the targeted device (Word 2 Nack Padded)</description>
     <troubleshooting>
-      This is a <b>powerline carrier</b> error that is typically associated with marginal signal or a request to a non existent device.
+      This is a powerline carrier error that is typically associated with marginal signal or a request to a non existent device.
       <ul>
          <li>Attempt the command again</li>
          <li>Attempt communication on another route if available</li>
@@ -168,7 +168,7 @@
              <li>In the Database Editor, edit the device's communication route and select one of the successful routes from the 'locate' command</li>
             <li>Attempt the command again</li>
          </ol>
-        <li>Attempt the same command with a different device on the same route</li>
+        <li>Attempt the same command with a different device on the original route</li>
         <ul>
                 <li>If the second device is successful</li>
                 <ul>
@@ -182,9 +182,9 @@
   </error>
 
 <error code="22">
-    <description>The CCU did not receive a response from the targeted device (Word 3 Nack Padded)</description>
+    <description><b>Powerline Carrier</b> -- The CCU did not receive a response from the targeted device (Word 3 Nack Padded)</description>
     <troubleshooting>
-      This is a <b>powerline carrier</b> error that is typically associated with marginal signal or a request to a non existent device.
+      This is a powerline carrier error that is typically associated with marginal signal or a request to a non existent device.
       <ul>
          <li>Attempt the command again</li>
          <li>Attempt communication on another route if available</li>
@@ -193,7 +193,7 @@
              <li>In the Database Editor, edit the device's communication route and select one of the successful routes from the 'locate' command</li>
             <li>Attempt the command again</li>
          </ol>
-        <li>Attempt the same command with a different device on the same route</li>
+        <li>Attempt the same command with a different device on the original route</li>
         <ul>
                 <li>If the second device is successful</li>
                 <ul>
@@ -207,21 +207,22 @@
   </error>
 
 <error code="31">
-    <description>The master station did not receive a response from the targeted device (Timeout reading from port)</description>
+    <description><b>Bulk Communications</b> -- The master station did not receive a response from the targeted device (Timeout reading from port)</description>
     <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with a setup problem or possibly caused by an equipment failure
+      This is a bulk communications error that is typically associated with a setup problem or possibly caused by a communications equipment failure
      <ul> 
          <li>Attempt the command again</li>
          <li>Attempt a loop or scan of another device using the same communications channel if available</li>
          <ul>
              <li>If communication to the second device is successful, the error is probably caused by an equipment or setup problem with the original device.</li>
              <ul>
-                    <li>Verify the original device's serial number</li>
-                    <li>Verify the original device's communications equipment is working properly</li>
+                    <li>Verify the targeted device's serial number and/or address</li>   
+                    <li>Verify the communication equipment (modem, phone line or radio) at the targeted device is working properly</li>
              </ul>
              <li>If the communication to the second device is not successful, the error is probably caused by an equipment problem at the master station</li>
              <ul>
-                    <li>Verify the communications equipment at the master station is working properly.</li>
+                    <li>Verify the communication equipment (modem, phone line or radio) at the master station is working properly</li>
+                    <li>If the targeted device is a CCU, verify it is powered up and the selector is not switched to external</li>
              </ul>
          </ul>
          <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
@@ -230,9 +231,9 @@
   </error>
 
 <error code="32">
-    <description>The response's sequence number does not match what was expected by the master station (Sequence reject frame received... sequencing ajusted)</description>
+    <description><b>Bulk Communications</b> -- The response's sequence number does not match what was expected by the master station (Sequence reject frame received... sequencing ajusted)</description>
       <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with invalid timing parameter's set at the master station.  Another possible cause is a field visit to the CCU
+      This is a bulk communications error that is typically associated with invalid timing parameter's set at the master station.  Another possible cause is a field visit to the CCU
       resulting in local communications being used.  Upon setting the communcations back to internal, the master station may receive this error on the first request due internal bookkeeping mismatches.  The
       master station will automatically recovery from this internal mismatch.
       <ul>
@@ -252,9 +253,9 @@
   </error>
 
 <error code="33">
-    <description>The master station received an invalid header in the response from the targeted device (Framing error)</description>
+    <description><b>Bulk Communications</b> -- The master station received an invalid header in the response from the targeted device (Framing error)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with invalid timing parameters set at the master station.  This particular code is returned when the first section 
+      This is a bulk communications error that is typically associated with invalid timing parameters set at the master station.  This particular code is returned when the first section 
       of the response from the targeted device does not match what the master station was expecting.
       <ul>
           <li>Attempt the command again</li>
@@ -273,9 +274,9 @@
   </error>
 
 <error code="34">
-    <description>Checksum verifcation failed on response from the targeted device (CRC on message)</description>
+    <description><b>Bulk Communications</b> -- Checksum verifcation failed on response from the targeted device (CRC on message)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error caused by an incomplete or corrupted response. 
+      This is a bulk communications error caused by an incomplete or corrupted response. 
      <ul>
          <li>Attempt the command again</li>
           <li>Adjust the timings of the communication channel (Steps to find the settings are shown below) or the communication equipment itself.  If you are unfamiliar with the timing parameters available, 
@@ -293,9 +294,9 @@
  </error>
 
 <error code="36">
-    <description>The CCU did not respond correctly to a reset request.   (Bad HDLC UA frame)</description>
+    <description><b>Powerline Carrier</b> -- The CCU did not respond correctly to a reset request.   (Bad HDLC UA frame)</description>
         <troubleshooting>
-      This is a <b>powerline carrier</b> error associated with a logic problem internal to the CCU.
+      This is a powerline carrier error associated with a logic problem internal to the CCU.
          <ul> 
          <li>Attempt the command again</li> 
          <li>If the problem persists,  contact Technical Support at 1-800-815-2258</li>
@@ -304,9 +305,9 @@
   </error>
 
 <error code="46">
-    <description>The CCU has rejected a request from the master station.  (REQUACK flag set.  Frame unexecutable)</description>
+    <description><b>Bulk Communications</b> -- The CCU has rejected a request from the master station.  (REQUACK flag set.  Frame unexecutable)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error often caused by a mismatch of bookkeeping between the master station and the CCU.  Another possibility is a logic problem internal to
+      This is a bulk communications error often caused by a mismatch of bookkeeping between the master station and the CCU.  Another possibility is a logic problem internal to
       the CCU.
          <ul> 
          <li>Attempt the command again</li> 
@@ -317,9 +318,9 @@
   </error>
 
 <error code="57">
-    <description>The repeater did not receive a response from the end device. (E-Word received in return message)</description>
+    <description><b>Powerline Carrier</b> -- The repeater did not receive a response from the end device. (E-Word received in return message)</description>
         <troubleshooting>
-            This is a <b>powerline carrier</b> error that is typically associated marginal signal or a request to a non existent device.
+            This is a powerline carrier error that is typically associated with marginal signal or a request to a non existent device.
             <ul>
                <li>Attempt the command again</li>
                <li>Attempt communication on another route if available</li>
@@ -342,9 +343,9 @@
   </error>
 
 <error code="65">
-    <description>The master station timed out while waiting for carrier detect on the communications channel (No DCD on return message)</description>
+    <description><b>Bulk Communications</b> -- The master station timed out while waiting for carrier detect on the communications channel (No DCD on return message)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with equipment failure or improperly configured communication channels 
+      This is a bulk communications error that is typically associated with equipment failure or improperly configured communication channels 
      <ul> <!-- This stands for Unordered List, which in HTML means bullet list -->
          <li>Attempt the command again</li>
          <li>Verify carrier detect is necessary for this communication channel</li>
@@ -360,16 +361,18 @@
                             <li>"Carrier Detect Wait" checkbox on the General tab</li>
                         </ol>
                 </ul>
-         </ul>                                
-         <li>If the problem persists, please contact Kevin Doe at Technical Support at 1-763 543 7666</li>
+         </ul>   
+         <li>Verify the communication equipment (modem, phone line or radio) at the master station is working properly</li>
+         <li>If the targeted device is a CCU, verify it is powered up and the selector is not switched to external</li>
+         <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
      </ul>
   </troubleshooting>
   </error>
 
 <error code="67">
-    <description>The master station was unable to read from the communications channel (Error reading from port)</description>
+    <description><b>Bulk Communications</b> -- The master station was unable to read from the communications channel (Error reading from port)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with the inability to connect to or retrieve data from the communications channel.   Built in methods allow the 
+      This is a bulk communications error that is typically associated with the inability to connect to or retrieve data from the communications channel.   Built in methods allow the 
       system to attempt to recover from this code automatically
       <ul>
          <li>Attempt the command again</li>
@@ -380,9 +383,9 @@
   </error>
 
 <error code="68">
-    <description>The master station was unable to write to the communications channel (Error writing to port)</description>
+    <description><b>Bulk Communications</b> -- The master station was unable to write to the communications channel (Error writing to port)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with the inability to connect to or write data to the communications channel.   Built in methods allow the 
+      This is a bulk communications error that is typically associated with the inability to connect to or write data to the communications channel.   Built in methods allow the 
       system to attempt to recover from this code automatically
       <ul>
          <li>Attempt the command again</li>
@@ -393,12 +396,11 @@
   </error>
 
 <error code="72">
-    <description>The CCU did not receive a response from the targeted device on a queued request (DLC read timeout on CCU queue entry)</description>
+    <description><b>Powerline Carrier</b> -- The CCU did not receive a response from the targeted device on a queued request (DLC read timeout on CCU queue entry)</description>
         <troubleshooting>
-            This is a <b>powerline carrier</b> error that is typically associated with marginal signal or a request to a non existent device.
+            This is a powerline carrier error that is typically associated with marginal signal or a request to a non existent device.
       <ul>
          <li>Attempt the command again</li>
-         <li> <b>Should we explain how to make a queued request from commander here??? </b></li>
          <li>Attempt communication on another route if available</li>
          <ol>
              <li>Using Commander, target the device and perform a 'locate' command</li>
@@ -419,9 +421,9 @@
   </error>
 
 <error code="74">
-    <description>The CCU received a partial response from the targeted device on a queued request (Route failed on CCU queue entry)</description>
+    <description><b>Powerline Carrier</b> -- The CCU received a partial response from the targeted device on a queued request (Route failed on CCU queue entry)</description>
         <troubleshooting>
-        This is a <b>powerline carrier</b> error typically associated with marginal or corrupted signal received at the CCU.
+        This is a powerline carrier error typically associated with marginal or corrupted signal received at the CCU.
         <ul>
            <li>Attempt the command again</li>
            <li>Attempt the same command with a different device on the same route</li>
@@ -438,9 +440,9 @@
   </error>
 
 <error code="87">
-    <description>The master station was unable to communicate with the targeted device due to communication failure. (Error dialing up remote)</description>
+    <description><b>Bulk Communications</b> -- The master station was unable to communicate with the targeted device due to communication failure. (Error dialing up remote)</description>
         <troubleshooting>
-        This is a <b>bulk communication</b> error typically associated with a failure to initialize the modem for dialup.  
+        This is a bulk communications error typically associated with a failure to initialize the modem for dialup.  
         <ul>
            <li>Attempt the command again</li>
            <li>Verify the modem is functioning properly</li>
@@ -450,9 +452,9 @@
   </error>
 
 <error code="88">
-    <description>The CCU heard a response from a device other than the one it was targeting. (Address does not match expected value)</description>
+    <description><b>Powerline Carrier</b> -- The CCU heard a response from a device other than the one it was targeting. (Address does not match expected value)</description>
         <troubleshooting>
-      This is a <b>powerline carrier</b> error that is typically associated either crosstalk or is preceeded by a bulk communication error such as a timeout.
+      This is a powerline carrier error that is typically associated either crosstalk or is preceeded by a bulk communication error such as a timeout.
       <ul>
             <li>Attempt the command again</li>
             <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
@@ -461,9 +463,9 @@
   </error>
 
 <error code="89">
-    <description>The master station was unable to connect to the communications channel (Error connecting to terminal server)</description>
+    <description><b>Bulk Communications</b> -- The master station was unable to connect to the communications channel (Error connecting to terminal server)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is associated with the inability to connect to or initialize the communications channel.   Built in methods allow the 
+      This is a bulk communications error that is associated with the inability to connect to or initialize the communications channel.   Built in methods allow the 
       system to attempt to recover from this code automatically
       <ul>
          <li>Attempt the command again</li>
@@ -474,9 +476,9 @@
   </error>
 
 <error code="90">
-    <description>The master station was unable to write to the communications channel (Error writing to terminal server)</description>
+    <description><b>Bulk Communications</b> -- The master station was unable to write to the communications channel (Error writing to terminal server)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with the inability to connect to or send data to the communications channel.   Built in methods allow the 
+      This is a bulk communications error that is typically associated with the inability to connect to or send data to the communications channel.   Built in methods allow the 
       system to attempt to recover from this code automatically
       <ul>
          <li>Attempt the command again</li>
@@ -487,9 +489,9 @@
   </error>
 
 <error code="91">
-    <description>The master station was unable to read from the communications channel (Error reading from terminal server)</description>
+    <description><b>Bulk Communications</b> -- The master station was unable to read from the communications channel (Error reading from terminal server)</description>
         <troubleshooting>
-      This is a <b>bulk communications</b> error that is typically associated with the inability to connect to retrieve data from the communications channel.   Built in methods allow the 
+      This is a bulk communications error that is typically associated with the inability to connect to retrieve data from the communications channel.   Built in methods allow the 
       system to attempt to recover from this code automatically
       <ul>
          <li>Attempt the command again</li>
@@ -500,9 +502,9 @@
   </error>
 
 <error code="92">
-    <description>The CCU heard a response from a device other than the one it was targeting. (Address does not match expected value)</description>
+    <description><b>Powerline Carrier</b> -- The CCU heard a response from a device other than the one it was targeting. (Address does not match expected value)</description>
         <troubleshooting>
-      This is a <b>powerline carrier</b> error that is typically associated either crosstalk or is preceeded by a bulk communication error such as a timeout.
+      This is a powerline carrier error that is typically associated either crosstalk or is preceeded by a bulk communication error such as a timeout.
       <ul>
             <li>Attempt the command again</li>
             <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
@@ -511,9 +513,9 @@
   </error>
 
 <error code="93">
-    <description>The powerline carrier device was unable to communicate to the connected IED (Bad data buffer for IED)</description>
+    <description><b>Powerline Carrier</b> -- The powerline carrier device was unable to communicate to the connected IED (Bad data buffer for IED)</description>
         <troubleshooting>
-      This is a <b>powerline carrier</b> error that is associated with using a powerline carrier device to query data from another intelligent device on the line.  The error is 
+      This is a powerline carrier error that is associated with using a powerline carrier device to query data from another intelligent device on the line.  The error is 
       returned when the carrier device is unable to communicate with the polyphase meter or other end device.
      <ul>
      <li>Attempt the command again</li>
@@ -523,9 +525,9 @@
   </troubleshooting>
 </error>
 <error code="100">
-     <description>Checksum verification failed on the response from the end device (Bad BCH)</description>
+     <description><b>Powerline Carrier</b> -- Checksum verification failed on the response from the end device (Bad BCH)</description>
     <troubleshooting>
-      This is a <b>powerline carrier</b> error typically associated with marginal or corrupted signal received at the CCU. 
+      This is a powerline carrier error typically associated with marginal or corrupted signal received at the CCU. 
      <ul>
         <li>Attempt the command again</li>
         <li>Attempt communication on another route if available</li>
@@ -546,4 +548,4 @@
         <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
      </troubleshooting>
   </error>
-  </portererrorcodes>
+</portererrorcodes>
