@@ -26,7 +26,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     private Map<Integer, DeviceErrorDescription> store = new HashMap<Integer, DeviceErrorDescription>();
     private DeviceErrorDescription defaultTranslation;
 
-    public DeviceErrorDescription traslateErrorCode(int error) {
+    public DeviceErrorDescription translateErrorCode(int error) {
         DeviceErrorDescription dded = store.get(error);
         if (dded != null) {
             return dded;

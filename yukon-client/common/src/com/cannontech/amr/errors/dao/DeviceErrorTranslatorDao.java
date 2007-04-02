@@ -4,5 +4,5 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 
 
 public interface DeviceErrorTranslatorDao {
-    public DeviceErrorDescription traslateErrorCode(int error);
+    public DeviceErrorDescription translateErrorCode(int error);
 }
