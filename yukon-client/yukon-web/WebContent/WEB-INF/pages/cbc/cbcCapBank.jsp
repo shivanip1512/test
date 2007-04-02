@@ -80,6 +80,8 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
 				<f:selectItem itemValue="(none)"/>
 				<f:selectItem itemValue="Oil"/>
 				<f:selectItem itemValue="Vacuum"/>
+				<f:selectItem itemValue="Mix"/>
+
 			</x:selectOneMenu>
          <f:verbatim>
              <br />
