@@ -17,6 +17,7 @@ import javax.faces.event.ValueChangeEvent;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.search.criteria.CBCControlPointCriteria;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -39,6 +40,7 @@ import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.JSFComparators;
 
 public class CapBankEditorForm extends DBEditorForm {
@@ -63,6 +65,9 @@ public class CapBankEditorForm extends DBEditorForm {
     private String[] DYNAMIC_TABLE_NAMES = { "DynamicCCMonitorBankHistory",
             "DynamicCCMonitorPointResponse" };
     private CapBankAdditional additionalInfo;
+    
+   //over-rides the drop-down values
+    private boolean customSize = Boolean.FALSE;
 
     public CapBankEditorForm() {
         super();
@@ -92,8 +97,7 @@ public class CapBankEditorForm extends DBEditorForm {
 
         try {
             checkForErrors();
-            getAdditionalInfo().setDbConnection(getDbPersistent().getDbConnection());
-            updateDBObject(getAdditionalInfo(), facesMessage);
+            updateAddInfo();
             updateDBObject(getDbPersistent(), facesMessage);
             capBank = (CapBank) getDbPersistent();
             handleMonitorPointsForController(capBank.getCapBank()
@@ -112,6 +116,17 @@ public class CapBankEditorForm extends DBEditorForm {
                                                          facesMessage);
         }
 
+    }
+
+    private void updateAddInfo(){
+        Connection connection = CBCDBUtil.getConnection();
+        getAdditionalInfo().setDbConnection(connection);
+        try {
+            getAdditionalInfo().update();
+        } catch (SQLException e) {
+            CTILogger.error(e);
+        }
+        CBCDBUtil.closeConnection(connection);
     }
 
     /**
@@ -570,6 +585,14 @@ public class CapBankEditorForm extends DBEditorForm {
 
     public void resetForm() {
         initAdditionalInfo();
+    }
+
+    public boolean isCustomSize() {
+        return customSize;
+    }
+
+    public void setCustomSize(boolean customSize) {
+        this.customSize = customSize;
     }
 
 

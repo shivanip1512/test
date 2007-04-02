@@ -477,5 +477,52 @@ public class CBCSelectionLists {
     public Integer getCapType () {
         return DeviceTypes.CAPBANK;
     }
-
+    
+    public SelectItem[] getCapBankConfigs (){
+        return new SelectItem[]{
+                new SelectItem ("none"),
+                new SelectItem ("Wye"),
+                new SelectItem("Delta"),
+                new SelectItem("Serial")
+        };
+    }
+    
+    public SelectItem[] getCapBankCommMedium() {
+        return new SelectItem[] {
+                new SelectItem ("none"),
+                new SelectItem ("Paging"),
+                new SelectItem("DLC"),
+                new SelectItem("VHF"),
+                new SelectItem("1XRTT"),
+                new SelectItem("GPRS"),
+                new SelectItem("SSRadio")
+        };
+    }
+    
+    public SelectItem[] getCapBankAntennaType () {
+       return new SelectItem[] {
+               new SelectItem ("none"),
+               new SelectItem ("Yagi"),
+               new SelectItem("Omni")
+       }; 
+    }
+    
+    public SelectItem[] getPotentialTransformer () {
+        return new SelectItem[] {
+                new SelectItem ("none"),
+                new SelectItem ("Dedicated"),
+                new SelectItem("Shared")
+        }; 
+    }
+    
+    public SelectItem[] getAddCapBankSizes() {
+        return new SelectItem[] {
+                new SelectItem (new Integer (300), "300"),
+                new SelectItem (new Integer (600), "600"),
+                new SelectItem (new Integer (900), "900"),
+                new SelectItem (new Integer (1200), "1200"),
+                new SelectItem (new Integer (1800), "1800"),
+                new SelectItem (new Integer (2400), "2400"),
+        }; 
+    }
 }

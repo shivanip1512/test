@@ -45,15 +45,15 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
                 </f:verbatim>    
 <f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="CapBank_Address" value="Address: " title="Geographical location of this CapBank" />
-			<x:inputText id="CapBank_Address" value="#{capControlForm.PAOBase.location}" required="true" maxlength="60" size="60"/>
+			<x:inputText id="CapBank_Address" value="#{capBankEditor.capBank.location}" required="true" maxlength="60" size="60"/>
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="capMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
-			<x:inputText id="capMapLocID" value="#{capControlForm.PAOBase.capBank.mapLocationID}" required="true" maxlength="64" />
+			<x:inputText id="capMapLocID" value="#{capBankEditor.capBank.capBank.mapLocationID}" required="true" maxlength="64" />
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="bankMan" value="Switch Manufacture: " title="What company manufactured this item"/>
-			<x:selectOneMenu id="bankMan" value="#{capControlForm.PAOBase.capBank.switchManufacture}" >
+			<x:selectOneMenu id="bankMan" value="#{capBankEditor.capBank.capBank.switchManufacture}" >
 				<f:selectItem itemValue="(none)"/>
 				<f:selectItem itemValue="ABB"/>
 				<f:selectItem itemValue="Cannon Tech"/>
@@ -65,7 +65,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="cntrlerType" value="Controller Type: " title="What type of switch this item is"/>
-			<x:selectOneMenu id="cntrlerType" value="#{capControlForm.PAOBase.capBank.controllerType}" >
+			<x:selectOneMenu id="cntrlerType" value="#{capBankEditor.capBank.capBank.controllerType}" >
 				<f:selectItem itemValue="(none)"/>
 				<f:selectItem itemValue="CTI DLC"/>
 				<f:selectItem itemValue="CTI Paging"/>
@@ -76,7 +76,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="bankType" value="Type of Switch: " title="What type of switch this item is"/>
-			<x:selectOneMenu id="bankType" value="#{capControlForm.PAOBase.capBank.typeOfSwitch}" >
+			<x:selectOneMenu id="bankType" value="#{capBankEditor.capBank.capBank.typeOfSwitch}" >
 				<f:selectItem itemValue="(none)"/>
 				<f:selectItem itemValue="Oil"/>
 				<f:selectItem itemValue="Vacuum"/>
@@ -91,22 +91,35 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             
             <x:outputLabel for="bankOperation" value="Operation Method: " title="How this CapBank should operate in the field"/>
             <x:selectOneMenu id="bankOperation" 
-                    value="#{capControlForm.PAOBase.capBank.operationalState}"  onchange="submit()">
+                    value="#{capBankEditor.capBank.capBank.operationalState}"   onchange="submit()">
                 <f:selectItems value="#{selLists.capBankOpStates}"/>
             </x:selectOneMenu>
 
+            
             <f:verbatim><br/></f:verbatim>
+            
             <x:outputLabel for="bankSize" value="Bank Size: " title="The total size of the CapBank"/>
+			
+            <x:selectOneMenu id="bankSizeSelect" 
+                    value="#{capBankEditor.capBank.capBank.bankSize}" onchange="submit()" rendered="#{!capBankEditor.customSize}">
+                <f:selectItems value="#{selLists.addCapBankSizes}"/>
+            </x:selectOneMenu>
+            <f:verbatim>&nbsp;&nbsp;</f:verbatim>
+
             <x:inputText id="bankSize" styleClass="char8Label" required="true"
-                    value="#{capControlForm.PAOBase.capBank.bankSize}" >
+                    value="#{capBankEditor.capBank.capBank.bankSize}" rendered="#{capBankEditor.customSize}">
                 <f:validateLongRange minimum="0" maximum="99999" />
             </x:inputText>
             <x:outputText id="bankSizeDesc" value="kVar"/>
+                        <f:verbatim>&nbsp;&nbsp;</f:verbatim>
+
+		   <x:outputLabel for="isCustomSize" value="Custom Bank Size?" title="The total size of the CapBank"/>
+            <x:selectBooleanCheckbox id="isCustomSize" value="#{capBankEditor.customSize}" onclick="submit()"/>
 
             <f:verbatim><br/></f:verbatim>
             <x:outputLabel for="bankReclose" value="Reclose Delay: " title="The amount of time this CapBank should wait before executing the close command"/>
             <x:selectOneMenu id="bankReclose"
-                    value="#{capControlForm.PAOBase.capBank.recloseDelay}" >
+                    value="#{capBankEditor.capBank.capBank.recloseDelay}" >
                 <f:selectItem itemLabel="(none)" itemValue="0"/>
                 <f:selectItems value="#{capControlForm.timeInterval}"/>
             </x:selectOneMenu>
@@ -151,14 +164,14 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             <f:verbatim><br/></f:verbatim>
             <x:outputLabel for="maxDailyOps" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
             <x:inputText id="maxDailyOps" styleClass="char16Label" required="true"
-                    value="#{capControlForm.PAOBase.capBank.maxDailyOps}" >
+                    value="#{capBankEditor.capBank.capBank.maxDailyOps}" >
                     <f:validateLongRange minimum="0" maximum="9999" />
             </x:inputText>
             <x:outputText id="maxDailyOpsDesc" value="(0 = unlimited)"/>
     
             <f:verbatim><br/></f:verbatim>
             <x:selectBooleanCheckbox id="disabledOps"
-                    value="#{capControlForm.PAOBase.capBank.maxOperationDisabled}" />
+                    value="#{capBankEditor.capBank.capBank.maxOperationDisabled}" />
             <x:outputLabel for="disabledOps" value="Disable upon reaching max operations" title="Should we be automatically disabled after reaching our max op counts"/>
             <f:verbatim><br><br></f:verbatim>
             <x:outputText styleClass="legendLikeLabel" value="CapBank Points"/>

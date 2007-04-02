@@ -69,7 +69,6 @@ public abstract class DBEditorForm
 	 * Updates a given DB object.
 	 */
 	protected void updateDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
-	    getConnection(db);
 		if( facesMsg == null ) facesMsg = new FacesMessage();
         
 		try {
@@ -94,26 +93,17 @@ public abstract class DBEditorForm
             }
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
-        finally {
-            Connection dbConnection = db.getDbConnection();
-            CBCDBUtil.closeConnection(dbConnection);
-        }
+     
 		
 	}
 
 
-    private void getConnection(DBPersistent db) {
-        if (db.getDbConnection() == null)
-        {
-	        db.setDbConnection(CBCDBUtil.getConnection());
-        }
-    }
+
 
 	/**
 	 * Add a given DB object.
 	 */
 	protected void addDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
-        getConnection(db);
 
 		if( facesMsg == null ) facesMsg = new FacesMessage();
 
@@ -139,10 +129,6 @@ public abstract class DBEditorForm
 
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
-        finally {
-            Connection dbConnection = db.getDbConnection();
-            CBCDBUtil.closeConnection(dbConnection);
-        }
 
 	}
 
@@ -150,7 +136,7 @@ public abstract class DBEditorForm
 	 * Delete a given DB object.
 	 */
 	protected void deleteDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
-        getConnection(db);
+       // getConnection(db);
 
 		if( db == null ) return;
 		if( facesMsg == null ) facesMsg = new FacesMessage();
@@ -175,10 +161,6 @@ public abstract class DBEditorForm
 
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
-        finally {
-            Connection dbConnection = db.getDbConnection();
-            CBCDBUtil.closeConnection(dbConnection);
-        }
 
 	}
 

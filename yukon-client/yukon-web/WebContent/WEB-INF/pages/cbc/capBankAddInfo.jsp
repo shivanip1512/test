@@ -37,11 +37,19 @@ CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capCont
 			<f:validateLength minimum="1" maximum="120"/>
 		</x:inputText>
 		<f:verbatim><br/></f:verbatim>
-		<x:outputLabel for="CapBank_Config" value="Config " title="" />
-		<x:inputText id="CapBank_Config" value="#{capBankEditor.additionalInfo.capBankConfig}" required="true" maxlength="10" size="10">
-			<f:validateLength minimum="1" maximum="10"/>
-		</x:inputText>
+
+		<x:outputLabel for="SelectConfig" value="Config " title="Select Cap Bank Configuration" />
+		<x:selectOneMenu id="SelectConfig" value="#{capBankEditor.additionalInfo.capBankConfig}" onchange="submit();">
+			<f:selectItems id="ConfigList" value="#{selLists.capBankConfigs}"/>
+		</x:selectOneMenu>
 		<f:verbatim><br/></f:verbatim>
+
+		<x:outputLabel for="SelectPotentTrans" value="Potential Transformer " title="Select Cap Bank Potential Transformer" />
+		<x:selectOneMenu id="SelectPotentTrans" value="#{capBankEditor.additionalInfo.potentTransformer}" onchange="submit();">
+			<f:selectItems id="PotentTransList" value="#{selLists.potentialTransformer}"/>
+		</x:selectOneMenu>
+		<f:verbatim><br/></f:verbatim>
+
 	 <f:verbatim>
 	             <br />
 	             <br />
@@ -51,10 +59,10 @@ CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capCont
 	                 </legend>
 	                </f:verbatim>    
 	<f:verbatim><br/></f:verbatim>
-	<x:outputLabel for="CapBank_CommMed" value="Comm. Medium " title="" />
-		<x:inputText id="CapBank_CommMed" value="#{capBankEditor.additionalInfo.commMedium}" required="true" maxlength="10" size="10">
-			<f:validateLength minimum="1" maximum="10"/>
-		</x:inputText>
+	<x:outputLabel for="SelectCommMed" value="Comm. Medium " title="" />
+	<x:selectOneMenu id="SelectCommMed" value="#{capBankEditor.additionalInfo.commMedium}" onchange="submit();">
+			<f:selectItems id="CommMedList" value="#{selLists.capBankCommMedium}"/>
+		</x:selectOneMenu>
 		<f:verbatim><br/></f:verbatim>
 	<x:outputLabel for="CapBank_CommStrength" value="Comm. Strength " title="" />
 		<x:inputText id="CapBank_CommStrength" value="#{capBankEditor.additionalInfo.commStrengh}" required="true" maxlength="10" size="10">
@@ -65,10 +73,12 @@ CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capCont
 	<x:selectBooleanCheckbox id="CapBank_ExtAntenna" value="#{capBankEditor.additionalInfo.extAnt}" onclick="submit()">
 	</x:selectBooleanCheckbox>
  	<f:verbatim><br/></f:verbatim>
-	<x:outputLabel for="CapBank_AntType" value="Antenna Type " title="" />
-		<x:inputText disabled="#{!capBankEditor.additionalInfo.extAnt}" id="CapBank_AntType" value="#{capBankEditor.additionalInfo.antennaType}" required="true" maxlength="10" size="10">
-			<f:validateLength minimum="1" maximum="10"/>
-		</x:inputText>
+	<x:outputLabel for="SelectAntType" value="Antenna Type " title="" />
+	<x:selectOneMenu id="SelectAntType" value="#{capBankEditor.additionalInfo.antennaType}" onchange="submit();" 
+					 disabled="#{!capBankEditor.additionalInfo.extAnt}">
+			<f:selectItems id="AntTypeList" value="#{selLists.capBankAntennaType}"/>
+		</x:selectOneMenu>
+
 		<f:verbatim><br/></f:verbatim>
  	
  	<f:verbatim>
