@@ -727,20 +727,17 @@ void CtiLMCommandExecutor::CycleGroup()
 
                         if( command == CtiLMCommand::TRUE_CYCLE_GROUP )
                         {
-                            currentLMGroup->createTrueCycleRequestMsg(percent,period,cycleCount,false,CtiLMProgramDirect::defaultLMStartPriority);
+                            requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent,period,cycleCount,false,CtiLMProgramDirect::defaultLMStartPriority);
                         }
                         else
                         {
-                            currentLMGroup->createSmartCycleRequestMsg(percent,period,cycleCount,false,CtiLMProgramDirect::defaultLMStartPriority);
-                        }
-
-                        if( routeId > 0 )
-                        {
-                            requestMsg->setRouteId(routeId);
+                            requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent,period,cycleCount,false,CtiLMProgramDirect::defaultLMStartPriority);
                         }
 
                         if( requestMsg != NULL )
                         {
+                            if( routeId > 0 )
+                                requestMsg->setRouteId(routeId);
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                             currentLMGroup->setLastControlSent(CtiTime());
