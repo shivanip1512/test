@@ -59,6 +59,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.ColorUtil;
 import com.cannontech.yc.MessageType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
@@ -85,6 +86,9 @@ public class YC extends Observable implements MessageListener
 	
 	/** Porter Return messages displayable text */
 	private String resultText = "";
+	
+	/** A string to hold error messages for the current command(s) sent */
+	private String errorMsg = "";
 	
 	/** Current command string to execute */
 	private String commandString = "";	//the actual string entered from the command line
@@ -906,9 +910,10 @@ public class YC extends Observable implements MessageListener
 		}
 		else
 		{
-			String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent - " + 
-				"connection to Yukon Port Control is not valid.";
+			String porterError = "Command request not sent - Connection to Yukon Port Control is not valid.";
+			String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "]- " + porterError;
 			writeOutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, MessageType.ERROR);
+			setErrorMsg(porterError);
 			CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 		}
 			
@@ -1055,10 +1060,10 @@ public class YC extends Observable implements MessageListener
 					if (returnMsg.getExpectMore() == 0) {
 						DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
 						DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
-						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, deviceErrorDesc.getDescription(), MessageType.FRIEND);
+						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.FRIEND);
 					}
-						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.ERROR);
-				}else 
+					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.ERROR);
+				} else //0=succes, 1="Not Normal" return, but not necessarily an error
 					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.SUCCESS);
 
 				synchronized ( YukonCommander.class )
@@ -1139,18 +1144,10 @@ public class YC extends Observable implements MessageListener
      */
     public void appendResultText(OutputMessage message)
     {
-        String color = null;
-        if( message.getMessageType() == MessageType.ERROR)
-            color = "red";
-        else if (message.getMessageType() == MessageType.SUCCESS)
-            color = "blue";
-        else if (message.getMessageType() == MessageType.FRIEND)
-            color = "green";
-        else 
-            color = "black";
+        Color color = message.getMessageType().getColor();
 
         resultText = getResultText() + "<BR>" +
-                    (color==null?"":"<span style='color:"+color+";'>") +
+                    (color==null?"":"<span style='color:"+ColorUtil.getHTMLColor(color)+";'>") +
                     message.getText() +
                     (color==null?"":"</span>");
     }
@@ -1676,4 +1673,28 @@ public class YC extends Observable implements MessageListener
         this.user  = user;
         this.logUserName = user.getUsername();
     }
+
+	/**
+	 * @return
+	 */
+	public String getErrorMsg()
+	{
+		return errorMsg;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setErrorMsg(String string)
+	{
+		errorMsg = string;
+	}
+	
+	/**
+	 * @param string
+	 */
+	public void clearErrorMsg()
+	{
+		setErrorMsg("");
+	}
 }

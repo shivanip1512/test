@@ -25,11 +25,13 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -53,6 +55,8 @@ import com.cannontech.yc.gui.YC;
  */
 public class YCBean extends YC implements MessageListener, HttpSessionBindingListener
 {
+    private java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+
 	private Vector deviceIDs = null;
     //Contains <String>serialType to <Vector<String>> serialNumbers
 	private HashMap serialTypeToNumberMap = null;
@@ -79,9 +83,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	/** Contains Integer(deviceID) to Integer(discAddress, -1 if none) values */
 	private Map deviceIDToDiscAddressMap  = new HashMap();
-	
-	/** A string to hold error messages for the current command(s) sent */
-	private String errorMsg = "";
 	
 	/** A vector of RPH data, for the currently selected point 
 	 * This vector of data should only live as long as a point and timestamp 
@@ -121,7 +122,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			} catch (PaoAuthorizationException e) {
 				//IGNORE, we're clearing it out, we have the right to do this.
 			}
-			setErrorMsg("");
+			clearErrorMsg();
 		}
 	}
 
@@ -146,7 +147,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					
 				getSerialTypeToNumberMap().put(serialType_, serialNumbers);
 			}
-			setErrorMsg("");
+			clearErrorMsg();
 		}
 	}
 
@@ -198,7 +199,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						
 						//Clear the Error Message Log, we did eventually read the meter
 						//This is a request from Jeff W. to only display the error messages when no data is returned.
-						setErrorMsg("");
+						clearErrorMsg();
 					}
 				}
 			}
@@ -311,12 +312,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						Double value = null;
 						int at = tempResult.indexOf('@');
 						int dashDash = tempResult.indexOf("--");
-						if(at > 0)
-							value = Double.valueOf(tempResult.substring(equal+1, at).trim());
-						else if( dashDash > 0)
-							value = Double.valueOf(tempResult.substring(equal+1, dashDash).trim());
-						else 
-							value = Double.valueOf(tempResult.substring(equal+1).trim());
+						if (! (tempResult.substring(equal+1, at).trim().equalsIgnoreCase("(invalid data)") ) ) {
+							if(at > 0)
+								value = Double.valueOf(tempResult.substring(equal+1, at).trim());
+							else if( dashDash > 0)
+								value = Double.valueOf(tempResult.substring(equal+1, dashDash).trim());
+							else 
+								value = Double.valueOf(tempResult.substring(equal+1).trim());
+						}
 						//The Time is the value after '@' to the end of the line
 						Date timestamp = new Date();
 						if (at > 0)
@@ -330,7 +333,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 							timestamp = ServletUtil.parseDateStringLiberally(dateStr);
 						}
 						PointData fakePtData = new PointData();
-						fakePtData.setValue(value.doubleValue());
+						if( value != null)
+							fakePtData.setValue(value.doubleValue());
 						fakePtData.setTimeStamp(timestamp);
 						fakePtData.setTime(timestamp);
 						fakePtData.setType(PointTypes.DEMAND_ACCUMULATOR_POINT);
@@ -475,13 +479,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		try {
 	        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
 	        PointData pointData = dds.getPointData(pointID);
-	        //This is a HORRIBLY BAD HACK to remove any dispatch errors from the error message.
-	        //We can't simply clear out the error message because we made need other information in it.
-	        //TODO Fix this.  Needed fast hack for 3.4 SLN
-	        setErrorMsg(getErrorMsg().replaceAll("Connection to dispatch is invalid", ""));
 	        return pointData;
 		} catch(DynamicDataAccessException ddae) {
-			setErrorMsg(ddae.getMessage());
+			//Need to do something here.  We should tell someone.
+			//When this is called from the jsp, we have already displayed the errorMsg.  So we need a different way.
 		}
        	return null;
 	}
@@ -1040,21 +1041,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	}
 
 	/**
-	 * @return
-	 */
-	public String getErrorMsg()
-	{
-		return errorMsg;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setErrorMsg(String string)
-	{
-		errorMsg = string;
-	}
-	/**
 	 * @return Returns the currentRPHVector.
 	 */
 	public Vector getCurrentRPHVector()
@@ -1099,5 +1085,33 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         }
         
         return deviceList;
+    }
+    
+    public String getFormattedTimestamp(PointData pointData, String defaultValue) { //int deviceID, int pointOffset, int pointType){
+	    if( pointData != null)
+	    	return dateTimeFormat.format(pointData.getPointDataTimeStamp()); 
+	    else
+	    	return defaultValue; 
+    }
+    
+    public String getFormattedValue(PointData pointData, String format, String defaultValue) {
+    	try {
+    		if( pointData != null){
+   		  		java.text.DecimalFormat df = new java.text.DecimalFormat(format);
+   		  		LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
+   		  		df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+   		  		df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+   		  		return df.format(pointData.getValue());
+    		}
+	  	} catch (NotFoundException nfe) {
+	  		//We accept that we might not get the LitePointUnit.
+   		}
+	  	return defaultValue;
+    }
+
+    public String getFormattedStr(PointData pointData, String defaultValue) {
+		if( pointData != null)
+	  		return pointData.getStr();
+	  	return defaultValue;
     }
 }
