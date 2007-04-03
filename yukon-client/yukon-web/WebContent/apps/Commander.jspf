@@ -5,7 +5,13 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 
 <style type="text/css">
-div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #666; text-align:left; padding: 8px;}
+div.scroll { font-size: 12px; 
+			 height: 350px;  
+			 width: 600px; 
+			 overflow: scroll; 
+			 border: 1px solid #CCCCCC; 
+			 text-align:left; 
+			 padding: 8px;}
 </style>
 
 <%
@@ -64,15 +70,6 @@ div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #
 	
 	<div class="subTitleHeader">
 		<%=name%>
-	</div>
-	
-	<div class="ErrorMsg">
-<% if (errorMsg != null) { %>
-		<%=errorMsg %><br />
-<% } %>
-<% if (YC_BEAN.getErrorMsg().length() > 0 ) { %>
-	 	<%=YC_BEAN.getErrorMsg() %><br />
-<% } %>
 	</div>
 	
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
@@ -170,10 +167,10 @@ div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #
 	} else {
 		gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
 	}
-    if (isMCT410) {
+    if (isMCT4XX) {
 %>
 	<div class="bottomLink">
-		<a href="<%= gotoLink%>" name="advCommander410"  class="Link1">Commander: MCT410 Custom</a>
+		<a href="<%= gotoLink%>" name="advCommander4XX"  class="Link1">Commander: MCT400series Custom</a>
 	</div>
 <%
 	}
@@ -182,10 +179,10 @@ div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #
 	} else {
 		gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
 	}
-	if (isMCT410 ) {
+	if (isMCT4XX ) {
 %>
 	<div class="bottomLink">
-		<a href="<%= gotoLink%>" name="advCommander410"  class="Link1">Commander: MCT410 Profile</a>
+		<a href="<%= gotoLink%>" name="advCommander4XX"  class="Link1">Commander: MCT400series Profile</a>
 	</div>
 <%
 	}
