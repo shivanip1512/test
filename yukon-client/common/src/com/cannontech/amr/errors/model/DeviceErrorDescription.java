@@ -4,6 +4,7 @@ package com.cannontech.amr.errors.model;
 public class DeviceErrorDescription {
     private Integer errorCode;
     private String category;
+    private String porter;
     private String description;
     private String troubleshooting;
     
@@ -49,6 +50,14 @@ public class DeviceErrorDescription {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public String getPorter() {
+		return porter;
+	}
+
+	public void setPorter(String porter) {
+		this.porter = porter;
 	}
 
 	@Override
