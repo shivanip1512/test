@@ -23,6 +23,7 @@ import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -329,8 +330,10 @@ private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
 	for( int j = 0; j < contact.getLiteContactNotifications().size(); j++ )
 	{
 		LiteContactNotification lcn = (LiteContactNotification)contact.getLiteContactNotifications().get(j);			
-		if( DaoFactory.getYukonListDao().isPhoneNumber(lcn.getNotificationCategoryID())
-			|| DaoFactory.getYukonListDao().isEmail(lcn.getNotificationCategoryID()) )
+		YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+        if( yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
+			|| yukonListDao.isEmail(lcn.getNotificationCategoryID()) 
+            || yukonListDao.isShortEmail(lcn.getNotificationCategoryID()))
 		{
 			LiteBaseNode notifNode = new LiteBaseNode( lcn );
 			notifNode.setUserValue( NotifMap.DEF_ATTRIBS );
