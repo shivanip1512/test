@@ -51,6 +51,9 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             if (!"*".equals(errorCodeStr)) {
                 errorCode = Integer.parseInt(errorCodeStr);
             }
+            String category = errorEl.getChildTextTrim("category");
+            Validate.notEmpty(category, "Category for error " + errorCodeStr + " must not be blank");
+            
             String description = errorEl.getChildTextTrim("description");
             Validate.notEmpty(description, "Description for error " + errorCodeStr + " must not be blank");
             Element troubleEl = errorEl.getChild("troubleshooting");
@@ -61,6 +64,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             String troubleHtml = xmlOut.outputString(troubleNodes).trim();
             DeviceErrorDescription dded = new DeviceErrorDescription();
             dded.setErrorCode(errorCode);
+            dded.setCategory(category);
             dded.setDescription(description);
             dded.setTroubleshooting(troubleHtml);
             if (errorCode == null) {

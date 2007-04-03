@@ -3,6 +3,7 @@ package com.cannontech.amr.errors.model;
 
 public class DeviceErrorDescription {
     private Integer errorCode;
+    private String category;
     private String description;
     private String troubleshooting;
     
@@ -42,7 +43,15 @@ public class DeviceErrorDescription {
         return troubleshooting;
     }
 
-    @Override
+    public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	@Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
