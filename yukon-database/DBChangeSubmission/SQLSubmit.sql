@@ -96,3 +96,10 @@ alter table ccfeederbanklist modify tripOrder number not null;
 
 /****************** END ORACLE **************************/
 
+
+/******* tom's change to "template root" role property default value *******/
+
+update yukonroleproperty set defaultvalue = 'Server/web/webapps/ROOT/WebConfig/custom/notif_templates/' where rolepropertyid = -80100;
+/* Jon, see my email for the creation script change (although I'm sure you could figure it out) */
+/******* end tom's change ******/
+
