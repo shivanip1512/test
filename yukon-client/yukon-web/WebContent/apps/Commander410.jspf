@@ -106,7 +106,7 @@ function setCommand(cmd)
 </SCRIPT>
   <td width="657" valign="top" bgcolor="#FFFFFF"> 
     <div align="center"> 
-      <% String header = "MCT 410 - CONTROL COMMANDS"; %>
+      <% String header = "MCT 400series - CONTROL COMMANDS"; %>
       <table width="100%" border="0" cellspacing="0" cellpadding="1">
         <tr>
           <td colspan="5" align="center" class="TitleHeader"><%= header %></td>
@@ -145,26 +145,11 @@ function setCommand(cmd)
                       <td width="20%" class="columnHeader">Current</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       </td>
                       <td width="35%" class="main" align="right"> 
                         <div id="currEnergyPD"> 
-                          <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
-							  if( lpu != null){
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                          %>
-                          <%=df.format(pointData.getValue())%> 
-                          <% } else {%>
-                          --- 
-                          <%}%>
+                          <%=YC_BEAN.getFormattedValue(pointData, "#0.000", "---")%>
                         </div>
                       </td>
                     </tr>
@@ -238,49 +223,19 @@ function setCommand(cmd)
                       <td width="20%" class="columnHeader">Last Interval</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0");
-							  if( lpu != null){							  
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                        %>
-                        <%=df.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedValue(pointData, "#0", "&nbsp;")%>
                       </td>
                     </tr>
                     <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">Peak</td>
                       <td class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 11, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       </td>
                       <td class="main" align="right"> 
-                        <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0");
-							  if( lpu != null){
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                        %>
-                        <%=df.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedValue(pointData, "#0", "&nbsp;")%>
                       </td>
                     </tr>
                   </table>
@@ -316,73 +271,28 @@ function setCommand(cmd)
                       <td width="20%" class="columnHeader">Last Interval</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
-							  if( lpu != null){
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                        %>
-                        <%=df.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedValue(pointData, "#0.000", "&nbsp;")%>
                       </td>
                     </tr>
                     <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">Minimum</td>
                       <td class="main" align="center"> 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       </td>
                       <td class="main" align="right"> 
-                        <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
-							  if( lpu != null){
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                        %>
-                        <%=df.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedValue(pointData, "#0.000", "&nbsp;")%>
                       </td>
                     </tr>
                     <tr> 
                       <td width="20%" class="columnHeader">Maximum</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 14, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
-							  if( lpu != null){
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                        %>
-                        <%=df.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedValue(pointData, "#0.000", "&nbsp;")%>
                       </td>
                     </tr>
                   </table>
@@ -405,7 +315,7 @@ function setCommand(cmd)
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="#888888" class="tableHeader">Outage</td>
-                <td height="95%" bgcolor="#888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
+                <td height="95%" bgcolor="#888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue demand & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
               onMouseOver="window.status='Read Current Blink Count, Last 6 Outages (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
@@ -418,24 +328,9 @@ function setCommand(cmd)
                       <td width="20%" class="columnHeader">Blink Count</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 20, PointTypes.PULSE_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){
-                    		  LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointData.getId());
-							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0");
-							  if( lpu != null){
-							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-							  }
-                        %>
-                        <%=df.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedValue(pointData, "#0", "&nbsp;")%>
                       </td>
                     </tr>
                     <tr bgcolor="#EEEEEE"> 
@@ -446,66 +341,42 @@ function setCommand(cmd)
                       <td class="columnHeader">History (Last 6)</td>
                       <td colspan="2" class="mainLeft">1.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_1);%>
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 
-                        <%} else {%>
-                        ---
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
                       </td>
                     </tr>
                     <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="mainLeft">2.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_2);%>
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 
-                        <%} else {%>
-                        ---
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
                       </td>
                     </tr>
                     <tr> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="mainLeft">3.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_3);%>
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 
-                        <%} else {%>
-                        ---
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
                       </td>
                     </tr>
                     <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="mainLeft">4.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_4);%>
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 
-                        <%} else{%>
-                        ---
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
                       </td>
                     </tr>
                     <tr> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="mainLeft">5.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_5);%>
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 
-                        <%} else {%>
-                        ---
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
                       </td>
                     </tr>
                     <tr bgcolor="#EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="mainLeft">6.&nbsp;&nbsp; 
                         <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_6);%>
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 
-                        <%} else {%>
-                        ---
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
                       </td>
                     </tr>
                   </table>
@@ -555,18 +426,9 @@ function setCommand(cmd)
                       <td width="20%" class="columnHeader">Status</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.STATUS_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=pointData.getStr()%>                         
-                        <%//format_nv3.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
+                        <%= YC_BEAN.getFormattedStr(pointData, "&nbsp;")%>
                       </td>
                     </tr>
                   </table>
@@ -641,7 +503,7 @@ function setCommand(cmd)
                   } else {
                     gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
                   }%>
-                  <td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
+                  <td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander4XX"  class="Link1">Commander: MCT400series Profile</a></td>
               </tr>               
               <tr>
                   <td class="bottomLink">
