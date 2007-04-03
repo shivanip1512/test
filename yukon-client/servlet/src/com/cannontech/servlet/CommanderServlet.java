@@ -267,30 +267,25 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			
 					localBean.setTimeOut(new Integer(timeOut).intValue());
                         localBean.setCommandString(command);
-					localBean.setErrorMsg("");	//clear out any old error messages
+					localBean.clearErrorMsg();
                     
-                    if (localBean.isPilConnValid()) {
-                        
-    					localBean.executeCommand();
-    		
-    					/** Don't return to the jsp until we have the message or we've timed out.*/
-    					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning()))
-    					{
-    						try
-    						{
-    							Thread.sleep(5000);
-    						}
-    						catch (InterruptedException e)
-    						{
-    							// TODO Auto-generated catch block
-    							e.printStackTrace();
-    						}
-    					}
-    					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
-                    
-                    } else {
-                        localBean.setErrorMsg("Connection to PORTER is not established");
-                    }
+					localBean.executeCommand();
+		
+					/** Don't return to the jsp until we have the message or we've timed out.*/
+					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning()))
+					{
+						try
+						{
+							Thread.sleep(5000);
+						}
+						catch (InterruptedException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
+
 			    } catch (PaoAuthorizationException e) {
                     localBean.setErrorMsg("You do not have permission to execute command: " + e.getPermission());
 			    }
