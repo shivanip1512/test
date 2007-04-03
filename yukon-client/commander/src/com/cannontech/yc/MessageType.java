@@ -5,7 +5,7 @@ import java.awt.Color;
 public enum MessageType{ INFO(Color.BLACK), 
 						 ERROR(Color.RED),
 						 SUCCESS(Color.BLUE),
-						 FRIEND(Color.GREEN);
+						 FRIEND(Color.RED);
 
 	private Color color;
 	
