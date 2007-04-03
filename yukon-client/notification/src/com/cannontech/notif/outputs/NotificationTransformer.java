@@ -1,16 +1,18 @@
 package com.cannontech.notif.outputs;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.XSLTransformException;
 import org.jdom.transform.XSLTransformer;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -30,6 +32,7 @@ import com.cannontech.roles.notifications.NotificationConfigurationRole;
  *    file:/C:/eclipse-workspace/notification/sample_templates/
  */
 public class NotificationTransformer {
+    private Logger log = YukonLogManager.getLogger(NotificationTransformer.class);
     private final String _rootDirectory;
     private String _outputType;
 
@@ -41,7 +44,7 @@ public class NotificationTransformer {
     public NotificationTransformer(LiteEnergyCompany energyCompany, String outputType) throws TransformException {
         try {
             LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID());
-            _rootDirectory = DaoFactory.getAuthDao().getRolePropertyValueEx(user, NotificationConfigurationRole.TEMPLATE_ROOT);
+            _rootDirectory = DaoFactory.getAuthDao().getRolePropertyValueEx(user, NotificationConfigurationRole.TEMPLATE_ROOT) + "/";
             _outputType = outputType;
         } catch (UnknownRolePropertyException e) {
             throw new TransformException("Could not get Template Root Role Property for " + energyCompany, e);
@@ -50,21 +53,21 @@ public class NotificationTransformer {
     
     public Document transform(Notification notif) throws TransformException {
         try {
-            CTILogger.debug("Transforming notification");
-            //CTILogger.debug("javax.xml: " + System.getProperty("javax.xml.transform.TransformerFactory"));
-            System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.processor.TransformerFactoryImpl");
+            log.debug("Transforming notification");
+            log.debug("javax.xml: " + System.getProperty("javax.xml.transform.TransformerFactory"));
+            //System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.processor.TransformerFactoryImpl");
             Document result;
             InputStream styleSheet = getStyleSheet(notif.getMessageType(),
                                                    _outputType);
             XSLTransformer trans = new XSLTransformer(styleSheet);
             result = trans.transform(notif.getDocument());
             
-            if (CTILogger.getLevel().isGreaterOrEqual(Level.DEBUG)) {
-                CTILogger.debug("  Input document:\n" + notif.getXmlString());
+            if (log.isDebugEnabled()) {
+                log.debug("  Input document:\n" + notif.getXmlString());
 
                 XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
                 String xmlDebug = outputter.outputString(result);
-                CTILogger.debug("  Output document:\n" + xmlDebug);
+                log.debug("  Output document:\n" + xmlDebug);
             }
             return result;
         } catch (XSLTransformException e) {
@@ -73,13 +76,35 @@ public class NotificationTransformer {
     }
 
     private InputStream getStyleSheet(String messageType, String outputType) throws TransformException {
-        String urlString = _rootDirectory + messageType + "_" + outputType + ".xsl";
-        CTILogger.debug("  Using stylesheet from: " + urlString);
+        URL url;
+        String fileName = messageType + "_" + outputType + ".xsl";
+        if (_rootDirectory.matches("^(http|file):.*")) {
+            String urlString = _rootDirectory + fileName;
+            log.debug("  Using stylesheet from (absolute): " + urlString);
+            try {
+                url = new URL(urlString);
+            } catch (Exception e) {
+                throw new TransformException("Unable to find stylesheet url: " + urlString, e);
+            }
+        } else {
+            // treat as relative to yukon_base (this needs to have been passed in on the cmd line)
+            String yukonBase = CtiUtilities.getYukonBase();
+            if (yukonBase == null) {
+                throw new IllegalStateException("'yukon_base' property has not been defined");
+            }
+            String fileString = yukonBase + "/" + _rootDirectory + fileName;
+            log.debug("  Using stylesheet from (yukon_home): " + fileString);
+            File file = new File(fileString);
+            try {
+                url = file.toURL();
+            } catch (Exception e) {
+                throw new TransformException("Unable to find stylesheet file: " + fileString, e);
+            }
+        }
         try {
-            URL url = new URL(urlString);
             return url.openStream();
         } catch (Exception e) {
-            throw new TransformException("Unable to find stylesheet: " + urlString);
+            throw new TransformException("Unable to read stylesheet: " + url, e);
         }
     }
     
