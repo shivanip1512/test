@@ -2023,6 +2023,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
+    boost::regex  re_ied_config ("ied configure( +[a-zA-Z0-9]+)+");
+    boost::regex  re_ied_mask (" alarmmask " + str_anynum + " " + str_anynum);
     boost::regex  re_group_address("group (enable|disable)");
     boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     boost::regex  re_centron_config("centron( ratio [0-9]+)?( display ([0-9]x[0-9]+)?( test [0-9]+s?)?( errors)?)?");
@@ -2066,6 +2068,31 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 _cmd["scan"]      = CtiParseValue(atoi(cmdtok().c_str()));
                 _cmd["scandelay"] = CtiParseValue(atoi(cmdtok().c_str()));
+            }
+            if(!(token = CmdStr.match(re_ied_config)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "ied"
+                cmdtok();  //  go past "configure"
+
+                _cmd["iedtype"]   = CtiParseValue(cmdtok().c_str());
+        
+                if(!(token = CmdStr.match(re_ied_mask)).empty())
+                {
+                    cmdtok(); //Past alarm mask
+                    _cmd["eventmask1"] = CtiParseValue(strtol(cmdtok().c_str(), &p, 16));
+                    _cmd["eventmask2"] = CtiParseValue(strtol(cmdtok().c_str(), &p, 16));
+
+                }
+                if(CmdStr.contains(" multiplemeters"))
+                {
+                    _cmd["hasmultiplemeters"] = CtiParseValue(TRUE);
+                }
+
+                if(CmdStr.contains(" dstdisable"))
+                {
+                    _cmd["dstenabled"] = CtiParseValue(false);
+                }
             }
         }
         if(CmdStr.contains(" onoffpeak"))

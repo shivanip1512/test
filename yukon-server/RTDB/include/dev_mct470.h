@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2007/03/06 19:38:48 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2007/04/03 18:33:10 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -412,6 +412,7 @@ public:
     virtual ULONG calcNextLPScanTime( void );
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
+    IED_Types getIEDTypeFromString(string &iedType);
 };
 
 #endif // #ifndef __DEV_MCT470_H__

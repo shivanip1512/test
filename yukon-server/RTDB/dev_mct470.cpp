@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2007/03/19 20:26:24 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2007/04/03 18:33:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1872,6 +1872,31 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
 
                 OutMessage->Buffer.BSt.Function += (channel - 1) * Memory_ChannelOffset;
             }
+        }
+    }
+    else if( parse.isKeyValid("ied") )
+    {
+        IED_Types iedType = IED_Mask;
+        string tempVal = parse.getsValue("iedtype");
+
+        if( tempVal.length() != 0 )
+        {
+            found = true;
+            iedType = getIEDTypeFromString(tempVal);
+
+            char multipleMeters = parse.getiValue("hasmultiplemeters", 0);
+            char dstEnabled = parse.getiValue("dstenabled", 1);
+
+            char configuration = (iedType) + (multipleMeters << 2) + dstEnabled;
+
+            int event1Mask = parse.getiValue("eventmask1",  0xFF);
+            int event2Mask = parse.getiValue("eventmask2",  0xFF);
+
+            OutMessage->Buffer.BSt.Message[0] = (configuration);
+            OutMessage->Buffer.BSt.Message[1] = (event1Mask);
+            OutMessage->Buffer.BSt.Message[2] = (event2Mask);
+
+            getOperation(Emetcon::PutConfig_Options, OutMessage->Buffer.BSt);
         }
     }
     else
@@ -4779,3 +4804,40 @@ void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
+CtiDeviceMCT470::IED_Types CtiDeviceMCT470::getIEDTypeFromString(string &iedType)
+{
+    IED_Types retVal = IED_None;
+    CtiString iedString = (iedType);
+    iedString.toLower();
+
+    if( iedString == "s4" )
+    {
+        retVal = IED_LandisGyrS4;
+    }
+    else if( iedString == "alphaa1" )
+    {
+        retVal = IED_AlphaA1;
+    }
+    else if( iedString == "alphapp" )
+    {
+        retVal = IED_AlphaPowerPlus;
+    }
+    else if( iedString == "gekv" )
+    {
+        retVal = IED_GeneralElectricKV;
+    }
+    else if( iedString == "gekv2" )
+    {
+        retVal = IED_GeneralElectricKV2;
+    }
+    else if( iedString == "sentinel" )
+    {
+        retVal = IED_Sentinel;
+    }
+    else
+    {
+        retVal = IED_None;
+    }
+
+    return retVal;
+}
