@@ -64,8 +64,8 @@
 	if( request.getParameter("lp") != null) {	//Force going to the Load Profile
 		lp = true;
 	}
-	boolean isMCT410 = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType());
-	if( !isMCT410 ) {	//MUST BE Manual...force it
+	boolean isMCT4XX = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(liteYukonPao.getType());
+	if( !isMCT4XX ) {	//MUST BE Manual...force it
 		manual = true;
 	}
 		
@@ -120,7 +120,7 @@
 	<c:set var="manual" scope="page" value="<%=manual%>"/>
 	<c:set var="lp" scope="page" value="<%=lp%>"/>
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
-	<c:set var="isMCT410" scope="page" value="<%=isMCT410%>"/>
+	<c:set var="isMCT4XX" scope="page" value="<%=isMCT4XX%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
 	
 	<div class="mainFull">
@@ -162,7 +162,7 @@
 						<span class="sideMenuTextSelected">MCT410 Custom</span>
 					</div>
 				</c:when>
-				<c:when test="${isMCT410}">
+				<c:when test="${isMCT4XX}">
 					<c:choose>
 						<c:when test="${!empty param.InvNo}">
 							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&command=null"/> 
@@ -191,7 +191,7 @@
 						<span class="sideMenuTextSelected">MCT410 Profile</span>
 					</div>
 				</c:when>
-				<c:when test="${isMCT410}">
+				<c:when test="${isMCT4XX}">
 					<c:choose>
 						<c:when test="${!empty param.InvNo}">
 							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&lp"/> 
@@ -452,7 +452,7 @@
 				<c:when test="${lp}">
 					<%@ include file="AdvancedCommander410.jspf"%>
 				</c:when>
-				<c:when test="${isMCT410 && !manual}">
+				<c:when test="${isMCT4XX && !manual}">
 					<%@ include file="Commander410.jspf"%>
 				</c:when>
 				<c:otherwise>

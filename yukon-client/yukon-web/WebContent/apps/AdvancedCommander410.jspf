@@ -100,7 +100,7 @@
 	<tr>
 		<td width="657" valign="top" bgcolor="#FFFFFF"> 
 			<div align="center"> 
-		<% String header = "MCT 410 - ADVANCED CONTROL COMMANDS"; %>
+		<% String header = "MCT 400series - ADVANCED CONTROL COMMANDS"; %>
 				<table width="100%" border="0" cellspacing="0" cellpadding="1">
 		        	<tr>
 		          		<td colspan="5" align="center" class="TitleHeader"><%= header %></td>
@@ -133,7 +133,8 @@
 												<tr> 
 								  					<td><br></td>
 												</tr>
-							  				</table>					  								  
+							  				</table>	
+					<% if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) ) { %>
 							  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 											    <tr> 
 													<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
@@ -265,7 +266,8 @@
 												<tr> 
 											  		<td><br><br></td>
 												</tr>
-										  	</table>					  								  
+										  	</table>				
+					  	<% } %>										  		  								  
 							  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 												<tr> 
 											  		<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
@@ -559,9 +561,9 @@
 		   	} else {
 		     	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
 		   	}
-			if ((lp || manual ) && isMCT410) {
+			if ((lp || manual ) && isMCT4XX) {
 		%>
-													<td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410Custom</a></td>
+													<td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander4XX"  class="Link1">Commander: MCT400series Custom</a></td>
 		<%
 			}
 		%>
