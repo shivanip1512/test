@@ -37,7 +37,7 @@
 <xsl:template match="error">
       <tr>
         <td><xsl:value-of select="@code"/></td>
-        <td><xsl:value-of select="@category"/></td>
+        <td><xsl:value-of select="category"/></td>
         <td><xsl:copy-of select="description"/></td>
         <td><xsl:copy-of select="troubleshooting"/>
 <!--        <div>If the problem persists, please contact Technical Support</div> --></td>
