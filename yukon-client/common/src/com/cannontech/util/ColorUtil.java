@@ -1,5 +1,7 @@
 package com.cannontech.util;
 
+import java.awt.Color;
+
 /**
  * @author ryan
  *
@@ -89,4 +91,21 @@ public class ColorUtil
 
 		return rgb;
 	}
+	
+	/**
+	 * Convert Color object to HTML string rapresentation (#RRGGBB).
+	 * @param c color to convert
+	 * @return html string rapresentation (#RRGGBB)
+	*/
+	public static String getHTMLColor(Color c) {
+		String colorR = "0" + Integer.toHexString(c.getRed());
+		colorR = colorR.substring(colorR.length() - 2);
+		String colorG = "0" + Integer.toHexString(c.getGreen());
+		colorG = colorG.substring(colorG.length() - 2);
+		String colorB = "0" + Integer.toHexString(c.getBlue());
+		colorB = colorB.substring(colorB.length() - 2);
+		String html_color = "#" + colorR + colorG + colorB;
+		return html_color;
+	}
+	
 }
