@@ -65,8 +65,8 @@ public class CapBankUpdatableStats extends LxAbstractView implements UpdatableSt
         //String strLabel = "Bank Size: ";
         StaticText size = OnelineUtil.createTextElement(getStreamable().getBankSize() + " KVar",
                                                          OnelineUtil.getStartPoint(getStateImage()),
-                                                         new Integer((int) getStateImage().getWidth() + 25),
-                                                         null);
+                                                         null,
+                                                         new Integer (25)); //image size is 20 px + 5 px below the image
 
        /* StaticText size = OnelineUtil.createTextElement(getStreamable().getBankSize() + "",
                                                         OnelineUtil.getStartPoint(label),

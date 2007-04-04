@@ -3,6 +3,7 @@ package com.cannontech.cbc.oneline.util;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -59,6 +60,9 @@ public class OnelineUtil {
     public static final Font SMALL_FONT = new java.awt.Font("arial",
                                                             java.awt.Font.BOLD,
                                                             10);
+    public static final Font MEDIUM_FONT = new java.awt.Font("arial",
+                                                            java.awt.Font.BOLD,
+                                                            12);
 
     public static final Font LARGE_FONT = new java.awt.Font("arial",
                                                             java.awt.Font.BOLD,
@@ -66,6 +70,7 @@ public class OnelineUtil {
     public static final Color TAG_COLOR = new Color(159, 187, 172);
     
     public static final int EDITOR_CAPCONTROL = 2;
+    public static final Color PURPLISH = new Color(115, 79, 182);
 
 
     public static LiteStateGroup getOnelineStateGroup(String groupName) {

@@ -94,7 +94,7 @@ public class OnelineFeeder implements OnelineObject {
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         double nameX = getFeederName().getX();
         int nameWidth = getFeederName().getText().length() * OnelineUtil.PXLS_PER_CHAR;
-        editorImage.setX(nameX + + nameWidth + 5);
+        editorImage.setX(nameX + + nameWidth + 10);
         editorImage.setY(getFeederName().getY());
     
     }

@@ -1,5 +1,6 @@
 package com.cannontech.cbc.oneline.model.cap;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import com.cannontech.cbc.oneline.CommandPopups;
@@ -16,6 +17,7 @@ import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
+import com.cannontech.esub.element.StaticText;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -47,6 +49,8 @@ public class OnelineCap implements OnelineObject {
 
     private StaticImage infoImage;
 
+    private StaticText capBankName;
+
     public void draw() {
 
         currFdrIndex = drawing.getFeeders().size() - 1;
@@ -66,12 +70,13 @@ public class OnelineCap implements OnelineObject {
         initStateImage(xImgYPos, imgXPos);
         initEditorImage();
         initInformationImage();
+        initCapBankName ();
         
         graph.add(stateImage);
         graph.add(connectorLn);
         graph.add(editorImage);
         graph.add(infoImage);
-
+        graph.add(capBankName);
         
         UpdatableStats capStats = new CapBankUpdatableStats(graph, this);
         capStats.draw();
@@ -82,6 +87,17 @@ public class OnelineCap implements OnelineObject {
         capBankInfo.draw();
         tagView.draw();
 
+    }
+
+
+
+    private void initCapBankName() {
+        capBankName = new StaticText();
+        capBankName.setFont(OnelineUtil.MEDIUM_FONT);
+        capBankName.setPaint(OnelineUtil.PURPLISH);
+        capBankName.setX(getStateImage().getX() + 20);
+        capBankName.setY(getStateImage().getY() - 20);
+        capBankName.setText(getStreamable().getCcName());
     }
 
 

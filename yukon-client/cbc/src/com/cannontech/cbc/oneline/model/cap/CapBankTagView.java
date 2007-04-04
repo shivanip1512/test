@@ -62,8 +62,8 @@ public class CapBankTagView extends LxAbstractView implements TagView {
         Point2D startPoint = OnelineUtil.getStartPoint(img);
         StaticText label = OnelineUtil.createTextElement(strLabel,
                                                          startPoint,
-                                                         new Integer (20),
-                                                         new Integer(-20));
+                                                         new Integer (25),
+                                                         null);
 
         label.setFont(OnelineUtil.LARGE_FONT);
         label.setPaint(OnelineUtil.TAG_COLOR);
