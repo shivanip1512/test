@@ -62,4 +62,17 @@
      </constructor-arg>
    </bean>
    
+   <bean id="com.cannontech.context.tools" 
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+        lazy-init="true">
+     <constructor-arg>
+       <list>
+         <value>com/cannontech/mainContext.xml</value>
+         <value>com/cannontech/core/dao/applicationContext.xml</value>
+         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
+         <value>com/cannontech/tools/toolsContext.xml</value>
+       </list>
+     </constructor-arg>
+   </bean>    
+   
  </beans>
