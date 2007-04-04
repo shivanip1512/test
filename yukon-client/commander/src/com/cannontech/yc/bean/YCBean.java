@@ -195,7 +195,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						// We could only display the most recent data value if the point exists in the database only, 
 						//  By sending it through the return string parser, we'll get entries in the returnNameToRecentPDMap for outage info
 						if( returnMsg.getCommandString().toLowerCase().indexOf("outage") >-1)
-							resultStr += point.getStr();
+							resultStr += point.getStr() + "\n";	//Need to add new line in order to utilize normal outage parsing below.
 						
 						//Clear the Error Message Log, we did eventually read the meter
 						//This is a request from Jeff W. to only display the error messages when no data is returned.
