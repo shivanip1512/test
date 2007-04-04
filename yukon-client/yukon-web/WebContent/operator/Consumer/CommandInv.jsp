@@ -47,8 +47,8 @@
 	{	//Force going to the Load Profile
 		lp = true;
 	}
-	boolean isMCT410 = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType());
-	if( !isMCT410 )
+	boolean isMCT4XX = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType());
+	if( !isMCT4XX )
 	{	//MUST BE Manual...force it
 		manual = true;
 	}
@@ -120,7 +120,7 @@
 			{%>
 				<%@ include file="../../apps/AdvancedCommander410.jspf"%>
 			<%}
-			else if (isMCT410 && !manual)
+			else if (isMCT4XX && !manual)
 			{
 				%>
 				<%@ include file="../../apps/Commander410.jspf"%>
