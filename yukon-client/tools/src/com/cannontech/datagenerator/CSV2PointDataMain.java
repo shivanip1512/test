@@ -25,6 +25,7 @@ public class CSV2PointDataMain {
             System.exit(0);
         }
         
+        YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
         CSV2PointData cpd = YukonSpringHook.getBean("csv2PointData", CSV2PointData.class);
         
         try {
