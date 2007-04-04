@@ -125,3 +125,11 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-575, -54, 'Repeater 921', 4, 'Y', -1);
 
 /** end **/
 
+/***elliot's tags**/
+insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0)
+
+insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0)
+
+insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0) 
+
+/******/
