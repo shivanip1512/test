@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.db.notification.NotificationGroup;
+import com.cannontech.database.db.point.PointAlarming;
 
 /**
  * Insert the type's description here.
@@ -42,7 +43,7 @@ public class ContactNotificationGroupLoader implements Runnable
 		String sqlString = 
 				"SELECT NotificationGroupID, GroupName, DisableFlag " +
 				"FROM " + NotificationGroup.TABLE_NAME + " " + 
-				"WHERE NotificationGroupID > 0 " + 
+				"WHERE NotificationGroupID > " + PointAlarming.NONE_NOTIFICATIONID + 
 				"ORDER BY GroupName";
 	
 		java.sql.Connection conn = null;
