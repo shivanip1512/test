@@ -21,6 +21,8 @@ import java.util.Vector;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -175,7 +177,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			{
 				if( getErrorMsg().indexOf(returnMsg.getCommandString()) < 0)	//command string not displayed yet
 					setErrorMsg(getErrorMsg() + "<br>* Command Failed - " + returnMsg.getCommandString());
-				setErrorMsg( getErrorMsg() + "<BR>" + returnMsg.getResultString());
+				DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
+				DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
+				setErrorMsg( getErrorMsg() + "<BR><B>"+deviceErrorDesc.getCategory()+"</B> -- " 
+						+ deviceErrorDesc.getDescription() + "<BR>" + returnMsg.getResultString());
 			}
 			
 			String resultStr = returnMsg.getResultString();
@@ -312,14 +317,16 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						Double value = null;
 						int at = tempResult.indexOf('@');
 						int dashDash = tempResult.indexOf("--");
-						if (! (tempResult.substring(equal+1, at).trim().equalsIgnoreCase("(invalid data)") ) ) {
-							if(at > 0)
+						
+						if(at > 0) {
+							if (! (tempResult.substring(equal+1, at).trim().equalsIgnoreCase("(invalid data)") ) ) 
 								value = Double.valueOf(tempResult.substring(equal+1, at).trim());
-							else if( dashDash > 0)
-								value = Double.valueOf(tempResult.substring(equal+1, dashDash).trim());
-							else 
-								value = Double.valueOf(tempResult.substring(equal+1).trim());
 						}
+						else if( dashDash > 0)
+							value = Double.valueOf(tempResult.substring(equal+1, dashDash).trim());
+						else 
+							value = Double.valueOf(tempResult.substring(equal+1).trim());
+
 						//The Time is the value after '@' to the end of the line
 						Date timestamp = new Date();
 						if (at > 0)
