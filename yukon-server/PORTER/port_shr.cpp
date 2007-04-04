@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/02/12 18:19:22 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/04/04 18:17:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "tcpsup.h"
 #include "CTICALLS.H"
 #include "cparms.h"
+#include "numstr.h"
 
 CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _sequenceFailReported(false),

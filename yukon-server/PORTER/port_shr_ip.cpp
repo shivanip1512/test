@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/04/04 18:17:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,6 +103,7 @@ void CtiPortShareIP::inThread()
     unsigned long bytesRead;
     BYTE Buffer[300];
     unsigned long bytesWritten;
+    unsigned long remainderbytes;
     CTINEXUS scadaListenNexus;          // Presents the IP Port for scada to connect to.
     CTINEXUS tmpNexus;
 
@@ -172,11 +173,16 @@ void CtiPortShareIP::inThread()
                     }
                 }
 
-                //  check for new connections if we haven't read anything in the last minute (20 * 90000 ms)
+                //  check for new connections if we haven't read anything in the last N loops.
                 //    or if we're not connected
-                if( loopsSinceRead > 20 || !_scadaNexus.CTINexusValid())
+                if( !_scadaNexus.CTINexusValid() || loopsSinceRead > gConfigParms.getValueAsULong("PORTER_PORTSHARE_LOOPCOUNT", 4))
                 {
-                    scadaListenNexus.CTINexusConnect(&tmpNexus, NULL, 1, CTINEXUS_FLAG_READANY);
+                    if( getDebugLevel(DEBUG_SCADA_CONNECTION) )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << getIDString() << " - inThread is looking for a new SCADA connection. Loops = " << loopsSinceRead << ". " << FILELINE << endl;
+                    }
+                    scadaListenNexus.CTINexusConnect(&tmpNexus, NULL, 1000, CTINEXUS_FLAG_READANY);
 
                     if(tmpNexus.CTINexusValid())
                     {
@@ -187,38 +193,41 @@ void CtiPortShareIP::inThread()
                         }
                         _scadaNexus.CTINexusClose();  //  make sure the old/invalid socket is closed
                         _scadaNexus = tmpNexus;           //  byte-for-byte copy - no pointers, ...
+                        _snprintf(_scadaNexus.Name, sizeof(_scadaNexus.Name) - 1, "%s", getIDString().data());
+
                         tmpNexus.sockt = INVALID_SOCKET;  //  ...  and observe how i make tmpNexus's sockt handle point elsewhere, so is all good
                         setRequestCount(0);             // Reconnect zeros the busy value.
                         _sequenceFailReported = false;  // Allow a new report on this nexus.
                         loopsSinceRead = 0;
                     }
-                }
 
-                //  if we don't have a valid SCADA connection
                 if(!_scadaNexus.CTINexusValid())
                 {
                     set(CtiPortShareIP::INWAITFOROUT, false);     // Do not cause this thread to wait before resetting scadaNexus.
-
-                    if( getDebugLevel(DEBUG_SCADA_CONNECTION) )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getIDString() << " - waiting for new connection - _scadaNexus is invalid " << FILELINE << endl;
+                        sleep(2000);
                     }
-                    sleep(5000);
                 }
-                else
+
+                //  if we have a valid SCADA connection
+                if(_scadaNexus.CTINexusValid())
                 {
                     bytesRead = 0; // <-- else we tend to report we've read a rather amazing 4e9 bytes from the TCP stack...
                     // listen to our SCADA system for a bit.
-                    if(((readStatus = _scadaNexus.CTINexusRead(Buffer, 4, &bytesRead, 15) == NORMAL)) && (bytesRead > 0))
+                    if(((readStatus = _scadaNexus.CTINexusRead(Buffer, 4, &bytesRead, 15)) == NORMAL) && (bytesRead > 0))
                     {
                         loopsSinceRead = 0;
 
                         if(Buffer[0] == 0x7e)
                         {
                             //  it's an IDLC message, read the rest
-                            if(((readStatus = _scadaNexus.CTINexusRead(&(Buffer[4]), (Buffer[3] + 2), &bytesRead, 15) == NORMAL)) && (bytesRead == (Buffer[3] + 2 + 4)))
+                            if(((readStatus = _scadaNexus.CTINexusRead(&(Buffer[4]), (Buffer[3] + 2), &bytesRead, 15)) == NORMAL) && (bytesRead == (Buffer[3] + 2 + 4)))
                             {
+
+                                // If there are any bytes still in the socket we must find the most recent.  The continue will
+                                // cause a new read.
+                                if( (SOCKET_ERROR != ioctlsocket(_scadaNexus.sockt, FIONREAD, &remainderbytes)) && remainderbytes != 0)
+                                    continue;
+
                                 // Get an OutMessage.
                                 if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                                 {
@@ -298,7 +307,7 @@ void CtiPortShareIP::inThread()
                                 memcpy (OutMessage->Buffer.OutMessage, Buffer, bytesRead);
 
                                 //  ... and put it on the correct port's queue
-                                if(getPort()->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                                if(getPort()->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -333,19 +342,20 @@ void CtiPortShareIP::inThread()
                         sleep(1000);        // Make certain we don't loop too crazy here
                         loopsSinceRead++;
 
-                        if( getDebugLevel(DEBUG_NO_INPUT) )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - no input from _scadaNexus.CTINexusRead " << FILELINE << endl;
-                        }
                         if( readStatus )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - closing connection to _scadaNexus " << FILELINE << endl;
+                                dout << CtiTime() << " " << getIDString() << " - closing connection to _scadaNexus " << readStatus << " error on socket " << FILELINE << endl;
                             }
                             _scadaNexus.CTINexusClose();
                         }
+                        else if( getDebugLevel(DEBUG_NO_INPUT) )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " " << getIDString() << " - no input from _scadaNexus.CTINexusRead " << FILELINE << endl;
+                        }
+
                     }
                 }
             }
