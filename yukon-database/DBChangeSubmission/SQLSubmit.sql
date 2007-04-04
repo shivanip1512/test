@@ -103,3 +103,15 @@ update yukonroleproperty set defaultvalue = 'Server/web/webapps/ROOT/WebConfig/c
 /* Jon, see my email for the creation script change (although I'm sure you could figure it out) */
 /******* end tom's change ******/
 
+/***************** Bug 568 - Adding commands for Repeater 801 and 921 (SLN) ******************/
+/*** Need to add to creation script and updates **********************************************/
+INSERT INTO DEVICETYPECOMMAND VALUES (-568, -52, 'Repeater 801', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-569, -3, 'Repeater 801', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-570, -53, 'Repeater 801', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-571, -54, 'Repeater 801', 4, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-572, -52, 'Repeater 921', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-573, -3, 'Repeater 921', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-574, -53, 'Repeater 921', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-575, -54, 'Repeater 921', 4, 'Y', -1);
+/***************** END Bug 568 - Adding commands for Repeater 801 and 921 (SLN) ***************/
