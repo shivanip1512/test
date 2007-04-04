@@ -25,7 +25,7 @@
       <tr>
         <th>Code</th>
         <th>Category</th>
-        <th>Description</th>
+        <th>Description (Porter)</th>
         <th>Troubleshooting Options</th>
       </tr>
       <xsl:apply-templates select="error"/>
@@ -38,7 +38,13 @@
       <tr>
         <td><xsl:value-of select="@code"/></td>
         <td><xsl:value-of select="category"/></td>
-        <td><xsl:copy-of select="description"/></td>
+        <td><xsl:value-of select="description"/> 
+            <xsl:if test="porter">
+              <xsl:text> (</xsl:text>
+              <xsl:value-of select="porter"/>
+              <xsl:text>)</xsl:text>
+            </xsl:if>
+        </td>
         <td><xsl:copy-of select="troubleshooting"/>
 <!--        <div>If the problem persists, please contact Technical Support</div> --></td>
       </tr>
