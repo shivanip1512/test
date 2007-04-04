@@ -548,10 +548,10 @@ insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
 go     
       
-insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1, 'TwoStateActive', 'Status' from stategroup;
+insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 go
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 0, 'Active', 0, 6, 0 from stategroup where name = 'TwoStateActive';      
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 1, 'Inactive', 2, 6, 0 from stategroup where name = 'TwoStateActive';      
+insert into State values(-8, 0, 'Active', 0, 6, 0);
+insert into State values(-8, 1, 'Inactive', 2, 6, 0);    
 go
 
 update YukonGroupRole set Value = '/operator/Operations.jsp' where GroupRoleID = -1090 and GroupID = -2 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';

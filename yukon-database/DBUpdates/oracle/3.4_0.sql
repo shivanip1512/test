@@ -423,9 +423,9 @@ insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
 
-insert into stategroup (StateGroupId, Name, GroupType) select max(stategroupid) + 1, 'TwoStateActive', 'Status' from stategroup;
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 0, 'Active', 0, 6, 0 from stategroup where name = 'TwoStateActive';      
-insert into state ( stateGroupId, rawState, text, foregroundcolor, backgroundcolor, imageId) select stategroupid, 1, 'Inactive', 2, 6, 0 from stategroup where name = 'TwoStateActive';      
+insert into StateGroup values (-8, 'TwoStateActive', 'Status');
+insert into State values(-8, 0, 'Active', 0, 6, 0);
+insert into State values(-8, 1, 'Inactive', 2, 6, 0);        
 
 update YukonGroupRole set Value = '/operator/Operations.jsp' where GroupRoleID = -1090 and GroupID = -2 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
 update YukonUserRole set Value = '/operator/Operations.jsp' where UserRoleID = -400 and UserID = -1 and RolePropertyID = -10800 and Value = '/user/CILC/user_trending.jsp';
