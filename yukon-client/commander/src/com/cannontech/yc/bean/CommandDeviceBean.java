@@ -1259,7 +1259,7 @@ public class CommandDeviceBean
 					" SELECT DISTINCT GM.CHILDID FROM " + GenericMacro.TABLE_NAME + " GM ");
 					sql.append(" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "' ");
 				sql.append(" OR PAO.PAOBJECTID IN ( " +
-					" SELECT DISTINCT LMG.DEVICEID FROM " + LMGroup.TABLE_NAME + " LMG");
+					" SELECT DISTINCT LMG.DEVICEID FROM " + LMGroup.TABLE_NAME + " LMG ) )");
                 
 			java.sql.Connection conn = null;
 			java.sql.PreparedStatement stmt = null;
