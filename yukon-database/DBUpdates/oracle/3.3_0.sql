@@ -184,7 +184,6 @@ create table CCurtCurtailmentEvent  (
    Message              VARCHAR2(255)                   not null,
    State                VARCHAR2(10)                    not null,
    StartTime            DATE                            not null,
-   CCurtProgramTypeID   NUMBER                          not null,
    Identifier           NUMBER                          not null
 );
 

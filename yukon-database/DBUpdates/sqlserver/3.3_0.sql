@@ -231,7 +231,6 @@ create table CCurtCurtailmentEvent (
    Message              varchar(255)         not null,
    State                varchar(10)          not null,
    StartTime            datetime             not null,
-   CCurtProgramTypeID   numeric              not null,
    Identifier           numeric              not null
 );
 go
