@@ -2629,66 +2629,65 @@ private synchronized LiteBase handleCustomerChange( int changeType, int id, Stri
  */
 private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allYukonGroups == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if ( allYukonGroups != null ) {
 
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-			for(int i=0;i<allYukonGroups.size();i++)
-			{
-				if( allYukonGroups.get(i).getGroupID() == id )
-				{
-					alreadyAdded = true;
-					lBase = allYukonGroups.get(i);
-					break;
-				}
-			}
-			if( !alreadyAdded )
-			{
-				LiteYukonGroup lcst = new LiteYukonGroup(id);
-				lcst.retrieve(databaseAlias);
-				allYukonGroups.add(lcst);
-				lBase = lcst;
-			}
-			break;
-            
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-			for(int i=0;i<allYukonGroups.size();i++)
-			{
-				if( allYukonGroups.get(i).getGroupID() == id )
-				{
-					allYukonGroups.get(i).retrieve(databaseAlias);
-					lBase = allYukonGroups.get(i);
-					break;
-				}
-			}
-			break;
-            
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-			for(int i=0;i<allYukonGroups.size();i++)
-			{
-				if( allYukonGroups.get(i).getGroupID() == id )
-				{
-					lBase = allYukonGroups.remove(i);
-					break;
-				}
-			}
-			break;
-            
-		default:
-				releaseAllYukonGroups();
-				break;
-	}
-    
+        switch(changeType)
+        {
+        case DBChangeMsg.CHANGE_TYPE_ADD:
+            for(int i=0;i<allYukonGroups.size();i++)
+            {
+                if( allYukonGroups.get(i).getGroupID() == id )
+                {
+                    alreadyAdded = true;
+                    lBase = allYukonGroups.get(i);
+                    break;
+                }
+            }
+            if( !alreadyAdded )
+            {
+                LiteYukonGroup lcst = new LiteYukonGroup(id);
+                lcst.retrieve(databaseAlias);
+                allYukonGroups.add(lcst);
+                lBase = lcst;
+            }
+            break;
+
+        case DBChangeMsg.CHANGE_TYPE_UPDATE:
+            for(int i=0;i<allYukonGroups.size();i++)
+            {
+                if( allYukonGroups.get(i).getGroupID() == id )
+                {
+                    allYukonGroups.get(i).retrieve(databaseAlias);
+                    lBase = allYukonGroups.get(i);
+                    break;
+                }
+            }
+            break;
+
+        case DBChangeMsg.CHANGE_TYPE_DELETE:
+            for(int i=0;i<allYukonGroups.size();i++)
+            {
+                if( allYukonGroups.get(i).getGroupID() == id )
+                {
+                    lBase = allYukonGroups.remove(i);
+                    break;
+                }
+            }
+            break;
+        default:
+            allYukonGroups = null;
+            break;
+        }
+    }
+
     releaseUserRoleMap();
     releaseUserRolePropertyValueMap();
 
-	return lBase;
+    return lBase;
 }
 
 
