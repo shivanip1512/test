@@ -131,7 +131,7 @@ public class MultiTableIncrementer {
                         + " where " + keyColumnName + " = '" + sequenceKey + "'";
                     List matches = jdbc.queryForList(checkSql, String.class);
                     if (matches.isEmpty()) {
-                        jdbc.execute(insertSql);
+                        jdbc.update(insertSql, new Integer[] {1});
                     }
 
                     String updateSql = "update " + sequenceTableName + " set " + valueColumnName
