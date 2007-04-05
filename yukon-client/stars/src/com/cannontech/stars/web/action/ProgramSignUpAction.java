@@ -595,7 +595,7 @@ public class ProgramSignUpAction implements ActionBase {
 						}
 		            	
 						if (liteHw != null) {
-							if (liteApp.getAddressingGroupID() != groupID && !hwsToConfig.contains( liteHw ))
+							if ((liteApp.getAddressingGroupID() != groupID || groupID == 0) && !hwsToConfig.contains( liteHw ))
 								hwsToConfig.add( liteHw );
 							liteApp.setAddressingGroupID( groupID );
 						}
