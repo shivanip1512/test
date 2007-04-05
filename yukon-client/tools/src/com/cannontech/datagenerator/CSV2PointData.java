@@ -52,12 +52,12 @@ public class CSV2PointData {
     }
     
     public void setMultiplier(int multiplier) {
-        Validate.isTrue(multiplier <= 0, "multiplier must be > 0", multiplier);
+        Validate.isTrue(multiplier > 0, "multiplier must be > 0: ", multiplier);
         this.multiplier = multiplier;
     }
     
     public void setFile(File file) {
-        Validate.isTrue(!file.exists() || !file.isFile(), "csv file must exist", file);
+        Validate.isTrue(file.exists() && file.isFile(), "csv file must exist", file);
         this.file = file;
     }
 

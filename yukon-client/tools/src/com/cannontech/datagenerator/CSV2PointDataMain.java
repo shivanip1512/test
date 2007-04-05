@@ -19,7 +19,7 @@ public class CSV2PointDataMain {
      */
     public static void main(String[] args) {
         
-        if (args.length != 1) {
+        if ((args.length == 0) || (args.length > 2)) {
             System.out.println("\n args[0] Specify path to csv file");
             System.out.println("\n args[1] Specify time multiplier to speed time by X (OPTIONAL)");
             System.exit(0);
