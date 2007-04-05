@@ -73,7 +73,7 @@
 			</div>
 	
 			<div class="loginMainSection">
-				<cti:titledContainer title="Account Information">		
+				<cti:titledContainer title="Account Information" styleClass="styledContainer">		
 					<c:if test="${!empty param.failedMsg}">
 						<div class="loginErrorMsg">* ${param.failedMsg}</div>
 					</c:if>

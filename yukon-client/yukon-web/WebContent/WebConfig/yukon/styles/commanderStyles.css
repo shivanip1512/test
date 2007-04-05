@@ -1,3 +1,18 @@
+div #main {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.commanderHeader {
+	text-align: left;
+	padding: 10px 6px;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	color: #000000; 
+	font-weight: bold;
+}
+
 div.searchForm {
 	padding-top: 20px;
 }
@@ -31,72 +46,64 @@ span.selection {
 
 div.commandInclude {
 	width: 60%;
-	float: left;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-div.sideMenu {
-	padding: 10px 10px;
-	background-color: #039;
-	width: 12%;
-	float: left;
+#sideMenu {
+	padding: 0px 10px 50px 10px;
+	width: 15%;
+	height: 100%;
+	float: right;
 }
 
-div.sideMenuSectionHeader {  
-	margin-top: 30px;
+#sideMenu div.header {  
+	padding: 20px 0px 0px 5px;
 	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 16px; 
+	font-size: 14px; 
 	font-weight: bold;
-	color: #FFF; 
-	font-style: italic;
 }
 
-span.sideMenuText {  
-	color: #FFF;
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 10px;
-}
-
-span.sideMenuTextDisabled {  
-	color: #ccc;
-	margin-left: 15px;
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 10px
-}
-
-span.sideMenuTextSelected {  
+#sideMenu div.sideMenuLink {
+	margin: 2px 0px 0px 20px;
 	font-family: Arial, Helvetica, sans-serif; 
 	font-size: 10px;  
-	color: #FFF;
 }
 
-div.sideMenuLink {
-	margin-left: 15px;
-}
-
-div.sideMenuDevice {
-	display: inline;
-	margin-left: 15px;
-}
-
-div.titleHeader {  
-	text-align: center;
+#sideMenu div.sideMenuSubLink {
+	margin: 2px 0px 0px 30px;
 	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 12px; 
-	color: #000000; 
-	font-weight:bold
+	font-size: 10px;  
 }
 
-div.subTitleHeader {  
-	text-align: center;
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 11px; 
-	color: #000000; 
-	font-weight:bold
+#sideMenu div.selected {  
+	font-weight: bold !important;
+	font-size: 12px !important;  
+	color: #CC3300 !important;
+}
+
+#sideMenu div.disabled {  
+	color: #ccc !important;
+}
+
+tr.altRow {
+	background-color: #DDDDDD;
+}
+
+a.link:active {color: #FC6}
+a.link:visited {color: #FC6}
+a.link:link {color: #FC6}
+a.link:hover {color: #FC6}
+
+div.horizontalRule {
+	margin-top: 10px;
+	border-bottom: 1px solid #006699
 }
 
 .bottomLink {
 	text-align: left;
+	padding: 0px 0px;
+	margin: 0px 0px;
 	font-family: Arial, Helvetica, sans-serif; 
 	font-size: 11px; 
-	color: #000000; 
 }

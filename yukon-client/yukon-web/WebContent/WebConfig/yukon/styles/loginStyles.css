@@ -1,5 +1,12 @@
+#TopRightLogo {
+  background-image: url(/CooperLogo.gif);
+  background-repeat: no-repeat;
+  width: 180px;
+  height: 40px;
+}
+
 .loginErrorMsg { 
-	margin: 20px 0px;
+	padding: 20px 0px;
 	font-family: Arial, Helvetica, sans-serif; 
 	font-size: 12px; 
 	color: #FF0000; 
@@ -7,14 +14,14 @@
 }
 
 .loginSuccessMsg { 
-	margin: 20px 0px;
+	padding: 20px 0px;
 	font-family: Arial, Helvetica, sans-serif; 
 	font-size: 12px; 
 	color: blue; 
 }
 
 .loginMain {
-	background: #FFF;
+	background: #fff;
 }
 
 .loginTopSection {
@@ -33,14 +40,14 @@
 
 .loginHeaderText {
 	text-align: center;
-	margin-top: 20px;
+	padding-top: 20px;
 	font-weight: bold;
 }
 
 .loginIntroText {
-	margin-top: 20px;
+	padding-top: 20px;
 	text-align: center;
-	margin-bottom: 20px;
+	padding-bottom: 20px;
 }
 
 .loginTable {
@@ -51,8 +58,8 @@
 }
 
 .loginTitleIntroText {
-	margin-top: 30px;
-	margin-left: 30px;
+	padding-top: 30px;
+	padding-left: 30px;
 	text-align: left;
 	font-family: Verdana, Arial, Helvetica, sans-serif; 
 	font-size: 18px; 
@@ -70,9 +77,9 @@
 
 .loginHelp {
 	text-align: center;
-	margin-top: 20px;
 }
 
 .loginCopyright {
-	margin: 20px;
+	padding: 20px;
 }
+

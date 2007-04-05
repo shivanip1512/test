@@ -27,6 +27,7 @@
     java.text.DecimalFormat format_nsec = new java.text.DecimalFormat("#0 secs");
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
     String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "");
 %>
 
 <cti:checklogin/> 
@@ -44,6 +45,7 @@
 	{
 		deviceID = Integer.parseInt(request.getParameter("deviceID"));
         if( YC_BEAN.getDeviceID() != deviceID) {
+            YC_BEAN.setDeviceID(deviceID);
             session.removeAttribute("CustomerDetail"); //delete this for now, we'll figure out a way to store per meter later
             session.removeAttribute("ServLocDetail"); //delete this for now, we'll figure out a way to store per meter later
         }
@@ -123,19 +125,20 @@
 	<c:set var="isMCT4XX" scope="page" value="<%=isMCT4XX%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
 	
-	<div class="mainFull">
+	<div id="main">
 	
 		<!-- Side menu -->
-		<div class="sideMenu">
-			<div class="sideMenuSectionHeader">Go To...</div>
+		<div id="sideMenu">
+		
+			<div class="commanderHeader">&nbsp;</div>
+			<cti:titledContainer title="Navigation" styleClass="styledContainer">
+
+			<div class="header">Go To...</div>
 			
 			<!-- Manual side menu section -->
 			<c:choose>
 				<c:when test="${manual}">
-					<div>
-						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-						<span class="sideMenuTextSelected">Manual</span>
-					</div>
+					<div class="sideMenuLink selected">Manual</div>
 				</c:when>
 				<c:otherwise>
 					<c:choose>
@@ -147,9 +150,7 @@
 						</c:otherwise>
 					</c:choose>
 					<div class="sideMenuLink">
-						<a href="${link}" class="Link2">
-							<span class="sideMenuText">Manual</span>
-						</a>
+						<a href="${link}" class="Link1">Manual</a>
 					</div>
 				</c:otherwise>
 			</c:choose>
@@ -157,10 +158,7 @@
 			<!-- MCT410 Custom side menu section -->
 			<c:choose>
 				<c:when test="${!(lp || manual)}">
-					<div>
-						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-						<span class="sideMenuTextSelected">MCT410 Custom</span>
-					</div>
+					<div class="selected sideMenuLink">MCT410 Custom</div>
 				</c:when>
 				<c:when test="${isMCT4XX}">
 					<c:choose>
@@ -172,24 +170,19 @@
 						</c:otherwise>
 					</c:choose>
 					<div class="sideMenuLink">
-						<a href="${link}" class="Link2">
-							<span class="sideMenuText">MCT410 Custom</span>
-						</a>
+						<a href="${link}" class="Link1">MCT410 Custom</a>
 					</div>
 				</c:when>
 				<c:otherwise>
-					<div>
-						<span class="sideMenuTextDisabled">MCT410 Custom</span>
+					<div class="sideMenuLink disabled">
+						MCT410 Custom
 					</div>
 				</c:otherwise>
 			</c:choose>
 			<!-- MCT410 Profile side menu section -->
 			<c:choose>
 				<c:when test="${lp}">
-					<div>
-						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-						<span class="sideMenuTextSelected">MCT410 Profile</span>
-					</div>
+					<div class="sideMenuLink selected">MCT410 Profile</div>
 				</c:when>
 				<c:when test="${isMCT4XX}">
 					<c:choose>
@@ -201,61 +194,60 @@
 						</c:otherwise>
 					</c:choose>
 					<div class="sideMenuLink">
-						<a href="${link}" class="Link2">
-							<span class="sideMenuText">MCT410 Profile</span>
-						</a>
+						<a href="${link}" class="Link1">MCT410 Profile</a>
 					</div>
 				</c:when>
 				<c:otherwise>
-					<div>
-						<span class="sideMenuTextDisabled">MCT410 Profile</span>
+					<div class="sideMenuLink disabled">
+						MCT410 Profile
 					</div>
 				</c:otherwise>
 			</c:choose>
 			
 			<!-- Select Device link -->
 			<div class="sideMenuLink">
-				<a href="SelectDevice.jsp" class="Link2">
-					<span class="sideMenuText">Select Device</span>
-				</a>
+				<a href="SelectDevice.jsp" class="Link1">Select Device</a>
 			</div>
+
+			<div class="horizontalRule" ></div>
 		
 			<!-- Devices side menu section -->
-			<div class="sideMenuSectionHeader">Devices</div>
+			<div class="header">Devices</div>
 			
 			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
 				<c:if test="${cti:isDeviceSortByGroup(device)}">
 					<c:choose>
 						<c:when test="${deviceId == device.yukonID}">
-							<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-							<span class="sideMenuTextSelected">${device.paoName}</span>
+							<div class="sideMenuLink selected">${device.paoName}</div>
 						</c:when>
 						<c:otherwise>
-							<div class="sideMenuDevice">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link2">
-									<span class="sideMenuText">${device.paoName}</span>
+							<div class="sideMenuLink">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link1">
+									${device.paoName}
 								</a>
 							</div>
 						</c:otherwise>
 					</c:choose>
 				</c:if>
-				<br/>
 			</c:forEach>
 		
+			<div class="horizontalRule" ></div>
+		
 			<!-- Load Management menu section -->
-			<div class="sideMenuSectionHeader">Load Management</div>
+			<div class="header">Load Management</div>
 			
 			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
 				<c:if test="${cti:isLoadManagementSortByGroup(device)}">
 					<c:choose>
 						<c:when test="${deviceId == device.yukonID}">
-							<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-							<span class="sideMenuTextSelected">${device.paoName}</span>
+							<div class="sideMenuLink selected">${device.paoName}</div>
 						</c:when>
 						<c:otherwise>
-							<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link2">
-								<span class="sideMenuText">${device.paoName}</span>
-							</a>
+							<div class="sideMenuLink">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link1">
+									${device.paoName}
+								</a>
+							</div>
 						</c:otherwise>
 					</c:choose>
 				</c:if>
@@ -265,13 +257,12 @@
 			<cti:checkProperty property="CommanderRole.DCU_SA205_SERIAL_MODEL">
 				<c:choose>
 					<c:when test="${serialType == 'sa205'}">
-						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-						<span class="sideMenuTextSelected">DCU-205 Serial</span>
+						<div class="sideMenuLink selected">DCU-205 Serial</div>
 					</c:when>
 					<c:otherwise>
 						<div class="sideMenuLink">					
-							<a href="CommandDevice.jsp?deviceID=${device.yukonID}&manual&sa205" class="Link2">
-								<span class="sideMenuText">DCU-205 Serial</span>
+							<a href="CommandDevice.jsp?deviceID=${device.yukonID}&manual&sa205" class="Link1">
+								DCU-205 Serial
 							</a>
 						</div>
 					</c:otherwise>
@@ -283,14 +274,13 @@
 			String sn = (String)serialNumbers.get(i);
 			if (serialType.equals("sa205") && sn.equals(serialNum)) {
 %>
-				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-				<span class="sideMenuTextSelected"><%=sn%></span>
+				<div class="sideMenuLink selected"><%=sn%></div>
 <%
 			} else {
 %>
 				<div class="sideMenuLink">
-					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205=<%=sn%>" class="Link2">
-						<span class="sideMenuText"><%=sn%></span>
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205=<%=sn%>" class="Link1">
+						<%=sn%>
 					</a>
 				</div>
 <%				
@@ -304,13 +294,12 @@
 			<cti:checkProperty property="CommanderRole.DCU_SA305_SERIAL_MODEL">
 				<c:choose>
 					<c:when test="${serialType == 'sa305'}">
-						<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-						<span class="sideMenuTextSelected">DCU-305 Serial</span>
+						<div class="sideMenuLink selected">DCU-305 Serial</div>
 					</c:when>
 					<c:otherwise>
 						<div class="sideMenuLink">
-							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305" class="Link2">
-								<span class="sideMenuText">DCU-305 Serial</span>
+							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305" class="Link1">
+								DCU-305 Serial
 							</a>
 						</div>
 					</c:otherwise>
@@ -323,14 +312,13 @@
 			String sn = (String)serialNumbers.get(i);
 			if (serialType.equals("sa305") && sn.equals(serialNum)) {
 %>
-				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-				<span class="sideMenuTextSelected"><%=sn%></span>
+				<div class="sideMenuLink selected"><%=sn%></div>
 <%
 			} else {
 %>
 				<div class="sideMenuLink">
-					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305=<%=sn%>" class="Link2">
-						<span class="sideMenuText"><%=sn%></span>
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305=<%=sn%>" class="Link1">
+						<%=sn%>
 					</a>
 				</div>
 <%				
@@ -345,14 +333,13 @@
 <% 
 	if (serialType.equals("xcom") ) {
 %>
-				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-				<span class="sideMenuTextSelected">Expresscom Serial</span>
+				<div class="sideMenuLink selected">Expresscom Serial</div>
 <%
 	} else {
 %>
 				<div class="sideMenuLink">
-			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom" class="Link2">
-			        	<span class="sideMenuText">Expresscom Serial</span>
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom" class="Link1">
+			        	Expresscom Serial
 			        </a>
 			    </div>
 <%
@@ -363,14 +350,13 @@
 			String sn = (String)serialNumbers.get(i);
 			if (serialType.equals("xcom") && sn.equals(serialNum)) {
 %>
-				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-				<span class="sideMenuTextSelected"><%=sn%></span>
+				<div class="sideMenuSubLink selected"><%=sn%></div>
 <%
 			} else {
 %>
-				<div class="sideMenuLink">
-					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom=<%=sn%>" class="Link2">
-						<span class="sideMenuText"><%=sn%></span>
+				<div class="sideMenuSubLink">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom=<%=sn%>" class="Link1">
+						<%=sn%>
 					</a>
 				</div>
 <%
@@ -386,14 +372,13 @@
 <% 
 	if (serialType.equals("vcom") ) {
 %>
-				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-				<span class="sideMenuTextSelected">Versacom Serial</span>
+				<div class="sideMenuLink selected">Versacom Serial</div>
 <%
 	} else {
 %>
 				<div class="sideMenuLink">
-			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom" class="Link2">
-			        	<span class="sideMenuText">Versacom Serial</span>
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom" class="Link1">
+			        	Versacom Serial
 			        </a>
 			    </div>
 <%
@@ -404,14 +389,13 @@
 			String sn = (String)serialNumbers.get(i);
 			if (serialType.equals("vcom") && sn.equals( serialNum)) {
 %>
-				<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-				<span class="sideMenuTextSelected"><%=sn%></span>
+				<div class="sideMenuSubLink selected"><%=sn%></div>
 <%
 			} else {
 %>
-				<div class="sideMenuLink">
-			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom=<%=sn%>" class="Link2">
-			        	<span class="sideMenuText"><%=sn%></span>
+				<div class="sideMenuSubLink selected">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom=<%=sn%>" class="Link1">
+			        	<%=sn%>
 			        </a>
 			    </div>
 <%
@@ -420,31 +404,32 @@
 	}
 %>
 			</cti:checkProperty>
+			
+			<div class="horizontalRule" ></div>
 		
 			<!-- Cap Control menu section -->
-			<div class="sideMenuSectionHeader">Cap Control</div>
+			<div class="header">Cap Control</div>
 			
 			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
 				<c:if test="${cti:isCapControlSortByGroup(device)}">
 					<c:choose>
 						<c:when test="${deviceId == device.yukonID}">
-							<img src="../WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9">
-							<span class="sideMenuTextSelected">${device.paoName}</span>
+							<div class="sideMenuLink selected">${device.paoName}</div>
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link2">
-									<span class="sideMenuText">${device.paoName}</span>
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link1">
+									${device.paoName}
 								</a>
 							</div>
 						</c:otherwise>
 					</c:choose>
 				</c:if>
-				<br/>
 			</c:forEach>
 			
+			</cti:titledContainer>
+			
 		</div>
-	
 	
 		<div class="commandInclude">
 		

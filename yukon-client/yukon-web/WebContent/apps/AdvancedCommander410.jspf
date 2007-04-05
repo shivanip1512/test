@@ -96,491 +96,433 @@
 	}
 </SCRIPT>
 
-<table>
-	<tr>
-		<td width="657" valign="top" bgcolor="#FFFFFF"> 
-			<div align="center"> 
-		<% String header = "MCT 400series - ADVANCED CONTROL COMMANDS"; %>
-				<table width="100%" border="0" cellspacing="0" cellpadding="1">
-		        	<tr>
-		          		<td colspan="5" align="center" class="TitleHeader"><%= header %></td>
-		        	</tr>
-		        	<tr>
-		          		<td colspan="5" width="100%" class="SubtitleHeader" align="center"><%=liteYukonPao.getPaoName()%></td>
-		        	</tr>
-		<%@ include file="MspCISDetail.jspf"%>
-				</table>
-		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-		<% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>
-          		<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
-		            <input type="hidden" name="deviceID" value="<%=deviceID%>">
-		            <input type="hidden" name="lpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>">
-		            <input type="hidden" name="pointID" value="<%=YC_BEAN.getPointID()%>">
-		            <input type="hidden" name="command" value="">
-		            <input type="hidden" name="timeOut" value="8000">
-					<input type="hidden" name="updateDB" value="true">
-		            <input type='hidden' name='action' value=''>
-		            <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
-		            <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
-					
-					<table width="600" border="0" cellspacing="0" cellpadding="0">
-			        	<tr>
-				            <td width="657" valign="top" bgcolor="#FFFFFF"> 
-		                		<table width="600" border="0" cellspacing="0" cellpadding="0">
-		                  			<tr> 
-		                    			<td> 
-							  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												<tr> 
-								  					<td><br></td>
-												</tr>
-							  				</table>	
-					<% if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) ) { %>
-							  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-											    <tr> 
-													<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-												  	<td height="19" bgcolor="#888888" class="tableHeader"> 
-												  		Profile Peak Summary Reports
-												  	</td>
-												  	<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
-											    </tr>
-		                        				<tr> 
-						                        	<td height="30" bgcolor="#888888" ></td>
-						                          	<td height="30" bgcolor="#888888" class="tableHeader"> 
-		                  								<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-		                    		  						<tr> 
-								                      			<td class="main">
-																  	<select name="rate" id="rateID">
-								                          				<option value="day">Peak Daily Usage</option>
-								                          				<option value="hour">Peak Hour Usage</option>
-								                          				<option value="interval">Peak Interval</option>
-								                        		  	</select>
-								                      			</td>
-								                      			<td class="columnHeader">Start Date: 
-								                        		  	<input id="PRcal" type="text" name="PRlpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
-																	<a href="javascript:openCalendar(document.getElementById('PRcal'))"
-																	onMouseOver="window.status='Date Calendar';return true;"
-																	onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
-								                      			</td>
-								                      			<td class="columnHeader">Days:
-								                        		  <input type="text" size="1" id="numDaysID" name="numDays" value="5">
-								                      			</td>
-													  			<td valign="bottom" align="right"> 
-																<a href="javascript:submitCommand('PeakReport',<%= channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="Link3" id="PRChannel1ID"
-																		onMouseOver="window.status='Read (from the meter) the selected Profile Peak Report for Channel 1';return true;"
-																		onMouseOut="window.status='';return true;"><%= channel_1Str%></a><br>
-																</td>
-		                    		  						</tr>
-		                  								</table>
-		                		  					</td>
-		                		  					<td height="30" bgcolor="#888888" ></td>
-		              							</tr>
-		              							<tr> 
-						                		  	<td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
-												  	<td> 
-												    	<table width="100%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
-													  		<tr colspan="3"> 
-													    		<td class="columnHeader">Profile Peak Report - <%= channel_1Str %></td>
-													  		</tr>
-		<%
-			pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);
-			if( pointData != null) {
-				boolean bg = true;
-				String tempStr = pointData.getStr();
-				int beginIndex = 0;
-				int endIndex = tempStr.indexOf("\n");
-				while( endIndex > 0) {
-		%>
-									  						<tr> 
-									    						<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
-		<%
-					tempStr = tempStr.substring(endIndex+1);
-					endIndex = tempStr.indexOf("\n");
-					bg = !bg;
-		%>
-									    						</td>
-									  						</tr>
-		<%
-				}
-			} else {
-		%>
-															<tr> 
-																<td class="mainLeft">---</td>
-															</tr>
-		<%	
-			}
-		%>
-															<tr> 
-																<td class="columnHeader">&nbsp;</td>
-															</tr>
-															<tr> 
-															    <td class="columnHeader">Profile Peak Report - <%= channel_4Str %></td>
-															</tr>
-		<%
-			pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);
-			if( pointData != null){
-				boolean bg = true;
-				String tempStr = pointData.getStr();
-				int beginIndex = 0;
-				int endIndex = tempStr.indexOf("\n");
-				while( endIndex > 0) {
-		%>
-														  	<tr> 
-														    	<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
-		<%
-					tempStr = tempStr.substring(endIndex+1);
-					endIndex = tempStr.indexOf("\n");
-					bg = !bg;
-		%>
-														    	</td>
-														  	</tr>
-		<%
-				}
-			} else {
-		%>
-									  						<tr> 
-														    	<td class="mainLeft">---</td>
-														  	</tr>
-		<%
-			}
-		%>
-								    					</table>
-								  					</td>
-								  					<td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
-											    </tr>
-											    <tr> 
-												  	<td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-												  	<td background="<%=request.getContextPath()%>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-												  	<td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
-											    </tr>
-							  				</table>
-							  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												<tr> 
-											  		<td align="right"><span class="NavText">
-														<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRSaveID"
-														onMouseOver="window.status='Save Displayed Peak Reports to File';return true;"
-														onMouseOut="window.status='';return true;">Save to File</a></span>
-											  		</td>
-												</tr>
-										  	</table>					  								  
-										  	<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												<tr> 
-											  		<td><br><br></td>
-												</tr>
-										  	</table>				
-					  	<% } %>										  		  								  
-							  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												<tr> 
-											  		<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-											  		<td height="19" bgcolor="#888888" class="tableHeader">
-														Profile Data Collection
-											  		</td>
-											  		<td width="6" height="19">
-											  			<img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19">
-											  		</td>		  
-												</tr>
-												<tr> 
-					                          		<td height="30" bgcolor="#888888" ></td>
-					                          		<td height="30" bgcolor="#888888" class="tableHeader"> 
-														<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-														  	<tr>
-														    	<td class="columnHeader">Date: 
-														      		<input id="DCcal" type="text" name="DClpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
-																		<a href="javascript:openCalendar(document.getElementById('DCcal'))"
-																		onMouseOver="window.status='Date Calendar';return true;"
-																		onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
-																</td>
-																<td class="columnHeader" align="center">Hour
-															  		<select name="hour" id="hourID">
-		<%
-			for (int i = 0; i < 24; i++) {
-				String iStr = String.valueOf(i);
-				if( i < 10)	{
-					iStr = "0" + iStr;
-				}
-		%>
-																		<option value="<%=iStr%>"><%=iStr%></option>
-		<%
-			}
-		%>
-															  		</select>
-																</td>
-																<td class="columnHeader" align="center">Min
-															  		<select name="minute" id="minuteID">
-		<%
-			for (int i = 0; i < 60; i=i+5) {
-				String iStr = String.valueOf(i);
-				if( i < 10)	{
-					iStr = "0" + iStr;
-				}
-		%>
-																		<option value="<%=iStr%>"><%=iStr%></option>
-		<%
-			}
-		%>			  
-															  		</select>
-																</td>
-																<td valign="bottom" align="right"> 
-																  	<a href="javascript:submitCommand('DataCollection', <%=channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="Link3" id="DCChannel1ID"
-								  										onMouseOver="window.status='Read (from the meter) and Archive (to the database) the Profile data for Channel 1';return true;"
-																		onMouseOut="window.status='';return true;"><%= channel_1Str %></a><br>
-															      	<a href="javascript:submitCommand('DataCollection', <%= channel_4ID %>, 4);" style="font-weight:bold;height:20px" class="Link3" id="DCChannel4ID"
-								  										onMouseOver="window.status='Read (from the meter) and Archive (to the database) the Profile data for Channel 4';return true;"
-																		onMouseOut="window.status='';return true;"><%= channel_4Str %></a>
-																</td>			
-														  	</tr>
-														</table>
-		                		  					</td>
-		                		  					<td height="30" bgcolor="#888888" ></td>
-		              							</tr>						
-												<tr>
-											  		<td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
-											  		<td>
-														<table width="100%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
-													  		<tr colspan="3"> 
-													    		<td class="columnHeader">Recent Profile Data Collection - <%= channel_1Str%></td>
-													  		</tr>
-									
-		<%
-			pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_ARCHIVED_DATA);
-			if( pointData != null){
-				boolean bg = true;
-				String tempStr = pointData.getStr();
-				int beginIndex = 0;
-				int endIndex = tempStr.indexOf("\n");
-				while( endIndex > 0) {
-		%>
-														  	<tr>
-														    	<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>><%=tempStr.substring(beginIndex, endIndex)%>
-		<%
-					tempStr = tempStr.substring(endIndex+1);
-					endIndex = tempStr.indexOf("\n");
-					bg = !bg;
-		%>
-														    	</td>
-														  	</tr>
-		<%
-				}
-			} else {
-		%>
-													  	  	<tr>
-														    	<td class="mainLeft">---</td>
-							  							  	</tr>
-		<%
-			}
-		%>
-														  	<tr> 
-														    	<td class="columnHeader">&nbsp;</td>
-														  	</tr>
-														  	<tr> 
-														    	<td class="columnHeader">Recent Profile Data Collection - <%= channel_4Str%></td>
-														  	</tr>
-		<%
-			pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_ARCHIVED_DATA);
-			if( pointData != null){
-				boolean bg = true;
-				String tempStr = pointData.getStr();
-				int beginIndex = 0;
-				int endIndex = tempStr.indexOf("\n");
-				while( endIndex > 0) {
-		%>
-														  	<tr>
-														    	<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>>
-		<%=tempStr.substring(beginIndex, endIndex)%>
-		<%
-					tempStr = tempStr.substring(endIndex+1);
-					endIndex = tempStr.indexOf("\n");
-					bg = !bg;
-		%>
-														    	</td>
-														  	</tr>
-		<%		}
-			} else {
-		%>
-													  	  	<tr>
-														    	<td class="mainLeft">---</td>
-							  							  	</tr>
-		<%
-			}
-		%>
-														  	<tr> 
-														    	<td class="columnHeader">&nbsp;</td>
-														  	</tr>
-													    </table>
-								  					</td>
-								  					<td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
-												</tr>
-												<tr> 
-												  	<td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-												  	<td background="<%=request.getContextPath()%>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-												  	<td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
-											    </tr>						
-											</table>
-							  
-										  	<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												<tr> 
-											  		<td><br><br></td>
-												</tr>
-										  	</table>					  								  
-										  	<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												<tr> 
-											  		<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-											  		<td height="19" bgcolor="#888888" class="tableHeader">
-														Profile Archived Data Display
-											  		</td>
-											  		<td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>		  
-												</tr>
-												<tr> 
-						                          	<td height="30" bgcolor="#888888" ></td>
-						                          	<td height="30" bgcolor="#888888" class="tableHeader"> 
-														<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-												  			<tr>
-																<td class="columnHeader" align="right">Date 
-												      				<input id="RPHcal" type="text" name="RPHlpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
-																		<a href="javascript:openCalendar(document.getElementById('RPHcal'))"
-																		onMouseOver="window.status='Date Calendar';return true;"
-																		onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
-																</td>
-																<td width="40%" valign="bottom" align="right"> 
-																	  	<a href="javascript:submitCommand('LoadRPHData', <%= channel_1ID%>, -1);" style="font-weight:bold;height:20px" class="Link3" id="LoadRPH1ID"
-									  										onMouseOver="window.status='Retrieve (from the database) the archived data values for Channel 1';return true;"
-																			onMouseOut="window.status='';return true;"><%= channel_1Str %></a><br>
-																      	<a href="javascript:submitCommand('LoadRPHData', <%= channel_4ID %>, -1);" style="font-weight:bold;height:20px" class="Link3" id="LoadRPH4ID"
-									  										onMouseOver="window.status='Retrieve (from the database) the archived data values for Channel 4';return true;"
-																			onMouseOut="window.status='';return true;"><%= channel_4Str %></a>
-																</td>			
-												  			</tr>
-														</table>
-					                		  		</td>
-					                		  		<td height="30" bgcolor="#888888" ></td>
-					              				</tr>
-												<tr>
-											  		<td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
-											  		<td>
-														<table width="100%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">	    
-												  			<tr> 
-												    			<td> 						  
-					                                  				<table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
-												  						<tr>
-												  		  					<td colspan="4"> 
-																				<table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#ffffff" align="center">
-																			  		<tr>
-																			    		<td colspan="4" class="columnHeader" align="center">
-																			    			<%=liteYukonPao.getPaoName()%> - <%=(YC_BEAN.getPointID() == PointTypes.SYS_PID_SYSTEM?"Undefined Point":DaoFactory.getPointDao().getPointName(YC_BEAN.getPointID()))%>
-															        					</td>										
-																			  		</tr>
-																	  		  		<tr> 
-																						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Timestamp</td>
-																						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Value</td>
-																						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Timestamp</td>
-																						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Value</td>
-																	  		  		</tr>
-		 <%
-		 	java.util.Vector lrphVector = YC_BEAN.getCurrentRPHVector();
-			if( lrphVector != null && !lrphVector.isEmpty()) {
-				int half = lrphVector.size()/2;
-				int vecSize = lrphVector.size();
-				int doneSize = half + (lrphVector.size()%2);
-				
-				LiteRawPointHistory lrph;
-				lrph = (LiteRawPointHistory)lrphVector.get(0);	//use the first entry to load the decimal format
-				java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
-				LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(lrph.getPointID());
-				if( lpu != null){
-					df.setMaximumFractionDigits(lpu.getDecimalPlaces());
-				  	df.setMinimumFractionDigits(lpu.getDecimalPlaces());
-				}
+	<div class="commanderHeader">
+    	MCT 400series - Advanced Control Commands:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%>
+	</div>
+
+	<div align="center"> 
+	
+	<%@ include file="MspCISDetail.jspf"%>
+<% 
+	if (errorMsg != null && errorMsg.length() != 0) {
+	    out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br/><br/>");
+	    errorMsg = null;
+	}
+	if (YC_BEAN.getErrorMsg().length() > 0 ) {
+	    out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br><br/>");
+	    YC_BEAN.setErrorMsg("");
+	}
+%>
+	</div>	
+	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
+    	<input type="hidden" name="deviceID" value="<%=deviceID%>">
+        <input type="hidden" name="lpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>">
+        <input type="hidden" name="pointID" value="<%=YC_BEAN.getPointID()%>">
+        <input type="hidden" name="command" value="">
+        <input type="hidden" name="timeOut" value="8000">
+		<input type="hidden" name="updateDB" value="true">
+        <input type='hidden' name='action' value=''>
+        <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
+        <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
 			
-				for( int i = 0; i < doneSize; i++) {
-			  		lrph = (LiteRawPointHistory)lrphVector.get(i);
-		%>
-																					<tr <%=!(i%2==0)? "bgcolor='#EEEEEE'":""%>> 
-																						<td width="25%" align="center" class="main">
-																							<%=dateTimeFormat.format(new java.util.Date(lrph.getTimeStamp()))%> 
-																						</td>
-																						<td width="25%" align="center" class="main">
-																							<%=df.format(lrph.getValue())%> 
-																						</td>
-		<%
-					if( half > 0 ){
-			   			lrph = (LiteRawPointHistory)lrphVector.get(vecSize - half);
-			   			half--;
-		%>
-																						<td width="25%" align="center" class="main">
-																							<%=dateTimeFormat.format(new java.util.Date(lrph.getTimeStamp()))%> 
-																						</td>
-																						<td width="25%" align="center" class="main">
-																							<%=df.format(lrph.getValue())%> 
-																						</td>
-		<%
-					} else {
-		%>
-																						<td width="25%" align="center" class="main">&nbsp;</td>
-																						<td width="25%" align="center" class="main">&nbsp;</td>
-		<%
-					}
-		%>
-																	  				</tr>
-		<%
-				}
+			
+<% 
+	if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) ) { 
+%>			
+		<cti:titledContainer styleClass="styledContainer">
+	  		
+			<jsp:attribute name="title">
+			
+				<table width="100%" class="titleTable">
+					<tr>
+						<td>
+							Profile Peak Summary Reports
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-left: 20px">
+							<select name="rate" id="rateID">
+                        				<option value="day">Peak Daily Usage</option>
+                        				<option value="hour">Peak Hour Usage</option>
+                        				<option value="interval">Peak Interval</option>
+                      		  	</select>
+	          			</td>
+	          			<td>
+	          				Start Date: 
+                      		  	<input id="PRcal" type="text" name="PRlpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
+							<a href="javascript:openCalendar(document.getElementById('PRcal'))"
+							onMouseOver="window.status='Date Calendar';return true;"
+							onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+                    			</td>
+                    			<td>
+                    				Days:
+                      		  	<input type="text" size="1" id="numDaysID" name="numDays" value="5">
+                    			</td>
+			  			<td valign="bottom" align="right"> 
+							<a href="javascript:submitCommand('PeakReport',<%= channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="link" id="PRChannel1ID"
+									onMouseOver="window.status='Read (from the meter) the selected Profile Peak Report for Channel 1';return true;"
+									onMouseOut="window.status='';return true;"><%= channel_1Str%></a><br>
+						</td>
+	          		</tr>
+	          	</table>
+	          
+	          
+			</jsp:attribute>
+			<jsp:body>
+  									  								  
+  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+					<tr colspan="3"> 
+						<td class="columnHeader">Profile Peak Report - <%= channel_1Str %></td>
+					</tr>
+<%
+		pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);
+		if( pointData != null) {
+			boolean bg = true;
+			String tempStr = pointData.getStr();
+			int beginIndex = 0;
+			int endIndex = tempStr.indexOf("\n");
+			while( endIndex > 0) {
+%>
+					<tr> 
+   						<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
+<%
+				tempStr = tempStr.substring(endIndex+1);
+				endIndex = tempStr.indexOf("\n");
+				bg = !bg;
+%>
+		    			</td>
+		  			</tr>
+<%
 			}
-		%>
-													  							</table>
-												    	  					</td>
-												  						</tr>
-													  				</table>
-					                          					</td>
-						                          			</tr>
-														</table>
-											  		</td>
-											  		<td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
-												</tr>
-												<tr>
-												  	<td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-												  	<td background="<%=request.getContextPath()%>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-												  	<td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
-												</tr>
-										  	</table>
-						                  	<table height="20" width="95%" align="center" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-						              	    	<tr><td height="10"></td></tr>
-					              				<tr> 
-					   			  			  		<td align="center" rowspan="2"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
-		<% 
-			String gotoLink = "";
-			if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-		      	gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
-		    } else {
-		      	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
-		    }
-		%>
-							   			  	  		<td class="bottomLink"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
-										    	</tr>	
-							                	<tr>
-		<%
-			if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-		     	gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
-		   	} else {
-		     	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
-		   	}
-			if ((lp || manual ) && isMCT4XX) {
-		%>
-													<td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander4XX"  class="Link1">Commander: MCT400series Custom</a></td>
-		<%
+		} else {
+%>
+					<tr> 
+						<td class="mainLeft">---</td>
+					</tr>
+<%	
+		}
+%>
+					<tr> 
+						<td class="columnHeader">&nbsp;</td>
+					</tr>
+					<tr> 
+					    <td class="columnHeader">Profile Peak Report - <%= channel_4Str %></td>
+					</tr>
+<%
+	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);
+	if( pointData != null){
+		boolean bg = true;
+		String tempStr = pointData.getStr();
+		int beginIndex = 0;
+		int endIndex = tempStr.indexOf("\n");
+		while( endIndex > 0) {
+%>
+				  	<tr> 
+				    	<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>> <%=tempStr.substring(beginIndex, endIndex)%> 
+<%
+			tempStr = tempStr.substring(endIndex+1);
+			endIndex = tempStr.indexOf("\n");
+			bg = !bg;
+%>
+				    	</td>
+				  	</tr>
+<%
 			}
-		%>
-								            	</tr>			          
-										  	</table>								  
-		                    			</td>
-		                  			</tr>
-		                  			<tr> 
-		                    			<td>&nbsp;</td>
-		                  			</tr>
-		                		</table>
-		                		<br>
-		                	</td>
-			        	</tr>
-			      	</table>
-				</form>
-			</div>
-		</td>	
-	</tr>
-</table>	
+		} else {
+%>
+ 					<tr> 
+				    	<td class="mainLeft">---</td>
+				  	</tr>
+<%
+		}
+%>
+  				</table>
+  			</jsp:body>
+  		</cti:titledContainer>
+			  				
+		<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+			<tr> 
+		  		<td align="right"><span class="NavText">
+					<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRSaveID"
+					onMouseOver="window.status='Save Displayed Peak Reports to File';return true;"
+					onMouseOut="window.status='';return true;">Save to File</a></span>
+		  		</td>
+			</tr>
+	  	</table>
+<% 
+	}
+%>	 		
+	 	<br/>
+	 	<cti:titledContainer styleClass="styledContainer">
+	  		
+			<jsp:attribute name="title">
+			
+				<table width="100%" class="titleTable">
+					<tr>
+						<td>
+							Profile Data Collection
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-left: 20px">
+							Date: 
+							<input id="DCcal" type="text" name="DClpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
+							<a href="javascript:openCalendar(document.getElementById('DCcal'))"
+							  onMouseOver="window.status='Date Calendar';return true;"
+							  onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+						</td>
+						<td align="center">
+							Hour
+							<select name="hour" id="hourID">
+<%
+for (int i = 0; i < 24; i++) {
+	String iStr = String.valueOf(i);
+	if( i < 10)	{
+		iStr = "0" + iStr;
+	}
+%>
+								<option value="<%=iStr%>"><%=iStr%></option>
+<%
+}
+%>
+							</select>
+						</td>
+						<td align="center">
+							Min
+							<select name="minute" id="minuteID">
+<%
+for (int i = 0; i < 60; i=i+5) {
+	String iStr = String.valueOf(i);
+	if( i < 10)	{
+		iStr = "0" + iStr;
+	}
+%>
+								<option value="<%=iStr%>"><%=iStr%></option>
+<%
+}
+%>			  
+							</select>
+						</td>
+						<td valign="bottom" align="right"> 
+							<a href="javascript:submitCommand('DataCollection', <%=channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="link" id="DCChannel1ID"
+	  						  onMouseOver="window.status='Read (from the meter) and Archive (to the database) the Profile data for Channel 1';return true;"
+							  onMouseOut="window.status='';return true;"><%= channel_1Str %></a><br>
+							<a href="javascript:submitCommand('DataCollection', <%= channel_4ID %>, 4);" style="font-weight:bold;height:20px" class="link" id="DCChannel4ID"
+	  						  onMouseOver="window.status='Read (from the meter) and Archive (to the database) the Profile data for Channel 4';return true;"
+							  onMouseOut="window.status='';return true;"><%= channel_4Str %></a>
+						</td>
+					</tr>
+				</table>
+			</jsp:attribute>
+			
+			<jsp:body>
+  		
+  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+					<tr colspan="3"> 
+						<td class="columnHeader">Recent Profile Data Collection - <%= channel_1Str%></td>
+					</tr>
+							
+<%
+	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_ARCHIVED_DATA);
+	if( pointData != null){
+		boolean bg = true;
+		String tempStr = pointData.getStr();
+		int beginIndex = 0;
+		int endIndex = tempStr.indexOf("\n");
+		while( endIndex > 0) {
+%>
+					<tr>
+						<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>><%=tempStr.substring(beginIndex, endIndex)%>
+<%
+			tempStr = tempStr.substring(endIndex+1);
+			endIndex = tempStr.indexOf("\n");
+			bg = !bg;
+%>
+						</td>
+					</tr>
+<%
+		}
+	} else {
+%>
+			  	  	<tr>
+				    	<td class="mainLeft">---</td>
+					</tr>
+<%
+	}
+%>
+				  	<tr> 
+				    	<td class="columnHeader">&nbsp;</td>
+				  	</tr>
+				  	<tr> 
+				    	<td class="columnHeader">Recent Profile Data Collection - <%= channel_4Str%></td>
+				  	</tr>
+<%
+	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_ARCHIVED_DATA);
+	if( pointData != null){
+		boolean bg = true;
+		String tempStr = pointData.getStr();
+		int beginIndex = 0;
+		int endIndex = tempStr.indexOf("\n");
+		while( endIndex > 0) {
+%>
+				  	<tr>
+				    	<td class="mainLeft" <%=(bg?"bgcolor='#EEEEEE'":"")%>>
+<%=tempStr.substring(beginIndex, endIndex)%>
+<%
+			tempStr = tempStr.substring(endIndex+1);
+			endIndex = tempStr.indexOf("\n");
+			bg = !bg;
+%>
+				    	</td>
+				  	</tr>
+<%		}
+	} else {
+%>
+			  	  	<tr>
+				    	<td class="mainLeft">---</td>
+					</tr>
+<%
+	}
+%>
+				  	<tr> 
+				    	<td class="columnHeader">&nbsp;</td>
+				  	</tr>
+			    </table>
+  			</jsp:body>
+  		</cti:titledContainer>
+  		
+  		<br/>
+  		<cti:titledContainer styleClass="styledContainer">
+	  		
+			<jsp:attribute name="title">
+			
+				<table width="100%" class="titleTable">
+					<tr>
+						<td>
+							Profile Archived Data Display
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-left: 20px">
+							Date 
+		      				<input id="RPHcal" type="text" name="RPHlpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
+							<a href="javascript:openCalendar(document.getElementById('RPHcal'))"
+							  onMouseOver="window.status='Date Calendar';return true;"
+							  onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+						</td>
+						<td valign="bottom" align="right"> 
+							<a href="javascript:submitCommand('LoadRPHData', <%= channel_1ID%>, -1);" style="font-weight:bold;height:20px" class="link" id="LoadRPH1ID"
+ 								  onMouseOver="window.status='Retrieve (from the database) the archived data values for Channel 1';return true;"
+							  onMouseOut="window.status='';return true;"><%= channel_1Str %></a><br>
+							<a href="javascript:submitCommand('LoadRPHData', <%= channel_4ID %>, -1);" style="font-weight:bold;height:20px" class="link" id="LoadRPH4ID"
+ 								  onMouseOver="window.status='Retrieve (from the database) the archived data values for Channel 4';return true;"
+							  onMouseOut="window.status='';return true;"><%= channel_4Str %></a>
+						</td>
+					</tr>
+				</table>
+			</jsp:attribute>
+			
+			<jsp:body>
+  		
+			  	<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+					<tr>
+						<td colspan="4" class="columnHeader" align="center">
+							<%=liteYukonPao.getPaoName()%> - <%=(YC_BEAN.getPointID() == PointTypes.SYS_PID_SYSTEM?"Undefined Point":DaoFactory.getPointDao().getPointName(YC_BEAN.getPointID()))%>
+						</td>
+					</tr>
+					<tr> 
+						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Timestamp</td>
+						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Value</td>
+						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Timestamp</td>
+						<td width="25%" class="columnHeader" align="center" bgcolor="#EEEEEE">Value</td>
+					</tr>
+ <%
+ 	java.util.Vector lrphVector = YC_BEAN.getCurrentRPHVector();
+	if( lrphVector != null && !lrphVector.isEmpty()) {
+		int half = lrphVector.size()/2;
+		int vecSize = lrphVector.size();
+		int doneSize = half + (lrphVector.size()%2);
+		
+		LiteRawPointHistory lrph;
+		lrph = (LiteRawPointHistory)lrphVector.get(0);	//use the first entry to load the decimal format
+		java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
+		LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(lrph.getPointID());
+		if( lpu != null){
+			df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+		  	df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+		}
+	
+		for( int i = 0; i < doneSize; i++) {
+	  		lrph = (LiteRawPointHistory)lrphVector.get(i);
+%>
+					<tr <%=!(i%2==0)? "bgcolor='#EEEEEE'":""%>> 
+						<td width="25%" align="center" class="main">
+							<%=dateTimeFormat.format(new java.util.Date(lrph.getTimeStamp()))%> 
+						</td>
+						<td width="25%" align="center" class="main">
+							<%=df.format(lrph.getValue())%> 
+						</td>
+<%
+			if( half > 0 ){
+	   			lrph = (LiteRawPointHistory)lrphVector.get(vecSize - half);
+	   			half--;
+%>
+						<td width="25%" align="center" class="main">
+							<%=dateTimeFormat.format(new java.util.Date(lrph.getTimeStamp()))%> 
+						</td>
+						<td width="25%" align="center" class="main">
+							<%=df.format(lrph.getValue())%> 
+						</td>
+<%
+			} else {
+%>
+						<td width="25%" align="center" class="main">&nbsp;</td>
+						<td width="25%" align="center" class="main">&nbsp;</td>
+<%
+			}
+%>
+					</tr>
+<%
+		}
+	}
+%>
+			  	</table>
+			</jsp:body>
+		</cti:titledContainer>
+			  	
+       	<table height="20" width="95%" align="center" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+   	    	<tr>
+   	    		<td height="10"></td>
+   	    	</tr>
+  			<tr> 
+ 				<td align="center" rowspan="2">
+ 					<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
+ 				</td>
+<% 
+	String gotoLink = "";
+	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
+      	gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
+    } else {
+      	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
+    }
+%>
+				<td class="bottomLink"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
+    		</tr>	
+			<tr>
+<%
+	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
+     	gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
+   	} else {
+     	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
+   	}
+	if ((lp || manual ) && isMCT4XX) {
+%>
+				<td class="bottomLink">
+					<a href='<%= gotoLink%>' name="advCommander4XX"  class="Link1">Commander: MCT400series Custom</a>
+				</td>
+<%
+	}
+%>
+           	</tr>			          
+	  	</table>								  
+	</form>

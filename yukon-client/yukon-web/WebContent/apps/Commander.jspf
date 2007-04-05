@@ -64,12 +64,8 @@ div.scroll { font-size: 12px;
 
 <%@ include file="MspCISDetail.jspf"%>
 
-	<div class="titleHeader"> 
-		CONTROL COMMANDS
-	</div>
-	
-	<div class="subTitleHeader">
-		<%=name%>
+	<div class="commanderHeader"> 
+		<center>Control Commands:&nbsp;&nbsp;<%=name%></center>
 	</div>
 	
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">

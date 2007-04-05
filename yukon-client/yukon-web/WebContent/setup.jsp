@@ -68,14 +68,14 @@
   
   		<div class="loginMainSection">
 			
-			<cti:titledContainer title="Database">
+			<cti:titledContainer title="Database" styleClass="styledContainer">
     			<div align="center" class="redMsg"><p>Database settings are now configured via the master.cfg file.<br> 
     			Seperate configuration for client and server is no longer required.</p></div>
 			</cti:titledContainer>
 			
 			<br/>
 			
-			<cti:titledContainer title="Server">
+			<cti:titledContainer title="Server" styleClass="styledContainer">
 
 				<div class="loginIntroText">
     			

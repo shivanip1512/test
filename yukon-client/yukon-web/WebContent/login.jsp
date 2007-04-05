@@ -7,7 +7,7 @@
         <title>Energy Services Operations Center</title>           
 
 <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/StandardStyles.css" >
-<link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" />
+<link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" >
 <script type="text/javascript" src="JavaScript/prototype.js" ></script>
 <script type="text/javascript" src="JavaScript/CtiMenu.js" ></script>
 
@@ -58,7 +58,7 @@
 			</div>
 
 			<div class="loginMainSection">
-				<cti:titledContainer title="Login">
+				<cti:titledContainer title="Login" styleClass="styledContainer">
 					<c:if test="${!empty param.failed}">
 						<div class="loginErrorMsg">* Invalid username/password</div>
 					</c:if>
