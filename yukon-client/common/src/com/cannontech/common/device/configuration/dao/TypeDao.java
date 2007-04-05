@@ -40,7 +40,7 @@ public class TypeDao {
      */
     public static Type getCategoryTypeForId(Integer id) {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT categorytypeid, name, displayname, categorygroup, level, "
+        String sql = "SELECT categorytypeid, name, displayname, categorygroup, categorytypelevel, "
                 + "description FROM " + CATEGORY_TABLE + " WHERE categorytypeid = ?";
 
         return (Type) jdbcOps.queryForObject(sql, new Object[] { id }, new CategoryTypeMapper());
@@ -88,7 +88,7 @@ public class TypeDao {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         String sql = "SELECT t." + CATEGORY_COLUMN + ", t.name, t.displayname, t.categorygroup, "
-                + "t.level, " + "t.description FROM " + CATEGORY_TABLE + " t, "
+                + "t.categorytypelevel, " + "t.description FROM " + CATEGORY_TABLE + " t, "
                 + CONFIG_CATEGORY_TABLE + " mt WHERE mt." + CONFIG_COLUMN + " = ? AND t."
                 + CATEGORY_COLUMN + " = mt." + CATEGORY_COLUMN;
 
