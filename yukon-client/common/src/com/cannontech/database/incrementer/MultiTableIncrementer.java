@@ -9,9 +9,11 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -40,7 +42,7 @@ public class MultiTableIncrementer {
         if (dirty) {
             insertSql = "insert into " + sequenceTableName + " (" 
                 + keyColumnName + ", " + valueColumnName + ") values " 
-                + "(\'" + sequenceKey + "\', 0)";
+                + "(\'" + sequenceKey + "\', ?)";
             
             valueSql = "select " + valueColumnName + " from " + sequenceTableName
                 + " where " + keyColumnName 
@@ -63,7 +65,8 @@ public class MultiTableIncrementer {
         }
         initializeSql();
         Connection con = null;
-        Statement statement = null;
+        Statement vStatement = null;
+        PreparedStatement iStatement = null;
         PreparedStatement pStatement = null;
         ResultSet resultSet = null;
         boolean previousAutoCommit = false;
@@ -76,31 +79,32 @@ public class MultiTableIncrementer {
             pStatement = con.prepareStatement(incrementSql);
             pStatement.setInt(1, incrementBy);
             int affected = pStatement.executeUpdate();
-            if (affected != 1) {
+            if (affected == 0) {
+                iStatement = con.prepareStatement(insertSql);
+                iStatement.setInt(1, incrementBy);
+                iStatement.executeUpdate();
+                return incrementBy;
+            } else if (affected != 1) {
                 throw new IncorrectUpdateSemanticsDataAccessException("More than one row affected :" + affected);
             }
 
-            statement = con.createStatement();
-            resultSet = statement.executeQuery(valueSql);
-            int  lastValue;
+            vStatement = con.createStatement();
+            resultSet = vStatement.executeQuery(valueSql);
             if (resultSet.next()) {
-                lastValue = resultSet.getInt(1);
-            } else {
-                statement.executeUpdate(insertSql);
-                lastValue = 0;
+                int  lastValue = resultSet.getInt(1);
+                return lastValue;
             }
             
-            // get the current value
-            return lastValue;
+            throw new DataRetrievalFailureException("Select after update for next value returned nothing");
         } catch (SQLException e){
             SQLErrorCodeSQLExceptionTranslator translator = new SQLErrorCodeSQLExceptionTranslator(dataSource);
             throw translator.translate("Unable to getNextValue", null, e);
         } finally {
             try {
                 con.commit();
-                resultSet.close();
-                statement.close();
-                pStatement.close();
+                JdbcUtils.closeResultSet(resultSet);
+                JdbcUtils.closeStatement(vStatement);
+                JdbcUtils.closeStatement(pStatement);
                 con.setAutoCommit(previousAutoCommit);
                 con.close();
             } catch (Exception e) {
