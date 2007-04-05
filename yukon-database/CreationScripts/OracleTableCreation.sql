@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/5/2007 5:51:27 PM                          */
+/* Created on:     4/5/2007 6:16:15 PM                          */
 /*==============================================================*/
 
 
@@ -6348,10 +6348,10 @@ insert into YukonGroupRole values (-10990,-2, -108, -10810, '(none)');
 insert into YukonGroupRole values (-10991,-2, -108, -10811, '(none)');
 
 /* Give yukon login access to View Logs, */
-insert into YukonUserRole values (-4000, -2, -200, -20009, '(none)');
+insert into YukonGroupRole values (-4000, -2, -200, -20009, '(none)');
 
 /* Give yukon login access to view Reporting on main page */
-insert into YukonUserRole values (-5000, -2, -109, -10920, '(none)');
+insert into YukonGroupRole values (-5000, -2, -109, -10920, '(none)');
 
 
 insert into yukongrouprole values (-2000,-303,-108,-10800,'/operator/Operations.jsp');
