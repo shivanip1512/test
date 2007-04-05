@@ -562,6 +562,30 @@ insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false
 
 /*Still need to add the PL/SQL loops for julie's cap control stuff*/
 
+update yukonroleproperty set defaultvalue = 'Server/web/webapps/ROOT/WebConfig/custom/notif_templates/' where rolepropertyid = -80100;
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-568, -52, 'Repeater 801', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-569, -3, 'Repeater 801', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-570, -53, 'Repeater 801', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-571, -54, 'Repeater 801', 4, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-572, -52, 'Repeater 921', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-573, -3, 'Repeater 921', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-574, -53, 'Repeater 921', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-575, -54, 'Repeater 921', 4, 'Y', -1);
+
+/* @error ignore-begin */
+insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key','','The name of the set of CICustomerPointData TYPES that should be set for customers.');
+/* @error ignore-end */
+
+insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0);
+insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0);
+insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0); 
+
+alter table DCItemValue drop constraint PK_DCITEMVALUE;
+alter table DCItemValue add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

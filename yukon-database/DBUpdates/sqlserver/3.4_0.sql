@@ -541,12 +541,12 @@ go
 alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID);
-go     
-      
+go
+     
 insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
-go     
+go    
       
 insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 go
@@ -858,6 +858,33 @@ go
 
 insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
 insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false','Show Cap Bank Addititional Info tab');
+go
+
+update yukonroleproperty set defaultvalue = 'Server/web/webapps/ROOT/WebConfig/custom/notif_templates/' where rolepropertyid = -80100;
+go
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-568, -52, 'Repeater 801', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-569, -3, 'Repeater 801', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-570, -53, 'Repeater 801', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-571, -54, 'Repeater 801', 4, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-572, -52, 'Repeater 921', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-573, -3, 'Repeater 921', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-574, -53, 'Repeater 921', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-575, -54, 'Repeater 921', 4, 'Y', -1);
+go
+
+/* @error ignore-begin */
+insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key','','The name of the set of CICustomerPointData TYPES that should be set for customers.');
+/* @error ignore-end */
+
+insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0);
+insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0);
+insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0);
+go
+
+alter table DCItemValue drop constraint PK_DCITEMVALUE;
+alter table DCItemValue add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
 go
 
 /******************************************************************************/
