@@ -3,13 +3,7 @@
 
 <beans>
 
-  <bean id="yukonDataSource" class="com.cannontech.database.YukonDataSource">
-    <constructor-arg value="yukon"/>
-  </bean>
-  
-  <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" factory-method="getInstance"/>
-  <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" singleton="false"/>
-  <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" singleton="false"/>
+  <bean id="yukonDataSource" class="com.cannontech.database.PoolManager" factory-method="getYukonDataSource"/>
   
   
   <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
