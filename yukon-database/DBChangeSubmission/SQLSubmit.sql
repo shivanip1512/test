@@ -116,12 +116,9 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-574, -53, 'Repeater 921', 3, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-575, -54, 'Repeater 921', 4, 'Y', -1);
 /***************** END Bug 568 - Adding commands for Repeater 801 and 921 (SLN) ***************/
 
-/** this is an old change that got missed, here is the creation script text:
+/** this is an old change that got missed, needs to be in creation script too **/
   insert into YukonRoleProperty values
     (-1112,-2,'applicable_point_type_key','','The name of the set of CICustomerPointData TYPES that should be set for customers.');
-   **/
-  update YukonServices set ServiceClass = 'bean:notificationServer' where ServiceClass = 'com.cannontech.notif.server.NotificationServer';
-
 
 /** end **/
 
