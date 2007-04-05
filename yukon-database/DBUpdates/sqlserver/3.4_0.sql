@@ -887,6 +887,15 @@ alter table DCItemValue drop constraint PK_DCITEMVALUE;
 alter table DCItemValue add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
 go
 
+/* @error ignore-begin */
+insert into YukonGroupRole values (-4000, -2, -200, -20009, '(none)');
+insert into YukonGroupRole values (-5000, -2, -109, -10920, '(none)');
+insert into YukonUserRole values (-2000, -1, -200, -20009, '(none)');
+insert into YukonUserRole values (-3000, -1, -109, -10920, '(none)');
+go
+/* @error ignore-end */
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

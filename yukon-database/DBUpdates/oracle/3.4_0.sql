@@ -585,7 +585,10 @@ insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0);
 alter table DCItemValue drop constraint PK_DCITEMVALUE;
 alter table DCItemValue add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
 
-
+/* @error ignore-begin */
+insert into YukonGroupRole values (-4000, -2, -200, -20009, '(none)');
+insert into YukonGroupRole values (-5000, -2, -109, -10920, '(none)');
+/* @error ignore-end */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
