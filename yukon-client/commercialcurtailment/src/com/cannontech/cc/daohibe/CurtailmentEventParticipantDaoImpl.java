@@ -2,6 +2,8 @@ package com.cannontech.cc.daohibe;
 
 import java.util.List;
 
+import org.hibernate.LockMode;
+
 import com.cannontech.cc.dao.CurtailmentEventParticipantDao;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventParticipant;
@@ -12,6 +14,7 @@ public class CurtailmentEventParticipantDaoImpl extends YukonBaseHibernateDao im
 
     @SuppressWarnings("unchecked")
     public List<CurtailmentEventParticipant> getForEvent(CurtailmentEvent event) {
+        getHibernateTemplate().lock(event, LockMode.NONE);
         String query = "select cep from CurtailmentEventParticipant cep " +
             "inner join fetch cep.customer " +
             "inner join fetch cep.event " +
@@ -20,6 +23,7 @@ public class CurtailmentEventParticipantDaoImpl extends YukonBaseHibernateDao im
     }
 
     public void deleteForEvent(CurtailmentEvent event) {
+        getHibernateTemplate().lock(event, LockMode.NONE);
         getHibernateTemplate().bulkUpdate("delete CurtailmentEventParticipant cep " +
                                           "where cep.event = ?", event);
     }

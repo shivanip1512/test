@@ -249,13 +249,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
 
         sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "deleted");
         if (success) {
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                public void doInTransactionWithoutResult(TransactionStatus status) {
-                    // no notifications have been sent, simply delete the event
-                    curtailmentEventParticipantDao.deleteForEvent(event);
-                    curtailmentEventDao.delete(event);
-                }
-            });
+            curtailmentEventDao.delete(event);
         } else {
             // this is crude, but it will work for the time being
             throw new RuntimeException("DB State might have been lost while deleting event.");

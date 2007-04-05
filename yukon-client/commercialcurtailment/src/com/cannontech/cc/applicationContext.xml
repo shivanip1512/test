@@ -178,7 +178,9 @@
   <bean id="availableProgramGroupDao" class="com.cannontech.cc.daohibe.AvailableProgramGroupDaoImpl" parent="yukonHibeDao"/>
   <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daohibe.GroupCustomerNotifDaoImpl" parent="yukonHibeDao"/>
   <bean id="customerStubDao" class="com.cannontech.cc.daohibe.CustomerStubDaoImpl" parent="yukonHibeDao"/>
-  <bean id="curtailmentEventDao" class="com.cannontech.cc.daohibe.CurtailmentEventDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventDao" class="com.cannontech.cc.daohibe.CurtailmentEventDaoImpl" parent="yukonHibeDao">
+    <property name="curtailmentEventParticipantDao" ref="curtailmentEventParticipantDao"/>
+  </bean>
   <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daohibe.CurtailmentEventNotifDaoImpl" parent="yukonHibeDao"/>
   <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao"/>
   <bean id="programParameterDao" class="com.cannontech.cc.daohibe.ProgramParameterDaoImpl" parent="yukonHibeDao"/>
