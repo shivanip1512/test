@@ -375,24 +375,26 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
         
         List<String> deviceNameList = new ArrayList<String>();
 
-        String exclude = "";
-        Object[] parameters = new Object[] { meterNumber };
-        if (excludedDeviceId != null) {
-            exclude = " AND ypo.paobjectid <> ?";
-            parameters = new Object[] { meterNumber, excludedDeviceId };
-        }
+        if(!"Default".equalsIgnoreCase(meterNumber)){
 
-        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT ypo.paoname FROM " + TABLE_NAME + " dmg, " + YukonPAObject.TABLE_NAME
-                + " ypo WHERE ypo.paobjectid=dmg.deviceid AND dmg.meternumber = ?" + exclude;
-
-        SqlRowSet rowSet = (SqlRowSet) jdbcOps.query(sql,
-                                                     parameters,
-                                                     new SqlRowSetResultSetExtractor());
-        while (rowSet.next()) {
-            deviceNameList.add(rowSet.getString(1));
-        }
-        
+            String exclude = "";
+            Object[] parameters = new Object[] { meterNumber };
+            if (excludedDeviceId != null) {
+                exclude = " AND ypo.paobjectid <> ?";
+                parameters = new Object[] { meterNumber, excludedDeviceId };
+            }
+    
+            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+            String sql = "SELECT ypo.paoname FROM " + TABLE_NAME + " dmg, " + YukonPAObject.TABLE_NAME
+                    + " ypo WHERE ypo.paobjectid=dmg.deviceid AND dmg.meternumber = ?" + exclude;
+    
+            SqlRowSet rowSet = (SqlRowSet) jdbcOps.query(sql,
+                                                         parameters,
+                                                         new SqlRowSetResultSetExtractor());
+            while (rowSet.next()) {
+                deviceNameList.add(rowSet.getString(1));
+            }
+        }        
         return deviceNameList;
     }
 
