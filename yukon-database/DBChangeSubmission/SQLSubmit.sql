@@ -44,7 +44,7 @@ begin
        loop
 			fetch c_areaid into v_areaid, v_areaname1;
 			insert into capcontrolarea values (v_areaid, 0);
-			v_order := 1;
+		v_order := 1;
              
 			open c_subarea;
 			while (c_subarea%notfound)
@@ -133,3 +133,12 @@ insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0)
 insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0) 
 
 /******/
+
+/*****
+Jess Says: This was already in the creation script, but the primary key is wrong.
+The key needs to be set up like this, and dropped if in previous versions.*/
+alter table DCItemValue
+   add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
+
+alter table DCItemValue
+   drop constraint PK_DCITEMVALUE;
