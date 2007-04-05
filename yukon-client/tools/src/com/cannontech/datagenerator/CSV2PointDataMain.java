@@ -29,7 +29,7 @@ public class CSV2PointDataMain {
         CSV2PointData cpd = YukonSpringHook.getBean("csv2PointData", CSV2PointData.class);
         
         try {
-            if (args[1] != null) {
+            if (args.length == 2) {
                 int multi = Integer.parseInt(args[1]);
                 cpd.setMultiplier(multi);
             }
