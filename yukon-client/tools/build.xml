@@ -19,7 +19,11 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/tools.jar"
-            basedir="build/"  manifest="resource/manifest.mf"/>       
+           basedir="build/"  manifest="resource/manifest.mf">
+	   	   <fileset dir="src">
+		      <include name="**/*.xml"/>
+		   </fileset>
+       </jar>       
 
        <jar jarfile="${yukon.lib}/tztest.jar"
             basedir="build/" manifest="resource/tztest_manifest.mf">
@@ -38,8 +42,11 @@
    </target>
 
 	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/tools.jar"
-   			basedir="build/" />   			       
+   		<jar jarfile="${yukon.client.bin}/tools.jar" basedir="build/">
+	    	<fileset dir="src">
+	 			<include name="**/*.xml"/>
+			</fileset>
+   		</jar>   			       
 
 		<copy todir="${yukon.client.bin}">
 	 	    <fileset dir="resource">
