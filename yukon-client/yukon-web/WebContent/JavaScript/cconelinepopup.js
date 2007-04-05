@@ -399,7 +399,7 @@ function createFeederMenu(paoID) {
 }
 function createSubMenu() {
 	//state var
-	paoId = 1531;
+	paoId = getSubId();
 	var resetOpcount = new Command (paoId, ALL_SUB_CMDS.reset_op_cnt, ALL_CMD_TYPES.sub);
 	var confirmSub = new Command (paoId, ALL_SUB_CMDS.confirm_close, ALL_CMD_TYPES.sub);
 	
