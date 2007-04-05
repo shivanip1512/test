@@ -1244,7 +1244,7 @@ public class CommandDeviceBean
 	}
 	public static boolean isLoadManagementSortByGroup(LiteYukonPAObject lPao)
 	{
-		return (DeviceClasses.LOADMANAGEMENT == lPao.getPaoClass());
+		return (DeviceClasses.LOADMANAGEMENT == lPao.getPaoClass() || DeviceClasses.GROUP == lPao.getPaoClass());
 	}
 	
 	public HashMap getLoadGroupIDToLiteLoadGroupsMap()
@@ -1257,9 +1257,9 @@ public class CommandDeviceBean
 			StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID FROM " + YukonPAObject.TABLE_NAME  + " PAO " +
 				" WHERE PAO.PAOBJECTID IN ( " +
 					" SELECT DISTINCT GM.CHILDID FROM " + GenericMacro.TABLE_NAME + " GM ");
-					sql.append(" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "' ");
+					sql.append(" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "') ");
 				sql.append(" OR PAO.PAOBJECTID IN ( " +
-					" SELECT DISTINCT LMG.DEVICEID FROM " + LMGroup.TABLE_NAME + " LMG ) )");
+					" SELECT DISTINCT LMG.DEVICEID FROM " + LMGroup.TABLE_NAME + " LMG )");
                 
 			java.sql.Connection conn = null;
 			java.sql.PreparedStatement stmt = null;
