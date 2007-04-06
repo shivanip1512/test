@@ -1822,6 +1822,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setCurrentWattLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
+                        currentSubstationBus->setCurrentWattPointQuality(quality);
 
                         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                         {
@@ -1853,6 +1854,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setCurrentVoltLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
+                        currentSubstationBus->setCurrentVoltPointQuality(quality);
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
                             !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
                         {
@@ -2089,9 +2091,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             if (currentFeeder->getCurrentWattLoadPointValue() != value) 
                             {
                                 currentFeeder->setCurrentWattLoadPointValue(value);
+                                currentFeeder->setNewPointDataReceivedFlag(TRUE);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-
+                            currentFeeder->setCurrentWattPointQuality(quality);
+                            
                             if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                             {
                                 currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
@@ -2119,8 +2123,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             if (currentFeeder->getCurrentVoltLoadPointValue() != value) 
                             {
                                 currentFeeder->setCurrentVoltLoadPointValue(value);
+                                currentFeeder->setNewPointDataReceivedFlag(TRUE);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
+                            currentFeeder->setCurrentVoltPointQuality(quality);
+
 
                             found = TRUE;
                            // break;
@@ -2416,6 +2423,17 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                             else if( commandString == "control close" )
                             {
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                            }
+                            else if( commandString == "control flip" )
+                            {
+                                if (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) 
+                                {
+                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                                }
+                                else
+                                {
+                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                                }
                             }
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
