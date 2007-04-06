@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.28 $
-*    DATE         :  $Date: 2006/08/24 14:44:16 $
+*    REVISION     :  $Revision: 1.29 $
+*    DATE         :  $Date: 2007/04/06 18:58:06 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.29  2007/04/06 18:58:06  jrichter
+      BUG ID: 923
+      fdrlodestar enhance debug/send message to system log on corrupt file data
+
       Revision 1.28  2006/08/24 14:44:16  jrichter
       BUG FIX:
       -initialize *fptr = NULL, set attemptCounter = 0 on each full loop.
@@ -122,6 +126,7 @@
 
 #include "cparms.h"
 #include "msg_cmd.h"
+#include "msg_signal.h"
 #include "pointtypes.h"
 
 #include "dllbase.h"
@@ -294,11 +299,19 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
     } */
     if( savedStopTime.seconds() != savedStartTime.seconds()+(nbrPoints*stdLsSecondsPerInterval)-getSubtractValue() )
     {
+        string text = "NbrPoints * SecondsPerInterval != StopTime - StartTime";
+        string additional = "Possible File Corruption!";
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<"returning FALSE!!!" << endl;
+            dout << CtiTime() <<" returning FALSE!!!" << endl;
+            dout << CtiTime() <<" NBR of Points in file: ("<<nbrPoints<<") * Seconds Per Interval ("<<stdLsSecondsPerInterval
+                 <<") != StopTime ("<<savedStopTime<<") - StartTime ("<<savedStartTime<<") "<<endl;
+            dout << CtiTime() << " Calculation: "<<((nbrPoints*stdLsSecondsPerInterval)-getSubtractValue()) << " != "
+                              << (savedStopTime.seconds() - savedStartTime.seconds()) <<endl;
         }
+        queueMessageToDispatch(new CtiSignalMsg(SYS_PID_SYSTEM,1,text,additional,GeneralLogType,SignalEvent,"fdr lodestar"));
+        
         delete_list(dispatchList);
         dispatchList.clear();
         returnBool = false;
