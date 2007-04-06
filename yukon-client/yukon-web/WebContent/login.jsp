@@ -89,7 +89,7 @@
 		                	</tr>
 		              	</table>
 		              	<div class="loginHelp">
-		              		<a href="<c:url value="/pwordreq.jsp"/>">Forgot your password?</a>.
+		              		<a href="<c:url value="/pwordreq.jsp"/>">Forgot your password?</a>
 		              	</div>
 					</form>
 					
