@@ -1853,6 +1853,7 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
     CtiString   token;
+    UINT        flag   = 0;
     boost::regex    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[0-9]+)?");
 
     CtiTokenizer   tok(CmdStr);
@@ -1910,8 +1911,14 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
 
     if(CmdStr.contains(" update"))
     {
-        _cmd["flag"] = CtiParseValue( CMD_FLAG_UPDATE );
+        flag |= CMD_FLAG_UPDATE;
     }
+    if(CmdStr.contains(" frozen"))
+    {
+        flag |= CMD_FLAG_FROZEN;
+    }
+    _cmd["flag"]  = CtiParseValue( flag   );
+
 
 }
 
