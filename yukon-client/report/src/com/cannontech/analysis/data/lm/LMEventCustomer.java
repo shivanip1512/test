@@ -160,18 +160,22 @@ public class LMEventCustomer
 	 * @param duration
 	 * @return
 	 */
-	public Double getERICredit(Double duration )
+	public Double getERICredit(Double duration, int eventType )
 	{
 		if( eriCredit == null)
 		{
 			if( getNumIntervalViolations().intValue() <= getDeviationPeriods().intValue())
 			{
-				if( getCustCurtailLoad() != null)
-				{
-                    double credit = duration.doubleValue() * getCustCurtailLoad().doubleValue() * getERIRate().doubleValue();
-                    BigDecimal bd = new BigDecimal(credit);
-                    bd = bd.setScale(0, BigDecimal.ROUND_HALF_UP);
-                    eriCredit = new Double(bd.doubleValue());
+				if( (eventType == LMEvent.EMERGENCY_EVENT || eventType == LMEvent.DISPATCHED_EVENT) ||
+	  					( eventType == LMEvent.UF_EVENT && duration.doubleValue() > 1) )
+				{	
+					if( getCustCurtailLoad() != null)
+					{
+	                    double credit = duration.doubleValue() * getCustCurtailLoad().doubleValue() * getERIRate().doubleValue();
+	                    BigDecimal bd = new BigDecimal(credit);
+	                    bd = bd.setScale(0, BigDecimal.ROUND_HALF_UP);
+	                    eriCredit = new Double(bd.doubleValue());
+					}
 				}
 			}
 			

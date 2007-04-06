@@ -874,7 +874,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		  		LMEventCustomer lmEventCust = (LMEventCustomer)event.getLmEventCustomerMap().get(customerIDS[i]);
 		  		if( lmEventCust != null)
 		  		{
-			  		eriAmount += lmEventCust.getERICredit(event.getRoundedDuration()).doubleValue();
+			  		eriAmount += lmEventCust.getERICredit(event.getRoundedDuration(), event.getEventType()).doubleValue();
 					double efslCharge = lmEventCust.getExcessFirmServiceLevelCharge().doubleValue();
 			  		switch (event.getEventType())
 					{
