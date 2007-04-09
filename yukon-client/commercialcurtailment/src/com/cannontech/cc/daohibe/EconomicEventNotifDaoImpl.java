@@ -43,6 +43,12 @@ public class EconomicEventNotifDaoImpl extends YukonBaseHibernateDao
         }
     }
 
+    public void deleteForParticipant(EconomicEventParticipant participant) {
+        String query = "delete from EconomicEventNotif een " +
+            "where een.participant = ? ";
+        getHibernateTemplate().bulkUpdate(query, participant);
+    }
+    
     @SuppressWarnings("unchecked")
     public List<EconomicEventNotif> getScheduledNotifs() {
         //use my def of now in case DB time is different

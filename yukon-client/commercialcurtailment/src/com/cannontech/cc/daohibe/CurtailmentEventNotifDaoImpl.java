@@ -6,6 +6,8 @@ import java.util.List;
 import com.cannontech.cc.dao.CurtailmentEventNotifDao;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventNotif;
+import com.cannontech.cc.model.CurtailmentEventParticipant;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 import com.cannontech.hibernate.YukonBaseHibernateDao;
@@ -35,11 +37,14 @@ public class CurtailmentEventNotifDaoImpl extends YukonBaseHibernateDao
     }
     
     public void deleteForEvent(CurtailmentEvent event) {
-        // this is a pretty lazy approach, maybe I should just use SQL...
         List<CurtailmentEventNotif> list = getForEvent(event);
-        for (CurtailmentEventNotif notif : list) {
-            delete(notif);
-        }
+        getHibernateTemplate().deleteAll(list);
+    }
+    
+    public void deleteForParticipant(CurtailmentEventParticipant participant) {
+        String query = "delete from CurtailmentEventNotif cen " +
+             "where cen.participant = ? ";
+        getHibernateTemplate().bulkUpdate(query, participant);
     }
 
     @SuppressWarnings("unchecked")

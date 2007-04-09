@@ -2,9 +2,11 @@ package com.cannontech.cc.daohibe;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.cc.dao.EconomicEventDao;
+import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
@@ -14,6 +16,7 @@ import com.cannontech.hibernate.YukonBaseHibernateDao;
 
 public class EconomicEventDaoImpl extends YukonBaseHibernateDao implements
     EconomicEventDao {
+    private EconomicEventParticipantDao economicEventParticipantDao;
 
     public EconomicEventDaoImpl() {
         super();
@@ -24,6 +27,7 @@ public class EconomicEventDaoImpl extends YukonBaseHibernateDao implements
     }
 
     public void delete(EconomicEvent object) {
+        economicEventParticipantDao.deleteForEvent(object);
         getHibernateTemplate().delete(object);
     }
 
@@ -66,6 +70,12 @@ public class EconomicEventDaoImpl extends YukonBaseHibernateDao implements
             return null;
         }
         return (EconomicEvent) results.get(0);
+    }
+    
+    @Required
+    public void setEconomicEventParticipantDao(
+            EconomicEventParticipantDao economicEventParticipantDao) {
+        this.economicEventParticipantDao = economicEventParticipantDao;
     }
 
 }

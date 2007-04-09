@@ -3,8 +3,10 @@ package com.cannontech.cc.daohibe;
 import java.util.List;
 
 import org.hibernate.LockMode;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
@@ -13,9 +15,11 @@ import com.cannontech.hibernate.YukonBaseHibernateDao;
 
 public class EconomicEventParticipantDaoImpl extends YukonBaseHibernateDao implements
     EconomicEventParticipantDao {
+    private EconomicEventNotifDao economicEventNotifDao;
 
     @SuppressWarnings("unchecked")
     public List<EconomicEventParticipant> getForEvent(EconomicEvent event) {
+        getHibernateTemplate().lock(event, LockMode.NONE);
         String query = "select eep from EconomicEventParticipant eep " +
             "inner join fetch eep.customer " +
             "inner join fetch eep.event " +
@@ -44,6 +48,7 @@ public class EconomicEventParticipantDaoImpl extends YukonBaseHibernateDao imple
 
     public void deleteForEvent(EconomicEvent event) {
         getHibernateTemplate().lock(event, LockMode.NONE);
+        economicEventNotifDao.deleteForEvent(event);
         List<EconomicEventParticipant> particips = getForEvent(event);
         for (EconomicEventParticipant partic : particips) {
             delete(partic);
@@ -55,12 +60,19 @@ public class EconomicEventParticipantDaoImpl extends YukonBaseHibernateDao imple
     }
 
     public void delete(EconomicEventParticipant object) {
+        economicEventNotifDao.deleteForParticipant(object);
         getHibernateTemplate().delete(object);
     }
 
     public EconomicEventParticipant getForId(Integer id) {
         return (EconomicEventParticipant) 
             getHibernateTemplate().get(EconomicEventParticipant.class, id);
+    }
+    
+    @Required
+    public void setEconomicEventNotifDao(
+            EconomicEventNotifDao economicEventNotifDao) {
+        this.economicEventNotifDao = economicEventNotifDao;
     }
 
 }
