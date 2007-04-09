@@ -69,7 +69,7 @@ alter table CustomerNotifGroupMap
       references Customer (CustomerID);
 
 alter table NotificationDestination add Attribs char(16);
-update NotificationDestination set Attribs = '0000000000000000';
+update NotificationDestination set Attribs = 'YNYNNNNNNNNNNNNN';
 alter table NotificationDestination modify Attribs char(16) not null;
 
 alter table NotificationGroup drop column emailsubject;

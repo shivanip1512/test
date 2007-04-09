@@ -105,7 +105,7 @@ go
 
 alter table NotificationDestination add Attribs char(16);
 go
-update NotificationDestination set Attribs = '0000000000000000';
+update NotificationDestination set Attribs = 'YNYNNNNNNNNNNNNN';
 go
 alter table NotificationDestination alter column Attribs char(16) not null;
 go
