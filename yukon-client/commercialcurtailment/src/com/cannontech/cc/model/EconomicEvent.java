@@ -21,8 +21,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -45,12 +43,6 @@ public class EconomicEvent extends BaseEvent {
 
     public EconomicEvent() {
         super();
-    }
-
-    @Override
-    @Transient
-    public String getDisplayName() {
-        return "#" + id;
     }
 
     @Override
@@ -182,21 +174,11 @@ public class EconomicEvent extends BaseEvent {
     }
     
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof EconomicEvent == false) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        EconomicEvent rhs = (EconomicEvent) obj;
-        return new EqualsBuilder().append(id, rhs.id).isEquals();
+    @Transient
+    public String getStateDescription() {
+        return state.toString();
     }
     
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(id).toHashCode();
-    }
     @Override
     public String toString() {
         return "EconomicEvent [" + id + "]";

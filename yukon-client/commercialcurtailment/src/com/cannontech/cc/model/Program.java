@@ -26,6 +26,8 @@ public class Program implements Serializable, Comparable<Program> {
     private String name = "";
     private ProgramType programType;
     private Integer id;
+    private Integer lastIdentifier;
+    private String identifierPrefix;
     static private Comparator<String> comparator = new NaturalOrderComparator();
     
     @Column(name="CCurtProgramName", nullable=false)
@@ -45,6 +47,24 @@ public class Program implements Serializable, Comparable<Program> {
     
     public void setProgramType(ProgramType programType) {
         this.programType = programType;
+    }
+
+    @Column(nullable=false)
+    public String getIdentifierPrefix() {
+        return identifierPrefix;
+    }
+
+    public void setIdentifierPrefix(String identifierPrefix) {
+        this.identifierPrefix = identifierPrefix;
+    }
+
+    @Column(nullable=false)
+    public Integer getLastIdentifier() {
+        return lastIdentifier;
+    }
+
+    public void setLastIdentifier(Integer lastIdentifier) {
+        this.lastIdentifier = lastIdentifier;
     }
 
     @Id

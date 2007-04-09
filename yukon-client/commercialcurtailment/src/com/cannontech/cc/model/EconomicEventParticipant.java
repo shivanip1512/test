@@ -42,7 +42,7 @@ public class EconomicEventParticipant implements BaseParticipant {
             return true;
         }
         EconomicEventParticipant rhs = (EconomicEventParticipant) obj;
-        return new EqualsBuilder().append(id, rhs.id).isEquals();
+        return new EqualsBuilder().append(event, rhs.event).append(customer, rhs.customer).isEquals();
     }
 
     @ManyToOne
@@ -77,7 +77,7 @@ public class EconomicEventParticipant implements BaseParticipant {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).toHashCode();
+        return new HashCodeBuilder().append(event).append(customer).toHashCode();
     }
 
     public void setCustomer(CICustomerStub customer) {

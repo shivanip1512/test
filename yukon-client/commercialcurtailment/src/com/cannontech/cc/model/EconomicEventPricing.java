@@ -119,12 +119,12 @@ public class EconomicEventPricing {
             return true;
         }
         EconomicEventPricing rhs = (EconomicEventPricing) obj;
-        return new EqualsBuilder().append(id, rhs.id).isEquals();
+        return new EqualsBuilder().append(event, rhs.event).append(revision,rhs.revision).isEquals();
     }
     
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).toHashCode();
+        return new HashCodeBuilder().append(event).append(revision).toHashCode();
     }
     
     @Override

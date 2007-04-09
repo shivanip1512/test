@@ -22,6 +22,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -132,5 +134,23 @@ public class EconomicEventParticipantSelection {
     public void setState(SelectionState state) {
         this.state = state;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof EconomicEventParticipantSelection == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        EconomicEventParticipantSelection rhs = (EconomicEventParticipantSelection) obj;
+        return new EqualsBuilder().append(pricingRevision, rhs.pricingRevision).append(participant, rhs.participant).isEquals();
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(pricingRevision).append(participant).toHashCode();
+    }
+
 
 }

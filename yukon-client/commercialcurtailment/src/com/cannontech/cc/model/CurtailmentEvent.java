@@ -115,17 +115,16 @@ public class CurtailmentEvent extends BaseEvent {
     public void setIdentifier(Integer identifier) {
         this.identifier = identifier;
     }
+    
+    @Override
+    @Transient
+    public String getStateDescription() {
+        return state.toString();
+    }
 
     @Override
     public String toString() {
         return "CurtailmentEvent [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
     }
-
-    @Override
-    @Transient
-    public String getDisplayName() {
-        return "#" + id;
-    }
-
 
 }

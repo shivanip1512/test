@@ -87,12 +87,12 @@ public class EconomicEventPricingWindow implements Comparable<EconomicEventPrici
             return true;
         }
         EconomicEventPricingWindow rhs = (EconomicEventPricingWindow) obj;
-        return new EqualsBuilder().append(id, rhs.id).isEquals();
+        return new EqualsBuilder().append(pricingRevision, rhs.pricingRevision).append(offset, rhs.offset).isEquals();
     }
     
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).toHashCode();
+        return new HashCodeBuilder().append(pricingRevision).append(offset).toHashCode();
     }
     
     @Override

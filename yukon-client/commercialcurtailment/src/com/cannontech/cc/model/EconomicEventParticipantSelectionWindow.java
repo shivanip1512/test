@@ -82,12 +82,12 @@ public class EconomicEventParticipantSelectionWindow implements Comparable<Econo
             return true;
         }
         EconomicEventParticipantSelectionWindow rhs = (EconomicEventParticipantSelectionWindow) obj;
-        return new EqualsBuilder().append(id, rhs.id).isEquals();
+        return new EqualsBuilder().append(selection, rhs.selection).append(window, rhs.window).isEquals();
     }
     
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).toHashCode();
+        return new HashCodeBuilder().append(selection).append(window).toHashCode();
     }
     @Override
     public String toString() {
