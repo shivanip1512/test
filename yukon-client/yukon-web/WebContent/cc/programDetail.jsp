@@ -24,6 +24,18 @@
     <f:validateLength minimum="2" />
     </t:inputText></td>
 </tr>
+<tr>
+  <td><t:outputLabel value="Identifier Prefix" for="identifierPrefix" styleClass="propertyEntry"/></td>
+  <td><t:inputText id="identifierPrefix" value="#{sProgramDetail.program.identifierPrefix}" >
+    <f:validateLength minimum="1" />
+    </t:inputText></td>
+</tr>
+<tr>
+  <td><t:outputLabel value="Last Identifier" for="lastIdentifier" styleClass="propertyEntry"/></td>
+  <td><t:inputText id="lastIdentifier" value="#{sProgramDetail.program.lastIdentifier}" >
+    <f:validateLongRange minimum="0" />
+    </t:inputText></td>
+</tr>
 </table>
 </div>
 
