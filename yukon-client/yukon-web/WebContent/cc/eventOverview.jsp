@@ -9,7 +9,7 @@
 
 <h:form>
 <h3>Current Events</h3>
-<t:dataTable value="#{sEventOverview.currentEventListModel}" 
+<t:dataTable value="#{rEventOverview.currentEventListModel}" 
              var="thisEvent"
              forceIdIndexFormula="#{thisEvent.id}">
   <t:column>
@@ -19,7 +19,7 @@
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailCurrent}">
+    <h:commandLink action="#{rEventOverview.showDetailCurrent}">
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
@@ -53,7 +53,7 @@
 </t:dataTable>
 
 <h3>Pending Events</h3>
-<t:dataTable value="#{sEventOverview.pendingEventListModel}" 
+<t:dataTable value="#{rEventOverview.pendingEventListModel}" 
              var="thisEvent"
              forceIdIndexFormula="#{thisEvent.id}">
   <t:column>
@@ -63,7 +63,7 @@
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailPending}">
+    <h:commandLink action="#{rEventOverview.showDetailPending}">
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
@@ -97,7 +97,7 @@
 </t:dataTable>
 
 <h3>Recent Events</h3>
-<t:dataTable value="#{sEventOverview.recentEventListModel}" 
+<t:dataTable value="#{rEventOverview.recentEventListModel}" 
              var="thisEvent"
              forceIdIndexFormula="#{thisEvent.id}">
   <t:column>
@@ -107,7 +107,7 @@
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailRecent}">
+    <h:commandLink action="#{rEventOverview.showDetailRecent}">
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
