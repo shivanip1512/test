@@ -18,35 +18,27 @@ public class EventListBean {
     private Program program;
     private ProgramService programService;
     private LiteYukonUser yukonUser;
-    private ListDataModel eventListModel;
     private EventDetailHelper eventDetailHelper;
     
     public Program getProgram() {
         return program;
     }
+    
+    public void setProgram(Program program) {
+        this.program = program;
+    }
 
     public String showProgram() {
-        ExternalContext externalContext = 
-            FacesContext.getCurrentInstance().getExternalContext();
-        String programIdStr = 
-            (String) externalContext.getRequestParameterMap().get("programId");
-        int programId = Integer.parseInt(programIdStr);
-        program = programService.getProgram(programId);
+        return "eventList";
+    }
+    
+    public List<? extends BaseEvent> getEventList() {
         CICurtailmentStrategy strategy = 
             eventDetailHelper.getStrategyFactory().getStrategy(getProgram());
         
         List<? extends BaseEvent> eventList = strategy.getEventsForProgram(getProgram());
         Collections.reverse(eventList);
-        eventListModel = new ListDataModel(eventList);
-        
-        return "eventList";
-    }
-    
-    public String showDetail() {
-        // get selected row
-        BaseEvent event = (BaseEvent) eventListModel.getRowData();
-        BaseDetailBean detailBean = eventDetailHelper.getEventDetailBean(event);
-        return detailBean.showDetail(event);
+        return eventList;
     }
     
     public LiteYukonUser getYukonUser() {
@@ -63,14 +55,6 @@ public class EventListBean {
 
     public void setProgramService(ProgramService programService) {
         this.programService = programService;
-    }
-
-    public ListDataModel getEventListModel() {
-        return eventListModel;
-    }
-
-    public void setEventListModel(ListDataModel eventListModel) {
-        this.eventListModel = eventListModel;
     }
 
     public EventDetailHelper getEventDetailHelper() {
