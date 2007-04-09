@@ -88,4 +88,6 @@
       <property name="authDao" ref="authDao"/>
       <property name="propertySearcher"><bean class="com.cannontech.util.ReflectivePropertySearcher" factory-method="getRoleProperty"/></property>
     </bean>
+    
+    <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
 </beans>
