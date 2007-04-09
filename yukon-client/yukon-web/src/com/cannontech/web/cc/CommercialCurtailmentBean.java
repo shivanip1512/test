@@ -2,12 +2,15 @@ package com.cannontech.web.cc;
 
 import java.util.TimeZone;
 
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.operator.AdministratorRole;
 
 public class CommercialCurtailmentBean {
     private LiteYukonUser yukonUser;
+    private AuthDao authDao;
 
     public CommercialCurtailmentBean() {
         super();
@@ -31,6 +34,10 @@ public class CommercialCurtailmentBean {
         return "H:mm";
     }
     
+    public boolean isAdminUser() {
+        return authDao.checkRole(getYukonUser(), AdministratorRole.ROLEID);
+    }
+    
     public String getDateFormat() {
         return "M/d/yy";
     }
@@ -41,6 +48,10 @@ public class CommercialCurtailmentBean {
     
     public LiteEnergyCompany getEnergyCompany() {
         return DaoFactory.getEnergyCompanyDao().getEnergyCompany(getYukonUser());
+    }
+    
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
     
 
