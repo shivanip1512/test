@@ -11,6 +11,7 @@ import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.service.IsocCommonStrategy;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.support.CustomerPointTypeHelper;
@@ -23,6 +24,7 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
     private CustomerStubDao customerStubDao = (CustomerStubDao) YukonSpringHook.getBean("customerStubDao");
     private BaseEventDao baseEventDao = (BaseEventDao) YukonSpringHook.getBean("baseEventDao");
     private CustomerPointTypeHelper customerPointTypeHelper = (CustomerPointTypeHelper) YukonSpringHook.getBean("customerPointTypeHelper");
+    private IsocCommonStrategy isocCommonStrategy = (IsocCommonStrategy) YukonSpringHook.getBean("isocCommonStrategy");
     
     private List<ModelRow> data = Collections.emptyList();
     
@@ -37,6 +39,7 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
         public Date stopDate;
         public Double durationHours;
         public String type;
+        public String state;
     }
     
     @Override
@@ -75,8 +78,10 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
                     row.startDate = event.getStartTime();
                     row.stopDate = event.getStopTime();
                     row.notificationDate = event.getNotificationTime();
-                    row.durationHours = (double)event.getDuration() / 60;
+                    boolean doesContribute = isocCommonStrategy.doesEventContributeToAllowedHours(event);
+                    row.durationHours = doesContribute ? (double)event.getDuration() / 60 : 0;
                     row.type = event.getProgram().getProgramType().getName() + " - " + event.getProgram().getName();
+                    row.state = event.getStateDescription();
                     data.add(row);
                 }
             } catch (Exception e) {
