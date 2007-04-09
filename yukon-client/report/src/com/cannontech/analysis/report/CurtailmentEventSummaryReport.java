@@ -17,15 +17,16 @@ import com.cannontech.spring.YukonSpringHook;
 public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Event #", "eventNumber", 50),
-        new ColumnLayoutData("Notification Time", "notificationDate", 140),
-        new ColumnLayoutData("Start Date", "startDate", 140),
-        new ColumnLayoutData("Stop Time", "stopDate", 140),
+        new ColumnLayoutData("State", "state", 80),
+        new ColumnLayoutData("Notification Time", "notificationDate", 120),
+        new ColumnLayoutData("Start Date", "startDate", 120),
+        new ColumnLayoutData("Stop Time", "stopDate", 120),
         new ColumnLayoutData("Duration (hours)", "durationHours", 90),
         new ColumnLayoutData("Type", "type", 150),
     };
     private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
         new LabelFooterFieldFactory(bodyColumns[0], "Total"),
-        new SumFooterFieldFactory(bodyColumns[4]),
+        new SumFooterFieldFactory(bodyColumns[5]),
     };
     
     public CurtailmentEventSummaryReport(BareReportModel bareModel) {
@@ -61,8 +62,8 @@ public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
         CurtailmentEventSummaryModel model = new CurtailmentEventSummaryModel();
         YukonReportBase rmReport = new CurtailmentEventSummaryReport(model);
         rmReport.getModel().setEnergyCompanyID(0);
-        rmReport.getModel().setStartDate(DateFormat.getDateInstance(DateFormat.SHORT).parse("1/1/2006"));
-        rmReport.getModel().setStopDate(DateFormat.getDateInstance(DateFormat.SHORT).parse("12/31/2006"));
+        rmReport.getModel().setStartDate(DateFormat.getDateInstance(DateFormat.SHORT).parse("1/1/2007"));
+        rmReport.getModel().setStopDate(DateFormat.getDateInstance(DateFormat.SHORT).parse("12/31/2007"));
         ReportFuncs.generatePreview(rmReport);
     }
 
