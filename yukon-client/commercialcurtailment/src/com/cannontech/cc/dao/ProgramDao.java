@@ -10,5 +10,5 @@ public interface ProgramDao extends StandardDaoOperations<Program> {
     public List<Program> getProgramsForEnergyCompany(Integer energyCompanyId);
     public Program getForId(Integer id);
     public List<Program> getProgramsForType(ProgramType programType);
-
+    public Integer incrementAndReturnIdentifier(Program program);
 }

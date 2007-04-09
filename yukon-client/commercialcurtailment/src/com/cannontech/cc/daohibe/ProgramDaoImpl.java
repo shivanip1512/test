@@ -52,6 +52,14 @@ public class ProgramDaoImpl extends YukonBaseHibernateDao implements ProgramDao 
     public List<Program> getProgramsForType(ProgramType programType) {
         return getHibernateTemplate().find("select p from Program as p where p.programType = ?", programType);
     }
+    
+    public Integer incrementAndReturnIdentifier(Program program) {
+        getHibernateTemplate().lock(program, LockMode.UPGRADE);
+        Integer result = program.getLastIdentifier() + 1;
+        program.setLastIdentifier(result);
+        getHibernateTemplate().update(program);
+        return result;
+    }
 
     public void setProgramGroupDao(AvailableProgramGroupDaoImpl programGroupDao) {
         this.programGroupDao = programGroupDao;
