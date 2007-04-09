@@ -19,10 +19,14 @@
   </t:column>
   <t:column>
     <f:facet name="header"><h:outputText value="Event #"/></f:facet>
-    <h:commandLink action="#{sEventOverview.showDetail}">
-      <t:updateActionListener property="#{sEventOverview.selectedEvent}" value="#{thisEvent}"/>
+    <h:commandLink action="#{rEventOverview.showDetail}">
+      <t:updateActionListener property="#{rEventOverview.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
+  </t:column>
+  <t:column>
+    <f:facet name="header"><h:outputText value="State"/></f:facet>
+    <h:outputText value="#{thisEvent.stateDescription}"/>
   </t:column>
   <t:column>
      <f:facet name="header"><h:outputText value="Start Date"/></f:facet>
