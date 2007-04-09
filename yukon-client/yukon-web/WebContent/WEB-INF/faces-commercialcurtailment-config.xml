@@ -16,6 +16,10 @@
             <property-name>yukonUser</property-name>
             <value>#{sessionScope.YUKON_USER}</value>
         </managed-property>
+        <managed-property>
+            <property-name>authDao</property-name>
+            <value>#{authDao}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
@@ -265,7 +269,7 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>sEventOverview</managed-bean-name>
+        <managed-bean-name>rEventOverview</managed-bean-name>
         <managed-bean-class>com.cannontech.web.cc.EventOverviewBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
         <managed-property>
