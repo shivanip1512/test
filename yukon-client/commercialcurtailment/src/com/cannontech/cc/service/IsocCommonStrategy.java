@@ -41,6 +41,8 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         }
     }
     private final Comparator<BaseEvent> stopTimeComparatot = new StopTimeComparator();
+    private final List<EconomicEventState> excludedEconStates = Arrays.asList(EconomicEventState.CANCELLED, EconomicEventState.SUPPRESSED);
+    private final List<CurtailmentEventState> excludedCurtailmentStates = Arrays.asList(CurtailmentEventState.CANCELLED);
 
     public IsocCommonStrategy() {
         super();
@@ -162,16 +164,12 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         }
         if (event instanceof EconomicEvent) {
             EconomicEvent existingEventEcon = (EconomicEvent) event;
-            List<EconomicEventState> excludedStates = 
-                Arrays.asList(EconomicEventState.CANCELLED, EconomicEventState.SUPPRESSED);
-            if (excludedStates.contains(existingEventEcon.getState())) {
+            if (excludedEconStates.contains(existingEventEcon.getState())) {
                 return false;
             }
         } else if (event instanceof CurtailmentEvent) {
             CurtailmentEvent existingEventCurt = (CurtailmentEvent) event;
-            List<CurtailmentEventState> excludedStates = 
-                Arrays.asList(CurtailmentEventState.CANCELLED);
-            if (excludedStates.contains(existingEventCurt.getState())) {
+            if (excludedCurtailmentStates.contains(existingEventCurt.getState())) {
                 return false;
             }
         }
