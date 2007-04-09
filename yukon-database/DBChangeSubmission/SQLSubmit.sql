@@ -92,3 +92,17 @@ end;
 alter table ccfeederbanklist modify tripOrder number not null;
 /**** END JON!!!! THIS DON't WORKY WORKY!!! ********/
 /****************** END ORACLE **************************/
+
+
+/** commercial curtailment **/
+
+alter table ccurtprogram add  LastIdentifier numeric;
+update ccurtprogram set LastIdentifier = 0;
+alter table ccurtprogram alter column LastIdentifier numeric not null;
+
+alter table ccurtprogram add  IdentifierPrefix varchar(32);
+update ccurtprogram set IdentifierPrefix = 'PROG-';
+alter table ccurtprogram alter column IdentifierPrefix varchar(32) not null;
+
+
+/** end **/
