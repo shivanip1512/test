@@ -25,4 +25,4 @@ alter table dynamiccccapbank alter column twowaycbcstatetime datetime not null;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Jon', '04-Apr-2007', 'Latest Update', 14 );
