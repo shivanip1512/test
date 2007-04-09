@@ -70,6 +70,7 @@
     <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
     <property name="transactionTemplate" ref="transactionTemplate"/>
     <property name="curtailmentEventDao" ref="curtailmentEventDao"/>
+    <property name="programDao" ref="programDao"/>
   </bean>
   
   <bean id="isocNotification" class="com.cannontech.cc.service.IsocNotificationStrategy" 
@@ -182,10 +183,16 @@
     <property name="curtailmentEventParticipantDao" ref="curtailmentEventParticipantDao"/>
   </bean>
   <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daohibe.CurtailmentEventNotifDaoImpl" parent="yukonHibeDao"/>
-  <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao">
+    <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
+  </bean>
   <bean id="programParameterDao" class="com.cannontech.cc.daohibe.ProgramParameterDaoImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventDao" class="com.cannontech.cc.daohibe.EconomicEventDaoImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventParticipantDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventDao" class="com.cannontech.cc.daohibe.EconomicEventDaoImpl" parent="yukonHibeDao">
+    <property name="economicEventParticipantDao" ref="economicEventParticipantDao"/>
+  </bean>
+  <bean id="economicEventParticipantDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl" parent="yukonHibeDao">
+    <property name="economicEventNotifDao" ref="economicEventNotifDao"/>
+  </bean>
   <bean id="economicEventNotifDao" class="com.cannontech.cc.daohibe.EconomicEventNotifDaoImpl" parent="yukonHibeDao"/>
   <bean id="economicEventParticipantSelectionDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionDaoImpl" parent="yukonHibeDao"/>
   <bean id="economicEventParticipantSelectionWindowDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionWindowImpl" parent="yukonHibeDao"/>

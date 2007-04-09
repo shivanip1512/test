@@ -34,4 +34,6 @@ public interface CICurtailmentStrategy {
 
     public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException;
 
+    public void forceDelete(BaseEvent event);
+
 }

@@ -96,6 +96,12 @@ public class EventService {
         
         return strategy.isConsideredActive(event);
     }
+    
+    public void forceDelete(BaseEvent event) {
+        CICurtailmentStrategy strategy = 
+            strategyFactory.getStrategy(event.getProgram());
+        strategy.forceDelete(event);
+    }
 
     public void setStrategyFactory(StrategyFactory strategyFactory) {
         this.strategyFactory = strategyFactory;

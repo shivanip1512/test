@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -23,6 +24,7 @@ import com.cannontech.cc.dao.EconomicEventParticipantSelectionDao;
 import com.cannontech.cc.dao.EconomicEventParticipantSelectionWindowDao;
 import com.cannontech.cc.dao.EconomicEventPricingDao;
 import com.cannontech.cc.dao.EconomicEventPricingWindowDao;
+import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
@@ -45,6 +47,7 @@ import com.cannontech.cc.service.enums.NotificationStatus;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.common.util.TimeSource;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -65,7 +68,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private TransactionTemplate transactionTemplate;
     private SimplePointAccessDao pointAccess;
     private EconomicService economicService;
+    private ProgramDao programDao;
     private PointDao pointDao;
+    private TimeSource timeSource;
     
     @Override
     public String getMethodKey() {
@@ -80,6 +85,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         builder.setTimeZone(tz);
         
         EconomicEvent event = new EconomicEvent();
+        Integer identifier = programDao.incrementAndReturnIdentifier(program);
+        event.setIdentifier(identifier);
         event.setProgram(program);
         event.setState(EconomicEventState.INITIAL);
         builder.setEvent(event);
@@ -88,7 +95,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         event.addRevision(revision);
         builder.setEventRevision(revision);
         
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         Calendar calendar = Calendar.getInstance(tz);
         calendar.setTime(now);
         int startTimeOffsetMinutes = getDefaultStartTimeOffsetMinutes(program);
@@ -196,7 +203,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         if (notifMinutes < minNotification) {
             throw new EventCreationException("Notification time must be greater than " + minNotification + " minutes.");
         }
-        Date now  = new Date();
+        Date now  = timeSource.getCurrentTime();
         if (builder.getEvent().getNotificationTime().before(now)) {
             throw new EventCreationException("Notification time must not be in the past.");
         }
@@ -277,7 +284,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
                 }
                 if (builder.getEvent().isEventExtension()) {
                     // verify customers for non-extension events
-                    builder.getEvent().setNotificationTime(new Date());
+                    builder.getEvent().setNotificationTime(timeSource.getCurrentTime());
                 }
                 
                 event = createDatabaseObjects(builder);
@@ -315,7 +322,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         
         try {
             EconomicEventPricing revision = builder.getEventRevision();
-            Date now = new Date(); // now
+            Date now = timeSource.getCurrentTime(); // now
             revision.setCreationTime(now);
 
             getEconomicEventDao().save(event);
@@ -368,7 +375,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             return false;
         }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), 0);
         Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.before(paddedStart) && now.after(paddedNotif);
@@ -376,7 +383,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     
     public Boolean canEventBeDeleted(EconomicEvent event, LiteYukonUser user) {
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.before(paddedNotif);
     }
@@ -386,7 +393,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             return false;
         }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         Date start = TimeUtil.addMinutes(event.getStartTime(), 0);
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.after(start) && now.before(paddedStop);
@@ -397,7 +404,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             return false;
         }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         
         if (!now.before(paddedStop)) {
@@ -438,7 +445,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         
         Date earliestStartTime = TimeUtil.addMinutes(lastWindowStart, -getMinimumRevisionNoticeMinutes());
         
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         Date paddedNow = TimeUtil.addMinutes(now, PADDING_MINUTES);
         
         if (paddedNow.after(earliestStartTime)) {
@@ -464,7 +471,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         newestRevision.setEvent(event);
         newestRevision.setRevision(latestRevision.getRevision().intValue() + 1);
         
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         
         int firstOffset = latestRevision.getFirstAffectedWindowOffset() + 1;
         int numberOfWindows = latestRevision.getEvent().getInitialWindows();
@@ -489,7 +496,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     
     @Transactional
     public void saveRevision(EconomicEventPricing nextRevision) {
-        nextRevision.setCreationTime(new Date());
+        nextRevision.setCreationTime(timeSource.getCurrentTime());
         EconomicEvent event = nextRevision.getEvent();
         event.addRevision(nextRevision);
         economicEventDao.save(event);
@@ -543,7 +550,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     public void saveParticipantSelection(EconomicEventParticipantSelection selection, LiteYukonUser user) 
     throws EventModificationException {
         // check time
-        Date now = new Date();
+        Date now = timeSource.getCurrentTime();
         if (!canUserSubmitSelectionForRevision(selection, user, now)) {
             throw new EventModificationException("Cannot save selections at this time.");
         }
@@ -583,8 +590,15 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         sendProgramNotifications(event, participants, "deleted");
         
         // now, actually delete everything
-        economicEventParticipantDao.deleteForEvent(event);
         economicEventDao.delete(event);
+    }
+    
+    @Transactional
+    public void forceDelete(BaseEvent event) {
+        EconomicEvent economicEvent = (EconomicEvent) event;
+
+        // notifications????
+        economicEventDao.delete(economicEvent);
     }
     
     @Transactional
@@ -614,10 +628,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             return false;
         }
         // first window of revision must not have started
-        Date now = new Date();
         Date revisionStartTime = pricingRevision.getFirstAffectedWindow().getStartTime();
         Date latestEntryTime = TimeUtil.addMinutes(revisionStartTime, -getMinimumAdvanceSelectionEntry());
-        if (now.after(latestEntryTime)) {
+        if (time.after(latestEntryTime)) {
             return false;
         }
         return true;
@@ -816,5 +829,12 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         this.pointDao = pointDao;
     }
 
-
+    public void setProgramDao(ProgramDao programDao) {
+        this.programDao = programDao;
+    }
+    
+    @Required
+    public void setTimeSource(TimeSource timeSource) {
+        this.timeSource = timeSource;
+    }
 }
