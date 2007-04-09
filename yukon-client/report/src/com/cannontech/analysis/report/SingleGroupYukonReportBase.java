@@ -70,7 +70,7 @@ public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
         groupFieldFactory.setMinimumSize(new FloatDimension( 300, 18));
         header.addElement(groupFieldFactory.createElement());
         
-        header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 20));
+        header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 18));
         
         createGroupLabels(header);
         singleGroup.setHeader(header);
