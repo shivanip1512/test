@@ -5,7 +5,9 @@
 
 <f:subview id="userEventList">
 <t:dataTable value="#{eventList}" 
-             var="thisEvent">
+             var="thisEvent"             
+             styleClass="light_table"
+             renderedIfEmpty="false">
   <t:column>
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
@@ -17,6 +19,9 @@
       <t:updateActionListener property="#{sCustomerEventBean.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.stateDescription}"/>
   </t:column>
   <t:column>
     <h:outputText value="#{thisEvent.startTime}">
