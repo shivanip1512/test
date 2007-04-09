@@ -91,6 +91,11 @@ public class EventOverviewBean {
         return eventDetailBean.showDetail(rowData);
     }
     
+    public String deleteEvent() {
+        BaseEvent event = getSelectedEvent();
+        eventService.forceDelete(event);
+        return null;
+    }
     
     //setters for dependency injection
 
