@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2006/05/23 17:17:42 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2007/04/10 23:04:34 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.15  2007/04/10 23:04:34  tspar
+      Added some more protection against bad input when tokenizing.
+
       Revision 1.14  2006/05/23 17:17:42  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -388,63 +391,67 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
             tok_iter1++;
-            tempString2 = *tok_iter1;
-
-       
-            // now we have a category with a :
-            if ( !tempString2.empty() )
+            if( tok_iter1 != nextTempToken.end() )
             {
-                // put category in final name
-                translationName= "C";
-                translationName += tempString2[0];
-        
-                // next token is the remote number
-                if ( tok_iter != nextTranslate.end())
+                tempString2 = *tok_iter1;
+           
+                // now we have a category with a :
+                if ( !tempString2.empty() )
                 {
-                    tempString1 = *tok_iter; tok_iter++;
-                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                    tok_iter1++;
-                    tempString2 = *tok_iter1;
-
-        
-                    // now we have a category with a :
-                    if ( !tempString2.empty() )
+                    // put category in final name
+                    translationName= "C";
+                    translationName += tempString2[0];
+            
+                    // next token is the remote number
+                    if ( tok_iter != nextTranslate.end())
                     {
-                        // put category in final name
-                        translationName= "R"+tempString2 + translationName;
-        
-                        // next token is the point number
-                        if ( tok_iter != nextTranslate.end())
+                        tempString1 = *tok_iter; tok_iter++;
+                        Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+    
+                        tok_iter1++;
+                        if( tok_iter1 != nextTempToken.end() )
                         {
-                            tempString1 = *tok_iter; tok_iter++;
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            tok_iter1++;
                             tempString2 = *tok_iter1;
-        
+
                             // now we have a category with a :
                             if ( !tempString2.empty() )
                             {
                                 // put category in final name
-                                translationName= "T" + string (itoa(translationPoint->getPointType(),wb,10)) + translationName + "P"+ tempString2;
+                                translationName= "R"+tempString2 + translationName;
+                
+                                // next token is the point number
+                                if ( tok_iter != nextTranslate.end())
+                                {
+                                    tempString1 = *tok_iter; tok_iter++;
+                                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
         
-                                // add this point ID and the translated ID
-                                translationPoint->getDestinationList()[aDestinationIndex].setTranslation (translationName);
-                                successful = true;
-        
-                            }   // point id invalid
-        
-                        }   // third token invalid
-        
-                    }   //remote number invalid
-        
-                }   // second token invalid
-        
-            }   // category invalid
-        
+                                    tok_iter1++;
+                                    if( tok_iter1 != nextTempToken.end() )
+                                    {
+                                        tempString2 = *tok_iter1;
+                    
+                                        // now we have a category with a :
+                                        if ( !tempString2.empty() )
+                                        {
+                                            // put category in final name
+                                            translationName= "T" + string (itoa(translationPoint->getPointType(),wb,10)) + translationName + "P"+ tempString2;
+                    
+                                            // add this point ID and the translated ID
+                                            translationPoint->getDestinationList()[aDestinationIndex].setTranslation (translationName);
+                                            successful = true;
+                    
+                                        }   // point id invalid
+                                    }
+                                }   // third token invalid
+                
+                            }   //remote number invalid
+                        }
+                    }   // second token invalid
+            
+                }   // category invalid
+            }
         }   // first token invalid
     } // end try
 

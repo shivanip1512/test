@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.17 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.18 $
+*    DATE         :  $Date: 2007/04/10 23:04:35 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.18  2007/04/10 23:04:35  tspar
+      Added some more protection against bad input when tokenizing.
+
       Revision 1.17  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -504,51 +507,55 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
                             tok_iter1++;
-                            tempString2 = *tok_iter1;
-
-                            // now we have a device name
-                            if ( !tempString2.empty() )
+                            if( tok_iter1 != nextTempToken.end() )
                             {
-                                // blank pad device
-                                tempString2.resize(20);
-                                translationName = tempString2;
+                                tempString2 = *tok_iter1;
     
-                                // next token is the point name
-                                if ( tok_iter != nextTranslate.end())
+                                // now we have a device name
+                                if ( !tempString2.empty() )
                                 {
-                                    tempString1 = *tok_iter;
-                                    boost::char_separator<char> sep2(":");
-                                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                                    tok_iter1++;
-                                    tempString2 = *tok_iter1;
-    
-                                    // now we have a point name:
-                                    if ( !tempString2.empty() )
+                                    // blank pad device
+                                    tempString2.resize(20);
+                                    translationName = tempString2;
+        
+                                    // next token is the point name
+                                    if ( tok_iter != nextTranslate.end())
                                     {
-                                        tempString2.resize(20);
-                                        translationName += tempString2;
-                                        std::transform(translationName.begin(), translationName.end(), translationName.begin(), ::toupper);
+                                        tempString1 = *tok_iter;
+                                        boost::char_separator<char> sep2(":");
+                                        Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
     
-                                        translationPoint->getDestinationList()[x].setTranslation(translationName);
-                                        string s = translationPoint->getDestinationList()[x].getDestination();
-                                        translationPoint->getDestinationList()[x].getDestination() = std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-                                        successful = true;
-    
-                                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                        tok_iter1++;
+                                        if( tok_iter1 != nextTempToken.end() )
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                                            dout << " translated: " << translationName << " for " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                            tempString2 = *tok_iter1;
+            
+                                            // now we have a point name:
+                                            if ( !tempString2.empty() )
+                                            {
+                                                tempString2.resize(20);
+                                                translationName += tempString2;
+                                                std::transform(translationName.begin(), translationName.end(), translationName.begin(), ::toupper);
+            
+                                                translationPoint->getDestinationList()[x].setTranslation(translationName);
+                                                string s = translationPoint->getDestinationList()[x].getDestination();
+                                                translationPoint->getDestinationList()[x].getDestination() = std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+                                                successful = true;
+            
+                                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+                                                    dout << " translated: " << translationName << " for " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                                }
+            
+                                            }   // point id invalid
                                         }
-    
-                                    }   // point id invalid
-    
-                                }   // second token invalid
-    
-                            }   // category invalid
-    
+                                    }   // second token invalid
+        
+                                }   // category invalid
+                            }
                         }   // first token invalid
     
                     }   // end of while entries

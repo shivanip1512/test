@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2007/04/10 23:04:35 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.11  2007/04/10 23:04:35  tspar
+      Added some more protection against bad input when tokenizing.
+
       Revision 1.10  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -279,11 +282,11 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
         if (flag == true)
         {
             // now
-            tempString1 = *tok_iter++;
+            tempString1 = *tok_iter;tok_iter++;
             // device name
-            tempString1 = *tok_iter++;
+            tempString1 = *tok_iter;tok_iter++;
             // point name
-            tempString1 = *tok_iter++;
+            tempString1 = *tok_iter;tok_iter++;
 
             // value
             if ( tok_iter != cmdLine.end())

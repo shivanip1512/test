@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2007/04/10 23:04:35 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.15  2007/04/10 23:04:35  tspar
+      Added some more protection against bad input when tokenizing.
+
       Revision 1.14  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -470,15 +473,18 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                             Boost_char_tokenizer nextTempToken(tempString1, sep1);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            tok_iter1++;//TS  There are a lot of places like this. Why is this incrementing before its even used. Is this expected?
+                            tok_iter1++;
 
-                            tempString2 = *tok_iter1;
-
-                            // now we have a point name
-                            if ( !tempString2.empty() )
+                            if( tok_iter1 != nextTempToken.end() )
                             {
-                                translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                successful = true;
+                                tempString2 = *tok_iter1;
+    
+                                // now we have a point name
+                                if ( !tempString2.empty() )
+                                {
+                                    translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                                    successful = true;
+                                }
                             }
                         }   // first token invalid
                     }

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2007/04/10 23:04:35 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.7  2007/04/10 23:04:35  tspar
+      Added some more protection against bad input when tokenizing.
+
       Revision 1.6  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -413,15 +416,16 @@ bool CtiFDR_BEPC::loadTranslationLists()
 
                             // do not care about the first part
                             nextTempToken(":");
-
-                            tempString2 = nextTempToken(";");
-                            tempString2 = tempString2.substr(1,(tempString2.length()-1));
-
-                            // now we have a point id
-                            if ( !tempString2.empty() )
-                            {
-                                translationPoint->getDestinationList()[x].setTranslation (tempString2.c_str());
-                                successful = true;
+                            if(!(tempString2 = nextTempToken(";")).empty())
+                            {    
+                                tempString2 = tempString2.substr(1,(tempString2.length()-1));
+    
+                                // now we have a point id
+                                if ( !tempString2.empty() )
+                                {
+                                    translationPoint->getDestinationList()[x].setTranslation (tempString2.c_str());
+                                    successful = true;
+                                }
                             }
                         }   // first token invalid
                     }

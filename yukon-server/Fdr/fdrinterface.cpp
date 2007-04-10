@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.26 $
- *    DATE         :  $Date: 2006/09/26 14:02:48 $
+ *    REVISION     :  $Revision: 1.27 $
+ *    DATE         :  $Date: 2007/04/10 23:04:35 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.27  2007/04/10 23:04:35  tspar
+ *     Added some more protection against bad input when tokenizing.
+ *
  *     Revision 1.26  2006/09/26 14:02:48  mfisher
  *     fixes for std namespace
  *
@@ -221,20 +224,22 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                         // do not care about the first part
 
                         tok_iter1++;
-                        tempString2 = *tok_iter1;
-
-                        // now we have a name
-                        if ( !tempString2.empty() )
+                        if( tok_iter1 != nextTempToken.end() )
                         {
-                            if (!stringCompareIgnoreCase(tempString2,aClientName))
+                            tempString2 = *tok_iter1;
+                            // now we have a name
+                            if ( !tempString2.empty() )
                             {
-                                retID = translationPoint->getPointID();
-
-                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                if (!stringCompareIgnoreCase(tempString2,aClientName))
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                                    dout << " defined as " << aClientName << "'s link status point" << endl;
+                                    retID = translationPoint->getPointID();
+    
+                                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+                                        dout << " defined as " << aClientName << "'s link status point" << endl;
+                                    }
                                 }
                             }
                         }
