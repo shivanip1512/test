@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2007/04/10 23:04:34 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2007/04/10 23:42:07 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.16  2007/04/10 23:42:07  tspar
+      Added even more protection against bad input when tokenizing.
+
+      Doing a ++ operation on an token iterator that is already at the end will also assert.
+
       Revision 1.15  2007/04/10 23:04:34  tspar
       Added some more protection against bad input when tokenizing.
 
@@ -390,11 +395,18 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
             Boost_char_tokenizer nextTempToken(tempString1, sep2);
             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-            tok_iter1++;
+            
             if( tok_iter1 != nextTempToken.end() )
             {
-                tempString2 = *tok_iter1;
-           
+                tok_iter1++;
+                if( tok_iter1 != nextTempToken.end() )
+                {
+                    tempString2 = *tok_iter1;
+                }else
+                {
+                    tempString2 = "";
+                }
+
                 // now we have a category with a :
                 if ( !tempString2.empty() )
                 {
@@ -409,10 +421,16 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
                         Boost_char_tokenizer nextTempToken(tempString1, sep2);
                         Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
     
-                        tok_iter1++;
                         if( tok_iter1 != nextTempToken.end() )
                         {
-                            tempString2 = *tok_iter1;
+                            tok_iter1++;
+                            if( tok_iter1 != nextTempToken.end() )
+                            {
+                                tempString2 = *tok_iter1;
+                            }else
+                            {
+                                tempString2 = "";
+                            }
 
                             // now we have a category with a :
                             if ( !tempString2.empty() )
@@ -427,10 +445,16 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
                                     Boost_char_tokenizer nextTempToken(tempString1, sep2);
                                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
         
-                                    tok_iter1++;
                                     if( tok_iter1 != nextTempToken.end() )
                                     {
-                                        tempString2 = *tok_iter1;
+                                        tok_iter1++;
+                                        if( tok_iter1 != nextTempToken.end() )
+                                        {
+                                            tempString2 = *tok_iter1;
+                                        }else
+                                        {
+                                            tempString2 = "";
+                                        }
                     
                                         // now we have a category with a :
                                         if ( !tempString2.empty() )

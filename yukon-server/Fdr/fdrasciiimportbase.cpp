@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2007/04/10 23:04:35 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2007/04/10 23:42:08 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.13  2007/04/10 23:42:08  tspar
+      Added even more protection against bad input when tokenizing.
+
+      Doing a ++ operation on an token iterator that is already at the end will also assert.
+
       Revision 1.12  2007/04/10 23:04:35  tspar
       Added some more protection against bad input when tokenizing.
 
@@ -337,19 +342,22 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            tok_iter1++;
-                            if(tok_iter1 != nextTempToken.end())
+                            if( tok_iter1 != nextTempToken.end() )
                             {
-                                Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-    
-                                tempString2 = *nextTempToken_.begin();
-                                tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-    
-                                // now we have a point id
-                                if ( !tempString2.empty() )
+                                tok_iter1++;
+                                if( tok_iter1 != nextTempToken.end() )
                                 {
-                                    translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                    successful = true;
+                                    Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
+        
+                                    tempString2 = *nextTempToken_.begin();
+                                    tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
+        
+                                    // now we have a point id
+                                    if ( !tempString2.empty() )
+                                    {
+                                        translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                                        successful = true;
+                                    }
                                 }
                             }
                         }   // first token invalid

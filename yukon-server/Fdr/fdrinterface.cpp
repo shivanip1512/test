@@ -15,10 +15,15 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.27 $
- *    DATE         :  $Date: 2007/04/10 23:04:35 $
+ *    REVISION     :  $Revision: 1.28 $
+ *    DATE         :  $Date: 2007/04/10 23:42:09 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.28  2007/04/10 23:42:09  tspar
+ *     Added even more protection against bad input when tokenizing.
+ *
+ *     Doing a ++ operation on an token iterator that is already at the end will also assert.
+ *
  *     Revision 1.27  2007/04/10 23:04:35  tspar
  *     Added some more protection against bad input when tokenizing.
  *
@@ -223,10 +228,16 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 
                         // do not care about the first part
 
-                        tok_iter1++;
                         if( tok_iter1 != nextTempToken.end() )
                         {
-                            tempString2 = *tok_iter1;
+                            tok_iter1++;
+                            if( tok_iter1 != nextTempToken.end() )
+                            {
+                                tempString2 = *tok_iter1;
+                            }else
+                            {
+                                tempString2 = "";
+                            }
                             // now we have a name
                             if ( !tempString2.empty() )
                             {

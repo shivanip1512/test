@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2007/04/10 23:04:35 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2007/04/10 23:42:08 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.12  2007/04/10 23:42:08  tspar
+      Added even more protection against bad input when tokenizing.
+
+      Doing a ++ operation on an token iterator that is already at the end will also assert.
+
       Revision 1.11  2007/04/10 23:04:35  tspar
       Added some more protection against bad input when tokenizing.
 
@@ -281,15 +286,27 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
 
         if (flag == true)
         {
-            // now
-            tempString1 = *tok_iter;tok_iter++;
-            // device name
-            tempString1 = *tok_iter;tok_iter++;
-            // point name
-            tempString1 = *tok_iter;tok_iter++;
-
+            //Need these nasty if's to protect from an assert.
+            bool flagOk = true;
+            if( flagOk && tok_iter != cmdLine.end() ){
+                // now
+                tempString1 = *tok_iter;tok_iter++;
+            }else{
+                flagOk = false;
+            }if( flagOk && tok_iter != cmdLine.end() ){
+                // device name
+                tempString1 = *tok_iter;tok_iter++;
+            }else{
+                flagOk = false;
+            }
+            if( flagOk && tok_iter != cmdLine.end() ){
+                // point name
+                tempString1 = *tok_iter;tok_iter++;
+            }else{
+                flagOk = false;
+            }
             // value
-            if ( tok_iter != cmdLine.end())
+            if ( flagOk && tok_iter != cmdLine.end() )
             {
                 tempString1 = *tok_iter; tok_iter++;
                 float value = atof (tempString1.c_str());

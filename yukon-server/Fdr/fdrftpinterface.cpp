@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2007/04/10 23:04:35 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2007/04/10 23:42:09 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.16  2007/04/10 23:42:09  tspar
+      Added even more protection against bad input when tokenizing.
+
+      Doing a ++ operation on an token iterator that is already at the end will also assert.
+
       Revision 1.15  2007/04/10 23:04:35  tspar
       Added some more protection against bad input when tokenizing.
 
@@ -473,11 +478,16 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                             Boost_char_tokenizer nextTempToken(tempString1, sep1);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            tok_iter1++;
-
                             if( tok_iter1 != nextTempToken.end() )
                             {
-                                tempString2 = *tok_iter1;
+                                tok_iter1++;
+                                if( tok_iter1 != nextTempToken.end() )
+                                {
+                                    tempString2 = *tok_iter1;
+                                }else
+                                {
+                                    tempString2 = "";
+                                }
     
                                 // now we have a point name
                                 if ( !tempString2.empty() )

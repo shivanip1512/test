@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.18 $
-*    DATE         :  $Date: 2007/04/10 23:04:35 $
+*    REVISION     :  $Revision: 1.19 $
+*    DATE         :  $Date: 2007/04/10 23:42:09 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.19  2007/04/10 23:42:09  tspar
+      Added even more protection against bad input when tokenizing.
+
+      Doing a ++ operation on an token iterator that is already at the end will also assert.
+
       Revision 1.18  2007/04/10 23:04:35  tspar
       Added some more protection against bad input when tokenizing.
 
@@ -506,10 +511,16 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            tok_iter1++;
                             if( tok_iter1 != nextTempToken.end() )
                             {
-                                tempString2 = *tok_iter1;
+                                tok_iter1++;
+                                if( tok_iter1 != nextTempToken.end() )
+                                {
+                                    tempString2 = *tok_iter1;
+                                }else
+                                {
+                                    tempString2 = "";
+                                }
     
                                 // now we have a device name
                                 if ( !tempString2.empty() )
