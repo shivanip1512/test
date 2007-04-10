@@ -6,9 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -135,10 +137,16 @@ public synchronized static CTIDatabase getDatabaseVersion()
  * Check to see if a common STARS table is in the DB
  * @return boolean
  */
-public static boolean starsExists()
+public static boolean starsExists() throws Exception
 {
     if(starsExists == null) {
-        starsExists = VersionTools.tableExists("APPLIANCECATEGORY");
+        boolean appCatExists = VersionTools.tableExists("APPLIANCECATEGORY");
+        if(!appCatExists) {
+            throw new Exception("STARS tables not present in this database.");
+        }
+        else {
+            return CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ));
+        }
     }
 
     return starsExists;
@@ -172,7 +180,7 @@ public static boolean staticLoadGroupMappingExists()
 
 public static void main ( String[] args )
 {
-	starsExists();
+	//starsExists();
 }
 
 /**

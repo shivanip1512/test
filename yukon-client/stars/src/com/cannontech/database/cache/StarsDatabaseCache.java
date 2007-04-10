@@ -342,7 +342,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 			return user;
 		}
 		catch (InstantiationException ie) {
-			CTILogger.error( ie.getMessage(), ie );
+			CTILogger.warn( yukonUser.getUsername() + " is not a STARS user.  STARS data will not be available for this session." );
 		}
 		
 		return null;

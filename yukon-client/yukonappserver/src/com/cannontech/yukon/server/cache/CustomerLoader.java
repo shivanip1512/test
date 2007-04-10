@@ -141,7 +141,7 @@ public class CustomerLoader implements Runnable
             customer.setAdditionalContacts(additionalContacts);
         }
         
-        if (VersionTools.starsExists()) {
+        if (starsExists()) {
             // Now we do the same for accountIds as we just did with additional contacts.
             sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
                 "FROM CustomerAccount acct, ECToAccountMapping map " +
@@ -210,6 +210,15 @@ public class CustomerLoader implements Runnable
         CTILogger.info((timerStop.getTime() - timerStart.getTime())*.001 + 
                        " Secs for CICustomerLoader with Contacts (" + allCustomers.size() + 
                        " loaded, MAX_CUSTOMER_LOAD="+ MAX_CUSTOMER_LOAD + ")" );
+    }
+    
+    public boolean starsExists () {
+        try {
+            return VersionTools.starsExists();
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
     
 }
