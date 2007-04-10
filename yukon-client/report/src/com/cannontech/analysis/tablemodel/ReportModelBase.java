@@ -110,8 +110,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	private Integer energyCompanyID = null;
 	private Integer userID = null;
 	
-	protected static final String ATT_START_DATE = "startDate";
-	protected static final String ATT_STOP_DATE = "stopDate";
+	public static final String ATT_START_DATE = "startDate";
+	public static final String ATT_STOP_DATE = "stopDate";
 	protected static final String ATT_EC_ID = "ecID";	//ONLY TAKES ONE ID, BUT MORE CAN BE SET USING THE STRING[] setter
 	protected static final String ATT_PAOBJECT_IDS = "paoIDs";
 	protected static final String ATT_SORT_ORDER = "sortOrder";	
