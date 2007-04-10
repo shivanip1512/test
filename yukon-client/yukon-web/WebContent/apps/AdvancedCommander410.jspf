@@ -239,16 +239,18 @@
   				</table>
   			</jsp:body>
   		</cti:titledContainer>
-			  				
-		<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-			<tr> 
-		  		<td align="right"><span class="NavText">
-					<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRSaveID"
-					onMouseOver="window.status='Save Displayed Peak Reports to File';return true;"
-					onMouseOut="window.status='';return true;">Save to File</a></span>
-		  		</td>
-			</tr>
-	  	</table>
+			  
+		<div style="float:left">
+			<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+				<tr> 
+			  		<td align="right"><span class="NavText">
+						<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRSaveID"
+						onMouseOver="window.status='Save Displayed Peak Reports to File';return true;"
+						onMouseOut="window.status='';return true;">Save to File</a></span>
+			  		</td>
+				</tr>
+		  	</table>
+	  	<div>
 <% 
 	}
 %>	 		
