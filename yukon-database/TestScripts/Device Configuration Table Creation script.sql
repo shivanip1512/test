@@ -37,7 +37,7 @@ create table DCCategoryType(
 	Name varchar(40) not null,
 	DisplayName varchar(40) not null,
 	CategoryGroup varchar(40) null,
-	Level varchar(40) not null,
+	CategoryTypeLevel varchar(40) not null,
 	Description varchar(500),
 	PRIMARY KEY (CategoryTypeID)
 )
