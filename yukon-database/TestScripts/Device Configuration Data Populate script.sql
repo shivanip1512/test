@@ -45,11 +45,11 @@ INSERT INTO dccategorytype VALUES (10, 'MCT Relays', 'Relays', null, 'low', 'Rel
 INSERT INTO dccategorytype VALUES (11, 'MCT Precanned Table', 'Precanned Table', null, 'low', 'Precanned Table')
 INSERT INTO dccategorytype VALUES (12, 'MCT System Options', 'System Options', null, 'low', 'System Options')
 INSERT INTO dccategorytype VALUES (24, 'MCT TOU', 'TOU', 'Time of Use', 'low', 'Time of Use Schedule')
-INSERT INTO dccategorytype VALUES (25, 'MCT Centron', 'Centron', null, 'low', 'Centron')
 INSERT INTO dccategorytype VALUES (26, 'MCT DNP', 'DNP', null, 'low', 'DNP')
 
 -- MCT 410
 -- These are duplicated here so that the 410 categories can have different items than the 470's.
+INSERT INTO dccategorytype VALUES (25, 'MCT Centron', 'Centron', null, 'low', 'Centron')
 INSERT INTO dccategorytype VALUES (27, 'MCT Addressing', 'Addressing', null, 'high', 'Addressing')
 INSERT INTO dccategorytype VALUES (28, 'MCT daylight savings time', 'Daylight Savings Time', null, 'low', 'Daylight Savings Time')
 INSERT INTO dccategorytype VALUES (29, 'MCT Options', 'Options', null, 'low', 'Options')
@@ -89,6 +89,7 @@ INSERT INTO dcconfigurationcategorytype VALUES (1, 33)
 INSERT INTO dcconfigurationcategorytype VALUES (1, 34)
 INSERT INTO dcconfigurationcategorytype VALUES (1, 36)
 INSERT INTO dcconfigurationcategorytype VALUES (1, 37)
+INSERT INTO dcconfigurationcategorytype VALUES (1, 25)
 
 -- CBC config
 INSERT INTO dcconfigurationcategorytype VALUES (2, 13)
@@ -116,7 +117,6 @@ INSERT INTO dcconfigurationcategorytype VALUES (3, 10)
 INSERT INTO dcconfigurationcategorytype VALUES (3, 11)
 INSERT INTO dcconfigurationcategorytype VALUES (3, 12)
 INSERT INTO dcconfigurationcategorytype VALUES (3, 24)
-INSERT INTO dcconfigurationcategorytype VALUES (3, 25)
 INSERT INTO dcconfigurationcategorytype VALUES (3, 26)
 
 
@@ -140,8 +140,8 @@ INSERT INTO dcitemtype VALUES (11, 'Alarm Mask Meter', 'Alarm Mask Meter', 'nume
 INSERT INTO dcitemtype VALUES (12, 'Alarm Mask Event 1', 'Alarm Mask Event 1', 'numeric', 'N', 0, 255, null, 'Bit field, bits ordered 76543210, defined as: 7 NegativeTimeSync 6 DST Change 5 Holiday Flag 4 RTC Adjusted 3 Power Fail Carryover 2 Stack Overflow 1 Electronic Meter Communication Error 0 Power Fail Event')
 INSERT INTO dcitemtype VALUES (13, 'Alarm Mask Event 2', 'Alarm Mask Event 2', 'numeric', 'N', 0, 255, null, 'Bit field, bits ordered 76543210, defined as: 7,6,5 Unused. 4: Address Corruption, 3: Zero Usage Channel 4, 2: Zero Usage Channel 3, 1: Zero Usage Channel 2. 0: Zero Usage Channel 1')
 INSERT INTO dcitemtype VALUES (14, 'Time Adjust Tolerance', 'Time Adjust Tolerance', 'numeric', 'N', 0, 255, null, 'Update the RTC if it is this far away from the incoming time sync')
-INSERT INTO dcitemtype VALUES (15, 'Configuration', 'Configuration', '', 'N', 0, 0, null, 'For MCT 470')
-INSERT INTO dcitemtype VALUES (177, 'Configuration', 'Configuration', '', 'N', 0, 0, null, 'For MCT 410')
+INSERT INTO dcitemtype VALUES (15, 'Configuration', 'Configuration', '', 'N', 0, 0, null, 'For MCT 470, bit field use caution.')
+INSERT INTO dcitemtype VALUES (177, 'Configuration', 'Configuration', '', 'N', 0, 0, null, 'For MCT 410, bit field use caution.')
 INSERT INTO dcitemtype VALUES (16, 'Options', 'Options', '', 'N', 0, 0, null, '')
 INSERT INTO dcitemtype VALUES (17, 'Outage Cycles', 'Outage Cycles', '', 'N', 0, 0, null, '')
 
