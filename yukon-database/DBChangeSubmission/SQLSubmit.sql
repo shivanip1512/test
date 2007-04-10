@@ -106,3 +106,11 @@ alter table ccurtprogram alter column IdentifierPrefix varchar(32) not null;
 
 
 /** end **/
+
+
+/***********************************************
+  These alters need to be changed in the creation script also 
+  **************************************************/
+alter table dcitemtype rename column maxlengh to MaxValue;
+alter table dcitemtype rename column minlength to MaxValue;
+
