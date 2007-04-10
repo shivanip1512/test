@@ -56,9 +56,9 @@ body {
   
 
 #Menu #topMenu {
-    border-top: 1px solid #888888;
-    border-bottom: 1px solid #888888;
-    background-color: #006699;
+    border-top: 1px solid #0066CC;
+    border-bottom: 1px solid #0066CC;
+    background-color: #0066CC;
     padding: .4em .8em;
     font-weight: bold;
     color: white;
@@ -71,7 +71,7 @@ body {
 }
 
 #Menu #subMenu {
-    border-bottom: 1px solid #888888;
+    border-bottom: 1px solid #0066CC;
     background-color: rgb(238, 238, 238);
     padding: .2em .8em;
     height: 1.2em;
@@ -144,8 +144,8 @@ div.titledContainer{
 
 div.titledContainer .content {
 	padding: 4px;
-	border-left: 1px solid #888;
-	border-right: 1px solid #888;
+	border-left: 1px solid #0066CC;
+	border-right: 1px solid #0066CC;
 }
 
 div.titledContainer .title table {
@@ -157,7 +157,7 @@ div.titledContainer .title table {
 
 div.titledContainer .title {
 	padding: 0px 9px 6px 9px;
-	background: #888;
+	background: #0066CC;
 	font-weight: bold;
     font-size: 12px;
     color: white;
@@ -186,7 +186,7 @@ div.titledContainer .rbottom span, div.titledContainer .rtbottom span {
 	display: block;
 	height: 1px;
     overflow: hidden; 
-    background: #888;
+    background: #0066CC;
 }
 
 div.titledContainer .lt1{margin: 0 5px}
@@ -212,13 +212,13 @@ div.titledContainer .r6{margin: 0 0px 0 5px; width: 1px;}
 
 div.styledContainer .title, div.styledContainer .rtop span, div.styledContainer .lbottom span, 
 div.styledContainer .rtbottom span, div.styledContainer .rbottom span {
-	background-color: #069 !important;
+	background-color: #06C !important;
 	color: #fff !important;
 }
 
 div.styledContainer .content
 {
-	border-color: #069 !important;
+	border-color: #06C !important;
 }
 
 /* used for "CSS" Icons in the clearbits folder */
