@@ -26,8 +26,8 @@ public class Program implements Serializable, Comparable<Program> {
     private String name = "";
     private ProgramType programType;
     private Integer id;
-    private Integer lastIdentifier;
-    private String identifierPrefix;
+    private Integer lastIdentifier = 0;
+    private String identifierPrefix = "";
     static private Comparator<String> comparator = new NaturalOrderComparator();
     
     @Column(name="CCurtProgramName", nullable=false)
