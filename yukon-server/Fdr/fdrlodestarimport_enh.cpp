@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2007/04/10 23:47:20 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.14  2007/04/10 23:47:20  tspar
+      Added even more protection against bad input when tokenizing.
+
+      assigning a string from an iterator at  .end() will assert.
+
       Revision 1.13  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -415,7 +420,11 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
-    string           tokedStr = *tok_iter;
+    string tokedStr = "";
+    if( tok_iter != cmdLine.end() )
+    {
+        tokedStr = *tok_iter;
+    }
     CtiFDRPoint         point;
     int                 fieldNumber = 1;
     string           tempStartTimeStr = "";
@@ -576,7 +585,11 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
-    string           tokedStr = *tok_iter;
+    string tokedStr = "";
+    if( tok_iter != cmdLine.end() )
+    {
+        tokedStr = *tok_iter;
+    }
     int                 fieldNumber = 1;
 
 
@@ -760,7 +773,11 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
-    string           tokedStr = *tok_iter;
+    string tokedStr = "";
+    if( tok_iter != cmdLine.end() )
+    {
+        tokedStr = *tok_iter;
+    }
     int                 fieldNumber = 1;
 
 
@@ -830,7 +847,11 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
-    string           tokedStr = *tok_iter;
+    string tokedStr = "";
+    if( tok_iter != cmdLine.end() )
+    {
+        tokedStr = *tok_iter;
+    }
     int                 fieldNumber = 1;
 
 
@@ -917,7 +938,11 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
-    string           tokedStr = *tok_iter;
+    string tokedStr = "";
+    if( tok_iter != cmdLine.end() )
+    {
+        tokedStr = *tok_iter;
+    }
     int                 fieldNumber = 1;
     double              intervalValue;
     unsigned            importedQuality;
