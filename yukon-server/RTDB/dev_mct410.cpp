@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.130 $
-* DATE         :  $Date: 2007/03/23 15:38:08 $
+* REVISION     :  $Revision: 1.131 $
+* DATE         :  $Date: 2007/04/10 15:57:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,7 +230,7 @@ CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::initConfigParts()
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_disconnect);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_holiday);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_llp);
-    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_usage);
+    //tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_usage); //Jess does not know what this was intended for...
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_centron);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_tou);
 
