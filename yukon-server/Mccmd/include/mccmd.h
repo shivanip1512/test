@@ -101,6 +101,7 @@ static int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, c
 
 static int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int importCommandFile(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+static bool FileAppendAndDelete(const string &toFileName, const string &fromFileName);
 
 /* Determines if the given time is a holiday */
 /* takes a time parameters in seconds and an int which is the holiday schedule id */

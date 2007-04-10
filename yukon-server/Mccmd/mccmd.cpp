@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2007/03/08 21:56:13 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2007/04/10 19:36:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -941,6 +941,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             dout << "                 /protocol:x - specify the protocol all commands should use (default versacom)" << endl;
             dout << "                      where x is versacom, expresscom, none (meaning don't specify)           " << endl;
             dout << "                 /dsm2 - import dsm2 vconfig.dat type commands (not valid with other options)" << endl;
+            dout << "                 /appendextension:zzz - files with this extension will be appended to file" << endl;
+            dout << "                      where zzz is an extension such as txt, dat, cfg, ect.." << endl;
             dout << "               NOTE: Commands are exported to file export\\sent-mm-dd-yyyy.txt" << endl;
         }
 
@@ -1019,6 +1021,29 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         dout << CtiTime() << " - Will export " << commandsPerTime << " commands from " << file << " every execution " <<endl;;
                     }
 
+                }
+
+                if(str.find(string ("/appendextension"))!=string::npos)
+                {
+                    int colon = str.find_first_of(':');
+
+                    HANDLE searchHandle;
+                    string findstr = "*.";
+                    findstr += (argv[i]+colon+1);
+                    string path = file;
+                    path.resize(path.find_last_of("\\/")+1);
+                    findstr = path + findstr;
+
+                    WIN32_FIND_DATA findData;
+
+                    if( (searchHandle = FindFirstFile(findstr.c_str(), &findData)) != INVALID_HANDLE_VALUE )
+                    {
+                        do
+                        {
+                            FileAppendAndDelete(file, path + findData.cFileName);
+
+                        } while( FindNextFile(searchHandle, &findData) );
+                    }
                 }
 
                 if(str.find(string ("/dsm2"))!=string::npos)
@@ -1158,6 +1183,112 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     }
     return retVal;
 }
+
+//Remember this deletes the old file if the append is successful!
+bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
+{
+    HANDLE toFileHandle;
+    ULONG fileSize,bytesRead,bytesWritten;
+    CHAR *workBuffer;
+    CHAR newFileName[100];
+    bool copyFailed = true;
+    bool retVal = true;
+    int cnt=0;
+
+    // create or open file of the day
+    toFileHandle = CreateFile (toFileName.c_str(),
+                                 GENERIC_READ | GENERIC_WRITE,
+                                 0,
+                                 NULL,
+                                 OPEN_ALWAYS,
+                                 FILE_ATTRIBUTE_NORMAL,
+                                 NULL);
+    // loop around until we get exclusive access to this guy
+    while (toFileHandle == INVALID_HANDLE_VALUE && cnt < 30)
+    {
+        if (GetLastError() == ERROR_SHARING_VIOLATION || GetLastError() == ERROR_LOCK_VIOLATION)
+        {
+            toFileHandle = CreateFile (toFileName.c_str(),
+                                         GENERIC_READ | GENERIC_WRITE,
+                                         0,
+                                         NULL,
+                                         OPEN_ALWAYS,
+                                         FILE_ATTRIBUTE_NORMAL,
+                                         NULL);
+            {
+                CtiLockGuard< CtiLogger > guard(dout);
+                dout << CtiTime() << " - file " << string (toFileName) << " is locked "<< endl;
+            }
+            cnt++;
+            Sleep (1000);
+        }
+        else
+            break;
+    }
+
+    // if we tried for 30 seconds, log that we failed to log the file
+    if (cnt >= 30)
+    {
+        // since we couldn't create the tmp file, we won't delete the current one
+        retVal = false;
+    }
+    else
+    {
+        FILE* fromfileptr;
+        char workString[500];  // not real sure how long each line possibly is
+        vector<string> aCmdVector;
+                                   
+        // open file               
+        if( (fromfileptr = fopen( fromFileName.c_str(), "r")) == NULL )
+        {
+            retVal = false;
+        }
+        else
+        {
+            // load list in the command vector
+            while ( fgets( (char*) workString, 500, fromfileptr) != NULL )
+            {
+                string entry (workString);
+                aCmdVector.push_back (entry);
+            }
+        }
+
+        // loop the vector and append to the file
+        int     totalLines = aCmdVector.size();
+        int     lineCnt = 0;
+        int     retCode = 0;
+
+        while (lineCnt < totalLines)
+        {
+            // move to end of file and write
+            retCode=SetFilePointer(toFileHandle,0,NULL,FILE_END);
+            retCode=SetEndOfFile (toFileHandle);
+            memset (workString, '\0',500);
+            strcpy (workString,aCmdVector[lineCnt].c_str());
+
+            if (workString[aCmdVector[lineCnt].length()-1] == '\n')
+            {
+                workString[aCmdVector[lineCnt].length()-1] = '\r';
+                workString[aCmdVector[lineCnt].length()] = '\n';
+                retCode=WriteFile (toFileHandle,workString,aCmdVector[lineCnt].length()+1,&bytesWritten,NULL);
+            }
+            else
+            {
+                workString[aCmdVector[lineCnt].length()] = '\r';
+                workString[aCmdVector[lineCnt].length()+1] = '\n';
+                retCode=WriteFile (toFileHandle,workString,aCmdVector[lineCnt].length()+2,&bytesWritten,NULL);
+            }
+            lineCnt++;
+        }
+
+        CloseHandle (toFileHandle);
+        fclose(fromfileptr);
+        DeleteFile (fromFileName.c_str());
+    }
+
+    return retVal;
+}
+
 
 int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
