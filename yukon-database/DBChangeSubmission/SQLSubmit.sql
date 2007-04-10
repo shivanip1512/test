@@ -112,5 +112,13 @@ alter table ccurtprogram alter column IdentifierPrefix varchar(32) not null;
   These alters need to be changed in the creation script also 
   **************************************************/
 alter table dcitemtype rename column maxlengh to MaxValue;
-alter table dcitemtype rename column minlength to MaxValue;
+alter table dcitemtype rename column minlength to MinValue;
+
+insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
+/*start block*/
+if 1 < (select count(*) from ApplianceCategory)
+begin
+   insert into YukonGroupRole values (-20, -1, -1, -1020, 'true');
+end;
+/*end block*/
 
