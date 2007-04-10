@@ -1072,7 +1072,7 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel((LMScenario)toCopy) );
 		else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
 		{
-			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy) );
+			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy, currentDatabase ) );
 		}
 		else if( toCopy instanceof DeviceConfiguration )
 		{

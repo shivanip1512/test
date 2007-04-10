@@ -7,6 +7,7 @@ package com.cannontech.dbeditor.wizard.copy.point;
  import java.awt.Dimension;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -363,7 +364,7 @@ public void setValue(Object val)
  * Creation date: (5/1/00 4:17:27 PM)
  * @param val java.lang.Object
  */
-public void setValueCore(Object val)
+public void setValueCore(Object val, int flagDB )
 {
 	//Load the device list
 	getDeviceComboBox().removeAllItems();
@@ -372,12 +373,29 @@ public void setValueCore(Object val)
 
 	synchronized (cache)
 	{
-		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		
-		for (int i = 0; i < devices.size(); i++)
-			getDeviceComboBox().addItem(((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)));
+        // if in LM DB
+        if( flagDB == DatabaseTypes.LM_DB )
+        {
+            //Adding All LM objects to the DeviceBox.  Control Aeras and Scenarios may not belong here
+            java.util.List lmprograms =  cache.getAllLMPrograms();
+            lmprograms.addAll( cache.getAllLMControlAreas() );
+            lmprograms.addAll( cache.getAllLMScenarios() );
+            lmprograms.addAll( cache.getAllLMGroups() );
+            java.util.Collections.sort( lmprograms, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );            
+            for (int i = 0; i < lmprograms.size(); i++)
+                getDeviceComboBox().addItem(((com.cannontech.database.data.lite.LiteYukonPAObject) lmprograms.get(i)));            
+        }else{
+        //if Other we are in Core, or some other view mode. In System there is no Copying so unless we add more modes, Core is the only other viable option.
+        //only show devices, LM Groups show up as devices, so using removeAll  to get them out of the list
+        
+    		java.util.List devices = cache.getAllDevices();
+    		devices.removeAll( cache.getAllLMGroups() );
+    		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+            for (int i = 0; i < devices.size(); i++)
+                getDeviceComboBox().addItem(((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)));
+            
 
+        }
 	}
 }
 

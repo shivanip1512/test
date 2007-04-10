@@ -14,16 +14,15 @@ public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPan
 	private PointCopyNameDevicePanel pointCopyNameDevicePanel;
 	private com.cannontech.database.db.DBPersistent copyObject = null;
 	private PointCopyOffsetsPanel pointCopyOffsetsPanel;
-
 	private int pointDeviceID = -1;
 	private int pointType;
 	
 /**
  * DeviceWizardPanel constructor comment.
  */
-public PointCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCopy)
+public PointCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCopy, int flag)
 {
-	super();
+    super(flag);
 	setCopyObject(objectToCopy);
 	initialize();
 
@@ -69,7 +68,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	if (currentInputPanel == null)
 	{
 		getPointCopyNameDevicePanel();
-		getPointCopyNameDevicePanel().setValueCore(null);
+		getPointCopyNameDevicePanel().setValueCore(null, currentDatabase);
 		return getPointCopyNameDevicePanel();
 	}
 	else if (currentInputPanel == getPointCopyNameDevicePanel())
