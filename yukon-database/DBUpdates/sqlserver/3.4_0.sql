@@ -24,6 +24,7 @@ exec (@cmd)
 select @cmd='alter table '+@tablename+ ' drop column '+@columnname
 exec (@cmd)
 END
+go
 /* @error ignore-end */
 
 /* @error ignore-begin */
@@ -836,24 +837,6 @@ go
 insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
 insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
-go
-
-/* @error ignore-begin */
-/* @start-block */
-CREATE proc removeColumn (@tablename nvarchar(100), @columnname nvarchar(100))
-AS
-BEGIN
-    DECLARE @tab VARCHAR(100),@defname varchar(100),@cmd varchar(100)
-    select @defname = name FROM sysobjects so JOIN sysconstraints sc ON so.id = sc.constid WHERE object_name(so.parent_obj) = @tablename
-    AND so.xtype = 'D' AND sc.colid = (SELECT colid FROM syscolumns WHERE id = object_id(@tablename) AND name = @columnname)
-
-    select @cmd='alter table '+@tablename+ ' drop constraint '+@defname
-    exec (@cmd)
-    select @cmd='alter table '+@tablename+ ' drop column '+@columnname
-    exec (@cmd)
-END
-/* @end-block */
-/* @error ignore-end */
 go
 
 insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
