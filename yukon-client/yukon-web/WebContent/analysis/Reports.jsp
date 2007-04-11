@@ -211,7 +211,7 @@ function enableDates(value)
   						<input type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
-					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(REPORT_BEAN.getModel() == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";reportForm.submit();'>
+					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(REPORT_BEAN.getModel() == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";return true;'>
 					  </td>
 					</tr>
 				  </table>
