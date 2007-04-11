@@ -16,7 +16,7 @@ public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInp
 	public int currentPanel = -1;
 	private WizardButtonPanel buttonPanel;
 	private javax.swing.JLabel headerLabel;
-    public int currentDatabase;
+    protected int currentDatabase=0;
 	private boolean cancelled = false;
 	private Vector listeners = new Vector();
 /**

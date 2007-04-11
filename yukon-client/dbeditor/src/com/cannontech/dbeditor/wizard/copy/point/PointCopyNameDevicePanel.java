@@ -5,9 +5,11 @@ package com.cannontech.dbeditor.wizard.copy.point;
  */
 
  import java.awt.Dimension;
+import java.util.ArrayList;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.DatabaseTypes;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -377,7 +379,7 @@ public void setValueCore(Object val, int flagDB )
         if( flagDB == DatabaseTypes.LM_DB )
         {
             //Adding All LM objects to the DeviceBox.  Control Aeras and Scenarios may not belong here
-            java.util.List lmprograms =  cache.getAllLMPrograms();
+            java.util.List lmprograms =  new ArrayList<LiteYukonPAObject>( cache.getAllLMPrograms() );
             lmprograms.addAll( cache.getAllLMControlAreas() );
             lmprograms.addAll( cache.getAllLMScenarios() );
             lmprograms.addAll( cache.getAllLMGroups() );
@@ -388,7 +390,7 @@ public void setValueCore(Object val, int flagDB )
         //if Other we are in Core, or some other view mode. In System there is no Copying so unless we add more modes, Core is the only other viable option.
         //only show devices, LM Groups show up as devices, so using removeAll  to get them out of the list
         
-    		java.util.List devices = cache.getAllDevices();
+    		java.util.List devices = new ArrayList<LiteYukonPAObject>( cache.getAllDevices() ); 
     		devices.removeAll( cache.getAllLMGroups() );
     		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
             for (int i = 0; i < devices.size(); i++)
