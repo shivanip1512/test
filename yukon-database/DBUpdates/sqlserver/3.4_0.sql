@@ -421,7 +421,7 @@ fetch userpaoowner_curs into @userid,@paoid;
 
 while (@@fetch_status = 0)
   begin 
-     insert into UserPaoPermission values (@counterid, @userid, @paoid, 'allow LM visibility');
+     insert into UserPaoPermission values (@counterid, @userid, @paoid, 'LM_VISIBLE');
      fetch userpaoowner_curs into @userid,@paoid;
      set @counterid = @counterid + 1;
   end

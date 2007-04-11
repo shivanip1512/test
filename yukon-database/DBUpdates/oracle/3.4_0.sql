@@ -309,7 +309,7 @@ begin
      while(c_userpaoowner%found)
      loop
           fetch c_userpaoowner into v_userid, v_paoid;
-          insert into userpaopermission values (v_counterid, v_userid, v_paoid, 'allow LM visibility');
+          insert into userpaopermission values (v_counterid, v_userid, v_paoid, 'LM_VISIBLE');
 	  v_counterid := v_counterid + 1; 
      end loop;
 
