@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/04/11 14:37:56 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/04/11 15:34:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -431,7 +431,7 @@ VOID PorterGWThread(void *pid)
 
         while( tok_iter != porttok.end() )
         {
-            tempstr = *tokIter++;
+            tempstr = *tok_iter++;
             unsigned short portnumber = atoi(tempstr.c_str());
 
             {

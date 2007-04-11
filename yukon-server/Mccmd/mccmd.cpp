@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2007/04/11 14:37:30 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2007/04/11 15:34:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -683,13 +683,14 @@ int Scan(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     string cmd;
+    string firsttok;
     AppendToString(cmd, argc, argv);
 
     Boost_char_tokenizer optoken(cmd);
 
     if( optoken.begin() != optoken.end() )
     {
-        string firsttok = *optoken.begin();
+        firsttok = *optoken.begin();
     }
 
     if(!stringCompareIgnoreCase(firsttok,"pil"))
