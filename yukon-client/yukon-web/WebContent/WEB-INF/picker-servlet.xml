@@ -129,6 +129,8 @@
         </property>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="yukonGroupDao" ref="yukonGroupDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="paoPermissionService" ref="paoPermissionService"/>
         <property name="paoTypeSearcher" ref="paoTypeSearcher"/>
     </bean>

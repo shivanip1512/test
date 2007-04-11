@@ -5,6 +5,7 @@
 <cti:standardPage title="User Assignment for Load Management Visibility" module="userlm">
 
 <c:url var="removeURL" value="/picker/userlm/removePao"/> 
+<c:url var="submitUserURL" value="/picker/userlm/submitUserChanges"/>
 
 <script type="text/javascript" src="/JavaScript/json.js"></script>
 <script language="JavaScript">
@@ -36,11 +37,28 @@
 	    $('userAssignedLM').appendChild(resultTable);
 	    
 	    Element.show("newUserPaoPickerDiv");
+	    
+	    if(json.statusSuccess) {
+	    	alert(json.statusSuccess);
+	    }
 	}
 	
 	function removeUserPAO(choice) {
-		alert('so you want to remove me?  I, pao ' + choice.paoId + '?');
-		new Ajax.Updater('userAssignedLM', '${removeURL}?removedId=' + choice.paoId + '&assigned=' + currentlyAssigned.toJSONString(), {'method': 'get', 'onComplete':displayAssignedUserPaos});
+		var jsonString = {};
+  		jsonString.removeId = choice.paoId;
+  		jsonString.assigned = currentlyAssigned;
+  		var args = {};
+  		args.currentJson = jsonString.toJSONString();
+		new Ajax.Updater('userAssignedLM', '${removeURL}', {'method':'get', 'onComplete':displayAssignedUserPaos, 'parameters': args});
+	}
+	
+	function submitUserChanges() {
+		var jsonString = {};
+  		jsonString.userId = $F('userSelectedId');
+  		jsonString.assigned = currentlyAssigned;
+  		var args = {};
+  		args.currentJson = jsonString.toJSONString();
+		new Ajax.Updater('userAssignedLM', '${submitUserURL}', {'method': 'get', 'onComplete':displayAssignedUserPaos, 'parameters': args});
 	}
 </script>
 
@@ -74,13 +92,12 @@
 <div style="display: none" id="newUserPaoPickerDiv">
 	<input id="newUserPao" type="hidden" value="0"> 
 	<cti:paoPicker pickerId="newUserPaoPicker" paoIdField="newUserPao" constraint="com.cannontech.common.search.criteria.LMDeviceCriteria" finalTriggerAction="divToRefresh:userAssignedLM;url:/picker/userlm/addPaoToUser;onComplete:displayAssignedUserPaos">Add load management device...</cti:paoPicker><br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<a href="javascript:submitUserChanges()">Submit</a>
 </div>	
-<br>
-<br>
-<br>
-<br>
-
-
 <hr>
 
 <input id="groupSelectedId" type="hidden" value="0"> 
