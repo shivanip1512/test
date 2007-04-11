@@ -912,8 +912,15 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
         $H(extras).each(function(pair) { headers[pair.key] = pair.value });
     }
 
-    for (var name in headers)
-      this.transport.setRequestHeader(name, headers[name]);
+    /* Adding a check to this loop due to incompatibility with json.js
+     *Prototype 1.5.1 has its own toJSON functionality that we may want to
+     *switch to, but 1.5.1 is not trustworthy yet.
+     */
+     for (var name in headers) {
+     	if(typeof headers[name] == 'function')
+     		continue;
+     	this.transport.setRequestHeader(name, headers[name]);
+     }
   },
 
   success: function() {
