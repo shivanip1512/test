@@ -19,5 +19,7 @@ public interface MenuRenderer {
     public void setFeatures(MenuFeatureSet features);
     
     public MenuFeatureSet getFeatures();
+    
+    public void setMenuSelection(String menuSelection);
 
 }

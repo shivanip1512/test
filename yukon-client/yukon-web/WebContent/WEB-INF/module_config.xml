@@ -50,7 +50,7 @@
   
   <module name="capcontrol">
     <toplinks>
-      <option name="Create">
+      <option id="create" name="Create">
         <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
           <option name="Area">
@@ -73,7 +73,7 @@
           </option>
         </sublinks>
       </option>
-      <option name="Modify">
+      <option id="modify" name="Modify">
         <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
           <option name="Edit">
@@ -87,7 +87,7 @@
           </option>
         </sublinks>
       </option>
-      <option name="Analysis">
+      <option id="analysis" name="Analysis">
         <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>
           <option name="Today kVAR/Watt">
@@ -108,7 +108,7 @@
           </option>
         </sublinks>
       </option>
-      <option name="View">
+      <option id="view" name="View">
         <sublinks>
          <option name="Orphaned Substations">
             <link>results.jsp?cbc_lastSearch=__cti_oSubs__</link>
@@ -195,41 +195,41 @@
   
   <module name="reporting">
    <toplinks>
-      <option name="Reports">
+      <option id="reports" name="Reports">
         <sublinks>
-          <option property="ReportingRole.ADMIN_REPORTS_GROUP_LABEL">
+          <option id="administrator" property="ReportingRole.ADMIN_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=0</link>
             <requireProperty value="ReportingRole.ADMIN_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.AMR_REPORTS_GROUP_LABEL">
+          <option id="metering" property="ReportingRole.AMR_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=1</link>
             <requireProperty value="ReportingRole.AMR_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.CAP_CONTROL_REPORTS_GROUP_LABEL">
+          <option id="capcontrol" property="ReportingRole.CAP_CONTROL_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=4</link>
             <requireProperty value="ReportingRole.CAP_CONTROL_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.STATISTICAL_REPORTS_GROUP_LABEL">
+          <option id="statistical" property="ReportingRole.STATISTICAL_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=2</link>
             <requireProperty value="ReportingRole.STATISTICAL_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.DATABASE_REPORTS_GROUP_LABEL">
+          <option id="database" property="ReportingRole.DATABASE_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=5</link>
             <requireProperty value="ReportingRole.DATABASE_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP_LABEL">
+          <option id="management" property="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=3</link>
             <requireProperty value="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.STARS_REPORTS_GROUP_LABEL">
+          <option id="stars" property="ReportingRole.STARS_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=6</link>
             <requireProperty value="ReportingRole.STARS_REPORTS_GROUP"/>
           </option>
-          <option property="ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL">
+          <option id="settlement" property="ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=100</link>
             <requireProperty value="ReportingRole.SETTLEMENT_REPORTS_GROUP"/>
           </option>
-          <option name="C&amp;I">
+          <option id="cni" name="C&amp;I">
             <link>/analysis/Reports.jsp?groupType=8</link>
           </option>
         </sublinks>
@@ -293,48 +293,48 @@
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     
     <toplinks>
-      <option name="Devices">
+      <option id="devices" name="Devices">
         <sublinks>
-          <option name="MCT">
+          <option id="mct" name="MCT">
             <link>SelectDevice.jsp?SortBy=1004</link>
           </option>
-          <option name="IED">
+          <option id="ied" name="IED">
             <link>SelectDevice.jsp?SortBy=1002</link>
           </option>
-          <option name="RTU">
+          <option id="rtu" name="RTU">
             <link>SelectDevice.jsp?SortBy=1001</link>
           </option>
-          <option name="Transmitter">
+          <option id="transmitter" name="Transmitter">
             <link>SelectDevice.jsp?SortBy=1000</link>
           </option>
         </sublinks>
       </option>
-      <option name="Load Management">
+      <option id="lm" name="Load Management">
         <sublinks>
-          <option name="Group">
+          <option id="group" name="Group">
             <link>SelectDevice.jsp?SortBy=1005</link>
           </option>
-          <option name="Expresscom">
+          <option id="xcom" name="Expresscom">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
             <requireProperty value="CommanderRole.EXPRESSCOM_SERIAL_MODEL"/>
           </option>
-          <option name="Versacom">
+          <option id="vcom" name="Versacom">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
             <requireProperty value="CommanderRole.VERSACOM_SERIAL_MODEL"/>
           </option>
-          <option name="DCU-205 Serial">
+          <option id="205serial" name="DCU-205 Serial">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
             <requireProperty value="CommanderRole.DCU_SA205_SERIAL_MODEL"/>
           </option>
-          <option name="DCU-205 Serial">
+          <option id="305serial" name="DCU-305 Serial">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
             <requireProperty value="CommanderRole.DCU_SA305_SERIAL_MODEL"/>
           </option>
         </sublinks>
       </option>
-      <option name="Cap Control">
+      <option id="capcontrol" name="Cap Control">
         <sublinks>
-          <option name="Cap Control">
+          <option id="capcontrolsub" name="Cap Control">
             <link>SelectDevice.jsp?SortBy=4</link>
           </option>
         </sublinks>

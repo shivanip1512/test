@@ -112,7 +112,7 @@ body {
     color: white;
 }
 
-#Menu #topMenu a:hover, #Menu #topMenu a.selected {
+#Menu #topMenu a:hover, #Menu #topMenu a.selected, #Menu #subMenu a.selected {
     color: #f90;
 }
 

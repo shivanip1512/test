@@ -115,6 +115,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     private BaseMenuOption processTopOption(Element topOptionElement) throws CommonMenuException {
         String topOptionName = topOptionElement.getAttributeValue("name");
+        String topOptionId = topOptionElement.getAttributeValue("id");
         BaseMenuOption topLevelOption = null;
         Element topAction = topOptionElement.getChild("script");
         Element topLink = topOptionElement.getChild("link");
@@ -148,6 +149,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
             throw new CommonMenuException("No script, link, or sublinks found under: "
                                           + topOptionName);
         }
+        
+        topLevelOption.setId(topOptionId);
+        
         return topLevelOption;
     }
 
@@ -173,6 +177,10 @@ public class CommonModuleBuilder implements ModuleBuilder {
             subLevelOptionTemp.setLinkUrl(subLink.getTextTrim());
             subLevelOption = subLevelOptionTemp;
         }
+
+        String subOptionId = subElement.getAttributeValue("id");
+        subLevelOption.setId(subOptionId);
+        
         return subLevelOption;
     }
 

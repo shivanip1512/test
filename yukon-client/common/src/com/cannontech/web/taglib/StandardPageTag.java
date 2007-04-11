@@ -35,6 +35,7 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_MODULE_NAME = "ctiModuleName";
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
     public static final String CTI_SHOW_MENU = "ctiShowMenu";
+    public static final String CTI_MENU_SELECTION = "ctiMenuSelection";
     
     public static final String HTML_QUIRKS = "quirks";
     public static final String HTML_TRANSITIONAL = "transitional";
@@ -47,8 +48,9 @@ public class StandardPageTag extends BodyTagSupport {
     private List<String> scriptFiles;
     private String module = "";
     private String breadCrumbData = "";
-    private boolean debugMode = false;
+    private boolean debugMode = true;
     private boolean showMenu = false;
+    private String menuSelection = null;
     private boolean skipPage;
     
     public int doStartTag() throws JspException {
@@ -106,6 +108,7 @@ public class StandardPageTag extends BodyTagSupport {
             pageContext.setAttribute(CTI_MODULE_BASE, moduleBase, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_BREADCRUMBS, getBreadCrumb(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_SHOW_MENU, new Boolean(isShowMenu()), PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(CTI_MENU_SELECTION, menuSelection, PageContext.REQUEST_SCOPE);
             
             TemplateReslover resolver = new BasicTemplateResolver();
             String wrapperPage = resolver.getTemplatePage(moduleBase, pageContext);
@@ -199,6 +202,10 @@ public class StandardPageTag extends BodyTagSupport {
 
     public void setShowMenu(boolean showMenu) {
         this.showMenu = showMenu;
+    }
+    
+    public void setMenuSelection(String menuSelection) {
+        this.menuSelection = menuSelection;
     }
 
 

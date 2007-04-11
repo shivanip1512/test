@@ -28,11 +28,33 @@
 	if( request.getParameter("SortBy") != null) {
 		currentSortBy = Integer.valueOf(request.getParameter("SortBy")).intValue();
 	}
+	
+	String menuSelection = null;
+	switch(currentSortBy){
+		case 1000:
+		    menuSelection = "devices|transmitter";
+		    break;
+		case 1001:
+		    menuSelection = "devices|rtu";
+		    break;
+		case 1002:
+		    menuSelection = "devices|ied";
+		    break;
+		case 1004:
+		    menuSelection = "devices|mct";
+		    break;
+		case 1005:
+		    menuSelection = "lm|group";
+		    break;
+		case 4:
+		    menuSelection = "capcontrol|capcontrolsub";
+		    break;
+	}
 %>
 
 
 <cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
-	<cti:standardMenu/>
+	<cti:standardMenu menuSelection="<%= menuSelection %>" />
 	
 	<script language="JavaScript">
 	

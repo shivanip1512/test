@@ -239,6 +239,11 @@
     <name>standardMenu</name>
     <tag-class>com.cannontech.web.taglib.StandardMenuTag</tag-class>
     <body-content>empty</body-content>
+    <attribute>
+      <name>menuSelection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   
   <tag>

@@ -7,6 +7,7 @@ import com.cannontech.user.checker.UserChecker;
 public abstract class BaseMenuOption {
     private UserChecker propertyChecker = new NullUserChecker();
     private OptionNameFactory nameFactory = OptionNameFactory.createPlain("");
+    private String id = null;
     
     public BaseMenuOption(OptionNameFactory nameFactory) {
         super();
@@ -31,6 +32,14 @@ public abstract class BaseMenuOption {
 
     public void setLinkName(String linkName) {
         nameFactory = OptionNameFactory.createPlain(linkName);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

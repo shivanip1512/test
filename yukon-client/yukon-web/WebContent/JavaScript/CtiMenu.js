@@ -7,23 +7,25 @@ CtiMenu.prototype = {
   },
   
   show: function(link, subId) {
-    if ($(subId) == this.lastShownMenu) {
-      Element.hide($(subId));
-      //Element.hide(this.wrapperDiv);
-      this.lastShownMenu = null;
-      Element.removeClassName(link, 'selected');
-      this.lastLink = null;
-    } else {
-      //Element.show(this.wrapperDiv);
-      if (this.lastShownMenu) {
-        Element.hide(this.lastShownMenu);
-        Element.removeClassName(this.lastLink, 'selected');
-      }
-      this.lastShownMenu = $(subId);
-      this.lastLink = link;
-      Element.show($(subId));
-      Element.addClassName(link, 'selected');
-    }
+  
+    // Unselect all of the menu links
+  	menuItems = document.getElementsByClassName('stdhdr_menuLink');
+	menuItems.each(function(item) {
+	  item.removeClassName('selected');
+	});
+	
+	// Get the div under subMenu and then get the sub menu divs themselves
+	subMenus = $('subMenu').immediateDescendants()[0].immediateDescendants();
+	subMenus.each(function(item) {
+	  // Hide each sub menu
+	  item.hide();
+	});
+	
+	// Select the link that was clicked
+	Element.addClassName(link, 'selected');
+	// Show the link's sub menu
+	$(subId).show()
+
   }
   
 };

@@ -12,27 +12,33 @@ import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.StandardMenuRenderer;
 
 /**
- * This tag uses one of the MenuRenderer classes to output the menu
- * that was configured with the StandardMenuTag within the StandardPageTag.
+ * This tag uses one of the MenuRenderer classes to output the menu that was
+ * configured with the StandardMenuTag within the StandardPageTag.
  */
 public class OutputMenuTag extends TagSupport {
-    
+
     public int doEndTag() throws JspException {
-        
-        Boolean showMenu = (Boolean) pageContext.getAttribute(StandardPageTag.CTI_SHOW_MENU, 
+
+        Boolean showMenu = (Boolean) pageContext.getAttribute(StandardPageTag.CTI_SHOW_MENU,
                                                               PageContext.REQUEST_SCOPE);
         
-        ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE, 
-                                                                      PageContext.REQUEST_SCOPE);
-        
-        MenuRenderer menuRenderer = 
-            new StandardMenuRenderer((HttpServletRequest) pageContext.getRequest(),
-                                     moduleBase);
-        String breadCrumbs = 
-            (String) pageContext.getAttribute(StandardPageTag.CTI_BREADCRUMBS, 
-                                              PageContext.REQUEST_SCOPE);
-        menuRenderer.setBreadCrumb(breadCrumbs);
         if (showMenu.booleanValue()) {
+    
+            ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE,
+                                                                          PageContext.REQUEST_SCOPE);
+            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+    
+            MenuRenderer menuRenderer = new StandardMenuRenderer(request, moduleBase);
+
+            String menuSelection = (String) pageContext.getAttribute(StandardPageTag.CTI_MENU_SELECTION,
+                                                                     PageContext.REQUEST_SCOPE);
+            menuRenderer.setMenuSelection(menuSelection);
+            
+            String breadCrumbs = (String) pageContext.getAttribute(StandardPageTag.CTI_BREADCRUMBS,
+                                                                   PageContext.REQUEST_SCOPE);
+            menuRenderer.setBreadCrumb(breadCrumbs);
+            
+
             try {
                 menuRenderer.renderMenu(pageContext.getOut());
             } catch (IOException e) {
@@ -41,5 +47,5 @@ public class OutputMenuTag extends TagSupport {
         }
         return EVAL_PAGE;
     }
-    
+
 }

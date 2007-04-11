@@ -19,20 +19,58 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<cti:standardPage module="reporting" title="Reports"> 
-<cti:standardMenu/>
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	StarsYukonUser starsYukonUser = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
-	<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
+<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="type" param="type"/>
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>
 <jsp:setProperty name="REPORT_BEAN" property="start" param="startDate"/>
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
+
+<%
+	String menuSelection = null;
+	switch(REPORT_BEAN.getGroupType()){
+		case 0:
+		    menuSelection = "reports|administrator";
+		    break;
+		case 1:
+		    menuSelection = "reports|metering";
+		    break;
+		case 2:
+		    menuSelection = "reports|statistical";
+		    break;
+		case 3:
+		    menuSelection = "reports|management";
+		    break;
+		case 4:
+		    menuSelection = "reports|capcontrol";
+		    break;
+		case 5:
+		    menuSelection = "reports|database";
+		    break;
+		case 6:
+		    menuSelection = "reports|stars";
+		    break;
+		case 8:
+		    menuSelection = "reports|cni";
+		    break;
+		case 100:
+		    menuSelection = "reports|settlement";
+		    break;
+		default:
+		    menuSelection = "reports";
+		    break;
+	}
+%>
+
+
+<cti:standardPage module="reporting" title="Reports"> 
+<cti:standardMenu menuSelection="<%= menuSelection %>"/>
 
 <script>
 function loadTarget(form)
@@ -315,7 +353,7 @@ function enableDates(value)
                         	<input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All
                       		</div>
                       		<div id='DivSelectNone' style='display:true'>         
-                        	<input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>";
+                        	<input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>
                       		</div>                
                       	</div>
             			<% } %>

@@ -43,7 +43,8 @@ public class StandardMenuRenderer implements MenuRenderer {
     private final HttpServletRequest httpServletRequest;
     private LiteYukonUser yukonUser;
     private MenuFeatureSet features = new MenuFeatureSet();
-
+    private String[] selections = new String[2];
+    
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.
      * The ServletRequest is required so that absolulte URLs can be adjusted
@@ -63,6 +64,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     }
 
     private Div buildMenu() {
+        
         Div menuDiv = new Div();
         menuDiv.setPrettyPrint(true);
         menuDiv.setID("Menu");
@@ -122,7 +124,7 @@ public class StandardMenuRenderer implements MenuRenderer {
                 subMenuParents.add(optionParent);
                 // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
                 link.setHref("#");
-                link.setClass("stdhdr_menuLink");
+                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
                 link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkName(yukonUser)) + "'); return false;"));
                 link.setTitle(e("Display Sub Menu for " + option.getLinkName(yukonUser)));
             }
@@ -138,7 +140,9 @@ public class StandardMenuRenderer implements MenuRenderer {
             TopLevelOption optionParent = iter.next();
             Div thisMenu = new Div();
             thisMenu.setID(generateIdForString(optionParent.getLinkName(yukonUser)));
-            thisMenu.setStyle("display: none;");
+            if(!isOptionSelected(optionParent, 0)){
+                thisMenu.setStyle("display: none;");
+            }
             Iterator subLevelOptionIterator = optionParent.getValidSubLevelOptions(yukonUser);
             boolean first = true;
             while (subLevelOptionIterator.hasNext()) {
@@ -148,6 +152,9 @@ public class StandardMenuRenderer implements MenuRenderer {
                 first = false;
                 SimpleMenuOption subOption = (SimpleMenuOption) subLevelOptionIterator.next();
                 A link = new A();
+                if(isOptionSelected(subOption, 1)){
+                    link.setClass("selected");
+                }
                 link.addElement(e(subOption.getLinkName(yukonUser)));
                 link.setHref(buildUrl(subOption.getUrl()));
                 thisMenu.addElement(link);
@@ -234,6 +241,13 @@ public class StandardMenuRenderer implements MenuRenderer {
         return "stdmenu_" + title.replaceAll("[^a-zA-Z0-9]", "_");
     }
     
+    private boolean isOptionSelected(BaseMenuOption option, int menuLevel){
+        if(menuLevel < selections.length && option.getId() != null){
+            return option.getId().equals(selections[menuLevel]);
+        }
+        return false;
+    }
+    
     /**
      * Escape a string for use in HTML.
      * This method has a short name to reduce typing.
@@ -250,5 +264,11 @@ public class StandardMenuRenderer implements MenuRenderer {
     
     public MenuFeatureSet getFeatures() {
         return features;
+    }
+
+    public void setMenuSelection(String menuSelection) {
+        if(menuSelection != null){
+            selections = menuSelection.split("\\|");
+        }
     }
 }
