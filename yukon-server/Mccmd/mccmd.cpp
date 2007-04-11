@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2007/04/10 19:36:34 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2007/04/11 14:37:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -333,9 +333,15 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
             string low;
             string high;
 
-            low = *nextLowSerial.begin();
+            if( nextLowSerial.begin() != nextLowSerial.end() )
+            {
+                low = *nextLowSerial.begin();
+            }
             Boost_char_tokenizer nextHighSerial(range.erase(0,low.size()), hig_sep);
-            high = *nextHighSerial.begin();
+            if( nextHighSerial.begin() != nextHighSerial.end() )
+            {
+                high = *nextHighSerial.begin();
+            }
             trim_left(high, "-");
 
             if( !low.empty() && !high.empty() )
@@ -681,7 +687,10 @@ int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
     Boost_char_tokenizer optoken(cmd);
 
-    string firsttok = *optoken.begin();
+    if( optoken.begin() != optoken.end() )
+    {
+        string firsttok = *optoken.begin();
+    }
 
     if(!stringCompareIgnoreCase(firsttok,"pil"))
     {   // Hack slash rip. CGP 11/07/2002  White rabbit entry point.
@@ -1195,95 +1204,99 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
     bool retVal = true;
     int cnt=0;
 
-    // create or open file of the day
-    toFileHandle = CreateFile (toFileName.c_str(),
-                                 GENERIC_READ | GENERIC_WRITE,
-                                 0,
-                                 NULL,
-                                 OPEN_ALWAYS,
-                                 FILE_ATTRIBUTE_NORMAL,
-                                 NULL);
-    // loop around until we get exclusive access to this guy
-    while (toFileHandle == INVALID_HANDLE_VALUE && cnt < 30)
+    if( toFileName != fromFileName )
     {
-        if (GetLastError() == ERROR_SHARING_VIOLATION || GetLastError() == ERROR_LOCK_VIOLATION)
+    
+        // create or open file of the day
+        toFileHandle = CreateFile (toFileName.c_str(),
+                                     GENERIC_READ | GENERIC_WRITE,
+                                     0,
+                                     NULL,
+                                     OPEN_ALWAYS,
+                                     FILE_ATTRIBUTE_NORMAL,
+                                     NULL);
+        // loop around until we get exclusive access to this guy
+        while (toFileHandle == INVALID_HANDLE_VALUE && cnt < 30)
         {
-            toFileHandle = CreateFile (toFileName.c_str(),
-                                         GENERIC_READ | GENERIC_WRITE,
-                                         0,
-                                         NULL,
-                                         OPEN_ALWAYS,
-                                         FILE_ATTRIBUTE_NORMAL,
-                                         NULL);
+            if (GetLastError() == ERROR_SHARING_VIOLATION || GetLastError() == ERROR_LOCK_VIOLATION)
             {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << CtiTime() << " - file " << string (toFileName) << " is locked "<< endl;
+                toFileHandle = CreateFile (toFileName.c_str(),
+                                             GENERIC_READ | GENERIC_WRITE,
+                                             0,
+                                             NULL,
+                                             OPEN_ALWAYS,
+                                             FILE_ATTRIBUTE_NORMAL,
+                                             NULL);
+                {
+                    CtiLockGuard< CtiLogger > guard(dout);
+                    dout << CtiTime() << " - file " << string (toFileName) << " is locked "<< endl;
+                }
+                cnt++;
+                Sleep (1000);
             }
-            cnt++;
-            Sleep (1000);
+            else
+                break;
         }
-        else
-            break;
-    }
-
-    // if we tried for 30 seconds, log that we failed to log the file
-    if (cnt >= 30)
-    {
-        // since we couldn't create the tmp file, we won't delete the current one
-        retVal = false;
-    }
-    else
-    {
-        FILE* fromfileptr;
-        char workString[500];  // not real sure how long each line possibly is
-        vector<string> aCmdVector;
-                                   
-        // open file               
-        if( (fromfileptr = fopen( fromFileName.c_str(), "r")) == NULL )
+    
+        // if we tried for 30 seconds, log that we failed to log the file
+        if (cnt >= 30)
         {
+            // since we couldn't create the tmp file, we won't delete the current one
             retVal = false;
         }
         else
         {
-            // load list in the command vector
-            while ( fgets( (char*) workString, 500, fromfileptr) != NULL )
+            FILE* fromfileptr;
+            char workString[500];  // not real sure how long each line possibly is
+            vector<string> aCmdVector;
+                                       
+            // open file               
+            if( (fromfileptr = fopen( fromFileName.c_str(), "r")) == NULL )
             {
-                string entry (workString);
-                aCmdVector.push_back (entry);
-            }
-        }
-
-        // loop the vector and append to the file
-        int     totalLines = aCmdVector.size();
-        int     lineCnt = 0;
-        int     retCode = 0;
-
-        while (lineCnt < totalLines)
-        {
-            // move to end of file and write
-            retCode=SetFilePointer(toFileHandle,0,NULL,FILE_END);
-            retCode=SetEndOfFile (toFileHandle);
-            memset (workString, '\0',500);
-            strcpy (workString,aCmdVector[lineCnt].c_str());
-
-            if (workString[aCmdVector[lineCnt].length()-1] == '\n')
-            {
-                workString[aCmdVector[lineCnt].length()-1] = '\r';
-                workString[aCmdVector[lineCnt].length()] = '\n';
-                retCode=WriteFile (toFileHandle,workString,aCmdVector[lineCnt].length()+1,&bytesWritten,NULL);
+                retVal = false;
             }
             else
             {
-                workString[aCmdVector[lineCnt].length()] = '\r';
-                workString[aCmdVector[lineCnt].length()+1] = '\n';
-                retCode=WriteFile (toFileHandle,workString,aCmdVector[lineCnt].length()+2,&bytesWritten,NULL);
+                // load list in the command vector
+                while ( fgets( (char*) workString, 500, fromfileptr) != NULL )
+                {
+                    string entry (workString);
+                    aCmdVector.push_back (entry);
+                }
             }
-            lineCnt++;
+    
+            // loop the vector and append to the file
+            int     totalLines = aCmdVector.size();
+            int     lineCnt = 0;
+            int     retCode = 0;
+    
+            while (lineCnt < totalLines)
+            {
+                // move to end of file and write
+                retCode=SetFilePointer(toFileHandle,0,NULL,FILE_END);
+                retCode=SetEndOfFile (toFileHandle);
+                memset (workString, '\0',500);
+                strcpy (workString,aCmdVector[lineCnt].c_str());
+    
+                if (workString[aCmdVector[lineCnt].length()-1] == '\n')
+                {
+                    workString[aCmdVector[lineCnt].length()-1] = '\r';
+                    workString[aCmdVector[lineCnt].length()] = '\n';
+                    retCode=WriteFile (toFileHandle,workString,aCmdVector[lineCnt].length()+1,&bytesWritten,NULL);
+                }
+                else
+                {
+                    workString[aCmdVector[lineCnt].length()] = '\r';
+                    workString[aCmdVector[lineCnt].length()+1] = '\n';
+                    retCode=WriteFile (toFileHandle,workString,aCmdVector[lineCnt].length()+2,&bytesWritten,NULL);
+                }
+                lineCnt++;
+            }
+    
+            CloseHandle (toFileHandle);
+            fclose(fromfileptr);
+            DeleteFile (fromFileName.c_str());
         }
-
-        CloseHandle (toFileHandle);
-        fclose(fromfileptr);
-        DeleteFile (fromFileName.c_str());
     }
 
     return retVal;

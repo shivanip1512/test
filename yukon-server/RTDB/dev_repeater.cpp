@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/09/18 17:25:09 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/04/11 14:37:50 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -428,16 +428,28 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 
            for(i = 0; i < pOutMessage->Buffer.BSt.Length; i = i + 2)       // This is the number of defined roles.
            {
-               strTemp = *fixtok.begin();
+               if( fixtok.begin() != fixtok.end() )
+               {
+                   strTemp = *fixtok.begin();
+               }
                fixbits = !strTemp.empty() ? atoi(strTemp.c_str()) : 31;
 
-               strTemp = *vouttok.begin();
+               if( vouttok.begin() != vouttok.end() )
+               {
+                   strTemp = *vouttok.begin();
+               }
                varbits_out = !strTemp.empty() ? atoi(strTemp.c_str()) : 7;
 
-               strTemp = *vintok.begin();
+               if( vintok.begin() != vintok.end() )
+               {
+                   strTemp = *vintok.begin();
+               }
                varbits_in = !strTemp.empty() ? atoi(strTemp.c_str()) : 7;
 
-               strTemp = *stftok.begin();
+               if( stftok.begin() != stftok.end() )
+               {
+                   strTemp = *stftok.begin();
+               }
                stagestf = !strTemp.empty() ? atoi(strTemp.c_str()) : 15;
 
                #if 0

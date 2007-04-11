@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/02/22 22:42:56 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/04/11 14:37:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -706,13 +706,15 @@ INT CtiProtocolExpresscom::rawconfiguration(string str)
     boost::tokenizer<>::iterator beg=cmdtok.begin();
     string tempStr;
 
-    if(!(tempStr = *beg).empty())
+    if(beg != cmdtok.end())
     {
+        tempStr = *beg;
         configNumber = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
-    while( !(tempStr = *(++beg)).empty() && i < 256 )
+    while( ++beg != cmdtok.end() && i < 256 )
     {
+        tempStr = *beg;
         raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
@@ -730,13 +732,15 @@ INT CtiProtocolExpresscom::rawmaintenance(string str)
     boost::tokenizer<>::iterator beg=cmdtok.begin();
     string tempStr;
 
-    if(!(tempStr = *beg).empty())
+    if(beg != cmdtok.end())
     {
+        tempStr = *beg;
         function = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
-    while( !(tempStr = *(++beg)).empty() && i < 4 )
+    while( ++beg != cmdtok.end() && i < 4 )
     {
+        tempStr = *beg;
         raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
@@ -824,8 +828,9 @@ INT CtiProtocolExpresscom::data(string str)
     boost::tokenizer<>::iterator beg=cmdtok.begin();
     string tempStr;
 
-    while( !(tempStr = *(++beg)).empty() && i < 256 )
+    while( beg != cmdtok.end() && i < 256 )
     {
+        tempStr = *beg++;
         raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
@@ -1685,27 +1690,30 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     Boost_char_tokenizer::iterator rbeg=rtok.begin();
 
 
-    for(load = 0; load < 15; load++)
+    if( pbeg != ptok.end() && rbeg != rtok.end() )
     {
-        if(loadmask & (0x01 << load))
+        for(load = 0; load < 15; load++)
         {
-            prog        = ( !(tStr = *pbeg).empty() ? atoi(tStr.c_str()) : prog);           // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
-            splinter    = ( !(tStr = *rbeg).empty() ? atoi(tStr.c_str()) : splinter);       // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
-
-            length = 1;
-            raw[0] = (prog >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load+1);
-
-            if((raw[0] & 0x30) != 0)
+            if(loadmask & (0x01 << load))
             {
-                if(prog >= 0)
+                prog        = ( !(tStr = *pbeg).empty() ? atoi(tStr.c_str()) : prog);           // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+                splinter    = ( !(tStr = *rbeg).empty() ? atoi(tStr.c_str()) : splinter);       // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+    
+                length = 1;
+                raw[0] = (prog >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load+1);
+    
+                if((raw[0] & 0x30) != 0)
                 {
-                    raw[length++] = (BYTE)prog;
+                    if(prog >= 0)
+                    {
+                        raw[length++] = (BYTE)prog;
+                    }
+                    if(splinter >= 0)
+                    {
+                        raw[length++] = (BYTE)splinter;
+                    }
+                    status = configuration( 0x07, length, raw );
                 }
-                if(splinter >= 0)
-                {
-                    raw[length++] = (BYTE)splinter;
-                }
-                status = configuration( 0x07, length, raw );
             }
         }
     }

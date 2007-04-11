@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/04/11 14:37:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,8 +204,14 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
                 BOOL syncstats = TRUE;
 
                 //tokens(" \t\n\0");  // Hop the timezone string.
-                tok_iter ++;
-                tstr = *tok_iter;
+                if( tok_iter != tokens.end() )
+                {
+                    tok_iter ++;
+                    if( tok_iter != tokens.end() )
+                    {
+                        tstr = *tok_iter;
+                    }
+                }
 
                 if(!tstr.empty())
                 {

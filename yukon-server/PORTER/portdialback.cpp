@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/04/11 14:37:55 $
 *
 * HISTORY      :
 * $Log: portdialback.cpp,v $
+* Revision 1.6  2007/04/11 14:37:55  jotteson
+* Fix for problems related to boost.
+*
 * Revision 1.5  2005/12/20 17:19:23  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -216,17 +219,33 @@ VOID PortDialbackThread(void *pid)
                     string strmsg;
                     CtiTime msgtime;
 
+                    if( beg != tok.end() )
+                    {
+                        tstr = *beg++; // Grab "BEGIN"
+                    }
 
-                    tstr = *beg++; // Grab "BEGIN"
-                    tstr = *beg++; // Grab "ALARM"
+                    if( beg != tok.end() )
+                    {
+                        tstr = *beg++; // Grab "ALARM"
+                    }
                     if(!tstr.compare("ALARM"))
                     {
-                        strdev = *beg++;         // Get the translation name from the ion.
-                        strtime = *beg++;        // Unix time value!
-                        strpriority = *beg++;    // Priority.
-
-                        while(!(tstr = *beg++).empty())
+                        if( beg != tok.end() )
                         {
+                            strdev = *beg++;         // Get the translation name from the ion.
+                        }
+                        if( beg != tok.end() )
+                        {
+                            strtime = *beg++;        // Unix time value!
+                        }
+                        if( beg != tok.end() )
+                        {
+                            strpriority = *beg++;    // Priority.
+                        }
+
+                        while(beg != tok.end())
+                        {
+                            tstr = *beg++;
                             tstr = trim_right(tstr, "\r");
 
                             if(!tstr.compare("END"))

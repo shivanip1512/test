@@ -370,10 +370,10 @@ bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &a
 }
 
 
-
 bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableString* programming, string aFileName)
 {
 	string serialNum;
+    string tempString1;
 	bool retCode = true;
     
 	std::transform(input.begin(), input.end(), input.begin(), tolower);
@@ -383,7 +383,11 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
 
     //RWCTokenizer cmdLine(input);           // Tokenize the string a
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
-    string tempString1 = *tok_iter;                // Will receive each token
+
+    if( tok_iter != cmdLine.end() )
+    {
+        tempString1 = *tok_iter;                // Will receive each token
+    }
 
     if (!tempString1.empty())
     {
@@ -403,13 +407,11 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                         * porter handles which is which based on the group
                         *****************************
                         */
-                        tempString1 = *(++tok_iter);
-                        if (!tempString1.empty())
+                        if (++tok_iter != cmdLine.end())
                         {
-                            serialNum = tempString1;
-                            tempString1 = *(++tok_iter);
+                            serialNum = *tok_iter;
 
-                            if (!tempString1.empty())
+                            if (++tok_iter != cmdLine.end())
                             {
                                 /*************************
                                 * output must look like this
@@ -423,7 +425,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                 *programming = "set MessagePriority 5 ; PutConfig serial ";
                                 *programming += serialNum.c_str();
                                 *programming += " template '";
-                                *programming += tempString1.c_str();
+                                *programming += tok_iter->c_str();
                                 *programming += "'";
                             }
                             else
@@ -444,14 +446,13 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                         * format:  2,serial #,in|out[,hours:#][,load:]
                         *****************************
                         */
-                        tempString1 = *(++tok_iter);
-                        if (!tempString1.empty())
+                        if (++tok_iter != cmdLine.end())
                         {
-                            serialNum = tempString1;
-                            tempString1 = *(++tok_iter);
+                            serialNum = *tok_iter;
 
-                            if (!tempString1.empty())
+                            if (++tok_iter != cmdLine.end())
                             {
+                                tempString1 = *tok_iter;
                                 if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL)
                                 {
                                     *programming = "set MessagePriority 7 ; PutConfig serial ";
@@ -485,9 +486,9 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                 }
 
                                 // everything from now on is optional
-                                tempString1 = *(++tok_iter);
-                                if (!tempString1.empty())
+                                if (++tok_iter != cmdLine.end())
                                 {
+                                    tempString1 = *tok_iter;
                                     // check for a timeout
                                     if (tempString1.find("offhours:")!=string::npos)
                                     {
@@ -505,9 +506,9 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                         *programming += " temp ";
 
                                         // see if offhours was after this
-                                        tempString1 = *(++tok_iter);
-                                        if (!tempString1.empty())
+                                        if (++tok_iter != cmdLine.end())
                                         {
+                                            tempString1 = *tok_iter;
                                             if (tempString1.find("offhours:")!=string::npos)
                                             {
                                                 int colon = tempString1.find_first_of(':');
@@ -563,16 +564,14 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             string classAddr("class ");
                             string divisionAddr("division ");
                             bool haveUtility=false, haveSection=false,firstClass=true,firstDivision=true;
-
-                            tempString1 = *(++tok_iter);
     
-                            if (!tempString1.empty())
+                            if (++tok_iter != cmdLine.end())
                             {
-                                serialNum = tempString1;
-                                tempString1 = *(++tok_iter);
+                                serialNum = *tok_iter;
     
-                                if (!tempString1.empty())
+                                if (++tok_iter != cmdLine.end())
                                 {
+                                    tempString1 = *tok_iter;
                                     bool continueFlag = true;
                                     while (continueFlag)
                                     {
@@ -621,11 +620,15 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             tempString1 = trim_left(tempString1,"d");
                                             divisionAddr += tempString1;
                                         }
-
-                                        tempString1 = *(++tok_iter);
     
-                                        if (tempString1.empty())
+                                        if (++tok_iter != cmdLine.end())
+                                        {
+                                            tempString1 = *tok_iter;
+                                        }
+                                        else
+                                        {
                                             continueFlag = false;
+                                        }
                                     }
     
                                     // make sure we found something
@@ -713,18 +716,15 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             ULONG tmpAddress;
 
                             memset (&buffer, '\0', 20);
-
-                            tempString1 = *(++tok_iter);
                             
-                            if (!tempString1.empty())
+                            if (++tok_iter != cmdLine.end())
                             {
-                                currentCmd += tempString1;
-                                serialNum = tempString1;
+                                currentCmd += *tok_iter;
+                                serialNum = *tok_iter;
 
-                                tempString1 = *(++tok_iter);
-    
-                                if (!tempString1.empty())
+                                if (++tok_iter != cmdLine.end())
                                 {
+                                    tempString1 = *tok_iter;
                                     bool continueFlag = true;
                                     while (continueFlag)
                                     {
@@ -832,11 +832,9 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             Boost_char_tokenizer subCmd(tempString1, sep);
                                             Boost_char_tokenizer::iterator sub_tok_iter = subCmd.begin();
 
-                                            workString = *sub_tok_iter;
-
-
-                                            while(!workString.empty())
+                                            while(sub_tok_iter != subCmd.end())
                                             {
+                                                workString = *sub_tok_iter++;
                                                 if (workString.find("load")!=string::npos)
                                                 {
                                                     loadCnt++;
@@ -850,10 +848,11 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                                         load += ",";
                                                     }
 
-                                                    workString = *(++sub_tok_iter);
+                                                    
 
-                                                    if (!workString.empty())
+                                                    if (sub_tok_iter != subCmd.end())
                                                     {
+                                                        workString = *sub_tok_iter++;
                                                         if (lastLoad < atoi(workString.c_str()))
                                                         {
                                                             load += workString;
@@ -887,9 +886,9 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
 
                                                     if (workString.length() < 2)
                                                     {
-                                                        workString = *(++sub_tok_iter);
-                                                        if (!workString.empty())
+                                                        if (sub_tok_iter != subCmd.end())
                                                         {
+                                                            workString = *sub_tok_iter++;
                                                             tmpAddress = atoi(workString.c_str());
                                                             //check address level
                                                             if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
@@ -941,9 +940,9 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
 
                                                     if (workString.length() < 2)
                                                     {
-                                                        workString = *(++sub_tok_iter);
-                                                        if (!workString.empty())
+                                                        if (sub_tok_iter != subCmd.end())
                                                         {
+                                                            workString = *sub_tok_iter++;
                                                             tmpAddress = atoi(workString.c_str());
                                                             //check address level
                                                             if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
@@ -984,10 +983,14 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             }
                                         }
 
-                                        tempString1 = *(++tok_iter);
-
-                                        if (tempString1.empty())
+                                        if (++tok_iter != cmdLine.end())
+                                        {
+                                            tempString1 = *tok_iter;
+                                        }
+                                        else
+                                        {
                                             continueFlag = false;
+                                        }
                                     }
 
                                     if (!(invalidSPID || invalidGEO || invalidSub || invalidFeeder ||invalidZip ||
@@ -1141,6 +1144,10 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
             retCode = false;
         }
     }
+    else
+    {
+        retCode = false;
+    }
 
     return retCode;
 }   
@@ -1161,10 +1168,26 @@ bool decodeDsm2Lines( string &aFunction,
     Boost_char_tokenizer tCmd(aCmd, sep);
 
     //RWCTokenizer cmdLine(input);           // Tokenize the string a
-    function = trim(string(*tFunction.begin()));
-    route = trim(string(*tRoute.begin()));
-    serialNum = trim(string(*tSN.begin()));
-    cmd = trim(string(*tCmd.begin()));
+
+    if( tFunction.begin() != tFunction.end() )
+    {
+        function = trim(string(*tFunction.begin()));
+    }
+
+    if( tRoute.begin() != tRoute.end() )
+    {
+        route = trim(string(*tRoute.begin()));
+    }
+
+    if( tSN.begin() != tSN.end() )
+    {
+        serialNum = trim(string(*tSN.begin()));
+    }
+
+    if( tCmd.begin() != tCmd.end() )
+    {
+        cmd = trim(string(*tCmd.begin()));
+    }
     
 /* rprw    
     RWCTokenizer tFunction(aFunction);           

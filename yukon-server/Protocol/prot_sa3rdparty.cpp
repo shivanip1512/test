@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/04/21 15:18:27 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2007/04/11 14:37:53 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.43  2007/04/11 14:37:53  jotteson
+* Fix for problems related to boost.
+*
 * Revision 1.42  2006/04/21 15:18:27  mfisher
 * made the Golay parsing logic a little more readable
 *
@@ -533,17 +536,24 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
                 boost::char_separator<char> sep("=");
                 Boost_char_tokenizer slotok(temp, sep);
                 Boost_char_tokenizer::iterator tok_iter = slotok.begin();
-                temp = trim_left(temp, *tok_iter);
+                if( tok_iter != slotok.end() )
+                {
+                    temp = trim_left(temp, *tok_iter);
+                }
 
                 boost::char_separator<char> sep1("=,\r\n ");
                 Boost_char_tokenizer _slotok(temp, sep1);
                 Boost_char_tokenizer::iterator _tok_iter = _slotok.begin();
 
 
-
-
-                rwsslot = *tok_iter;
-                rwsaddr = *_tok_iter;
+                if( tok_iter != slotok.end() )
+                {
+                    rwsslot = *tok_iter;
+                }
+                if( _tok_iter != _slotok.end() )
+                {
+                    rwsaddr = *_tok_iter;
+                }
 
                 int addr = atoi(rwsaddr.c_str());
 

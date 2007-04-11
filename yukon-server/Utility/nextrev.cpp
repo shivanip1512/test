@@ -209,7 +209,10 @@ int main(int argc, char **argv)
                     boost::char_separator<char> sep(":");
                     Boost_char_tokenizer next(str, sep);
                     Boost_char_tokenizer::iterator tok_iter = next.begin(); 
-                    string token = *tok_iter;
+                    if( tok_iter != next.end() )
+                    {
+                        string token = *tok_iter;
+                    }
                     cout << "    " << token << endl;
                 }
                 else if(!str.find(keyre)!=string::npos)     // Might be looking for BR's or TG's based upon -t
@@ -217,7 +220,10 @@ int main(int argc, char **argv)
                     boost::char_separator<char> sep(":");
                     Boost_char_tokenizer next(str, sep);
                     Boost_char_tokenizer::iterator tok_iter = next.begin(); 
-                    string token = *tok_iter;
+                    if( tok_iter != next.end() )
+                    {
+                        string token = *tok_iter;
+                    }
 
                     if(reportBranchesOnly)
                     {
@@ -236,10 +242,22 @@ int main(int argc, char **argv)
                         Boost_char_tokenizer next(str, sep);
                         Boost_char_tokenizer::iterator tok_iter = next.begin(); 
 
-                        string datestr = *tok_iter++;
-                        string majorRevision = *tok_iter++;
-                        string minorRevision = *tok_iter++;
-                        string buildRevision = *tok_iter;
+                        if( tok_iter != next.end() )
+                        {
+                            string datestr = *tok_iter++;
+                        }
+                        if( tok_iter != next.end() )
+                        {
+                            string majorRevision = *tok_iter++;
+                        }
+                        if( tok_iter != next.end() )
+                        {
+                            string minorRevision = *tok_iter++;
+                        }
+                        if( tok_iter != next.end() )
+                        {
+                            string buildRevision = *tok_iter;
+                        }
                         
                         boost::char_separator<char> sep2(" \0");
                         typedef boost::token_iterator_generator<boost::char_separator<char> >::type Iter;
@@ -316,21 +334,35 @@ int main(int argc, char **argv)
                         Boost_char_tokenizer next(str, sep);
                         Boost_char_tokenizer::iterator tok_iter = next.begin(); 
 
-                        string datestr = *tok_iter++;
-                        string timestr = *tok_iter++;
-                        string majorRevision = *tok_iter++;
+                        if( tok_iter != next.end() )
+                        {
+                            string datestr = *tok_iter++;
+                        }
+                        if( tok_iter != next.end() )
+                        {
+                            string timestr = *tok_iter++;
+                        }
+                        if( tok_iter != next.end() )
+                        {
+                            string majorRevision = *tok_iter++;
+                        }
 
 
                         boost::char_separator<char> sep2("_ \0");
                         typedef boost::token_iterator_generator<boost::char_separator<char> >::type Iter;
                         Iter beg = boost::make_token_iterator<string>(tok_iter.base(), tok_iter.end(),sep2);
                         Iter end;
-                        string minorRevision = *beg++;
-
+                        if( beg != tok_iter.end() )
+                        {
+                            string minorRevision = *beg++;
+                        }
 
                         boost::char_separator<char> sep3(" \0");
                         Iter beg1 = boost::make_token_iterator<string>(beg.base(), beg.end(), sep3);
-                        string buildRevision = *beg1;
+                        if( beg1 != beg.end() )
+                        {
+                            string buildRevision = *beg1;
+                        }
 
                         
                         majorRevision = trim(majorRevision, "_");
