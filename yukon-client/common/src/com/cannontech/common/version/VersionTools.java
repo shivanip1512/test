@@ -142,7 +142,7 @@ public static boolean starsExists() throws Exception
     if(starsExists == null) {
         boolean appCatExists = VersionTools.tableExists("APPLIANCECATEGORY");
         if(!appCatExists) {
-            throw new Exception("STARS tables not present in this database.");
+            throw new RuntimeException("STARS tables not present in this database.");
         }
         else {
             return CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ));
