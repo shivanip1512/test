@@ -11,7 +11,8 @@ var ALL_POPUP_TYPES = {
 	//types that are not known on the server
 	//because they are the children 
 	childCapMaint: "CapBankMaint",
-	childCapDBChange:"CapDBChange"
+	childCapDBChange:"CapDBChange",
+	cbcPointTimestamp: "CapPtTmstmp"
 };
 
 
@@ -66,9 +67,22 @@ function openPopupWin(elem, compositeIdType) {
 	else if (type == ALL_POPUP_TYPES.childCapDBChange) {
 						url = createCapbankDBChange(id);
 	}
+	else if (type == ALL_POPUP_TYPES.cbcPointTimestamp) {
+						showPointTimestamps(id);
+						return;
+	}
 
+	showPopup(url);
 
-	currentPopup.populate(url);
+}
+
+function showPopup (html) {
+	currentPopup.populate(html);
+	//over-ride this function since we
+	//need to adjust table headers
+	currentPopup.PopupWindow_showPopup = function () {
+			PopupWindow_showPopup("popupanchor");
+	}
 	currentPopup.showPopup("popupanchor");
 	window.parent.currentPopup = currentPopup;
 	window.parent.document.getElementById("controlrequest").style.borderStyle = "solid";
@@ -76,6 +90,7 @@ function openPopupWin(elem, compositeIdType) {
 	window.parent.document.getElementById("controlrequest").style.borderWidth = "thin";
 	window.parent.document.getElementById("controlrequest").style.backgroundColor = "black";
 }
+
 
 function createCapInfoTable (paoName, testData) {
 
@@ -598,3 +613,109 @@ function createCapbankDBChange(paoID) {
 	str += "	</select>';";
 	return str;
 }
+
+
+function bind (str)
+{
+	var html = str;
+	return html;
+}
+
+function showPointTimestamps (cbcID) {
+	
+	new Ajax.Request ('/spring/capcontrol/pointdata', 
+					{method:'post', 
+					parameters: 'cbcID=' + cbcID, 
+					onSuccess: function (t) { 
+					showPopup(t.responseText);
+					},
+					onFailure: function () { alert ("Could not reach server!")}, 
+					asynchronous:true });
+	
+}
+
+//function borrowed from cbc_funcs.js to align oneline popup
+function alignHeaders(mainTable, headerTable) {
+mytable = window.parent.document.getElementById(mainTable);
+hdrTable =  window.parent.document.getElementById(headerTable);
+	if (hdrTable)
+	{
+	hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+	
+		for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
+		    var myrow = mytable.getElementsByTagName('tr').item(j);  
+		     if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
+		        var colNum = myrow.cells.length;
+		        
+		        for(i=0;i < colNum - 1; i++) {
+		            var hdrCell = hdrRow.getElementsByTagName('td').item(i);
+		            var myrowCell = myrow.cells[i];
+		            if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
+		                maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
+		                hdrCell.width = maxWidth;
+		                myrowCell.width = maxWidth;
+		                break;
+		                }
+		                                                                       
+		            }
+		    
+		        }
+		    }
+	}
+}
+//over-ridden function from PopupWindow.js
+function PopupWindow_showPopup (anchorname) {
+	this.anchorname = anchorname;
+	this.getXYPosition(anchorname);
+	this.x += this.offsetX;
+	this.y += this.offsetY;
+	if (!this.populated && (this.contents != "")) {
+		this.populated = true;
+		this.refresh();
+		
+		}
+	if (this.divName != null) {
+		// Show the DIV object
+		if (this.use_gebi) {
+			window.parent.document.getElementById(this.divName).style.left = this.x + "px";
+			window.parent.document.getElementById(this.divName).style.top = this.y + "px";
+			window.parent.document.getElementById(this.divName).style.visibility = "visible";
+			}
+		else if (this.use_css) {
+			document.all[this.divName].style.left = this.x;
+			document.all[this.divName].style.top = this.y;
+			document.all[this.divName].style.visibility = "visible";
+			
+			
+			}
+		else if (this.use_layers) {
+			document.layers[this.divName].left = this.x;
+			document.layers[this.divName].top = this.y;
+			document.layers[this.divName].visibility = "visible";
+			}
+		}
+	else {
+		if (this.popupWindow == null || this.popupWindow.closed) {
+			// If the popup window will go off-screen, move it so it doesn't
+			if (this.x<0) { this.x=0; }
+			if (this.y<0) { this.y=0; }
+			if (screen && screen.availHeight) {
+				if ((this.y + this.height) > screen.availHeight) {
+					this.y = screen.availHeight - this.height;
+					}
+				}
+			if (screen && screen.availWidth) {
+				if ((this.x + this.width) > screen.availWidth) {
+					this.x = screen.availWidth - this.width;
+					}
+				}
+			var avoidAboutBlank = window.opera || ( document.layers && !navigator.mimeTypes['*'] ) || navigator.vendor == 'KDE' || ( document.childNodes && !document.all && !navigator.taintEnabled );
+			this.popupWindow = window.open(avoidAboutBlank?"":"about:blank","window_"+anchorname,this.windowProperties+",width="+this.width+",height="+this.height+",screenX="+this.x+",left="+this.x+",screenY="+this.y+",top="+this.y+"");
+			}
+		this.refresh();
+		}
+		alignHeaders("dataTable", "headerTable");
+		
+	
+}
+

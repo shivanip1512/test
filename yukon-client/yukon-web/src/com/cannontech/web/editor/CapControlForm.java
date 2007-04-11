@@ -28,7 +28,6 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
-import com.cannontech.cbc.dao.CBCDaoFactory;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -1890,7 +1889,7 @@ public class CapControlForm extends DBEditorForm{
 		
 		if (subBusList == null) {
 			//subBusList = PAOFuncs.getAllCapControlSubBuses();			
-			subBusList = CBCDaoFactory.getCBCDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
+			subBusList = DaoFactory.getCBCDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
 		}
 		return (LiteYukonPAObject[]) subBusList
 				.toArray(new LiteYukonPAObject[subBusList.size()]);

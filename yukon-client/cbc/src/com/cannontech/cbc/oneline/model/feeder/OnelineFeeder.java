@@ -89,7 +89,7 @@ public class OnelineFeeder implements OnelineObject {
 
     private void initEditorImage() {
         editorImage = new StaticImage();
-        String link = OnelineUtil.createEditLink(getCurrentFeederIdFromMessage().intValue());
+        String link = OnelineUtil.createBookmarkLink(getCurrentFeederIdFromMessage().intValue());
         editorImage.setLinkTo(link);
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         double nameX = getFeederName().getX();

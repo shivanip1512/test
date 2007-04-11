@@ -107,4 +107,8 @@ public class DaoFactory {
     public static YukonGroupDao getYukonGroupDao() {
         return (YukonGroupDao) YukonSpringHook.getBean("yukonGroupDao");
     }
+    
+    public static CBCDao getCBCDao () {
+        return  (CBCDao) YukonSpringHook.getBean("cbcDao");
+    }
 }

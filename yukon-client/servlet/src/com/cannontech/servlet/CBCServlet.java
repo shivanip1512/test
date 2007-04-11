@@ -42,6 +42,7 @@ import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.conns.ConnPool;
 
+@SuppressWarnings("serial")
 public class CBCServlet extends ErrorAwareInitializingServlet 
 {		
 	// Key used to store instances of this in the servlet context, this is the same

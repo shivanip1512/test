@@ -1,12 +1,12 @@
-package com.cannontech.cbc.daoimpl;
+package com.cannontech.core.dao.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.cbc.dao.CBCDao;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.CBCDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
@@ -130,3 +130,4 @@ public class CBCDaoImpl  implements CBCDao{
         return  pointDao.getLitePointsByPaObjectId(pao.getPAObjectID());
     }
 }
+

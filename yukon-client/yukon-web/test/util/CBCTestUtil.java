@@ -119,4 +119,13 @@ public class CBCTestUtil {
         return subID;
     }
 
+    public static int getCBC72xID() {
+
+        SqlStatementBuilder areaID = new SqlStatementBuilder();
+        areaID.append("SELECT MAX(deviceID)FROM ");
+        areaID.append("device2wayflags");
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        return yukonTemplate.queryForInt(areaID.toString());
+    }
+
 }

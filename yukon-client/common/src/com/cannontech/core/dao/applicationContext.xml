@@ -17,6 +17,13 @@
   	<property name="databaseCache" ref="databaseCache" />
   	<property name="authenticationService" ref="authenticationService" />
   </bean>
+   <bean id="cbcDao" class="com.cannontech.core.dao.impl.CBCDaoImpl" >
+    <property name="pointDao" ref="pointDao" />
+    <property name="paoDao" ref="paoDao" />
+    <property name="authDao" ref="authDao" />
+    <property name="stateDao" ref="stateDao" />
+    <property name="dynamicDataSource" ref="dynamicDataSource" />
+ </bean>
   <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
   	<property name="databaseCache" ref="databaseCache" />
   </bean>

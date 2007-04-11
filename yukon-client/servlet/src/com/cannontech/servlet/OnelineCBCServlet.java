@@ -28,6 +28,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -56,7 +57,11 @@ public class OnelineCBCServlet extends HttpServlet {
         String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);
         registerPointsWithDispatch(config, subBusMsg);
         String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath);
-        resp.sendRedirect(subName + ".html");
+        String busHTML = subName + ".html";
+        //remember the location
+        String subOnelineURL = "/capcontrol/oneline/" + busHTML;
+        CBCNavigationUtil.bookmarkLocation(subOnelineURL, req.getSession(false));
+        resp.sendRedirect(busHTML);
         
         
     }

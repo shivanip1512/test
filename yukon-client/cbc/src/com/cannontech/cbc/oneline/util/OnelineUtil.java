@@ -3,7 +3,6 @@ package com.cannontech.cbc.oneline.util;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Paint;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -52,6 +51,8 @@ public class OnelineUtil {
     public static final String IMG_BACKBUTTON = "arrow.gif";
     public static final String IMG_EDITOR = "edit.gif";
     public static final String IMG_QUESTION = "question.gif";
+    public static final String IMG_PTTIMESTAMP = "magnifier.gif";
+
     
 
     public static final String ONELN_STATE_GROUP = "1LNSUBSTATE";
@@ -71,7 +72,6 @@ public class OnelineUtil {
     
     public static final int EDITOR_CAPCONTROL = 2;
     public static final Color PURPLISH = new Color(115, 79, 182);
-
 
     public static LiteStateGroup getOnelineStateGroup(String groupName) {
         LiteStateGroup[] groups = DaoFactory.getStateDao().getAllStateGroups();
@@ -215,4 +215,10 @@ public class OnelineUtil {
         String link = "/editor/cbcBase.jsf?type=" + EDITOR_CAPCONTROL + "&itemid=" + id;
         return link;
     }
+    
+    public static String createBookmarkLink(int id) {
+        String link = "/capcontrol/oneline/OnelineBookmarkServlet?itemid=" + id;
+        return link;
+    }
+
 }

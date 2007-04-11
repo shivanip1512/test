@@ -59,8 +59,13 @@
 			return;
 		}
 	}
-	
-	if (user == null && VersionTools.starsExists()) {
+	boolean starsExists = false;
+    try{
+        VersionTools.starsExists();
+    }catch (Exception e)
+    {
+    }
+        if (user == null && starsExists) {
 		user = StarsDatabaseCache.getInstance().getStarsYukonUser( lYukonUser );
 		if (user != null) {
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);

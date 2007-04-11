@@ -1,8 +1,5 @@
 package com.cannontech.cbc.oneline.model.cap;
 
-import java.awt.Color;
-import java.util.ArrayList;
-
 import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.model.HiddenStates;
@@ -14,10 +11,12 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -51,6 +50,8 @@ public class OnelineCap implements OnelineObject {
 
     private StaticText capBankName;
 
+    private StaticImage tmStmpImage;
+
     public void draw() {
 
         currFdrIndex = drawing.getFeeders().size() - 1;
@@ -70,14 +71,20 @@ public class OnelineCap implements OnelineObject {
         initStateImage(xImgYPos, imgXPos);
         initEditorImage();
         initInformationImage();
-        initCapBankName ();
         
+        if (CBCUtils.isTwoWay(DaoFactory.getPaoDao().getLiteYukonPAO(getStreamable().getControlDeviceID())))
+            initPointTimestampsImage();
+
+        initCapBankName ();
         graph.add(stateImage);
         graph.add(connectorLn);
         graph.add(editorImage);
         graph.add(infoImage);
         graph.add(capBankName);
         
+        if (tmStmpImage != null)
+            graph.add(tmStmpImage);
+            
         UpdatableStats capStats = new CapBankUpdatableStats(graph, this);
         capStats.draw();
         HiddenStates hiddenStates = new CapBankHiddenStates(graph, this);
@@ -87,6 +94,17 @@ public class OnelineCap implements OnelineObject {
         capBankInfo.draw();
         tagView.draw();
 
+    }
+
+
+
+    private void initPointTimestampsImage() {
+        tmStmpImage = new StaticImage();
+        tmStmpImage.setYukonImage(OnelineUtil.IMG_PTTIMESTAMP);
+        tmStmpImage.setX(infoImage.getX());
+        tmStmpImage.setY(infoImage.getY() + 30);
+        tmStmpImage.setLinkTo("javascript:void(0)");
+        tmStmpImage.setName(CommandPopups.CAP_TMSTMP + "_" + getStreamable().getControlDeviceID());
     }
 
 
@@ -136,7 +154,7 @@ public class OnelineCap implements OnelineObject {
 
     private void initEditorImage() {
         editorImage = new StaticImage();
-        String link = OnelineUtil.createEditLink(getCurrentCapIdFromMessage().intValue());
+        String link = OnelineUtil.createBookmarkLink(getCurrentCapIdFromMessage().intValue());
         editorImage.setLinkTo(link);
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         editorImage.setX(stateImage.getX() - 20);

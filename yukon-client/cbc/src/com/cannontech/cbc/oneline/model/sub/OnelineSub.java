@@ -72,7 +72,7 @@ public class OnelineSub implements OnelineObject {
 
     private void initEditorImage() {
         editorImage = new StaticImage();
-        String link = OnelineUtil.createEditLink(subBusMsg.getCcId().intValue());
+        String link = OnelineUtil.createBookmarkLink(subBusMsg.getCcId().intValue());
         editorImage.setLinkTo(link);
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         editorImage.setX(getInjectionLine().getPoint1().getX() + 5);

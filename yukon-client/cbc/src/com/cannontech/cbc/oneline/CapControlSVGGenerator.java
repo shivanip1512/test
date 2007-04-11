@@ -7,10 +7,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
-import com.cannontech.cbc.oneline.model.cap.CapBankAdditionalInfo;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
-import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.Drawing;
@@ -135,9 +133,22 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
             String id = OnelineUtil.extractObjectIdFromString(str);
             addDynamicAttributes(elem, CommandPopups.CAP_INFO + "_" + id);
         }
+        if (isCapBankPointTimestampImage(comp) && getGenOptions().isScriptingEnabled()) {
+            String str = comp.getName();
+            String id = OnelineUtil.extractObjectIdFromString(str);
+            addDynamicAttributes(elem, CommandPopups.CAP_TMSTMP + "_" + id);
+        }
 
     }
 
+
+    private boolean isCapBankPointTimestampImage(LxComponent comp) {
+        if ((comp instanceof StaticImage) && StringUtils.contains(comp.getName(),
+                                                                  CommandPopups.CAP_TMSTMP)) {
+             return true;
+         }
+         return false;
+     }
 
     private boolean isCapBankInfoImage(LxComponent comp) {
         if ((comp instanceof StaticImage) && StringUtils.contains(comp.getName(),

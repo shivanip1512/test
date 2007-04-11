@@ -51,6 +51,12 @@ public class CSSFilter implements Filter {
 		if( cssPath.startsWith("/esub/css/") ) {					
 			chain.doFilter(req,resp);		
 		}
+        else if (cssPath.startsWith("/capcontrol/oneline/css/"))
+        {
+              
+            config.getServletContext().getRequestDispatcher(cssPath).forward(req, resp);
+            
+        }      
 		else {
 			cssPath = cssPath.substring(cssPath.lastIndexOf("/"));
 			config.getServletContext().getRequestDispatcher("/esub/css" + cssPath).forward(req, resp);
