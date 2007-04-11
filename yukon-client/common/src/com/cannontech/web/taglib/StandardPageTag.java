@@ -48,7 +48,7 @@ public class StandardPageTag extends BodyTagSupport {
     private List<String> scriptFiles;
     private String module = "";
     private String breadCrumbData = "";
-    private boolean debugMode = true;
+    private boolean debugMode = false;
     private boolean showMenu = false;
     private String menuSelection = null;
     private boolean skipPage;
