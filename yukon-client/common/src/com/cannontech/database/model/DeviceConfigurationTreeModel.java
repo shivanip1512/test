@@ -89,6 +89,7 @@ public class DeviceConfigurationTreeModel extends DBTreeModel {
 
                 child.insert(deviceNode, ind[0]);
 
+                nodeChanged(child);
                 nodesWereInserted(child, ind);
 
                 return true;
