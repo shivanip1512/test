@@ -462,7 +462,9 @@ public Object getValue(Object val)
 	LiteNotificationGroup grp = 
 		(LiteNotificationGroup)getJComboBoxGroup().getSelectedItem();
 
-	point.getPointAlarming().setNotificationGroupID( new Integer(grp.getNotificationGroupID()) );
+    if(grp != null){
+        point.getPointAlarming().setNotificationGroupID( new Integer(grp.getNotificationGroupID()) );
+    }
 	
 	return point;
 }
