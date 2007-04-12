@@ -4,11 +4,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.message.util.ServerRequest;
+import com.cannontech.message.util.ServerRequestHelper;
 
 public class LoadManagementProxy implements LoadManagementService {
     private LoadControlClientConnection loadControlClientConnection;
-    private ServerRequest serverRequest;
     
     public LoadManagementProxy() {
         super();
@@ -27,7 +26,7 @@ public class LoadManagementProxy implements LoadManagementService {
         msg.setStartTime(startCal);
         msg.setStopTime(stopCal);
         
-        serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
+        ServerRequestHelper.makeServerRequest(getLoadControlClientConnection(), msg, 5000);
     }
 
     private GregorianCalendar convertToCalendar(Date startTime) {
@@ -44,10 +43,10 @@ public class LoadManagementProxy implements LoadManagementService {
 
         GregorianCalendar stopCal = convertToCalendar(stopTime);
 
-        msg.setStartTime(null);
+        msg.setStartTime(stopCal);
         msg.setStopTime(stopCal);
         
-        serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
+        ServerRequestHelper.makeServerRequest(getLoadControlClientConnection(), msg, 30000);
     }
     
     public void stopProgram(int programId) {
@@ -59,10 +58,10 @@ public class LoadManagementProxy implements LoadManagementService {
         Date now = new Date();
         GregorianCalendar stopCal = convertToCalendar(now);
 
-        msg.setStartTime(null);
-        msg.setStopTime(null);
+        msg.setStartTime(stopCal);
+        msg.setStopTime(stopCal);
         
-        serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
+        ServerRequestHelper.makeServerRequest(getLoadControlClientConnection(), msg, 5000);
     }
 
     public LoadControlClientConnection getLoadControlClientConnection() {
@@ -71,14 +70,6 @@ public class LoadManagementProxy implements LoadManagementService {
 
     public void setLoadControlClientConnection(LoadControlClientConnection loadControlClientConnection) {
         this.loadControlClientConnection = loadControlClientConnection;
-    }
-
-    public ServerRequest getServerRequest() {
-        return serverRequest;
-    }
-
-    public void setServerRequest(ServerRequest serverRequest) {
-        this.serverRequest = serverRequest;
     }
 
 }
