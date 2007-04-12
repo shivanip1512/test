@@ -1,5 +1,6 @@
 package com.cannontech.core.authorization.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -123,5 +124,16 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         paoIdSet.addAll(groupPaoIdSet);
 
         return paoIdSet;
+    }
+    
+    public Set<Integer> getPaoIdsForGroupPermission(LiteYukonGroup group, Permission permission) {
+
+        // Get paos for group
+        List<LiteYukonGroup> groupList = new ArrayList<LiteYukonGroup>();
+        groupList.add(group);
+        List<Integer> groupPaoIdList = paoPermissionDao.getPaosForGroupPermission(groupList, permission);
+        Set<Integer> groupPaoIdSet = new HashSet<Integer>(groupPaoIdList);
+
+        return groupPaoIdSet;
     }
 }

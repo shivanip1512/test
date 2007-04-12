@@ -292,7 +292,7 @@ public class PaoPermissionDaoImpl implements PaoPermissionDao {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             GroupPaoPermission gpp = new GroupPaoPermission();
-            gpp.setId(rs.getInt("userPaoPermissionId"));
+            gpp.setId(rs.getInt("groupPaoPermissionId"));
             gpp.setGroupId(rs.getInt("groupId"));
             gpp.setPaoId(rs.getInt("paoId"));
             gpp.setPermission(Permission.valueOf(rs.getString("permission")));

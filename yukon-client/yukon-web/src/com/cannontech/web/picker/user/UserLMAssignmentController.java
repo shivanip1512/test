@@ -20,6 +20,7 @@ import com.cannontech.common.search.PaoTypeSearcher;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.criteria.LMDeviceCriteria;
+import com.cannontech.core.authorization.model.GroupPaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
 import com.cannontech.core.authorization.model.UserPaoPermission;
 import com.cannontech.core.authorization.service.PaoPermissionService;
@@ -27,6 +28,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -39,7 +41,6 @@ public class UserLMAssignmentController extends YukonObjectPickerController {
     private PaoDao paoDao;
     private PaoGroupsWrapper paoGroupsWrapper;
     private PaoPermissionService paoPermissionService;
-    private PaoTypeSearcher paoTypeSearcher;
     
     public UserLMAssignmentController() {
         super();
@@ -112,7 +113,7 @@ public class UserLMAssignmentController extends YukonObjectPickerController {
         return mav;
     }
     
-    public ModelAndView addPaoToUser(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView addPao(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView("json");
         JSONObject jsonPao = new JSONObject(RequestUtils.getStringParameter(request, "selectedItem", ""));
         final int paoId = jsonPao.getInt("paoId");
@@ -166,7 +167,9 @@ public class UserLMAssignmentController extends YukonObjectPickerController {
                     }
                 };
                 paos.add(ultraLightPao);
-                processedPaoIds.add(paoId);
+                //don't display duplicates
+                if(! processedPaoIds.contains(new Integer(paoId)))
+                    processedPaoIds.add(paoId);
             }
         }
         
@@ -183,10 +186,88 @@ public class UserLMAssignmentController extends YukonObjectPickerController {
         return mav;
     }
     
-    public ModelAndView refreshGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public ModelAndView refreshGroup(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView("json");
-        mav.addObject("showAll", false);
+        JSONObject jsonGroup = new JSONObject(RequestUtils.getStringParameter(request, "selectedItem", ""));
+        LiteYukonGroup selectedGroup = yukonGroupDao.getLiteYukonGroup(jsonGroup.getInt("groupId"));
+        List<GroupPaoPermission> permList = paoPermissionService.getGroupPermissions(selectedGroup);
+        List<UltraLightPao> paos = new ArrayList<UltraLightPao>();
+        for(GroupPaoPermission perm : permList) {
+            if(perm.getPermission().compareTo(Permission.LM_VISIBLE) == 0) {
+                final int paoId = perm.getPaoId();
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+                PaoGroupsWrapper paoGroupsWrapper = (PaoGroupsWrapper) YukonSpringHook.getBean("paoGroupsWrapper");
+                final String type = paoGroupsWrapper.getPAOTypeString(pao.getType());
+                final String name = pao.getPaoName();
+                UltraLightPao ultraLightPao = new UltraLightPao() {
+                    public String getType() {
+                        return type;
+                    }
+                    public int getPaoId() {
+                        return paoId;
+                    }
+                    public String getPaoName() {
+                        return name;
+                    }
+                };
+                paos.add(ultraLightPao);
+            }
+        }
         
+        mav.addObject("assignedLMPaos", paos);
+        
+        return mav;
+    }
+    
+    public ModelAndView submitGroupChanges(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mav = new ModelAndView("json");
+        JSONObject currentJson = new JSONObject(ServletRequestUtils.getStringParameter(request, "currentJson", ""));
+        JSONArray assignedArray = currentJson.getJSONArray("assigned");
+        String groupId = currentJson.getString("groupId");
+        List<UltraLightPao> paos = new ArrayList<UltraLightPao>();
+        LiteYukonGroup group = new LiteYukonGroup(Integer.parseInt(groupId));
+        Set<Integer> existingLMPermissions = paoPermissionService.getPaoIdsForGroupPermission(group, Permission.LM_VISIBLE);
+        List<Integer> processedPaoIds = new ArrayList<Integer>();
+        for(int j = 0; j < assignedArray.length(); j++) {
+            JSONObject jsonPao = assignedArray.getJSONObject(j);
+            //don't forget that JSONArray counts nulls when it returns the length of itself
+            if(jsonPao != null) {
+                final int paoId = jsonPao.getInt("paoId");
+                LiteYukonPAObject pao = new LiteYukonPAObject(paoId);
+                if(! existingLMPermissions.contains(new Integer(paoId)) && ! processedPaoIds.contains(new Integer(paoId))) {
+                    /*Save the new permission*/
+                    paoPermissionService.addGroupPermission(group, pao, Permission.LM_VISIBLE);
+                }
+                final String type = jsonPao.getString("type");
+                final String name = jsonPao.getString("paoName");
+                UltraLightPao ultraLightPao = new UltraLightPao() {
+                    public String getType() {
+                        return type;
+                    }
+                    public int getPaoId() {
+                        return paoId;
+                    }
+                    public String getPaoName() {
+                        return name;
+                    }
+                };
+                paos.add(ultraLightPao);
+                //don't display duplicates
+                if(! processedPaoIds.contains(new Integer(paoId)))
+                    processedPaoIds.add(paoId);
+            }
+        }
+        
+        Object[] previous = existingLMPermissions.toArray();
+        for(int i = 0; i < previous.length; i++) {
+            if(! processedPaoIds.contains(previous[i])) {
+                LiteYukonPAObject pao = new LiteYukonPAObject(((Integer)previous[i]).intValue());
+                paoPermissionService.removeGroupPermission(group, pao, Permission.LM_VISIBLE);
+            }
+        }
+        
+        mav.addObject("assignedLMPaos", paos);
+        mav.addObject("statusSuccess", "Permission changes have been saved.");
         return mav;
     }
 
@@ -212,14 +293,6 @@ public class UserLMAssignmentController extends YukonObjectPickerController {
 
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
-    }
-
-    public PaoTypeSearcher getPaoTypeSearcher() {
-        return paoTypeSearcher;
-    }
-
-    public void setPaoTypeSearcher(PaoTypeSearcher paoTypeSearcher) {
-        this.paoTypeSearcher = paoTypeSearcher;
     }
 
     public PaoDao getPaoDao() {

@@ -128,4 +128,12 @@ public interface PaoPermissionService {
      *         groups the user is in
      */
     public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission);
+    
+    /**
+     * Method to get a list of pao ids for a given login group and permission
+     * @param group - Group to get pao ids for
+     * @param permission - Permission in question
+     * @return All pao ids with the given permission for the login group
+     */
+    public Set<Integer> getPaoIdsForGroupPermission(LiteYukonGroup group, Permission permission);
 }

@@ -10,4 +10,6 @@ public interface YukonGroupDao {
     public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user);
     
     public List<LiteYukonGroup> getGroupsForUser(int userID);
+    
+    public LiteYukonGroup getLiteYukonGroup(int groupID);
 }

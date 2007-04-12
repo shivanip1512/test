@@ -7,7 +7,7 @@ LoginGroupPicker.prototype = Object.extend(new ItemPicker(), {
 	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context, triggerAction) {
 		this.baseInitialize(destItemIdFieldId, criteria, extraMapping, pickerId, context);
 		this.sameItemLink = '';
-		this.triggerAction = triggerAction;   
+		this.triggerFinalAction = triggerAction;   
 	},
 	
 	//controllerMethod should match name of appropriate method in the xxPickerController java class

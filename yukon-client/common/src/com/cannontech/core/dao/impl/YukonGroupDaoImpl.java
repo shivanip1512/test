@@ -52,4 +52,12 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
     }
 
+    public LiteYukonGroup getLiteYukonGroup( int groupID )
+    {
+        String sql = "select groupid, groupname from YukonGroup where groupid = ? ";
+        List<LiteYukonGroup> groupList = jdbcTemplate.query(sql,
+                                                    new Object[] { groupID },
+                                                    new LiteYukonGroupMapper());
+        return groupList.get(0);
+    }
 }

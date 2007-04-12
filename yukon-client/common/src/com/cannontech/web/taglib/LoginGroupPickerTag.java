@@ -21,7 +21,7 @@ public class LoginGroupPickerTag extends ItemPickerTag {
         // build up extraMapping string
         List<String> extraMappings = new ArrayList<String>();
         if (StringUtils.isNotBlank(itemNameElement)) {
-            extraMappings.add("loginGroupName:" + itemNameElement);
+            extraMappings.add("groupName:" + itemNameElement);
         }
         String extraMappingString = StringUtils.join(extraMappings.iterator(), ";");
         
