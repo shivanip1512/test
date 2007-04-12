@@ -1261,6 +1261,14 @@ void CtiLMManualControlRequestExecutor::Execute()
                 response->setMessage("Manual Control Request Violates Constraints, Abandoning");
             }       
             break;
+
+        default:
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
+            }
+            break;
+            
         };
         break;
         
@@ -1302,6 +1310,13 @@ void CtiLMManualControlRequestExecutor::Execute()
                 response->setMessage("Manual Control Request OK, Using Constraints");
             }                               
             break;
+
+        default:
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
+            }
+            break;
         };
         
         break;
@@ -1324,6 +1339,10 @@ void CtiLMManualControlRequestExecutor::Execute()
         response->setPayload(lmResp);
         response->setID(_request->getID());     
 
+        if( _LM_DEBUG & LM_DEBUG_OUT_MESSAGES )
+        {
+            response->dump();
+        }
         //Send the response to all the clients
         CtiLMConnectionPtr connection = _controlMsg->getConnection();
         if(connection)
@@ -2761,6 +2780,11 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
             return 0;
         }
         classId = message->isA();
+    }
+
+    if( _LM_DEBUG & LM_DEBUG_IN_MESSAGES )
+    {
+        message->dump();
     }
 
     switch ( classId )

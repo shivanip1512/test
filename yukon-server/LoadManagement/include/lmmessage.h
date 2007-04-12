@@ -155,6 +155,7 @@ public:
     LONG getStartPriority() const;
     const string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;
+    virtual void dump() const;
     
     virtual CtiMessage* replicateMessage() const;
 	

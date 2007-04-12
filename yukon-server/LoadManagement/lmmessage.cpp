@@ -259,6 +259,28 @@ CtiLMManualControlRequest::~CtiLMManualControlRequest()
 {
 }
 
+
+/*----------------------------------------------------------------------------
+  dump
+
+  Sends information about this request to the logs/screen.
+---------------------------------------------------------------------------*/ 
+void CtiLMManualControlRequest::dump() const
+{
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+    dout << " ------- Message -------       LM Manual Control Request" << endl;
+    dout << "Command                        " << _command << endl;
+    dout << "Paobject ID                    " << _paoid << endl;
+    dout << "Notify Time                    " << _notifytime << endl;
+    dout << "Start Time                     " << _starttime << endl;
+    dout << "Stop Time                      " << _stoptime << endl;
+    dout << "Start Gear                     " << _startgear << endl;
+    dout << "Start Priority                 " << _startpriority << endl;
+    dout << "Additional Info                " << _additionalinfo << endl;
+    dout << "Constraint                     " << _constraint_cmd << endl;
+}
+
 /*---------------------------------------------------------------------------
     getCommand
     
