@@ -122,3 +122,4 @@ begin
 end;
 /*end block*/
 
+insert into YukonRoleProperty values (-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
