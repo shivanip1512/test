@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -70,7 +71,7 @@ public class CustomerPointTypeLookup {
             energyCompanyDao.getEnergyCompanyProperty(energyCompany, 
                                                         EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY);
         
-        if (property == null) {
+        if (StringUtils.isBlank(property)) {
             return Collections.emptySet();
         }
         property = property.trim();
