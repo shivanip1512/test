@@ -215,6 +215,12 @@
   	</attribute>
   </tag>
  
+  <tag>
+  	<name>isStarsExist</name>
+    <body-content>scriptless</body-content>
+  	<tag-class>com.cannontech.web.taglib.IsStarsExistTag</tag-class>
+  </tag>
+ 
    <tag>
     <name>standardPage</name>
     <tag-class>com.cannontech.web.taglib.StandardPageTag</tag-class>

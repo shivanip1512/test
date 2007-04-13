@@ -88,9 +88,12 @@
 		                  		</td>
 		                	</tr>
 		              	</table>
+                        
+                        <cti:isStarsExist>
 		              	<div class="loginHelp">
 		              		<a href="<c:url value="/pwordreq.jsp"/>">Forgot your password?</a>
 		              	</div>
+                        </cti:isStarsExist>
 					</form>
 					
 				</cti:titledContainer>
