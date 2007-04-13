@@ -137,11 +137,11 @@ public synchronized static CTIDatabase getDatabaseVersion()
  * Check to see if a common STARS table is in the DB
  * @return boolean
  */
-public static boolean starsExists() throws Exception
+public static boolean starsExists()
 {
-    if(starsExists == null) {
+    if (starsExists == null) {
         boolean appCatExists = VersionTools.tableExists("APPLIANCECATEGORY");
-        if(!appCatExists) {
+        if (!appCatExists) {
             throw new RuntimeException("STARS tables not present in this database.");
         }
         else {
