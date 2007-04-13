@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2007/03/08 22:41:17 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2007/04/13 20:21:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,20 +42,31 @@ private:
     static DynamicPaoAddressing_t         initDynPaoAddressing();
     static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
 
-    struct daily_read_interest_t
+    struct daily_read_info_t
     {
         unsigned long single_day;
 
         unsigned long multi_day_start;
         unsigned long multi_day_end;
 
-        long in_progress;
-
         unsigned channel;
 
+        long in_progress;
         bool retry;
         bool failed;
-    } _daily_read_interest;
+
+        enum current_request_t
+        {
+            Request_None,
+            Request_SingleDayCh1,
+            Request_SingleDayCh2,
+            Request_SingleDayCh3,
+            Request_MultiDay,
+            Request_RecentCh1,
+
+        } current_request;
+
+    } _daily_read_info;
 
 protected:
 
@@ -191,8 +202,13 @@ protected:
         FuncRead_SingleDayDailyReportCh3Pos = 0x1f,
         FuncRead_SingleDayDailyReportCh3Len =    9,
 
-        FuncRead_MultiDayDailyReportingBasePos = 0x20,
-        FuncRead_MultiDayDailyReportingLen     =   13,
+        FuncRead_MultiDayDailyReportingBasePos   = 0x20,
+        FuncRead_MultiDayDailyReportingLen       =   13,
+        FuncRead_MultiDayDailyReportingMaxOffset = 0x0f,
+
+        FuncRead_Channel1SingleDayBasePos   = 0x30,
+        FuncRead_Channel1SingleDayLen       =    9,
+        FuncRead_Channel1SingleDayMaxOffset = 0x07,
 
         FuncRead_FrozenMReadPos   = 0x91,
         FuncRead_FrozenMReadLen   =   10,
@@ -256,6 +272,21 @@ protected:
     {
         Channel_Voltage = 4,
     };
+
+    enum ValueType410
+    {
+        ValueType_AccumulatorDelta,
+        ValueType_Voltage,
+        ValueType_DynamicDemand,
+        ValueType_LoadProfile_Voltage,
+        ValueType_LoadProfile_DynamicDemand,
+    };
+
+    virtual point_info getDemandData(unsigned char *buf, int len) const;
+
+    point_info getData(unsigned char *buf, int len, ValueType410 vt) const;
+
+    int makeDynamicDemand(double input) const;
 
     long getLoadProfileInterval(unsigned channel);
     point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
