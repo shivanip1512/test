@@ -4,7 +4,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <f:view>
 <cti:standardPage title="Group List" module="commercialcurtailment">
-<cti:standardMenu />
+<cti:standardMenu menuSelection="ccurt_setup|ccurt_groups"/>
 <h2>Group Setup</h2>
 
 <h:form>

@@ -6,7 +6,7 @@
 
 <f:view>
 <cti:standardPage title="Program Detail" module="commercialcurtailment">
-<cti:standardMenu />
+<cti:standardMenu menuSelection="ccurt_setup"/>
 <h2>Program Detail</h2>
 <h:form>
 <div><h:messages /></div>

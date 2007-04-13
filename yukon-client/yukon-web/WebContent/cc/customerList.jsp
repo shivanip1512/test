@@ -4,7 +4,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <f:view>
 <cti:standardPage title="Customer List" module="commercialcurtailment">
-<cti:standardMenu />
+<cti:standardMenu menuSelection="ccurt_setup|ccurt_customers"/>
 
 <h:form>
 <t:dataList id="customerList" value="#{rCustomerList.customerList}" var="thisCustomer" layout="unorderedList">

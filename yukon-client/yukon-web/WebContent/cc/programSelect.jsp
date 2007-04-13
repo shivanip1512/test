@@ -4,7 +4,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <f:view>
 <cti:standardPage title="Select Program to Start" module="commercialcurtailment">
-<cti:standardMenu />
+<cti:standardMenu menuSelection="ccurt_events"/>
 
 <h2>Available Programs</h2>
 

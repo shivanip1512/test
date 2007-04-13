@@ -152,18 +152,18 @@
   
   <module name="commercialcurtailment">
     <toplinks>
-      <option name="Events">
+      <option id="ccurt_events" name="Events">
         <link>/cc/programSelect.jsf</link>
       </option>
-      <option name="Setup">
+      <option id="ccurt_setup" name="Setup">
         <sublinks>
-          <option name="Programs">
+          <option id="ccurt_programs" name="Programs">
             <link>/cc/programList.jsf</link>
           </option>
-          <option name="Groups">
+          <option id="ccurt_groups" name="Groups">
             <link>/cc/groupList.jsf</link>
           </option>
-          <option name="Customers">
+          <option id="ccurt_customers" name="Customers">
             <link>/cc/customerList.jsf</link>
           </option>
         </sublinks>

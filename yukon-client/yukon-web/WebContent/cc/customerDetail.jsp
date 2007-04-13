@@ -4,7 +4,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <f:view>
 <cti:standardPage title="Customer List" module="commercialcurtailment">
-<cti:standardMenu />
+<cti:standardMenu menuSelection="ccurt_setup"/>
 
 <h2>Customer Detail: <h:outputText value="#{sCustomerDetail.customer.companyName}"/></h2>
 <h:form>
