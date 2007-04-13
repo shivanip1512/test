@@ -124,10 +124,10 @@ public class StandardMenuRenderer implements MenuRenderer {
                 subMenuParents.add(optionParent);
                 // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
                 link.setHref("#");
-                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
                 link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkName(yukonUser)) + "'); return false;"));
                 link.setTitle(e("Display Sub Menu for " + option.getLinkName(yukonUser)));
             }
+            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
             leftDiv.addElement(link);
         }
         return leftDiv;
