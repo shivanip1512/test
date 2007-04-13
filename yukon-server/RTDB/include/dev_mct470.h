@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2007/04/03 18:33:10 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2007/04/13 20:24:11 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,6 +127,38 @@ protected:
 
     virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
+    enum ValueType470
+    {
+        ValueType_PulseDemand,
+        ValueType_LoadProfile_PulseDemand,
+        ValueType_LoadProfile_IED_LG_S4,
+        ValueType_LoadProfile_IED_Alpha_A3,
+        ValueType_LoadProfile_IED_Alpha_PP,
+        ValueType_LoadProfile_IED_GE_kV,
+        ValueType_LoadProfile_IED_GE_kV2,
+        ValueType_LoadProfile_IED_GE_kV2c,
+        ValueType_LoadProfile_IED_Sentinel,
+        ValueType_IED,
+    };
+
+    virtual point_info getDemandData(unsigned char *buf, int len) const;
+
+    point_info getData(unsigned char *buf, int len, ValueType470 vt) const;
+
+    static const error_set _error_info_old_lp;
+    static const error_set _error_info_lgs4;
+    static const error_set _error_info_alphaa3;
+    static const error_set _error_info_alphapp;
+    static const error_set _error_info_gekv;
+    static const error_set _error_info_sentinel;
+
+    static error_set initErrorInfoOldLP   ( void );
+    static error_set initErrorInfoLGS4    ( void );
+    static error_set initErrorInfoAlphaA3 ( void );
+    static error_set initErrorInfoAlphaPP ( void );
+    static error_set initErrorInfoGEkV    ( void );
+    static error_set initErrorInfoSentinel( void );
+
     enum MemoryMap
     {
         //  new/changed stuff
@@ -135,6 +167,9 @@ protected:
 
         Memory_EventFlagsMask2Pos   = 0x09,
         Memory_EventFlagsMask2Len   =    1,
+
+        Memory_AddressingPos        = 0x0d,
+        Memory_AddressingLen        =    6,
 
         Memory_AddressBronzePos     = 0x0d,
         Memory_AddressBronzeLen     =    1,
@@ -171,11 +206,11 @@ protected:
         Memory_DemandIntervalPos    = 0x32,
         Memory_DemandIntervalLen    =    1,
 
-        Memory_LoadProfileInterval1Pos    = 0x33,
-        Memory_LoadProfileInterval1Len    =    1,
+        Memory_LoadProfileInterval1Pos  = 0x33,
+        Memory_LoadProfileInterval1Len  =    1,
 
-        Memory_LoadProfileInterval2Pos    = 0x34,
-        Memory_LoadProfileInterval2Len    =    1,
+        Memory_LoadProfileInterval2Pos  = 0x34,
+        Memory_LoadProfileInterval2Len  =    1,
 
         Memory_TableReadIntervalPos = 0x35,
         Memory_TableReadIntervalLen =    1,
@@ -249,28 +284,31 @@ protected:
 
     enum Functions
     {
-        FuncWrite_ConfigAlarmMaskLen =   3,  //  func write 0x01
+        FuncWrite_ConfigAlarmMaskLen    =   3,  //  func write 0x01
 
-        FuncWrite_IntervalsPos       = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
-        FuncWrite_IntervalsLen       =    3,
+        FuncWrite_IntervalsPos          = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
+        FuncWrite_IntervalsLen          =    3,
 
-        FuncWrite_RelaysPos          = 0x08,
-        FuncWrite_RelaysLen          =    3,
+        FuncWrite_RelaysPos             = 0x08,
+        FuncWrite_RelaysLen             =    3,
 
-        FuncWrite_SetupLPChannelsPos = 0x07,
-        FuncWrite_SetupLPChannelsLen =   13,
-        FuncWrite_SetupLPChannelLen  =    7,  //  if you're only doing one channel
+        FuncWrite_SetupLPChannelsPos    = 0x07,
+        FuncWrite_SetupLPChannelsLen    =   13,
+        FuncWrite_SetupLPChannelLen     =    7,  //  if you're only doing one channel
 
-        FuncWrite_PrecannedTablePos  = 0xd3,
-        FuncWrite_PrecannedTableLen  =    4,
+        FuncWrite_IEDCommandData        = 0xd1,
+        FuncWrite_IEDCommandDataBaseLen =    5,
 
-        FuncWrite_DNPReqTable        = 0xd6,
+        FuncWrite_PrecannedTablePos     = 0xd3,
+        FuncWrite_PrecannedTableLen     =    4,
 
-        Memory_AddressingPos         = 0x0d,
-        Memory_AddressingLen         =    6,
+        FuncWrite_CurrentReading        = 0xd5,
+        FuncWrite_CurrentReadingLen     =    5,
 
-        FuncRead_ChannelSetupDataPos = 0x20,
-        FuncRead_ChannelSetupDataLen =    7,
+        FuncWrite_DNPReqTable           = 0xd6,
+
+        FuncRead_ChannelSetupDataPos    = 0x20,
+        FuncRead_ChannelSetupDataLen    =    7,
 
         FuncRead_LoadProfileChannel12Pos = 0x21,
         FuncRead_LoadProfileChannel12Len =   10,
@@ -278,27 +316,27 @@ protected:
         FuncRead_LoadProfileChannel34Pos = 0x22,
         FuncRead_LoadProfileChannel34Len =   10,
 
-        FuncRead_PrecannedTablePos  = 0x23,
-        FuncRead_PrecannedTableLen  =   11,
+        FuncRead_PrecannedTablePos      = 0x23,
+        FuncRead_PrecannedTableLen      =   11,
 
-        FuncRead_IED_DNPTablePos    = 0x24,
-        FuncRead_IED_DNPTableLen    =   13,
+        FuncRead_IED_DNPTablePos        = 0x24,
+        FuncRead_IED_DNPTableLen        =   13,
 
-        FuncRead_IED_CRCPos         = 0x25,
-        FuncRead_IED_CRCLen         =   12,
+        FuncRead_IED_CRCPos             = 0x25,
+        FuncRead_IED_CRCLen             =   12,
 
-        FuncRead_MReadLen           =   12,
+        FuncRead_MReadLen               =   12,
 
-        FuncRead_MReadFrozenPos     = 0x91,
-        FuncRead_MReadFrozenLen     =   13,
+        FuncRead_MReadFrozenPos         = 0x91,
+        FuncRead_MReadFrozenLen         =   13,
 
-        FuncRead_DemandPos          = 0x92,
-        FuncRead_DemandLen          =   11,  //  0x92
+        FuncRead_DemandPos              = 0x92,
+        FuncRead_DemandLen              =   11,  //  0x92
 
-        FuncRead_PeakDemandPos      = 0x93,
-        FuncRead_PeakDemandLen      =   12,  //  0x93
+        FuncRead_PeakDemandPos          = 0x93,
+        FuncRead_PeakDemandLen          =   12,  //  0x93
 
-        FuncRead_TOUChannelOffset   = 0x08,  //  TOU function reads for channel 2 are offset by 8
+        FuncRead_TOUChannelOffset       = 0x08,  //  TOU function reads for channel 2 are offset by 8
 
         FuncRead_IED_Precanned_Base     = 0xc1,
         FuncRead_IED_Precanned_Last     = 0xd4,
@@ -374,14 +412,19 @@ protected:
         SspecRevMin  =    5,  //  rev  0.5
         SspecRevMax  =  100,  //  rev 10.0
 
-        SspecRev_IEDZeroWriteMin = 13,  //  rev 1.3
-        SspecRev_IEDErrorPadding = 14,  //  rev 1.4
+        SspecRev_IED_ZeroWriteMin    = 13,  //  rev 1.3
+        SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4
+        SspecRev_IED_LPExtendedRange = 26,  //  rev 2.6
 
-        FuncWrite_IEDCommandData        = 0xd1,
-        FuncWrite_IEDCommandDataBaseLen =    5,
-
-        FuncWrite_CurrentReading        = 0xd5,
-        FuncWrite_CurrentReadingLen     =    5,
+        IED_Type_None     = 0x00,
+        IED_Type_LG_S4    = 0x01,
+        IED_Type_Alpha_A3 = 0x02,
+        IED_Type_Alpha_PP = 0x03,
+        IED_Type_GE_kV    = 0x04,
+        IED_Type_GE_kV2   = 0x05,
+        IED_Type_Sentinel = 0x06,
+        IED_Type_DNP      = 0x07,
+        IED_Type_GE_kV2c  = 0x08,
     };
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );

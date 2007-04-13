@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2007/04/03 18:33:07 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2007/04/13 20:24:10 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,13 @@ const CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDevic
 
 const CtiDeviceMCT470::DynamicPaoAddressing_t         CtiDeviceMCT470::_dynPaoAddressing     = CtiDeviceMCT470::initDynPaoAddressing();
 const CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::_dynPaoFuncAddressing = CtiDeviceMCT470::initDynPaoFuncAddressing();
+
+const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_old_lp    = CtiDeviceMCT470::initErrorInfoOldLP();
+const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_lgs4      = CtiDeviceMCT470::initErrorInfoLGS4();
+const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_alphaa3   = CtiDeviceMCT470::initErrorInfoAlphaA3();
+const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_alphapp   = CtiDeviceMCT470::initErrorInfoAlphaPP();
+const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_gekv      = CtiDeviceMCT470::initErrorInfoGEkV();
+const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_sentinel  = CtiDeviceMCT470::initErrorInfoSentinel();
 
 CtiDeviceMCT470::CtiDeviceMCT470( ) :
     _lastConfigRequest(0)
@@ -101,7 +108,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                             0));
     cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  FuncRead_PeakDemandPos,       FuncRead_PeakDemandLen));
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,               Emetcon::IO_Write,          FuncWrite_CurrentReading,     FuncWrite_CurrentReadingLen));
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,               Emetcon::IO_Function_Write, FuncWrite_CurrentReading,     FuncWrite_CurrentReadingLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                             0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                             0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Function_Read,  FuncRead_LoadProfileChannel12Pos, FuncRead_LoadProfileChannel12Len));
@@ -163,7 +170,6 @@ CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncA
     addressSet.insert(DynamicPaoAddressing(4, 1, Keys::Key_MCT_LoadProfileInterval));
     addressSet.insert(DynamicPaoAddressing(5, 1, Keys::Key_MCT_LoadProfileInterval2));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_ChannelSetupDataPos,addressSet));
-
     addressSet.clear();
 
     // FuncRead_LoadProfileChannel12Pos
@@ -174,7 +180,6 @@ CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncA
     addressSet.insert(DynamicPaoAddressing(6, 2, Keys::Key_MCT_LoadProfileMeterRatio2));
     addressSet.insert(DynamicPaoAddressing(8, 2, Keys::Key_MCT_LoadProfileKRatio2));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LoadProfileChannel12Pos,addressSet));
-
     addressSet.clear();
 
     // FuncRead_LoadProfileChannel34Pos
@@ -185,7 +190,6 @@ CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncA
     addressSet.insert(DynamicPaoAddressing(6, 2, Keys::Key_MCT_LoadProfileMeterRatio4));
     addressSet.insert(DynamicPaoAddressing(8, 2, Keys::Key_MCT_LoadProfileKRatio4));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LoadProfileChannel34Pos,addressSet));
-
     addressSet.clear();
 
     // FuncRead_PrecannedTablePos
@@ -193,7 +197,6 @@ CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncA
     addressSet.insert(DynamicPaoAddressing(1, 1, Keys::Key_MCT_PrecannedMeterNumber));
     addressSet.insert(DynamicPaoAddressing(2, 1, Keys::Key_MCT_PrecannedTableType));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_PrecannedTablePos,addressSet));
-
     addressSet.clear();
 
     // FuncRead_LLPStatusPos
@@ -202,6 +205,7 @@ CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncA
     addressSet.insert(DynamicPaoAddressing(6, 1, Keys::Key_MCT_LLPChannel3Len));
     addressSet.insert(DynamicPaoAddressing(7, 1, Keys::Key_MCT_LLPChannel4Len));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LLPStatusPos,addressSet));
+    addressSet.clear();
 
     // FuncRead_IED_CRCPos
     addressSet.insert(DynamicPaoAddressing( 1, 1, Keys::Key_MCT_LLPChannel1Len));
@@ -217,21 +221,119 @@ CtiDeviceMCT470::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncA
     addressSet.insert(DynamicPaoAddressing(11, 1, Keys::Key_MCT_LLPChannel4Len));
     addressSet.insert(DynamicPaoAddressing(12, 1, Keys::Key_MCT_LLPChannel4Len));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_IED_CRCPos,addressSet));
-
-
     addressSet.clear();
 
     // FuncRead_TOUDaySchedulePos
     addressSet.insert(DynamicPaoAddressing( 0, 2, Keys::Key_MCT_DayTable));
     addressSet.insert(DynamicPaoAddressing( 2, 1, Keys::Key_MCT_DefaultTOURate));
     addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_TimeZoneOffset));
-
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_TOUDaySchedulePos,addressSet));
-
     addressSet.clear();
 
     return functionSet;
 }
+
+CtiDeviceMCT470::error_set CtiDeviceMCT470::initErrorInfoOldLP( void )
+{
+    error_set es;
+
+    es.insert(error_info(0xffff7fff, "Interval not recorded",   InvalidQuality));
+    es.insert(error_info(0xffff7ffe, "Pulse count overflow",    OverflowQuality));
+    es.insert(error_info(0xffff7ffd, "Time adjusted",           DeviceFillerQuality));
+
+    return es;
+}
+
+
+CtiDeviceMCT470::error_set CtiDeviceMCT470::initErrorInfoLGS4( void )
+{
+    error_set es;
+
+    es.insert(error_info(0xffffffff, "Interval not recorded",   InvalidQuality));
+    es.insert(error_info(0xfffffffe, "Pulse count overflow",    OverflowQuality));
+    es.insert(error_info(0xfffffffd, "Time adjusted",           DeviceFillerQuality));
+
+    //  not available for LLP - indicate somehow?
+    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+
+    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
+    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+
+    return es;
+}
+
+CtiDeviceMCT470::error_set CtiDeviceMCT470::initErrorInfoAlphaA3( void )
+{
+    error_set es;
+
+    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
+    //
+    // not available for LP
+    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+
+    //  not available for LLP
+    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+
+    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
+    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+
+    return es;
+}
+
+CtiDeviceMCT470::error_set CtiDeviceMCT470::initErrorInfoAlphaPP( void )
+{
+    error_set es;
+
+    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
+    es.insert(error_info(0xfffffffe, "LP config error",         InvalidQuality));
+    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+
+    //  not available for LLP
+    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+
+    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
+    es.insert(error_info(0xfffffff2, "Interval not recorded",   InvalidQuality));
+    es.insert(error_info(0xfffffff1, "Pulse count overflow",    OverflowQuality));
+    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+
+    return es;
+}
+
+CtiDeviceMCT470::error_set CtiDeviceMCT470::initErrorInfoGEkV( void )
+{
+    error_set es;
+
+    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
+
+    //  not available for LP
+    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+
+    //  not available for LLP
+    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+
+    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
+    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+
+    return es;
+}
+
+CtiDeviceMCT470::error_set CtiDeviceMCT470::initErrorInfoSentinel( void )
+{
+    error_set es;
+
+    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
+    es.insert(error_info(0xfffffffe, "LP config error",         InvalidQuality));
+    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+
+    //  not available for LLP
+    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+
+    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
+    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+
+    return es;
+}
+
 
 bool CtiDeviceMCT470::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
@@ -374,6 +476,8 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
     retval &= getDynamicInfo(Keys::Key_MCT_SSpec,         sspec);
     retval &= getDynamicInfo(Keys::Key_MCT_SSpecRevision, sspec_rev);
 
+    retval &= hasDynamicInfo(Keys::Key_MCT_Configuration);
+
     //  note that we're verifying this against the interval that's in the database - more things will be used this way in the future
     retval &= (getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) == getLoadProfile().getLoadProfileDemandRate());
 
@@ -417,7 +521,7 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
         dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" requesting key (" << key << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( key == Keys::Key_MCT_SSpec )
+    if( key == Keys::Key_MCT_SSpec || key == Keys::Key_MCT_Configuration )
     {
         strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
         OutMessage->Sequence  = Emetcon::GetConfig_Model;     // Helps us figure it out later!
@@ -648,11 +752,9 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
     {
         if( getDynamicInfo(Keys::Key_MCT_LoadProfileConfig, config) )
         {
-            //  the at() function call can throw, so this isn't ideal yet - if we ever go to exception based error handling, we
-            //    can be more graceful about this
-            try
+            if( config.length() > channel * 3 )
             {
-                if( config.at(channel * 3) == '1' )
+                if( config[channel*3] == '1' )
                 {
                     //  leaves it untouched (i.e., -1) if it doesn't have it
                     getDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval, retval);
@@ -667,10 +769,10 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
                     getDynamicInfo(Keys::Key_MCT_LoadProfileInterval, retval);
                 }
             }
-            catch(...)
+            else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - OOB exception when accessing Key_MCT_LoadProfileConfig **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - config.length() < channel * 3 (" << config.length() << " < " << channel * 3 << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
@@ -699,11 +801,199 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
 }
 
 
+CtiDeviceMCT470::point_info CtiDeviceMCT470::getDemandData(unsigned char *buf, int len) const
+{
+    return getData(buf, len, ValueType_PulseDemand);
+}
+
+CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int len, ValueType470 vt ) const
+{
+    PointQuality_t quality = NormalQuality;
+    unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
+                  min_error  = 0xffffffff;
+    unsigned char quality_flags = 0,
+                  resolution    = 0;
+    unsigned char error_byte, value_byte;
+
+    const error_set *errors = &_error_info_old_lp;
+
+    string description;
+    __int64 value = 0;
+    point_info  retval;
+
+    for( int i = 0; i < len; i++ )
+    {
+        //  input data is in MSB order
+        value      <<= 8;
+        error_code <<= 8;
+
+        value_byte = buf[i];
+        error_byte = buf[i];
+
+        //  the first byte for some value types needs to be treated specially
+        if( i == 0 )
+        {
+            if( vt == ValueType_PulseDemand ||
+                vt == ValueType_LoadProfile_PulseDemand )
+            {
+                quality_flags = value_byte & 0xc0;
+
+                value_byte   &= 0x3f;  //  trim off the quality bits
+                error_code   |= 0xc0;  //  fill in the quality bits to get the true error code
+            }
+        }
+
+        value      |= value_byte;
+        error_code |= error_byte;
+    }
+
+    retval.freeze_bit = value & 0x01;
+
+    switch( vt )
+    {
+        case ValueType_PulseDemand:
+        //case ValueType_TOUDemand:
+        //case ValueType_TOUFrozenDemand:
+        case ValueType_LoadProfile_PulseDemand:      min_error = 0xffffffa1; break;
+
+        case ValueType_LoadProfile_IED_Alpha_A3:
+        case ValueType_LoadProfile_IED_Alpha_PP:
+        case ValueType_LoadProfile_IED_GE_kV:
+        case ValueType_LoadProfile_IED_GE_kV2:
+        case ValueType_LoadProfile_IED_GE_kV2c:
+        case ValueType_LoadProfile_IED_LG_S4:
+        case ValueType_LoadProfile_IED_Sentinel:
+        {
+            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
+            {
+                min_error = 0xfffffff0; break;
+            }
+            else
+            {
+                min_error = 0xffff7ff0; break;
+            }
+        }
+    }
+
+    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
+    {
+        switch( vt )
+        {
+            case ValueType_LoadProfile_IED_Alpha_A3:    errors = &_error_info_alphaa3;  break;
+            case ValueType_LoadProfile_IED_Alpha_PP:    errors = &_error_info_alphapp;  break;
+            case ValueType_LoadProfile_IED_GE_kV:
+            case ValueType_LoadProfile_IED_GE_kV2:
+            case ValueType_LoadProfile_IED_GE_kV2c:     errors = &_error_info_gekv;     break;
+            case ValueType_LoadProfile_IED_LG_S4:       errors = &_error_info_lgs4;     break;
+            case ValueType_LoadProfile_IED_Sentinel:    errors = &_error_info_sentinel; break;
+        }
+    }
+
+    if( error_code >= min_error )
+    {
+        value       = 0;
+
+        error_set::const_iterator es_itr = errors->find(error_info(error_code));
+
+        if( es_itr != _mct_error_info.end() )
+        {
+            quality     = es_itr->quality;
+            description = es_itr->description;
+        }
+        else
+        {
+            quality     = InvalidQuality;
+            description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
+        }
+    }
+    else if( vt == ValueType_LoadProfile_PulseDemand ||
+             vt == ValueType_PulseDemand )
+    {
+        //  only take the demand bits into account if everything else is cool
+        switch( quality_flags )
+        {
+            case 0xc0:  quality = PartialIntervalQuality;
+                        description = "Time was adjusted in this interval";
+                        break;
+
+            case 0x80:  quality = PartialIntervalQuality;
+                        description = "Power was restored in this interval";
+                        break;
+
+            case 0x40:  quality = PowerfailQuality;
+                        description = "Power failed in this interval";
+                        break;
+        }
+    }
+
+    retval.value       = value;
+    retval.quality     = quality;
+    retval.description = description;
+
+    return retval;
+}
+
+
 CtiDeviceMCT470::point_info CtiDeviceMCT470::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
 {
     point_info pi;
+    string config;
 
-    pi = getData(buf, len, ValueType_LoadProfile_Demand);
+    ValueType470 vt = ValueType_LoadProfile_PulseDemand;
+
+    if( getDynamicInfo(Keys::Key_MCT_LoadProfileConfig, config) )
+    {
+        if( config.length() > channel * 3 )
+        {
+            if( config[channel*3] == '1' )
+            {
+                if( hasDynamicInfo(Keys::Key_MCT_Configuration) )
+                {
+                    switch( getDynamicInfo(Keys::Key_MCT_Configuration) >> 4 )
+                    {
+                        case IED_Type_Alpha_A3:     vt = ValueType_LoadProfile_IED_Alpha_A3;    break;
+                        case IED_Type_Alpha_PP:     vt = ValueType_LoadProfile_IED_Alpha_PP;    break;
+                        case IED_Type_GE_kV:        vt = ValueType_LoadProfile_IED_GE_kV;       break;
+                        case IED_Type_GE_kV2:       vt = ValueType_LoadProfile_IED_GE_kV2;      break;
+                        case IED_Type_GE_kV2c:      vt = ValueType_LoadProfile_IED_GE_kV2c;     break;
+                        case IED_Type_LG_S4:        vt = ValueType_LoadProfile_IED_LG_S4;       break;
+                        case IED_Type_Sentinel:     vt = ValueType_LoadProfile_IED_Sentinel;    break;
+
+                        case IED_Type_DNP:
+                        case IED_Type_None:
+                        default:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(Keys::Key_MCT_Configuration) >> 4) << "); aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have Key_MCT_Configuration; attempting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            else
+            {
+                vt = ValueType_LoadProfile_PulseDemand;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - config.length() < channel * 3 (" << config.length() << " < " << channel * 3 << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - dynamic LP config not stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    pi = getData(buf, len, vt);
 
     //  adjust for the demand interval
     pi.value *= 3600 / getLoadProfileInterval(channel);
@@ -1177,7 +1467,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
-        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IEDZeroWriteMin )
+        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
         {
             //If we need to read out the time, do so.
             function = Emetcon::GetConfig_IEDTime;
@@ -1450,7 +1740,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
                           || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {
-                if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IEDZeroWriteMin )
+                if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
                 {
                     //If we need to read out the time, do so.
                     function = Emetcon::GetConfig_IEDTime;
@@ -3132,7 +3422,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
         {
             pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
 
-            point_info pi = getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
+            point_info pi = CtiDeviceMCT4xx::getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
 
             CtiTime pointTime;
             pointTime -= pointTime.seconds() % 300;
@@ -3206,7 +3496,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
         for( i = 0; i < 4; i++ )
         {
-            pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Demand);
+            pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_PulseDemand);
 
             //  turn raw pulses into a demand reading
             pi.value *= double(3600 / getDemandInterval());
@@ -3224,7 +3514,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
             }
         }
 
-        pi = getData(DSt->Message + 9, 2, ValueType_Raw);
+        pi = CtiDeviceMCT4xx::getData(DSt->Message + 9, 2, ValueType_Raw);
 
         insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
                               ReturnMsg, pi, "Blink Counter");
@@ -3283,8 +3573,8 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
             base_offset = 1;
         }
 
-        pi      = getData(DSt->Message + 0, 2, ValueType_Demand);
-        pi_time = getData(DSt->Message + 2, 4, ValueType_Raw);
+        pi      = getData(DSt->Message + 0, 2, ValueType_PulseDemand);
+        pi_time = CtiDeviceMCT4xx::getData(DSt->Message + 2, 4, ValueType_Raw);
 
         //  turn raw pulses into a demand reading
         pi.value *= double(3600 / getDemandInterval());
@@ -3302,8 +3592,8 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
         insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MaxOffset,
                               ReturnMsg, pi, pointname, pointTime);
 
-        pi      = getData(DSt->Message + 6, 2, ValueType_Demand);
-        pi_time = getData(DSt->Message + 8, 4, ValueType_Raw);
+        pi      = getData(DSt->Message + 6, 2, ValueType_PulseDemand);
+        pi_time = CtiDeviceMCT4xx::getData(DSt->Message + 8, 4, ValueType_Raw);
 
         //  turn raw pulses into a demand reading
         pi.value *= double(3600 / getDemandInterval());
@@ -3398,7 +3688,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             ied_data_end = 13;
         }
 
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IEDErrorPadding )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IED_ErrorPadding )
         {
             for( int i = 0; i < ied_data_end; i++)
             {
@@ -3426,7 +3716,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         }
 
         //  If this rev is before the SSPEC fix and the timestamp is at least 10 minutes old
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IEDZeroWriteMin
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin
             && (CtiTime::now().seconds() > (_iedTime.seconds() + MaxIEDReadAge)) )
         {
             dataInvalid = true;
@@ -3640,7 +3930,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         pointname  = "Analog point ";
                         pointname += CtiNumStr(pointoffset);
 
-                        pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
+                        pi = CtiDeviceMCT4xx::getData(DSt->Message + byte*2, 2, ValueType_Raw);
 
                         insertPointDataReport(AnalogPointType, pointoffset,
                                               ReturnMsg, pi, pointname);
@@ -3668,7 +3958,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         pointname  = "Pulse Accumulator point ";
                         pointname += CtiNumStr(pointoffset);
 
-                        pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
+                        pi = CtiDeviceMCT4xx::getData(DSt->Message + byte*2, 2, ValueType_Raw);
 
                         insertPointDataReport(PulseAccumulatorPointType, pointoffset,
                                               ReturnMsg, pi, pointname);
@@ -3809,7 +4099,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
                 else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
 
-                pi = getData(DSt->Message, 5, ValueType_Raw);
+                pi = CtiDeviceMCT4xx::getData(DSt->Message, 5, ValueType_Raw);
 
                 pointname += string(1, (char)('A' + rate));
                 pointname += " total";
@@ -3834,7 +4124,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }
 
                 pi        = getData(DSt->Message + 5, 3, ValueType_IED);
-                time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
+                time_info = CtiDeviceMCT4xx::getData(DSt->Message + 8, 4, ValueType_Raw);
                 peak_time = (unsigned long)time_info.value + timezone_offset;
 
                 pointname  = "kW rate ";
@@ -3910,7 +4200,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                         break;
                 }
 
-                point_info  pi_time  = getData(DSt->Message, 4, ValueType_Raw);
+                point_info  pi_time  = CtiDeviceMCT4xx::getData(DSt->Message, 4, ValueType_Raw);
                 unsigned long ied_time = (unsigned long)pi_time.value + timezone_offset;
 
                 _iedTime = CtiTime(ied_time);
@@ -3981,16 +4271,16 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 resultString = getName() + " / phase C: " + (DSt->Message[] & 0x08)?"present":"not present" + "\n";
                 */
 
-                pi = getData(DSt->Message + 5, 2, ValueType_Raw);
+                pi = CtiDeviceMCT4xx::getData(DSt->Message + 5, 2, ValueType_Raw);
 
                 resultString += getName() + " / demand reset count: " + CtiNumStr((int)pi.value) + "\n";
 
-                pi_time  = getData(DSt->Message + 7, 4, ValueType_Raw);
+                pi_time  = CtiDeviceMCT4xx::getData(DSt->Message + 7, 4, ValueType_Raw);
                 ied_time = (unsigned long)pi_time.value + timezone_offset;
 
                 resultString += getName() + " / time of last reset: " + printable_time(ied_time) + "\n";
 
-                pi = getData(DSt->Message + 11, 2, ValueType_Raw);
+                pi = CtiDeviceMCT4xx::getData(DSt->Message + 11, 2, ValueType_Raw);
 
                 resultString += getName() + " / outage count: " + CtiNumStr((int)pi.value) + "\n";
 
@@ -4002,7 +4292,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 int mctPoint = DSt->Message[0];
                 for( int i = 0; i < 6; i++ )
                 {
-                    pi = getData(DSt->Message + 1 + 2*i, 2, ValueType_Raw);
+                    pi = CtiDeviceMCT4xx::getData(DSt->Message + 1 + 2*i, 2, ValueType_Raw);
                     if( mctPoint + i < MCT470_DNP_MCTPoint_RealTimeAnalog )
                     {
                         resultString += "Yukon Binary Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPStatus_RealTime1) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
@@ -4613,7 +4903,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         int analogoffset  = readNumber == 1 ? PointOffset_DNPAnalog_RealTime1  : PointOffset_DNPAnalog_RealTime2;
         int counteroffset = readNumber == 1 ? PointOffset_DNPCounter_RealTime1 : PointOffset_DNPCounter_RealTime2;
 
-        pi = getData(buffer, 1, ValueType_Raw);//Gets pi built up properly...
+        pi = CtiDeviceMCT4xx::getData(buffer, 1, ValueType_Raw);//Gets pi built up properly...
         for( int i = 0; i < 7; i++ )//only 7 in the first byte
         {
             if( !errorFlagSet )
@@ -4661,7 +4951,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
                 pointname  = "Analog point ";
                 pointname += CtiNumStr(analogoffset + i);
 
-                pi = getData(buffer + 2 * (i + 1), 2, ValueType_Raw);
+                pi = CtiDeviceMCT4xx::getData(buffer + 2 * (i + 1), 2, ValueType_Raw);
 
                 insertPointDataReport(AnalogPointType, analogoffset + i,
                                       ReturnMsg, pi, pointname);
@@ -4680,7 +4970,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
                 pointname  = "Pulse Accumulator point ";
                 pointname += CtiNumStr(counteroffset + i);
 
-                pi = getData(buffer + 2 * i + 8, 2, ValueType_Raw);
+                pi = CtiDeviceMCT4xx::getData(buffer + 2 * i + 8, 2, ValueType_Raw);
 
                 insertPointDataReport(PulseAccumulatorPointType, counteroffset + i,
                                       ReturnMsg, pi, pointname);
@@ -4766,15 +5056,18 @@ string CtiDeviceMCT470::resolveIEDName(int bits) const
 
     switch( bits & 0x0f )
     {
-        case 0x00:  name += "None";                 break;
-        case 0x01:  name += "Landis and Gyr S4";    break;
-        case 0x02:  name += "Alpha A1";             break;
-        case 0x03:  name += "Alpha Power Plus";     break;
-        case 0x04:  name += "GE kV";                break;
-        case 0x05:  name += "GE kV2";               break;
-        case 0x06:  name += "Sentinel";             break;
-        case 0x07:  name += "DNP";                  break;
-        default:    name += "Unknown (" + CtiNumStr(bits).xhex().zpad(2) + ")";   break;
+        case IED_Type_Alpha_A3: name += "Alpha A3";             break;
+        case IED_Type_Alpha_PP: name += "Alpha Power Plus";     break;
+        case IED_Type_DNP:      name += "DNP";                  break;
+        case IED_Type_GE_kV:    name += "GE kV";                break;
+        case IED_Type_GE_kV2:   name += "GE kV2";               break;
+        case IED_Type_GE_kV2c:  name += "GE kV2c";              break;
+        case IED_Type_LG_S4:    name += "Landis and Gyr S4";    break;
+        case IED_Type_Sentinel: name += "Sentinel";             break;
+
+        case IED_Type_None:     name += "None";                 break;
+
+        default:                name += "Unknown (" + CtiNumStr(bits).xhex().zpad(2) + ")";   break;
     }
 
     return name;
