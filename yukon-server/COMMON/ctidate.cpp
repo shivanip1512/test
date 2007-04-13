@@ -58,10 +58,11 @@ CtiDate::CtiDate(const CtiTime& ct) :
         else
         {
             struct tm ctime;
-            ct.extract(&ctime);
 
             try
             {
+                ct.extract(&ctime);
+
                 bdate = date(ctime.tm_year + 1900, ctime.tm_mon + 1, ctime.tm_mday);
             }
             catch( ... )
