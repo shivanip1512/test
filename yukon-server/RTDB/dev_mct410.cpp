@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.135 $
-* DATE         :  $Date: 2007/04/13 21:48:34 $
+* REVISION     :  $Revision: 1.136 $
+* DATE         :  $Date: 2007/04/13 22:04:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1460,7 +1460,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
 
             function = Emetcon::GetValue_DailyRead;
-            found = getOperation(function, OutMessage->Buffer.BSt);
+            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
 
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
@@ -3150,10 +3150,20 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 {
                     reading = CtiDeviceMCT4xx::getData(DSt->Message + 0, 3, ValueType_Accumulator);
 
+                    insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
+                                          reading, consumption_pointname,  _daily_read_info.single_day + 86400);  //  add on 24 hours - end of day
+
                     peak    = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 
                     //  adjust for the demand interval
                     peak.value *= 3600 / getDemandInterval();
+
+                    time_peak        = ((DSt->Message[10] & 0xc0) >>  5) | //  2 bits
+                                       ((DSt->Message[9]  & 0xff) <<  2) | //  8 bits
+                                       ((DSt->Message[8]  & 0x01) << 10);  //  1 bit
+
+                    insertPointDataReport(DemandAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
+                                          peak, demand_pointname,  _daily_read_info.single_day + (time_peak * 60));
 
                     voltage_min  = DSt->Message[7] | ((DSt->Message[6] & 0x0f) << 8);
 
@@ -3165,11 +3175,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     time_voltage_max = ((DSt->Message[11] & 0xf8) >>  3) | //  5 bits
                                        ((DSt->Message[10] & 0x3f) <<  5);  //  6 bits
 
-                    time_peak        = ((DSt->Message[10] & 0xc0) >>  5) | //  2 bits
-                                       ((DSt->Message[9]  & 0xff) <<  2) | //  8 bits
-                                       ((DSt->Message[8]  & 0x01) << 10);  //  1 bit
-
-                    if( voltage_min == 0x7fa )
+					if( voltage_min == 0x7fa )
                     {
                         pi.value   = 0;
                         pi.quality = InvalidQuality;
@@ -3245,11 +3251,11 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
 
                     time_peak = (DSt->Message[5] << 8) | DSt->Message[6];
 
-                    if( _daily_read_info.channel > 1
+                    if( channel > 1
                         && !getDevicePointOffsetTypeEqual(_daily_read_info.channel, PulseAccumulatorPointType)
                         && !getDevicePointOffsetTypeEqual(_daily_read_info.channel, DemandAccumulatorPointType) )
                     {
-                        resultString += "No points defined for channel " + CtiNumStr(_daily_read_info.channel) + "\n";
+                        resultString += "No points defined for channel " + CtiNumStr(channel) + "\n";
                     }
                     else
                     {
