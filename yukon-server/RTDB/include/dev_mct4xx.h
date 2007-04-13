@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2007/03/08 22:43:34 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2007/04/13 20:19:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,55 +52,23 @@ protected:
 
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
-    enum ValueType
+    enum ValueType4xx
     {
-        ValueType_Voltage,
-        ValueType_Demand,
-        ValueType_DynamicDemand,
-        ValueType_TOUDemand,
-        ValueType_TOUFrozenDemand,
-        ValueType_LoadProfile_Voltage,
-        ValueType_LoadProfile_Demand,
-        ValueType_LoadProfile_DynamicDemand,
         ValueType_Accumulator,
-        ValueType_AccumulatorDelta,
         ValueType_FrozenAccumulator,
-        ValueType_IED,
         ValueType_Raw,
-    };
-
-    enum Errors
-    {
-        Error_MeterCommunicationProblem = 0xfffffffe,
-        Error_NoDataYetAvailable        = 0xfffffffc,
-        Error_IntervalOutsideValidRange = 0xfffffffa,
-        Error_DeviceFiller              = 0xfffffff8,
-        Error_PowerFailureThisInterval  = 0xfffffff6,
-        Error_PowerRestoredThisInterval = 0xfffffff4,
-        Error_Overflow                  = 0xffffffe0,
-    };
-
-    enum ErrorClasses
-    {
-        EC_MeterReading    = 1 << 0,
-        EC_DemandReading   = 1 << 1,
-        EC_TOUDemand       = 1 << 2,
-        EC_TOUFrozenDemand = 1 << 3,
-        EC_LoadProfile     = 1 << 4,
     };
 
     struct error_info
     {
         int error;
-        int error_classes;
         PointQuality_t quality;
         string description;
 
-        error_info(int e, string d = "", PointQuality_t q = NormalQuality, int ec = 0) :
+        error_info(int e, string d = "", PointQuality_t q = NormalQuality) :
             error(e),
             description(d),
-            quality(q),
-            error_classes(ec)
+            quality(q)
         {
         }
 
@@ -112,7 +80,9 @@ protected:
 
     typedef set<error_info> error_set;
 
-    static const error_set _errorInfo;
+    static const error_set _mct_error_info;
+
+    static error_set initErrorInfo( void );
 
     enum Commands
     {
@@ -146,8 +116,8 @@ protected:
         Memory_TOUDailySched4Pos  = 0x67,
         Memory_TOUDailySched4Len  =    7,
 
-        Memory_TOUDefaultRatePos    = 0x6e,
-        Memory_TOUDefaultRateLen    =    1,
+        Memory_TOUDefaultRatePos  = 0x6e,
+        Memory_TOUDefaultRateLen  =    1,
     };
 
     enum Functions
@@ -251,12 +221,12 @@ protected:
         string         description;
     };
 
-    static error_set initErrorInfo( void );
-
     unsigned char crc8(const unsigned char *buf, unsigned int len) const;
-    point_info getData(unsigned char *buf, int len, ValueType vt=ValueType_Demand) const;
 
-    int makeDynamicDemand(double input) const;
+    //  overridden by the 410 and 470 so they can use the same peak/TOU decode function
+    virtual point_info getDemandData(unsigned char *buf, int len) const = 0;
+
+    point_info getData(unsigned char *buf, int len, ValueType4xx vt) const;
 
     string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
     string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;

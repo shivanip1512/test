@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2007/04/10 14:03:34 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/04/13 20:19:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ const char *CtiDeviceMCT4xx::PutConfigPart_dnp             = "dnp";
 const CtiDeviceMCT4xx::CommandSet      CtiDeviceMCT4xx::_commandStore = CtiDeviceMCT4xx::initCommandStore();
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts = initConfigParts();
 
-const CtiDeviceMCT4xx::error_set       CtiDeviceMCT4xx::_errorInfo    = initErrorInfo();
+const CtiDeviceMCT4xx::error_set       CtiDeviceMCT4xx::_mct_error_info = initErrorInfo();
 
 CtiDeviceMCT4xx::CtiDeviceMCT4xx()
 {
@@ -106,63 +106,21 @@ CtiDeviceMCT4xx::error_set CtiDeviceMCT4xx::initErrorInfo( void )
 {
     error_set es;
 
-    es.insert(error_info(Error_MeterCommunicationProblem,
-                         "Meter communications problem",
-                         InvalidQuality,
-                         EC_MeterReading | EC_DemandReading | EC_LoadProfile));
+    es.insert(error_info(0xfffffffe, "Meter communications problem",                 InvalidQuality));
 
+    es.insert(error_info(0xfffffffd, "No data yet available for requested interval", InvalidQuality));
+    es.insert(error_info(0xfffffffc, "No data yet available for requested interval", InvalidQuality));
 
-    es.insert(error_info(Error_NoDataYetAvailable | 0x01,
-                         "No data yet available for requested interval",
-                         InvalidQuality,
-                         EC_TOUFrozenDemand));
+    es.insert(error_info(0xfffffffa, "Requested interval outside of valid range",    InvalidQuality));
 
-    es.insert(error_info(Error_NoDataYetAvailable,
-                         "No data yet available for requested interval",
-                         InvalidQuality,
-                         EC_MeterReading    |
-                         EC_DemandReading   |
-                         EC_TOUDemand       |
-                         EC_TOUFrozenDemand |
-                         EC_LoadProfile));
+    es.insert(error_info(0xfffffff8, "Device filler",                                DeviceFillerQuality));
 
+    es.insert(error_info(0xfffffff6, "Power failure occurred during part or all of this interval",   PowerfailQuality));
 
-    es.insert(error_info(Error_IntervalOutsideValidRange,
-                         "Requested interval outside of valid range",
-                         InvalidQuality,
-                         EC_LoadProfile));
+    es.insert(error_info(0xfffffff4, "Power restored during this interval",          PartialIntervalQuality));
 
-
-    es.insert(error_info(Error_DeviceFiller,
-                         "Device filler",
-                         DeviceFillerQuality,
-                         EC_LoadProfile));
-
-
-    es.insert(error_info(Error_PowerFailureThisInterval,
-                         "Power failure occurred during part or all of this interval",
-                         PowerfailQuality,
-                         EC_LoadProfile));
-
-
-    es.insert(error_info(Error_PowerRestoredThisInterval,
-                         "Power restored during this interval",
-                         PartialIntervalQuality,
-                         EC_LoadProfile));
-
-
-    es.insert(error_info(Error_Overflow | 0x01,
-                         "Overflow",
-                         OverflowQuality,
-                         EC_TOUFrozenDemand));
-
-    es.insert(error_info(Error_Overflow,
-                         "Overflow",
-                         OverflowQuality,
-                         EC_DemandReading   |
-                         EC_TOUDemand       |
-                         EC_TOUFrozenDemand |
-                         EC_LoadProfile));
+    es.insert(error_info(0xffffffe1, "Overflow",                                     OverflowQuality));
+    es.insert(error_info(0xffffffe0, "Overflow",                                     OverflowQuality));
 
     return es;
 }
@@ -335,13 +293,11 @@ unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len 
 }
 
 
-CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int len, ValueType vt ) const
+CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int len, ValueType4xx vt ) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
-                  min_error  = 0xffffffff;
-    unsigned char quality_flags = 0,
-                  resolution    = 0;
+                  min_error  = 0;
     unsigned char error_byte, value_byte;
 
     string description;
@@ -351,66 +307,25 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
     for( int i = 0; i < len; i++ )
     {
         //  input data is in MSB order
-        value      <<= 8;
-        error_code <<= 8;
-
-        value_byte = buf[i];
-        error_byte = buf[i];
-
-        //  the first byte for some value types needs to be treated specially
-        if( i == 0 )
-        {
-            if( vt == ValueType_DynamicDemand ||
-                vt == ValueType_LoadProfile_DynamicDemand )
-            {
-                resolution    = value_byte & 0x30;
-                quality_flags = value_byte & 0xc0;
-
-                value_byte   &= 0x0f;  //  trim off the quality bits and the resolution bits
-                error_byte   |= 0xf0;  //  fill in the quality bits to get the true error code
-            }
-            else if( vt == ValueType_Demand ||
-                     vt == ValueType_LoadProfile_Demand ||
-                     vt == ValueType_LoadProfile_Voltage )
-            {
-                quality_flags = value_byte & 0xc0;
-
-                value_byte   &= 0x3f;  //  trim off the quality bits
-                error_code   |= 0xc0;  //  fill in the quality bits to get the true error code
-            }
-        }
-
-        value      |= value_byte;
-        error_code |= error_byte;
+        value      = value      << 8 | buf[i];
+        error_code = error_code << 8 | buf[i];
     }
 
     retval.freeze_bit = value & 0x01;
 
     switch( vt )
     {
-        case ValueType_Voltage:             min_error = 0xffffffe0; break;
-
         case ValueType_Accumulator:
-        case ValueType_FrozenAccumulator:   min_error = 0xff989680; break;
-
-        case ValueType_AccumulatorDelta:    min_error = 0xfffffffa; break;
-
-        case ValueType_Demand:
-        case ValueType_DynamicDemand:
-        case ValueType_TOUDemand:
-        case ValueType_TOUFrozenDemand:
-        case ValueType_LoadProfile_Demand:
-        case ValueType_LoadProfile_DynamicDemand:
-        case ValueType_LoadProfile_Voltage: min_error = 0xffffffa1; break;
+        case ValueType_FrozenAccumulator:           min_error = 0xff989680; break;
     }
 
-    if( error_code >= min_error )
+    if( min_error && error_code >= min_error )
     {
-        value       = 0;
+        value = 0;
 
-        error_set::const_iterator es_itr = _errorInfo.find(error_info(error_code));
+        error_set::const_iterator es_itr = _mct_error_info.find(error_info(error_code));
 
-        if( es_itr != _errorInfo.end() )
+        if( es_itr != _mct_error_info.end() )
         {
             quality     = es_itr->quality;
             description = es_itr->description;
@@ -421,103 +336,13 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
             description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
         }
     }
-    else
-    {
-        //  only take the demand bits into account if everything else is cool
-        switch( quality_flags )
-        {
-            case 0xc0:  quality = PartialIntervalQuality;
-                        description = "Time was adjusted in this interval";
-                        break;
-
-            case 0x80:  quality = PartialIntervalQuality;
-                        description = "Power was restored in this interval";
-                        break;
-
-            case 0x40:  quality = PowerfailQuality;
-                        description = "Power failed in this interval";
-                        break;
-        }
-    }
 
     retval.value       = value;
     retval.quality     = quality;
     retval.description = description;
 
-    if( vt == ValueType_DynamicDemand || vt == ValueType_LoadProfile_DynamicDemand )
-    {
-        if( getMCTDebugLevel(DebugLevel_Info) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - demand value " << (unsigned long)value << " resolution " << (int)resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        //  we need to do this here because value is an unsigned long and retval.first is a double
-        switch( resolution )
-        {
-            default:
-            case 0x00:  retval.value /=    10.0;    break;  //  100 WH units -> kWH
-            case 0x10:  retval.value /=   100.0;    break;  //   10 WH units -> kWH
-            case 0x20:  retval.value /=  1000.0;    break;  //    1 WH units -> kWH
-            case 0x30:  retval.value /= 10000.0;    break;  //  0.1 WH units -> kWH
-        }
-
-        retval.value *= 10.0;  //  remove this whenever we implement the proper, pretty, nice 1.0 kWH output code
-    }
-
     return retval;
 }
-
-
-int CtiDeviceMCT4xx::makeDynamicDemand(double input) const
-{
-    /*
-    Bits   Resolution            Range
-    13-12
-    00     100   WHr   40,100.0 WHr - 400,000.0 WHr
-    01      10   WHr    4,010.0 WHr -  40,000.0  WHr
-    10       1   WHr      401.0 WHr -   4,000.0  WHr
-    11       0.1 WHr        0.0 WHr -     400.0  WHr
-    */
-
-    int output;
-    int resolution;
-    float divisor;
-
-    if( input > 40950.0 || input < 0.0 )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - input = " << input << " in CtiDeviceMCT4xx::makeDynamicDemand() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        output = -1;
-    }
-    else if( input < 0.05 )
-    {
-        output = 0;
-    }
-    else
-    {
-        if(      input <=   400.0 )     {   divisor =   0.1;    resolution = 0x3;   }
-        else if( input <=  4000.0 )     {   divisor =   1.0;    resolution = 0x2;   }
-        else if( input <= 40000.0 )     {   divisor =  10.0;    resolution = 0x1;   }
-        else                            {   divisor = 100.0;    resolution = 0x0;   }
-
-        output = input / divisor;
-
-        if( fmod( input, divisor ) >= (divisor / 2.0) )
-        {
-            output++;
-        }
-
-        output |= resolution << 12;
-    }
-
-    return output;
-}
-
-
 
 
 //  timestamp == 0UL means current time
@@ -3381,13 +3206,13 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             //  TOU memory layout
             pi_kwh         = getData(DSt->Message,     3, ValueType_Accumulator);
 
-            pi_kw          = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
+            pi_kw          = getDemandData(DSt->Message + 3, 2);
             pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
         }
         else
         {
             //  normal peak memory layout
-            pi_kw          = getData(DSt->Message,     2, ValueType_DynamicDemand);
+            pi_kw          = getDemandData(DSt->Message, 2);
             pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
             pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
