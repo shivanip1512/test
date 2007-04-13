@@ -31,12 +31,15 @@ static const CtiString str_anynum  ("(" + str_num + "|" + str_hexnum + ")");
 static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
 static const CtiString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
 
-static const boost::regex   re_num     (str_num);
-static const boost::regex   re_floatnum(str_floatnum);
-static const boost::regex   re_hexnum  (str_hexnum);
-static const boost::regex   re_anynum  (str_anynum);
-static const boost::regex   re_date    (str_date);
-static const boost::regex   re_time    (str_time);
+static const CtiString str_daterange(str_date + " (" + str_date + ")?");
+
+static const boost::regex   re_num      (str_num);
+static const boost::regex   re_floatnum (str_floatnum);
+static const boost::regex   re_hexnum   (str_hexnum);
+static const boost::regex   re_anynum   (str_anynum);
+static const boost::regex   re_date     (str_date);
+static const boost::regex   re_time     (str_time);
+static const boost::regex   re_daterange(str_daterange);
 
 CtiCommandParser::CtiCommandParser(const string str) :
 _cmdString(str)
@@ -407,7 +410,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
     //  getvalue daily read 12/12/2007 12/27/2007
     //  getvalue daily read channel n 12/12/2007
-    boost::regex  re_dailyread("daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?");
+    boost::regex  re_dailyread("daily read (channel " + str_num + " )?" + str_daterange);
 
     boost::regex  re_outage("outage " + str_num);
 
@@ -686,23 +689,16 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
                 CtiTokenizer cmdtok(temp);
 
-                cmdtok();  //  daily
-                cmdtok();  //  read
+                _cmd["daily_read"] = true;
 
-                temp = cmdtok();
-
-                if( !temp.compareTo("channel") )
+                if( !(temp = temp.match(re_daterange)).empty() )
                 {
-                    cmdtok();  //  channel number;  this is parsed above, and we get it from _cmd["channel"]
-                }
-				else
-				{
-					_cmd["daily_read_date_begin"] = temp;
-				}
+                    _cmd["daily_read_date_begin"] = cmdtok();
 
-                if( !(temp = cmdtok()).empty() )
-                {
-                    _cmd["daily_read_date_end"] = temp;
+                    if( !(temp = cmdtok()).empty() )
+                    {
+                        _cmd["daily_read_date_end"]   = cmdtok();
+                    }
                 }
             }
         }
@@ -2083,7 +2079,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 cmdtok();  //  go past "configure"
 
                 _cmd["iedtype"]   = CtiParseValue(cmdtok().c_str());
-        
+
                 if(!(token = CmdStr.match(re_ied_mask)).empty())
                 {
                     cmdtok(); //Past alarm mask
