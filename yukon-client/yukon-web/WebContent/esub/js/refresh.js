@@ -166,7 +166,8 @@ function checkAlarmAudio(deviceIds, pointIds, alarmCategoryIds) {
 
 	function fn3(obj) {
 		if(!obj.success) {
-			alert('Alarm audio request failed.  Please restart your browser if this continues.');
+				//alert('Alarm audio request failed.  Please restart your browser if this continues.');
+				stopAlarmAudio();
 		}
 		else		
 		if(obj.content == 'true') {
