@@ -40,8 +40,6 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.model.EconomicEventParticipantSelection.SelectionState;
 import com.cannontech.cc.service.builder.EconomicBuilder;
-import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.cc.service.enums.NotificationStatus;
 import com.cannontech.cc.service.exception.EventCreationException;
@@ -72,11 +70,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private PointDao pointDao;
     private TimeSource timeSource;
     
-    @Override
-    public String getMethodKey() {
-        return "economic";
-    }
-
     public EconomicBuilder createBuilder(Program program) {
         EconomicBuilder builder = new EconomicBuilder();
         builder.setProgram(program);
@@ -302,18 +295,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         }
         
         return event;
-    }
-    
-    protected void verifyCustomers(EconomicBuilder builder) throws EventCreationException {
-        List<EconomicEventParticipant> participantList = builder.getParticipantList();
-        for (EconomicEventParticipant participant : participantList) {
-            VerifiedCustomer vCustoemr = new VerifiedPlainCustomer(participant.getCustomer());
-            verifyCustomer(builder, vCustoemr);
-            if (!vCustoemr.isIncludable()) {
-                throw new EventCreationException("Customer " + participant.getCustomer() +
-                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
-            }
-        }
     }
     
     protected EconomicEvent createDatabaseObjects(EconomicBuilder builder) throws EventCreationException {

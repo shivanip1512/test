@@ -123,3 +123,59 @@ end;
 /*end block*/
 
 insert into YukonRoleProperty values (-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
+
+
+/** new ISOC tables **/
+/*==============================================================*/
+/* Table: CCurtAcctEvent                                        */
+/*==============================================================*/
+create table CCurtAcctEvent (
+   CCurtAcctEventId     numeric              not null,
+   CCurtProgramID       numeric              null,
+   Duration             numeric              not null,
+   Reason               varchar(255)         not null,
+   StartTime            datetime             not null,
+   Identifier           numeric              not null
+)
+go
+
+
+alter table CCurtAcctEvent
+   add constraint PK_foo2 primary key  (CCurtAcctEventId)
+go
+
+
+/*==============================================================*/
+/* Table: CCurtAcctEventParticipant                             */
+/*==============================================================*/
+create table CCurtAcctEventParticipant (
+   CCurtAcctEventParticipantId  numeric        not null,
+   CustomerID                   numeric        not null,
+   CCurtAcctEventId             numeric        not null
+)
+go
+
+
+alter table CCurtAcctEventParticipant
+   add constraint PK_foo1 primary key  (CCurtAcctEventParticipantId)
+go
+
+
+alter table CCurtAcctEventParticipant
+   add constraint FK_foo3 foreign key (CCurtAcctEventId)
+      references CCurtAcctEvent (CCurtAcctEventId)
+go
+
+
+alter table CCurtAcctEventParticipant
+   add constraint FK_foo4 foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table CCurtAcctEvent
+   add constraint FK_foo5 foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID)
+go
+
+/** end new ISOC tables **/

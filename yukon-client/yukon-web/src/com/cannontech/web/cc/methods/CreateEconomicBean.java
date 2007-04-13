@@ -1,13 +1,9 @@
 package com.cannontech.web.cc.methods;
 
-import java.util.List;
-
 import com.cannontech.cc.model.EconomicEvent;
-import com.cannontech.cc.model.Group;
 import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.builder.EconomicBuilder;
-import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.web.util.JSFUtil;
 
@@ -110,12 +106,6 @@ public class CreateEconomicBean extends EventCreationBase {
 
     public void setBuilder(EconomicBuilder builder) {
         this.builder = builder;
-    }
-
-    @Override
-    public List<VerifiedNotifCustomer> 
-    getVerifiedCustomerList(List<Group> selectedGroupList) {
-        return getStrategy().getVerifiedCustomerList(getBuilder(), selectedGroupList);
     }
 
     public void setDetailBean(DetailEconomicBean detailBean) {

@@ -1,6 +1,7 @@
 package com.cannontech.cc.service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.beans.factory.annotation.Required;
+
+import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.UnknownParameterException;
 import com.cannontech.cc.model.BaseEvent;
@@ -22,19 +26,30 @@ import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramParameterKey;
+import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
+import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.support.CustomerPointTypeHelper;
 import com.cannontech.yukon.INotifConnection;
 
 public abstract class StrategyBase implements CICurtailmentStrategy {
+    private SimplePointAccessDao pointAccess;
+    private CustomerPointTypeHelper pointTypeHelper;
     private ProgramService programService;
     private GroupService groupService;
     private Set<ProgramParameterKey> parameters = new TreeSet<ProgramParameterKey>();
     protected ProgramParameterDao programParameterDao;
+    protected ProgramDao programDao;
     private INotifConnection notificationProxy;
+    private String methodKey;
+    private CICustomerPointType loadPoint;
     
     public ProgramParameterDao getProgramParameterDao() {
         return programParameterDao;
@@ -56,7 +71,13 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
         this.programService = programService;
     }
     
-    public abstract String getMethodKey();
+    public String getMethodKey() {
+        return this.methodKey;
+    }
+    
+    public void setMethodKey(String methodKey) {
+        this.methodKey = methodKey;
+    }
     
     /** Meant to be used to determine if an event is NOT cancelled or
      *  NOT an accounting-only event or NOT a suppressed event.
@@ -97,10 +118,19 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
         return result;
     }
     
-    protected abstract 
-    void 
-    verifyCustomer(EventBuilderBase builder, 
-                   VerifiedCustomer vCustomer);
+    protected void verifyCustomers(EventBuilderBase builder) throws EventCreationException {
+        List<GroupCustomerNotif> customerList = builder.getCustomerList();
+        for (GroupCustomerNotif customer : customerList) {
+            VerifiedCustomer vCustoemr = new VerifiedNotifCustomer(customer);
+            verifyCustomer(builder, vCustoemr);
+            if (!vCustoemr.isIncludable()) {
+                throw new EventCreationException("Customer " + customer +
+                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
+            }
+        }
+    }
+    protected abstract void verifyCustomer(EventBuilderBase builder, 
+                                           VerifiedCustomer vCustomer);
 
     public List<ProgramParameter> getParameters(Program program) {
         List<ProgramParameter> result = new LinkedList<ProgramParameter>();
@@ -122,7 +152,13 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
     public abstract
     List<? extends BaseEvent> getEventsForProgram(Program program);
 
-    public abstract BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException;
+    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
+        LitePoint point = pointTypeHelper.getPoint(customer, loadPoint);
+        double interruptLoad = pointAccess.getPointValue(point);
+        
+        BigDecimal bigDecimal = new BigDecimal(interruptLoad, new MathContext(7));
+        return bigDecimal;
+    }
     
     protected void sendProgramNotifications(BaseEvent event, List<? extends BaseParticipant> participants, String action) {
         int customerIds[] = new int[participants.size()];
@@ -137,13 +173,6 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
                                                        event.getStopTime(), 
                                                        event.getNotificationTime(), 
                                                        customerIds);
-    }
-
-    public void setParameterStrings(Set<String> parameterStrings) {
-        for (String string : parameterStrings) {
-            ProgramParameterKey key = ProgramParameterKey.valueOf(string);
-            parameters.add(key);
-        }
     }
 
     public Set<ProgramParameterKey> getParameters() {
@@ -165,6 +194,25 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
     public void setNotificationProxy(INotifConnection notificationProxy) {
         this.notificationProxy = notificationProxy;
     }
+    
+    @Required
+    public void setPointAccess(SimplePointAccessDao pointAccess) {
+        this.pointAccess = pointAccess;
+    }
+    
+    @Required
+    public void setProgramDao(ProgramDao programDao) {
+        this.programDao = programDao;
+    }
+    
+    @Required
+    public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
+        this.pointTypeHelper = pointTypeHelper;
+    }
 
+    @Required
+    public void setLoadPoint(CICustomerPointType loadPoint) {
+        this.loadPoint = loadPoint;
+    }
 
 }

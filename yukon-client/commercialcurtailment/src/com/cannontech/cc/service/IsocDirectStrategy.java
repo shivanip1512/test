@@ -23,11 +23,6 @@ public class IsocDirectStrategy extends BaseDirectStrategy {
         isocCommonStrategy.checkEventCustomer(vCustomer, myBuilder.getEvent());
     }
 
-    @Override
-    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
-        return isocCommonStrategy.getCurrentLoad(customer);
-    }
-
     public IsocCommonStrategy getIsocCommonStrategy() {
         return isocCommonStrategy;
     }

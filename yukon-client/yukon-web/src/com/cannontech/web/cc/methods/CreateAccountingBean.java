@@ -1,19 +1,19 @@
 package com.cannontech.web.cc.methods;
 
-import com.cannontech.cc.model.CurtailmentEvent;
-import com.cannontech.cc.service.NotificationStrategy;
-import com.cannontech.cc.service.builder.CurtailmentBuilder;
+import com.cannontech.cc.model.AccountingEvent;
+import com.cannontech.cc.service.AccountingStrategy;
+import com.cannontech.cc.service.builder.AccountingBuilder;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.web.util.JSFUtil;
 
 
-public class CreateNotificationBean extends EventCreationBase {
-    private CurtailmentBuilder builder;
-    private DetailNotificationBean detailBean;
+public class CreateAccountingBean extends EventCreationBase {
+    private AccountingBuilder builder;
+    private DetailAccountingBean detailBean;
     
     @Override
     public String getStartPage() {
-        return "notifStart";
+        return "acctStart";
     }
     
     @Override
@@ -22,14 +22,6 @@ public class CreateNotificationBean extends EventCreationBase {
     }
 
     public String doAfterParameterEntry() {
-        try {
-            // check values so far
-            // bad use of exceptions?
-            getMyStrategy().verifyTimes(getBuilder());
-        } catch (EventCreationException e) {
-            JSFUtil.handleException("Invalid times", e);
-            return null;
-        }
         getCustomerSelectionBean().setEventBean(this);
         return "groupSelection";
     }
@@ -38,11 +30,11 @@ public class CreateNotificationBean extends EventCreationBase {
     public String doAfterCustomerPage() {
         // move parameters from getCustomerSelectionBean() to EventBuilderBase
         getBuilder().setCustomerList(getCustomerSelectionBean().getSelectedCustomers());
-        return "notifConfirmation";
+        return "acctConfirmation";
     }
     
     public String doCreateEvent() {
-        CurtailmentEvent event;
+        AccountingEvent event;
         try {
             event = getMyStrategy().createEvent(getBuilder());
             return detailBean.showDetail(event);
@@ -52,23 +44,23 @@ public class CreateNotificationBean extends EventCreationBase {
         }
     }
     
-    public NotificationStrategy getMyStrategy() {
-        return (NotificationStrategy) getStrategy();
+    public AccountingStrategy getMyStrategy() {
+        return (AccountingStrategy) getStrategy();
     }
 
-    public CurtailmentBuilder getBuilder() {
+    public AccountingBuilder getBuilder() {
         return builder;
     }
 
-    public void setBuilder(CurtailmentBuilder builder) {
+    public void setBuilder(AccountingBuilder builder) {
         this.builder = builder;
     }
 
-    public DetailNotificationBean getDetailBean() {
+    public DetailAccountingBean getDetailBean() {
         return detailBean;
     }
 
-    public void setDetailBean(DetailNotificationBean detailBean) {
+    public void setDetailBean(DetailAccountingBean detailBean) {
         this.detailBean = detailBean;
     }
 

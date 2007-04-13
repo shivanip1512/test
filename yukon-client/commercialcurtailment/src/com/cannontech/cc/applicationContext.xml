@@ -51,10 +51,22 @@
   <bean id="strategyFactory" class="com.cannontech.cc.service.StrategyFactory" />
   <bean id="notificationService" class="com.cannontech.cc.service.NotificationService" autowire="byType"/>
   
-  <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy" dependency-check="objects"
-        abstract="true">
+  <bean id="commercialCurtailmentStrategyBase" class="com.cannontech.cc.service.StrategyBase" abstract="true">
+    <property name="loadPoint" value="CurrentLoad"/>
+    
+    <property name="groupService" ref="groupService"/>
     <property name="notificationProxy" ref="notificationProxy"/>
-    <property name="parameterStrings">
+    <property name="pointAccess" ref="simplePointAccessDao"/>
+    <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
+    <property name="programService" ref="programService"/>
+    <property name="programDao" ref="programDao"/>
+    <property name="programParameterDao" ref="programParameterDao"/>
+  </bean>
+  
+  <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy" dependency-check="objects"
+        abstract="true" parent="commercialCurtailmentStrategyBase">
+    <property name="methodKey" value="notification"/>
+    <property name="parameters">
       <set>
         <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
         <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
@@ -63,9 +75,6 @@
         <value>MINIMUM_NOTIFICATION_MINUTES</value>
       </set>
     </property>
-    <property name="groupService" ref="groupService"/>
-    <property name="programService" ref="programService"/>
-    <property name="programParameterDao" ref="programParameterDao"/>
     <property name="curtailmentEventParticipantDao" ref="curtailmentEventParticipantDao"/>
     <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
     <property name="transactionTemplate" ref="transactionTemplate"/>
@@ -100,9 +109,10 @@
   
   
   <bean id="genericEconomic" class="com.cannontech.cc.service.BaseEconomicStrategy" autowire="byType"
-        abstract="true" >
+        abstract="true" parent="commercialCurtailmentStrategyBase">
+    <property name="methodKey" value="economic"/>
     <property name="notificationProxy" ref="notificationProxy"/>
-    <property name="parameterStrings">
+    <property name="parameters">
       <set>
         <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
         <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
@@ -111,6 +121,20 @@
         <value>MINIMUM_NOTIFICATION_MINUTES</value>
       </set>
     </property>
+  </bean>
+  
+  <bean id="genericAccounting" class="com.cannontech.cc.service.BaseAccountingStrategy"
+  	parent="commercialCurtailmentStrategyBase">
+    <property name="methodKey" value="accounting"/>
+    <property name="notificationProxy" ref="notificationProxy"/>
+    <property name="parameters">
+      <set>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+      </set>
+    </property>
+    <property name="accountingEventDao" ref="accountingEventDao"/>
+    <property name="accountingEventParticipantDao" ref="accountingEventParticipantDao"/>
+    <property name="transactionTemplate" ref="transactionTemplate"/>
   </bean>
   
   <bean id="isocSameDay" class="com.cannontech.cc.service.IsocEconomicStrategy" 
@@ -150,6 +174,7 @@
         <value>isocNotification</value>
         <value>isocSupersedeNotification</value>
         <value>isocDirect</value>
+        <value>genericAccounting</value>
       </set>
     </property>
     <property name="requiredPointGroup" value="ISOC"/>
@@ -198,6 +223,10 @@
   <bean id="economicEventParticipantSelectionWindowDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionWindowImpl" parent="yukonHibeDao"/>
   <bean id="economicEventPricingDao" class="com.cannontech.cc.daohibe.EconomicEventPricingDaoImpl" parent="yukonHibeDao"/>
   <bean id="economicEventPricingWindowDao" class="com.cannontech.cc.daohibe.EconomicEventPricingWindowDaoImpl" parent="yukonHibeDao"/>
+  <bean id="accountingEventDao" class="com.cannontech.cc.daohibe.AccountingEventDaoImpl" parent="yukonHibeDao">
+    <property name="accountingEventParticipantDao" ref="accountingEventParticipantDao"/>
+  </bean>
+  <bean id="accountingEventParticipantDao" class="com.cannontech.cc.daohibe.AccountingEventParticipantDaoImpl" parent="yukonHibeDao"/>
   <bean id="programNotificationGroupDao" class="com.cannontech.cc.daojdbc.ProgramNotificationGroupDaoImpl" parent="yukonJdbcDao">
     <property name="notificationGroupDao" ref="notificationGroupDao"/>
   </bean>
@@ -206,6 +235,7 @@
       <set>
         <ref bean="curtailmentEventDao"/>
         <ref bean="economicEventDao"/>
+        <ref bean="accountingEventDao"/>
       </set>
     </property>
   </bean>

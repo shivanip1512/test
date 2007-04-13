@@ -1,7 +1,5 @@
 package com.cannontech.cc.service;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -19,16 +17,14 @@ import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
-import com.cannontech.common.exception.PointDataException;
+import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
-import com.cannontech.support.NoPointException;
 
 public class IsocCommonStrategy extends StrategyGroupBase {
     private SimplePointAccessDao pointAccess;
@@ -91,14 +87,6 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return allowedHours;
     }
     
-    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
-        LitePoint point = pointTypeHelper.getPoint(customer, CICustomerPointType.CurrentLoad);
-        double interruptLoad = pointAccess.getPointValue(point);
-        
-        BigDecimal bigDecimal = new BigDecimal(interruptLoad, new MathContext(7));
-        return bigDecimal;
-    }
-
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
         try {
             checkRequiredPoints(vCustomer);
@@ -121,8 +109,6 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     public void checkEventOverlap(VerifiedCustomer vCustomer, BaseEvent event) {
         List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(vCustomer.getCustomer());
         Collections.sort(forCustomer, stopTimeComparatot);
-        // technically this list should be sorted by stop time, but because
-        // events can't overlap, sorting by start time produces the same order
         for (Iterator iter = new ReverseListIterator(forCustomer); iter.hasNext();) {
             BaseEvent otherEvent = (BaseEvent) iter.next();
             // rely on ordering to short circuit

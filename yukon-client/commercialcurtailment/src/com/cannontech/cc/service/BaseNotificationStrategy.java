@@ -23,8 +23,6 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
-import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
@@ -42,11 +40,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
-    }
-
-    @Override
-    public String getMethodKey() {
-        return "notification";
     }
 
     public CurtailmentBuilder createBuilder(Program program) {
@@ -124,18 +117,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         int minNotification = getMinimumNotificationMinutes(builder.getProgram());
         if (notifMinutes < minNotification) {
             throw new EventCreationException("Notification time must be greater than " + minNotification + " minutes.");
-        }
-    }
-    
-    protected void verifyCustomers(CurtailmentBuilder builder) throws EventCreationException {
-        List<GroupCustomerNotif> customerList = builder.getCustomerList();
-        for (GroupCustomerNotif customer : customerList) {
-            VerifiedCustomer vCustoemr = new VerifiedNotifCustomer(customer);
-            verifyCustomer(builder, vCustoemr);
-            if (!vCustoemr.isIncludable()) {
-                throw new EventCreationException("Customer " + customer +
-                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
-            }
         }
     }
     

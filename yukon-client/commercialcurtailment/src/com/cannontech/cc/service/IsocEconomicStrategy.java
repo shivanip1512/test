@@ -100,11 +100,6 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
         }
     }
     
-    @Override
-    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
-        return isocCommonStrategy.getCurrentLoad(customer);
-    }
-    
     public IsocCommonStrategy getIsocCommonStrategy() {
         return isocCommonStrategy;
     }

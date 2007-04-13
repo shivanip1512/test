@@ -39,6 +39,10 @@
                 <key>economic</key>
                 <value>#{sEconomicDetail}</value>
               </map-entry>
+              <map-entry>
+                <key>accounting</key>
+                <value>#{sAccountingDetail}</value>
+              </map-entry>
             </map-entries>
         </managed-property>
         <managed-property>
@@ -53,6 +57,10 @@
               <map-entry>
                 <key>economic</key>
                 <value>#{sEconomicUserDetail}</value>
+              </map-entry>
+              <map-entry>
+                <key>accounting</key>
+                <value>#{sAccountingDetail}</value>
               </map-entry>
             </map-entries>
         </managed-property>
@@ -167,10 +175,6 @@
         <managed-bean-class>com.cannontech.web.cc.methods.CreateNotificationBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
         <managed-property>
-            <property-name>programService</property-name>
-            <value>#{programService}</value>
-        </managed-property>
-        <managed-property>
           <property-name>customerSelectionBean</property-name>
           <value>#{sCustomerSelectionBean}</value>
         </managed-property>
@@ -222,6 +226,34 @@
     </managed-bean>
 
     <managed-bean>
+        <managed-bean-name>sAccountingCreate</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.CreateAccountingBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+          <property-name>customerSelectionBean</property-name>
+          <value>#{sCustomerSelectionBean}</value>
+        </managed-property>
+        <managed-property>
+          <property-name>detailBean</property-name>
+          <value>#{sAccountingDetail}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sAccountingDetail</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.cc.methods.DetailAccountingBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+          <property-name>strategyFactory</property-name>
+          <value>#{strategyFactory}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
+    </managed-bean>
+
+    <managed-bean>
         <managed-bean-name>rEventInit</managed-bean-name>
         <managed-bean-class>com.cannontech.web.cc.EventInitBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -237,6 +269,10 @@
               <map-entry>
                 <key>economic</key>
                 <value>#{sEconomicCreate}</value>
+              </map-entry>
+              <map-entry>
+                <key>accounting</key>
+                <value>#{sAccountingCreate}</value>
               </map-entry>
             </map-entries>
         </managed-property>
@@ -504,6 +540,22 @@
     </navigation-rule>
 
     <navigation-rule>
+        <navigation-case>
+            <from-outcome>acctStart</from-outcome>
+            <to-view-id>/cc/acct/init.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>acctConfirmation</from-outcome>
+            <to-view-id>/cc/acct/confirmation.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
         <from-view-id>/cc/user/overview.jsp</from-view-id>
         <navigation-case>
             <from-outcome>notifDetail</from-outcome>
@@ -516,6 +568,14 @@
         <navigation-case>
             <from-outcome>notifDetail</from-outcome>
             <to-view-id>/cc/notif/detail.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>acctDetail</from-outcome>
+            <to-view-id>/cc/acct/detail.jsp</to-view-id>
             <redirect></redirect>
         </navigation-case>
     </navigation-rule>

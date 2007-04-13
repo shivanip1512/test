@@ -22,6 +22,8 @@
         <table name="CCurtEEParticipantWindow" identitycolumn="CCurtEEParticipantWindowId"/>
         <table name="CCurtEEPricing" identitycolumn="CCurtEEPricingId"/>
         <table name="CCurtEEPricingWindow" identitycolumn="CCurtEEPricingWindowId"/>
+        <table name="CCurtAcctEvent" identitycolumn="CCurtAcctEventId"/>
+        <table name="CCurtAcctEventParticipant" identitycolumn="CCurtAcctEventParticipantId"/>
       </sequence>
       <sequence name="paobjectid">
       	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>

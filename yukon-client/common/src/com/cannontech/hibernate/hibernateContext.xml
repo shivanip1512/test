@@ -26,6 +26,8 @@
        <value>com.cannontech.cc.model.EconomicEventParticipantSelectionWindow</value>
        <value>com.cannontech.cc.model.EconomicEventPricing</value>
        <value>com.cannontech.cc.model.EconomicEventPricingWindow</value>
+       <value>com.cannontech.cc.model.AccountingEvent</value>
+       <value>com.cannontech.cc.model.AccountingEventParticipant</value>
      </list>
    </property>
    <property name="hibernateProperties">

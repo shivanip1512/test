@@ -1,10 +1,7 @@
 package com.cannontech.web.cc.methods;
 
-import java.util.TimeZone;
-
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CurtailmentEvent;
-import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.NotificationService;
 import com.cannontech.cc.service.NotificationStrategy;
 import com.cannontech.cc.service.ProgramService;
@@ -34,12 +31,6 @@ public class DetailNotificationBean implements BaseDetailBean {
 
     public void setProgramService(ProgramService programService) {
         this.programService = programService;
-    }
-    
-    public TimeZone getTimeZone() {
-        Program program = getEvent().getProgram();
-        TimeZone tz = getProgramService().getTimeZone(program);
-        return tz;
     }
     
     public Boolean getShowDeleteButton() {
