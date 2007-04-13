@@ -6,6 +6,7 @@
 <%@page import="java.io.StringWriter"%>
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
 <%@page import="com.cannontech.common.util.CtiUtilities"%>
+<jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
 
@@ -31,7 +32,8 @@ request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
 StringWriter sw = new StringWriter();
 PrintWriter p = new PrintWriter(sw);
 p.write(
-	"<b>Status code:</b> " + status_code.toString() +
+	"<b>Yukon Version:</b> " + VersionTools.getYUKON_VERSION() +
+	"<br><b>Status code:</b> " + status_code.toString() +
 	"<br><b>Message</b>: " + message.toString() +
 	"<br><b>Error type</b>: " + error_type.toString() +
 	"<br><b>Request URI</b>: " + request_uri.toString());		

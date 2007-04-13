@@ -26,6 +26,7 @@
 </div> <!-- Content -->
 
 <div id="CopyRight">
+Yukon Version ${ctiYukonVersion}. 
 Copyright &copy; 2002-2007, 
   Cannon Technologies. All rights reserved.
 </div>

@@ -13,6 +13,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.ModuleBase;
@@ -27,6 +28,7 @@ import com.cannontech.web.template.TemplateReslover;
  */
 public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_PAGE_TITLE = "ctiPageTitle";
+    public static final String CTI_YUKON_VERSION = "ctiYukonVersion";
     public static final String CTI_MAIN_CONTENT = "ctiMainContent";
     public static final String CTI_CSS_FILES = "ctiCssFiles";
     public static final String CTI_SCRIPT_FILES = "ctiScriptFiles";
@@ -100,6 +102,7 @@ public class StandardPageTag extends BodyTagSupport {
             ModuleBase moduleBase = moduleBuilder.getModuleBase(getModule());
             
             pageContext.setAttribute(CTI_PAGE_TITLE, getTitle(), PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(CTI_YUKON_VERSION, VersionTools.getYUKON_VERSION(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MODULE_NAME, getModule(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_CSS_FILES, cssFiles, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_SCRIPT_FILES, scriptFiles, PageContext.REQUEST_SCOPE);
