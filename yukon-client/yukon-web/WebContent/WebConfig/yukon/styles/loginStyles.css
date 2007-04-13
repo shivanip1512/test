@@ -3,6 +3,7 @@
   background-repeat: no-repeat;
   width: 180px;
   height: 40px;
+  margin-top: 4px;
 }
 
 .loginErrorMsg { 

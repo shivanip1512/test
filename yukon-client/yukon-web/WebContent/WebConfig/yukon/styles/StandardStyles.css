@@ -21,6 +21,9 @@ body {
   font-size: .8em;
 }
 
+#Header {
+  margin: 5px;
+}
 
 #Header img {
   margin: 0 0 1em 0;
