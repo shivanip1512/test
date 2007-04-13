@@ -139,6 +139,7 @@ public class EconomicEvent extends BaseEvent {
     
     @Transient
     public EconomicEventPricing getLatestRevision() {
+        if (revisions.size() == 0) return null;
         Integer lastRevNumber = Collections.max(revisions.keySet());
         return revisions.get(lastRevNumber);
     }
