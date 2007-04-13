@@ -75,7 +75,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
                 totalMinutes += event.getDuration();
             }
         }
-        int totalHours = totalMinutes / 60;
+        double totalHours = (double)totalMinutes / 60;
         return totalHours;
     }
     
