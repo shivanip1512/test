@@ -212,10 +212,6 @@
 	                	<input type="submit" name="Submit2" value="Submit">
 	              	</div>
 						  
-					<div align="center" class="MainText"><br>
-						<a href="<%=request.getContextPath()%>/pwordreq.jsp">Forgot your password?</a>
-						<br/><br/>
-					</div>
 				</form>
 
 			</cti:titledContainer>
