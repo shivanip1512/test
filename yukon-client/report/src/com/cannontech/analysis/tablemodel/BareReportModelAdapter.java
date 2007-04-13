@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.Date;
+
 import com.cannontech.analysis.ColumnProperties;
 
 public final class BareReportModelAdapter extends ReportModelBase {
@@ -11,17 +13,9 @@ public final class BareReportModelAdapter extends ReportModelBase {
         this.model = model;
         this.layout = layout;
     }
+    
     @Override
     public void collectData() {
-        if (model instanceof CommonModelAttributes) {
-            CommonModelAttributes commonModel = (CommonModelAttributes) model;
-            Integer energyCompanyId2 = getEnergyCompanyID();
-            if (energyCompanyId2 != null) {
-                commonModel.setEnergyCompanyId(energyCompanyId2);
-            }
-            commonModel.setStartDate(getStartDate());
-            commonModel.setStopDate(getStopDate());
-        }
         if (model instanceof LoadableModel) {
             LoadableModel loadableBase = (LoadableModel) model;
             loadableBase.loadData();
@@ -84,6 +78,31 @@ public final class BareReportModelAdapter extends ReportModelBase {
 
     public String getTitleString() {
         return model.getTitle();
+    }
+    
+    @Override
+    public Date getStartDate() {
+        throw new UnsupportedOperationException("getStartDate() is not supported, please override getDateRangeString() in your report");
+    }
+    
+    @Override
+    public Date getStopDate() {
+        throw new UnsupportedOperationException("getStopDate() is not supported, please override getDateRangeString() in your report");
+    }
+    
+    @Override
+    public String getDateRangeString() {
+        throw new UnsupportedOperationException("getDateRangeString() is not supported, please override getDateRangeString() in your report");
+    }
+    
+    @Override
+    public boolean useStartDate() {
+        return model instanceof DatedModelAttributes;
+    }
+    
+    @Override
+    public boolean useStopDate() {
+        return model instanceof DatedModelAttributes;
     }
 
 }

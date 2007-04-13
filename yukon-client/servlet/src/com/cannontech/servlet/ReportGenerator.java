@@ -22,8 +22,6 @@ package com.cannontech.servlet;
  * @author: Stacey Nebben
  */
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
@@ -68,8 +66,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 	    String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
 		String errorURL = req.getParameter( ServletUtil.ATT_REFERRER );	//failed action URL
 
-		try
-		{	 	
 			//a string value for unique reports held in session.
 			//ECID + type + startDate.toString() + stopDate.toString()
 			String reportKey = "";
@@ -120,6 +116,12 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			}
 			else
 				isKeyIncomplete = true;
+            
+            // save start and stop date
+            param = req.getParameter("startDate");
+            reportBean.setStart(param);
+            param = req.getParameter("stopDate");
+            reportBean.setStop(param);
 			
             reportBean.createController();
 			reportBean.getModel().setTimeZone(tz);
@@ -225,60 +227,15 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 						session.setAttribute(reportKey + "Report", report);
 				}
 				final ServletOutputStream out = resp.getOutputStream();
-//				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-//                BufferedOutputStream buffOut = new BufferedOutputStream(byteOut);
                 ReportFuncs.outputYukonReport( report, ext, out);
-//                out.write(byteOut.toByteArray());
                 
 				if (!ext.equalsIgnoreCase("png")) {
 					if (ext.equalsIgnoreCase("pdf")) {
 						resp.setContentType("application/pdf");
 						resp.addHeader("Content-Type", "application/pdf");
 					}
-//                    resp.setContentLength(byteOut.size());
 					return;
 				}
-//				else {
-////					java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
-//				    PageDefinition pageDefinition = report.getPageDefinition();
-//					
-//					//create buffered image
-//					BufferedImage image = ReportFuncs.createImage(pageDefinition);
-//					final Graphics2D g2 = image.createGraphics();
-//					g2.setPaint(Color.white);
-//					g2.fillRect(0,0, (int) pageDefinition.getWidth(), (int) pageDefinition.getHeight());
-//					
-//					resp.setHeader("Content-Type", "image/png");
-//	
-//					final G2OutputTarget target = new G2OutputTarget(g2);
-//					final PageableReportProcessor processor = new PageableReportProcessor(report);
-//					processor.setOutputTarget(target);
-//	
-//					Object statelist = session.getAttribute(reportKey + "StateList");
-//					if( noCache || statelist == null)
-//					{			
-//						statelist = processor.repaginate();
-//						processor.
-//						if( !noCache )
-//							session.setAttribute(reportKey + "StateList", statelist);
-//					}
-//					else
-//					{
-//						if( action.equalsIgnoreCase("PagedReport"))
-//						{
-//							int page = 0;  //The page number of the report to generate
-//							param = req.getParameter("page");
-//							if( param != null)
-//								page = Integer.valueOf(param).intValue();
-//	
-//							target.open();
-//							processor.processPage(((ReportStateList)statelist).get(page), target);
-//							ReportFuncs.encodePNG(out, image);
-//							target.close();
-//						}
-//					}
-//					out.flush();
-//				}
 			}
 			else if( action.equalsIgnoreCase("GenerateMissedMeterList"))
 			{
@@ -309,11 +266,5 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			if( destURL!= null ) {
 				resp.sendRedirect(destURL);
 			}
-		}
-		catch( Throwable t )
-		{
-			CTILogger.error("An exception was throw in ReportGenerator:  ");
-			t.printStackTrace();
-		}
 	}
 }

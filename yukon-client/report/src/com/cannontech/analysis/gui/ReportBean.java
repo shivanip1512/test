@@ -49,7 +49,9 @@ public class ReportBean
 	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private String start = "";
+    private Date startDate = null;
 	private String stop = "";
+    private Date stopDate = null;
 	
 	private boolean isChanged = false;
     private ReportController reportController;
@@ -111,44 +113,34 @@ public class ReportBean
 	public void setStart(String startDateString)
 	{
 		start = startDateString;
-		setStartDate(ServletUtil.parseDateStringLiberally(start));
+		startDate = ServletUtil.parseDateStringLiberally(start);
 	}
 
-	public void setStartDate(Date newStartDate)
-	{
-		if( getStartDate().compareTo(newStartDate) != 0 )
-		{
-			getModel().setStartDate(newStartDate);
-		}
-	}
 	public Date getStartDate()
 	{
-	    if (getModel() == null)
-	        return ServletUtil.getYesterday();
+	    if (startDate == null) {
+            return ServletUtil.getYesterday();
+        }
 	    
-		return getModel().getStartDate();
+		return startDate;
 	}
+    
 	public Date getStopDate()
 	{
-	    if( getModel() == null)
-	        return ServletUtil.getTomorrow();
-		return getModel().getStopDate();
+	    if (stopDate == null) {
+            return ServletUtil.getTomorrow();
+        }
+		return stopDate;
 	}
+    
 	/**
 	 * @param string
 	 */
 	public void setStop(String stopDateString)
 	{
 		stop = stopDateString;
-		setStopDate(ServletUtil.parseDateStringLiberally(stop));
+		stopDate = ServletUtil.parseDateStringLiberally(stop);
 		
-	}
-	public void setStopDate(Date newStopDate)
-	{
-		if( getStopDate().compareTo(newStopDate) != 0 )
-		{
-			getModel().setStopDate( newStopDate);
-		}
 	}
 
 	/**
@@ -211,17 +203,20 @@ public class ReportBean
 	 * @return
 	 * @throws FunctionInitializeException
 	 */
-	public JFreeReport createReport() throws FunctionInitializeException
-	{
-	    //Create an instance of JFreeReport from the YukonReportBase
-	    YukonReportBase report = reportController.getReport();
-	    JFreeReport jfreeReport = report.createReport();
-	    
-	    //Collecto the data for the model and set the freeReports data
-	    getModel().collectData();
-	    jfreeReport.setData(getModel());
-	    
-	    return jfreeReport;
+	public JFreeReport createReport() {
+	    try {
+            //Create an instance of JFreeReport from the YukonReportBase
+            YukonReportBase report = reportController.getReport();
+            JFreeReport jfreeReport = report.createReport();
+            
+            //Collecto the data for the model and set the freeReports data
+            getModel().collectData();
+            jfreeReport.setData(getModel());
+            
+            return jfreeReport;
+        } catch (FunctionInitializeException e) {
+            throw new RuntimeException("Unable to create report for " + reportController, e);
+        }
 	}
 
 	/**

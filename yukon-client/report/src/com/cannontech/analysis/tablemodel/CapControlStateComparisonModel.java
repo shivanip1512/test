@@ -27,7 +27,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.support.CustomerPointTypeHelper;
 
-public class CapControlStateComparisonModel extends BareReportModelBase<CapControlStateComparisonModel.ModelRow> implements LoadableModel, CapControlFilterable  {
+public class CapControlStateComparisonModel extends BareReportModelBase<CapControlStateComparisonModel.ModelRow> implements CapControlFilterable  {
 
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
@@ -68,7 +68,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         return data.size();
     }
 
-    public void loadData() {
+    public void doLoadData() {
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         

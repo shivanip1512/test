@@ -332,12 +332,16 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		factory.setMinimumSize(new FloatDimension(-100, 24));
 		factory.setHorizontalAlignment(ElementAlignment.CENTER);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setText(getModel().getDateRangeString());
+		factory.setText(getDateRangeString());
 		factory.setFontSize(new Integer(12));
 		header.addElement(factory.createElement());		
 
 		return header;
 	}
+
+    protected String getDateRangeString() {
+        return getModel().getDateRangeString();
+    }
 	/**
 	 * @return
 	 */

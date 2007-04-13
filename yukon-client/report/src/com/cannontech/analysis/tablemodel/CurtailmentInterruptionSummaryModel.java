@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -14,10 +13,8 @@ import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.support.CustomerPointTypeHelper;
 
-public class CurtailmentInterruptionSummaryModel extends BareReportModelBase<CurtailmentInterruptionSummaryModel.ModelRow> implements LoadableModel, CommonModelAttributes {
+public class CurtailmentInterruptionSummaryModel extends BareDatedReportModelBase<CurtailmentInterruptionSummaryModel.ModelRow> {
     private int energyCompanyId;
-    private Date fromDate;
-    private Date toDate;
     
     private CustomerStubDao customerStubDao = (CustomerStubDao) YukonSpringHook.getBean("customerStubDao");
     private IsocCommonStrategy isocCommonStrategy = (IsocCommonStrategy) YukonSpringHook.getBean("isocCommonStrategy");
@@ -64,10 +61,10 @@ public class CurtailmentInterruptionSummaryModel extends BareReportModelBase<Cur
         return data.size();
     }
 
-    public void loadData() {
+    public void doLoadData() {
         // get all of the customers
-        Validate.notNull(fromDate, "Start date must not be null");
-        Validate.notNull(toDate, "End date must not be null");
+        Validate.notNull(getStartDate(), "Start date must not be null");
+        Validate.notNull(getStopDate(), "End date must not be null");
         List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompanyId);
         data = new ArrayList<ModelRow>(customersForEC.size());
         
@@ -76,7 +73,7 @@ public class CurtailmentInterruptionSummaryModel extends BareReportModelBase<Cur
             try {
                 row.customername = customerStub.getCompanyName();
                 row.interruptHoursContract = isocCommonStrategy.getAllowedHours(customerStub);
-                row.interruptHoursUsed = isocCommonStrategy.getTotalEventHours(customerStub, fromDate, toDate);
+                row.interruptHoursUsed = isocCommonStrategy.getTotalEventHours(customerStub, getStartDate(), getStopDate());
                 row.interruptHoursRemaining = row.interruptHoursContract - row.interruptHoursUsed;
                 
                 row.cil = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.ContractIntLoad);
@@ -97,14 +94,6 @@ public class CurtailmentInterruptionSummaryModel extends BareReportModelBase<Cur
         this.energyCompanyId = energyCompanyId;
     }
     
-    public void setStartDate(Date startDate) {
-        this.fromDate = startDate;
-    }
-    
-    public void setStopDate(Date stopDate) {
-        this.toDate = stopDate;
-    }
-
     public CustomerPointTypeHelper getCustomerPointTypeHelper() {
         return customerPointTypeHelper;
     }

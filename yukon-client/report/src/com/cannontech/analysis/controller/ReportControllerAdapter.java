@@ -31,6 +31,7 @@ public class ReportControllerAdapter extends ReportControllerBase  {
     
     @Override
     public void setRequestParameters(HttpServletRequest request) {
+        super.setRequestParameters(request);
         reportModelbase.setParameters(request);
     }
     

@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Float;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +36,8 @@ import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.BareReportModelAdapter;
+import com.cannontech.analysis.tablemodel.DatedModelAttributes;
+import com.cannontech.analysis.tablemodel.LoadableModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelDelegate;
 import com.cannontech.analysis.tablemodel.ReportModelLayout;
@@ -46,11 +50,15 @@ import com.cannontech.analysis.tablemodel.ReportModelLayout;
  */
 public abstract class SimpleYukonReportBase extends YukonReportBase {
     private final ReportModelBase model;
+    private BareReportModel bareModel = null;
 
     protected Map<ColumnLayoutData,Point2D> columnProperties = new HashMap<ColumnLayoutData, Point2D>();
     protected Map<String,Integer> columIndexLookup = new HashMap<String, Integer>();
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+
 
     public SimpleYukonReportBase(BareReportModel bareModel) {
+        this.bareModel = bareModel;
         model = new BareReportModelAdapter(bareModel, new ReportModelLayout() {
             public ColumnProperties getColumnProperties(int i) {
                 throw new UnsupportedOperationException();
@@ -237,6 +245,30 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             }
         }
         return expressionCollection;
+    }
+    
+    @Override
+    protected String getDateRangeString() {
+        if (bareModel == null) {
+            return model.getDateRangeString();
+        }
+        
+        if (bareModel instanceof DatedModelAttributes) {
+            DatedModelAttributes datedModel = (DatedModelAttributes) bareModel;
+            return getDateFormat().format(datedModel.getStartDate()) + " through " +
+               getDateFormat().format(datedModel.getStopDate());
+        }
+        
+        if (bareModel instanceof LoadableModel) {
+            LoadableModel loadModel = (LoadableModel) bareModel;
+            return getDateFormat().format(loadModel.getLoadDate());
+        }
+        
+        return "";
+    }
+
+    private DateFormat getDateFormat() {
+        return simpleDateFormat;
     }
 
 }

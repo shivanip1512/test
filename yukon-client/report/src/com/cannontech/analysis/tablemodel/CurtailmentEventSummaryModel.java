@@ -16,10 +16,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.support.CustomerPointTypeHelper;
 
-public class CurtailmentEventSummaryModel extends BareReportModelBase<CurtailmentEventSummaryModel.ModelRow> implements LoadableModel, CommonModelAttributes {
+public class CurtailmentEventSummaryModel extends BareDatedReportModelBase<CurtailmentEventSummaryModel.ModelRow> implements CommonModelAttributes {
     private int energyCompanyId;
-    private Date fromDate;
-    private Date toDate;
     
     private CustomerStubDao customerStubDao = (CustomerStubDao) YukonSpringHook.getBean("customerStubDao");
     private BaseEventDao baseEventDao = (BaseEventDao) YukonSpringHook.getBean("baseEventDao");
@@ -60,17 +58,17 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
         return data.size();
     }
 
-    public void loadData() {
+    public void doLoadData() {
         // get all of the customers
-        Validate.notNull(fromDate, "Start date must not be null");
-        Validate.notNull(toDate, "End date must not be null");
+        Validate.notNull(getStartDate(), "Start date must not be null");
+        Validate.notNull(getStopDate(), "End date must not be null");
         
         List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompanyId);
         data = new ArrayList<ModelRow>(customersForEC.size());
         
         for (CICustomerStub customerStub : customersForEC) {
             try {
-                List<BaseEvent> allEvents = baseEventDao.getAllForCustomer(customerStub, fromDate, toDate);
+                List<BaseEvent> allEvents = baseEventDao.getAllForCustomer(customerStub, getStartDate(), getStopDate());
                 for (BaseEvent event : allEvents) {
                     ModelRow row = new ModelRow();
                     row.customerName = customerStub.getCompanyName();
@@ -96,14 +94,6 @@ public class CurtailmentEventSummaryModel extends BareReportModelBase<Curtailmen
         this.energyCompanyId = energyCompanyId;
     }
     
-    public void setStartDate(Date startDate) {
-        this.fromDate = startDate;
-    }
-    
-    public void setStopDate(Date stopDate) {
-        this.toDate = stopDate;
-    }
-
     public CustomerPointTypeHelper getCustomerPointTypeHelper() {
         return customerPointTypeHelper;
     }

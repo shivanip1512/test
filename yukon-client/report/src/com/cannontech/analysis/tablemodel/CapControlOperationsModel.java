@@ -15,7 +15,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 
 
-public class CapControlOperationsModel extends BareReportModelBase<CapControlOperationsModel.ModelRow> implements LoadableModel, CapControlFilterable {
+public class CapControlOperationsModel extends BareReportModelBase<CapControlOperationsModel.ModelRow> implements CapControlFilterable {
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
@@ -63,7 +63,7 @@ public class CapControlOperationsModel extends BareReportModelBase<CapControlOpe
         return data.size();
     }
 
-    public void loadData() {
+    public void doLoadData() {
 
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 

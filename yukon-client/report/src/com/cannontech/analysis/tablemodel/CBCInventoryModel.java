@@ -20,7 +20,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 
-public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.ModelRow> implements LoadableModel, CapControlFilterable {
+public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.ModelRow> implements CapControlFilterable {
 
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
@@ -63,7 +63,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         return data.size();
     }
 
-    public void loadData() {
+    public void doLoadData() {
 
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 

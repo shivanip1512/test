@@ -1,28 +1,20 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
-import com.cannontech.util.ServletUtil;
 
-public class CapControlConfirmationPercentageModel extends BareReportModelBase<CapControlConfirmationPercentageModel.ModelRow> implements LoadableModel, CapControlFilterable  {
+public class CapControlConfirmationPercentageModel extends BareDatedReportModelBase<CapControlConfirmationPercentageModel.ModelRow> implements CapControlFilterable  {
 
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
-    private Date startDate = null;
-    private Date stopDate = null;
-    private TimeZone timeZone = TimeZone.getDefault();
     
     static public class ModelRow {
         public String Region;
@@ -50,7 +42,7 @@ public class CapControlConfirmationPercentageModel extends BareReportModelBase<C
         return ModelRow.class;
     }
 
-    public void loadData() {
+    public void doLoadData() {
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString());
 
@@ -181,38 +173,4 @@ public class CapControlConfirmationPercentageModel extends BareReportModelBase<C
         return "CapControl Confirmation Percentage Report";
     }
     
-    public Date getStartDate()
-    {
-        if (startDate == null)
-        {
-            startDate = ServletUtil.getYesterday(timeZone);
-        }
-        return startDate;
-    }
-
-    public Date getStopDate()
-    {
-        if( stopDate == null)
-        {
-            stopDate = ServletUtil.getTomorrow(timeZone);
-        }
-        return stopDate;        
-    }
-    /**
-     * Set the startDate
-     * @param Date date 
-     */
-    public void setStartDate(Date startDate_)
-    {
-        startDate = startDate_;
-    }
-    /**
-     * Set the stopDate
-     * @param Date date
-     */
-    public void setStopDate(Date stopDate_)
-    {
-        stopDate = stopDate_;
-    }
-
 }

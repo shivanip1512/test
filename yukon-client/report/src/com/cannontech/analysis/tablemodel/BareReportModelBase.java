@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,9 +18,10 @@ import com.cannontech.clientutils.YukonLogManager;
  * is returned by implementing the getColumnData() method. Currently, only the 
  * ColumnDataField class is useful.
  */
-public abstract class BareReportModelBase<T> implements BareReportModel {
+public abstract class BareReportModelBase<T> implements BareReportModel, LoadableModel {
     private List<Field> columnData = null;
     private Logger log = YukonLogManager.getLogger(this.getClass());
+    private Date loadDate = null;
 
     public BareReportModelBase() {
         super();
@@ -74,5 +76,17 @@ public abstract class BareReportModelBase<T> implements BareReportModel {
         }
         return columnData;
     }
+    
+    public final void loadData() {
+        doLoadData();
+        loadDate = new Date();
+    }
 
+    protected void doLoadData() {
+    }
+
+    public Date getLoadDate() {
+        return loadDate;
+    }
+    
 }
