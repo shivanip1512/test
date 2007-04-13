@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.136 $
-* DATE         :  $Date: 2007/04/13 22:04:08 $
+* REVISION     :  $Revision: 1.137 $
+* DATE         :  $Date: 2007/04/13 22:20:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3252,17 +3252,17 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     time_peak = (DSt->Message[5] << 8) | DSt->Message[6];
 
                     if( channel > 1
-                        && !getDevicePointOffsetTypeEqual(_daily_read_info.channel, PulseAccumulatorPointType)
-                        && !getDevicePointOffsetTypeEqual(_daily_read_info.channel, DemandAccumulatorPointType) )
+                        && !getDevicePointOffsetTypeEqual(channel, PulseAccumulatorPointType)
+                        && !getDevicePointOffsetTypeEqual(channel, DemandAccumulatorPointType) )
                     {
                         resultString += "No points defined for channel " + CtiNumStr(channel) + "\n";
                     }
                     else
                     {
-                        insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
+                        insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
                                               reading, consumption_pointname,  _daily_read_info.single_day + 86400);  //  add on 24 hours - end of day
 
-                        insertPointDataReport(DemandAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
+                        insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
                                               peak, demand_pointname,  _daily_read_info.single_day + (time_peak * 60));
                     }
 
