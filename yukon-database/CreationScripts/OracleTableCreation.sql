@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/5/2007 6:16:15 PM                          */
+/* Created on:     4/13/2007 11:34:34 AM                        */
 /*==============================================================*/
 
 
@@ -175,6 +175,10 @@ drop table CCFeederSubAssignment cascade constraints;
 drop table CCMONITORBANKLIST cascade constraints;
 
 drop table CCSUBAREAASSIGNMENT cascade constraints;
+
+drop table CCURTACCTEVENT cascade constraints;
+
+drop table CCURTACCTEVENTPARTICIPANT cascade constraints;
 
 drop table CCurtCENotif cascade constraints;
 
@@ -1026,6 +1030,33 @@ alter table CCSUBAREAASSIGNMENT
    add constraint PK_CCSUBAREAASSIGNMENT primary key (AreaID, SubstationBusID);
 
 /*==============================================================*/
+/* Table: CCURTACCTEVENT                                        */
+/*==============================================================*/
+create table CCURTACCTEVENT  (
+   CCurtAcctEventID     NUMBER                          not null,
+   CCurtProgramID       NUMBER                          not null,
+   Duration             NUMBER                          not null,
+   Reason               VARCHAR2(255)                   not null,
+   StartTime            DATE                            not null,
+   Identifier           NUMBER                          not null
+);
+
+alter table CCURTACCTEVENT
+   add constraint PK_CCURTACCTEVENT primary key (CCurtAcctEventID);
+
+/*==============================================================*/
+/* Table: CCURTACCTEVENTPARTICIPANT                             */
+/*==============================================================*/
+create table CCURTACCTEVENTPARTICIPANT  (
+   CCurtAcctEventParticipantID NUMBER                          not null,
+   CustomerID           NUMBER                          not null,
+   CCurtAcctEventID     NUMBER                          not null
+);
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint PK_CCURTACCTEVENTPARTICIPANT primary key (CCurtAcctEventParticipantID);
+
+/*==============================================================*/
 /* Table: CCurtCENotif                                          */
 /*==============================================================*/
 create table CCurtCENotif  (
@@ -1258,7 +1289,9 @@ create unique index INDX_CCRTGRPCSTNOTIF_GID_CID on CCurtGroupCustomerNotif (
 create table CCurtProgram  (
    CCurtProgramID       NUMBER                          not null,
    CCurtProgramName     VARCHAR2(255)                   not null,
-   CCurtProgramTypeID   NUMBER
+   CCurtProgramTypeID   NUMBER,
+   LastIdentifier       NUMBER                          not null,
+   IdentifierPrefix     VARCHAR2(32)                    not null
 );
 
 alter table CCurtProgram
@@ -2008,8 +2041,8 @@ create table DCItemType  (
    DisplayName          VARCHAR2(40)                    not null,
    ValidationType       VARCHAR2(40),
    Required             CHAR(1)                         not null,
-   MinLength            NUMBER                          not null,
-   MaxLengh             NUMBER                          not null,
+   MinValue             NUMBER                          not null,
+   MaxValue             NUMBER                          not null,
    DefaultValue         VARCHAR2(40),
    Description          VARCHAR2(320)
 );
@@ -7191,6 +7224,7 @@ insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','N
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
 insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
+insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
 
 /* Energy Company Role Properties */
 insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
@@ -7404,6 +7438,7 @@ insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','
 insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Controls access to configure the Multispeak Interfaces.');
+insert into YukonRoleProperty values(-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
 
 /* Operator Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
@@ -8141,6 +8176,18 @@ alter table CCSUBAREAASSIGNMENT
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+
+alter table CCURTACCTEVENT
+   add constraint FK_CCURTACC_CCURTPRO foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint FK_CCURTACCTEVENTID foreign key (CCurtAcctEventID)
+      references CCURTACCTEVENT (CCurtAcctEventID);
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint FK_CCURTACC_CICUSTOM foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
 
 alter table CCurtCENotif
    add constraint FK_CCCURTCE_NOTIF_PART foreign key (CCurtCEParticipantID)

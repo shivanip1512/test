@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/5/2007 6:17:28 PM                          */
+/* Created on:     4/13/2007 11:33:03 AM                        */
 /*==============================================================*/
 
 
@@ -782,6 +782,22 @@ if exists (select 1
            where  id = object_id('CCSUBAREAASSIGNMENT')
             and   type = 'U')
    drop table CCSUBAREAASSIGNMENT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCURTACCTEVENT')
+            and   type = 'U')
+   drop table CCURTACCTEVENT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCURTACCTEVENTPARTICIPANT')
+            and   type = 'U')
+   drop table CCURTACCTEVENTPARTICIPANT
 go
 
 
@@ -3031,6 +3047,41 @@ go
 
 
 /*==============================================================*/
+/* Table: CCURTACCTEVENT                                        */
+/*==============================================================*/
+create table CCURTACCTEVENT (
+   CCurtAcctEventID     numeric              not null,
+   CCurtProgramID       numeric              not null,
+   Duration             numeric              not null,
+   Reason               varchar(255)         not null,
+   StartTime            datetime             not null,
+   Identifier           numeric              not null
+)
+go
+
+
+alter table CCURTACCTEVENT
+   add constraint PK_CCURTACCTEVENT primary key  (CCurtAcctEventID)
+go
+
+
+/*==============================================================*/
+/* Table: CCURTACCTEVENTPARTICIPANT                             */
+/*==============================================================*/
+create table CCURTACCTEVENTPARTICIPANT (
+   CCurtAcctEventParticipantID numeric              not null,
+   CustomerID           numeric              not null,
+   CCurtAcctEventID     numeric              not null
+)
+go
+
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint PK_CCURTACCTEVENTPARTICIPANT primary key  (CCurtAcctEventParticipantID)
+go
+
+
+/*==============================================================*/
 /* Table: CCurtCENotif                                          */
 /*==============================================================*/
 create table CCurtCENotif (
@@ -3325,7 +3376,9 @@ go
 create table CCurtProgram (
    CCurtProgramID       numeric              not null,
    CCurtProgramName     varchar(255)         not null,
-   CCurtProgramTypeID   numeric              null
+   CCurtProgramTypeID   numeric              null,
+   LastIdentifier       numeric              not null,
+   IdentifierPrefix     varchar(32)          not null
 )
 go
 
@@ -4241,8 +4294,8 @@ create table DCItemType (
    DisplayName          varchar(40)          not null,
    ValidationType       varchar(40)          null,
    Required             char(1)              not null,
-   MinLength            numeric              not null,
-   MaxLengh             numeric              not null,
+   MinValue             numeric              not null,
+   MaxValue             numeric              not null,
    DefaultValue         varchar(40)          null,
    Description          varchar(320)         null
 )
@@ -10166,6 +10219,7 @@ insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','N
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
 insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
+insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
 
 /* Energy Company Role Properties */
 insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
@@ -10379,6 +10433,7 @@ insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','
 insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Controls access to configure the Multispeak Interfaces.');
+insert into YukonRoleProperty values(-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
 
 /* Operator Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
@@ -11216,6 +11271,24 @@ go
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+go
+
+
+alter table CCURTACCTEVENT
+   add constraint FK_CCURTACC_CCURTPRO foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID)
+go
+
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint FK_CCURTACCTEVENTID foreign key (CCurtAcctEventID)
+      references CCURTACCTEVENT (CCurtAcctEventID)
+go
+
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint FK_CCURTACC_CICUSTOM foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
 go
 
 

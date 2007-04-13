@@ -878,6 +878,71 @@ insert into YukonUserRole values (-3000, -1, -109, -10920, '(none)');
 go
 /* @error ignore-end */
 
+alter table ccurtprogram add LastIdentifier numeric;
+update ccurtprogram set LastIdentifier = 0;
+alter table ccurtprogram alter column LastIdentifier numeric not null;
+go
+
+alter table ccurtprogram add IdentifierPrefix varchar(32);
+update ccurtprogram set IdentifierPrefix = 'PROG-';
+alter table ccurtprogram alter column IdentifierPrefix varchar(32) not null;
+go
+
+sp_rename 'DCItemType.MinLength', 'MinValue', 'COLUMN';
+sp_rename 'DCItemType.MaxLength', 'MaxValue', 'COLUMN';
+go
+
+insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
+/* @start-block */
+if 1 < (select count(*) from ApplianceCategory)
+begin
+   insert into YukonGroupRole values (-20, -1, -1, -1020, 'true');
+end;
+/* @end-block */
+go
+
+insert into YukonRoleProperty values (-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
+go
+
+create table CCURTACCTEVENT (
+   CCurtAcctEventID     numeric              not null,
+   CCurtProgramID       numeric              not null,
+   Duration             numeric              not null,
+   Reason               varchar(255)         not null,
+   StartTime            datetime             not null,
+   Identifier           numeric              not null
+);
+go
+
+alter table CCURTACCTEVENT
+   add constraint PK_CCURTACCTEVENT primary key  (CCurtAcctEventID);
+go
+
+alter table CCURTACCTEVENT
+   add constraint FK_CCURTACC_CCURTPRO foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+go
+
+create table CCURTACCTEVENTPARTICIPANT (
+   CCurtAcctEventParticipantID numeric              not null,
+   CustomerID           numeric              not null,
+   CCurtAcctEventID     numeric              not null
+);
+go
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint PK_CCURTACCTEVENTPARTICIPANT primary key  (CCurtAcctEventParticipantID);
+go
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint FK_CCURTACCTEVENTID foreign key (CCurtAcctEventID)
+      references CCURTACCTEVENT (CCurtAcctEventID);
+go
+
+alter table CCURTACCTEVENTPARTICIPANT
+   add constraint FK_CCURTACC_CICUSTOM foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
