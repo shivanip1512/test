@@ -4,10 +4,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.message.util.ServerRequestHelper;
+import com.cannontech.message.util.ServerRequest;
 
 public class LoadManagementProxy implements LoadManagementService {
     private LoadControlClientConnection loadControlClientConnection;
+    private ServerRequest serverRequest;
     
     public LoadManagementProxy() {
         super();
@@ -26,7 +27,7 @@ public class LoadManagementProxy implements LoadManagementService {
         msg.setStartTime(startCal);
         msg.setStopTime(stopCal);
         
-        ServerRequestHelper.makeServerRequest(getLoadControlClientConnection(), msg, 5000);
+        serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
     }
 
     private GregorianCalendar convertToCalendar(Date startTime) {
@@ -46,7 +47,7 @@ public class LoadManagementProxy implements LoadManagementService {
         msg.setStartTime(stopCal);
         msg.setStopTime(stopCal);
         
-        ServerRequestHelper.makeServerRequest(getLoadControlClientConnection(), msg, 30000);
+        serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
     }
     
     public void stopProgram(int programId) {
@@ -61,7 +62,7 @@ public class LoadManagementProxy implements LoadManagementService {
         msg.setStartTime(stopCal);
         msg.setStopTime(stopCal);
         
-        ServerRequestHelper.makeServerRequest(getLoadControlClientConnection(), msg, 5000);
+        serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
     }
 
     public LoadControlClientConnection getLoadControlClientConnection() {
@@ -70,6 +71,14 @@ public class LoadManagementProxy implements LoadManagementService {
 
     public void setLoadControlClientConnection(LoadControlClientConnection loadControlClientConnection) {
         this.loadControlClientConnection = loadControlClientConnection;
+    }
+
+    public ServerRequest getServerRequest() {
+        return serverRequest;
+    }
+
+    public void setServerRequest(ServerRequest serverRequest) {
+        this.serverRequest = serverRequest;
     }
 
 }

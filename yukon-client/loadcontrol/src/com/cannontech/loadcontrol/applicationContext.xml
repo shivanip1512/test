@@ -8,6 +8,7 @@
    <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
          singleton="true">
         <property name="loadControlClientConnection" ref="loadControlConnection" />
+        <property name="serverRequest" ref="serverRequest" />
    </bean>
 <!-- 
    <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementStub" 
