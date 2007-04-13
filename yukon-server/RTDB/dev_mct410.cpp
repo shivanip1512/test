@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.133 $
-* DATE         :  $Date: 2007/04/13 21:25:23 $
+* REVISION     :  $Revision: 1.134 $
+* DATE         :  $Date: 2007/04/13 21:48:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,11 @@ CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
 {
     _daily_read_info.in_progress = false;
+    _daily_read_info.failed      = false;
+    _daily_read_info.retry       = false;
+    _daily_read_info.single_day = 0;
+    _daily_read_info.multi_day_start = 0;
+    _daily_read_info.multi_day_end   = 0;
 }
 
 CtiDeviceMCT410::CtiDeviceMCT410( const CtiDeviceMCT410 &aRef )
@@ -1454,13 +1459,18 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 time_end = CtiTime(CtiDate(day, month, year));
             }
 
-            OutMessage->Sequence = Emetcon::GetValue_DailyRead;
+            function = Emetcon::GetValue_DailyRead;
+            found = getOperation(function, OutMessage->Buffer.BSt);
 
-            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
-                returnErrorMessage(NoMethod, OutMessage, retList, "Daily read requires SSPEC rev 2.1 or higher");
+                returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher - execute \"getconfig model\" to verify");
             }
-            if( !time_begin.isValid() || !time_end.isValid() )
+            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+            {
+                returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher, MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0),1);
+            }
+            else if( !time_begin.isValid() || !time_end.isValid() )
             {
                 nRet  = BADPARAM;
 
@@ -1516,13 +1526,10 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 {
                     returnErrorMessage(NoMethod, OutMessage, retList,
                                        getName() + " / Invalid channel for daily read request (" + CtiNumStr(channel) + ")");
-
-                    found = false;
                 }
                 else if( time_begin < (CtiTime::now() - 86400 * 93) ||   //  must be less than 93 days ago
                          time_begin >  CtiTime::now() )                  //  must begin on or before yesterday midnight
                 {
-                    found = false;
                     nRet  = BADPARAM;
 
                     string error_string;
@@ -1536,7 +1543,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 else if( time_end  > 86400 && (time_end <= time_begin ||         //  make sure it ends after it starts
                                                time_end >  CtiTime::now()) )     //  must end on or before yesterday midnight
                 {
-                    found = false;
                     nRet  = BADPARAM;
 
                     string error_string;
@@ -1619,7 +1625,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     {
                         //  single-day read
 
-                        if( _daily_read_info.channel == 1 )
+                        if( channel == 1 )
                         {
                             OutMessage->Buffer.BSt.Function = FuncRead_SingleDayDailyReportCh1Pos;
                             OutMessage->Buffer.BSt.Length   = FuncRead_SingleDayDailyReportCh1Len;
@@ -1628,7 +1634,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                             found = true;
                         }
-                        if( _daily_read_info.channel == 2 )
+                        if( channel == 2 )
                         {
                             OutMessage->Buffer.BSt.Function = FuncRead_SingleDayDailyReportCh2Pos;
                             OutMessage->Buffer.BSt.Length   = FuncRead_SingleDayDailyReportCh2Len;
@@ -1637,7 +1643,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                             found = true;
                         }
-                        if( _daily_read_info.channel == 3 )
+                        if( channel == 3 )
                         {
                             OutMessage->Buffer.BSt.Function = FuncRead_SingleDayDailyReportCh3Pos;
                             OutMessage->Buffer.BSt.Length   = FuncRead_SingleDayDailyReportCh3Len;
@@ -1650,6 +1656,11 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 }
 
                 nRet = NoError;
+            }
+
+            if( !found )
+            {
+                InterlockedExchange(&_daily_read_info.in_progress, false);
             }
         }
     }
@@ -3002,8 +3013,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
         }
         else
         {
-            demand_pointname      = "Channel " + CtiNumStr(channel) + " demand";
-            consumption_pointname = "Channel " + CtiNumStr(channel) + " consumption";
+            demand_pointname      = "Channel " + CtiNumStr(expected_channel) + " demand";
+            consumption_pointname = "Channel " + CtiNumStr(expected_channel) + " consumption";
         }
 
         //  then group them by their decode type
