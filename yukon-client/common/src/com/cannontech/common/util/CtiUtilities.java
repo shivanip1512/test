@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -40,6 +41,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
 
 public final class CtiUtilities 
@@ -1651,6 +1653,11 @@ public static double convertTemperature(double temperature, String fromUnit, Str
     public static String getSystemInfoString() {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
+        out.println("Yukon Version: " + VersionTools.getYUKON_VERSION());
+        try {
+            out.println("Local IP: " + InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+        }
         out.println("getYukonBase(): " + getYukonBase());
         out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
         out.println("USER_COUNTRY: " + SystemUtils.USER_COUNTRY);
@@ -1663,6 +1670,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         out.println("JAVA_LIBRARY_PATH: " + SystemUtils.JAVA_LIBRARY_PATH);
         out.println("JAVA_EXT_DIRS: " + SystemUtils.JAVA_EXT_DIRS);
         out.println("JAVA_ENDORSED_DIRS: " + SystemUtils.JAVA_ENDORSED_DIRS);
+
         return sw.toString();
     }
     
