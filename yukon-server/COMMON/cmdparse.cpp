@@ -687,13 +687,13 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 //
                 //  "daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
 
-                CtiTokenizer cmdtok(temp);
-
                 _cmd["daily_read"] = true;
 
                 if( !(temp = temp.match(re_daterange)).empty() )
                 {
-                    _cmd["daily_read_date_begin"] = cmdtok();
+					CtiTokenizer cmdtok(temp);
+
+					_cmd["daily_read_date_begin"] = cmdtok();
 
                     if( !(temp = cmdtok()).empty() )
                     {
