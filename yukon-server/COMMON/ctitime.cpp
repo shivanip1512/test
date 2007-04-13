@@ -278,7 +278,7 @@ CtiTime& CtiTime::toUTCtime()
 
 bool CtiTime::isValid() const
 {
-    return _seconds != 0;
+    return _seconds >= 0 || is_neg_infinity();
 }
 
 bool CtiTime::is_special() const
@@ -309,7 +309,30 @@ bool CtiTime::isDST() const
 void CtiTime::extract(struct tm* ctm) const
 {
     boost::mutex::scoped_lock scoped_lock(ctime_mutex);
-    *ctm = *localtime(&_seconds);
+
+    struct tm *extracted;
+
+    if( isValid() && (extracted = localtime(&_seconds)) )
+    {
+        *ctm = *extracted;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - attempt to extract invalid CtiTime (seconds = " << _seconds << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        ctm->tm_hour  = 0;
+        ctm->tm_isdst = 0;
+        ctm->tm_mday  = 0;
+        ctm->tm_min   = 0;
+        ctm->tm_mon   = 0;
+        ctm->tm_sec   = 0;
+        ctm->tm_wday  = 0;
+        ctm->tm_yday  = 0;
+        ctm->tm_year  = 0;
+    }
 }
 
 unsigned long CtiTime::toRwSeconds() const
