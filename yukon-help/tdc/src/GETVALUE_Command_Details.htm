@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="04 19, 2005 10:10:37 AM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="GETVALUE Command Details">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=933>
-<meta name=layout-width content=744>
-<meta name=date content="04 19, 2005 10:10:37 AM">
-<meta name=x-ignored-words content="Ack;nn;TDC;Unsilence;MACS;HH;Tcl;MW;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;GETSTATUS;MCT;PFCOUNT;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;getconfig;lp|li;kyz;rolenum;ied;lp;a|b|c|d|t;kwh;getvalue;kwh|kvark|kvah;powerfail;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak">
+<meta name=layout-height content=1428>
+<meta name=layout-width content=696>
+<meta name=x-ignored-words content="Ack;nn;TDC;Unsilence;MACS;HH;Tcl;MW;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;GETSTATUS;MCT;PFCOUNT;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;getconfig;lp|li;kyz;rolenum;ied;lp;a|b|c|d|t;kwh;getvalue;kwh|kvark|kvah;powerfail;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;freezecount">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="GETVALUE Command Details"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -44,31 +46,44 @@
 <h4>GETVALUE Command Details</h4>
 
 <p>This command is used to collect metering type data from the various 
- supported field devices. The command defaults to the most basic metering 
- data for each device type. Most field device types support multiple metering 
+ supported field devices. Most field device types support multiple metering 
  quantities (kWh, current kW, peak kW, kvarh, current kvar, etc.). To allow 
- the collection of the different metering type quantities the GETVALUE 
- command supports additional arguments to specify the other quantities.</p>
+ the collection of the these metering type quantities, the GETVALUE command 
+ supports the following arguments.</p>
 
 <p>&nbsp;</p>
 
-<p style="font-weight: bold;"><span style="font-weight: bold;">getvalue 
- [[ied] kwh|kvarh|kvah [rate (a|b|c|d|t)] [update]]</span></p>
+<p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah)[a|b|c|d|t] 
+ [update]] [frozen] [rate (a|b|c|d|t)] [update]]</p>
 
-<p style="font-weight: bold;">getvalue [[ied] kw|kva|kvar|demand|peak [update]]</p>
-
-<p style="font-weight: bold;">getvalue [lp channel (1|4) <span style="font-style: italic;">date</span> 
+<p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah) [rate (a|b|c|d|t)] 
+ [channel <span style="font-style: italic; font-weight: normal;">channel</span>] 
+ [update]] [frozen]getvalue [lp channel (1|4) <span style="font-style: italic;">date</span> 
  <span style="font-style: italic;">time</span>]</p>
 
-<p style="font-weight: bold;">getvalue [minmax|peak [frozen] [update]]</p>
+<p style="font-weight: bold;">getvalue [[ied] (kw|kva|kvar|demand|peak|voltage) 
+ [offset <span style="font-style: italic; font-weight: normal;">channel</span>] 
+ [update]] [frozen]</p>
 
-<p style="font-weight: bold;">getvalue [powerfail]</p>
+<p style="font-weight: bold;">getvalue [ied dnp (collection [1-2]|status|analog 
+ [1-5]|accumulator [1-4])]</p>
+
+<p style="font-weight: bold;">getvalue [lp channel (1|2|3|4) <span style="font-style: italic; font-weight: normal;">date</span> 
+ <span style="font-weight: normal; font-style: italic;">time</span>] [status] 
+ [cancel] [background]</p>
+
+<p style="font-weight: bold;">getvalue [lp peak (day|hour|interval) channel 
+ (1|2|3|4) mm/dd/yyyy (days)]</p>
+
+<p style="font-weight: bold;">getvalue [minmax|peak [update]] [frozen]</p>
+
+<p style="font-weight: bold;">getvalue [powerfail] [feeezecount]</p>
 
 <p style="font-weight: bold;">getvalue [outage (1|2|3|4|5|6)]</p>
 
 <p style="font-weight: bold;">&nbsp;</p>
 
-<p>The arguments are as follows:</p>
+<p>The meaning of the arguments are as follows:</p>
 
 <p>&nbsp;</p>
 
@@ -76,14 +91,17 @@
 <table x-use-null-cells
 		style="x-cell-content-align: top;
 				width: 100%;
+				border-spacing: 0px;
 				border-spacing: 0px;"
 		cellspacing=0
 		width=100%>
-<col style="width: 22.463%;">
-<col style="width: 77.537%;">
+<col style="width: 22.462%;">
+<col style="width: 77.538%;">
 
-<tr valign=top>
-<td style="background-color: #000080;
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td style="width: 22.462%;
+			background-color: #000080;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -99,9 +117,10 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#000080
-	width=22.463%>
+	width=22.462%>
 <p style="color: #ffffff; font-weight: bold;">Argument </td>
-<td style="background-color: #000080;
+<td style="width: 77.538%;
+			background-color: #000080;
 			border-top-width: 2px;
 			border-top-style: Solid;
 			border-top-color: #ffffff;
@@ -114,13 +133,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#000080
-	width=77.537%>
+	width=77.538%>
 <p style="color: #ffffff; font-weight: bold;">Description </td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -133,11 +154,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
 <p>ied </td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -147,13 +169,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
+	width=77.538%>
 <p>Collects IED Port data from field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -166,11 +190,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
 <p>kwh</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -180,13 +205,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the energy reading from a metering type device.</td></tr>
+	width=77.538%>
+<p>Collects the energy reading from a field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -199,11 +226,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
 <p>kvarh</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -213,13 +241,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the reactive reading from a metering type device.</td></tr>
+	width=77.538%>
+<p>Collects the reactive reading from a field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -232,11 +262,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
 <p>kvah</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -246,13 +277,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the voltage-amp reading from a metering type device.</td></tr>
+	width=77.538%>
+<p>Collects the voltage-amp reading from a field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -265,11 +298,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
 <p>rate (a|b|c|d|t)</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -279,13 +313,16 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Optionally specifies a time-of-use rate.</td></tr>
+	width=77.538%>
+<p>Collects the TOU accumulator and current or frozen peak for the specified 
+ rate.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -298,11 +335,85 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
+<p>channel <span style="font-style: italic;"><!--kadov_tag{{<ignored>}}-->channel<!--kadov_tag{{</ignored>}}--></span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Specifies the pulse input channel from which to collect data. Defaults 
+ to channel 1 if no channel is specified.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>offset <span style="font-style: italic;">channel</span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Specifies the pulse input channel from which to read.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
 <p>update</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -312,13 +423,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
+	width=77.538%>
 <p>Saves the data into the current/last reading table.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -331,276 +444,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
-<p>ied</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects IED Port data from field device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>kw</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the current kW from a metering type device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>kva</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the current kva from a metering type device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>kvar</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the current kvar from a metering type device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>lp channel (1|4) <span style="font-style: italic;">date time</span></td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects specific blocks or data ranges of Load Profile data from an 
- MCT-410.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>demand</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the demand reading from a metering type device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>minmax</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the minimum and maximum values from a field device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
-<p>peak</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the peak reading from a metering type device.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
 <p>frozen</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -610,13 +459,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Optionally specifies frozen data instead of current data.</td></tr>
+	width=77.538%>
+<p>Collects frozen data instead of current data.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -629,11 +480,489 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
+	width=22.462%>
+<p>kw</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the current kW from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>kva</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the current kVa from a field <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>kvar</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the current kVar from a field <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>demand</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the demand reading from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>peak</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the peak reading from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>voltage</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the minimum and maximum voltage readings from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>ied dnp <br>
+(collection [1-2]|<br>
+status|<br>
+analog [1-5]|<br>
+accumulator [1-4])</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Returns DNP data when using a DNP enabled MCT-470. The collection option 
+ reads out of the real time tables and is a combination of status, analog, 
+ and accumulator data.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>lp channel (1|4) <span style="font-style: italic;">date time</span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects specific blocks or data ranges of Load Profile data from a 
+ field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>lp peak (day|hour|interval) channel (1|2|3|4) mm/dd/yyyy (days)</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects a peak usage report of a field device’s load profile data. 
+ The command can return the peak day, hour, or interval. The day|hour|interval 
+ parameter specifies how far back the report should go.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>status</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Returns the status of a load profile read.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>cancel</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Cancels a load profile read.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>background</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Results of the command are not returned to the Yukon Commander application.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>minmax</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects the minimum and maximum values from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
 <p>powerfail</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -643,13 +972,15 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
-<p>Collects the powerfail count from a metering type device.</td></tr>
+	width=77.538%>
+<p>Collects the powerfail count from a field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 22.462%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -662,11 +993,12 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=22.463%>
-<p>outage (1|2|3|4|5|6)</td>
+	width=22.462%>
+<p>freezecount</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 77.538%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -676,7 +1008,43 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
-	width=77.537%>
+	width=77.538%>
+<p>Collects the freeze counter from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>outage (1|2|3|4|5|6)</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
 <p>Collects the specified outage logs. Specifying 1 or 2 collects outage 
  logs 1 and 2. Specifying 3 or 4 collects outage logs 3 and 4. Specifying 
  5 or 6 collects outage logs 5 and 6. </td></tr>
@@ -684,11 +1052,20 @@
 
 <h5 style="font-size: 11pt;">Examples</h5>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue kwh rate a update</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue kwh update</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue frozen</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kwh rate a</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kwh rate c frozen</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue kvarh update</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwh</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwha</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwh rate 
+ b</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue ied demand</p>
 
@@ -696,14 +1073,26 @@
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue kvar demand</p>
 
+<p style="font-weight: bold; margin-left: 12px;">getvalue ied dnp collection 
+ 1</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue ied dnp status</p>
+
 <p style="font-weight: bold; margin-left: 12px;">getvalue lp channel 1 
- 12/15/2004 12:00</p>
+ 12/15/2006 12:00</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue lp channel 1 
+ 12/15/2006 12/20/2006 12:00</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue lp status</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue frozen</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue peak frozen update</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue minmax</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue peak offset 3</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue offset 60</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue minmax</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue powerfail</p>
 

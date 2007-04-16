@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="04 19, 2005 10:22:31 AM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="GETCONFIG Command Details">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=809>
-<meta name=layout-width content=744>
-<meta name=date content="04 19, 2005 10:22:31 AM">
-<meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;TDC;Unsilence;Unmute;Unacked;ACK;SOE;DNP;MACS;HH;MW;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;IED;TOU;IEDSCAN;PLC;ss;ddddd;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval">
+<meta name=layout-height content=1205>
+<meta name=layout-width content=696>
+<meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;TDC;Unsilence;Unmute;Unacked;ACK;SOE;DNP;MACS;HH;MW;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;IED;TOU;IEDSCAN;PLC;ss;ddddd;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;tou;scan|dnp;centron;ratio|parameters">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="GETCONFIG Command Details"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -49,25 +51,24 @@
 <h4>GETCONFIG Command Details</h4>
 
 <p>This command is used to retrieve configuration type data from the various 
- supported field devices. The command defaults to the most basic or common 
- configuration data for each device type. Most field device types support 
- multiple pieces of configuration data. To allow for the retrieval of the 
- different configuration data the GETCONFIG command supports additional 
- arguments to specify the other pieces of data.</p>
+ supported field devices. To allow for the retrieval of the different configuration 
+ data the GETCONFIG command supports the following arguments.</p>
 
 <p>&nbsp;</p>
 
-<p style="font-weight: bold;">getconfig [model] [options] [address (group|uniq)] 
- [role <span style="font-style: italic; font-weight: normal;">rolenum</span>] 
- [time [sync]] [intervals|interval (lp|li)] [multiplier kyz <span style="font-style: italic; font-weight: normal;">offset</span>] 
- <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->[raw [func] 
- start=0x<span style="font-style: italic; font-weight: normal;">hexnum</span> 
- [<span style="font-style: italic; font-weight: normal;">length</span>]] 
- <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->[ied scan]</p>
+<p style="font-weight: bold;">getconfig [model] [options] [disconnect] 
+ [address (group|unique)] [role <span style="font-weight: normal; font-style: italic;">rolenum</span>] 
+ [time[sync]] [internal] [intervals|interval (lp|li)] [channels] [lp channel 
+ <span style="font-weight: normal; font-style: italic;">N</span>] [tou 
+ [schedule <span style="font-weight: normal; font-style: italic;">N</span>] 
+ [holiday] [multiplier kyz <span style="font-weight: normal; font-style: italic;">offset</span>] 
+ [ied (scan|dnp)] [centron (ratio|parameters)] [raw [function] start=0x<span 
+ style="font-weight: normal; font-style: italic;">hexnum</span> [<span 
+ style="font-weight: normal; font-style: italic;">length</span>]]</p>
 
 <p style="font-weight: bold;">&nbsp;</p>
 
-<p>The arguments are as follows:</p>
+<p>The meaning of the arguments are as follows:</p>
 
 <p>&nbsp;</p>
 
@@ -75,14 +76,17 @@
 <table x-use-null-cells
 		style="x-cell-content-align: top;
 				width: 100%;
+				border-spacing: 0px;
 				border-spacing: 0px;"
 		cellspacing=0
 		width=100%>
 <col style="width: 17.537%;">
 <col style="width: 82.463%;">
 
-<tr valign=top>
-<td style="background-color: #000080;
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td style="width: 17.537%;
+			background-color: #000080;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -100,7 +104,8 @@
 	bgcolor=#000080
 	width=17.537%>
 <p style="color: #ffffff; font-weight: bold;">Argument </td>
-<td style="background-color: #000080;
+<td style="width: 82.463%;
+			background-color: #000080;
 			border-top-width: 2px;
 			border-top-style: Solid;
 			border-top-color: #ffffff;
@@ -116,10 +121,12 @@
 	width=82.463%>
 <p style="color: #ffffff; font-weight: bold;">Description </td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -136,7 +143,8 @@
 <p>model</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -149,10 +157,12 @@
 	width=82.463%>
 <p>Returns the model information of the field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -169,7 +179,8 @@
 <p>options</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -182,10 +193,48 @@
 	width=82.463%>
 <p>Returns the set options of the field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			<<<<<<<: GETCONFIG_Command_Details.htm 'border-right-width:' 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>disconnect</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Returns the disconnect configuration of an field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -202,7 +251,8 @@
 <p>address (group|uniq)</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -216,10 +266,12 @@
 <p>Returns either the group or unique addressing information of the field 
  device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -236,7 +288,8 @@
 <p>role <span style="font-style: italic;">rolenum</span></td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -249,10 +302,12 @@
 	width=82.463%>
 <p>Returns the role information of the field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -269,7 +324,8 @@
 <p>time [sync]</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -284,10 +340,48 @@
  used, the command returns information regarding when the field device 
  received its last time synchronization.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>internal</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Returns all internal statuses from the field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -304,7 +398,8 @@
 <p>intervals</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -318,10 +413,12 @@
 <p>Returns the last interval demand/voltage and load/voltage profile settings 
  in a field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -338,7 +435,8 @@
 <p>interval (lp|li)</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -352,10 +450,122 @@
 <p>Returns information regarding supported demand interval programming. 
  (lp = Load Profile, li = Last Demand Interval)</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>lp channel <span style="font-style: italic;">N</span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Returns the current status of load profile on the specified channel.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>tou [schedule <span style="font-style: italic;">N</span>]</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Returns the current Time of Use state in the field device. The parameter 
+ schedule <span style="font-style: italic;">N</span> returns the specified 
+ TOU schedule.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>holiday</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Returns the three TOU holidays in the field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -372,7 +582,8 @@
 <p>multiplier kyz <span style="font-style: italic;">offset</span></td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -385,10 +596,126 @@
 	width=82.463%>
 <p>Returns any internal multiplier information from the field device.</td></tr>
 
-<tr valign=top>
+<tr style="x-cell-content-align: top;"
+	valign=top>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>ied scan</p>
+<p>&nbsp;</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>Returns IED Port configuration data programmed into the field device 
+ (i.e. Alpha scan and class information from an MCT).</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>ied dnp [0-154]</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>The dnp option returns the DNP status bytes and reports the results. 
+ When a point is specified, the command returns the DNP configuration from 
+ the MCT.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=17.537%>
+<p>centron (ratio|parameters)</td>
+<td colspan=1
+	rowspan=1
+	style="width: 82.463%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=82.463%>
+<p>The ratio option returns the CENTRON multiplier ratio from an MCT-410cL 
+ and the parameters option returns the CENTRON display parameters from 
+ an MCT-410cL.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 17.537%;
+			background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -406,7 +733,8 @@
  style="font-style: italic;">length</span>]</td>
 <td colspan=1
 	rowspan=1
-	style="background-color: #c0c0c0;
+	style="width: 82.463%;
+			background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -421,56 +749,31 @@
  the command download raw function information. The start parameter specifies 
  the starting location in hex. This command downloads a maximum length 
  of 13 bytes if a length is not specified.</td></tr>
-
-<tr valign=top>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=17.537%>
-<p>ied scan</td>
-<td colspan=1
-	rowspan=1
-	style="background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=82.463%>
-<p>Returns IED Port configuration data programmed into the field device 
- (i.e. Alpha scan and class information from an MCT-360).</td></tr>
 </table>
 
 <h5 style="font-size: 11pt;">Examples</h5>
 
-<p style="font-weight: bold; margin-left: 12px;">getconfig model</p>
+<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">getconfig 
+ model</span></p>
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig options</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getconfig role 52</p>
+<p style="font-weight: bold; margin-left: 12px;">getconfig disconnect</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig address group</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig address unique</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig role 5</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig multiplier kyz 
- 15</p>
+ 1</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig time</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getconfig time sync</p>
+<p style="font-weight: bold; margin-left: 12px;">getconfig timesync</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig internal</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig intervals</p>
 
@@ -478,12 +781,32 @@
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig interval lp</p>
 
+<p style="font-weight: bold; margin-left: 12px;">getconfig channels</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus lp</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus lp channel 3</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig tou</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig tou schedule 
+ 3</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig holiday</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig ied scan</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getatatus ied dnp</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig ied dnp 20</p>
+
 <p style="font-weight: bold; margin-left: 12px;">getconfig raw start=0x20</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getconfig rawfunc start=0x90</p>
+<p style="font-weight: bold; margin-left: 12px;">getconfig raw func start=0x90</p>
 
-<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">getconfig 
- ied scan</span></p>
+<p style="font-weight: bold; margin-left: 12px;">getconfig centron ratio</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig centron parameters</p>
 
 </body>
 
