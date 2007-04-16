@@ -107,7 +107,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         meterList.toArray(arrayOfMeters);
         CTILogger.info("Returning " + arrayOfMeters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         //TODO = need to get the true number of meters remaining
-        int numRemaining = (arrayOfMeters.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
+        int numRemaining = (arrayOfMeters.length < MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
         MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         return new ArrayOfMeter(arrayOfMeters);
     }
@@ -173,7 +173,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.BILL_GROUP, billingCycle, startDate.getTime(), endDate.getTime(), lastReceived);
         //TODO = need to get the true number of meters remaining
-        int numRemaining = (meterReads.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
+        int numRemaining = (meterReads.length < MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
         MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
 
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
