@@ -130,7 +130,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			else if (message.getMessageType() == MessageType.SUCCESS)
 				return "Blue";
 			else if( message.getMessageType() == MessageType.FRIEND)
-				return "Green";
+				return "Red";
 			else
 				return "Black";
 		}		
