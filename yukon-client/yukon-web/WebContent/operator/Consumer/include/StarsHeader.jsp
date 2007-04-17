@@ -61,15 +61,16 @@
 	}
 	boolean starsExists = false;
     try{
-        VersionTools.starsExists();
+        starsExists = VersionTools.starsExists();
     }catch (Exception e)
     {
     }
-        if (user == null && starsExists) {
+    
+    if (user == null && starsExists) {
 		user = StarsDatabaseCache.getInstance().getStarsYukonUser( lYukonUser );
 		if (user != null) {
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
-			
+		
 			// Get the energy company settings
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			StarsEnergyCompanySettings settings = liteEC.getStarsEnergyCompanySettings( user );
@@ -125,7 +126,6 @@
 	StarsUser userLogin = null;
 	
 	java.util.Vector custGraphs = null;
-
 	if (user != null) {
 		liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
