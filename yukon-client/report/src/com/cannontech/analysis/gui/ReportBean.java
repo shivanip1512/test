@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.util.IntList;
@@ -112,6 +113,9 @@ public class ReportBean
 	 */
 	public void setStart(String startDateString)
 	{
+        if (StringUtils.isBlank(startDateString)) {
+            return;
+        }
 		start = startDateString;
 		startDate = ServletUtil.parseDateStringLiberally(start);
 	}
@@ -138,6 +142,9 @@ public class ReportBean
 	 */
 	public void setStop(String stopDateString)
 	{
+        if (StringUtils.isBlank(stopDateString)) {
+            return;
+        }
 		stop = stopDateString;
 		stopDate = ServletUtil.parseDateStringLiberally(stop);
 		
