@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2007/04/13 20:24:10 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2007/04/17 16:15:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -796,6 +796,15 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
 
         retval = getLoadProfile().getLoadProfileDemandRate();
     }
+    else if( retval == 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - channel " << channel << " LP interval returned zero, returning DB interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        retval = getLoadProfile().getLoadProfileDemandRate();
+    }
 
     return retval;
 }
@@ -815,7 +824,7 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int le
                   resolution    = 0;
     unsigned char error_byte, value_byte;
 
-    const error_set *errors = &_error_info_old_lp;
+    const error_set *errors = &_mct_error_info;
 
     string description;
     __int64 value = 0;
@@ -852,8 +861,6 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int le
     switch( vt )
     {
         case ValueType_PulseDemand:
-        //case ValueType_TOUDemand:
-        //case ValueType_TOUFrozenDemand:
         case ValueType_LoadProfile_PulseDemand:      min_error = 0xffffffa1; break;
 
         case ValueType_LoadProfile_IED_Alpha_A3:
@@ -875,7 +882,13 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int le
         }
     }
 
-    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
+    if( vt == ValueType_LoadProfile_PulseDemand ||
+        vt == ValueType_PulseDemand )
+    {
+        //  this was already set in errors' initializer, but this is for clarity
+        errors = &_mct_error_info;
+    }
+    else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
     {
         switch( vt )
         {
@@ -888,6 +901,10 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int le
             case ValueType_LoadProfile_IED_Sentinel:    errors = &_error_info_sentinel; break;
         }
     }
+    else
+    {
+        errors = &_error_info_old_lp;
+    }
 
     if( error_code >= min_error )
     {
@@ -895,7 +912,7 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int le
 
         error_set::const_iterator es_itr = errors->find(error_info(error_code));
 
-        if( es_itr != _mct_error_info.end() )
+        if( es_itr != errors->end() )
         {
             quality     = es_itr->quality;
             description = es_itr->description;
@@ -2166,18 +2183,18 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
     }
     else if( parse.isKeyValid("ied") )
     {
-        IED_Types iedType = IED_Mask;
+        IED_Types iedType = IED_Type_None;
         string tempVal = parse.getsValue("iedtype");
 
         if( tempVal.length() != 0 )
         {
             found = true;
-            iedType = getIEDTypeFromString(tempVal);
+            iedType = resolveIEDType(tempVal);
 
             char multipleMeters = parse.getiValue("hasmultiplemeters", 0);
             char dstEnabled = parse.getiValue("dstenabled", 1);
 
-            char configuration = (iedType) + (multipleMeters << 2) + dstEnabled;
+            char configuration = (iedType << 4) | (multipleMeters << 2) | dstEnabled;
 
             int event1Mask = parse.getiValue("eventmask1",  0xFF);
             int event2Mask = parse.getiValue("eventmask2",  0xFF);
@@ -2186,7 +2203,8 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
             OutMessage->Buffer.BSt.Message[1] = (event1Mask);
             OutMessage->Buffer.BSt.Message[2] = (event2Mask);
 
-            getOperation(Emetcon::PutConfig_Options, OutMessage->Buffer.BSt);
+            function = Emetcon::PutConfig_Options;
+            getOperation(function, OutMessage->Buffer.BSt);
         }
     }
     else
@@ -5027,53 +5045,6 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
     }
 }
 
-string CtiDeviceMCT470::resolveDNPStatus(int status)
-{
-    string result;
-
-    switch(status)
-    {
-        case 0:     result = "Success";                     break;
-        case 1:     result = "Failed Data Link Header";     break;
-        case 2:     result = "Failed Application Header";   break;
-        case 3:     result = "Failed Object Header";        break;
-        case 4:     result = "Invalid Point Configuration"; break;
-        case 5:     result = "Command Failed";              break;
-        case 6:     result = "Communications Failure";      break;
-        case 7:     result = "Application Message Length Error";    break;
-        case 8:     result = "Data Request Failed";         break;
-        case 9:     result = "Data Storage Failed";         break;
-        default:    result = "Unknown";                     break;
-    }
-
-    return result;
-}
-
-
-string CtiDeviceMCT470::resolveIEDName(int bits) const
-{
-    string name;
-
-    switch( bits & 0x0f )
-    {
-        case IED_Type_Alpha_A3: name += "Alpha A3";             break;
-        case IED_Type_Alpha_PP: name += "Alpha Power Plus";     break;
-        case IED_Type_DNP:      name += "DNP";                  break;
-        case IED_Type_GE_kV:    name += "GE kV";                break;
-        case IED_Type_GE_kV2:   name += "GE kV2";               break;
-        case IED_Type_GE_kV2c:  name += "GE kV2c";              break;
-        case IED_Type_LG_S4:    name += "Landis and Gyr S4";    break;
-        case IED_Type_Sentinel: name += "Sentinel";             break;
-
-        case IED_Type_None:     name += "None";                 break;
-
-        default:                name += "Unknown (" + CtiNumStr(bits).xhex().zpad(2) + ")";   break;
-    }
-
-    return name;
-}
-
-
 void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
@@ -5097,40 +5068,67 @@ void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
-CtiDeviceMCT470::IED_Types CtiDeviceMCT470::getIEDTypeFromString(string &iedType)
+
+string CtiDeviceMCT470::resolveDNPStatus(int status)
 {
-    IED_Types retVal = IED_None;
-    CtiString iedString = (iedType);
+    string result;
+
+    switch(status)
+    {
+        case 0:     result = "Success";                     break;
+        case 1:     result = "Failed Data Link Header";     break;
+        case 2:     result = "Failed Application Header";   break;
+        case 3:     result = "Failed Object Header";        break;
+        case 4:     result = "Invalid Point Configuration"; break;
+        case 5:     result = "Command Failed";              break;
+        case 6:     result = "Communications Failure";      break;
+        case 7:     result = "Application Message Length Error";    break;
+        case 8:     result = "Data Request Failed";         break;
+        case 9:     result = "Data Storage Failed";         break;
+        default:    result = "Unknown";                     break;
+    }
+
+    return result;
+}
+
+
+string CtiDeviceMCT470::resolveIEDName(int bits)
+{
+    string name;
+
+    switch( bits & 0x0f )
+    {
+        case IED_Type_Alpha_A3: name += "Alpha A3";             break;
+        case IED_Type_Alpha_PP: name += "Alpha Power Plus";     break;
+        case IED_Type_DNP:      name += "DNP";                  break;
+        case IED_Type_GE_kV:    name += "GE kV";                break;
+        case IED_Type_GE_kV2:   name += "GE kV2";               break;
+        case IED_Type_GE_kV2c:  name += "GE kV2c";              break;
+        case IED_Type_LG_S4:    name += "Landis and Gyr S4";    break;
+        case IED_Type_Sentinel: name += "Sentinel";             break;
+
+        case IED_Type_None:     name += "None";                 break;
+
+        default:                name += "Unknown (" + CtiNumStr(bits).xhex().zpad(2) + ")";   break;
+    }
+
+    return name;
+}
+
+
+CtiDeviceMCT470::IED_Types CtiDeviceMCT470::resolveIEDType(const string &iedType)
+{
+    IED_Types retVal = IED_Type_None;
+    CtiString iedString = iedType;
     iedString.toLower();
 
-    if( iedString == "s4" )
-    {
-        retVal = IED_LandisGyrS4;
-    }
-    else if( iedString == "alphaa1" )
-    {
-        retVal = IED_AlphaA1;
-    }
-    else if( iedString == "alphapp" )
-    {
-        retVal = IED_AlphaPowerPlus;
-    }
-    else if( iedString == "gekv" )
-    {
-        retVal = IED_GeneralElectricKV;
-    }
-    else if( iedString == "gekv2" )
-    {
-        retVal = IED_GeneralElectricKV2;
-    }
-    else if( iedString == "sentinel" )
-    {
-        retVal = IED_Sentinel;
-    }
-    else
-    {
-        retVal = IED_None;
-    }
+    if(      iedString == "s4" )        retVal = IED_Type_LG_S4;
+    else if( iedString == "alphaa3" )   retVal = IED_Type_Alpha_A3;
+    else if( iedString == "alphapp" )   retVal = IED_Type_Alpha_PP;
+    else if( iedString == "gekv" )      retVal = IED_Type_GE_kV;
+    else if( iedString == "gekv2" )     retVal = IED_Type_GE_kV2;
+    else if( iedString == "gekv2c" )    retVal = IED_Type_GE_kV2c;
+    else if( iedString == "sentinel" )  retVal = IED_Type_Sentinel;
 
     return retVal;
 }
