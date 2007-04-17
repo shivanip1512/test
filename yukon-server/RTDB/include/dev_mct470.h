@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2007/04/13 20:24:11 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2007/04/17 16:12:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,19 +96,6 @@ private:
         PointOffset_DNPCounter_Precanned8 = 547,
     };
 
-    enum IED_Types
-    {
-        IED_None               = 0x00,
-        IED_LandisGyrS4        = 0x10,
-        IED_AlphaA1            = 0x20,
-        IED_AlphaPowerPlus     = 0x30,
-        IED_GeneralElectricKV  = 0x40,
-        IED_GeneralElectricKV2 = 0x50,
-        IED_Sentinel           = 0x60,
-
-        IED_Mask               = 0xF0,
-    };
-
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, unsigned char *buf, unsigned len );
 
@@ -117,11 +104,26 @@ private:
     void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
     int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force, bool verifyOnly);
-    string resolveDNPStatus(int status);
 
     bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
-    string resolveIEDName(int bits) const;
     string describeChannel(unsigned char channel_config) const;
+
+    enum IED_Types
+    {
+        IED_Type_None     = 0x00,
+        IED_Type_LG_S4    = 0x01,
+        IED_Type_Alpha_A3 = 0x02,
+        IED_Type_Alpha_PP = 0x03,
+        IED_Type_GE_kV    = 0x04,
+        IED_Type_GE_kV2   = 0x05,
+        IED_Type_Sentinel = 0x06,
+        IED_Type_DNP      = 0x07,
+        IED_Type_GE_kV2c  = 0x08,
+    };
+
+    static IED_Types resolveIEDType(const string &iedType);
+    static string    resolveIEDName(int bits);
+    static string    resolveDNPStatus(int status);
 
 protected:
 
@@ -415,16 +417,6 @@ protected:
         SspecRev_IED_ZeroWriteMin    = 13,  //  rev 1.3
         SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4
         SspecRev_IED_LPExtendedRange = 26,  //  rev 2.6
-
-        IED_Type_None     = 0x00,
-        IED_Type_LG_S4    = 0x01,
-        IED_Type_Alpha_A3 = 0x02,
-        IED_Type_Alpha_PP = 0x03,
-        IED_Type_GE_kV    = 0x04,
-        IED_Type_GE_kV2   = 0x05,
-        IED_Type_Sentinel = 0x06,
-        IED_Type_DNP      = 0x07,
-        IED_Type_GE_kV2c  = 0x08,
     };
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
@@ -455,7 +447,6 @@ public:
     virtual ULONG calcNextLPScanTime( void );
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
-    IED_Types getIEDTypeFromString(string &iedType);
 };
 
 #endif // #ifndef __DEV_MCT470_H__
