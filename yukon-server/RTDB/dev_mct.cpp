@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2007/04/13 19:29:43 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2007/04/17 16:11:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -894,6 +894,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_TOUEnable:
         case Emetcon::PutConfig_TOUDisable:
         case Emetcon::PutConfig_DailyReadInterest:
+        case Emetcon::PutConfig_Options:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -3560,6 +3561,8 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             case Emetcon::PutConfig_Holiday:                    resultString = getName() + " / Holiday dates sent";     break;
             case Emetcon::PutConfig_TOUEnable:                  resultString = getName() + " / TOU enable sent";        break;
             case Emetcon::PutConfig_TOUDisable:                 resultString = getName() + " / TOU disable sent";       break;
+
+            case Emetcon::PutConfig_Options:                    resultString = getName() + " / options sent";       break;
 
             case Emetcon::PutConfig_Install:
             {
