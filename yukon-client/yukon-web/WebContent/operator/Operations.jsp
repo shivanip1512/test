@@ -92,7 +92,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value='${LAST_ACCOUNT_SEARCH_VALUE}'>
-					<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif" onClick="Javascript:document.custSearchForm.submit();"> 
+					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" onClick="Javascript:document.custSearchForm.submit();"> 
 				</div>
 			</form>
 		</div>
@@ -244,7 +244,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value="${LAST_INVENTORY_SEARCH_VALUE}">
-					<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif" onclick="Javascript:document.invSearchForm.submit();" >
+					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" onclick="Javascript:document.invSearchForm.submit();" >
 				</div>
 			</form>
 		</div>
@@ -301,7 +301,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value="${LAST_SERVICE_SEARCH_VALUE}">
-					<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif" onClick="Javascript:document.soSearchForm.submit();" >
+					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" onClick="Javascript:document.soSearchForm.submit();" >
 				</div>
 			</form>
 		</div>
