@@ -5,7 +5,7 @@
 <tags:operationSection sectionName="Client Launcher" sectionImageName="ClientLauncherLogo">
     <c:forEach items="${jnlpList}" var="jnlp">
         <tags:sectionLink>
-            <a href="/jws/${jnlp.path}">${jnlp.appTitle}</a>
+            <a href="<c:url value="/jws/${jnlp.path}"/>">${jnlp.appTitle}</a>
         </tags:sectionLink>
     </c:forEach>
     <tags:sectionLink>
