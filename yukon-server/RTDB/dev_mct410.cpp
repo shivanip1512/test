@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.137 $
-* DATE         :  $Date: 2007/04/13 22:20:28 $
+* REVISION     :  $Revision: 1.138 $
+* DATE         :  $Date: 2007/04/17 16:14:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3175,7 +3175,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     time_voltage_max = ((DSt->Message[11] & 0xf8) >>  3) | //  5 bits
                                        ((DSt->Message[10] & 0x3f) <<  5);  //  6 bits
 
-					if( voltage_min == 0x7fa )
+                    if( voltage_min == 0x7fa )
                     {
                         pi.value   = 0;
                         pi.quality = InvalidQuality;
@@ -3221,7 +3221,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 month   =  DSt->Message[10] & 0x0f;
                 channel = (DSt->Message[10] & 0x30) >> 4;
 
-                CtiDate d = CtiDate(CtiTime(start_time));
+                CtiTime t = CtiTime(start_time);
+                CtiDate d = CtiDate(t);
                 channel++;  //  change to 1-based
 
                 if( channel != expected_channel )
@@ -3260,10 +3261,10 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     else
                     {
                         insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
-                                              reading, consumption_pointname,  _daily_read_info.single_day + 86400);  //  add on 24 hours - end of day
+                                              reading, consumption_pointname,  start_time + 86400);  //  add on 24 hours - end of day
 
                         insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
-                                              peak, demand_pointname,  _daily_read_info.single_day + (time_peak * 60));
+                                              peak, demand_pointname,  start_time + (time_peak * 60));
                     }
 
                     outage_count = (DSt->Message[7] << 8) | DSt->Message[8];
