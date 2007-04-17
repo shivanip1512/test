@@ -31,6 +31,7 @@ public class BaseAccountingStrategy extends StrategyBase implements AccountingSt
     private AccountingEventDao accountingEventDao;
     private AccountingEventParticipantDao accountingEventParticipantDao;
     
+    @Transactional
     public AccountingBuilder createBuilder(Program program) {
         AccountingBuilder builder = new AccountingBuilder();
         AccountingEvent event = new AccountingEvent();

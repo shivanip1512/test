@@ -53,6 +53,7 @@ public class ProgramDaoImpl extends YukonBaseHibernateDao implements ProgramDao 
         return getHibernateTemplate().find("select p from Program as p where p.programType = ?", programType);
     }
     
+    @Transactional(propagation=Propagation.MANDATORY)
     public Integer incrementAndReturnIdentifier(Program program) {
         getHibernateTemplate().lock(program, LockMode.UPGRADE);
         Integer result = program.getLastIdentifier() + 1;

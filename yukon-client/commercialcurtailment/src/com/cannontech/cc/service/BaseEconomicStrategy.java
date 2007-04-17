@@ -70,6 +70,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private PointDao pointDao;
     private TimeSource timeSource;
     
+    @Transactional
     public EconomicBuilder createBuilder(Program program) {
         EconomicBuilder builder = new EconomicBuilder();
         builder.setProgram(program);

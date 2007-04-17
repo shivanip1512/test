@@ -42,6 +42,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         this.transactionTemplate = transactionTemplate;
     }
 
+    @Transactional
     public CurtailmentBuilder createBuilder(Program program) {
         CurtailmentBuilder builder = new CurtailmentBuilder();
         CurtailmentEvent event = new CurtailmentEvent();

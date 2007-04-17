@@ -2,7 +2,6 @@ package com.cannontech.web.cc;
 
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -10,7 +9,6 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.web.cc.methods.EventCreationBase;
 
 public class EventInitBean {
@@ -33,32 +31,23 @@ public class EventInitBean {
     
     public String initEvent() {
         // determine selected program
-        try {
-            ExternalContext externalContext = 
-                FacesContext.getCurrentInstance().getExternalContext();
-            String programIdStr = 
-                (String) externalContext.getRequestParameterMap().get("programId");
-            int programId = Integer.parseInt(programIdStr);
-            Program selectedProgram = programService.getProgram(programId);
-            CICurtailmentStrategy strategy = strategyFactory.getStrategy(selectedProgram);
-            String methodKey = strategy.getMethodKey();
-            EventCreationBase methodBean = methodBeanLookup.get(methodKey);
-            if (methodBean == null) {
-                throw new Exception("No Bean is configured for method: " + methodKey);
-            }
-            methodBean.setProgram(selectedProgram);
-            methodBean.setStrategy(strategy);
-            methodBean.initialize();
-            String startPageKey = methodBean.getStartPage();
-            return startPageKey;
-        } catch (Exception e) {
-            CTILogger.warn("Could not start the selected program.", e);
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, 
-                                                "Could not start the selected program", 
-                                                e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return null;
+        ExternalContext externalContext = 
+            FacesContext.getCurrentInstance().getExternalContext();
+        String programIdStr = 
+            (String) externalContext.getRequestParameterMap().get("programId");
+        int programId = Integer.parseInt(programIdStr);
+        Program selectedProgram = programService.getProgram(programId);
+        CICurtailmentStrategy strategy = strategyFactory.getStrategy(selectedProgram);
+        String methodKey = strategy.getMethodKey();
+        EventCreationBase methodBean = methodBeanLookup.get(methodKey);
+        if (methodBean == null) {
+            throw new RuntimeException("No Bean is configured for method: " + methodKey);
         }
+        methodBean.setProgram(selectedProgram);
+        methodBean.setStrategy(strategy);
+        methodBean.initialize();
+        String startPageKey = methodBean.getStartPage();
+        return startPageKey;
     }
 
     public ProgramService getProgramService() {
