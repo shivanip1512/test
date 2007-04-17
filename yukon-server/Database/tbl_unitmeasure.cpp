@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_analog.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/04/17 15:25:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,10 +59,10 @@ void CtiTableUnitMeasure::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
 
 void CtiTableUnitMeasure::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   rdr["uomname"]   >> _uomName;
-   rdr["calctype"]  >> _calcType;
-   rdr["longname"]  >> _longName;
-   rdr["formula"]   >> _formula;
+   rdr  >> _uomName;
+   rdr  >> _calcType;
+   rdr  >> _longName;
+   rdr  >> _formula;
 }
 
 void CtiTableUnitMeasure::dump() const

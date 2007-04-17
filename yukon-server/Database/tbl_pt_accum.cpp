@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_accum.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/04/17 15:25:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,8 +46,8 @@ void CtiTablePointAccumulator::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 
 void CtiTablePointAccumulator::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   rdr["multiplier"]       >> _multiplier;
-   rdr["dataoffset"]       >> _dataOffset;
+   rdr       >> _multiplier;
+   rdr       >> _dataOffset;
 }
 
 void CtiTablePointAccumulator::dump() const

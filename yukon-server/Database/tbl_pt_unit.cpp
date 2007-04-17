@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/07/13 21:14:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/04/17 15:25:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,12 +73,12 @@ void CtiTablePointUnit::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    rdr["pointid"]                  >> _pointID;
-    rdr["uomid"]                    >> _unitID;
-    rdr["decimalplaces"]            >> _decimalPlaces;
-    rdr["decimaldigits"]            >> _decimalDigits;
-    rdr["highreasonabilitylimit"]   >> _highReasonablityLimit;
-    rdr["lowreasonabilitylimit"]    >> _lowReasonablityLimit;
+    rdr   >> _pointID;
+    rdr   >> _unitID;
+    rdr   >> _decimalPlaces;
+    rdr   >> _decimalDigits;
+    rdr   >> _highReasonablityLimit;
+    rdr   >> _lowReasonablityLimit;
 
     _unitMeasure.DecodeDatabaseReader(rdr);
 }

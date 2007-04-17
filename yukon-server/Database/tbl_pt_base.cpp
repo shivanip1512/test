@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/04/17 15:25:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,29 +73,29 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
    }
 
    rdr["pointid"]       >> _pointID;
-   rdr["pointname"]     >> _name;
+   rdr                  >> _name;
 
-   rdr["pointtype"]     >> rwsTemp;
+   rdr                  >> rwsTemp;
    _type = (CtiPointType_t) resolvePointType(rwsTemp);
 
-   rdr["paobjectid"]    >> _paObjectID;
-   rdr["logicalgroup"]  >> _logicalGroup;
-   rdr["stategroupid"]  >> _stateGroupID;
-   rdr["pointoffset"]   >> _pointOffset;
+   rdr                  >> _paObjectID;
+   rdr                  >> _logicalGroup;
+   rdr                  >> _stateGroupID;
+   rdr                  >> _pointOffset;
 
-   rdr["serviceflag"]   >> rwsTemp;
+   rdr                  >> rwsTemp;
    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
    
    //ServiceFlag = ((rwsTemp == "y") ? TRUE : FALSE);
    setDisableTag(((rwsTemp == "y") ? TRUE : FALSE));
 
-   rdr["alarminhibit"]  >> rwsTemp;
+   rdr                  >> rwsTemp;
    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
    // AlarmInhibit = ((rwsTemp == "y") ? TRUE : FALSE);
    setAlarmDisableTag(((rwsTemp == "y") ? TRUE : FALSE));
 
 
-   rdr["pseudoflag"]    >> rwsTemp;
+   rdr                  >> rwsTemp;
    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
    // PseudoFlag = ((rwsTemp == "y") ? TRUE : FALSE);
    setPseudoTag(((rwsTemp == "p") ? TRUE : FALSE));
@@ -105,10 +105,10 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
        setPseudoTag(TRUE);
    }
 
-   rdr["archivetype"]   >> rwsTemp;
+   rdr                 >> rwsTemp;
    _archiveType = resolvePointArchiveType(rwsTemp);
 
-   rdr["archiveinterval"] >> _archiveInterval;
+   rdr                 >> _archiveInterval;
 
    setUpdatedFlag();
 }
