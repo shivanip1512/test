@@ -691,9 +691,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
                 if( !(temp = temp.match(re_daterange)).empty() )
                 {
-					CtiTokenizer cmdtok(temp);
+                    CtiTokenizer cmdtok(temp);
 
-					_cmd["daily_read_date_begin"] = cmdtok();
+                    _cmd["daily_read_date_begin"] = cmdtok();
 
                     if( !(temp = cmdtok()).empty() )
                     {
@@ -2000,14 +2000,14 @@ DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) con
 
 string CtiCommandParser::getsValue(const string key) const
 {
-    CtiParseValue& pv = CtiParseValue();
+    CtiParseValue &pv = CtiParseValue();
     map_itr_type itr;
     itr = _cmd.find(key.c_str() );
     if(itr != _cmd.end())
     {
         pv = (*itr).second;
     }
-    return pv.getString().c_str();
+    return pv.getString();
 }
 
 void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
@@ -2314,11 +2314,11 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 //  move past "start" to the hex digit
                 temp2 = cmdtok(" =");
 
-                _cmd["rawloc"] = CtiParseValue( strtol(temp2.c_str(), &p, 16) );
+                _cmd["rawloc"] = CtiParseValue(strtol(temp2.c_str(), &p, 16));
 
                 while( !(temp2 = cmdtok(" =")).empty() )
                 {
-                    rawData.appendLong( strtol(temp2.c_str(), &p, 16) );
+                    rawData.append(1, (char)strtol(temp2.c_str(), &p, 16));
                 }
 
                 _cmd["rawdata"] = CtiParseValue( rawData );
