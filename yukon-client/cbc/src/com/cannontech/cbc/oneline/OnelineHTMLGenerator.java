@@ -20,7 +20,7 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
     private String[] files = {
             "AnchorPosition.js",
             "PopupWindow.js", 
-            "prototype.js",  "cc.js", "cccommands.js", "cconelinepopup.js" };
+            "prototype.js",  "scriptaculous/scriptaculous.js", "cc.js", "cccommands.js", "cconelinepopup.js"  };
 
     public OnelineHTMLGenerator() {
         super();
@@ -43,6 +43,8 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             //"Any:-1,Open:0,Close:1"
             String manualCapStates = CBCUtils.getAllManualCapStates();
             w.write("<INPUT TYPE=\"hidden\" ID=\"capmanualstates\" value=\"" + manualCapStates + "\"></INPUT>");
+            w.write("<DIV ID=\"cmdMessageDiv\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>");
+
         } catch (IOException e) {
             CTILogger.error(e);
         }

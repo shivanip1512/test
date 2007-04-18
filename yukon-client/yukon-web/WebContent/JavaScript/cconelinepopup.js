@@ -102,7 +102,7 @@ str+='							<td align="center" colspan="3" > <u>';
 str+= paoName;
 str+= '<\/u> <\/td>';
 str+='							<td align="right" valign="top" id = "popupplaceholder">';
-str+='								<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
+str+='								<a   href="javascript:void(0)" style="color=white" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
 str+='							<\/td>';
 str+='						<\/tr>';
 for (var key in REF_LABELS)
@@ -110,10 +110,10 @@ for (var key in REF_LABELS)
 	label = REF_LABELS[key];
 	data  = testData[key];
 	str+='<tr >';
-	str+='			<td align="left" style="color:gray">';
+	str+='			<td align="left" style="color:white">';
 	str+='				' + label;
 	str+='			<\/td>';
-	str+='			<td align="right" style="color:gray"> ' + data +' <\/td>';
+	str+='			<td align="right" style="color:white"> ' + data +' <\/td>';
 	str+='		<\/tr>';
 
 }

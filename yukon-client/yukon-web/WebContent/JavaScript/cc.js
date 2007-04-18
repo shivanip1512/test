@@ -94,24 +94,58 @@ function isQueued (str, queue) {
 } 
 
 function executeReasonUpdate(paoID, tagDesc, reason) {
-	new Ajax.Request("/capcontrol/oneline/CBCReasonUpdaterServlet", {method:"post", parameters:"id=" + paoID + "&tagDesc=" + tagDesc + "&reason=" + reason, asynchronous:true});
+	new Ajax.Request("/capcontrol/oneline/CBCReasonUpdaterServlet", 
+		{
+			method:"post", 
+			parameters:"id=" + paoID + "&tagDesc=" + tagDesc + "&reason=" + reason, 
+			asynchronous:true,
+			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
+			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
+			});
 }
 function executeSubCommand(paoId, command, cmd_name) {
-	new Ajax.Request("/servlet/CBCServlet", {method:"post", parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=SUB_TYPE", asynchronous:true});
+	new Ajax.Request("/servlet/CBCServlet", 
+		{
+			method:"post", 
+			parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=SUB_TYPE", 
+			asynchronous:true,
+			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
+			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
+		});
 }
 function executeFeederCommand(paoId, command, cmd_name) {
-	new Ajax.Request("/servlet/CBCServlet", {method:"post", parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=FEEDER_TYPE", asynchronous:true});
+	new Ajax.Request("/servlet/CBCServlet", 
+		{
+			method:"post", 
+			parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=FEEDER_TYPE", 
+			asynchronous:true,
+			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
+			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
+			});
 }
 function executeCapBankCommand(paoId, command, cmd_name, is_manual_state) {
 	var RESET_OP_CNT = 12;
 	if (is_manual_state) {
-		new Ajax.Request("/servlet/CBCServlet", {method:"post", parameters:"opt=" + command + "&cmdID=" + 30 + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE", asynchronous:true});
+		new Ajax.Request("/servlet/CBCServlet", 
+		{
+			method:"post", 
+			parameters:"opt=" + command + "&cmdID=" + 30 + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE", asynchronous:true,
+			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
+			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
+		});
 	} else {
 		//special case for reset_op_counts command
 		if (command == RESET_OP_CNT) {
 			handleOpcountRequest(command, paoId, "", cmd_name);
 		} else {
-			new Ajax.Request("/servlet/CBCServlet", {method:"post", parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE", asynchronous:true});
+			new Ajax.Request("/servlet/CBCServlet", 
+			{
+			method:"post", 
+			parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE", 
+			asynchronous:true,
+			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
+			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
+			});
 		}
 	}
 }
@@ -124,7 +158,13 @@ function handleOpcountRequest(command, paoId, cmd_name, newOpcntVal) {
 	} else {
 		opcount = parseInt(newOpcntVal);
 	}
-	new Ajax.Request("/servlet/CBCServlet", {method:"post", parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE&opt=" + opcount, asynchronous:true});
+	new Ajax.Request("/servlet/CBCServlet", 
+		{	method:"post", 
+			parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE&opt=" + opcount, 
+			asynchronous:true,
+			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
+			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
+			});
 }
 function updateDrawing() {
 	id = getSubId();
@@ -490,3 +530,32 @@ function findValueByKey(key, map){
 	}
 	return null;
 }
+
+function display_status(cmd_name, msg, color) {
+	var msg_div = document.getElementById('cmdMessageDiv');
+	//var titledCont = new CTITitledContainer (cmd_name);
+	msg_div.innerHTML =  '<font color="white">' + msg + '</font>';
+	msg_div.style.visibility = "visible";	
+	msg_div.style.width = "100";	
+	msg_div.style.height = "40";	
+	msg_div.style.top= 20;
+	msg_div.style.left = 1050;
+	msg_div.style.backgroundColor = color;
+	var timeout = 0;
+	if (color == "red") {
+		Effect.Pulsate('cmdMessageDiv', {duration: 8});
+		timeout = 8000;
+		}
+	 else {
+	 	Effect.Appear('cmdMessageDiv');
+		timeout = 2000;
+		}
+		setTimeout ('hideMsgDiv()', timeout);	
+}
+
+function hideMsgDiv() {
+	Effect.Fade('cmdMessageDiv');
+}
+
+
+

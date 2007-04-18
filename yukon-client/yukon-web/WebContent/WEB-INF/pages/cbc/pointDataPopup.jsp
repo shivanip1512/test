@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 
-<table id="headerTable" style="text-align:left; color:green; font-weight: bold">
+<table id="headerTable" style="text-align:left; color:#9FBBAC; font-weight: bold">
 	<tr>
 		<td >
 			Name
