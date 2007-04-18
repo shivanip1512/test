@@ -16,7 +16,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.support.CustomerPointTypeHelper;
 
-public class CurtailmentEventSummaryModel extends BareDatedReportModelBase<CurtailmentEventSummaryModel.ModelRow> implements CommonModelAttributes {
+public class CurtailmentEventSummaryModel extends BareDatedReportModelBase<CurtailmentEventSummaryModel.ModelRow> implements EnergyCompanyModelAttributes {
     private int energyCompanyId;
     
     private CustomerStubDao customerStubDao = (CustomerStubDao) YukonSpringHook.getBean("customerStubDao");

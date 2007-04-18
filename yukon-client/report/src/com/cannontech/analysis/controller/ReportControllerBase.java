@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.CommonModelAttributes;
+import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
 import com.cannontech.analysis.tablemodel.DatedModelAttributes;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.core.dao.DaoFactory;
@@ -41,8 +41,8 @@ public abstract class ReportControllerBase implements ReportController {
     }
     
     public void setRequestParameters(HttpServletRequest req) {
-        if (model instanceof CommonModelAttributes) {
-            CommonModelAttributes commonModel = (CommonModelAttributes)model;
+        if (model instanceof EnergyCompanyModelAttributes) {
+            EnergyCompanyModelAttributes commonModel = (EnergyCompanyModelAttributes)model;
 
             String param = req.getParameter("ecID");
             if ( param != null) {
