@@ -278,7 +278,7 @@ CtiTime& CtiTime::toUTCtime()
 
 bool CtiTime::isValid() const
 {
-    return _seconds >= 0 || is_neg_infinity();
+    return _seconds > 0 || is_neg_infinity();
 }
 
 bool CtiTime::is_special() const
