@@ -790,8 +790,11 @@ public class CapControlForm extends DBEditorForm{
 			setPaoDescLabel("Street Location");
 			getVisibleTabs().put("CBCCapBank", Boolean.TRUE);
             LiteYukonUser user = JSFUtil.getYukonUser();
-            boolean showCapBankAddInfo = CBCUtils.isCBAdditionalInfoAllowed(user);
-            getVisibleTabs().put ("CBAddInfo", Boolean.TRUE && showCapBankAddInfo);
+            if (user != null)
+            {
+                boolean showCapBankAddInfo = CBCUtils.isCBAdditionalInfoAllowed(user);
+                getVisibleTabs().put ("CBAddInfo", Boolean.TRUE && showCapBankAddInfo);
+            }
 			break;
 
 		case PAOGroups.CAPBANKCONTROLLER:
