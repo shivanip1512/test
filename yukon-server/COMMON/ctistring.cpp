@@ -34,7 +34,7 @@ string CtiString::match(const boost::regex& re, size_t start) const{
         return string(what[0]);
     } else {
         return string("");
-    }               
+    }
 }
 
 
@@ -71,7 +71,7 @@ string& CtiString::replace(boost::regex& re, string str, scopeType scope){
             s[i] = '\0';
         }
     }
-    
+
 
     if(scope == CtiString::one){
         s1 = boost::regex_replace(s1, re, s, boost::match_default | boost::format_all | boost::format_first_only);
@@ -116,14 +116,6 @@ void CtiString::toUpper(){
     std::transform(begin(), end(), begin(), ::toupper);
 }
 
-void CtiString::appendLong(long num){
-     char ptr[1];
-     ptr[0] = (char)num;
-     ptr[1] = '\0';
-     string t(ptr);
-     string::append(t);
-
-}
 
 size_t CtiString::index(boost::regex& re, size_t* ext, size_t i) {
     boost::cmatch what;
@@ -135,8 +127,8 @@ size_t CtiString::index(boost::regex& re, size_t* ext, size_t i) {
     } else {
         *ext = 0;
         return string::npos;
-    }               
-    
+    }
+
 }
 
 size_t CtiString::index(char* e, size_t* ext, size_t i) {

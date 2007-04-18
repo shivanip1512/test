@@ -1,15 +1,15 @@
 /*
  * class CtiString
- *  
- * Author: Jian Liu 
- * Date: 07/23/2005 15:20:00 
- * 
- * 
+ *
+ * Author: Jian Liu
+ * Date: 07/23/2005 15:20:00
+ *
+ *
  * This class initailly is to replace the string in cmdparse.cpp. It is not part of the DLL interface.
  *
  * The class use C++ standard string class and boost regular expression library.
  *
- * Its interface and methods are the same as sTring. 
+ * Its interface and methods are the same as sTring.
  *
  * Please refer to string document to see its functionalities.
  */
@@ -23,7 +23,7 @@
 #include <string.h>
 #include <boost/regex.hpp>
 using std::string;
-                               
+
 class IM_EX_CTIBASE CtiString : public string
 {
 
@@ -45,8 +45,8 @@ public:
     CtiString(): string(){};
     CtiString(const string& s): string(s){};
     CtiString(const char* s): string(s){};
-    
-    
+
+
     int compareTo(const string& s) const;
     int compareTo(const char* str) const;
     bool contains(const char* str, caseCompare cc=CtiString::exact) const;
@@ -60,7 +60,6 @@ public:
     string strip(stripType scope=CtiString::both, char c = ' ');
     void toLower();
     void toUpper();
-    void appendLong(long num);
 
     CtiString& operator= ( const CtiString& rs);
     CtiString& operator= ( const string& s);
