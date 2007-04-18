@@ -94,3 +94,17 @@ alter table ccfeederbanklist modify tripOrder number not null;
 /****************** END ORACLE **************************/
 
 
+
+
+/***************** FDR TABLE Update ***********************/
+/*  Need to change the coumn to take 200 characters from now on */
+
+alter table 
+	FDRTRANSLATION
+modify
+(
+	TRANSLATION varchar(200)
+);
+
+
+/***************** END FDR TABLE Update *******************/
