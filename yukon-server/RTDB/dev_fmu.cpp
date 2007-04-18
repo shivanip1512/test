@@ -8,11 +8,15 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/02/12 19:19:16 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/04/18 20:04:12 $
 *
 * HISTORY      :
 * $Log: dev_fmu.cpp,v $
+* Revision 1.4  2007/04/18 20:04:12  mfisher
+* YUK-3192
+* Changed CtiString::appendLong() to CtiString::append() so that you can append nulls to the raw config string
+*
 * Revision 1.3  2007/02/12 19:19:16  jotteson
 * Communications with the FMU are now working.
 *
@@ -151,7 +155,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             break;
         }
         case GetConfigRequest:
-        {   
+        {
             if(parse.isKeyValid("time") )
             {
                 OutMessage->DeviceID = getID();
@@ -220,7 +224,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                         OutMessage->Request.UserID,
                                                         OutMessage->Request.SOE,
                                                         CtiMultiMsg_vec()));
-             
+
                 if(OutMessage)                // And get rid of our memory....
                 {
                     delete OutMessage;
@@ -619,7 +623,7 @@ int CtiDeviceFMU::generate(CtiXfer &xfer)
             setupHeader(xfer, AckResponse, length, SequenceFlagEnd | SequenceFlagStart);
             xfer.getOutBuffer()[length++] = 1;    //Data length
             xfer.getOutBuffer()[length++] = data; //Data Complete
-        
+
             USHORT crc1 = crc16( xfer.getOutBuffer()+1, length-1 );
             xfer.getOutBuffer()[length++] = crc1;
             xfer.getOutBuffer()[length++] = crc1 >> 8;
@@ -706,7 +710,7 @@ int CtiDeviceFMU::decode(CtiXfer &xfer,  int status)
                     {
                         CtiTime now;
                         ULONG time = ((ULONG) _inbound[8]  << 24) |
-                                     ((ULONG) _inbound[9]  << 16) | 
+                                     ((ULONG) _inbound[9]  << 16) |
                                      ((ULONG) _inbound[10] << 8)  |
                                      ((ULONG) _inbound[11]);
                         time += DawnOfTime;
@@ -768,7 +772,7 @@ int CtiDeviceFMU::decode(CtiXfer &xfer,  int status)
                     dout << CtiTime() << " **** Checkpoint - Bad CRC Received on Device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     //_state = State_Send_Nak;
                 }
-                
+
                 break;
             }
 
@@ -924,7 +928,7 @@ void CtiDeviceFMU::setupExternalDevCommand(CtiXfer &xfer)
 
         while( !(temp = cmdtok(" =")).empty() )
         {
-            rawData.appendLong( strtol(temp.c_str(), &p, 16) );
+            rawData.append(1, (char)strtol(temp.c_str(), &p, 16));
         }
     }
 
@@ -978,7 +982,7 @@ void CtiDeviceFMU::setupLoComCommand(CtiXfer &xfer)
 
     xfer.setOutCount(length);
 }
-    
+
 void CtiDeviceFMU::setupReadMore(CtiXfer &xfer)
 {
     xfer.setOutCount(0);
@@ -1049,7 +1053,7 @@ void CtiDeviceFMU::decodeDataRead()
         {
             _codes_received ++;
             time = ((ULONG) _inbound[readLoc++] << 24) |
-                   ((ULONG) _inbound[readLoc++] << 16) | 
+                   ((ULONG) _inbound[readLoc++] << 16) |
                    ((ULONG) _inbound[readLoc++] << 8)  |
                    ((ULONG) _inbound[readLoc++]);
             time += DawnOfTime;
