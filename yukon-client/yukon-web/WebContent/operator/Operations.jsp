@@ -11,7 +11,7 @@
 <cti:standardPage title="Energy Services Operations Center" module="operations">
 <cti:standardMenu/>
 
-<script language="JavaScript">
+<script type="text/javascript">
 	function confirmDelete() {
 		if (confirm("Are you sure you want to delete the energy company and all customer account information belongs to it?")
 			&& confirm("Are you really sure you want to delete the energy company?"))
@@ -49,7 +49,7 @@
 
 	<tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
 		<tags:sectionLink>
-        	<a href="Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&Wizard=true</cti:checkProperty>">New Account</a>
+        	<a href="Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&amp;Wizard=true</cti:checkProperty>">New Account</a>
         </tags:sectionLink>
 
 		<c:set var="importID" scope="page">
@@ -92,7 +92,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value='${LAST_ACCOUNT_SEARCH_VALUE}'>
-					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" onClick="Javascript:document.custSearchForm.submit();"> 
+					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
 				</div>
 			</form>
 		</div>
@@ -244,7 +244,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value="${LAST_INVENTORY_SEARCH_VALUE}">
-					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" onclick="Javascript:document.invSearchForm.submit();" >
+					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
 				</div>
 			</form>
 		</div>
@@ -301,7 +301,7 @@
 					</select>
 		
 					<input type="text" name="SearchValue" size="15" value="${LAST_SERVICE_SEARCH_VALUE}">
-					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" onClick="Javascript:document.soSearchForm.submit();" >
+					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.soSearchForm.submit();" >
 				</div>
 			</form>
 		</div>
