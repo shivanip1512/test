@@ -1,10 +1,15 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.point.Point;
 
 /**
@@ -72,14 +77,21 @@ public void delete() throws java.sql.SQLException
 
 	//Delete from all dynamic Feeder cap control tables here
 	delete("DynamicCCFeeder", "FeederID", getCapControlPAOID() );
-
-    delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
+    deleteAllPoints();
+    //delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
 
 	getCapControlFeeder().delete();
 
 	super.delete();
 }
-
+private void deleteAllPoints() throws SQLException {
+    List<LitePoint> litePointsByPaObjectId = DaoFactory.getPointDao().getLitePointsByPaObjectId(getCapControlPAOID());
+    for (LitePoint point : litePointsByPaObjectId) {
+        PointBase pointPers = (PointBase) LiteFactory.convertLiteToDBPers(point);
+        pointPers.setDbConnection(getDbConnection());
+        pointPers.delete();
+    }
+}
 /**
  * Strategy object used for control
  * 
