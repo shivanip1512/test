@@ -188,7 +188,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				int routeID = liteHw.getRouteID();
 				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 				
-				ServerUtils.sendSerialCommand( cmd.toString(), routeID );
+				ServerUtils.sendSerialCommand( cmd.toString(), routeID, user.getYukonUser() );
 				
 				// Add to the thermostat manual events
 				com.cannontech.database.data.stars.event.LMThermostatManualEvent event =

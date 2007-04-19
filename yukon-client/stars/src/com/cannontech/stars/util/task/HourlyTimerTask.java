@@ -5,7 +5,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -14,6 +17,7 @@ import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
+import com.cannontech.user.UserUtils;
 
 /**
  * @author yao
@@ -78,7 +82,13 @@ public class HourlyTimerTask extends StarsTimerTask {
 				
 				LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation( dueEvents[j].getAccountID(), true );
 				if (liteAcctInfo == null) continue;
-				
+				/*
+                 * With permissions now necessary to send commands, we'll use the admin user
+                 * for automated STARS sends.
+				 */
+                YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+                LiteYukonUser user = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
+                
 				try {
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
 						ArrayList hardwares = new ArrayList();
@@ -94,7 +104,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 							String cmd = ProgramReenableAction.getReenableCommand( liteHw, company );
 							int routeID = liteHw.getRouteID();
 							if (routeID == 0) routeID = company.getDefaultRouteID();
-							ServerUtils.sendSerialCommand( cmd, routeID );
+							ServerUtils.sendSerialCommand( cmd, routeID, user );
 						}
 						
 						ProgramReenableAction.handleReenableEvent( dueEvents[j], company );
@@ -112,7 +122,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 							String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
 							int routeID = liteHw.getRouteID();
 							if (routeID == 0) routeID = company.getDefaultRouteID();
-							ServerUtils.sendSerialCommand( cmd, routeID );
+							ServerUtils.sendSerialCommand( cmd, routeID, user );
 						}
 						
 						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company );

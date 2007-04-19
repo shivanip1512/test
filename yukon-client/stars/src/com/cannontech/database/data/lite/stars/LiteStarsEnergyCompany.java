@@ -330,7 +330,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 for(Integer paoID : permittedIDs) {
                     sql += paoID.toString() + ", ";
                 }
-                sql = sql.substring(0, sql.length() - 1);
+                sql = sql.substring(0, sql.lastIndexOf(','));
                 sql += ") ORDER BY CHILDORDER";
             }
             

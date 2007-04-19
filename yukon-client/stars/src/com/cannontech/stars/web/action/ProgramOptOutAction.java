@@ -238,7 +238,7 @@ public class ProgramOptOutAction implements ActionBase {
 						String cmd = getOptOutCommand( hw[j], energyCompany, offHours );
 						int routeID = hw[j].getRouteID();
 						if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-						ServerUtils.sendSerialCommand( cmd, routeID );
+						ServerUtils.sendSerialCommand( cmd, routeID, user.getYukonUser() );
 					}
 					
 					resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent." );
@@ -255,7 +255,7 @@ public class ProgramOptOutAction implements ActionBase {
 					String cmd = getOptOutCommand( liteHw, energyCompany, optOut.getPeriod() );
 					int routeID = liteHw.getRouteID();
 					if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-					ServerUtils.sendSerialCommand( cmd, routeID );
+					ServerUtils.sendSerialCommand( cmd, routeID, user.getYukonUser() );
 					
 					StarsLMHardwareHistory hwHist = processOptOut( optOut, liteHw, liteAcctInfo, energyCompany );
 					resp.addStarsLMHardwareHistory( hwHist );

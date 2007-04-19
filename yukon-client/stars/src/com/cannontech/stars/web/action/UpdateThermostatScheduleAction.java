@@ -338,7 +338,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 				
 				for (int j = 0; j < cmdList.size(); j++)
-					ServerUtils.sendSerialCommand( (String)cmdList.get(j), routeID );
+					ServerUtils.sendSerialCommand( (String)cmdList.get(j), routeID, user.getYukonUser() );
 				
 				// Add "programming" to the hardware events
 				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();

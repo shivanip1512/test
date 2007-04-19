@@ -20,10 +20,12 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -54,6 +56,7 @@ import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.UserUtils;
 
 /**
  * <p>Title: </p>
@@ -269,6 +272,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
 		java.util.Date now = new java.util.Date();
 		
+        YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
+        
 		String cmd = null;
 		String map1Cmdlorm = null;
 		String map1Cmdhorm = null;
@@ -321,11 +327,11 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		if(is305)
 		{
-			ServerUtils.sendSerialCommand( map1Cmdlorm, rtID );
-			ServerUtils.sendSerialCommand( map1Cmdhorm, rtID );
+			ServerUtils.sendSerialCommand( map1Cmdlorm, rtID, user );
+			ServerUtils.sendSerialCommand( map1Cmdhorm, rtID, user );
 		}
 		
-		ServerUtils.sendSerialCommand( cmd, rtID );
+		ServerUtils.sendSerialCommand( cmd, rtID, user );
 		
 		// Add "Termination" to hardware events
 		try {
@@ -357,6 +363,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
+        YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
+        
 		String cmd = null;
 		String map1Cmdlorm = null;
 		String map1Cmdhorm = null;
@@ -404,11 +413,11 @@ public class YukonSwitchCommandAction implements ActionBase {
 		if (rtID == 0)
 			rtID = energyCompany.getDefaultRouteID();
 		
-		ServerUtils.sendSerialCommand( cmd, rtID );
+		ServerUtils.sendSerialCommand( cmd, rtID, user );
 		if(is305)
 		{
-			ServerUtils.sendSerialCommand( map1Cmdlorm, rtID );
-			ServerUtils.sendSerialCommand( map1Cmdhorm, rtID );
+			ServerUtils.sendSerialCommand( map1Cmdlorm, rtID, user );
+			ServerUtils.sendSerialCommand( map1Cmdhorm, rtID, user );
 		}
 		
 		// Add "Activation Completed" to hardware events
@@ -445,6 +454,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
+        YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
+        
 		Integer invID = new Integer( liteHw.getInventoryID() );
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
@@ -496,9 +508,16 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			TimerTask sendCfgTask = new TimerTask() {
 				public void run() {
-					try {
+                    /*
+                     * With permissions now necessary to send commands, we'll use the admin user
+                     * for automated STARS sends.
+                     */
+                    YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+                    LiteYukonUser user = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
+                    
+                    try {
 						for (int i = 0; i < cfgCmds.length; i++)
-							ServerUtils.sendSerialCommand( cfgCmds[i], routeID2 );
+							ServerUtils.sendSerialCommand( cfgCmds[i], routeID2, user );
 					}
 					catch (WebClientException e) {}
 					CTILogger.info( "*** Config command sent ***" );
@@ -511,7 +530,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		else {
 			// Only send the config command
 			for (int i = 0; i < cfgCmds.length; i++)
-				ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
+				ServerUtils.sendSerialCommand( cfgCmds[i], routeID, user );
 		}
 		
 		// Add "Config" to hardware events

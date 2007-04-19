@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yc.gui.YC;
 import com.cannontech.yc.gui.YCDefaults;
@@ -64,7 +65,7 @@ public class ServerUtils {
 		return yc;
 	}
 	
-	public static void sendSerialCommand(String command, int routeID) throws WebClientException
+	public static void sendSerialCommand(String command, int routeID, LiteYukonUser user) throws WebClientException
 	{
 		if (routeID == 0)
 			throw new WebClientException("The route to send the switch command is not specified.");
@@ -77,7 +78,9 @@ public class ServerUtils {
 		    try {
     			yc.setYCDefaults( ycDefaults );
     			yc.setRouteID( routeID );
-                    yc.setCommandString( command );
+                /*We now need to pass in a user for the permission checks to work properly*/
+                yc.setLiteUser(user);
+                yc.setCommandString( command );
     			yc.handleSerialNumber();
 			} catch (PaoAuthorizationException e) {
 			    throw new WebClientException("You do not have permission to execute command: " + e.getPermission());

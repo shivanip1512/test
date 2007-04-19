@@ -156,7 +156,7 @@ public class ProgramReenableAction implements ActionBase {
 					String cmd = getReenableCommand( liteHw, energyCompany );
 					int routeID = liteHw.getRouteID();
 					if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-					ServerUtils.sendSerialCommand( cmd, routeID );
+					ServerUtils.sendSerialCommand( cmd, routeID, user.getYukonUser() );
 					
 					StarsLMHardwareHistory hwHist = processReenable( liteHw, liteAcctInfo, energyCompany );
 					resp.addStarsLMHardwareHistory( hwHist );
