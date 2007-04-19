@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/12/11 21:47:51 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/04/19 15:41:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -505,7 +505,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = 0;
+    CtiMultiMsg *pMulti = new CtiMultiMsg;
     CtiSignalMsg *pSig = 0;
     SigMgrMap_t::const_iterator itr;
 
@@ -522,10 +522,6 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
                 pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
                 pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
-                if(!pMulti)
-                {
-                    pMulti = new CtiMultiMsg;
-                }
                 if(pMulti)
                 {
                     pMulti->insert(pSig);
@@ -697,7 +693,7 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = 0;
+    CtiMultiMsg *pMulti = new CtiMultiMsg;
     CtiSignalMsg *pSig = 0;
     SigMgrMap_t::const_iterator itr;
 
@@ -714,7 +710,6 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
                 pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
                 pSig->setText( TrimAlarmTagText((string&)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
-                if(!pMulti) pMulti = new CtiMultiMsg;   // Create a new message if this is our first find
                 if(pMulti) pMulti->insert(pSig);        // Insert into the multi.
             }
         }
