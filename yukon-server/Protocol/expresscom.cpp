@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2007/04/11 14:37:51 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2007/04/19 15:49:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1646,7 +1646,7 @@ INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
         }
         if(raw[0] & 0x08)
         {
-            int zip = (USHORT)parse.getiValue("xca_zip", 0);
+            int zip = parse.getiValue("xca_zip", 0);
             raw[length++] = LOBYTE(HIWORD(zip));
             raw[length++] = HIBYTE(LOWORD(zip));
             raw[length++] = LOBYTE(LOWORD(zip));
