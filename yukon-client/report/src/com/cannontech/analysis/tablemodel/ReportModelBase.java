@@ -616,6 +616,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 */
 	protected static String convertSecondsToTimeString(double seconds)
 	{
+		int iSeconds = (int)seconds;
         DecimalFormat format = new DecimalFormat();
         format.setMaximumFractionDigits(0);
         format.setMinimumIntegerDigits(2);
@@ -623,10 +624,10 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
         format2.setMaximumIntegerDigits(0);
         format2.setMinimumFractionDigits(3);
         
-        double hour = seconds / 3600;
-        double temp = seconds% 3600;
-        double min = temp / 60;
-        double sec = temp % 60; 
+        int hour = iSeconds / 3600;
+        int temp = iSeconds % 3600;
+        int min = temp / 60;
+        int sec = temp % 60; 
 
         return format.format(hour) + ":" + format.format(min) + ":" + format.format(Math.floor(sec))+  format2.format(temp).toString();
     }
