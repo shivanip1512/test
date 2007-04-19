@@ -30,6 +30,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.common.version.VersionTools;
 
 /**
  * Created on Dec 15, 2003
@@ -426,5 +427,18 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	{
 	    this.pageOrientation = pageOrientation_;
 	    pageDefinition = null;	//force a new one to be created with the new pageOrientation
+	}
+	
+	public LabelElementFactory getVersionLabel() {
+    	LabelElementFactory factory = new LabelElementFactory();
+		factory.setAbsolutePosition(new Point2D.Float(0, 8));
+		factory.setMinimumSize(new FloatDimension(-100, 0));
+		factory.setHorizontalAlignment(ElementAlignment.LEFT);
+		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+		factory.setText("V." + VersionTools.getYUKON_VERSION() + "  DB." +
+				VersionTools.getDatabaseVersion().getVersion() + "." + 
+				VersionTools.getDatabaseVersion().getBuild());
+		factory.setDynamicHeight(Boolean.TRUE);
+		return factory;
 	}
 }

@@ -13,6 +13,7 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.JFreeReportBoot;
+import org.jfree.report.PageFooter;
 import org.jfree.report.PageHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
@@ -217,4 +218,9 @@ public class HECO_CustomerMonthlyBillingSettlementReport extends YukonReportBase
 		header.setDisplayOnLastPage(false);
 		return header;
 	}
+	protected PageFooter createPageFooter() {
+    	PageFooter pageFooter = super.createPageFooter();
+    	pageFooter.addElement(getVersionLabel().createElement());
+		return pageFooter;
+    }
 }
