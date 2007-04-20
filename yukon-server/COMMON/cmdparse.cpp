@@ -697,7 +697,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
                     if( !(temp = cmdtok()).empty() )
                     {
-                        _cmd["daily_read_date_end"]   = cmdtok();
+                        _cmd["daily_read_date_end"] = temp;
                     }
                 }
             }
