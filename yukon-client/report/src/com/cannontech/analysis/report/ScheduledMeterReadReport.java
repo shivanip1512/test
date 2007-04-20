@@ -5,10 +5,11 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
-import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
@@ -20,15 +21,17 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.function.TotalItemCountFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.ScheduledMeterReadModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -87,8 +90,8 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		ScheduledMeterReadModel model = new ScheduledMeterReadModel();
 //		model.setStopDate(stop);
 		model.setFilterModelType(ReportFilter.ALTERNATEGROUP);
-		model.setGroupBy(ScheduledMeterReadModel.GroupBy.GROUP_BY_SCHEDULE_REQUESTS);
-		model.setStatusCodeType(ScheduledMeterReadModel.StatusCodeType.SUCCESS_METER_READ_TYPE);
+		model.setGroupBy(ScheduledMeterReadModel.GroupBy.GROUP_BY_DEVICE);
+//		model.setStatusCodeType(ScheduledMeterReadModel.StatusCodeType.SUCCESS_METER_READ_TYPE);
 		YukonReportBase meterReadReport =new ScheduledMeterReadReport(model);
 		meterReadReport.getModel().collectData();
 		
@@ -112,10 +115,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		dialog.pack();
 		dialog.setVisible(true);
 	}		
-	@Override
-	protected ReportFooter createReportFooter() {
-		return super.createReportFooter();
-	}
 
 	/**
 	 * Create a Group for ScheduleName  
@@ -160,34 +159,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	    
 	    
 	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
-
-//	    for (int i = ScheduledMeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
-//	    {
-//	        factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-//			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
-//		    header.addElement(factory.createElement());
-//		}
-//	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
 	    scheduleGroup.setHeader(header);
-
-
-	  	GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		/*final Group statCodeGroup = new Group();
-
-		tfactory = tfactory = new TextFieldElementFactory();
-		tfactory.setAbsolutePosition(new Point2D.Float(100, 1));
-		tfactory.setMinimumSize(new FloatDimension(-100, 12));
-		tfactory.setHorizontalAlignment(ElementAlignment.CENTER);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setFieldname("totalItemCount");
-		tfactory.setDynamicHeight(Boolean.TRUE);
-		footer.addElement(tfactory.createElement());
-//		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-//		footer.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-//		footer.addElement(ReportFactory.createBasicLine("line4", 0.5f, 4));
-		statCodeGroup.setFooter(footer);
-	  	*/
-		scheduleGroup.setFooter(footer);
 	  	return scheduleGroup;
 	}
 
@@ -263,9 +235,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_STOP_TIME_STRING);
-	    collGrpGroup.addField( ScheduledMeterReadModel.REQUEST_COMMAND_STRING);
-	    collGrpGroup.addField( ScheduledMeterReadModel.REQUEST_START_TIME_STRING);
-	    collGrpGroup.addField(ScheduledMeterReadModel.REQUEST_STOP_TIME_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.COLLECTION_GROUP_STRING);
 		  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
@@ -279,7 +248,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	    tfactory.setAbsolutePosition(new Point2D.Float(150, 1));	//override the posX location
 	    
 	    header.addElement(tfactory.createElement());
-	    header.addElement(ReportFactory.createBasicLine("line3", 0.5f, 18));
+	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", Color.LIGHT_GRAY, new BasicStroke(0.5f), 18));
 		for (int i = ScheduledMeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
 		{
 		    factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
@@ -287,55 +256,32 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		    factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
 		    header.addElement(factory.createElement());
 		}
-
-		header.addElement(ReportFactory.createBasicLine("line3", 0.5f, 32));
-		collGrpGroup.setHeader(header);
-	
-//		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-//		tfactory = tfactory = new TextFieldElementFactory();
-//		tfactory.setAbsolutePosition(new Point2D.Float(0, 1));
-//		tfactory.setMinimumSize(new FloatDimension(100, 12));
-//		tfactory.setHorizontalAlignment(ElementAlignment.CENTER);
-//		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-//		tfactory.setFieldname("countItem");
-//		tfactory.setDynamicHeight(Boolean.TRUE);
-//		footer.addElement(tfactory.createElement());
-//		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-//		footer.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-//		footer.addElement(ReportFactory.createBasicLine("line4", 0.5f, 4));
-//		collGrpGroup.setFooter(footer);
-		
+		collGrpGroup.setHeader(header);		
 		return collGrpGroup;
 	}
 
 	/**
-	 * Create a Group for ScheduleName, (by StatusCode).  
+	 * Create a Group for DeviceName, (by scheduleName, collGorup).  
 	 * @return Group
 	 */
-	private Group createStatusCodeGroup()
+	private Group createDeviceGroup()
 	{
-		final Group statCodeGroup = new Group();
-		statCodeGroup.setName(ScheduledMeterReadModel.STATUS_CODE_STRING + ReportFactory.NAME_GROUP);
-		statCodeGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
-		statCodeGroup.addField(ScheduledMeterReadModel.COLLECTION_GROUP_STRING);
-		statCodeGroup.addField(ScheduledMeterReadModel.STATUS_CODE_STRING);
+		final Group collGrpGroup = new Group();
+		collGrpGroup.setName(ScheduledMeterReadModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
+		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
+		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
+		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_STOP_TIME_STRING);
+		collGrpGroup.addField(ScheduledMeterReadModel.COLLECTION_GROUP_STRING);
+		collGrpGroup.addField(ScheduledMeterReadModel.DEVICE_NAME_STRING);
 		  
-		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setAbsolutePosition(new Point2D.Float(0, 1));
-		tfactory.setMinimumSize(new FloatDimension(100, 12));
-		tfactory.setHorizontalAlignment(ElementAlignment.CENTER);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setFieldname("totalItemCount");
-		tfactory.setDynamicHeight(Boolean.TRUE);
-		footer.addElement(tfactory.createElement());
-//		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-//		footer.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-//		footer.addElement(ReportFactory.createBasicLine("line4", 0.5f, 4));
-		statCodeGroup.setFooter(footer);
-		return statCodeGroup;
-	}
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 2));
 
+	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", Color.LIGHT_GRAY, new BasicStroke(0.5f), 1));
+		collGrpGroup.setHeader(header);		
+		return collGrpGroup;
+	}
+	
 	/**
 	 * Creates the function collection. The xml definition for this construct:
 	 * @return the functions.
@@ -344,12 +290,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
 		super.getExpressions();
-		
-		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName("hideItem");
-		hideItem.setField(ScheduledMeterReadModel.DEVICE_NAME_STRING);
-		hideItem.setElement(ScheduledMeterReadModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
-		expressions.add(hideItem);
 
 		totalItemCount = new TotalItemCountFunction();
 		totalItemCount.setName("totalItemCount");
@@ -371,8 +311,10 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	  list.add(createScheduleGroup());
 	  if ( ((ScheduledMeterReadModel)getModel()).getGroupBy() == ScheduledMeterReadModel.GroupBy.GROUP_BY_SCHEDULE_REQUESTS)
 		  list.add(createRequestGroup());
-//	  list.add(createCollGrpGroup());
-//	  list.add(createStatusCodeGroup());
+	  else {
+		  list.add(createCollGrpGroup());
+		  list.add(createDeviceGroup());
+	  }
 	  return list;
 	}
 
@@ -405,4 +347,66 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	
 		return items;
 	}
+	
+	@Override
+	protected ReportFooter createReportFooter()
+	{
+		ReportFooter footer = ReportFactory.createReportFooterDefault();
+		
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault("TOTALS", 0, 1, 792);
+		factory.setHorizontalAlignment(ElementAlignment.CENTER);		
+		footer.addElement(factory.createElement());
+		
+		factory = ReportFactory.createGroupLabelElementDefault( ScheduledMeterReadModel.STATUS_CODE_STRING, 0, 1,
+				getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
+		footer.addElement(factory.createElement());
+		
+		factory = ReportFactory.createGroupLabelElementDefault("Counts", 
+				getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getPositionX(), 
+				1, getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
+		
+		Iterator iter = ((ScheduledMeterReadModel)getModel()).getTotals().entrySet().iterator();
+		int offset = 8;
+		
+		DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
+		offset += 12;
+		while( iter.hasNext())
+		{		
+			Map.Entry entry = ((Map.Entry)iter.next());
+			String statusCode = entry.getKey().toString();
+			
+			factory = ReportFactory.createGroupLabelElementDefault(statusCode, 0, 
+				offset, getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
+			footer.addElement(factory.createElement());
+			
+			DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(Integer.valueOf(statusCode));
+			factory = ReportFactory.createGroupLabelElementDefault(deviceErrorDesc.getDescription(), 50, 
+					offset, 692);
+			footer.addElement(factory.createElement());
+		
+			factory = ReportFactory.createGroupLabelElementDefault(entry.getValue().toString(), 
+				getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getPositionX(), 
+				offset, getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
+			factory.setHorizontalAlignment(ElementAlignment.CENTER);
+			footer.addElement(factory.createElement());
+			
+			//Doing some magic to adjust the offset for text that exceeds the given height (by length too long)
+			int x = (deviceErrorDesc.getDescription().length() / 90) + 1;
+			int offExtra = x * 12;	//where 12 is the default height
+			offset+=offExtra;
+		}
+		offset += 20;
+
+		footer.addElement(ReportFactory.createBasicLine("rfLine",0.5f, 20));
+		
+		factory = new LabelElementFactory();
+		factory.setAbsolutePosition(new Point2D.Float(0, offset));
+		factory.setMinimumSize(new FloatDimension(-100, 16));
+		factory.setHorizontalAlignment(ElementAlignment.CENTER);
+		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
+		factory.setText("*** END OF REPORT ***");
+		footer.addElement(factory.createElement());
+		return footer;
+	
+	}	
 }
