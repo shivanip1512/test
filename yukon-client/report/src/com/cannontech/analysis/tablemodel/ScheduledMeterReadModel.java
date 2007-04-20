@@ -3,9 +3,9 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
-
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
@@ -77,6 +77,8 @@ public class ScheduledMeterReadModel extends ReportModelBase
 	public final static String STATUS_CODE_STRING = "StatusCode";
 	
 	/** Class fields */
+	private HashMap totals = null;
+
 	public enum StatusCodeType { ALL_METER_READ_TYPE("All"), 		//All status codes
 								  ERROR_METER_READ_TYPE("Errors Only"),	//Only status codes > 0
 								  SUCCESS_METER_READ_TYPE("Success Only");	//0 status code
@@ -282,6 +284,7 @@ public class ScheduledMeterReadModel extends ReportModelBase
 	public void collectData() {
 		//Reset all objects, new data being collected!
 		setData(null);
+		totals = null;
 				
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
@@ -451,8 +454,8 @@ public class ScheduledMeterReadModel extends ReportModelBase
 				new ColumnProperties(390, 1, 90, "MM/dd/yy HH:mm:ss"),
 				new ColumnProperties(540, 1, 90, "MM/dd/yy HH:mm:ss"),
 				
-				new ColumnProperties(50, 1, 180, null),
-				new ColumnProperties(100, 1, 150, null),
+				new ColumnProperties(20, 1, 200, null),
+				new ColumnProperties(40, 1, 210, null),
 				new ColumnProperties(250, 1, 70, null),
 				new ColumnProperties(320, 1, 70, null),
 				new ColumnProperties(390, 1, 150, null),
@@ -668,5 +671,24 @@ public class ScheduledMeterReadModel extends ReportModelBase
 	@Override
 	public boolean useStopDate() {
 		return false;
+	}
+	
+	public HashMap getTotals()
+	{
+		if (totals == null)
+		{
+			totals = new HashMap();
+			for(int i = 0; i < getData().size(); i++)
+			{
+				String key = String.valueOf(((ScheduledMeterReadRow)getData().get(i)).statusCode);
+				Integer initValue = (Integer)totals.get(key);
+				if( initValue == null)
+					initValue = new Integer(0);
+	
+				Integer newValue = new Integer(initValue.intValue() +1);
+				totals.put(key, newValue);		
+			}
+		}
+		return totals;
 	}
 }
