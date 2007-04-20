@@ -16,6 +16,8 @@
 #include "ctitokenizer.h"
 #include "thread_monitor.h"
 #include "utility.h"
+#include "msg_signal.h"
+
 
 #include <rw/thr/prodcons.h>
 #include <rw/ctoken.h>
@@ -326,7 +328,21 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                             CtiTime tempNextTime = CtiTime((*iter)->getNextRunTime().seconds() + (*iter)->getIntervalRate());
                             if (tempNextTime < currentTime) 
                             {
-                                (*iter)->setNextRunTime(CtiTime(currentTime.seconds() + (*iter)->getIntervalRate()));
+
+                                string text = string("ERROR - Schedule ID ");
+                                text += (*iter)->getScheduleId();
+                                
+                                string additional = string("Schedule ID ");
+                                additional += (*iter)->getScheduleId();
+                                additional += " did not run at: ";
+                                additional += tempNextTime.asString();
+
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                                while (tempNextTime < currentTime) 
+                                {
+                                    tempNextTime = CtiTime(tempNextTime.seconds() + (*iter)->getIntervalRate());
+                                }
+                                (*iter)->setNextRunTime(tempNextTime);
                             }
                             else
                                 (*iter)->setNextRunTime(tempNextTime);
@@ -481,13 +497,34 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
 {
     CtiTime currentTime = CtiTime();
         
-    schedule->setLastRunTime(currentTime);
+    schedule->setLastRunTime(schedule->getNextRunTime());
     if (schedule->getIntervalRate() <= 0)
     {                                   
         schedule->setNextRunTime( CtiTime(currentTime.seconds() + 0) );
     }
     else
-        schedule->setNextRunTime( CtiTime(currentTime.seconds() + schedule->getIntervalRate()) );
+    {
+        CtiTime tempNextTime = CtiTime(schedule->getNextRunTime().seconds() + schedule->getIntervalRate());
+        if (tempNextTime < currentTime) 
+        {
+        
+            string text = string("ERROR - Schedule ID ");
+            text += schedule->getScheduleId();
+            
+            string additional = string("Schedule ID ");
+            additional += schedule->getScheduleId();
+            additional += " did not run at: ";
+            additional += tempNextTime.asString();
+        
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+            while (tempNextTime < currentTime) 
+            {
+                tempNextTime = CtiTime(tempNextTime.seconds() + schedule->getIntervalRate());
+            }
+           
+        }
+        schedule->setNextRunTime(tempNextTime);
+    }
 
 
 }
