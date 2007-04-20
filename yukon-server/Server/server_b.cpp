@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/08/03 20:15:10 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/04/20 19:48:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -487,6 +487,12 @@ void CtiServer::join()
 RWWaitStatus CtiServer::join(unsigned long milliseconds)
 {
     return MainThread_.join(milliseconds);     // He will have waited for this to terminate.
+}
+
+/* Use Only as a last resort */
+void CtiServer::terminate()
+{
+    MainThread_.terminate(); //This is a last resort
 }
 
 string CtiServer::getMyServerName() const

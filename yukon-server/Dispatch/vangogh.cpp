@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/04/20 19:48:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,16 @@ int DispatchMainFunction(int argc, char **argv)
 
         int i = VanGogh.execute();
 
-        VanGogh.join();
+        while( !bGCtrlC )
+        {
+            Sleep(3000);
+        }
+
+        if( RW_THR_COMPLETED != VanGogh.join(30000) ) //30 seconds to shut down before I kill.
+        {
+            cerr << "***** EXCEPTION ******* Terminating Dispatch" << endl;
+            VanGogh.terminate();
+        }
 
         _CrtSetAllocHook(pfnOldCrtAllocHook);
 

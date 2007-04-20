@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/06/15 20:41:56 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/04/20 19:48:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,6 +109,7 @@ public:
    virtual string getMyServerName() const;
 
    virtual void  shutdown();
+   void          terminate();
 
    ptr_type findConnectionManager( long cid );
 };
