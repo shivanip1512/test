@@ -2473,8 +2473,9 @@ private void loadParamMapFromSwingComp()
         getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, "group");
     
     //Notification in script
-    getScriptTemplate().getParamToValueMap().put(NOTIFICATION_FLAG_PARAM, String.valueOf(getSendEmailCheckBox().isSelected()).toString());    
-    getScriptTemplate().getParamToValueMap().put(NOTIFY_GROUP_PARAM, getNotifyGroupComboBox().getSelectedItem().toString());
+    getScriptTemplate().getParamToValueMap().put(NOTIFICATION_FLAG_PARAM, String.valueOf(getSendEmailCheckBox().isSelected()).toString());
+    if (getNotifyGroupComboBox().getSelectedItem() != null)
+    	getScriptTemplate().getParamToValueMap().put(NOTIFY_GROUP_PARAM, getNotifyGroupComboBox().getSelectedItem().toString());
     getScriptTemplate().getParamToValueMap().put(EMAIL_SUBJECT_PARAM, getMessageSubjectTextField().getText());
     //Multiple reads script (one with retries)
     getScriptTemplate().getParamToValueMap().put(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())).toString());
