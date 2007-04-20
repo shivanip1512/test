@@ -75,6 +75,7 @@ public class CapBank extends CapControlDeviceBase {
         delete("DynamicCCMonitorPointResponse", "BankID", getPAObjectID());
         delete("DynamicCCMonitorBankHistory", "BankID", getPAObjectID());
         delete("DynamicCCCapBank", "CapBankID", getPAObjectID());
+        delete("CapBankAdditional", "DeviceID", getPAObjectID());
         CCMonitorBankList.deleteMonitorPointsOnCapBankList(getPAObjectID());
         getCapBank().delete();
 
