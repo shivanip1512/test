@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.139 $
-* DATE         :  $Date: 2007/04/20 22:36:08 $
+* REVISION     :  $Revision: 1.140 $
+* DATE         :  $Date: 2007/04/20 22:55:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3273,7 +3273,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     pi.quality = NormalQuality;
 
                     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
-                                          pi, "Blink Counter",  _daily_read_info.single_day + 86400);  //  add on 24 hours - end of day
+                                          pi, "Blink Counter",  start_time + 86400);  //  add on 24 hours - end of day
                 }
 
                 //  reset the "in progress" flag
