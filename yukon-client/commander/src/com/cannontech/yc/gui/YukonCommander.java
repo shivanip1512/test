@@ -19,7 +19,6 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -41,7 +40,6 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -50,6 +48,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
@@ -1850,27 +1849,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			enableSerialAndRoute(false);
 		}
 
-		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
-		getYCCommandMenu().installAddressing.setEnabled(false);	//init to false, will change below if valid state.
-		getYCCommandMenu().downloadSchedule.setEnabled(false);	//init to false, will change below if valid state.
-
-		if (getModelType() == ModelFactory.DEVICE)
-		{
-			if( selectedItem instanceof LiteYukonPAObject)
-			{
-				LiteYukonPAObject lpao = (LiteYukonPAObject) selectedItem;
-				if( DeviceTypesFuncs.isMCT(lpao.getType()) || DeviceTypesFuncs.isRepeater(lpao.getType()))
-				{
-					getYCCommandMenu().locateRoute.setEnabled(true);
-					if(DeviceTypesFuncs.isMCT4XX(lpao.getType()))
-					    getYCCommandMenu().downloadSchedule.setEnabled(true);
-				}				
-			}
-		}
-		else if( ModelFactory.isEditableSerial(getModelType()))
-		{
-			getYCCommandMenu().installAddressing.setEnabled(true);
-		}
+		updateCommandMenu(selectedItem);
 		
 		if (selectedItem == null )
 		{
@@ -1927,15 +1906,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		    if( getTreeViewPanel().getSelectedNode().getParent() == null)
 				return;
 		}
-	
-		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
-		getYCCommandMenu().installAddressing.setEnabled(false);
-		getYCCommandMenu().downloadSchedule.setEnabled(false);	//init to false, will change below if valid state.
 		
+		updateCommandMenu(selectedItem);
 		if ( selectedItem instanceof LiteBase)
 		{
 			DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
-					
 			if (dbp == null)
 				return;
 	
@@ -1943,12 +1918,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			if( selectedItem instanceof LiteYukonPAObject)
 			{
 				LiteYukonPAObject lpao = (LiteYukonPAObject)selectedItem;
-				if( DeviceTypesFuncs.isMCT(lpao.getType()) || DeviceTypesFuncs.isRepeater(lpao.getType()))
-				{
-					getYCCommandMenu().locateRoute.setEnabled(true);
-					if(DeviceTypesFuncs.isMCT4XX(lpao.getType()) )
-				        getYCCommandMenu().downloadSchedule.setEnabled(true);
-				}
 				setTitle(displayTitle + " - " + lpao.getPaoName() + " (" + PAOGroups.getPAOTypeString(lpao.getType()) + ")");
 			}
 			else
@@ -1956,7 +1925,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		}
 		else if ( ModelFactory.isEditableSerial(getModelType()))
 		{
-			getYCCommandMenu().installAddressing.setEnabled(true);
 			setSerialNumber( (String)selectedItem);
 			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
 			
@@ -2007,6 +1975,34 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		}
 	}
 
+	public void updateCommandMenu(Object selectedItem){
+		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
+		getYCCommandMenu().installAddressing.setEnabled(false);	//init to false, will change below if valid state.
+		getYCCommandMenu().downloadSchedule.setEnabled(false);	//init to false, will change below if valid state.
+
+		if( ModelFactory.isEditableSerial(getModelType())) {
+			getYCCommandMenu().installAddressing.setEnabled(true);
+		}
+		else  {
+			LiteYukonPAObject lpao = null;
+			if( selectedItem instanceof LiteYukonPAObject) {
+				lpao = (LiteYukonPAObject) selectedItem;
+			}
+			else if( selectedItem instanceof LiteDeviceMeterNumber){
+				lpao = DaoFactory.getPaoDao().getLiteYukonPAO(((LiteDeviceMeterNumber)selectedItem).getDeviceID());
+			}
+			
+			if (lpao != null) {
+				if( DeviceTypesFuncs.isMCT(lpao.getType()) || DeviceTypesFuncs.isRepeater(lpao.getType())) {
+					getYCCommandMenu().locateRoute.setEnabled(true);
+					
+					if(DeviceTypesFuncs.isMCT4XX(lpao.getType()))
+					    getYCCommandMenu().downloadSchedule.setEnabled(true);
+				}
+			}
+		}
+	}
+	
 	public void updateCommandSelection()
 	{
 		// Clear out the old, get ready for the new!
