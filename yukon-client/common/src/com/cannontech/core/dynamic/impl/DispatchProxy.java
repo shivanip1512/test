@@ -2,6 +2,7 @@ package com.cannontech.core.dynamic.impl;
 
 import java.util.*;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Multi;
@@ -146,6 +147,7 @@ class DispatchProxy {
         }
         ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection,cmd);
         if(resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
+            CTILogger.error(resp.getMessage());
             throw new DynamicDataAccessException(resp.getStatusStr());
         }        
         // returns multi of signals??

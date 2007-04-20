@@ -99,7 +99,12 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         Set<Signal> signals = dynamicDataCache.getSignalForCategory(alarmCategoryId);
         if(signals == null) {
             Set<Signal> sigSet = dispatchProxy.getSignalsByCategory(alarmCategoryId);
-            signals.addAll(sigSet);
+            if(signals == null) {
+                signals = new HashSet<Signal>();
+                return signals;
+            }else {
+                signals.addAll(sigSet);
+            }
         }
         
         return signals;
