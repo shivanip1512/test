@@ -814,7 +814,6 @@ void CtiCCCommandExecutor::EnableOvUv()
     LONG bankID = _command->getId();
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
-   // RWOrdered& pointChanges = multi->getData();
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 

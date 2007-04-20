@@ -1768,6 +1768,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setCurrentVarLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
+                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                        {
+                            currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                        }
 
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
                             !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
@@ -1822,6 +1826,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setCurrentWattLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
+                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                        {
+                            currentSubstationBus->updateIntegrationWPoint(CtiTime());
+                        }
                         currentSubstationBus->setCurrentWattPointQuality(quality);
 
                         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
@@ -1853,6 +1861,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             currentSubstationBus->setCurrentVoltLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        }
+                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                        {
+                            currentSubstationBus->updateIntegrationVPoint(CtiTime());
                         }
                         currentSubstationBus->setCurrentVoltPointQuality(quality);
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&

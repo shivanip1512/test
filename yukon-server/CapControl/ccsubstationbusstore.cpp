@@ -3504,7 +3504,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["altSubControlValue"]
                         << dynamicCCSubstationBusTable["eventSeq"]
                         << dynamicCCSubstationBusTable["currentwattpointquality"]
-                        << dynamicCCSubstationBusTable["currentvoltpointquality"];
+                        << dynamicCCSubstationBusTable["currentvoltpointquality"]
+                        << dynamicCCSubstationBusTable["ivcontroltot"]
+                        << dynamicCCSubstationBusTable["ivcount"]
+                        << dynamicCCSubstationBusTable["iwcontroltot"]
+                        << dynamicCCSubstationBusTable["iwcount"];
 
                         selector.from(capControlSubstationBusTable);
                         selector.from(dynamicCCSubstationBusTable);
@@ -4012,7 +4016,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["currverifycbid"]
                     << dynamicCCFeederTable["currverifycborigstate"]
                     << dynamicCCFeederTable["currentwattpointquality"]
-                    << dynamicCCFeederTable["currentvoltpointquality"];
+                    << dynamicCCFeederTable["currentvoltpointquality"]
+                    << dynamicCCFeederTable["ivcontroltot"]
+                    << dynamicCCFeederTable["ivcount"]
+                    << dynamicCCFeederTable["iwcontroltot"]
+                    << dynamicCCFeederTable["iwcount"];
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);
@@ -4643,7 +4651,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                              << dynamicCCTwoWayTable["temp"]
                              << dynamicCCTwoWayTable["rssi"] 
                              << dynamicCCTwoWayTable["ignoredreason"]
-                             << dynamicCCTwoWayTable["rssi"]
+                             << dynamicCCTwoWayTable["totalopcount"]
                              << dynamicCCTwoWayTable["uvopcount"]
                              << dynamicCCTwoWayTable["ovopcount"]
                              << dynamicCCTwoWayTable["ovuvcountresetdate"]

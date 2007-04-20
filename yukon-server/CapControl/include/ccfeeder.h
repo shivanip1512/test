@@ -162,6 +162,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getWaitForReCloseDelayFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
+    DOUBLE getTargetVarValue() const;
+    const string& getSolution() const;
+    BOOL getIntegrateFlag() const;
+    LONG getIntegratePeriod() const;
+    DOUBLE getIVControlTot() const;
+    LONG getIVCount() const;
+    DOUBLE getIWControlTot() const;
+    LONG getIWCount() const;
     
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
@@ -248,6 +256,15 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
+    CtiCCFeeder& setTargetVarValue(DOUBLE value);
+    CtiCCFeeder& setSolution(const string& text);
+    CtiCCFeeder& setIntegrateFlag(BOOL flag);
+    CtiCCFeeder& setIntegratePeriod(LONG period);
+    CtiCCFeeder& setIVControlTot(DOUBLE value);
+    CtiCCFeeder& setIVCount(LONG value);
+    CtiCCFeeder& setIWControlTot(DOUBLE value);
+    CtiCCFeeder& setIWCount(LONG value);
+
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
@@ -258,6 +275,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
+    BOOL isControlPoint(LONG pointid);
+    void updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
+    void updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
@@ -415,6 +435,15 @@ private:
 
     LONG _currentVerificationCapBankId;
     LONG _currentCapBankToVerifyAssumedOrigState;
+
+    DOUBLE _targetvarvalue;
+    string _solution;
+
+    DOUBLE _iVControlTot;
+    LONG  _iVCount;
+    DOUBLE _iWControlTot;
+    LONG  _iWCount;
+
     
     //don't stream
     BOOL _insertDynamicDataFlag;

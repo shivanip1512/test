@@ -150,10 +150,17 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getWaitForReCloseDelayFlag() const;
     BOOL getWaitToFinishRegularControlFlag() const;
     const string& getSolution() const;
+    DOUBLE getTargetVarValue() const;
     const string& getParentControlUnits() const;
     const string& getParentName() const;
-    LONG getDisplayOrder() const;        
-    
+    LONG getDisplayOrder() const;  
+    BOOL getIntegrateFlag() const;
+    LONG getIntegratePeriod() const;
+    DOUBLE getIVControlTot() const;
+    LONG getIVCount() const;
+    DOUBLE getIWControlTot() const;
+    LONG getIWCount() const;
+
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
 
@@ -238,10 +245,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setWaitToFinishRegularControlFlag(BOOL flag);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
     CtiCCSubstationBus& setSolution(const string& text);
+    CtiCCSubstationBus& setTargetVarValue(DOUBLE value);
     CtiCCSubstationBus& setParentControlUnits(const string& parentControlUnits);
     CtiCCSubstationBus& setParentName(const string& parentName);
     CtiCCSubstationBus& setDisplayOrder(LONG displayOrder);
-
+    CtiCCSubstationBus& setIntegrateFlag(BOOL flag);
+    CtiCCSubstationBus& setIntegratePeriod(LONG period);
+    CtiCCSubstationBus& setIVControlTot(DOUBLE value);
+    CtiCCSubstationBus& setIVCount(LONG value);
+    CtiCCSubstationBus& setIWControlTot(DOUBLE value);
+    CtiCCSubstationBus& setIWCount(LONG value);
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
@@ -254,6 +267,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakDay(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
+    BOOL isControlPoint(LONG pointid);
+    void updateIntegrationVPoint(const CtiTime &currentDateTime);
+    void updateIntegrationWPoint(const CtiTime &currentDateTime);
     void clearOutNewPointReceivedFlags();
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -453,6 +469,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     int _verificationStrategy;
     LONG _capBankToVerifyInactivityTime;
 
+    DOUBLE _targetvarvalue;
     string _solution;  //text field to be added to messaging indicating status/thinking
     string _parentControlUnits;
     string _parentName;
@@ -463,6 +480,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _altSubVarVal;
     DOUBLE _altSubWattVal;
     CtiTime _lastVerificationCheck;
+
+    DOUBLE _iVControlTot;
+    LONG  _iVCount;
+    DOUBLE _iWControlTot;
+    LONG  _iWCount;
+
 
     //don't stream
     BOOL _insertDynamicDataFlag;

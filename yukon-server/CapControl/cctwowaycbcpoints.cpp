@@ -1373,7 +1373,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             << dynamicCCTwoWayTable["temp"].assign( _temperature )
             << dynamicCCTwoWayTable["rssi"].assign( _rssi )
             << dynamicCCTwoWayTable["ignoredreason"].assign( _ignoredReason )
-            << dynamicCCTwoWayTable["rssi"].assign( _totalOpCount )
+            << dynamicCCTwoWayTable["totalopcount"].assign( _totalOpCount )
             << dynamicCCTwoWayTable["uvopcount"].assign( _uvCount )
             << dynamicCCTwoWayTable["ovopcount"].assign( _ovCount)
             << dynamicCCTwoWayTable["ovuvcountresetdate"].assign( toRWDBDT((CtiTime)_ovuvCountResetDate) ) //toADD

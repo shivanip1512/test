@@ -482,6 +482,65 @@ LONG CtiCCFeeder::getDisplayOrder() const
 }
 
 /*---------------------------------------------------------------------------
+    getIntegrateFlag
+
+    Returns the IntegrateFlag of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getIntegrateFlag() const
+{
+    return _integrateflag;
+}
+/*---------------------------------------------------------------------------
+    getIntegratePeriod
+
+    Returns the IntegratePeriod of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getIntegratePeriod() const
+{
+    return _integrateperiod;
+}
+/*---------------------------------------------------------------------------
+    getIVControlTot
+
+    Returns the Integrate Volt/Var Control total of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getIVControlTot() const
+{
+    return _iVControlTot;
+}
+/*---------------------------------------------------------------------------
+    getIVCount
+
+    Returns the Integrate Volt/Var Control count of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getIVCount() const
+{
+    return _iVCount;
+}
+
+
+/*---------------------------------------------------------------------------
+    getIWControlTot
+
+    Returns the Integrate Watt Control total of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getIWControlTot() const
+{
+    return _iWControlTot;
+}
+
+/*---------------------------------------------------------------------------
+    getIWCount
+
+    Returns the Integrate Watt Control count of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getIWCount() const
+{
+    return _iWCount;
+}
+
+
+/*---------------------------------------------------------------------------
     getNewPointDataReceivedFlag
 
     Returns the new point data received flag of the feeder
@@ -2187,6 +2246,106 @@ BOOL CtiCCFeeder::isPeakDay()
         return FALSE;
 }
 
+BOOL CtiCCFeeder::isControlPoint(LONG pointid)
+{
+    BOOL retVal = FALSE;
+
+    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    {   
+        if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits)  &&
+            getCurrentVoltLoadPointId() == pointid )
+            retVal = TRUE;
+        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::KVARControlUnits)  &&
+            getCurrentVarLoadPointId() == pointid) 
+            retVal = TRUE;
+        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) &&
+                 (getCurrentVarLoadPointId() == pointid || getCurrentWattLoadPointId() == pointid) ) 
+            retVal = TRUE;
+        else
+            retVal = FALSE;
+    }
+    return retVal;
+}
+
+void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime)
+{
+    DOUBLE controlVvalue = 0;
+
+    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    {
+        if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+            controlVvalue = getCurrentVoltLoadPointValue();
+        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::KVARControlUnits)) 
+            controlVvalue = getCurrentVarLoadPointValue();
+        else
+        {
+            //integration not implemented.
+            controlVvalue = 0;
+        }
+
+        if (getControlInterval() > 0) 
+        {
+            if (nextCheckTime - getIntegratePeriod() <= currentDateTime) 
+            {
+                
+                if (getIVCount() == 0) 
+                {
+                    setIVControlTot( controlVvalue );
+                }
+                else
+                    setIVControlTot( getIVControlTot() + controlVvalue );
+
+                setIVCount( getIVCount() + 1 );
+            }
+            else
+            {
+                setIVControlTot( controlVvalue );
+                setIVControlTot( 1 );
+            }
+        }
+        else
+        {
+            setIVControlTot( controlVvalue );
+            setIVControlTot( 1 );
+        }
+    }
+}
+
+void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime)
+{
+    DOUBLE controlWvalue = 0;
+
+    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    {
+        controlWvalue = getCurrentWattLoadPointValue();
+        if (getControlInterval() > 0) 
+        {
+            if (nextCheckTime - getIntegratePeriod() <= currentDateTime) 
+            {
+
+                if (getIWCount() == 0) 
+                {
+                    setIWControlTot( controlWvalue );
+                }
+                else
+                    setIWControlTot( getIWControlTot() + controlWvalue );
+
+                setIWCount( getIWCount() + 1 );
+            }
+            else
+            {
+                setIWControlTot( controlWvalue );
+                setIWCount( 1 );
+            }
+        }
+        else
+        {
+            setIWControlTot( controlWvalue );
+            setIWCount( 1 );
+        }
+    }
+}
+
 
 /*---------------------------------------------------------------------------
     checkForAndProvideNeededIndividualControl
@@ -3775,6 +3934,100 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankState(LONG status)
     return *this;
 }
 
+CtiCCFeeder& CtiCCFeeder::setTargetVarValue(DOUBLE value)
+{
+    if( _targetvarvalue != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _targetvarvalue = value;
+
+    return *this;
+}
+
+CtiCCFeeder& CtiCCFeeder::setSolution(const string &text)
+{
+    if( _solution != text )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _solution = text;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setIntegrateFlag
+
+    Sets the IntegrateFlag of the substation
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIntegrateFlag(BOOL flag)
+{
+    _integrateflag = flag;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setIntegratePeriod
+    
+    Sets the IntegratePeriod of the substation
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIntegratePeriod(LONG period)
+{
+    _integrateperiod = period;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setIVControlTot 
+        
+    Sets the Integrated Volt or var Control Total of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIVControlTot(DOUBLE value)
+{
+    _iVControlTot = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setIVCoont 
+        
+    Sets the Integrated Volt or var Control Count of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIVCount(LONG value)
+{
+    _iVCount = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setIWControlTot 
+        
+    Sets the Integrated Watt Control Total of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIWControlTot(DOUBLE value)
+{
+    _iWControlTot = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setIWCoont 
+        
+    Sets the Integrated Watt Control Count of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIWCount(LONG value)
+{
+    _iWCount = value;
+    return *this;
+}
+
+
 
 BOOL CtiCCFeeder::getVerificationFlag() const
 {
@@ -3816,6 +4069,16 @@ LONG CtiCCFeeder::getCurrentVerificationCapBankId() const
 LONG CtiCCFeeder::getCurrentVerificationCapBankOrigState() const
 {
     return _currentCapBankToVerifyAssumedOrigState;
+
+}
+DOUBLE CtiCCFeeder::getTargetVarValue() const
+{
+    return _targetvarvalue;
+
+}
+const string& CtiCCFeeder::getSolution() const
+{
+    return _solution;
 
 }
 
@@ -4631,7 +4894,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["currverifycbid"].assign(_currentVerificationCapBankId)
             << dynamicCCFeederTable["currverifycborigstate"].assign(_currentCapBankToVerifyAssumedOrigState)
             << dynamicCCFeederTable["currentwattpointquality"].assign(_currentwattpointquality)
-            << dynamicCCFeederTable["currentvoltpointquality"].assign(_currentvoltpointquality);
+            << dynamicCCFeederTable["currentvoltpointquality"].assign(_currentvoltpointquality)
+            << dynamicCCFeederTable["ivcontroltot"].assign(_iVControlTot)
+            << dynamicCCFeederTable["ivcount"].assign(_iVCount)
+            << dynamicCCFeederTable["iwcontroltot"].assign(_iWControlTot)
+            << dynamicCCFeederTable["iwcount"].assign(_iWCount);
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4694,7 +4961,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _currentVerificationCapBankId
             << _currentCapBankToVerifyAssumedOrigState
             << _currentwattpointquality
-            << _currentvoltpointquality;
+            << _currentvoltpointquality
+            << _iVControlTot
+            << _iVCount
+            <<  _iWControlTot
+            <<  _iWCount;
 
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -4942,6 +5213,16 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _postOperationMonitorPointScanFlag = right._postOperationMonitorPointScanFlag;
         _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
 
+        _targetvarvalue = right._targetvarvalue;
+        _solution = right._solution;
+        _integrateflag = right._integrateflag;
+        _integrateperiod = right._integrateperiod;
+        _iVControlTot = right._iVControlTot;
+        _iVCount = right._iVCount;
+        _iWControlTot = right._iWControlTot;
+        _iWCount = right._iWCount;
+
+
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)
         {
@@ -5073,6 +5354,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     _currentwattpointquality = NormalQuality;
     _currentvoltpointquality = NormalQuality;
 
+    setTargetVarValue(0);
+    setSolution("IDLE");
+
     _insertDynamicDataFlag = TRUE;
 
 
@@ -5093,7 +5377,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     _currentwattloadpointvalue = 0; 
     _currentvoltloadpointvalue = 0; 
 
-
+    setIVControlTot(0);
+    setIVCount(0);
+    setIWControlTot(0);
+    setIWCount(0);
 
 }
 
@@ -5171,6 +5458,12 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
     rdr["currentwattpointquality"] >> _currentwattpointquality;
     rdr["currentvoltpointquality"] >> _currentvoltpointquality;
+
+    rdr["ivcontroltot"] >> _iVControlTot;
+    rdr["ivcount"] >> _iVCount;
+    rdr["iwcontroltot"] >> _iWControlTot;
+    rdr["iwcount"] >> _iWCount;
+
     
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
