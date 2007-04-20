@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/13/2007 11:33:03 AM                        */
+/* Created on:     4/20/2007 5:41:40 PM                         */
 /*==============================================================*/
 
 
@@ -5946,7 +5946,11 @@ create table DynamicCCFeeder (
    CurrVerifyCBId       numeric              not null,
    CurrVerifyCBOrigState numeric              not null,
    CurrentWattPointQuality numeric              not null,
-   CurrentVoltPointQuality numeric              not null
+   CurrentVoltPointQuality numeric              not null,
+   iVControlTot         float                not null,
+   iVCount              numeric              not null,
+   iWControlTot         float                not null,
+   iWCount              numeric              not null
 )
 go
 
@@ -6027,7 +6031,11 @@ create table DynamicCCSubstationBus (
    AltSubControlValue   float                not null,
    EventSeq             numeric              not null,
    CurrentWattPointQuality numeric              not null,
-   CurrentVoltPointQuality numeric              not null
+   CurrentVoltPointQuality numeric              not null,
+   iVControlTot         float                not null,
+   iVCount              numeric              not null,
+   iWControlTot         float                not null,
+   iWCount              numeric              not null
 )
 go
 

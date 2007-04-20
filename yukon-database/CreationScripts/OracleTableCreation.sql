@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/13/2007 11:34:34 AM                        */
+/* Created on:     4/20/2007 5:39:11 PM                         */
 /*==============================================================*/
 
 
@@ -3533,7 +3533,11 @@ create table DynamicCCFeeder  (
    CurrVerifyCBId       NUMBER                          not null,
    CurrVerifyCBOrigState NUMBER                          not null,
    CurrentWattPointQuality NUMBER                          not null,
-   CurrentVoltPointQuality NUMBER                          not null
+   CurrentVoltPointQuality NUMBER                          not null,
+   iVControlTot         FLOAT                           not null,
+   iVCount              NUMBER                          not null,
+   iWControlTot         FLOAT                           not null,
+   iWCount              NUMBER                          not null
 );
 
 alter table DynamicCCFeeder
@@ -3602,7 +3606,11 @@ create table DynamicCCSubstationBus  (
    AltSubControlValue   FLOAT                           not null,
    EventSeq             NUMBER                          not null,
    CurrentWattPointQuality NUMBER                          not null,
-   CurrentVoltPointQuality NUMBER                          not null
+   CurrentVoltPointQuality NUMBER                          not null,
+   iVControlTot         FLOAT                           not null,
+   iVCount              NUMBER                          not null,
+   iWControlTot         FLOAT                           not null,
+   iWCount              NUMBER                          not null
 );
 
 alter table DynamicCCSubstationBus
