@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.140 $
-* DATE         :  $Date: 2007/04/20 22:55:34 $
+* REVISION     :  $Revision: 1.141 $
+* DATE         :  $Date: 2007/04/20 23:09:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3071,6 +3071,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     days.push_back(pi);
                 }
 
+                channel++;
+
                 if( channel != expected_channel )
                 {
                     resultString  = getName() + " / Invalid channel returned by daily read ";
@@ -3130,6 +3132,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                         InterlockedExchange(&_daily_read_info.in_progress, false);
                     }
                 }
+
+                break;
             }
 
             case daily_read_info_t::Request_SingleDayCh1:
