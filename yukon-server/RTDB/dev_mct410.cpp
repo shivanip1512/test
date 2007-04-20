@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.138 $
-* DATE         :  $Date: 2007/04/17 16:14:03 $
+* REVISION     :  $Revision: 1.139 $
+* DATE         :  $Date: 2007/04/20 22:36:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1498,7 +1498,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     time_begin >  CtiTime::now() - 86400 )         //  must begin on or before yesterday midnight
                 {
                     returnErrorMessage(NoMethod, OutMessage, retList,
-                                       getName() + " / Invalid date for daily read request (" + parse.getsValue("daily_read_date_begin")  + ")");
+                                       getName() + " / Invalid date for daily read request (" + parse.getsValue("daily_read_date_begin")  + ") - must be less than 8 days ago");
                 }
                 else
                 {
@@ -1534,7 +1534,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                     string error_string;
 
-                    error_string  = getName() + " / Beginning date out of range for daily read request ";
+                    error_string  = getName() + " / Beginning date out of range for daily read request - must be less than 3 months ago and before today ";
 
                     error_string += "(" + parse.getsValue("daily_read_date_begin") + ")";
 
@@ -1547,7 +1547,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                     string error_string;
 
-                    error_string  = getName() + " / Ending date out of range for daily read request ";
+                    error_string  = getName() + " / Ending date out of range for daily read request - must be after beginning time and before today";
 
                     error_string += "(" + parse.getsValue("daily_read_date_end") + ")";
 
@@ -3150,7 +3150,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 {
                     reading = CtiDeviceMCT4xx::getData(DSt->Message + 0, 3, ValueType_Accumulator);
 
-                    insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
+                    insertPointDataReport(PulseAccumulatorPointType, 1, ReturnMsg,
                                           reading, consumption_pointname,  _daily_read_info.single_day + 86400);  //  add on 24 hours - end of day
 
                     peak    = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
@@ -3162,7 +3162,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                                        ((DSt->Message[9]  & 0xff) <<  2) | //  8 bits
                                        ((DSt->Message[8]  & 0x01) << 10);  //  1 bit
 
-                    insertPointDataReport(DemandAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
+                    insertPointDataReport(DemandAccumulatorPointType, 1, ReturnMsg,
                                           peak, demand_pointname,  _daily_read_info.single_day + (time_peak * 60));
 
                     voltage_min  = DSt->Message[7] | ((DSt->Message[6] & 0x0f) << 8);
