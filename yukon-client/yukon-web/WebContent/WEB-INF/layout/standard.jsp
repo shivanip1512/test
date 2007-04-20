@@ -9,6 +9,7 @@
         <cti:outputHeadContent>
           <cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
           <cti:includeCss link="/WebConfig/yukon/styles/StandardStyles.css"/>
+          <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
           <cti:includeScript link="/JavaScript/prototype.js"/>
           <cti:includeScript link="/JavaScript/CtiMenu.js"/>
         </cti:outputHeadContent>
