@@ -4,15 +4,18 @@
 
 /****************** ORACLE **************************/
 declare
-v_paoid number;
+v_paoid number(6);
 v_areaname varchar2(60);
-select max(paobjectid) + 1 into v_paoid from yukonpaobject;
-cursor c_areaname is select distinct(description) as areaname from yukonpaobject where type = 'ccsubbus';
+cursor c_areaname is select distinct description  as areaname from yukonpaobject where type = 'CCSUBBUS';
 begin
-    open c_areaname;
-   while(c_areaname%notfound)
+select max(paobjectid) into v_paoid from yukonpaobject;
+v_paoid := v_paoid + 1;
+open c_areaname;
+fetch c_areaname into v_areaname;
+          
+   while(v_areaname%found)
       loop
-          fetch c_areaname into v_areaname;
+          --fetch c_areaname into v_areaname;
           insert into yukonpaobject(paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
                   select v_paoid,
                    'CAPCONTROL',
@@ -23,6 +26,8 @@ begin
                    'N',
                    '-----' from yukonpaobject;
             v_paoid := v_paoid + 1;
+fetch c_areaname into v_areaname;
+         
      end loop;
 close c_areaname;
 end;
@@ -94,8 +99,6 @@ alter table ccfeederbanklist modify tripOrder number not null;
 /****************** END ORACLE **************************/
 
 
-
-
 /***************** FDR TABLE Update ***********************/
 /*  Need to change the coumn to take 200 characters from now on */
 
@@ -108,3 +111,55 @@ modify
 
 
 /***************** END FDR TABLE Update *******************/
+
+
+/***** JULIE: Integrate Control Functionality **************/
+alter table dynamicccsubstationbus add iVControlTot float;
+go
+update dynamicccsubstationbus set iVControlTot = 0;
+go
+alter table dynamicccsubstationbus  alter column iVControlTot float not null;
+go
+alter table dynamicccsubstationbus add iVCount numeric;
+go
+update dynamicccsubstationbus set iVCount = 0;
+go
+alter table dynamicccsubstationbus  alter column iVCount numeric not null;
+go
+alter table dynamicccsubstationbus add iWControlTot float;
+go
+update dynamicccsubstationbus set iWControlTot = 0;
+go
+alter table dynamicccsubstationbus  alter column iWControlTot float not null;
+go
+alter table dynamicccsubstationbus add iWCount numeric;
+go
+update dynamicccsubstationbus set iWCount = 0;
+go
+alter table dynamicccsubstationbus  alter column iWCount numeric not null;
+go
+alter table dynamicccfeeder add iVControlTot float;
+go
+update dynamicccfeeder set iVControlTot = 0;
+go
+alter table dynamicccfeeder  alter column iVControlTot float not null;
+go
+alter table dynamicccfeeder add iVCount numeric;
+go
+update dynamicccfeeder set iVCount = 0;
+go
+alter table dynamicccfeeder  alter column iVCount numeric not null;
+go
+alter table dynamicccfeeder add iWControlTot float;
+go
+update dynamicccfeeder set iWControlTot = 0;
+go
+alter table dynamicccfeeder  alter column iWControlTot float not null;
+go
+alter table dynamicccfeeder add iWCount numeric;
+go
+update dynamicccfeeder set iWCount = 0;
+go
+alter table dynamicccfeeder  alter column iWCount numeric not null;
+go
+/***** END JULIE: Integrate Control Functionality **************/
