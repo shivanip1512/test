@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2007/04/20 20:28:47 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2007/04/20 23:14:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4263,6 +4263,12 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                             if( !rate )     resultString += string(1, 'A' + rate - 1) + "\n";
                             else            resultString += "demand only\n";
 
+                            break;
+                        }
+
+                        case IED_Type_Sentinel:
+                        {
+                            //  doesn't support TOU rate reporting
                             break;
                         }
 
