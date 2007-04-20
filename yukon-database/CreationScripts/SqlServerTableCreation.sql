@@ -6529,7 +6529,7 @@ create table FDRTRANSLATION (
    DIRECTIONTYPE        varchar(20)          not null,
    InterfaceType        varchar(20)          not null,
    DESTINATION          varchar(20)          not null,
-   TRANSLATION          varchar(100)         not null
+   TRANSLATION          varchar(200)         not null
 )
 go
 

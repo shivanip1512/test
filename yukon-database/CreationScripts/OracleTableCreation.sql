@@ -4016,7 +4016,7 @@ create table FDRTRANSLATION  (
    DIRECTIONTYPE        VARCHAR2(20)                    not null,
    InterfaceType        VARCHAR2(20)                    not null,
    DESTINATION          VARCHAR2(20)                    not null,
-   TRANSLATION          VARCHAR2(100)                   not null
+   TRANSLATION          VARCHAR2(200)                   not null
 );
 
 alter table FDRTRANSLATION
