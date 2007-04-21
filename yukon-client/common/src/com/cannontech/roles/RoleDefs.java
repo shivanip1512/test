@@ -23,6 +23,7 @@ interface RoleDefs {
 	static final int CBC_ROLEID_BASE = -700;
 	static final int NOTIFICATIONS_ROLEID_BASE = -800;
 	static final int LM_ROLEID_BASE = -900;
+    static final int CBC_ONELINE_ROLEID_BASE = -1000;
 	
 	
 	/*
@@ -38,5 +39,6 @@ interface RoleDefs {
 	static final int CBC_PROPERTYID_BASE = -70000;
 	static final int NOTIFICATIONS_PROPERTYID_BASE = -80000;
 	static final int LM_PROPERTYID_BASE = -90000;
+    static final int CBC_ONELINE_PROPERTYID_BASE = -100000;
 
 }

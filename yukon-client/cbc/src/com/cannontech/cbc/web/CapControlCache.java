@@ -242,8 +242,12 @@ public synchronized CapBankDevice[] getCapBanksByArea(Integer areaID)
 	Vector allBanks = new Vector(64);
 	for( int i = 0; i < subs.length; i++ )
 	{
-		CapBankDevice[] capBanks = getCapBanksBySub( subs[i].getCcId() );		
-		allBanks.addAll( Arrays.asList(capBanks) );
+		SubBus subBus = subs[i];
+        if (subBus != null)
+        {
+            CapBankDevice[] capBanks = getCapBanksBySub( subBus.getCcId() );		
+    		allBanks.addAll( Arrays.asList(capBanks) );
+        }
 	}
 
 	Collections.sort( allBanks, CBCUtils.CCNAME_COMPARATOR );

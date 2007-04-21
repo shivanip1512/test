@@ -174,9 +174,12 @@ public final class CBCUtils
 		
 		for( int i = 0; i < numberOfSubs; i++ )
 		{			
-			sumOfVars += subs[i].getCurrentVarLoadPointValue().doubleValue();
-			sumOfWatts += Math.abs(subs[i].getCurrentWattLoadPointValue().doubleValue() ); 			
-			
+			SubBus subBus = subs[i];
+            if (subBus != null)
+            {
+                sumOfVars += subBus.getCurrentVarLoadPointValue().doubleValue();
+    			sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue().doubleValue() ); 			
+            }
 		}		
 		retVal  = sumOfWatts / ( Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)) );
 		if (sumOfVars < 0) {

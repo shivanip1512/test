@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.util.Vector;
 
 import com.cannontech.cbc.oneline.OneLineParams;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -22,6 +23,7 @@ public class CapControlOnelineCanvas {
     private int drawingWidth = 1200;
     private OneLineParams layoutParams;
     private OneLineDrawing drawing;
+    private LiteYukonUser user;
 
     public CapControlOnelineCanvas() {
     }
@@ -42,6 +44,7 @@ public class CapControlOnelineCanvas {
             layoutParams = new OneLineParams(drawingHeight,
                                              drawingWidth,
                                              isSingleFeeder);
+            layoutParams.setUser (user);
         }
         if (fileName != null)
             drawing = new OneLineDrawing(layoutParams, fileName);
@@ -79,5 +82,11 @@ public class CapControlOnelineCanvas {
     public void setLayoutParams(OneLineParams layoutParams) {
         this.layoutParams = layoutParams;
     }
+
+    public void setUser(LiteYukonUser u) {
+        user = u;        
+    }
+
+
 
 }

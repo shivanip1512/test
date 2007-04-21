@@ -105,7 +105,7 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		List subsAllowedToView = new ArrayList(10);
 		for (int i=0; i < subs.length; i++) {
 			SubBus sub = subs[i];
-			if (DaoFactory.getAuthDao().userHasAccessPAO(_user, sub.getCcId().intValue()))
+			if (sub != null && DaoFactory.getAuthDao().userHasAccessPAO(_user, sub.getCcId().intValue()))
 				subsAllowedToView.add(sub);
 		}
 		return ((SubBus[])subsAllowedToView.toArray(retArray));

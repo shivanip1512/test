@@ -24,8 +24,10 @@ import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -56,7 +58,11 @@ public class OnelineCBCServlet extends HttpServlet {
         SubBus subBusMsg = cache.getSubBus(currentSubId);
         String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);
         registerPointsWithDispatch(config, subBusMsg);
-        String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath);
+        
+        LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
+        
+
+        String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath, user);
         String busHTML = subName + ".html";
         //remember the location
         String subOnelineURL = "/capcontrol/oneline/" + busHTML;
@@ -80,7 +86,7 @@ public class OnelineCBCServlet extends HttpServlet {
         config.setAttribute(TAGHANDLER, handler);
     }
 
-    private String createSubBusDrawing(String redirectURL, SubBus subBusMsg, String absPath) {
+    private String createSubBusDrawing(String redirectURL, SubBus subBusMsg, String absPath, LiteYukonUser user) {
         OnelineCBCBroker util = new OnelineCBCBroker();
         //set dir base
         util.setDirBase(absPath);
@@ -93,6 +99,7 @@ public class OnelineCBCServlet extends HttpServlet {
         int height = (int)d.getHeight();
         int width = (int)d.getWidth();
         OneLineParams param = new OneLineParams(height, width, isSingleFeeder);
+        param.setUser(user);
         param.setRedirectURL(redirectURL);
         //create drawing
         CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
@@ -131,7 +138,9 @@ public class OnelineCBCServlet extends HttpServlet {
                                      .getServletContext()
                                      .getAttribute("capControlCache");
         currentSubId = ParamUtil.getInteger(req, "id");
-
+        
+        LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
+        
         SubBus msg = cache.getSubBus(currentSubId);
 
         String absPath = req.getSession()
@@ -148,6 +157,7 @@ public class OnelineCBCServlet extends HttpServlet {
                                               CBCWebUtils.ONE_LINE_DIR);
 
         CapControlOnelineCanvas view = new CapControlOnelineCanvas();
+        view.setUser (user);
         Drawing d = view.createDrawing(msg, CBCWebUtils.ONE_LINE_DIR + htmlFile);
         resp.setContentType("text/xml");
 

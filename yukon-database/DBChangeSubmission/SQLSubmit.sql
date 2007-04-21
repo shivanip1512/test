@@ -97,4 +97,73 @@ end;
 alter table ccfeederbanklist modify tripOrder number not null;
 /**** END JON!!!! THIS DON't WORKY WORKY!!! ********/
 
+/*************eliot*****************/
+/*********role properties for oneline config****/
+/*****start*************************************/
+INSERT INTO YukonRole
+VALUES(-1000, 'Substation','CBC Oneline', 'Oneline View Substation Config')
 
+INSERT INTO YukonRole
+VALUES(-1001, 'Feeder','CBC Oneline', 'Oneline View Feeder Config')
+
+INSERT INTO YukonRole
+VALUES(-1002, 'Cap Bank','CBC Oneline', 'Oneline View Cap Bank Config')
+
+go
+
+
+
+INSERT INTO YukonRoleProperty
+VALUES(-100000, -1000, 'Target', 'true', 'is target stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100001, -1000, 'Var Load', 'true', 'is target stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100002, -1000, 'Estimated Var Load', 'true', 'is Var Load stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100003, -1000, 'Power Factor', 'true', 'is Power Factor stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100004, -1000, 'Estimated Power Factor', 'true', 'is Estimated Power Factor stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100005, -1000, 'Watts', 'true', 'are Watts stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100006, -1000, 'Volts', 'true', 'are Volts stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100007, -1000, 'Daily Operation Count', 'true', 'is Daily Operation Count stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100008, -1000, 'Max Operation Count', 'true', 'is Max Operation Count stat displayed')
+
+go
+
+
+INSERT INTO YukonRoleProperty
+VALUES(-100100, -1001, 'KVAR', 'true', 'is KVAR stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100101, -1001, 'Power Factor', 'true', 'is Power Factor stat displayed')
+
+
+INSERT INTO YukonRoleProperty
+VALUES(-100102, -1001, 'WattsVolts', 'true', 'are Watts and Volts stat displayed')
+
+
+INSERT INTO YukonRoleProperty
+VALUES(-100103, -1001, 'Operation Count', 'true', 'is Daily Operation Count stat displayed')
+
+go
+
+INSERT INTO YukonRoleProperty
+VALUES(-100200, -1002, 'Op Count', 'true', 'is KVAR stat displayed')
+
+INSERT INTO YukonRoleProperty
+VALUES(-100201, -1002, 'Bank Size', 'true', 'is Bank Size stat displayed')
+
+go
+/************end********************************/

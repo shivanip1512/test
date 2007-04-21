@@ -1,11 +1,14 @@
 package com.cannontech.cbc.oneline;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
+
 public class OneLineParams {
 
     private int height;
     private int width;
     private boolean isSingleFeeder = false;
     private String redirectURL;
+    private LiteYukonUser user;
 
     public OneLineParams(int h, int w, boolean singleFdr) {
         height = h;
@@ -97,6 +100,14 @@ public class OneLineParams {
 
     public void setRedirectURL(String redirectURL) {
         this.redirectURL = redirectURL;
+    }
+
+    public void setUser(LiteYukonUser u) {
+        user = u;
+    }
+
+    public LiteYukonUser getUser() {
+        return user;
     }
 
 }

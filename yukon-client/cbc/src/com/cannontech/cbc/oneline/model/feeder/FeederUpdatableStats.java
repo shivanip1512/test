@@ -1,208 +1,77 @@
 package com.cannontech.cbc.oneline.model.feeder;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import com.cannontech.cbc.oneline.OnelineDisplayManager;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
-import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.esub.element.StaticText;
+import com.cannontech.cbc.oneline.view.AdjustablePosition;
+import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.Feeder;
 import com.loox.jloox.LxAbstractGraph;
-import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
 public class FeederUpdatableStats extends LxAbstractView implements
-        UpdatableStats {
+        UpdatableStats, AdjustablePosition {
     public static final String LBL_KVAR_LOAD = "KVAR: ";
     public static final String LBL_PFACTOR = "PF: ";
     public static final String LBL_WATT_VOLT = "Watt/Volt";
     public static final String LBL_DAILYOPS = "Daily Ops: ";
-    private UpdatableTextList varLoad = new UpdatableTextList();
-    private UpdatableTextList pFactor = new UpdatableTextList();
-    private UpdatableTextList wattVoltLoad = new UpdatableTextList();
-    private UpdatableTextList dailyOps = new UpdatableTextList();
+    private UpdatableTextList varLoad = new UpdatableTextList(CBCOnelineSettingsRole.FDR_KVAR,
+                                                              this);
+    private UpdatableTextList pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,
+                                                              this);
+    private UpdatableTextList wattVoltLoad = new UpdatableTextList(CBCOnelineSettingsRole.FDR_WATTVOLT,
+                                                                   this);
+    private UpdatableTextList dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,
+                                                               this);
     private LxGraph graph;
     private OnelineFeeder parent;
+    private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
+    private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
+    private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
 
     public FeederUpdatableStats(LxGraph graph, OnelineFeeder parent) {
         this.graph = graph;
         this.parent = parent;
+        initPropColumnMap();
+        initPropLabelMap();
+        initAllStats();
     }
 
     public void draw() {
-        addVarLoad();
-        addPFactor();
-        addWattVoltLoad();
-        addDailyOps();
+
+        filterInvisibleFromList();
+        List<UpdatableTextList> copy = adjustPosition();
+        addToGraph(graph, copy);
 
     }
 
-    private void addDailyOps() {
+    private void initPropLabelMap() {
 
-        String strLabel = LBL_DAILYOPS;
-        LxAbstractText firstElement = getWattVoltLoad().getFirstElement();
-        StaticText label = OnelineUtil.createTextElement(strLabel,
-                                                         OnelineUtil.getStartPoint(firstElement),
-                                                         null,
-                                                         new Integer((int) firstElement.getHeight() + 10));
-
-        Integer dayOp = getStreamable().getCurrentDailyOperations();
-        StaticText dayOpVal = OnelineUtil.createTextElement(dayOp + "",
-                                                            OnelineUtil.getStartPoint(label),
-                                                            new Integer((int) (label.getWidth() + 10)),
-                                                            null);
-        dayOpVal.setName("FeederStat_" + getStreamable().getCcId() + "_DAYOP");
-        StaticText separator = OnelineUtil.createTextElement(" / ",
-                                                             OnelineUtil.getStartPoint(dayOpVal),
-                                                             new Integer((int) (dayOpVal.getWidth() + 10)),
-                                                             null);
-        int maxDayOp = getStreamable().getMaxDailyOperation().intValue();
-        StaticText maxDayVal = OnelineUtil.createTextElement((maxDayOp <= 0) ? CBCDisplay.STR_NA
-                                                                     : " " + maxDayOp,
-                                                             OnelineUtil.getStartPoint(separator),
-                                                             new Integer((int) (separator.getWidth() + 10)),
-                                                             null);
-        graph.add(label);
-        graph.add(dayOpVal);
-        graph.add(separator);
-        graph.add(maxDayVal);
-        dailyOps.setFirstElement(label);
-        dailyOps.setLastElement(maxDayVal);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_KVAR, LBL_KVAR_LOAD);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_PF, LBL_PFACTOR);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_WATTVOLT, LBL_WATT_VOLT);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_OP_CNT, LBL_DAILYOPS);
 
     }
 
-    private UpdatableTextList getWattVoltLoad() {
-        return wattVoltLoad;
-    }
-
-    private void addWattVoltLoad() {
-
-        String strLabel = LBL_WATT_VOLT;
-        LxAbstractText firstElement = getPFactor().getFirstElement();
-        StaticText label = OnelineUtil.createTextElement(strLabel,
-                                                         OnelineUtil.getStartPoint(firstElement),
-                                                         null,
-                                                         new Integer((int) firstElement.getHeight() + 10));
-
-        double wats = getStreamable().getCurrentWattLoadPointValue()
-                                     .doubleValue();
-        double volts = getStreamable().getCurrentVoltLoadPointValue()
-                                      .doubleValue();
-        StaticText wattVal = OnelineUtil.createTextElement(CommonUtils.formatDecimalPlaces(wats,
-                                                                                           2),
-                                                           OnelineUtil.getStartPoint(label),
-                                                           new Integer((int) label.getWidth() + 10),
-                                                           null);
-        wattVal.setName("FeederStat_" + getStreamable().getCcId() + "_WATT");
-
-        StaticText separator = OnelineUtil.createTextElement(" / ",
-                                                             OnelineUtil.getStartPoint(wattVal),
-                                                             new Integer((int) wattVal.getWidth() + 10),
-                                                             null);
-        StaticText voltVal = OnelineUtil.createTextElement(CommonUtils.formatDecimalPlaces(volts,
-                                                                                           2),
-
-                                                           OnelineUtil.getStartPoint(separator),
-                                                           new Integer((int) separator.getWidth() + 10),
-                                                           null);
-
-        graph.add(label);
-        graph.add(wattVal);
-        graph.add(separator);
-        graph.add(voltVal);
-        wattVoltLoad.setFirstElement(label);
-        wattVoltLoad.setLastElement(voltVal);
-
-    }
-
-    private UpdatableTextList getPFactor() {
-        return pFactor;
-    }
-
-    private void addPFactor() {
-
-        String strLabel = LBL_PFACTOR;
-        StaticText staticLabel = (StaticText) getVarLoad().getFirstElement();
-        StaticText label = OnelineUtil.createTextElement(strLabel,
-                                                         OnelineUtil.getStartPoint(staticLabel),
-                                                         null,
-                                                         new Integer((int) staticLabel.getHeight() + 10));
-
-        double powerFactorValue = getStreamable().getPowerFactorValue()
-                                                 .doubleValue();
-        StaticText pfVal = OnelineUtil.createTextElement(CBCDisplay.getPowerFactorText(powerFactorValue,
-                                                                                       true),
-                                                         OnelineUtil.getStartPoint(label),
-                                                         new Integer((int) label.getWidth() + 10),
-                                                         null);
-        pfVal.setName("FeederStat_" + getStreamable().getCcId() + "_PF");
-
-        StaticText separator = OnelineUtil.createTextElement(" / ",
-                                                             OnelineUtil.getStartPoint(pfVal),
-                                                             new Integer((int) pfVal.getWidth() + 10),
-                                                             null);
-
-        double estPF = getStreamable().getEstimatedPFValue().doubleValue();
-        StaticText estPFVal = OnelineUtil.createTextElement(CBCDisplay.getPowerFactorText(estPF,
-                                                                                          true),
-                                                            OnelineUtil.getStartPoint(separator),
-                                                            new Integer((int) separator.getWidth() + 10),
-                                                            null);
-        graph.add(label);
-        graph.add(pfVal);
-        graph.add(separator);
-        graph.add(estPFVal);
-
-        pFactor.setFirstElement(label);
-        pFactor.setLastElement(estPFVal);
-
-    }
-
-    private UpdatableTextList getVarLoad() {
-        return varLoad;
-    }
-
-    private void addVarLoad() {
-
-        String strLabel = LBL_KVAR_LOAD;
-        StaticText label = OnelineUtil.createTextElement(strLabel,
-                                                         OnelineUtil.getStartPoint(getFeederName()),
-                                                         null,
-                                                         new Integer((int) getFeederName().getHeight() + 20));
-
-        double vars = getStreamable().getCurrentVarLoadPointValue()
-                                     .doubleValue();
-        double estVars = getStreamable().getEstimatedVarLoadPointValue();
-
-        StaticText varVal = OnelineUtil.createTextElement(CommonUtils.formatDecimalPlaces(vars,
-                                                                                          2),
-                                                          OnelineUtil.getStartPoint(label),
-                                                          new Integer((int) label.getWidth() + 10),
-                                                          null);
-
-        varVal.setName("FeederStat_" + getStreamable().getCcId() + "_VAR");
-
-        StaticText separator = OnelineUtil.createTextElement(" / ",
-                                                             OnelineUtil.getStartPoint(varVal),
-                                                             new Integer((int) varVal.getWidth() + 10),
-                                                             null);
-
-        StaticText estVarVal = OnelineUtil.createTextElement(CommonUtils.formatDecimalPlaces(estVars,
-                                                                                             2),
-                                                             OnelineUtil.getStartPoint(separator),
-                                                             new Integer((int) separator.getWidth() + 10),
-                                                             null);
-        graph.add(label);
-        graph.add(varVal);
-        graph.add(separator);
-        graph.add(estVarVal);
-        varLoad.setFirstElement(label);
-        varLoad.setLastElement(estVarVal);
-
+    private void initPropColumnMap() {
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_KVAR,
+                          CBCDisplay.FDR_VAR_LOAD_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_PF,
+                          CBCDisplay.FDR_POWER_FACTOR_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATTVOLT,
+                          CBCDisplay.FDR_WATTS_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_OP_CNT,
+                          CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN);
     }
 
     private Feeder getStreamable() {
@@ -228,6 +97,68 @@ public class FeederUpdatableStats extends LxAbstractView implements
 
     public void setGraph(LxAbstractGraph g) {
         graph = (LxGraph) g;
+    }
+
+    public Hashtable<Integer, Integer> getPropColumnMap() {
+        return propColumnMap;
+    }
+
+    public Hashtable<Integer, String> getPropLabelMap() {
+        return propLabelMap;
+    }
+
+    public void addToGraph(LxGraph graph, List<UpdatableTextList> copy) {
+        for (UpdatableTextList list : copy) {
+            graph.add(list.getFirstElement());
+            graph.add(list.getLastElement());
+        }
+    }
+
+    public List<UpdatableTextList> adjustPosition() {
+        List<UpdatableTextList> copy = new ArrayList<UpdatableTextList>();
+        OnelineDisplayManager manager = OnelineDisplayManager.getInstance();
+        if (allStats.size() > 0) {
+            LxComponent prevComp = getFeederName();
+            UpdatableTextList pair = manager.adjustPosition(allStats,
+                                                            prevComp,
+                                                            0,
+                                                            getStreamable());
+            copy.add(pair);
+
+        }
+        if (allStats.size() > 1) {
+            for (int i = 1; i < allStats.size(); i++) {
+                UpdatableTextList prevEl = copy.get(i - 1);
+                UpdatableTextList pair = manager.adjustPosition(allStats,
+                                                                prevEl.getFirstElement(),
+                                                                i,
+                                                                getStreamable());
+                copy.add(pair);
+            }
+        }
+        return copy;
+    }
+
+    public void filterInvisibleFromList() {
+        List<UpdatableTextList> tempList = new ArrayList<UpdatableTextList>();
+        for (UpdatableTextList list : allStats) {
+            if (list.isVisible()) {
+                tempList.add(list);
+            }
+        }
+        allStats = tempList;
+    }
+
+    public void initAllStats() {
+
+        allStats.add(varLoad);
+        allStats.add(pFactor);
+        allStats.add(wattVoltLoad);
+        allStats.add(dailyOps);
+        for (UpdatableTextList list : allStats) {
+            list.adjustVisibility();
+        }
+
     }
 
 }

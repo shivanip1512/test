@@ -1,5 +1,7 @@
 package com.cannontech.cbc.oneline.model;
 
+import java.util.Hashtable;
+
 import com.loox.jloox.LxAbstractGraph;
 
 public interface UpdatableStats {
@@ -13,5 +15,11 @@ public interface UpdatableStats {
     public LxAbstractGraph getGraph();
 
     public void setGraph(LxAbstractGraph graph);
+
+    public Hashtable<Integer, Integer> getPropColumnMap();
+
+    public Hashtable<Integer, String> getPropLabelMap();
+
+    
 
 }
