@@ -17,11 +17,10 @@
     //****
 
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
-
+	DBCopyForm cbcCopyForm = new DBCopyForm();
     if( id != PAOGroups.INVALID ) {
         JSFUtil.resetBackingBean("cbcCopyForm");
-        DBCopyForm cbcCopyForm =
-            (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
+        cbcCopyForm = (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
         cbcCopyForm.init(id);
 
     }
@@ -48,7 +47,7 @@
 			<br />
 			<fieldset>
 				<legend>
-				 Object To Copy
+				 Object To Copy: <%=cbcCopyForm.getPaoName()%>
 				</legend>
 				<br/> <br/>
 	</f:verbatim>
