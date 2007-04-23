@@ -28,14 +28,31 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <!-- Pao Permission Service -->
     <bean id="paoPermissionService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl">
 	    <property name="groupDao" ref="yukonGroupDao" />
-	    <property name="paoPermissionDao" ref="paoPermissionDao" />
+	    <property name="groupPaoPermissionDao" ref="groupPaoPermissionDao" />
+	    <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />
     </bean>
     
     <!-- Authorization Daos -->
-    <bean id="paoPermissionDao" class="com.cannontech.core.authorization.dao.PaoPermissionDaoImpl" >
+    <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
     	<property name="jdbcOps" ref="jdbcTemplate" />
     	<property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
+	
+    <bean id="groupPaoPermissionDao" class="com.cannontech.core.authorization.dao.GroupPaoPermissionDaoImpl" >
+    	<property name="jdbcOps" ref="jdbcTemplate" />
+    	<property name="nextValueHelper" ref="nextValueHelper" />
+    </bean>
+    
+  	<bean id="userEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
+		<property name="paoDao" ref="paoDao" />
+		<property name="permissionDao" ref="userPaoPermissionDao" />
+	</bean>
+    
+	<bean id="groupEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
+		<property name="paoDao" ref="paoDao" />
+		<property name="permissionDao" ref="groupPaoPermissionDao" />
+	</bean>
+ 
 	
 	<!-- Pao checkers -->
     <!-- Pao checker which matches LM paos -->

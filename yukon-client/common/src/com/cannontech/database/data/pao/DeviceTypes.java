@@ -126,9 +126,12 @@ public interface DeviceTypes extends TypeBase
     public final static int MCT430IN                  = DEVICE_OFFSET + 97;
     
     public final static int CCU721                  = DEVICE_OFFSET + 98;
+
+    public final static int SIMPLE_SCHEDULE                = DEVICE_OFFSET + 99;
+    public final static int SCRIPT                        = DEVICE_OFFSET + 100;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 98;
+	public final static int DEVICE_TYPES_COUNT = 100;
 	
 
 	//all the possible text representation of each device type.

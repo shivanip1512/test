@@ -4,17 +4,16 @@ import com.cannontech.core.authorization.support.Permission;
 
 public class UserPaoPermission implements PaoPermission {
 
-    private int id;
     private int userId;
     private int paoId;
     private Permission permission = null;
 
     public int getId() {
-        return id;
+        return userId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public int getPaoId() {

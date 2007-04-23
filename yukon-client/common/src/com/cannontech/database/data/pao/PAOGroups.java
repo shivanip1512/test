@@ -1,5 +1,7 @@
 package com.cannontech.database.data.pao;
 
+import com.cannontech.message.macs.message.Schedule;
+
 //import com.cannontech.database.data.customer.*;
 
 /**
@@ -21,6 +23,7 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    	public static final String STRING_CAT_CUSTOMER = "CUSTOMER";
    	public static final String STRING_CAT_CAPCONTROL = "CAPCONTROL";
    	public static final String STRING_CAT_LOADMANAGEMENT = "LOADMANAGEMENT";
+   	public static final String STRING_CAT_MACS_SCHEDULE = "SCHEDULE";
    	public static final String STRING_INVALID = "(invalid)";
 
 
@@ -313,6 +316,10 @@ public final static int getDeviceType(String typeString)
         return CBC_7023;
     else if (isStringDevice(compareString, STRING_CBC_7020[3]))
         return CBC_7024;
+    else if (isStringDevice(compareString, Schedule.SIMPLE_TYPE))
+        return SIMPLE_SCHEDULE;
+    else if (isStringDevice(compareString, Schedule.SCRIPT_TYPE))
+        return SCRIPT;
    	else
 	  return INVALID;
 }
@@ -586,6 +593,10 @@ public final static String getPAOTypeString(int type)
             return STRING_CBC_7020[2];
         case CBC_7024:
             return STRING_CBC_7020[3];
+        case SIMPLE_SCHEDULE:
+            return Schedule.SIMPLE_TYPE;
+        case SCRIPT:
+            return Schedule.SCRIPT_TYPE;
             
  	  	default:
 		  	return STRING_INVALID;
@@ -674,7 +685,8 @@ public final static int getPAOType( String category, String paoType )
 		return getRouteType( paoType );
 	}
 	else if( category.equalsIgnoreCase(STRING_CAT_DEVICE)
-		  		|| category.equalsIgnoreCase(STRING_CAT_LOADMANAGEMENT) )
+		  		|| category.equalsIgnoreCase(STRING_CAT_LOADMANAGEMENT)
+                || category.equalsIgnoreCase(STRING_CAT_MACS_SCHEDULE))
 	{
 		return getDeviceType( paoType );
 	}

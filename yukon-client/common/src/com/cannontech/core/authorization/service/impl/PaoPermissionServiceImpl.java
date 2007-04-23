@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
-import com.cannontech.core.authorization.model.GroupPaoPermission;
+import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
@@ -20,11 +20,16 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class PaoPermissionServiceImpl implements PaoPermissionService {
 
-    PaoPermissionDao paoPermissionDao = null;
+    public PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao = null;
+    public PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
     YukonGroupDao groupDao = null;
 
-    public void setPaoPermissionDao(PaoPermissionDao paoPermissionDao) {
-        this.paoPermissionDao = paoPermissionDao;
+    public void setGroupPaoPermissionDao(PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao) {
+        this.groupPaoPermissionDao = groupPaoPermissionDao;
+    }
+
+    public void setUserPaoPermissionDao(PaoPermissionDao<LiteYukonUser> userPaoPermissionDao) {
+        this.userPaoPermissionDao = userPaoPermissionDao;
     }
 
     public void setGroupDao(YukonGroupDao groupDao) {
@@ -36,11 +41,11 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         UserGroupPermissionList permissionList = new UserGroupPermissionList();
 
         // Get permissions for user
-        permissionList.setUserPermissionList(paoPermissionDao.getUserPermissions(user));
+        permissionList.setUserPermissionList(userPaoPermissionDao.getPermissions(user));
 
         // Get permissions for all groups that the user is in
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
-        permissionList.setGroupPermissionList(paoPermissionDao.getGroupPermissions(userGroups));
+        permissionList.setGroupPermissionList(groupPaoPermissionDao.getPermissions(userGroups));
 
         return permissionList;
     }
@@ -51,21 +56,25 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         UserGroupPermissionList permissionList = new UserGroupPermissionList();
 
         // Get permissions for user
-        permissionList.setUserPermissionList(paoPermissionDao.getUserPermissionsForPao(user, pao));
+        permissionList.setUserPermissionList(userPaoPermissionDao.getPermissionsForPao(user, pao));
 
         // Get permissions for all groups that the user is in
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
-        permissionList.setGroupPermissionList(paoPermissionDao.getGroupPermissions(userGroups));
+        permissionList.setGroupPermissionList(groupPaoPermissionDao.getPermissions(userGroups));
 
         return permissionList;
     }
 
     public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-        paoPermissionDao.addUserPermission(user, pao, permission);
+        userPaoPermissionDao.addPermission(user, pao, permission);
     }
 
     public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-        paoPermissionDao.removeUserPermission(user, pao, permission);
+        userPaoPermissionDao.removePermission(user, pao, permission);
+    }
+
+    public void removeAllUserPermissions(int userId) {
+        userPaoPermissionDao.removeAllPermissions(userId);
     }
 
     public boolean hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
@@ -73,50 +82,53 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         // Get all groups that the user is in
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
 
-        return paoPermissionDao.isUserHasPermissionForPao(user, pao, permission)
-                || paoPermissionDao.isGroupHasPermissionForPao(userGroups, pao, permission);
+        return userPaoPermissionDao.hasPermissionForPao(user, pao, permission)
+                || groupPaoPermissionDao.hasPermissionForPao(userGroups, pao, permission);
     }
 
     public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission) {
-        paoPermissionDao.addGroupPermission(group, pao, permission);
+        groupPaoPermissionDao.addPermission(group, pao, permission);
     }
 
-    public List<GroupPaoPermission> getGroupPermissions(LiteYukonGroup group) {
-        return paoPermissionDao.getGroupPermissions(group);
+    public List<PaoPermission> getGroupPermissions(LiteYukonGroup group) {
+        return groupPaoPermissionDao.getPermissions(group);
     }
 
-    public List<GroupPaoPermission> getGroupPermissions(List<LiteYukonGroup> groupList) {
-        return paoPermissionDao.getGroupPermissions(groupList);
+    public List<PaoPermission> getGroupPermissions(List<LiteYukonGroup> groupList) {
+        return groupPaoPermissionDao.getPermissions(groupList);
     }
 
-    public List<GroupPaoPermission> getGroupPermissionsForPao(LiteYukonGroup group,
-            LiteYukonPAObject pao) {
-        return paoPermissionDao.getGroupPermissionsForPao(group, pao);
+    public List<PaoPermission> getGroupPermissionsForPao(LiteYukonGroup group, LiteYukonPAObject pao) {
+        return groupPaoPermissionDao.getPermissionsForPao(group, pao);
     }
 
     public boolean hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
-        return paoPermissionDao.isGroupHasPermissionForPao(group, pao, permission);
+        return groupPaoPermissionDao.hasPermissionForPao(group, pao, permission);
     }
 
     public boolean hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
-        return paoPermissionDao.isGroupHasPermissionForPao(groupList, pao, permission);
+        return groupPaoPermissionDao.hasPermissionForPao(groupList, pao, permission);
     }
 
     public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission) {
-        paoPermissionDao.removeGroupPermission(group, pao, permission);
+        groupPaoPermissionDao.removePermission(group, pao, permission);
+    }
+
+    public void removeAllGroupPermissions(LiteYukonGroup group) {
+        groupPaoPermissionDao.removeAllPermissions(group);
     }
 
     public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission) {
 
         // Get paos for user
-        List<Integer> userPaoIdList = paoPermissionDao.getPaosForUserPermission(user, permission);
+        List<Integer> userPaoIdList = userPaoPermissionDao.getPaosForPermission(user, permission);
         Set<Integer> paoIdSet = new HashSet<Integer>(userPaoIdList);
 
         // Get paos for user's groups
-        List<Integer> groupPaoIdList = paoPermissionDao.getPaosForGroupPermission(groupDao.getGroupsForUser(user.getUserID()),
+        List<Integer> groupPaoIdList = groupPaoPermissionDao.getPaosForPermission(groupDao.getGroupsForUser(user.getUserID()),
                                                                                   permission);
         Set<Integer> groupPaoIdSet = new HashSet<Integer>(groupPaoIdList);
 
@@ -125,15 +137,21 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
         return paoIdSet;
     }
-    
+
     public Set<Integer> getPaoIdsForGroupPermission(LiteYukonGroup group, Permission permission) {
 
         // Get paos for group
         List<LiteYukonGroup> groupList = new ArrayList<LiteYukonGroup>();
         groupList.add(group);
-        List<Integer> groupPaoIdList = paoPermissionDao.getPaosForGroupPermission(groupList, permission);
+        List<Integer> groupPaoIdList = groupPaoPermissionDao.getPaosForPermission(groupList,
+                                                                                  permission);
         Set<Integer> groupPaoIdSet = new HashSet<Integer>(groupPaoIdList);
 
         return groupPaoIdSet;
+    }
+
+    public void removeAllPaoPermissions(int paoId) {
+        userPaoPermissionDao.removeAllPaoPermissions(paoId);
+        groupPaoPermissionDao.removeAllPaoPermissions(paoId);
     }
 }

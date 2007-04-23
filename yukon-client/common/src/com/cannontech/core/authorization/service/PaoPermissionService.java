@@ -3,7 +3,7 @@ package com.cannontech.core.authorization.service;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.core.authorization.model.GroupPaoPermission;
+import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -51,6 +51,12 @@ public interface PaoPermissionService {
     public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
 
     /**
+     * Method to remove all permissions for a given user.
+     * @param userId - Id of user to remove permissions for
+     */
+    public void removeAllUserPermissions(int userId);
+
+    /**
      * Method to determine if a user has a given permission
      * @param user - User for the permission
      * @param pao - Pao for the permission
@@ -84,14 +90,14 @@ public interface PaoPermissionService {
      * @param group - Group to get permissions for
      * @return List of permissions
      */
-    public List<GroupPaoPermission> getGroupPermissions(LiteYukonGroup group);
+    public List<PaoPermission> getGroupPermissions(LiteYukonGroup group);
 
     /**
      * Method to get all of the group pao permissions for a list of groups
      * @param groupList - List of groups to get permissions for
      * @return List of permission
      */
-    public List<GroupPaoPermission> getGroupPermissions(List<LiteYukonGroup> groupList);
+    public List<PaoPermission> getGroupPermissions(List<LiteYukonGroup> groupList);
 
     /**
      * Method to get a list of group pao permissions for a given group and pao
@@ -99,8 +105,7 @@ public interface PaoPermissionService {
      * @param pao - Pao to get permissions for
      * @return List of permissions
      */
-    public List<GroupPaoPermission> getGroupPermissionsForPao(LiteYukonGroup group,
-            LiteYukonPAObject pao);
+    public List<PaoPermission> getGroupPermissionsForPao(LiteYukonGroup group, LiteYukonPAObject pao);
 
     /**
      * Method to add a group pao permission
@@ -121,6 +126,12 @@ public interface PaoPermissionService {
             Permission permission);
 
     /**
+     * Method to remove all permissions for a given group.
+     * @param group - Group to remove permissions for
+     */
+    public void removeAllGroupPermissions(LiteYukonGroup group);
+
+    /**
      * Method to get a list of pao ids for a given user and permission
      * @param user - User to get pao ids for
      * @param permission - Permission in question
@@ -128,7 +139,7 @@ public interface PaoPermissionService {
      *         groups the user is in
      */
     public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission);
-    
+
     /**
      * Method to get a list of pao ids for a given login group and permission
      * @param group - Group to get pao ids for
@@ -136,4 +147,10 @@ public interface PaoPermissionService {
      * @return All pao ids with the given permission for the login group
      */
     public Set<Integer> getPaoIdsForGroupPermission(LiteYukonGroup group, Permission permission);
+
+    /**
+     * Method to remove all user and group permissions for a given pao
+     * @param paoId - Id of pao to remove permissions for
+     */
+    public void removeAllPaoPermissions(int paoId);
 }

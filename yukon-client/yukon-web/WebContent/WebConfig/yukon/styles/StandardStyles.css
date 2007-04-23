@@ -225,6 +225,10 @@ div.styledContainer .content
 	border-color: #06C !important;
 }
 
+tr.altRow {
+	background-color: #DDD;
+}
+
 /* used for "CSS" Icons in the clearbits folder */
 img.cssicon, input.cssicon {
   background-color: #C30;

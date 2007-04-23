@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -77,8 +78,8 @@ public class YukonGroup extends DBPersistent implements com.cannontech.database.
 		delete( YukonGroupRole.TABLE_NAME, "GroupID", getYukonGroup().getGroupID() );
 		delete( com.cannontech.database.db.user.YukonGroup.TBL_YUKON_USER_GROUP, 
 					"GroupID", getYukonGroup().getGroupID() );
-        PaoPermissionDao paoPermissionDao = (PaoPermissionDao) YukonSpringHook.getBean("paoPermissionDao");
-        paoPermissionDao.removeAllGroupPermissions(getGroupID());
+        PaoPermissionDao<LiteYukonGroup> paoPermissionDao = (PaoPermissionDao<LiteYukonGroup>) YukonSpringHook.getBean("groupPaoPermissionDao");
+        paoPermissionDao.removeAllPermissions(getGroupID());
         
 		getYukonGroup().delete();
 	}

@@ -373,7 +373,7 @@
 			</cti:checkProperty>
 			<cti:checkProperty property="AdministratorRole.ADMIN_LM_USER_ASSIGN"> 
 	            <tags:sectionLink>
-	            	<a href="/picker/userlm">LM Visibility <br/> User Assignment</a>
+	            	<a href="/spring/editor/userGroupSelector">User/Group Editor</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
             <tags:sectionLink>

@@ -10,11 +10,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.search.YukonObjectCriteria;
-import com.cannontech.common.search.UserSearcher;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightYukonUser;
-import com.cannontech.user.UserUtils;
+import com.cannontech.common.search.UserSearcher;
+import com.cannontech.common.search.YukonObjectCriteria;
 import com.cannontech.web.picker.YukonObjectPickerController;
 
 public class UserPickerController extends YukonObjectPickerController {

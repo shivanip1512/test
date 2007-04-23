@@ -2,158 +2,109 @@ package com.cannontech.core.authorization.dao;
 
 import java.util.List;
 
-import com.cannontech.core.authorization.model.GroupPaoPermission;
-import com.cannontech.core.authorization.model.UserPaoPermission;
+import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
- * Dao for user pao permissions
+ * Dao for pao permissions
  */
-public interface PaoPermissionDao {
+public interface PaoPermissionDao<T> {
 
     /**
-     * Method to get a list of user pao permissions for a given user
-     * @param user - User to get permissions for
+     * Method to get a list of pao permissions for a given thing
+     * @param it - Thing to get permissions for
      * @return List of permissions
      */
-    public List<UserPaoPermission> getUserPermissions(LiteYukonUser user);
+    public List<PaoPermission> getPermissions(T it);
 
     /**
-     * Method to get a list of user pao permissions for a given user and pao
-     * @param user - User to get permissions for
+     * Method to get a list of all pao permissions for a list of things
+     * @param itList - List of things to get permissions for
+     * @return List of permissions
+     */
+    public List<PaoPermission> getPermissions(List<T> itList);
+
+    /**
+     * Method to get a list of pao permissions for a given thing and pao
+     * @param it - Thing to get permissions for
      * @param pao - Pao to get permissions for
      * @return List of permissions
      */
-    public List<UserPaoPermission> getUserPermissionsForPao(LiteYukonUser user,
-            LiteYukonPAObject pao);
+    public List<PaoPermission> getPermissionsForPao(T it, LiteYukonPAObject pao);
 
     /**
-     * Method to determine if a user has a permission for a pao
-     * @param user - User to determine permission for
+     * Method to get all paoids for which the thing has the given permission
+     * @param it - Thing to get paoids for
+     * @param permission - Permission in question
+     * @return A list of paoids
+     */
+    public List<Integer> getPaosForPermission(T it, Permission permission);
+
+    /**
+     * Method to get all paoids for which the any of the things in the list has
+     * the given permission
+     * @param itList - List of things to check permission for
+     * @param permission - Permission in question
+     * @return A list of paoids
+     */
+    public List<Integer> getPaosForPermission(List<T> itList, Permission permission);
+
+    /**
+     * Method to determine if a thing has a permission for a pao
+     * @param it - Thing to determine permission for
      * @param pao - Pao to determine permission for
      * @param permission - Permission in question
-     * @return True if the user has the permission for the pao
+     * @return True if the thing has the permission for the pao
      */
-    public boolean isUserHasPermissionForPao(LiteYukonUser user, LiteYukonPAObject pao,
-            Permission permission);
+    public boolean hasPermissionForPao(T it, LiteYukonPAObject pao, Permission permission);
 
     /**
-     * Method to add a user pao permission
-     * @param user - User for the permission
+     * Method to determine if any of the things in the list have a given
+     * permission for a pao
+     * @param itList - List of things to check permission for
+     * @param pao - Pao to determine permission for
+     * @param permission - Permission in question
+     * @return True if any of the things in the list have the permission for the
+     *         pao
+     */
+    public boolean hasPermissionForPao(List<T> itList, LiteYukonPAObject pao, Permission permission);
+
+    /**
+     * Method to add a pao permission for a thing
+     * @param it - Thing to get permission
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addUserPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
+    public void addPermission(T it, LiteYukonPAObject pao, Permission permission);
 
     /**
-     * Method to remove a user pao permission
-     * @param user - User for the permission
+     * Method to remove a pao permission for a thing
+     * @param it - Thing to remove permission from
      * @param pao - Pao for the permission
      * @param permission - Permission to remove
      */
-    public void removeUserPermission(LiteYukonUser user, LiteYukonPAObject pao,
-            Permission permission);
+    public void removePermission(T it, LiteYukonPAObject pao, Permission permission);
 
     /**
-     * Method to get a list of group pao permissions for a given group
-     * @param group - Group to get permissions for
-     * @return List of permissions
+     * Method to remove all permissions for a given thing. (Can be used when
+     * deleting the thing)
+     * @param it - Thing to remove permissions for
      */
-    public List<GroupPaoPermission> getGroupPermissions(LiteYukonGroup group);
+    public void removeAllPermissions(T it);
 
     /**
-     * Method to get all of the group pao permissions for a list of groups
-     * @param groupList - List of groups to get permissions for
-     * @return List of permission
+     * Method to remove all permissions for a given thing. (Can be used when
+     * deleting the thing)
+     * @param id - Id of the thing to remove permissions for
      */
-    public List<GroupPaoPermission> getGroupPermissions(List<LiteYukonGroup> groupList);
+    public void removeAllPermissions(int id);
 
     /**
-     * Method to get a list of group pao permissions for a given group and pao
-     * @param group - Group to get permissions for
-     * @param pao - Pao to get permissions for
-     * @return List of permissions
-     */
-    public List<GroupPaoPermission> getGroupPermissionsForPao(LiteYukonGroup group,
-            LiteYukonPAObject pao);
-
-    /**
-     * Method to determine if a group has a permission for a pao
-     * @param group - Group to determine permission for
-     * @param pao - Pao to determine permission for
-     * @param permission - Permission in question
-     * @return True if the group has the permission for the pao
-     */
-    public boolean isGroupHasPermissionForPao(LiteYukonGroup group, LiteYukonPAObject pao,
-            Permission permission);
-
-    /**
-     * Method to determine if any group in the list has a permission for a pao
-     * @param groupList - List of groups to determine permission for
-     * @param pao - Pao to determine permission for
-     * @param permission - Permission in question
-     * @return True if any group in the list has the permission for the pao
-     */
-    public boolean isGroupHasPermissionForPao(List<LiteYukonGroup> groupList,
-            LiteYukonPAObject pao, Permission permission);
-
-    /**
-     * Method to add a group pao permission
-     * @param group - Group for the permission
-     * @param pao - Pao for the permission
-     * @param permission - Permission to add
-     */
-    public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
-            Permission permission);
-
-    /**
-     * Method to remove a group pao permission
-     * @param group - Group for the permission
-     * @param pao - Pao for the permission
-     * @param permission - Permission to remove
-     */
-    public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
-            Permission permission);
-
-    /**
-     * Method to remove all permissions for a given pao. (Can be used when
-     * deleting a pao)
+     * Method to remove all paoPermissions for a given pao related to the type
+     * <T> of this dao
      * @param paoId - Id of pao to remove permissions for
      */
     public void removeAllPaoPermissions(int paoId);
 
-    /**
-     * Method to remove all permissions for a given user. (Can be used when
-     * deleting a user)
-     * @param userId - Id of user to remove permissions for
-     */
-    public void removeAllUserPermissions(int userId);
-
-    /**
-     * Method to remove all permissions for a given group. (Can be used when
-     * deleting a group)
-     * @param groupId - Id of user to remove permissions for
-     */
-    public void removeAllGroupPermissions(int groupId);
-
-    /**
-     * Method to get all paoids for which the user has the given permission
-     * @param user - User to get paoids for
-     * @param permission - Permission in question
-     * @return A list of paoids
-     */
-    public List<Integer> getPaosForUserPermission(LiteYukonUser user, Permission permission);
-
-    /**
-     * Method to get all paoids for which any of the groups have the given
-     * permission
-     * @param groupList - List of groups to get paoids for
-     * @param permission - Permission in question
-     * @return A list of paoids
-     */
-    public List<Integer> getPaosForGroupPermission(List<LiteYukonGroup> groupList,
-            Permission permission);
 }

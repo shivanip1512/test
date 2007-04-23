@@ -7,8 +7,6 @@
             <value>
                 /point/test=testpage
                 /point/*=PointPickerController
-                /userlm=userlm
-                /userlm/*=UserLMAssignmentController
                 /user/*=UserPickerController
                 /loginGroup/*=LoginGroupPickerController
                 /pao/*=PaoPickerController
@@ -105,33 +103,6 @@
             <value type="boolean">true</value>
         </property>
         <property name="paoTypeSearcher" ref="paoTypeSearcher"/>
-    </bean>
-    
-    <bean id="userlm" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="/user/userlm"/>
-    </bean>
-    
-    <bean id="UserLMAssignmentController" class="com.cannontech.web.picker.user.UserLMAssignmentController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="validators">
-            <null />
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="yukonGroupDao" ref="yukonGroupDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
-        <property name="paoPermissionService" ref="paoPermissionService"/>
     </bean>
     
 </beans>

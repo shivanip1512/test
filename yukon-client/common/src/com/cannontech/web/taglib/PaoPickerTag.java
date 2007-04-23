@@ -33,7 +33,7 @@ public class PaoPickerTag extends ItemPickerTag {
         String initString = "\'"
             + itemIdField + "\','" + constraint + "','" 
             + extraMappingString + "','" + pickerId + "','"
-            + request.getContextPath() + "','" + finalTriggerAction + "'";
+            + request.getContextPath() + "'," + finalTriggerAction;
         getJspContext().getOut().println("<script> var " + pickerId + " = new PaoPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
         String outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";

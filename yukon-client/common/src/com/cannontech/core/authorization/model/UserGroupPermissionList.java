@@ -8,22 +8,22 @@ import java.util.List;
  */
 public class UserGroupPermissionList {
 
-    private List<UserPaoPermission> userPermissionList = null;
-    private List<GroupPaoPermission> groupPermissionList = null;
+    private List<PaoPermission> userPermissionList = null;
+    private List<PaoPermission> groupPermissionList = null;
 
-    public List<GroupPaoPermission> getGroupPermissionList() {
+    public List<PaoPermission> getGroupPermissionList() {
         return groupPermissionList;
     }
 
-    public void setGroupPermissionList(List<GroupPaoPermission> groupPermissionList) {
+    public void setGroupPermissionList(List<PaoPermission> groupPermissionList) {
         this.groupPermissionList = groupPermissionList;
     }
 
-    public List<UserPaoPermission> getUserPermissionList() {
+    public List<PaoPermission> getUserPermissionList() {
         return userPermissionList;
     }
 
-    public void setUserPermissionList(List<UserPaoPermission> userPermissionList) {
+    public void setUserPermissionList(List<PaoPermission> userPermissionList) {
         this.userPermissionList = userPermissionList;
     }
 
