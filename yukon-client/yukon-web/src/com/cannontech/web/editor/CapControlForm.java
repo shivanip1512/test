@@ -449,7 +449,7 @@ public class CapControlForm extends DBEditorForm{
 					paoTypeNode.getChildren().set(j, newPAO);					
 				}
 			}
-			if (((TreeNodeBase) paoTypeNode).getChildren().size() > 0)
+			if (paoTypeNode.getChildren().size() > 0)
 				rootNode.getChildren().add(paoTypeNode);
 		}
 		
@@ -956,7 +956,8 @@ public class CapControlForm extends DBEditorForm{
                     }
                 }
             }
-            getDataModel().updateDataModel();    
+            if (getDataModel() != null)
+                getDataModel().updateDataModel();    
             
             if (getDbPersistent().getDbConnection() == null)
             {
@@ -1305,8 +1306,8 @@ public class CapControlForm extends DBEditorForm{
 	 * 
 	 */
 	public void createStrategy() {
-
-		CapControlStrategy ccStrat = CCYukonPAOFactory
+        currentStratModel = null;
+        CapControlStrategy ccStrat = CCYukonPAOFactory
 				.createCapControlStrategy();
 		Integer newID = CapControlStrategy.getNextStrategyID();
 		ccStrat.setStrategyID(newID);

@@ -129,10 +129,12 @@ if( subBus != null ) {
 
 		<a id="subSnapShot">
 		<%
-		SubSnapshotParams snap =  CBCUtils.getSubSnapshot(subBus.getCcId().intValue());
-		int varPoint = subBus.getCurrentVarLoadPointID().intValue();
-		int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
-		int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
+		if (subBus != null)
+		{
+			SubSnapshotParams snap =  CBCUtils.getSubSnapshot(subBus.getCcId().intValue());
+			int varPoint = subBus.getCurrentVarLoadPointID().intValue();
+			int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
+			int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
 		%>
 		        <tr class="tableCell" style="display: none;">
 		        <td>
@@ -164,7 +166,9 @@ if( subBus != null ) {
 				</tr>
 			</a>
 
-
+<% 
+		}
+%>
 			</table>
 		</cti:titledContainer>
 

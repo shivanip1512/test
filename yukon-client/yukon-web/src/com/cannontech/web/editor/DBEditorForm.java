@@ -69,7 +69,8 @@ public abstract class DBEditorForm
 	 * Updates a given DB object.
 	 */
 	protected void updateDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
-		if( facesMsg == null ) facesMsg = new FacesMessage();
+		Connection conn = prehandleDbConnection(db);
+        if( facesMsg == null ) facesMsg = new FacesMessage();
         
 		try {
 			Transaction t = Transaction.createTransaction( Transaction.UPDATE, db );
@@ -93,9 +94,49 @@ public abstract class DBEditorForm
             }
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
-     
+		finally {
+		    posthandleDbConnection(conn);
+        }
 		
 	}
+/**
+ * closes the connection if it was open
+ * @param conn
+ */
+
+    private void posthandleDbConnection(Connection conn) {
+        if (conn  != null)
+        {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                CTILogger.error(e);
+            }
+        }
+    }
+
+
+   /**
+    * Sets up the db object with a new connection if one doesn't exist or closed
+    * @param db
+    * @return the reference to the newly created connection or null if no connection was created - which would
+    * happen in case when one already existed
+    */
+    private Connection prehandleDbConnection(DBPersistent db) {
+        Connection conn = null;
+        try {
+               if (db.getDbConnection() == null || db.getDbConnection().isClosed())
+                {
+                    conn = CBCDBUtil.getConnection();
+                    db.setDbConnection( conn);
+                    
+                }
+            } 
+        catch (SQLException e1) {
+            CTILogger.error(e1);
+        }
+        return conn;
+    }
 
 
 

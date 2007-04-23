@@ -150,7 +150,7 @@
 			<f:verbatim><br/></f:verbatim>
 			<h:selectBooleanCheckbox id="Disabled_Ops" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].maxOperationDisabled}"
 					disabled="#{!capControlForm.editingCBCStrategy}" />
-			<x:outputLabel for="DisabledOps" value="Disable upon reaching max operations" 
+			<x:outputLabel for="Disabled_Ops" value="Disable upon reaching max operations" 
                 title="Should we be automatically disabled after reaching our max op counts"/>
 			<f:verbatim></fieldset></f:verbatim>
 		</h:column>
