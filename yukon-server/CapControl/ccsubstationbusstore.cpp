@@ -5252,7 +5252,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                       
                          for(LONG i=0;i<feedCount;i++)
                          {
-                             CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.begin();
+                             CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
                              CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
                              long capCount = ccCapBanks.size();
                              for (LONG j = 0; j < capCount; j++)
@@ -5320,7 +5320,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
             long feedCount = ccFeeders.size();
             for(LONG i=0;i<feedCount;i++)
             {
-                CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.begin();
+                CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
                 CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
                 long capCount = ccCapBanks.size();
                 for (LONG j = 0; j < capCount; j++)
