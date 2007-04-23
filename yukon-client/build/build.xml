@@ -207,7 +207,7 @@
         <ant dir="${yukon-web}" target="webcopy"/> 
     </target>
 
-	<target name="sign" depends="build">
+	<target name="sign">
 		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}" keystore="${jarsign.keystore}">
 			<fileset dir="${yukon.lib}">
 				<include name="*.jar"/>

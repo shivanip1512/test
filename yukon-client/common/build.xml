@@ -18,11 +18,9 @@
 	      </classpath> 
      	</javac>
 
-       <property name="manifest.yukon.build.version" value="${yukon.build.version}"/>
-       
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
             <manifest>
-                <attribute name="Yukon-Version" value="${manifest.yukon.build.version}"/>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
             </manifest>      
 		    <fileset dir="resource">
 				<include name="**/*.gif"/>
