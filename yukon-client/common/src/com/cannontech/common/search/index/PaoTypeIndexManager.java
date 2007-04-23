@@ -23,7 +23,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected int getIndexVersion() {
-        return 1;
+        return 2;
     }
 
     protected Analyzer getAnalyzer() {
@@ -88,7 +88,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND pao.paoid = ?");
+        sql.append(" WHERE pao.paoid = ?");
 
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { paoId },

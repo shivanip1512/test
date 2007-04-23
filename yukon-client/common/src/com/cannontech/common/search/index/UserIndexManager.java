@@ -24,7 +24,7 @@ public class UserIndexManager extends AbstractIndexManager {
     }
 
     protected int getIndexVersion() {
-        return 1;
+        return 2;
     }
 
     protected Analyzer getAnalyzer() {
@@ -35,7 +35,7 @@ public class UserIndexManager extends AbstractIndexManager {
         String query = "select *                                                        "
                 + " from                                                                "
                 + "     yukonuser where userid >= " + UserUtils.USER_YUKON_ID + " and   "
-                + " not userid = " + UserUtils.USER_ADMIN_ID + " order by username      ";
+                + " not userid = " + UserUtils.USER_ADMIN_ID;
         return query;
     }
 
@@ -92,7 +92,7 @@ public class UserIndexManager extends AbstractIndexManager {
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND user.userid = ?");
+        sql.append(" AND userid = ?");
 
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { userId },
