@@ -47,7 +47,7 @@
 			<br />
 			<fieldset>
 				<legend>
-				 Object To Copy: <%=cbcCopyForm.getPaoName()%>
+				 Object To Copy: ${ cbcCopyForm.paoName }
 				</legend>
 				<br/> <br/>
 	</f:verbatim>
