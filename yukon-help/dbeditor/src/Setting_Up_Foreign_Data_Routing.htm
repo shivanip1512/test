@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="01 23, 2006 4:08:08 PM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Setting Up Foreign Data Routing">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=730>
-<meta name=layout-width content=687>
-<meta name=date content="01 23, 2006 4:08:08 PM">
+<meta name=layout-height content=765>
+<meta name=layout-width content=692>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;TOU;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;IVR;Timeout;Esub;Esubstation;Grp;E-mail;otification;fixVar;epeaters;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;DrivePath;XA;ACSMULTI;BEPC;LIVEDATA">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Setting Up Foreign Data Routing"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -55,8 +57,8 @@
  The available interfaces are: ACS, ACSMULTI, BEPC, <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->CYGNET, 
  DSM2FILEIN, DSM2IMPORT, INET, LIVEDATA, LODESTAR_ENH, LOADSTAR_STD, PI, 
  RCCS, RDEX, STEC, SYSTEM, TELGYR, TEXTEXPORT, TEXTIMPORT, TRISTATE, VALMET, 
- and XA21LM. The Data Parameters change depending on the type of interface 
- you select.</p></li>
+ WABASH, and XA21LM. The Data Parameters change depending on the type of 
+ interface you select.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a data direction 
  from the <span style="font-weight: bold;">Direction</span> drop-down list. 
@@ -140,6 +142,12 @@
  select the group from the <span style="font-weight: bold;">Group</span> 
  drop-down list.</p></li>
 		
+		<li class=kadov-p><p>If you selected WABASH, enter the schedule 
+ name in <span style="font-weight: bold;">SchedName</span> text box, enter 
+ the file path in the <span style="font-weight: bold;">Path</span> text 
+ box, and enter the name of the file in the <span style="font-weight: bold;">File 
+ Name</span> text box.</p></li>
+		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">If you selected 
  XA21LM, enter the point number of the point on the XA/21 system in the 
  <span style="font-weight: bold;">Translation</span> text box.</p></li>
@@ -161,23 +169,24 @@
 				margin-right: 0px;
 				vertical-align: baseline;"
 		align=bottom>
-<param name=_Version value="65536" >
-<param name=_ExtentX value="2117" >
-<param name=_ExtentY value="556" >
-<param name=_StockProps value="13" >
-<param name=ForeColor value="0" >
-<param name=BackColor value="13160660" >
-<param name=UseButton value="-1" >
-<param name=ControlLabel value="Related Topics" >
-<param name=UseIcon value="0" >
-<param name=Items value="Editing a Core Database Point;Editing_a_Point.htm$$**$$Editing a Load Management Point;Editing_a_Load_Management_Point.htm$$**$$" >
-<param name=Image value="" >
-<param name=FontInfo value="MS Sans Serif,8,0,," >
-<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon 3.2 Database Editor Help\Setting_Up_Foreign_Data_Routing.htm" >
-<param name=_ID value="RelatedTopics" >
-<param name=UseMenu value="-1" >
-<param name=Frame value="_top" >
-<param name=Window value="" >
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2117" >
+<param name="_ExtentY" value="556" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Editing a Core Database Point;Editing_a_Point.htm$$**$$Editing a Load Management Point;Editing_a_Load_Management_Point.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\working\help\head\yukon-help\dbeditor\src\Setting_Up_Foreign_Data_Routing.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="_top" >
+<param name="Window" value="" >
 </object>-->
 <OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
@@ -191,7 +200,7 @@
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->
-</p>
+ </p>
 
 </body>
 

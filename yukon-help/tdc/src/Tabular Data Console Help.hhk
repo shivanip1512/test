@@ -106,14 +106,6 @@
     <param name="Local" value="Yukon_Command_Language_Summary.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="Control Area">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Show">
-    </object>
-    </ul>
-  <li><object type="text/sitemap">
     <param name="Name" value="Control Scheduler">
     <param name="Name" value="Viewing Metering and Control Scheduler">
     <param name="Local" value="Metering_and_Control_Scheduler.htm">
@@ -186,14 +178,6 @@
     </object>
     </ul>
   <li><object type="text/sitemap">
-    <param name="Name" value="Curtailment Program">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Starting">
-    </object>
-    </ul>
-  <li><object type="text/sitemap">
     <param name="Name" value="Custom Displays">
     <param name="Name" value="Viewing Custom Displays">
     <param name="Local" value="Custom_Displays.htm">
@@ -216,23 +200,6 @@
       <param name="Local" value="Exporting_a_Data_Set.htm">
     </object>
     </ul>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Direct Control Program">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Starting">
-    </object>
-    </ul>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Disable All">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Disable Area">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Disable/Enable">
-  </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Display">
     <param name="Name" value="Removing a Display">
@@ -375,12 +342,6 @@
     </object>
     </ul>
   <li><object type="text/sitemap">
-    <param name="Name" value="Enable">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Enable All">
-  </object>
-  <li><object type="text/sitemap">
     <param name="Name" value="Enable/Disable">
     <param name="Name" value="Viewing Metering and Control Scheduler">
     <param name="Local" value="Metering_and_Control_Scheduler.htm">
@@ -471,21 +432,9 @@
     </object>
     </ul>
   <li><object type="text/sitemap">
-    <param name="Name" value="Group Info">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Groups/Programs">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Hide Area/Show Area">
-  </object>
-  <li><object type="text/sitemap">
     <param name="Name" value="Load Group">
     <param name="Name" value="Creating a Simple Schedule">
     <param name="Local" value="Creating_a_Simple_Schedule.htm">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Load Management">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="LOCATE">
@@ -525,9 +474,6 @@
     <param name="Name" value="Manual">
     <param name="Name" value="Creating a MACS Schedule">
     <param name="Local" value="Creating_a_Schedule.htm">
-  </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Manual Active">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Manual Control">
@@ -852,14 +798,6 @@
     <param name="Local" value="Performing_a_Search.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="Show">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Control Area">
-    </object>
-    </ul>
-  <li><object type="text/sitemap">
     <param name="Name" value="Silence/Unsilence">
     <param name="Name" value="Viewing Metering and Control Scheduler">
     <param name="Local" value="Metering_and_Control_Scheduler.htm">
@@ -930,21 +868,6 @@
     <param name="Name" value="Viewing Metering and Control Scheduler">
     <param name="Local" value="Metering_and_Control_Scheduler.htm">
   </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Starting">
-    <param name="Name" value="Creating a MACS Schedule">
-    <param name="Local" value="Creating_a_Schedule.htm">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Curtailment Program">
-    </object>
-    <li><object type="text/sitemap">
-      <param name="Name" value="selecting">
-      <param name="Name" value="Creating a MACS Schedule">
-      <param name="Local" value="Creating_a_Schedule.htm">
-    </object>
-    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="State">
     <param name="Name" value="Viewing Metering and Control Scheduler">

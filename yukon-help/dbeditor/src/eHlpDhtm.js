@@ -9,7 +9,7 @@
 /// Section Begin - General and relative topics(JavaScript 1.0)
 
 //{{HH_SYMBOL_SECTION
-var HH_ChmFilename = "C:\\working\\yukon-help\\dbeditor\\Yukon Database Editor Help.chm";
+var HH_ChmFilename = "C:\\working\\help\\head\\yukon-help\\dbeditor\\src\\Yukon Database Editor Help.chm";
 var HH_WindowName = "dbeditor";
 var HH_GlossaryFont = "";
 var HH_Glossary = "1";

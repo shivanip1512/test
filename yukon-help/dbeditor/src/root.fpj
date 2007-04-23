@@ -93,7 +93,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Editing_an_MCT_Config.htm</name>
+			<name>Introduction.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -108,7 +108,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Introduction.htm</name>
+			<name>Creating_a_Login_Group.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -119,16 +119,6 @@
 		</topic>
 		<topic>
 			<name>Load_Group_General_Tab.htm</name>
-			<comments></comments>
-			<frameset>0</frameset>
-		</topic>
-		<topic>
-			<name>Editing_an_Energy_Exchange_Program.htm</name>
-			<comments></comments>
-			<frameset>0</frameset>
-		</topic>
-		<topic>
-			<name>Editing_a_Curtailment_Program.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -254,11 +244,6 @@
 		</topic>
 		<topic>
 			<name>Creating_a_Point.htm</name>
-			<comments></comments>
-			<frameset>0</frameset>
-		</topic>
-		<topic>
-			<name>Notification.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -398,12 +383,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Energy_Exchange.htm</name>
-			<comments></comments>
-			<frameset>0</frameset>
-		</topic>
-		<topic>
-			<name>UDP_Terminal_Server.htm</name>
+			<name>Device_MCT_Settings.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -453,7 +433,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm</name>
+			<name>Editing_an_MCT_Config.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -503,7 +483,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Creating_a_Login_Group.htm</name>
+			<name>Editing_Latching.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -608,7 +588,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Editing_Time_Resfresh_Rotation.htm</name>
+			<name>Thermostat.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -618,12 +598,12 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Comm_Channel_Timing_Tab.htm</name>
+			<name>Ripple.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Device_IED_Port_Tab.htm</name>
+			<name>Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -658,22 +638,22 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Editing_Latching.htm</name>
+			<name>Comm_Channel_General_Tab.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>No_Control.htm</name>
+			<name>Route_General_Tab.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Point_Limits_Tab.htm</name>
+			<name>Comm_Channel_Timing_Tab.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Ripple.htm</name>
+			<name>Route_Repeater_Setup_Tab.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -703,17 +683,22 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
+			<name>Creating_a_Season_Schedule.htm</name>
+			<comments></comments>
+			<frameset>0</frameset>
+		</topic>
+		<topic>
 			<name>Editing_System_Points.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Device_MCT_Settings.htm</name>
+			<name>Creating_a_Calculated_Point_with_Status_Output.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Comm_Channel_General_Tab.htm</name>
+			<name>No_Control.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -723,7 +708,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Thermostat.htm</name>
+			<name>UDP_Terminal_Server.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -763,7 +748,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Route_General_Tab.htm</name>
+			<name>Device_IED_Port_Tab.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -773,7 +758,7 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Route_Repeater_Setup_Tab.htm</name>
+			<name>Editing_Time_Resfresh_Rotation.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
@@ -813,17 +798,12 @@
 			<frameset>0</frameset>
 		</topic>
 		<topic>
-			<name>Creating_a_Calculated_Point_with_Status_Output.htm</name>
+			<name>Point_Limits_Tab.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
 		<topic>
 			<name>Creating_a_Baseline.htm</name>
-			<comments></comments>
-			<frameset>0</frameset>
-		</topic>
-		<topic>
-			<name>Creating_a_Season_Schedule.htm</name>
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>

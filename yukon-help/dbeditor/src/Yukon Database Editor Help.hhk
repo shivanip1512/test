@@ -772,13 +772,6 @@
       <param name="Local" value="Editing_a_Point.htm">
     </object>
     <li><object type="text/sitemap">
-      <param name="Name" value="KWH">
-      <param name="Name" value="Core Database">
-      <param name="Local" value="Core_Database.htm">
-      <param name="Name" value="Creating a Core Database Point">
-      <param name="Local" value="Creating_a_Point.htm">
-    </object>
-    <li><object type="text/sitemap">
       <param name="Name" value="Limit">
       <param name="Name" value="Editing a Load Management Point">
       <param name="Local" value="Editing_a_Load_Management_Point.htm">
@@ -1052,10 +1045,14 @@
       <param name="Local" value="Creating_a_Route.htm">
     </object>
     <li><object type="text/sitemap">
-      <param name="Name" value="Season">
+      <param name="Name" value="Season Schedule">
+      <param name="Name" value="Creating a Season Schedule">
+      <param name="Local" value="Creating_a_Season_Schedule.htm">
     </object>
     <li><object type="text/sitemap">
-      <param name="Name" value="Season Schedule">
+      <param name="Name" value="Season">
+      <param name="Name" value="Creating a Season">
+      <param name="Local" value="Creating_a_Season.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Smart Cycle">

@@ -51,6 +51,10 @@
       <param name="Name" value="Saving Output">
       <param name="Local" value="Saving_Output.htm">
     </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Error Messages">
+      <param name="Local" value="Error_Messages.htm">
+    </object>
     </ul>
 </ul>
 </html>

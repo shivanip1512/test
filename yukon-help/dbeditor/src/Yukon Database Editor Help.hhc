@@ -194,6 +194,10 @@
         <param name="Local" value="Creating_a_Notification_Group.htm">
       </object>
       <li><object type="text/sitemap">
+        <param name="Name" value="Creating a Season Schedule">
+        <param name="Local" value="Creating_a_Season_Schedule.htm">
+      </object>
+      <li><object type="text/sitemap">
         <param name="Name" value="Creating a Tag">
         <param name="Local" value="Creating_a_Tag.htm">
       </object>

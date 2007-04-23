@@ -9,7 +9,7 @@
 /// Section Begin - General and relative topics(JavaScript 1.0)
 
 //{{HH_SYMBOL_SECTION
-var HH_ChmFilename = "C:\\working\\yukontrendinghelp\\Yukon Trending Help.chm";
+var HH_ChmFilename = "C:\\working\\help\\head\\yukon-help\\trending\\src\\Yukon Trending Help.chm";
 var HH_WindowName = "Trending";
 var HH_GlossaryFont = "";
 var HH_Glossary = "0";

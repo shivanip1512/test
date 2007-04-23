@@ -9,7 +9,7 @@
 /// Section Begin - General and relative topics(JavaScript 1.0)
 
 //{{HH_SYMBOL_SECTION
-var HH_ChmFilename = "C:\\working\\yukoncommanderhelp\\Yukon Commander Help.chm";
+var HH_ChmFilename = "C:\\working\\help\\head\\yukon-help\\commander\\src\\Yukon Commander Help.chm";
 var HH_WindowName = "Commander";
 var HH_GlossaryFont = "";
 var HH_Glossary = "1";
