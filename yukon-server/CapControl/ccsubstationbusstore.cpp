@@ -5247,22 +5247,6 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
 
                     if (currentCCSubstationBus->getParentId() == areaId) 
                     {
-                         CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
-                         long feedCount = ccFeeders.size();
-                      
-                         for(LONG i=0;i<feedCount;i++)
-                         {
-                             CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
-                             CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
-                             long capCount = ccCapBanks.size();
-                             for (LONG j = 0; j < capCount; j++)
-                             {
-                                 CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
-                      
-                                 deleteCapBank(capBankToDelete->getPAOId());
-                             }
-                             deleteFeeder(feederToDelete->getPAOId());
-                         }
                          deleteSubBus(currentCCSubstationBus->getPAOId());
                     }
                 }
@@ -5321,14 +5305,6 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
             for(LONG i=0;i<feedCount;i++)
             {
                 CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
-                CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
-                long capCount = ccCapBanks.size();
-                for (LONG j = 0; j < capCount; j++)
-                {
-                    CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
-
-                    deleteCapBank(capBankToDelete->getPAOId());
-                }
                 deleteFeeder(feederToDelete->getPAOId());
             }
 
