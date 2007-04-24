@@ -232,14 +232,20 @@ public SelectItem[] getEmailNotifcations() {
             synchronized( cache ) {
                 
                 List liteNotifGrps = cache.getAllContactNotificationGroups();
-                notifGroups = new SelectItem[ liteNotifGrps.size() ];
                 
-                for( int i = 0; i < liteNotifGrps.size(); i++ ) {
-                    LiteNotificationGroup liteGroup = (LiteNotificationGroup)liteNotifGrps.get(i);
-                    notifGroups[i] = 
-                        new SelectItem(
-                            new Integer(liteGroup.getNotificationGroupID()),
-                            liteGroup.toString());
+                if( liteNotifGrps.size() == 0 ){
+                //This is to avoid a constraint error when adding this to the database.
+                    notifGroups = new SelectItem[1];
+                    notifGroups[0] = new SelectItem( new Integer(1), "(none)");             
+                }else{
+                    notifGroups = new SelectItem[ liteNotifGrps.size() ];
+                    for( int i = 0; i < liteNotifGrps.size(); i++ ) {
+                        LiteNotificationGroup liteGroup = (LiteNotificationGroup)liteNotifGrps.get(i);
+                        notifGroups[i] = 
+                            new SelectItem(
+                                new Integer(liteGroup.getNotificationGroupID()),
+                                liteGroup.toString());
+                    }
                 }
             }
         }
