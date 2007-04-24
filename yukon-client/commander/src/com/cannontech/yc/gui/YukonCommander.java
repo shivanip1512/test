@@ -76,7 +76,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
 	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
-	public static final String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon_Commander_Help.chm";
+	public static final String HELP_FILE = "Yukon_Commander_Help.chm";
     public static final URL COMMANDER_GIF = YukonCommander.class.getResource("/CommanderIcon.gif");
 
 	private javax.swing.JPanel ivjJFrameContentPane = null;

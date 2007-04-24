@@ -18,7 +18,7 @@
         <echo message=" sign jars    - sign all jars"/>
     </target>
             
-    <target name="all" depends="init, cleanlib">
+    <target name="all" depends="init, cleanlib, help">
         <antcall target="callall">
             <param name="dotarget" value="all"/>
         </antcall>
@@ -35,6 +35,22 @@
             <param name="dotarget" value="build"/>
         </antcall>
     </target>
+    
+    <target name="help" depends="init,help.present,help.skip"/>
+    
+    <target name="help.present" if="yukonHelpAvailable">
+        <echo message="including yukon-help"/>
+        <ant dir="${yukon.help}" antfile="build.xml" inheritAll="true"/>
+        <copy todir="${yukon.lib}">
+            <fileset dir="${yukon.help}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="help.skip" unless="yukonHelpAvailable">
+        <echo message="yukon-help is not in correct location to be included"/>
+    </target>
 	
     <target name="runUnitTests" depends="init">
 <!-- All of our build files need this target for this to work
@@ -50,6 +66,11 @@
         <echo message="ANT_HOME=${env.ANT_HOME}"/>
         <echo message="target=${yukon.javac.target}"/>
         <mkdir dir="${yukon.lib}" />
+        
+        <!-- see if help is available -->
+        <condition property="yukonHelpAvailable">
+            <available file="${yukon.help}"/>
+        </condition>
     </target>
 	
     <target name="cleanlib">

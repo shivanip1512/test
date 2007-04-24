@@ -3527,10 +3527,7 @@ public void jMenuItemFont_ActionPerformed(java.awt.event.ActionEvent actionEvent
  */
 public void jMenuItemHelpTopics_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-
-	Process p = com.cannontech.common.util.CtiUtilities.showHelp( TDCDefines.HELP_FILE );
-
-	return;
+	com.cannontech.common.util.CtiUtilities.showHelp( TDCDefines.HELP_FILE );
 }
 
 

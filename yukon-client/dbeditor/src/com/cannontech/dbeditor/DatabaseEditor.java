@@ -492,7 +492,7 @@ public void actionPerformed(ActionEvent event)
 	if( item == helpMenu.helpTopicMenuItem )
 	{
 		//run and show our help program
-		Process p = CtiUtilities.showHelp( CommonDefines.HELP_FILE );
+		CtiUtilities.showHelp( CommonDefines.HELP_FILE );
 	}
 	else
 	{

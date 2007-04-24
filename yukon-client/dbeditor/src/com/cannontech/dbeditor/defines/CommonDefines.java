@@ -7,8 +7,7 @@ package com.cannontech.dbeditor.defines;
  */
 public class CommonDefines 
 {
-	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath()
-			+ "Yukon_Database_Editor_Help.chm";
+	public static final String HELP_FILE = "Yukon_Database_Editor_Help.chm";
 
 /**
  * CommonUtils constructor comment.

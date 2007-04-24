@@ -7,7 +7,9 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -38,6 +40,7 @@ import javax.swing.text.BadLocationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
@@ -46,7 +49,8 @@ import com.cannontech.database.data.lite.LiteComparators;
 
 public final class CtiUtilities 
 {
-	public static final int MAX_UTILITY_ID = 254;
+	private static final String YUKON_HELP_PREFIX = "com/cannontech/help/";
+    public static final int MAX_UTILITY_ID = 254;
 	public static final int MAX_SECTION_ID = 255;
 	public static final int NONE_ZERO_ID = 0;
 
@@ -599,16 +603,6 @@ public final static String getExportDirPath()
  */
 public final static Character getFalseCharacter() {
 	return falseChar;
-}
-
-
-/**
- *
- */
-public final static String getHelpDirPath()
-{
-
-	return USER_DIR + "../Help/";
 }
 
 
@@ -1319,36 +1313,35 @@ public final static void setSelectedInComboBox( javax.swing.JComboBox comboBox, 
  * This method was created in VisualAge.
  * @return int
  */
-public static final Process showHelp( String helpFileName ) 
+public static final void showHelp( String helpFileName ) 
 {
-	//if( System.getProperty("os.name").equalsIgnoreCase("Windows NT") )
-		//cmd[0] = "hhupd.exe";  //Windows NT
-	//else if( System.getProperty("os.name").equalsIgnoreCase("Windows 2000") )
-		//cmd[0] = "hh.exe";  //Windows 2000
-	//else
-		//throw new UnsupportedOperationException("The help program is not available for the current OS");
+    try {
+        // prepend classpath prefix to helpFile
+        String helpFilePath = YUKON_HELP_PREFIX + helpFileName;
 
-	String[] cmd = new String[2];
-	cmd[0] = "hh.exe";
-	cmd[1] = helpFileName;
+        // get reference
+        ClassLoader classLoader = CtiUtilities.class.getClassLoader();
+        InputStream helpContents = classLoader.getResourceAsStream(helpFilePath);
+        if (helpContents == null) {
+            throw new IOException("Couldn't find helpfile on classpath: " + helpFilePath);
+        }
 
-	try
-	{
-		return Runtime.getRuntime().exec( cmd );
-	}
-	catch( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.info("*** Tried to execute help with the following values:");
-                String s = null;
-		for( int i = 0; i < cmd.length; i++ )
-			s += cmd[i] + " ";
+        // copy contents to temporary file
+        File tempContents = File.createTempFile("yukon", helpFileName);
+        tempContents.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream(tempContents);
+        
+        FileCopyUtils.copy(helpContents, fos);
+        CTILogger.info("Help contents copied out to: " + tempContents);
 
-		com.cannontech.clientutils.CTILogger.info(s);
-		com.cannontech.clientutils.CTILogger.info("");
-		e.printStackTrace( System.out );
-	}
+        String[] cmd = new String[2];
+        cmd[0] = "hh.exe";
+        cmd[1] = tempContents.getAbsolutePath();
 
-	return null;
+        Runtime.getRuntime().exec( cmd );
+    } catch( IOException e ) {
+        CTILogger.info("Unable to display help for: " + helpFileName, e);
+    }
 }
 
 

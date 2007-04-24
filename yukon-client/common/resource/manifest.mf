@@ -27,3 +27,4 @@ Class-Path: ./
  jta.jar 
  activation.jar 
  mail.jar 
+ yukon-help.jar 

@@ -44,7 +44,7 @@ public interface GraphDefines
 	public String HEADER_CELL_BGCOLOR = "#999966";
 	public String TABLE_CELL_BGCOLOR = "#CCCC99";
 
-	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath() + "Yukon_Trending_Help.chm";
+	public static final String HELP_FILE = "Yukon_Trending_Help.chm";
 	
 	//old GraphDataFormats interface removed and fields moved into here.
 	public static SimpleDateFormat timestampQueryFormat = new SimpleDateFormat("dd-MMM-yyyy");

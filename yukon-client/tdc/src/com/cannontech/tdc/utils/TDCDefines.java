@@ -17,8 +17,7 @@ import com.cannontech.tdc.TDCMainFrame;
 public final class TDCDefines 
 {
 	// main things of TDC
-	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath()
-			+ "Tabular_Data_Console_Help.chm";
+	public static final String HELP_FILE = "Tabular_Data_Console_Help.chm";
 
 	public static String DBALIAS = "yukon";
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<project name="help system jars" default="build">
+
+   <target name="build">
+       <mkdir dir="lib" />
+       
+       <!-- the following property must sync with com.cannontech.common.util.CtiUtilities.YUKON_HELP_PREFIX -->
+       <property name="yukon.help.prefix" value="com/cannontech/help"/>
+
+       <jar destfile="lib/yukon-help.jar">
+           <zipfileset prefix="${yukon.help.prefix}" dir="commander/out" includes="*.chm" />
+           <zipfileset prefix="${yukon.help.prefix}" dir="dbeditor/out" includes="*.chm" />
+           <zipfileset prefix="${yukon.help.prefix}" dir="tdc/out" includes="*.chm" />
+           <zipfileset prefix="${yukon.help.prefix}" dir="trending/out" includes="*.chm" />
+       </jar>
+   </target>
+
+   <target name="clean">
+       <delete dir="lib"/>
+    </target>
+   
+</project>
