@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2007/03/14 19:33:03 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2007/04/24 18:04:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,6 +92,7 @@ bool findAllQueueEntries(void *unused, PQUEUEENT d);
 bool findReturnNexusMatch(void *nid, PQUEUEENT d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
+#define QUEUED_MSG_REQ_ID_BASE 0xFFFFFF00
 
 
 void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
@@ -157,8 +158,44 @@ static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprti
             /* Now check out the queue queue handle */
             if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
             {
-                /* See if we have one outstanding */
-                if(!(pInfo->getStatus(INLGRPQ)))
+                if( pInfo->getStatus(INLGRPQ) && pInfo->getINLGRPQWarning() < CtiTime::now() )
+                {
+                    CtiPortSPtr port = PortManager.PortGetEqual(Dev->getPortID());
+                    if( port )
+                    {
+                        ULONG reqCount = 0, priority = 0;
+                        ULONG requestID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
+                        HCTIQUEUE portQueue = port->getPortQueueHandle();
+
+                        GetRequestCountAndPriority(portQueue, requestID, reqCount, priority);
+
+                        if( reqCount > 0 )
+                        {
+                            pInfo->setINLGRPQWarning(CtiTime::now().seconds() + 300 ); //Yuck, but ok?
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, entry found, NOT removing entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else
+                        {
+                            pInfo->clearStatus(INLGRPQ);
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, no queue entry found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        pInfo->clearStatus(INLGRPQ);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, unknown port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                }
+
+                if( !pInfo->getStatus(INLGRPQ) )
                 {
                     BuildLGrpQ(Dev);
                 }
@@ -1397,6 +1434,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->Remote         = Dev->getAddress();
                 OutMessage->Port           = Dev->getPortID();
                 OutMessage->Sequence       = QueueEntrySequence;              // Tells us on return that we are queued ( >= 0x8000 )
+                OutMessage->Request.UserID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
                 OutMessage->EventCode      = NOWAIT | RESULT | RCONT;
                 OutMessage->TimeOut        = TIMEOUT;
                 OutMessage->Retry          = 2;
