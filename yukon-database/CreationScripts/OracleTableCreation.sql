@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/20/2007 5:39:11 PM                         */
+/* Created on:     4/24/2007 4:20:54 PM                         */
 /*==============================================================*/
 
 
@@ -7183,7 +7183,7 @@ insert into YukonRole values(-306,'User Control', 'CICustomer', 'Customer access
 insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
 
 /* Capacitor Control roles */
-insert into YukonRole values (-700,'CBC Control','CapBank Control','Allows the user to control change states of the CapControl system .');
+insert into YukonRole values (-700,'Administrator','Capacitor Control','Allows a user to change overall settings of the Cap Control system .');
 
 /* IVR roles */
 insert into YukonRole values (-800,'IVR','Notifications','Settings for Interactive Voice Response module');
@@ -7191,6 +7191,11 @@ insert into YukonRole values (-801, 'Configuration', 'Notifications', 'Configura
 
 /* Load Control roles */
 insert into YukonRole values(-900,'Direct Loadcontrol','Load Control','Access and usage of direct loadcontrol system');
+
+/* Capacitor Control roles cont*/
+insert into YukonRole values (-1000,'Substation Display','Capacitor Control','Change display settings for substation details.');
+insert into YukonRole values (-1001,'Feeder Display','Capacitor Control','Change display settings for feeder details.');
+insert into YukonRole values (-1002,'Cap Bank Display','Capacitor Control','Change display settings for cap bank details.');
 alter table YukonRole
    add constraint PK_YUKONROLE primary key (RoleID);
 
@@ -7677,6 +7682,26 @@ insert into YukonRoleProperty values(-90004,-900,'Constraint Check','true','Allo
 insert into YukonRoleProperty values(-90005,-900,'Constraint Observe','true','Allow load management program constraints to be OBSERVED before starting');
 insert into YukonRoleProperty values(-90006,-900,'Constraint Override','true','Allow load management program constraints to be OVERRIDDEN before starting');
 insert into YukonRoleProperty values(-90007,-900,'Constraint Default','Check','The default program constraint selection prior to starting a program');
+
+/* Capacitor Control role properties cont...*/
+insert into YukonRoleProperty values(-100000, -1000, 'Target', 'true', 'display Target settings');
+insert into YukonRoleProperty values(-100001, -1000, 'kVAR', 'true', 'display kVAR');
+insert into YukonRoleProperty values(-100002, -1000, 'Estimated kVAR', 'true', 'display estimated kVAR');
+insert into YukonRoleProperty values(-100003, -1000, 'Power Factor', 'true', 'display Power Factor');
+insert into YukonRoleProperty values(-100004, -1000, 'Estimated Power Factor', 'true', 'display estimated Power Factor');
+insert into YukonRoleProperty values(-100005, -1000, 'Watts', 'true', 'display Watts');
+insert into YukonRoleProperty values(-100006, -1000, 'Volts', 'true', 'display Volts');
+insert into YukonRoleProperty values(-100007, -1000, 'Daily Op Count', 'true', 'display Daily Operation Count');
+insert into YukonRoleProperty values(-100008, -1000, 'Max Op Count', 'true', 'display Max Operation Count');
+
+insert into YukonRoleProperty values(-100100, -1001, 'kVAR', 'true', 'display kVAR');
+insert into YukonRoleProperty values(-100101, -1001, 'Power Factor', 'true', 'display Power Factor');
+insert into YukonRoleProperty values(-100102, -1001, 'Watts', 'true', 'display Watts');
+insert into YukonRoleProperty values(-100103, -1001, 'Daily Op Count', 'true', 'display Daily Operation Count');
+insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'true', 'display Volts');
+
+insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
+insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID);
 
