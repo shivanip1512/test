@@ -111,9 +111,8 @@ if (areaBuses.length > 0) {
 					<td></td>
 				</tr>
 <% 		} %>
-			</a>
-
 	<%}%>
+  </a>
 <% } %>
 
             </table>
