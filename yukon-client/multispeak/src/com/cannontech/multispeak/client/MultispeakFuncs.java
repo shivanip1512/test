@@ -129,7 +129,7 @@ public class MultispeakFuncs
 
     public static YukonMultispeakMsgHeader getResponseHeader() throws RemoteException {
         SOAPEnvelope env = getResponseMessageSOAPEnvelope();
-        return (YukonMultispeakMsgHeader)env.getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue();
+        return (YukonMultispeakMsgHeader)env.getHeaderByName("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader").getObjectValue();
     }
     
     private static SOAPEnvelope getResponseMessageSOAPEnvelope() throws RemoteException {

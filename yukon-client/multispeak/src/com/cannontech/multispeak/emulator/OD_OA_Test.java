@@ -38,7 +38,7 @@ public class OD_OA_Test {
 		OD_OA_Test test = new OD_OA_Test();
 		YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
 		testHeader.setCompany("milsoft");
-		test.header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", testHeader);
+		test.header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", testHeader);
 		try {
 			if( args != null && args.length > 0)
 			{

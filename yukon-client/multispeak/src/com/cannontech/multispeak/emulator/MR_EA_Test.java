@@ -40,7 +40,7 @@ public class MR_EA_Test {
 			endpointURL = "http://10.100.10.25:80/soap/MR_EASoap";
 		  	MR_EASoap_BindingStub instance = new MR_EASoap_BindingStub(new URL(endpointURL), new Service());
 			
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
 			instance.setHeader(header);
 			String meterNumber = "81307861";
 			int todo = 0;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=getLatestReadings

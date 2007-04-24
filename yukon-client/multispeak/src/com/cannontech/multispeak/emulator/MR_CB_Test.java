@@ -45,7 +45,7 @@ public class MR_CB_Test {
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
             msgHeader.setCompany("milsoft");
             
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msgHeader);
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
 			int todo = 3;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo
