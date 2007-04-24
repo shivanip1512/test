@@ -423,14 +423,13 @@ function editorPost()
     getValidChecks( elemPoints, validElems );
 
     //only allow the editing of the zeroth element for now
-    if ( validElems.length <= 0 )
+    if ( validElems.length <= 0 ){
         alert('You must check the item you want to edit first');
-    else {
-       if (validElems.length > 1)
-            alert ("You can only edit 1 item at a time");
+    }else if (validElems.length > 1){
+        alert ("You can only edit 1 item at a time");
+	}else{
         window.location =
             getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value');
-    
     }
 }
 
