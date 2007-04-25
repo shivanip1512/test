@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.141 $
-* DATE         :  $Date: 2007/04/20 23:09:26 $
+* REVISION     :  $Revision: 1.142 $
+* DATE         :  $Date: 2007/04/25 15:54:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -876,7 +876,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     if( restoreMessageRead(InMessage, ioType, location) )
     {
         int foundAddress, foundLength = 0;
-        CtiTableDynamicPaoInfo::Keys foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+        Keys foundKey = Keys::Key_Invalid;
 
          //ioType and location were set by the function.
         if(ioType == Emetcon::IO_Read)
@@ -887,7 +887,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             {
                 getDynamicPaoAddressing(searchLocation, foundAddress, foundLength, foundKey);
 
-                if( foundAddress >= 0 && foundLength > 0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid
+                if( foundAddress >= 0 && foundLength > 0 && foundKey != Keys::Key_Invalid
                    && (foundAddress - location + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8)
                 {
                     unsigned long value = 0;
@@ -900,10 +900,10 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 }
                 else
                 {
-                    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+                    foundKey = Keys::Key_Invalid;
                 }
 
-            }while( foundKey != CtiTableDynamicPaoInfo::Key_Invalid );
+            }while( foundKey != Keys::Key_Invalid );
         }
         else if( ioType == Emetcon::IO_Function_Read )
         {
@@ -915,7 +915,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 //It is assumed that SSPec changes do NOT change the order of recieved bytes.
                 getDynamicPaoFunctionAddressing(location, searchLocation, foundAddress, foundLength, foundKey);
 
-                if( foundAddress >= 0 && foundLength > 0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid &&
+                if( foundAddress >= 0 && foundLength > 0 && foundKey != Keys::Key_Invalid &&
                     (searchLocation + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8 )
                 {
                     unsigned long value = 0;
@@ -928,10 +928,10 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 }
                 else
                 {
-                    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+                    foundKey = Keys::Key_Invalid;
                 }
 
-            }while( foundKey != CtiTableDynamicPaoInfo::Key_Invalid );
+            }while( foundKey != Keys::Key_Invalid );
         }
     }
 
@@ -1462,13 +1462,13 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             function = Emetcon::GetValue_DailyRead;
             OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
 
-            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+            if( !hasDynamicInfo(Keys::Key_MCT_SSpecRevision) )
             {
                 returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher - execute \"getconfig model\" to verify");
             }
-            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+            else if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
-                returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher, MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
+                returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher, MCT reports " + CtiNumStr(getDynamicInfo(Keys::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( !time_begin.isValid() || !time_end.isValid() )
             {
@@ -1676,7 +1676,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("outage") )  //  outages
     {
-        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
+        if( !hasDynamicInfo(Keys::Key_MCT_SSpec) )
         {
             //  we need to set it to the requested interval
             CtiOutMessage *sspec_om = new CtiOutMessage(*OutMessage);
@@ -1782,6 +1782,11 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
         found = getOperation(Emetcon::GetConfig_Disconnect, OutMessage->Buffer.BSt);
 
         OutMessage->Sequence = Emetcon::GetConfig_Disconnect;
+
+        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
+        {
+            OutMessage->Buffer.BSt.Length += 2;
+        }
     }
     else if( parse.isKeyValid("address_unique") )
     {
@@ -1883,10 +1888,10 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval)        != demand
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval)   != loadProfile
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval)     != voltageDemand
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
+                    || getDynamicInfo(Keys::Key_MCT_DemandInterval)        != demand
+                    || getDynamicInfo(Keys::Key_MCT_LoadProfileInterval)   != loadProfile
+                    || getDynamicInfo(Keys::Key_MCT_VoltageLPInterval)     != voltageDemand
+                    || getDynamicInfo(Keys::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -1948,7 +1953,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             delay = config->getLongValueFromKey(ConnectDelay);
             cycleDisconnectMinutes = config->getLongValueFromKey(CyclingDisconnectMinutes);
             cycleConnectMinutes = config->getLongValueFromKey(CyclingConnectMinutes);
-            long revision = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
+            long revision = getDynamicInfo(Keys::Key_MCT_SSpecRevision);
 
             if( revision >= SspecRev_Disconnect_Min && revision < SspecRev_Disconnect_Cycle
                 && (cycleDisconnectMinutes | cycleConnectMinutes) != 0
@@ -1982,8 +1987,8 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay)    != delay )
+                    || getDynamicInfo(Keys::Key_MCT_DemandThreshold) != threshold
+                    || getDynamicInfo(Keys::Key_MCT_ConnectDelay)    != delay )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2048,7 +2053,7 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
             MCTCentronSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTCentron> >(tempBasePtr);
             parameters = config->getLongValueFromKey(CentronParameters);
             ratio = config->getLongValueFromKey(CentronTransformerRatio);
-            spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
+            spid = CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_AddressServiceProviderID);
 
             if( spid == numeric_limits<long>::min() )
             {
@@ -2071,8 +2076,8 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if(parse.isKeyValid("force")
-                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronParameters) != parameters
-                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronRatio)      != ratio )
+                   || getDynamicInfo(Keys::Key_MCT_CentronParameters) != parameters
+                   || getDynamicInfo(Keys::Key_MCT_CentronRatio)      != ratio )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2158,11 +2163,11 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options)         != options
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1) != event1mask
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2) != event2mask
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)  != meterAlarmMask
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration)   != configuration )
+                    || getDynamicInfo(Keys::Key_MCT_Options)         != options
+                    || getDynamicInfo(Keys::Key_MCT_EventFlagsMask1) != event1mask
+                    || getDynamicInfo(Keys::Key_MCT_EventFlagsMask2) != event2mask
+                    || getDynamicInfo(Keys::Key_MCT_MeterAlarmMask)  != meterAlarmMask
+                    || getDynamicInfo(Keys::Key_MCT_Configuration)   != configuration )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2215,7 +2220,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OutageCycles) != outage )
+                    || getDynamicInfo(Keys::Key_MCT_OutageCycles) != outage )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2257,7 +2262,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+                    || getDynamicInfo(Keys::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2337,14 +2342,14 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
         {
-            if( _expected_freeze < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
+            if( _expected_freeze < 0 && hasDynamicInfo(Keys::Key_ExpectedFreeze) )
             {
-                _expected_freeze = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
+                _expected_freeze = getDynamicInfo(Keys::Key_ExpectedFreeze);
             }
 
-            if( _freeze_counter  < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
+            if( _freeze_counter  < 0 && hasDynamicInfo(Keys::Key_FreezeCounter) )
             {
-                _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
+                _freeze_counter = getDynamicInfo(Keys::Key_FreezeCounter);
             }
 
             pi_freezecount = CtiDeviceMCT4xx::getData(DSt->Message + 3, 1, ValueType_Raw);
@@ -2363,7 +2368,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                 _freeze_counter = pi_freezecount.value;
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
+                setDynamicInfo(Keys::Key_FreezeCounter, _freeze_counter);
             }
             else
             {
@@ -2410,9 +2415,9 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                     //    and the freeze counter (DSt->Message[3]) is what we expect
                     //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
 
-                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
+                    if( hasDynamicInfo(Keys::Key_DemandFreezeTimestamp) )
                     {
-                        pointTime  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
+                        pointTime  = CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp));
                         pointTime -= pointTime.seconds() % 60;
                     }
                     else
@@ -2435,7 +2440,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                     }
 
                     valid_data = false;
-                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
+                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
                     status = NOTNORMAL;
                 }
             }
@@ -2626,7 +2631,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
+        if( hasDynamicInfo(Keys::Key_MCT_SSpec) )
         {
             outagenum = parse.getiValue("outage");
 
@@ -2661,9 +2666,9 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_NewOutage_Max )
+                if( getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec &&
+                    getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min &&
+                    getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_NewOutage_Max )
                 {
                     if( duration == 0x8000 )
                     {
@@ -3696,19 +3701,12 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-        resultStr  = getName() + " / Disconnect Config:\n";
-
-        resultStr += "Load limit ";
-        resultStr += (DSt->Message[0] & 0x04)?"active\n":"inactive\n";
-
-        resultStr += "Disconnect status: ";
-
         switch( DSt->Message[0] & 0x03 )
         {
-            case RawStatus_Connected:               resultStr += "connected\n";                 state = StateGroup_Connected;      break;
-            case RawStatus_ConnectArmed:            resultStr += "connect armed\n";             state = StateGroup_ConnectArmed;   break;
-            case RawStatus_DisconnectedUnconfirmed: resultStr += "unconfirmed disconnected\n";  state = StateGroup_DisconnectedUnconfirmed; break;
-            case RawStatus_DisconnectedConfirmed:   resultStr += "confirmed disconnected\n";    state = StateGroup_DisconnectedConfirmed;   break;
+            case RawStatus_Connected:               state = StateGroup_Connected;      break;
+            case RawStatus_ConnectArmed:            state = StateGroup_ConnectArmed;   break;
+            case RawStatus_DisconnectedUnconfirmed: state = StateGroup_DisconnectedUnconfirmed; break;
+            case RawStatus_DisconnectedConfirmed:   state = StateGroup_DisconnectedConfirmed;   break;
         }
 
         point_info pi_disconnect;
@@ -3717,10 +3715,33 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         insertPointDataReport(StatusPointType, 1, ReturnMsg, pi_disconnect, "Disconnect status", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
 
+        resultStr  = getName() + " / Disconnect Info:\n";
+
+        if( DSt->Message[0] & 0x04 )
+        {
+            resultStr += "Load limiting mode active\n";
+        }
+        if( DSt->Message[0] & 0x08 )
+        {
+            resultStr += "Cycling mode active, currently ";
+
+            if( DSt->Message[0] & 0x10 )    resultStr += "connected\n";
+            else                            resultStr += "disconnected\n";
+        }
+
+        if( DSt->Message[0] & 0x20 )
+        {
+            resultStr += "Disconnect state uncertain (powerfail during disconnect)\n";
+        }
+
         if( DSt->Message[1] & 0x02 )
         {
-            resultStr += "Disconnect error - nonzero demand detected after disconnect command sent to collar\n";
+            resultStr += "Disconnect error - demand detected after disconnect command sent to collar\n";
         }
+
+        resultStr += "Disconnect load limit count: " + CtiNumStr(DSt->Message[8]) + string("\n");
+
+        resultStr += getName() + " / Disconnect Config:\n";
 
         long disconnectaddress = DSt->Message[2] << 16 |
                                  DSt->Message[3] <<  8 |
@@ -3728,40 +3749,87 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + string("\n");
 
-        point_info pi = getData(DSt->Message + 5, 2, ValueType_DynamicDemand);
+        resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
+
+        int config_byte = -1;
+
+        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
+        {
+            config_byte = DSt->Message[11];
+
+            //  threshhold is in units of Wh/minute, so we convert it into kW
+            resultStr += "Disconnect verification threshhold: " + CtiNumStr((float)DSt->Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt->Message[12]) + " Wh/minute)\n");
+        }
+        else if( hasDynamicInfo(Keys::Key_MCT_Configuration) )
+        {
+            config_byte = getDynamicInfo(Keys::Key_MCT_Configuration);
+        }
+
+        point_info demand_threshhold = getData(DSt->Message + 5, 2, ValueType_DynamicDemand);
 
         //  adjust for the demand interval
-        pi.value *= 3600 / getDemandInterval();
+        demand_threshhold.value *= 3600 / getDemandInterval();
         //  adjust for the 0.1 kWh factor of getData()
-        pi.value /= 10.0;
+        demand_threshhold.value /= 10.0;
 
-        resultStr += "Disconnect demand threshold: ";
-
-        if( pi.value )
+        //  only the config byte tells us if demand limit mode is really enabled
+        if( config_byte >= 0 )
         {
-            resultStr += CtiNumStr(pi.value) + string(" kW\n");
+            if( config_byte & 0x04 )
+            {
+                resultStr += "Reconnect button disabled\n";
+            }
+
+            if( config_byte & 0x08 && demand_threshhold.value )
+            {
+                resultStr += "Demand limit mode enabled\n";
+                resultStr += "Disconnect demand threshold: ";
+                resultStr += CtiNumStr(demand_threshhold.value) + string(" kW\n");
+            }
+            else
+            {
+                resultStr += "Disconnect demand threshold disabled\n";
+            }
         }
         else
         {
-            resultStr += "disabled\n";
+            if( demand_threshhold.value )
+            {
+                resultStr += "Disconnect demand threshold: ";
+                resultStr += CtiNumStr(demand_threshhold.value) + string(" kW\n");
+            }
+            else
+            {
+                resultStr += "Disconnect demand threshold disabled\n";
+            }
         }
 
-        resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
-
-        resultStr += "Disconnect load limit count: " + CtiNumStr(DSt->Message[8]) + string("\n");
-
+        //  include the cycle information
         if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )
         {
-            //  include the cycle information
+            if( config_byte >= 0 )
+            {
+                //  cycling only - demand limit mode takes precedence, if it's set
+                if( (config_byte & 0x18) == 0x10 )
+                {
+                    resultStr += "Disconnect cycling mode enabled\n";
 
-            if( DSt->Message[9] || DSt->Message[10] )
+                    resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(DSt->Message[9])  + string("\n");
+                    resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(DSt->Message[10]) + string("\n");
+                }
+                else
+                {
+                    resultStr += "Disconnect cycling mode disabled\n";
+                }
+            }
+            else if( DSt->Message[9] && DSt->Message[10] )
             {
                 resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(DSt->Message[9])  + string("\n");
                 resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(DSt->Message[10]) + string("\n");
             }
             else
             {
-                resultStr += "Cycling mode inactive\n";
+                resultStr += "Disconnect cycling mode disabled\n";
             }
         }
 
@@ -3849,8 +3917,8 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         descriptor += "\n";
 
         //  set the dynamic info for use later
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)DSt.Message[1]);
+        setDynamicInfo(Keys::Key_MCT_SSpec,         (long)ssp);
+        setDynamicInfo(Keys::Key_MCT_SSpecRevision, (long)DSt.Message[1]);
 
         descriptor += getName() + " / Physical meter configuration:\n";
         descriptor += "Base meter: ";
