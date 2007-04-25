@@ -132,6 +132,7 @@ if( subBus != null ) {
 		if (subBus != null)
 		{
 			SubSnapshotParams snap =  CBCUtils.getSubSnapshot(subBus.getCcId().intValue());
+			String areaName = CBCUtils.getAreaNameFromSubId(subBus.getCcId().intValue());			
 			int varPoint = subBus.getCurrentVarLoadPointID().intValue();
 			int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
 			int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
@@ -142,7 +143,8 @@ if( subBus != null ) {
 		        </td>	
 		        </tr>
 		        <tr class="tableCell" style="display: none;">
-		        <td><font  class="lIndent">Area:<%=subBus.getCcArea()%></font></td>
+		        <!--td><font  class="lIndent">Area:<%=subBus.getCcArea()%></font></td-->
+		        <td><font  class="lIndent">Area:<%=areaName%></font></td>
 				</tr>
 		        <tr class="tableCell" style="display: none;">
 		        <td><b><font  class="lIndent">Control Method: <%=snap.getControlMethod()%> (<%=snap.getAlgorithm()%>)</font></b></td>
