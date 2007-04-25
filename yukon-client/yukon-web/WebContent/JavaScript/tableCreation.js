@@ -51,7 +51,7 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
           
           //in case we want to display static text but maintain a value
           var dataString = dataArray[i][outputCols[col].field];
-          if(!dataString) {
+          if(dataString === undefined) {
           	dataString = outputCols[col].field;
           }
           var text = document.createTextNode(dataString);
