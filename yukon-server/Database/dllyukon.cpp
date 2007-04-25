@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/dllyukon.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/04/25 15:51:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue)
         loadStateNames();
     }
 */
-    if(grpid > 0)
+    if(grpid)
     {
         CtiTableStateGroup mygroup( grpid );
 
