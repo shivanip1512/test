@@ -106,7 +106,7 @@ public class CSV2PointData {
             long diff = loggedDate - lastLoggedDate;
             lastLoggedDate = loggedDate;
             
-            time = (x == 0) ? System.currentTimeMillis() : (diff / multiplier);
+            time += (x == 0) ? System.currentTimeMillis() : (diff / multiplier);
 
             final Date date = new Date(time);
             timer.schedule(new TimerTask() {
