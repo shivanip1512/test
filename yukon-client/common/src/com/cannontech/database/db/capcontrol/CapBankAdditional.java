@@ -102,7 +102,8 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
             setCbcBattInstallDate((Date) results[17]);
 
         } else
-            throw new Error(getClass() + " - Incorrect Number of results retrieved");
+            
+            throw new Error(getClass() + " - Incorrect Number of results retrieved. Bank ID is " + getDeviceID());
 
     }
 

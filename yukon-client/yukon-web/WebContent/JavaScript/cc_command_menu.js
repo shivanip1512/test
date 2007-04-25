@@ -315,7 +315,7 @@ function enableOpCounts (pao_id) {
 	window.document.getElementById ("cb_state_td_hdr1").style.display = '';
 	window.document.getElementById ("cb_state_td_hdr2").style.display = '';
 	enableDisplayAll ('capBankTable');
-    var invis_idx = 3;
+    var invis_idx = 4;
 	//the index of the invisible input text field in the table
     //located right after CB Name(Order) column
     alignHeadersIgnoreDisplayNone ('capBankTable','capBankHeaderTable', invis_idx);	

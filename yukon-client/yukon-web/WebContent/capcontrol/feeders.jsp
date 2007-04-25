@@ -262,6 +262,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
               	<td/>
                 <td/>
                 <td/>
+                <td/>
               	<td id="cb_state_td_hdr1" style="display:none"/>
                 <td/>
                 <td/>
@@ -272,7 +273,10 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
              <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx"
                     onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
-                <td> CB Name (Order)
+                    <td> CBC Name
+                    </td>                    
+
+                    <td> CB Name (Order)
                         <img class="rAlign popupImg" src="images\question.gif"
                             onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
                  </td>                    
@@ -281,7 +285,6 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
                 </td>
 
                 <td id="cb_state_td_hdr2" style="display:none" > Op Count Value</td>
-                <td>Bank Address</td>
                 <td>Date/Time</td>
                 <td>Bank Size</td>
                 <td id="parent_fdr_td"/>  
@@ -308,6 +311,16 @@ for( int i = 0; i < capBanks.length; i++ )
 										
 
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" /></td>
+					<td>
+					<%  String name = "---";
+						Integer cdId = capBank.getControlDeviceID();
+						if (cdId.intValue() != 0)
+						{
+						    name = DaoFactory.getPaoDao().getYukonPAOName(cdId);    
+						}
+					%> 
+					<%= name%>
+					</td>
 					<td>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 						<input id="cmd_cap_<%=capBank.getCcId()%>_field" type="hidden" name = "cmd_dyn" value= "" />
@@ -373,7 +386,6 @@ for( int i = 0; i < capBanks.length; i++ )
 						Reset</a>
 					
 					</td>
-					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_ADDRESS_COLUMN)%></td>
 					<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN)%></a>
 					</td>
