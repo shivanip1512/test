@@ -267,6 +267,28 @@ public final class CBCUtils
 		return cal.getTime();
 	}
 	
+	public static String getAreaNameFromSubId( int subID ){
+		
+		String sqlStmt1 = "SELECT AreaID FROM CCSubAreaAssignment WHERE SubstationBusID = ?";
+        String sqlStmt2 = "SELECT PAOName FROM YukonPAObject WHERE PAObjectID = ?";
+        String areaName = null;
+		JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();  
+        try{
+        	int areaid = yukonTemplate.queryForInt(sqlStmt1, new Integer[]{ new Integer( subID )});
+        	areaName = (String)yukonTemplate.queryForObject(sqlStmt2, new Integer[] { new Integer (areaid)}, new RowMapper () {
+	        	public Object mapRow (ResultSet rs, int rowNum) throws SQLException {
+	        		return rs.getString(1);
+	        	}
+	        	
+	        });
+           return areaName;
+        }
+        catch (IncorrectResultSizeDataAccessException e)
+        {
+            areaName = new String("(none)");
+        }
+		return areaName;
+	}
 	/**
 	 * @param paoID
 	 * @return CapControlStrategy for Paobject. If no strategy exists returns a strategy with
