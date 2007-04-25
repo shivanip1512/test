@@ -33,9 +33,16 @@
 	
 			<x:outputLabel for="paoName" value="Name: " title="System wide label for this object" />
 			<x:inputText id="paoName" value="#{capControlForm.PAOBase.PAOName}" styleClass="char32Label"
-						required="true" maxlength="60" />
+						required="true" maxlength="60"  rendered="#{capControlForm.PAOBase.PAOType != 'CAP BANK'}"/>
+			<x:inputText id="paoNameForCaps" value="#{capBankEditor.capBank.PAOName}" styleClass="char32Label"
+						required="true" maxlength="60"  rendered="#{capControlForm.PAOBase.PAOType == 'CAP BANK'}"/>
+
 			<f:verbatim><br/></f:verbatim>
-			<h:selectBooleanCheckbox id="disablePao" value="#{capControlForm.PAOBase.disabled}"/>
+			<h:selectBooleanCheckbox id="disablePao" value="#{capControlForm.PAOBase.disabled}" 
+			rendered="#{capControlForm.PAOBase.PAOType != 'CAP BANK'}"/>
+			<h:selectBooleanCheckbox id="disablePaoForCaps" value="#{capBankEditor.capBank.disabled}" 
+			rendered="#{capControlForm.PAOBase.PAOType == 'CAP BANK'}"/>
+
 			<x:outputLabel for="disablePao" value="Disable" title="Removes this item from automatic control" />
 		</h:panelGroup>		
 
