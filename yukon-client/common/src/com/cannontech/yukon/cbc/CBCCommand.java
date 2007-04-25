@@ -38,7 +38,9 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
     public static final int ENABLE_AREA = 22;
     public static final int DISABLE_AREA = 23;
     public static final int SCAN_2WAY_DEV = 24;
-
+    public static final int ENABLE_SYSTEM = 25;
+    public static final int DISABLE_SYSTEM = 26;
+    public static final int FLIP_7010_CAPBANK = 27;
 
 	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY = 30;
@@ -81,7 +83,10 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
         "ENABLE AREA", //22
         "DISABLE AREA", //23
         "SCAN 2WAY DEV",//24
-		"","","","","",
+        "ENABLE SYTEM",
+        "DISABLE SYSTEM",
+        "FLIP 7010 CAPBANK",
+		"","",
 
 
 		//below are not used by the server
