@@ -36,6 +36,11 @@
             <h:form id="schedListForm" onsubmit="return submitCheck();">
 
             <h:outputText styleClass="editorHeader" value="Schedules"/>
+            <f:verbatim><br/><br/></f:verbatim>
+            <x:commandButton value="Submit" action="#{paoDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" />
+            <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
+            	<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
+            </x:commandButton>
             <f:verbatim><br/><hr/><br/></f:verbatim>
             <x:messages id="messageList" showSummary="true" showDetail="true"
                     styleClass="smallResults" errorClass="errorResults" layout="table"/>
