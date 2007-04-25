@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2007/04/13 21:25:24 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2007/04/25 15:52:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -343,13 +343,14 @@ public:
     {
         Sspec = 1029,
 
-        SspecRev_NewLLP_Min       =    9,  //  rev  0.9
-        SspecRev_TOUPeak_Min      =   13,  //  rev  1.3
-        SspecRev_NewOutage_Min    =    8,  //  rev  0.8
-        SspecRev_NewOutage_Max    =  100,  //  rev 10.0
-        SspecRev_Disconnect_Min   =    8,  //  rev  0.8
-        SspecRev_Disconnect_Cycle =   12,  //  rev  1.2
-        SspecRev_DailyRead        =   21,  //  rev  2.1
+        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
+        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
+        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
+        SspecRev_NewOutage_Max      =  100,  //  rev 10.0
+        SspecRev_Disconnect_Min     =    8,  //  rev  0.8
+        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
+        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
+        SspecRev_DailyRead          =   21,  //  rev  2.1
     };
 
     enum Disconnect_Raw
