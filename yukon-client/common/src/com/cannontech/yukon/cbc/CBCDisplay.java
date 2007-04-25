@@ -43,6 +43,7 @@ public class CBCDisplay
 	public static final int CB_TIME_STAMP_COLUMN = 4;
 	public static final int CB_OP_COUNT_COLUMN = 5;
 	public static final int CB_PARENT_COLUMN = 6;
+	public static final int CB_CURRENT_DAILY_OP_COLUMN = 7;
 	    
 	//Column numbers for the Feeder display	
 	public static final int FDR_NAME_COLUMN = 0;
@@ -168,7 +169,10 @@ public class CBCDisplay
 				else
 					return DASH_LINE;
 			}
-
+			case CB_CURRENT_DAILY_OP_COLUMN:
+			{
+				return capBank.getCurrentDailyOperations();
+			}
             default:
                 return null;
         }               

@@ -140,7 +140,7 @@ if( subBus != null ) {
 		        <td>
 		        <b><u>Substation Info</u></b>
 		        </td>	
-		        <tr>
+		        </tr>
 		        <tr class="tableCell" style="display: none;">
 		        <td><font  class="lIndent">Area:<%=subBus.getCcArea()%></font></td>
 				</tr>
@@ -176,7 +176,7 @@ if( subBus != null ) {
 
 	<cti:titledContainer title="Feeders">
 
-    <form id="fdrForm" action="feeders.jsp" method="post">
+    <!--form id="fdrForm" action="feeders.jsp" method="post"-->
        <table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">
          <tr class="columnHeader lAlign">
          <td><input type="checkbox" name="chkAllFdrsBx"
@@ -245,7 +245,7 @@ for( int i = 0; i < feeders.length; i++ )
 				
 			</table>
 			</div>
-            </form>
+            <!--/form-->
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdrHeaderTable');    }, false);
 </script>
@@ -255,7 +255,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
 	<br>
 
 	<cti:titledContainer title="Capacitor Banks" id="last_titled_container">
-         <form id="capBankForm" action="feeders.jsp" method="post">
+         <!--form id="capBankForm" action="feeders.jsp" method="post"-->
              <table id="capBankHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
              
              <tr class="columnHeader lAlign">
@@ -285,7 +285,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
                 <td>Date/Time</td>
                 <td>Bank Size</td>
                 <td id="parent_fdr_td"/>  
-                <td>Op Count</td>
+                <td>Daily/Total Op</td>
               </tr>              
               
 
@@ -397,7 +397,11 @@ for( int i = 0; i < capBanks.length; i++ )
                         ><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
                     </a>                    
                     </td>
-					<td><a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
+					<td>
+					<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
+					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_CURRENT_DAILY_OP_COLUMN)%></a>
+					/
+					<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN)%></a>
 					</td>
 				</tr>
@@ -407,7 +411,7 @@ for( int i = 0; i < capBanks.length; i++ )
 			</table>
 		</div>
 		<input type="hidden" id="lastUpdate" value="">
-    </form>
+    <!--/form-->
 <script type="text/javascript">
 Event.observe(window, 'load', function() { 
 								initFilter($('parent_fdr_td'), $('capBankTable'), 7);			
