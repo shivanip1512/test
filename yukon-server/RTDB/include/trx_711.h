@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/06/02 20:05:57 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/04/25 18:47:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@ public:
     LONG             FreeSlots;
     USHORT           RColQMin;
     QUEENT           QueTable[MAXQUEENTRIES];
+    unsigned long    LastColdStartTime;
 
 private:
 
@@ -53,7 +54,8 @@ public:
         NCsets(0),
         NCOcts(0),
         FreeSlots(MAXQUEENTRIES),
-        RColQMin(0)
+        RColQMin(0),
+        LastColdStartTime(0)
     {
         for(int i = 0; i < MAXQUEENTRIES; i++)
         {
@@ -100,6 +102,16 @@ public:
         }
 
         return *this;
+    }
+
+    unsigned long getLastColdStartTime()
+    {
+        return LastColdStartTime;
+    }
+
+    void setLastColdStartTime(unsigned long time)
+    {
+        LastColdStartTime = time;
     }
 
 };
