@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2007/04/25 17:59:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,6 +179,7 @@ IDLCFunction (CtiDeviceSPtr &Dev,
     {
         if(p711Info)
         {
+            if( Function == COLD ) p711Info->setLastColdStartTime(CtiTime::now().seconds());
             p711Info->PortQueueEnts++;
             p711Info->PortQueueConts++;
         }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2007/04/24 18:04:37 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2007/04/25 17:59:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,6 +85,7 @@ extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 static ULONG MAX_CCU_QUEUE_TIME = 1800;
 USHORT QueSequence = {0x8000};
+static ULONG QUEUED_MSG_REQ_ID_BASE = 0xFFFFFF00;
 
 static CHAR tempstr[100];
 
@@ -92,8 +93,6 @@ bool findAllQueueEntries(void *unused, PQUEUEENT d);
 bool findReturnNexusMatch(void *nid, PQUEUEENT d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
-#define QUEUED_MSG_REQ_ID_BASE 0xFFFFFF00
-
 
 void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
 {
@@ -443,7 +442,8 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     /* Check if we have need to re-download this ccu********  Logic needs improvement */
     if(InMessage->IDLCStat[6] & (STAT_FAULTC | STAT_DEADMN | STAT_COLDST))
     {
-        if(!(InMessage->IDLCStat[6] & STAT_COLDST) && !(pInfo->FreeSlots < MAXQUEENTRIES && !pInfo->PortQueueEnts))
+        if(!(InMessage->IDLCStat[6] & STAT_COLDST) && pInfo->getLastColdStartTime() + gConfigParms.getValueAsInt("COLD_START_FREQUENCY", 300) < CtiTime::now().seconds()
+           && !(pInfo->FreeSlots < MAXQUEENTRIES && !pInfo->PortQueueEnts))
         {
             /* Issue a cold start */
             _snprintf(tempstr, 99,"Reset Needed on Port: %2hd Remote: %3hd... Cold Starting\n", InMessage->Port, InMessage->Remote);
