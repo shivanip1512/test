@@ -42,7 +42,7 @@ if( cmdMsg.getLMData() == null )
 
 <script language="JavaScript">
 
-function update()
+function validateInput()
 {
 	//validate the inputs first
 	if( document.cmdForm.startdate != null && document.cmdForm.stopdate != null
@@ -100,7 +100,7 @@ function setStopAble( radioChk )
 <body leftmargin="0" topmargin="0" bgcolor="#FFFFFF">
 	<div align="center">
 
-	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="isCancel();update();">
+	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="isCancel();validateInput();">
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
 		<input type="hidden" name="redirectURL" value="/close.jsp" >

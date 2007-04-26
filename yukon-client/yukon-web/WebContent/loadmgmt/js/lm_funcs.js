@@ -7,7 +7,7 @@ itemid = -1;
 function showConfirmWin( theDiv )
 {
    var url = "lmcmd.jsp" +
-    		  	"?cmd=" + theDiv.name +
+    		  	"?cmd=" + theDiv.getAttribute('name') +
     		  	"&itemid=" + itemid;
 
    var width = 510;
