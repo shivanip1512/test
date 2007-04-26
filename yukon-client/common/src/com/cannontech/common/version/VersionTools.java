@@ -1,5 +1,11 @@
 package com.cannontech.common.version;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -208,26 +214,32 @@ private final static boolean tableExists( String tableName_ )
  * Creation date: (6/26/2001 2:43:28 PM)
  * @return java.lang.String
  */
-public synchronized final static java.lang.String getYUKON_VERSION() 
+public synchronized final static String getYUKON_VERSION() 
 {
-	if( yukonVersion == null )
-	{
-		try
-		{
-			java.util.jar.JarFile jf = new java.util.jar.JarFile( COMMON_JAR );
-	
-			yukonVersion =
-					jf.getManifest().getMainAttributes().getValue( KEY_YUKON_VERSION );
-	
-			jf.close();			
+	if( yukonVersion == null ) {
+		try {
+            ClassLoader classLoader = VersionTools.class.getClassLoader();
+            Enumeration<URL> resources = classLoader.getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                URL it = resources.nextElement();
+                InputStream stream = it.openStream();
+                Manifest manifest = new Manifest(stream);
+                yukonVersion = manifest.getMainAttributes().getValue(KEY_YUKON_VERSION);
+                if (yukonVersion != null) {
+                    CTILogger.debug("Found Yukon Version '" + yukonVersion + "' on " + it);
+                    break;
+                }
+            }
 		}
-		catch( Exception e )
-		{
-			CTILogger.info("*** PROPERTY TRANSLATION ERROR: " + KEY_YUKON_VERSION + " key/value not stored." );
+		catch ( Exception e ) {
+			CTILogger.warn("Caught exception looking up yukon version, setting to 'unknown'", e);
+            yukonVersion = "unknown";
 		}
 		
-		if( yukonVersion == null )
-			yukonVersion = "0.0.0";		
+		if ( yukonVersion == null ) {
+		    CTILogger.warn("Yukon version was not found, setting to 'undefined'");
+            yukonVersion = "undefined";
+        }		
 	}
 	
 	return yukonVersion;
