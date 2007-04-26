@@ -237,7 +237,7 @@ protected DataInputPanel getNextInputPanel(
 												((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getDivisionAddress());
 
 		getLmGroupVersacomEditorPanel().setRelay( ((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getRelayUsage() );
-		
+		getLmGroupVersacomEditorPanel().setFirstFocus();
 		return getLmGroupVersacomEditorPanel();
 	}	
 	else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
@@ -247,11 +247,13 @@ protected DataInputPanel getNextInputPanel(
 		{
 
 			getGoldSilverPanel().setGoldSilverSpinnerValues(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getGoldAddress(), ((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getSilverAddress());
+            getGoldSilverPanel().setFirstFocus();
 			return getGoldSilverPanel();
 		}	
 		else
 		{
 			getGoldPanel().setGoldSpinnerValue(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getGoldAddress());
+            getGoldPanel().setFirstFocus();
 			return getGoldPanel();
 
 		}
@@ -280,13 +282,14 @@ protected DataInputPanel getNextInputPanel(
 
         getRoutePanel().setRoute(((MCTBase)getCopyObject()).getDeviceRoutes().getRouteID());
         
-
+        getRoutePanel().setFirstFocus();
         return getRoutePanel();
         
     }else if( currentInputPanel == getGoldSilverPanel() 
 			   || currentInputPanel == getGoldPanel() )
 	{
 		getEmetconRelayPanel().setRelay(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getRelayUsage());
+        getEmetconRelayPanel().setFirstFocus();
 		return getEmetconRelayPanel();
 	}
 	else if( currentInputPanel == getLmGroupVersacomEditorPanel() 
@@ -298,13 +301,14 @@ protected DataInputPanel getNextInputPanel(
 			getRoutePanel().setRoute(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getRouteID());
 		else
 			getRoutePanel().setRoute(((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getRouteID());
-
+		getRoutePanel().setFirstFocus();
 		return getRoutePanel();
 	}
 
 	else if( (currentInputPanel == getDeviceCopyNameAddressPanel() || currentInputPanel == getDeviceCopyPointPanel()) &&
 	getDeviceType() == PAOGroups.CAPBANK)
     {
+        getCapBankCntrlCreationPanel().setFirstFocus();
 		return getCapBankCntrlCreationPanel();
     }else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
                                                     || getDeviceType() == DeviceTypes.MCT430LG
@@ -327,6 +331,7 @@ protected DataInputPanel getNextInputPanel(
     {
         
         getDeviceMeterGroupPanel().setValue(getCopyObject());
+        getDeviceMeterGroupPanel().setFirstFocus();
         return getDeviceMeterGroupPanel();
         
     }else

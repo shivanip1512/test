@@ -350,5 +350,17 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         getAreaCodeGroupComboBox().setSelectedItem(dmg.getTestCollectionGroup());
         getJComboBoxBillingGroup().setSelectedItem(dmg.getBillingGroup());
     }
+    
+    public void setFirstFocus() 
+    {
+        // Make sure that when its time to display this panel, the focus starts in the top component
+        javax.swing.SwingUtilities.invokeLater( new Runnable() 
+            { 
+            public void run() 
+                { 
+                getCycleGroupComboBox().requestFocus(); 
+            } 
+        });    
+    }
 
 }
