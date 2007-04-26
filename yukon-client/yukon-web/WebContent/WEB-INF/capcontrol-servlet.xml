@@ -2,22 +2,33 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <value>
-                /pointdata=ccPointTimestampController
-            </value>
-        </property>
-    </bean>
-    
-   <bean id="viewResolver"
-      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/pages/cbc/"/>
-        <property name="suffix" value=".jsp"/>
-    </bean>
-    
-    <bean id="ccPointTimestampController" class="com.cannontech.web.editor.CCPointTimestampServlet" >
-        <property name="cbcDao" ref="cbcDao"/>
-    </bean>
+	<bean
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="urlMap">
+			<map>
+				<entry key="/pointdata">
+					<ref bean="ccPointTimestampController" />
+				</entry>
+				<entry key="/capAddInfo*">
+					<ref bean="capBankAdditionalController" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/cbc/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="ccPointTimestampController"
+		class="com.cannontech.web.editor.CCPointTimestampServlet">
+		<property name="cbcDao" ref="cbcDao" />
+	</bean>
+	<bean id="capBankAdditionalController"
+		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
+
 </beans>

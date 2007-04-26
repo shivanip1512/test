@@ -359,6 +359,11 @@ for( int i = 0; i < capBanks.length; i++ )
        
 					</a>
 					<%}%>
+						<a href="#" 
+							onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=<%=capBank.getCcId()%>', 500, 600)" 
+                            onmouseover="statusMsg(this, 'Click to see additional information for the cap bank');" >       
+						x
+					</a>
 					</td>
 
 					<td >
