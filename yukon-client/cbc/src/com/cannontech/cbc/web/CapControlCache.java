@@ -217,8 +217,11 @@ public  SubBus[] getSubsByArea(Integer areaID)
     {
         for (Integer id : intList) {
             SubBus sub = (SubBus) subBusMap.get(id);
-            subs[i] = sub;
-            i++;
+            if (sub != null)
+            {
+                subs[i] = sub;
+                i++;
+            }
         }
     }
 	//before returning, sort our SubBuses based on the name

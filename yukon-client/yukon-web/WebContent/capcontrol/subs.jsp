@@ -53,7 +53,9 @@
 		</script>
 		</form>
 		-->
-		<%} else  {%> 
+		<%} else  {
+		
+		%> 
 		
 	          
             <form id="subForm" action="feeders.jsp" method="post">
@@ -66,6 +68,10 @@
                 Sub Name</td>
                 <td>State</td>
                 <td>Target</td>
+                <td>Available<br/> kVARS</td>
+                <td>Disabled <br/>kVARS</td>
+                <td>Closed <br/>kVARS</td>
+                <td>Tripped <br/>kVARS</td>
                 <td>VAR Load / Est.</td>
                 <td>Date/Time</td>
                 <td>PFactor / Est.</td>
@@ -81,6 +87,17 @@ for( int i = 0; i < areaSubs.length; i++ )
 {
     css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
     SubBus subBus = areaSubs[i];
+
+    String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(subBus ));
+	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(subBus));
+			
+	String closedVars =
+		CBCUtils.format( CBCUtils.calcClosedVARS(capControlCache.getCapBanksBySub( subBus.getCcId()) ));
+	String trippedVars =
+		CBCUtils.format( CBCUtils.calcTrippedVARS(capControlCache.getCapBanksBySub( subBus.getCcId()) ));
+
+
+
 %>
 
 
@@ -121,6 +138,10 @@ for( int i = 0; i < areaSubs.length; i++ )
                 <td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
                 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%></a>
                 </td>
+                <td><%=varsAvailable %> </td>
+                <td><%=varsDisabled %> </td>
+                <td><%=closedVars %> </td>
+                <td><%=trippedVars %> </td>
                 <td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
                 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
                 </td>
@@ -136,6 +157,7 @@ for( int i = 0; i < areaSubs.length; i++ )
                 <td><a type="param6" name="cti_dyn" id="<%=subBus.getCcId()%>">
                 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN)%></a>
                 </td>
+
             </tr>
 <% } %>
 

@@ -33,8 +33,10 @@
 				<td>Area Name</td>
                 <td>State</td>
                 <td>Setup</td>
-                <td>Closed kVARS</td>
-                <td>Tripped kVARS</td>
+                <td>Available<br/> kVARS</td>
+                <td>Disabled <br/>kVARS</td>
+                <td>Closed <br/>kVARS</td>
+                <td>Tripped <br/>kVARS</td>
                 <td>PFactor/Est.</td>
               </tr>
               </table>
@@ -44,22 +46,27 @@
 		String css = "tableCell";
 		for( int i = 0; i < userOwner.getCbcAreas().size(); i++ )
 		{
-			css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-			CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
-			
-			SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
-			
-			CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
-			
-			String totalVars =
-				CBCUtils.format( CBCUtils.calcTotalVARS(areaCapBanks) );
-			String availVars =
-				CBCUtils.format( CBCUtils.calcAvailableVARS(areaCapBanks) );
+	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
+	CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
+	
+	SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
+	
+	CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
+	
+	//new additions for the available and closed vars
+	String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(Arrays.asList(areaBuses)) );
+	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(Arrays.asList(areaBuses)) );
+		
+	String closedVars =
+		CBCUtils.format( CBCUtils.calcClosedVARS(areaCapBanks) );
+	String trippedVars =
+		CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
 
-			String currPF = CBCDisplay.getPowerFactorText(
-								CBCUtils.calcAvgPF(areaBuses), true);
-			String estPF = CBCDisplay.getPowerFactorText(
-								CBCUtils.calcAvgEstPF(areaBuses), true);
+	
+	String currPF = CBCDisplay.getPowerFactorText(
+		CBCUtils.calcAvgPF(areaBuses), true);
+	String estPF = CBCDisplay.getPowerFactorText(
+		CBCUtils.calcAvgEstPF(areaBuses), true);
             String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
 %>
 	        <tr class="<%=css%>">
@@ -88,8 +95,10 @@
                 </a>
                 </td>
 				<td><%=areaBuses.length%> Substation(s)</td>
-				<td><%=totalVars%></td>
-				<td><%=availVars%></td>
+				<td><%=varsAvailable%></td>
+				<td><%=varsDisabled%></td>
+				<td><%=closedVars%></td>
+				<td><%=trippedVars%></td>
 				<td><%=currPF%> / <%=estPF%></td>
 			</tr>
 
