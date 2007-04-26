@@ -18,13 +18,14 @@ public class TitledContainerTag extends TagSupport {
         try {
             pageContext.getOut().print("<div class=\"titledContainer " + getStyleClass() + "\" "
                     + ((id != null) ? "id=\"" + id + "\"" : "") + ">\n"
-                    + "           <span class=\"rtop\">\n"
-                    + "             <span class=\"lt1\"></span>\n"
-                    + "             <span class=\"lt2\"></span>\n"
-                    + "             <span class=\"lt3\"></span>\n"
-                    + "             <span class=\"lt4\"></span>\n"
-                    + "             <span class=\"lt5\"></span>\n"
-                    + "             <span class=\"lt6\"></span>\n" + "           </span>\n"
+                    + "           <span class=\"top\">\n"
+                    + "             <span class=\"t1\"></span>\n"
+                    + "             <span class=\"t2\"></span>\n"
+                    + "             <span class=\"t3\"></span>\n"
+                    + "             <span class=\"t4\"></span>\n"
+                    + "             <span class=\"t5\"></span>\n"
+                    + "             <span class=\"t6\"></span>\n" 
+                    + "           </span>\n                      "
                     + "           <div class=\"title\">" + getTitle() + "</div>\n"
                     + "           <div class=\"content\">\n");
         } catch (IOException e) {
@@ -35,21 +36,22 @@ public class TitledContainerTag extends TagSupport {
 
     public int doEndTag() throws JspException {
         try {
-            pageContext.getOut().print("</div>" + "           <span class=\"lbottom\">"
-                    + "             <span class=\"l6\"></span>"
+            pageContext.getOut().print("<br class=\"makesNoSense\"></div>                " 
+                    + "           <span class=\"lbottom\">    "
                     + "             <span class=\"l5\"></span>"
                     + "             <span class=\"l4\"></span>"
                     + "             <span class=\"l3\"></span>"
                     + "             <span class=\"l2\"></span>"
-                    + "             <span class=\"l1\"></span>" + "           </span>"
-                    + "           <span class=\"rtbottom\">"
-                    + "             <span class=\"r6\"></span>"
+                    + "             <span class=\"l1\"></span>"
+                    + "           </span>                     "
+                    + "           <span class=\"rbottom\">    "
                     + "             <span class=\"r5\"></span>"
                     + "             <span class=\"r4\"></span>"
                     + "             <span class=\"r3\"></span>"
-                    + "             <span class=\"r2\"></span>" + "           </span>"
-                    + "           <span class=\"rbottom\">"
-                    + "             <span class=\"r1\"></span>" + "           </span>"
+                    + "             <span class=\"r2\"></span>"
+                    + "             <span class=\"r1\"></span>" 
+                    + "           </span>                     "
+                    + "           <div class=\"bottomBar\"></div>"
                     + "       </div>");
         } catch (IOException e) {
             throw new JspException(e);

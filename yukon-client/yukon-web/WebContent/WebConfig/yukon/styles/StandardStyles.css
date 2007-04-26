@@ -144,6 +144,7 @@ body {
 
 div.titledContainer{ 
 	width: 100%;
+	position: relative;
 }
 
 div.titledContainer .content {
@@ -167,55 +168,66 @@ div.titledContainer .title {
     color: white;
 }
 
-div.titledContainer .rtop, .div.titledContainer lbottom,
-div.titledContainer .rbottom, div.titledContainer .rtbottom {
-	display: block;
+div.titledContainer .lbottom {
+	position: absolute;
+	left: 0;
+	width: 6px;
 }
 
-div.titledContainer .lbottom {
-	float: left;
-	width: 51%;
-}
 div.titledContainer .rbottom {
-	float: right;
-	width: 49%;
-}
-div.titledContainer .rtbottom {
-	float: right;
+	position: absolute;
+	right: 0;
 	width: 6px;
 }
 	
-div.titledContainer .rtop span, div.titledContainer .lbottom span, 
-div.titledContainer .rbottom span, div.titledContainer .rtbottom span {
+div.titledContainer .top span, div.titledContainer .lbottom span, 
+div.titledContainer .rbottom span {
 	display: block;
 	height: 1px;
     overflow: hidden; 
     background: #0066CC;
 }
 
-div.titledContainer .lt1{margin: 0 5px}
-div.titledContainer .lt2{margin: 0 3px}
-div.titledContainer .lt3{margin: 0 2px}
-div.titledContainer .lt4{margin: 0 1px;height: 1px;}
-div.titledContainer .lt5{margin: 0 1px;height: 1px;}
-div.titledContainer .lt6{margin: 0 0px;height: 1px;}
+div.titledContainer .content .makesNoSense {
+	padding: 0;
+	margin: 0;
+	height: 0;
+	font-size: 0em;
+}
 
-div.titledContainer .l1{margin: 0 0px 0px 5px;}
-div.titledContainer .l2{margin: 0 1px 0 3px; width: 2px;}
-div.titledContainer .l3{margin: 0 3px 0 2px; width: 1px;}
+div.titledContainer .t1{margin: 0 5px}
+div.titledContainer .t2{margin: 0 3px}
+div.titledContainer .t3{margin: 0 2px}
+div.titledContainer .t4{margin: 0 1px;height: 1px;}
+div.titledContainer .t5{margin: 0 1px;height: 1px;}
+div.titledContainer .t6{margin: 0 0px;height: 1px;}
+
+div.titledContainer .lbottom span.l1{margin: 0 1px 0 3px; width: 2px; height: 1px;}
+div.titledContainer .l2{margin: 0 3px 0 2px; width: 1px;}
+div.titledContainer .l3{margin: 0 4px 0 1px; width: 1px;}
 div.titledContainer .l4{margin: 0 4px 0 1px; width: 1px;}
-div.titledContainer .l5{margin: 0 4px 0 1px; width: 1px;}
-div.titledContainer .l6{margin: 0 5px 0 0px; width: 1px;}
+div.titledContainer .l5{margin: 0 5px 0 0px; width: 1px;}
 
-div.titledContainer .r1{margin: 0 5px 0px 0px;}
-div.titledContainer .r2{margin: 0 3px 0 1px; width: 2px;}
-div.titledContainer .r3{margin: 0 2px 0 3px; width: 1px;}
+div.titledContainer .r1{margin: 0 3px 0 1px; width: 2px; height: 2px}
+div.titledContainer .r2{margin: 0 2px 0 3px; width: 1px;}
+div.titledContainer .r3{margin: 0 1px 0 4px; width: 1px;}
 div.titledContainer .r4{margin: 0 1px 0 4px; width: 1px;}
-div.titledContainer .r5{margin: 0 1px 0 4px; width: 1px;}
-div.titledContainer .r6{margin: 0 0px 0 5px; width: 1px;}
+div.titledContainer .r5{margin: 0 0px 0 5px; width: 1px;}
 
-div.styledContainer .title, div.styledContainer .rtop span, div.styledContainer .lbottom span, 
-div.styledContainer .rtbottom span, div.styledContainer .rbottom span {
+div.titledContainer .bottomBar{
+	position: relative;
+	top: 5px;
+	left: 5px;
+	right: 5px;
+	margin-right: 10px;
+	padding: 0;
+	height: 1px;
+    overflow: hidden; 
+    background: #0066CC;
+}
+
+div.styledContainer .title, div.styledContainer .rop span, div.styledContainer .lbottom span, 
+div.styledContainer .rbottom span {
 	background-color: #06C !important;
 	color: #fff !important;
 }

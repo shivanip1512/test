@@ -7,7 +7,7 @@
 <style type="text/css">
 div.scroll { font-size: 12px; 
 			 height: 350px;  
-			 width: 600px; 
+			 width: 550px; 
 			 overflow: scroll; 
 			 border: 1px solid #CCCCCC; 
 			 text-align:left; 
