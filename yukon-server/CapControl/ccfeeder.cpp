@@ -539,7 +539,24 @@ LONG CtiCCFeeder::getIWCount() const
     return _iWCount;
 }
 
+/*---------------------------------------------------------------------------
+    getIVControl
 
+    Returns the Integrate Volt/Var Control of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getIVControl() const
+{
+    return _iVControl;
+}
+/*---------------------------------------------------------------------------
+    getIWControl
+
+    Returns the Integrate Watt Control of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getIWControl() const
+{
+    return _iWControl;
+}
 /*---------------------------------------------------------------------------
     getNewPointDataReceivedFlag
 
@@ -1876,7 +1893,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         capBank->setTotalOperations(capBank->getTotalOperations() + 1);
         capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
         setRecentlyControlledFlag(TRUE);
-        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+        //setVarValueBeforeControl(getCurrentVarLoadPointValue());
+        setVarValueBeforeControl(kvarBefore);
         if( capBank->getStatusPointId() > 0 )
         {
             string additional;
@@ -2091,7 +2109,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         capBank->setTotalOperations(capBank->getTotalOperations() + 1);
         capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
         setRecentlyControlledFlag(TRUE);
-        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+        //setVarValueBeforeControl(getCurrentVarLoadPointValue());
+        setVarValueBeforeControl(kvarBefore);
         if( capBank->getStatusPointId() > 0 )
         {
             string additional;
@@ -2371,7 +2390,30 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
        !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KQControlUnits) )
         setpoint = (peakTimeFlag?getPeakPFSetPoint():getOffPeakPFSetPoint());
 
-    setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(controlUnits,setpoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
+    //Integration Control Point setting...
+    setIWControl(getCurrentWattLoadPointValue());
+    if (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits))
+        setIVControl(getCurrentVoltLoadPointValue());
+    else
+        setIVControl(getCurrentVarLoadPointValue());
+    if (getIntegrateFlag() && getIntegratePeriod() > 0) 
+    {
+        if (getIVCount() > 0) 
+            setIVControl(getIVControlTot() / getIVCount());
+        if (getIWCount() > 0)
+            setIWControl(getIWControlTot() / getIVCount());
+     //resetting integration total...
+        if (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits))
+            setIVControlTot(getCurrentVoltLoadPointValue());
+        else
+            setIVControlTot(getCurrentVarLoadPointValue());
+        setIVCount(1);
+        setIWControlTot(getCurrentWattLoadPointValue());
+        setIWCount(1);
+    }
+
+    setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits,setpoint,getIVControl(),getIWControl()));
+   
 
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
     CtiRequestMsg* request = NULL;
@@ -2389,17 +2431,17 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits) ) 
         {
             if( (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
-                (getCurrentVarLoadPointValue() > lagLevel || getCurrentVarLoadPointValue() < leadLevel )) ||
+                (getIVControl() > lagLevel || getIVControl() < leadLevel )) ||
                 (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) &&  
-                (getCurrentVoltLoadPointValue() < lagLevel || getCurrentVoltLoadPointValue() > leadLevel) ) ) 
+                (getIVControl() < lagLevel || getIVControl() > leadLevel) ) ) 
             {
         
                 try
                 {   
                     if( ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
-                          lagLevel < getCurrentVarLoadPointValue() ) ||
+                          lagLevel < getIVControl() ) ||
                         ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) &&
-                          lagLevel > getCurrentVoltLoadPointValue() ) )
+                          lagLevel > getIVControl() ) )
                     {                    
                         //if( _CC_DEBUG )
                         if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) )
@@ -2433,9 +2475,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         }
                         else
                         {
-                            DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                            string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank , pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                            //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                            string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank , pointChanges, ccEvents, text, getIVControl());
 
                             if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                             {
@@ -2471,9 +2513,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
                         CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
 
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                        string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                        //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
+                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getIVControl());
     
                         if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                         {
@@ -2539,8 +2581,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         DOUBLE adjustedBankKVARReduction = (lagLevel/100.0)*((DOUBLE)capBank->getBankSize());
                         if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                         {
-                            string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                            string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getIVControl());
                         }
                         else
                         {//cap bank too big
@@ -2586,8 +2628,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     DOUBLE adjustedBankKVARIncrease = (leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
                     if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
-                        string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue());
-                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                        string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
+                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getIVControl());
                     }
                     else
                     {//cap bank too big
@@ -2632,7 +2674,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid control units: " << controlUnits << ", in feeder: " << getPAOName() << endl;
+            dout << CtiTime() << " - Invalid control units: " << feederControlUnits << ", in feeder: " << getPAOName() << endl;
         }
     }
     
@@ -4026,8 +4068,25 @@ CtiCCFeeder& CtiCCFeeder::setIWCount(LONG value)
     _iWCount = value;
     return *this;
 }
-
-
+/*---------------------------------------------------------------------------
+    setIVControl 
+        
+    Sets the Integrated Volt/Var Control of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIVControl(DOUBLE value)
+{
+    _iVControl = value;
+    return *this;
+}/*---------------------------------------------------------------------------
+    setIWControl 
+        
+    Sets the Integrated Watt Control  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setIWControl(DOUBLE value)
+{
+    _iWControl = value;
+    return *this;
+}
 
 BOOL CtiCCFeeder::getVerificationFlag() const
 {
@@ -4874,9 +4933,15 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[5] = (_postOperationMonitorPointScanFlag?'Y':'N');
             addFlags[6] = (_waitForReCloseDelayFlag?'Y':'N');
             addFlags[7] = (_peakTimeFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + 
-                                         char2string(*(addFlags+3)) + char2string(*(addFlags+4)) + char2string(*(addFlags+5)) +
-                                         char2string(*(addFlags+6)) + char2string(*(addFlags+7))) + string(*(addFlags + 8), 12);
+            _additionalFlags = char2string(*addFlags);
+            _additionalFlags.append(char2string(*(addFlags+1)));
+            _additionalFlags.append(char2string(*(addFlags+2))); 
+            _additionalFlags.append(char2string(*(addFlags+3)));
+            _additionalFlags.append(char2string(*(addFlags+4))); 
+            _additionalFlags.append(char2string(*(addFlags+5)));
+            _additionalFlags.append(char2string(*(addFlags+6))); 
+            _additionalFlags.append(char2string(*(addFlags+7)));
+            _additionalFlags.append("NNNNNNNNNNNN");
 
             updater.clear();
 
@@ -4888,7 +4953,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality )
             << dynamicCCFeederTable["waivecontrolflag"].assign( (_waivecontrolflag?"Y":"N")) 
-            << dynamicCCFeederTable["additionalflags"].assign( _additionalFlags[0] )
+            << dynamicCCFeederTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
             << dynamicCCFeederTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
             << dynamicCCFeederTable["eventseq"].assign( _eventSeq )
             << dynamicCCFeederTable["currverifycbid"].assign(_currentVerificationCapBankId)
@@ -5052,7 +5117,11 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _peaklead
     >> _offpklead
     >> _currentvoltloadpointid
-    >> _currentvoltloadpointvalue;
+    >> _currentvoltloadpointvalue
+    >> _currentwattpointquality
+    >> _currentvoltpointquality
+    >> _targetvarvalue
+    >> _solution;
 
    
     istrm >> numberOfCapBanks;
@@ -5126,7 +5195,11 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _peaklead
     << _offpklead
     << _currentvoltloadpointid
-    << _currentvoltloadpointvalue;
+    << _currentvoltloadpointvalue
+    << _currentwattpointquality
+    << _currentvoltpointquality
+    << _targetvarvalue
+    << _solution;
 
     ostrm << _cccapbanks.size();
     for(LONG i=0;i<_cccapbanks.size();i++)
@@ -5221,7 +5294,8 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _iVCount = right._iVCount;
         _iWControlTot = right._iWControlTot;
         _iWCount = right._iWCount;
-
+        _iVControl = right._iVControl;
+        _iWControl = right._iWControl;
 
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)
@@ -5381,6 +5455,8 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setIVCount(0);
     setIWControlTot(0);
     setIWCount(0);
+    setIVControl(0);
+    setIWControl(0);
 
 }
 

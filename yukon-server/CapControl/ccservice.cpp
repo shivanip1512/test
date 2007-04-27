@@ -35,7 +35,7 @@ BOOL _LOG_MAPID_INFO;
 ULONG _LINK_STATUS_TIMEOUT;
 BOOL _END_DAY_ON_TRIP;
 
-CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
+CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
 ULONG gInvalidCtiTimeSeconds = gInvalidCtiTime.seconds();
 

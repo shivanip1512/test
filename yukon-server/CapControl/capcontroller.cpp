@@ -1767,12 +1767,12 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             currentSubstationBus->setCurrentVarLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                            {
+                                currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                            }
                         }
-                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
-                        {
-                            currentSubstationBus->updateIntegrationVPoint(CtiTime());
-                        }
-
+                        
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
                             !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
                         {
@@ -1825,11 +1825,12 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             currentSubstationBus->setCurrentWattLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                            {
+                                currentSubstationBus->updateIntegrationWPoint(CtiTime());
+                            }
                         }
-                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
-                        {
-                            currentSubstationBus->updateIntegrationWPoint(CtiTime());
-                        }
+                        
                         currentSubstationBus->setCurrentWattPointQuality(quality);
 
                         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
@@ -1861,10 +1862,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             currentSubstationBus->setCurrentVoltLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        }
-                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
-                        {
-                            currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                            {
+                                currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                            }
                         }
                         currentSubstationBus->setCurrentVoltPointQuality(quality);
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
@@ -2057,7 +2058,12 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentFeeder->setCurrentVarLoadPointValue(value);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                if (currentFeeder->isControlPoint(pointID) && currentFeeder->getIntegrateFlag()) 
+                                {
+                                    currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
+                                }
                             }
+                            
                             currentFeeder->figureEstimatedVarLoadPointValue();
                             currentFeeder->setCurrentVarPointQuality(quality);
                             if( currentFeeder->getEstimatedVarLoadPointId() > 0 )
@@ -2253,8 +2259,17 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                         currentCapBank->setReportedCBCStateTime(timestamp);
                                     }
                                     currentCapBank->setReportedCBCState(twoWayPts->getCapacitorBankState());
+
+                                    store->set2wayFlagUpdate(TRUE);
                                 }
-                                store->set2wayFlagUpdate(TRUE);
+                                else if (twoWayPts->getIgnoredIndicatorId() == pointID) 
+                                {
+                                    if (twoWayPts->getIgnoredIndicator() != value) 
+                                    {
+                                       // currentCapBank->setIgnoredIndicator(value);
+                                       // currentCapBank->setToggleIgnoreReason(flag);
+                                    }
+                                }
                                 if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2263,13 +2278,16 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             }
                             else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value))
                             {
-                                if (twoWayPts->getUDPIpAddressId() == 0) 
+                                if (twoWayPts->getUDPIpAddressId() == pointID) 
                                 {
                                     currentCapBank->setIpAddress(twoWayPts->getUDPIpAddress());
                                 }
-                                if (twoWayPts->getUDPPortNumberId() == 0) 
+                                else if (twoWayPts->getUDPPortNumberId() == pointID) 
                                 {
                                     currentCapBank->setUDPPort(twoWayPts->getUDPPortNumber());
+                                }
+                                else if (twoWayPts->getIgnoredReasonId() == pointID) 
+                                {
                                 }
                                 if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
                                 {

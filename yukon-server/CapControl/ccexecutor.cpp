@@ -136,6 +136,12 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::DISABLE_AREA:
         DisableArea();
         break;
+    case CtiCCCommand::ENABLE_SYSTEM:
+        EnableSystem();
+        break;
+    case CtiCCCommand::DISABLE_SYSTEM:
+        DisableSystem();
+        break;
     case CtiCCCommand::SCAN_2WAY_DEVICE:
         Scan2WayDevice();
         break;
@@ -1489,7 +1495,6 @@ void CtiCCCommandExecutor::EnableArea()
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
-    CtiMultiMsg* enableMulti = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
@@ -1535,7 +1540,6 @@ void CtiCCCommandExecutor::DisableArea()
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
-    CtiMultiMsg* disableMulti = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
@@ -1567,6 +1571,97 @@ void CtiCCCommandExecutor::DisableArea()
 
     }
 }
+/*---------------------------------------------------------------------------
+    EnableSystem
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::EnableSystem()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG areaId = _command->getId();
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    string text1 = string("Manual Enable System");
+    string additional1 = string("CapControl SYSTEM ENABLE ");
+
+    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    for(LONG i=0;i<ccAreas.size();i++)
+    { 
+        CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+        if (currentArea != NULL)
+        {
+             currentArea->setDisableFlag(FALSE);
+             store->UpdateAreaDisableFlagInDB(currentArea);
+        }
+    }
+               
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+    
+    CtiCCExecutorFactory f;
+    CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+    executor->Execute();
+    delete executor;
+}
+
+/*---------------------------------------------------------------------------
+    DisableSystem
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::DisableSystem()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG areaId = _command->getId();
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    string text1 = string("Manual Disable System");
+    string additional1 = string("CapControl SYSTEM DISABLE ");
+
+    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    for(LONG i=0;i<ccAreas.size();i++)
+    { 
+        CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+        if (currentArea != NULL)
+        {
+             currentArea->setDisableFlag(TRUE);
+             store->UpdateAreaDisableFlagInDB(currentArea);
+        }
+    }
+               
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+    
+    CtiCCExecutorFactory f;
+    CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+    executor->Execute();
+    delete executor;
+
+}
+
 
 
 /*---------------------------------------------------------------------------
@@ -1819,125 +1914,6 @@ void CtiCCCommandExecutor::Flip7010Device()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
-}
-
-/*---------------------------------------------------------------------------
-    EnableSystem
----------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::EnableSystem()
-{
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-    LONG controlID = 0;
-    BOOL found = FALSE;
-    CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg* eventMulti = new CtiMultiMsg();
-    CtiMultiMsg* enableMulti = new CtiMultiMsg();
-    CtiMultiMsg_vec& pointChanges = multi->getData();
-    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
-
-    string text1 = string("Manual Enable System");
-    string additional1 = "";
-    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, SYS_PID_CAPCONTROL, 0, capControlManualCommand, -1, 0, text1, _command->getUser()));
-    
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
-
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
-    {
-        CtiCCSubstationBusPtr currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        
-        if (currentSubstationBus->getReEnableBusFlag()) 
-        {
-            currentSubstationBus->setDisableFlag(FALSE);
-            currentSubstationBus->setReEnableBusFlag(FALSE);
-        
-            currentSubstationBus->setBusUpdatedFlag(TRUE);
-            store->UpdateBusDisableFlagInDB(currentSubstationBus);
-            string text = string("Substation Bus Enabled");
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPAOName();
-            if (_LOG_MAPID_INFO) 
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPAODescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-           
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
-        }            
-        
-    }
-    
-    if (eventMulti->getCount() > 0)
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-    if (multi->getCount() > 0)
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
-    
-}
-
-/*---------------------------------------------------------------------------
-    DisableSystem
----------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::DisableSystem()
-{
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-    LONG controlID = 0;
-    BOOL found = FALSE;
-    CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg* eventMulti = new CtiMultiMsg();
-    CtiMultiMsg* disableMulti = new CtiMultiMsg();
-    CtiMultiMsg_vec& pointChanges = multi->getData();
-    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
-
-    string text1 = string("Manual Disable System");
-    string additional1 = "";
-
-    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, SYS_PID_CAPCONTROL, 0, capControlManualCommand, -1, 0, text1, _command->getUser()));
-
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
-
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
-    {
-        CtiCCSubstationBusPtr currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        
-        if (!currentSubstationBus->getDisableFlag() )//&& !currentSubstationBus->getReEnableBusFlag()) 
-        {
-            currentSubstationBus->setDisableFlag(TRUE);
-            currentSubstationBus->setReEnableBusFlag(TRUE);
-        
-            currentSubstationBus->setBusUpdatedFlag(TRUE);
-            store->UpdateBusDisableFlagInDB(currentSubstationBus);
-            string text = string("Substation Bus Disabled");
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPAOName();
-            if (_LOG_MAPID_INFO) 
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPAODescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-           
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
-        }
-        
-    }
-    
-    if (eventMulti->getCount() > 0)
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-    if (multi->getCount() > 0)
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
-    
 }
 
 
@@ -3551,91 +3527,51 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     BOOL found = FALSE;
     BOOL verificationFlag = FALSE;
 
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
-    {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(LONG j=0;j<ccFeeders.size();j++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-            if( oldFeederPtr==NULL && currentFeeder->getPAOId()==oldFeederId )
-            {
-                if ( currentSubstationBus->getVerificationFlag() )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                     <<".  Cannot perform MOVE CAPBANK on Feeder: "<<currentFeeder->getPAOName()<<" PAOID: "<<currentFeeder->getPAOId()<<"."<<endl;
-                    }
-                    verificationFlag = TRUE;
-                    found = TRUE;
-                }
-                else
-                {
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    oldFeederPtr = currentFeeder;
-                }
-            }
-            if( newFeederPtr==NULL && currentFeeder->getPAOId()==newFeederId  )
-            {
-                if ( currentSubstationBus->getVerificationFlag() )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                     <<".  Cannot perform MOVE CAPBANK on Feeder: "<<currentFeeder->getPAOName()<<" PAOID: "<<currentFeeder->getPAOId()<<"."<<endl;
-                    }
-                    verificationFlag = TRUE;
-                    found = TRUE;
-                }
-                else
-                {
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    newFeederPtr = currentFeeder;
-                }
-            }
-
-            if( movedCapBankPtr==NULL )
-            {
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                for(LONG k=0;k<ccCapBanks.size();k++)
-                {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-
-                    if( currentCapBank->getPAOId()==movedCapBankId )
-                    {
-                        if ( currentSubstationBus->getVerificationFlag() )
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                             <<".  Cannot perform MOVE CAPBANK on CapBank: "<<currentCapBank->getPAOName()<<" PAOID: "<<currentCapBank->getPAOId()<<"."<<endl;
-                            }
-                            verificationFlag = TRUE;
-                            found = TRUE;
-                        }
-                        else
-                        {
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            movedCapBankPtr = currentCapBank;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL )
-            {
-                found = TRUE;
-                break;
-            }
-        }
-        if( found )
-        {
-            break;
-        }
-    }
+    oldFeederPtr = store->findFeederByPAObjectID(oldFeederId);
+   if (oldFeederPtr != NULL) 
+   {
+       CtiCCSubstationBus* oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
+       if (oldFeederParentSub != NULL) 
+       {
+           if (oldFeederParentSub->getVerificationFlag()) 
+           {
+               {
+                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                   dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< oldFeederParentSub->getPAOName() <<" PAOID: "<< oldFeederParentSub->getPAOId() 
+                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<oldFeederPtr->getPAOName()<<" PAOID: "<<oldFeederPtr->getPAOId()<<"."<<endl;
+               }
+               verificationFlag = TRUE;
+               found = TRUE;
+           }
+           else
+           {
+               oldFeederParentSub->setBusUpdatedFlag(TRUE);
+           }
+       }
+   }
+   newFeederPtr = store->findFeederByPAObjectID(newFeederId);
+   if (newFeederPtr != NULL) 
+   {
+       CtiCCSubstationBus* newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
+       if (newFeederParentSub != NULL) 
+       {
+           if (newFeederParentSub->getVerificationFlag()) 
+           {
+               {
+                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                   dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< newFeederParentSub->getPAOName() <<" PAOID: "<< newFeederParentSub->getPAOId() 
+                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<newFeederPtr->getPAOName()<<" PAOID: "<<newFeederPtr->getPAOId()<<"."<<endl;
+               }
+               verificationFlag = TRUE;
+               found = TRUE;
+           }
+           else
+           {
+               newFeederParentSub->setBusUpdatedFlag(TRUE);
+           }        
+       }
+   }
+   movedCapBankPtr = store->findCapBankByPAObjectID(movedCapBankId);
 
     if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL )
     {
@@ -3682,6 +3618,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 {
                     //have to remove due to change in sorting field in a sorted vector
                     CtiCCCapBank* currentCapBank = *(oldFeederCapBanks.begin());
+                    //CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
+
                     oldFeederCapBanks.erase(oldFeederCapBanks.begin());
                     currentCapBank->setControlOrder(shuffledOrder);
                     tempShufflingCapBankList.insert(currentCapBank);

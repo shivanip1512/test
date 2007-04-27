@@ -181,6 +181,16 @@ const CtiTime& CtiCCCapBank::getReportedCBCStateTime() const
     return _reportedCBCStateTime;
 }
 
+BOOL CtiCCCapBank::getIgnoreFlag() const
+{
+    return _ignoreFlag;
+}
+
+
+LONG CtiCCCapBank::getIgnoredReason() const
+{
+    return _ignoreReason;
+}
 
 /*---------------------------------------------------------------------------
     getDisableFlag
@@ -982,6 +992,30 @@ CtiCCCapBank& CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
 
 }
 
+CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(BOOL flag)
+{
+    if (_ignoreFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _ignoreFlag = flag;
+
+    return *this;
+
+}
+
+CtiCCCapBank& CtiCCCapBank::setIgnoredReason(LONG value)
+{
+    if (_ignoreReason != value)
+    {
+        _dirty = TRUE;
+    }
+    _ignoreReason = value;
+
+    return *this;
+
+}
+
 
 BOOL CtiCCCapBank::updateVerificationState(void)
 {
@@ -1429,7 +1463,9 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> tempTime1
     >> _tagscontrolstatus
     >> _originalfeederid
-    >> _currentdailyoperations;
+    >> _currentdailyoperations
+    >> _ignoreFlag
+    >> _ignoreReason;
 
     _laststatuschangetime = CtiTime(tempTime1);
 }
@@ -1471,7 +1507,9 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _laststatuschangetime
     << _tagscontrolstatus
     << _originalfeederid
-    << _currentdailyoperations;
+    << _currentdailyoperations
+    << _ignoreFlag   
+    << _ignoreReason;
 }
 
 /*---------------------------------------------------------------------------
@@ -1527,6 +1565,9 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _udpPortNumber = right._udpPortNumber;
         _reportedCBCState = right._reportedCBCState;
         _reportedCBCStateTime = right._reportedCBCStateTime;
+
+        _ignoreFlag = right._ignoreFlag;
+        _ignoreReason = right._ignoreReason;
     }
     return *this;
 }
@@ -1610,6 +1651,9 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setUDPPort(0);
     setReportedCBCState(-1);
     setReportedCBCStateTime(gInvalidCtiTime);
+
+    setIgnoreFlag(FALSE);
+    setIgnoredReason(0);
 
     _insertDynamicDataFlag = TRUE;
     /*{

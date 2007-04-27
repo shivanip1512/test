@@ -160,6 +160,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getIVCount() const;
     DOUBLE getIWControlTot() const;
     LONG getIWCount() const;
+    DOUBLE getIVControl() const;
+    DOUBLE getIWControl() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -255,6 +257,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setIVCount(LONG value);
     CtiCCSubstationBus& setIWControlTot(DOUBLE value);
     CtiCCSubstationBus& setIWCount(LONG value);
+    CtiCCSubstationBus& setIVControl(DOUBLE value);
+    CtiCCSubstationBus& setIWControl(DOUBLE value);
+
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
@@ -486,6 +491,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _iWControlTot;
     LONG  _iWCount;
 
+    DOUBLE _iVControl;
+    DOUBLE _iWControl;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

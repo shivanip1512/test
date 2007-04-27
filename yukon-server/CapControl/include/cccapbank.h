@@ -87,6 +87,9 @@ public:
     const string& getIpAddress() const;
     LONG getReportedCBCState() const;
     const CtiTime& getReportedCBCStateTime() const;
+    BOOL getIgnoreFlag() const;
+    LONG getIgnoredReason() const;
+
 
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
@@ -140,6 +143,8 @@ public:
     CtiCCCapBank& setIpAddress(ULONG value);
     CtiCCCapBank& setReportedCBCState(LONG value);
     CtiCCCapBank& setReportedCBCStateTime(const CtiTime& timestamp);
+    CtiCCCapBank& setIgnoreFlag(BOOL flag);
+    CtiCCCapBank& setIgnoredReason(LONG value);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -249,6 +254,9 @@ private:
     LONG _udpPortNumber;
     LONG _reportedCBCState;
     CtiTime _reportedCBCStateTime;
+
+    BOOL _ignoreFlag;
+    LONG _ignoreReason;
     
     //don't stream
     BOOL _insertDynamicDataFlag;

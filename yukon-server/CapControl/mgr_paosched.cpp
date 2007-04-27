@@ -329,8 +329,8 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                             if (tempNextTime < currentTime) 
                             {
 
-                                string text = string("ERROR - Schedule ID ");
-                                text += (*iter)->getScheduleId();
+                                string text = string("ERROR - Schedule: ");
+                                text += (*iter)->getScheduleName();
                                 
                                 string additional = string("Schedule ID ");
                                 additional += (*iter)->getScheduleId();
@@ -508,8 +508,8 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
         if (tempNextTime < currentTime) 
         {
         
-            string text = string("ERROR - Schedule ID ");
-            text += schedule->getScheduleId();
+            string text = string("ERROR - Schedule: ");
+            text += schedule->getScheduleName();
             
             string additional = string("Schedule ID ");
             additional += schedule->getScheduleId();
