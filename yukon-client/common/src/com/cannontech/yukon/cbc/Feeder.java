@@ -1,12 +1,13 @@
 package com.cannontech.yukon.cbc;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
  * A feeder object
  */
-public class Feeder extends StreamableCapObject
+public class Feeder extends StreamableCapObject implements PointQualityCheckable
 {
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
@@ -593,6 +594,15 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setMaxOperationDisableFlag(Boolean boolean1) {
 		maxOperationDisableFlag = boolean1;
 	}
+    public Integer getCurrentPtQuality(int pointType) {
+        if (pointType == PointUnits.UOMID_KVAR)
+            return getCurrentVarLoadPointID();
+        else if (pointType == PointUnits.UOMID_KW)
+            return getCurrentwattpointquality();
+        else if (pointType == PointUnits.UOMID_KVOLTS)
+            return getCurrentvoltpointquality();
+        return null;
+    }
 	public Integer getCurrentvoltpointquality() {
 		return currentvoltpointquality;
 	}

@@ -3,6 +3,7 @@ package com.cannontech.yukon.cbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -28,7 +29,9 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 
@@ -276,7 +279,7 @@ public final class CBCUtils {
     public static SubSnapshotParams getSubSnapshot(int subID) {
         if (subID >= CtiUtilities.NONE_ZERO_ID) {
 
-            String sqlStmt = "SELECT SubstationbusID, " + "ControlUnits, ControlMethod FROM CapControlSubstationBus, " + "CapControlStrategy WHERE CapControlSubstationBus.StrategyID = CapControlStrategy.StrategyID " + "AND SubStationBusID = ?";
+            String sqlStmt = "SELECT SubstationbusID, ControlUnits, ControlMethod FROM CapControlSubstationBus, " + "CapControlStrategy WHERE CapControlSubstationBus.StrategyID = CapControlStrategy.StrategyID " + "AND SubStationBusID = ?";
 
             JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
             SubSnapshotParams snapshot = null;
@@ -429,6 +432,23 @@ public final class CBCUtils {
     public static boolean isSwitched(CapBankDevice capBank) {
         return capBank.getOperationalState()
                       .equalsIgnoreCase(CapBank.SWITCHED_OPSTATE);
+    }
+
+    public static String getAreaName(Integer subID) {
+       Integer areaID = CCSubAreaAssignment.getAreaIDForSub(subID);
+       return DaoFactory.getPaoDao().getYukonPAOName(areaID);
+    }
+
+    public static boolean checkSignalQuality(PointQualityCheckable checkable, Integer type) {
+        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(type))
+            return (checkable.getCurrentPtQuality(type.intValue()) > 0) ? true : false;
+        if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(type))
+            return (checkable.getCurrentPtQuality(type.intValue()) > 0) ? true : false;
+
+        if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(type))
+            return (checkable.getCurrentPtQuality(type.intValue()) > 0) ? true : false;
+
+        return false;
     }
 
 }

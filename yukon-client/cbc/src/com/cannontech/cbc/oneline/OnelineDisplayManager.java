@@ -1,10 +1,12 @@
 package com.cannontech.cbc.oneline;
 
+import java.awt.Color;
 import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
+import com.cannontech.cbc.oneline.util.ExtraUpdatableTextElement;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.core.dao.AuthDao;
@@ -61,20 +63,20 @@ public class OnelineDisplayManager {
             UpdatableStats stats) {
         int roleID = getRoleID(rolePropID);
         CBCDisplay oldWebDisplay = new CBCDisplay();
+        Integer dispCol = stats.getPropColumnMap().get(rolePropID);
+
         if (roleID == CBCOnelineSettingsRole.SUB_ROLEID) {
-            Integer dispCol = stats.getPropColumnMap().get(rolePropID);
-            return (String) oldWebDisplay.getSubBusValueAt((SubBus) stream,
-                                                           dispCol);
-        }
-        else if (roleID == CBCOnelineSettingsRole.FDR_ROLEID) {
-            Integer dispCol = stats.getPropColumnMap().get(rolePropID);
+            return oldWebDisplay.getOnelineSubBusValueAt((SubBus) stream,
+                                                         dispCol);
+        } else if (roleID == CBCOnelineSettingsRole.FDR_ROLEID) {
+            // Integer dispCol = stats.getPropColumnMap().get(rolePropID);
             return (String) oldWebDisplay.getFeederValueAt((Feeder) stream,
                                                            dispCol);
-        }
-        else if (roleID == CBCOnelineSettingsRole.CAP_ROLEID) {
-            Integer dispCol = stats.getPropColumnMap().get(rolePropID);
+        } else if (roleID == CBCOnelineSettingsRole.CAP_ROLEID) {
+            // Integer dispCol = stats.getPropColumnMap().get(rolePropID);
             return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream,
-                                                           dispCol.intValue()).toString();
+                                                   dispCol.intValue())
+                                .toString();
         }
         return "(none)";
 
@@ -96,12 +98,43 @@ public class OnelineDisplayManager {
                                                            OnelineUtil.getStartPoint(label),
                                                            new Integer((int) label.getWidth() + 10),
                                                            null);
-        content.setName(propPrefixMap.get(getRoleID(temp.getRolePropID())) + stream.getCcId() + "_" + labelName);
+
+        //handle any extra elements
+        if (temp instanceof ExtraUpdatableTextElement) {
+            ExtraUpdatableTextElement extraElement = (ExtraUpdatableTextElement) temp;
+            if (extraElement.conditionToAddOnItTrue())
+            {
+                LxAbstractText t = createExtraElement(stream,
+                                   (ExtraUpdatableTextElement) temp,
+                                   labelName,
+                                   content,
+                                   "!*",
+                                   Color.RED);
+               temp.addExtraElement(t);
+            }
+            else
+            {
+                LxAbstractText t = createExtraElement(stream,
+                                                      (ExtraUpdatableTextElement) temp,
+                                                      labelName,
+                                                      content,
+                                                      "",
+                                                      Color.BLACK);
+                                  temp.addExtraElement(t);
+
+            }
+                
+        }
+
+        int roleID = getRoleID(temp.getRolePropID());
+        Integer paoID = stream.getCcId();
+        content.setName(propPrefixMap.get(roleID) + paoID + "_" + labelName);
 
         temp.setFirstElement(label);
         temp.setLastElement(content);
         return temp;
     }
+
 
     public String getLabel(int rolePropID, UpdatableStats stats) {
 
@@ -112,6 +145,24 @@ public class OnelineDisplayManager {
     private int getRoleID(int rolePropID) {
         int roleID = (rolePropID / 100);
         return roleID;
+    }
+    
+
+    private LxAbstractText createExtraElement(StreamableCapObject stream,
+            ExtraUpdatableTextElement extra, String labelName,
+            LxComponent neighborComponent, String textContent, Color c) {
+        
+        // create an extra Element to display
+        StaticText retTextElement = OnelineUtil.createColoredTextElement(textContent,
+                                                                    OnelineUtil.getStartPoint(neighborComponent),
+                                                                    new Integer((int) neighborComponent.getWidth() + 10),
+                                                                    null,
+                                                                   c);
+        int roleID = getRoleID(extra.getRolePropID());
+        Integer paoID = stream.getCcId();
+        String nameString = propPrefixMap.get(roleID) + paoID;
+        retTextElement.setName(nameString + "_EXTRA_" + (Math.abs( extra.getRolePropID())));
+        return retTextElement;
     }
 
 }

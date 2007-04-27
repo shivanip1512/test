@@ -24,7 +24,7 @@ import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxComponent;
 
 public class OnelineUtil {
-    public static final int MIN_SUBINJLINE_LENGTH = 120;
+    public static final int MIN_SUBINJLINE_LENGTH = 150;
     public static final int PXL_LARGE_FONT = 10;
     public static final int DEFAULT_HEIGHT = 800;
     public static final int DEFAULT_WIDTH = 1200;
@@ -179,7 +179,18 @@ public class OnelineUtil {
         return new Dimension(width, height);
     }
 
-
+    public static StaticText createColoredTextElement(String sep,
+            Point2D p, Integer optionXOffset, Integer optionYOffset, Color c) {
+        StaticText text = new StaticText();
+        text.setText(sep);
+        double pX = (optionXOffset != null) ? (optionXOffset.intValue() + p.getX()) : p.getX();
+        text.setX(pX);
+        double pY = (optionYOffset != null) ? (optionYOffset.intValue() + p.getY()) : p.getY(); 
+        text.setY(pY);
+        text.setFont(SMALL_FONT);
+        text.setPaint(c);
+        return text;
+    }
    
     public static StaticText createTextElement(String sep,
             Point2D p, Integer optionXOffset, Integer optionYOffset) {
@@ -199,7 +210,8 @@ public class OnelineUtil {
     }
 
     public static int getInjLineLength(String subName) {
-        return Math.max((int) (subName.length() * PXL_LARGE_FONT - OnelineUtil.SUB_IMG_WIDTH), MIN_SUBINJLINE_LENGTH);
+        int length = Math.max((int) (subName.length() * PXL_LARGE_FONT - OnelineUtil.SUB_IMG_WIDTH), MIN_SUBINJLINE_LENGTH);
+        return length;
     }
 
     

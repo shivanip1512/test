@@ -2,7 +2,9 @@ package com.cannontech.cbc.oneline.model;
 
 import java.util.Hashtable;
 
+import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.loox.jloox.LxAbstractGraph;
+import com.loox.jloox.LxGraph;
 
 public interface UpdatableStats {
 
@@ -19,6 +21,8 @@ public interface UpdatableStats {
     public Hashtable<Integer, Integer> getPropColumnMap();
 
     public Hashtable<Integer, String> getPropLabelMap();
+
+    public void addExtraElements(LxGraph graph, UpdatableTextList list);
 
     
 

@@ -102,7 +102,7 @@ public class OnelineSub implements OnelineObject {
         if (transformerImg == null) {
             transformerImg = new SubDynamicImage(subBusMsg, new SubImgState());
             OneLineParams layoutParams = drawing.getLayoutParams();
-            transformerImg.setCenter(20, layoutParams.getHeight() / 3);
+            transformerImg.setCenter(20, layoutParams.getHeight() / 3 + 50);
             transformerImg.setName(SUB_TRANSFORMER_IMG);
             transformerImg.setLinkTo("javascript:void(0)");
 

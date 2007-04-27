@@ -1,13 +1,18 @@
 package com.cannontech.cbc.oneline.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.cbc.oneline.OnelineDisplayManager;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.loox.jloox.LxAbstractText;
 
 public class UpdatableTextList {
 
-    LxAbstractText firstElement;
-    LxAbstractText lastElement;
+    private LxAbstractText firstElement;
+    private LxAbstractText lastElement;
+    private List<LxAbstractText> extraElements = new ArrayList<LxAbstractText>();
+    
     private UpdatableStats stats;
     private int rolePropID;
     private boolean visible = true;
@@ -65,6 +70,14 @@ public class UpdatableTextList {
 
     public void setRolePropID(int rolePropID) {
         this.rolePropID = rolePropID;
+    }
+
+    public List<LxAbstractText> getExtraElements() {
+        return extraElements;
+    }
+    
+    public void addExtraElement (LxAbstractText t) {
+        extraElements.add(t);
     }
 
 }

@@ -168,7 +168,6 @@ function handleOpcountRequest(command, paoId, cmd_name, newOpcntVal) {
 }
 function updateDrawing() {
 	id = getSubId();
-
 		new Ajax.Request("/capcontrol/oneline/OnelineCBCServlet", {method:"post", parameters:"id=" + id, onSuccess:function (t) {
 			updateHTML(t.responseXML);
 			callback();
@@ -181,21 +180,27 @@ function callback() {
 }
 function updateHTML(xml) {
 	updateSub(xml);
+//	say("after sub");
 	updateFeeders(xml);
+//	say("after feeder");
 	updateCaps(xml);
+//	say("after caps");
+
 }
 function updateSub(xml) {
 	updateImages(SUB_IMAGES, xml);
 	updateHiddenTextElements("SubState", xml, ["isDisable", "isVerify", "subDisableReason"]);
 	updateDynamicLineElements("Sub", xml);
-	updateVisibleText("SubStat", xml, false);
-	updateVisibleText("SubTag", xml, false);
+	updateVisibleText("SubStat", xml);
+	updateVisibleText("SubTag", xml);
+
 }
 function updateFeeders(xml) {
 	updateHiddenTextElements("FeederState", xml, ["isDisable", "disableFdrReason"]);
 	updateDynamicLineElements("OnelineFeeder", xml);
-	updateVisibleText("FeederStat", xml, true);
-	updateVisibleText("FeederTag", xml, false);
+	updateVisibleText("FeederStat", xml);
+	updateVisibleText("FeederTag", xml);
+
 }
 
 function updateCaps(xml) {
@@ -213,11 +218,12 @@ function updateCaps(xml) {
 	}
 	updateHiddenTextElements("CapHiddenInfo", xml, capBankInfo);
 	updateHiddenTextElements("CapState", xml, ["isDisable", "isOVUVDis", "isStandalone", "standAloneReason", "disableCapReason", "paoName"]);
-	updateVisibleText("CapStat", xml, false);
-	updateVisibleText("CapTag", xml, false);
+	updateVisibleText("CapStat", xml);
+	updateVisibleText("CapTag", xml);
+
 }
 
-function updateVisibleText(prefix, xml, updPairs) {
+function updateVisibleText(prefix, xml) {
 	var textEls = document.getElementsByTagName("text");
 	for (var i = 0; i < textEls.length; i++) {
 		textEl = textEls.item(i);
@@ -229,16 +235,9 @@ function updateVisibleText(prefix, xml, updPairs) {
 				xmlID = xmlText.getAttribute("id");
 				if ((xmlID == id) && (i == j)) {
 					textEl.getFirstChild().setData(xmlText.text);
-					//id the stats are in pairs, i.e - "KVAR  1.0 / 7.0"
-					//1.0 - we already updated
-					//7.0 - will update if updPairs is true
-					if (updPairs) {
-						pair = textEls.item(i + 2);
-						xmlPair = xmlDynamicEls.item(i + 2);
-						pair.getFirstChild().setData(xmlPair.text);
-						j = j + 2;
-						i = i + 2;
-					}
+					color = xmlText.getAttribute("style");
+					textEl.setAttribute("style", color);
+					
 				}
 			}
 		}
@@ -533,7 +532,6 @@ function findValueByKey(key, map){
 
 function display_status(cmd_name, msg, color) {
 	var msg_div = document.getElementById('cmdMessageDiv');
-	//var titledCont = new CTITitledContainer (cmd_name);
 	msg_div.innerHTML =  '<font color="white">' + msg + '</font>';
 	msg_div.style.visibility = "visible";	
 	msg_div.style.width = "100";	

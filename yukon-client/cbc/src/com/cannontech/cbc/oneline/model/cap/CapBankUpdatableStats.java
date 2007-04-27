@@ -14,6 +14,7 @@ import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.loox.jloox.LxAbstractGraph;
+import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -93,6 +94,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         for (UpdatableTextList list : copy) {
             graph.add(list.getFirstElement());
             graph.add(list.getLastElement());
+            addExtraElements(graph, list);
         }
     }
 
@@ -139,6 +141,15 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         allStats.add(bankSize);
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();
+        }
+    }
+
+    public void addExtraElements(LxGraph graph, UpdatableTextList list) {
+        if (!list.getExtraElements().isEmpty()) {
+            List<LxAbstractText> extraElements = list.getExtraElements();
+            for (LxAbstractText text : extraElements) {
+                graph.add(text);
+            }
         }
     }
 }

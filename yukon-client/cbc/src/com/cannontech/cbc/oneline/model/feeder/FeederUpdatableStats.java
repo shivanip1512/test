@@ -7,12 +7,15 @@ import java.util.List;
 import com.cannontech.cbc.oneline.OnelineDisplayManager;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
+import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
+import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.Feeder;
 import com.loox.jloox.LxAbstractGraph;
+import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -24,14 +27,19 @@ public class FeederUpdatableStats extends LxAbstractView implements
     public static final String LBL_PFACTOR = "PF: ";
     public static final String LBL_WATT_VOLT = "Watt/Volt";
     public static final String LBL_DAILYOPS = "Daily Ops: ";
-    private UpdatableTextList varLoad = new UpdatableTextList(CBCOnelineSettingsRole.FDR_KVAR,
-                                                              this);
+    private static final String LBL_WATT = "Watt";
+    private static final String LBL_VOLT = "Volt";
+    private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_KVAR,
+                                                                                  this);
     private UpdatableTextList pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,
                                                               this);
-    private UpdatableTextList wattVoltLoad = new UpdatableTextList(CBCOnelineSettingsRole.FDR_WATTVOLT,
-                                                                   this);
+    private PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_WATT,
+                                                                                   this);
     private UpdatableTextList dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,
                                                                this);
+    private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_VOLT,
+                                                                                   this);
+
     private LxGraph graph;
     private OnelineFeeder parent;
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
@@ -58,20 +66,24 @@ public class FeederUpdatableStats extends LxAbstractView implements
 
         propLabelMap.put(CBCOnelineSettingsRole.FDR_KVAR, LBL_KVAR_LOAD);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_PF, LBL_PFACTOR);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_WATTVOLT, LBL_WATT_VOLT);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_WATT, LBL_WATT);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_OP_CNT, LBL_DAILYOPS);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_VOLT, LBL_VOLT);
 
     }
 
     private void initPropColumnMap() {
         propColumnMap.put(CBCOnelineSettingsRole.FDR_KVAR,
-                          CBCDisplay.FDR_VAR_LOAD_COLUMN);
+                          CBCDisplay.FDR_ONELINE_VAR_LOAD_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_PF,
                           CBCDisplay.FDR_POWER_FACTOR_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATTVOLT,
-                          CBCDisplay.FDR_WATTS_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT,
+                          CBCDisplay.FDR_ONELINE_WATTS_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_OP_CNT,
                           CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_VOLT,
+                          CBCDisplay.FDR_ONELINE_VOLTS_COLUMN);
+
     }
 
     private Feeder getStreamable() {
@@ -111,6 +123,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
         for (UpdatableTextList list : copy) {
             graph.add(list.getFirstElement());
             graph.add(list.getLastElement());
+            addExtraElements(graph, list);
         }
     }
 
@@ -150,15 +163,43 @@ public class FeederUpdatableStats extends LxAbstractView implements
     }
 
     public void initAllStats() {
-
-        allStats.add(varLoad);
+        initPointQualCheckable();
         allStats.add(pFactor);
-        allStats.add(wattVoltLoad);
         allStats.add(dailyOps);
+
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();
         }
 
+    }
+
+    // TODO make this a part of interface
+    private void initPointQualCheckable() {
+        Feeder streamable = parent.getStreamable();
+        if (streamable != null) {
+            varLoad.setPointCheckable(streamable);
+            varLoad.setType(PointUnits.UOMID_KVAR);
+
+            wattLoad.setPointCheckable(streamable);
+            wattLoad.setType(PointUnits.UOMID_KW);
+
+            voltLoad.setPointCheckable(streamable);
+            voltLoad.setType(PointUnits.UOMID_KVOLTS);
+
+        }
+        allStats.add(varLoad);
+        allStats.add(wattLoad);
+        allStats.add(voltLoad);
+
+    }
+
+    public void addExtraElements(LxGraph graph, UpdatableTextList list) {
+        if (!list.getExtraElements().isEmpty()) {
+            List<LxAbstractText> extraElements = list.getExtraElements();
+            for (LxAbstractText text : extraElements) {
+                graph.add(text);
+            }
+        }
     }
 
 }
