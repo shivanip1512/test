@@ -278,6 +278,9 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > 
 
     if( (Xfer.getInCountExpected() > 0) && isSimulated() )
     {
+        //  simulate the inbound delay as best we can
+        CTISleep(byteTime(Xfer.getInCountExpected()) * 1000);
+
         status = ErrPortSimulated;
     }
     else
@@ -599,7 +602,20 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* >
         }
 #endif
 
-        if( !isSimulated() )
+        if( isSimulated() )
+        {
+            //  simulate all delays
+
+            if(getDelay(PRE_RTS_DELAY))                 CTISleep(getDelay(PRE_RTS_DELAY));
+            if(getDelay(RTS_TO_DATA_OUT_DELAY))         CTISleep(getDelay(RTS_TO_DATA_OUT_DELAY));
+
+            int portWriteTime = (10000L * Xfer.getOutCount()) / getTablePortSettings().getBaudRate();
+
+            CTISleep(portWriteTime);
+
+            if(getDelay(DATA_OUT_TO_RTS_DOWN_DELAY))    CTISleep (getDelay(DATA_OUT_TO_RTS_DOWN_DELAY));
+        }
+        else
         {
             /* Check if we need to key ... Pre Key Delay */
             if(getDelay(PRE_RTS_DELAY))

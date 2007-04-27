@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/09/26 14:37:25 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2007/04/27 16:50:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -319,6 +319,9 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
 
     if( (Xfer.getInCountExpected() > 0) && isSimulated() )
     {
+        //  simulate the inbound delay as best we can
+        CTISleep(byteTime(Xfer.getInCountExpected()) * 1000);
+
         status = ErrPortSimulated;
     }
     else
@@ -539,7 +542,20 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMess
             Xfer.setOutCount( Xfer.getOutCount() + 2 );
         }
 
-        if( !isSimulated() )
+        if( isSimulated() )
+        {
+            //  simulate all delays
+
+            if(getDelay(PRE_RTS_DELAY))                 CTISleep(getDelay(PRE_RTS_DELAY));
+            if(getDelay(RTS_TO_DATA_OUT_DELAY))         CTISleep(getDelay(RTS_TO_DATA_OUT_DELAY));
+
+            int portWriteTime = (10000L * Xfer.getOutCount()) / getTablePortSettings().getBaudRate();
+
+            CTISleep(portWriteTime);
+
+            if(getDelay(DATA_OUT_TO_RTS_DOWN_DELAY))    CTISleep (getDelay(DATA_OUT_TO_RTS_DOWN_DELAY));
+        }
+        else
         {
             /* Check if we need to key ... Pre Key Delay */
             if(getDelay(PRE_RTS_DELAY))
