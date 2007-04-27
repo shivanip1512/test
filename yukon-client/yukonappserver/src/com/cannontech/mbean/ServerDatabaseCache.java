@@ -58,6 +58,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
@@ -781,6 +782,19 @@ public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups(
 		//allUsedContactNotifications = notifLoader.getAllUsedContactNotifications();
 		return allNotificationGroups;
 	}
+}
+
+public synchronized List<LiteNotificationGroup> getAllContactNotificationGroupsWithNone()
+{
+    List<LiteNotificationGroup> notifGroup = new ArrayList<LiteNotificationGroup>();
+    
+    LiteNotificationGroup noneGroup = new LiteNotificationGroup(PointAlarming.NONE_NOTIFICATIONID);
+    noneGroup.setNotificationGroupName("(none)");
+    notifGroup.add(noneGroup);
+    
+    notifGroup.addAll(this.getAllContactNotificationGroups());
+    
+    return notifGroup;
 }
 
 /**

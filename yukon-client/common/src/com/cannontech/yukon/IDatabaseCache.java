@@ -110,6 +110,7 @@ public interface IDatabaseCache {
     public List<LiteYukonPAObject> getAllLoadManagement();
 
     public List<LiteNotificationGroup> getAllContactNotificationGroups();
+    public List<LiteNotificationGroup> getAllContactNotificationGroupsWithNone();
 
     public List<LitePoint> getAllSystemPoints();
 

@@ -313,11 +313,7 @@ private void initializeAddPanel()
 		java.util.List groups = cache.getAllContactNotificationGroups();
 		java.util.Vector lmNotifies = new java.util.Vector( (int)(groups.size() * .75) );
 
-		for( int i = 0; i < groups.size(); i++ )
-		{ 
-			if(((LiteNotificationGroup)groups.get(i)).getNotificationGroupID() != 1)
-				lmNotifies.addElement( groups.get(i) );
-		}
+		lmNotifies.addAll(groups);
 
 		getAddRemovePanel().leftListSetListData(lmNotifies);
 	}

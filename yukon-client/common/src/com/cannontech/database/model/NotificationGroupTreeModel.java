@@ -44,7 +44,6 @@ public void update() {
 		{
 			DBTreeNode notifGroupNode = new DBTreeNode( notifGroups.get(i) );
 
-			if( ((com.cannontech.database.data.lite.LiteNotificationGroup)notifGroups.get(i)).getNotificationGroupID() != com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID )
 				rootNode.add( notifGroupNode );
 		}
 	}
