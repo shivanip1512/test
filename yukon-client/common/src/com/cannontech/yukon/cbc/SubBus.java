@@ -1,619 +1,675 @@
 package com.cannontech.yukon.cbc;
 
+import com.cannontech.database.data.point.PointUnits;
+
 /**
- * Insert the type's description here.
- * Creation date: (8/18/00 4:23:32 PM)
- * @author: 
+ * Insert the type's description here. Creation date: (8/18/00 4:23:32 PM)
+ * @author:
  */
-public class SubBus extends StreamableCapObject
-{   
-	private Integer maxDailyOperation = null;
-	private Boolean maxOperationDisableFlag = null;
-	private Double currentVarLoadPointValue = null;
+public class SubBus extends StreamableCapObject implements
+        PointQualityCheckable {
+    private Integer maxDailyOperation = null;
+    private Boolean maxOperationDisableFlag = null;
+    private Double currentVarLoadPointValue = null;
 
-	private Double currentWattLoadPointValue = null;
-	private String mapLocationID = null;
-	private Integer decimalPlaces = null;
-	private Boolean newPointDataReceivedFlag = null;
-	private Boolean busUpdateFlag = null;
-	private java.util.Date lastCurrentVarPointUpdateTime = null;
-	private Double estimatedVarLoadPointValue = null;
+    private Double currentWattLoadPointValue = null;
+    private String mapLocationID = null;
+    private Integer decimalPlaces = null;
+    private Boolean newPointDataReceivedFlag = null;
+    private Boolean busUpdateFlag = null;
+    private java.util.Date lastCurrentVarPointUpdateTime = null;
+    private Double estimatedVarLoadPointValue = null;
 
-	private Integer currentVarLoadPointID = null;
-	private Integer currentWattLoadPointID = null;
-	private String controlUnits = null;
-	private Integer estimatedVarLoadPointID = null;
-	private Integer dailyOperationsAnalogPointId = null;
-	private Integer powerFactorPointId = null;
-	private Integer estimatedPowerFactorPointId = null;
-	private Integer currentVoltLoadPointID = null;
+    private Integer currentVarLoadPointID = null;
+    private Integer currentWattLoadPointID = null;
+    private String controlUnits = null;
+    private Integer estimatedVarLoadPointID = null;
+    private Integer dailyOperationsAnalogPointId = null;
+    private Integer powerFactorPointId = null;
+    private Integer estimatedPowerFactorPointId = null;
+    private Integer currentVoltLoadPointID = null;
 
-	private Integer currentDailyOperations = null;
-	private Boolean peakTimeFlag = null;
-	private Boolean recentlyControlledFlag = null;
-	private java.util.Date lastOperationTime = null;
-	private Double varValueBeforeControl = null;
-	
-	private Double powerFactorValue = null;
-	private Double estimatedPFValue = null;
-	private Integer currentVarPtQuality = null;
-	private Boolean waiveControlFlag = null;
+    private Integer currentDailyOperations = null;
+    private Boolean peakTimeFlag = null;
+    private Boolean recentlyControlledFlag = null;
+    private java.util.Date lastOperationTime = null;
+    private Double varValueBeforeControl = null;
 
-	private Double peakLag = new Double(0.0);
-	private Double offPkLag = new Double(0.0);
-	private Double peakLead = new Double(0.0);
-	private Double offPkLead = new Double(0.0);
-	private Double currentVoltLoadPointValue = null;
-	private Boolean verificationFlag = null;
+    private Double powerFactorValue = null;
+    private Double estimatedPFValue = null;
+    private Integer currentVarPtQuality = null;
+    private Boolean waiveControlFlag = null;
+
+    private Double peakLag = new Double(0.0);
+    private Double offPkLag = new Double(0.0);
+    private Double peakLead = new Double(0.0);
+    private Double offPkLead = new Double(0.0);
+    private Double currentVoltLoadPointValue = null;
+    private Boolean verificationFlag = null;
     private Integer currentwattpointquality = null;
     private Integer currentvoltpointquality = null;
     private Double targetvarvalue = null;
     private String solution = null;
 
-	//should only contain objects of type Feeder
-	private java.util.Vector ccFeeders = null;
-	private Boolean switchOverStatus = null;	
-	
-	
-/**
- * constructor comment.
- */
-public SubBus() {
-	super();
-}
-/**
- * StreamableCapObject constructor comment.
- */
-public SubBus( Integer paoId_, String paoCategory_, String paoClass_,
-				String paoName_, String paoType_, String paoDescription_, 
-				Boolean paoDisableFlag_ )
-{
-	super( paoId_, paoCategory_, paoClass_, paoName_, 
-				paoType_, paoDescription_, paoDisableFlag_ );
+    // should only contain objects of type Feeder
+    private java.util.Vector ccFeeders = null;
+    private Boolean switchOverStatus = null;
 
-}
+    /**
+     * constructor comment.
+     */
+    public SubBus() {
+        super();
+    }
 
-public Integer getCurrentVarPtQuality()
-{
-   return currentVarPtQuality;   
-}
+    /**
+     * StreamableCapObject constructor comment.
+     */
+    public SubBus(Integer paoId_, String paoCategory_, String paoClass_,
+            String paoName_, String paoType_, String paoDescription_,
+            Boolean paoDisableFlag_) {
+        super(paoId_,
+              paoCategory_,
+              paoClass_,
+              paoName_,
+              paoType_,
+              paoDescription_,
+              paoDisableFlag_);
 
-public void setCurrentVarPtQuality( Integer ptQ_ )
-{
-   currentVarPtQuality = ptQ_;
-}
+    }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getBusUpdateFlag() {
-	return busUpdateFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.util.Vector
- */
-public java.util.Vector getCcFeeders() {
-	return ccFeeders;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getCurrentDailyOperations() {
-	return currentDailyOperations;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getCurrentVarLoadPointValue() {
-	return currentVarLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getCurrentWattLoadPointValue() {
-	return currentWattLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDecimalPlaces() {
-	return decimalPlaces;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getEstimatedVarLoadPointValue() {
-	return estimatedVarLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.util.Date
- */
-public java.util.Date getLastCurrentVarPointUpdateTime() {
-	return lastCurrentVarPointUpdateTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.util.Date
- */
-public java.util.Date getLastOperationTime() {
-	return lastOperationTime;
-}
-/**
- * Insert the method's description here.
- *
- */
-public String getMapLocationID() {
-	return mapLocationID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxDailyOperation() {
-	return maxDailyOperation;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getMaxOperationDisableFlag() {
-	return maxOperationDisableFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getNewPointDataReceivedFlag() {
-	return newPointDataReceivedFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getPeakTimeFlag() {
-	return peakTimeFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getRecentlyControlledFlag() {
-	return recentlyControlledFlag;
-}
+    public Integer getCurrentVarPtQuality() {
+        return currentVarPtQuality;
+    }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getVarValueBeforeControl() {
-	return varValueBeforeControl;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newBusUpdateFlag java.lang.Boolean
- */
-public void setBusUpdateFlag(java.lang.Boolean newBusUpdateFlag) {
-	busUpdateFlag = newBusUpdateFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newCcFeeders java.util.Vector
- */
-public void setCcFeeders(java.util.Vector newCcFeeders) {
-	ccFeeders = newCcFeeders;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newCurrentDailyOperations java.lang.Integer
- */
-public void setCurrentDailyOperations(java.lang.Integer newCurrentDailyOperations) {
-	currentDailyOperations = newCurrentDailyOperations;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newCurrentVarLoadPointValue java.lang.Double
- */
-public void setCurrentVarLoadPointValue(java.lang.Double newCurrentVarLoadPointValue) {
-	currentVarLoadPointValue = newCurrentVarLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newCurrentWattLoadPointValue java.lang.Double
- */
-public void setCurrentWattLoadPointValue(java.lang.Double newCurrentWattLoadPointValue) {
-	currentWattLoadPointValue = newCurrentWattLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newDecimalPlaces java.lang.Integer
- */
-public void setDecimalPlaces(java.lang.Integer newDecimalPlaces) {
-	decimalPlaces = newDecimalPlaces;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newEstimatedVarLoadPointValue java.lang.Double
- */
-public void setEstimatedVarLoadPointValue(java.lang.Double newEstimatedVarLoadPointValue) {
-	estimatedVarLoadPointValue = newEstimatedVarLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newLastCurrentVarPointUpdateTime java.util.Date
- */
-public void setLastCurrentVarPointUpdateTime(java.util.Date newLastCurrentVarPointUpdateTime) {
-	lastCurrentVarPointUpdateTime = newLastCurrentVarPointUpdateTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newLastOperationTime java.util.Date
- */
-public void setLastOperationTime(java.util.Date newLastOperationTime) {
-	lastOperationTime = newLastOperationTime;
-}
-/**
- * Insert the method's description here.
- *
- */
-public void setMapLocationID(String newMapLocationID) {
-	mapLocationID = newMapLocationID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newMaxDailyOperation java.lang.Integer
- */
-public void setMaxDailyOperation(java.lang.Integer newMaxDailyOperation) {
-	maxDailyOperation = newMaxDailyOperation;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newMaxOperationDisableFlag java.lang.Boolean
- */
-public void setMaxOperationDisableFlag(java.lang.Boolean newMaxOperationDisableFlag) {
-	maxOperationDisableFlag = newMaxOperationDisableFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newNewPointDataReceivedFlag java.lang.Boolean
- */
-public void setNewPointDataReceivedFlag(java.lang.Boolean newNewPointDataReceivedFlag) {
-	newPointDataReceivedFlag = newNewPointDataReceivedFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newPeakTimeFlag java.lang.Boolean
- */
-public void setPeakTimeFlag(java.lang.Boolean newPeakTimeFlag) {
-	peakTimeFlag = newPeakTimeFlag;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newRecentlyConrolledFlag java.lang.Boolean
- */
-public void setRecentlyControlledFlag(java.lang.Boolean newRecentlyConrolledFlag) {
-	recentlyControlledFlag = newRecentlyConrolledFlag;
-}
+    public void setCurrentVarPtQuality(Integer ptQ_) {
+        currentVarPtQuality = ptQ_;
+    }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newVarValueBeforeControl java.lang.Double
- */
-public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) {
-	varValueBeforeControl = newVarValueBeforeControl;
-}
-	/**
-	 * Returns the powerFactorValue.
-	 * @return Double
-	 */
-	public Double getPowerFactorValue()
-	{
-		return powerFactorValue;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Boolean
+     */
+    public java.lang.Boolean getBusUpdateFlag() {
+        return busUpdateFlag;
+    }
 
-	/**
-	 * Sets the powerFactorValue.
-	 * @param powerFactorValue The powerFactorValue to set
-	 */
-	public void setPowerFactorValue(Double powerFactorValue)
-	{
-		this.powerFactorValue = powerFactorValue;
-	}
-	/**
-	 * Returns the estimatedPFValue.
-	 * @return Double
-	 */
-	public Double getEstimatedPFValue()
-	{
-		return estimatedPFValue;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.util.Vector
+     */
+    public java.util.Vector getCcFeeders() {
+        return ccFeeders;
+    }
 
-	/**
-	 * Sets the estimatedPFValue.
-	 * @param estimatedPFValue The estimatedPFValue to set
-	 */
-	public void setEstimatedPFValue(Double estimatedPFValue)
-	{
-		this.estimatedPFValue = estimatedPFValue;
-	}
-	/**
-	 * @return
-	 */
-	public Boolean getWaiveControlFlag()
-	{
-		return waiveControlFlag;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Integer
+     */
+    public java.lang.Integer getCurrentDailyOperations() {
+        return currentDailyOperations;
+    }
 
-	/**
-	 * @param boolean1
-	 */
-	public void setWaiveControlFlag(Boolean boolean1)
-	{
-		waiveControlFlag = boolean1;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Double
+     */
+    public java.lang.Double getCurrentVarLoadPointValue() {
+        return currentVarLoadPointValue;
+    }
 
-	/**
-	 * @return
-	 */
-	public Double getCurrentVoltLoadPointValue() {
-		return currentVoltLoadPointValue;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Double
+     */
+    public java.lang.Double getCurrentWattLoadPointValue() {
+        return currentWattLoadPointValue;
+    }
 
-	/**
-	 * @return
-	 */
-	public Double getOffPkLag() {
-		return offPkLag;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Integer
+     */
+    public java.lang.Integer getDecimalPlaces() {
+        return decimalPlaces;
+    }
 
-	/**
-	 * @return
-	 */
-	public Double getOffPkLead() {
-		return offPkLead;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Double
+     */
+    public java.lang.Double getEstimatedVarLoadPointValue() {
+        return estimatedVarLoadPointValue;
+    }
 
-	/**
-	 * @return
-	 */
-	public Double getPeakLag() {
-		return peakLag;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.util.Date
+     */
+    public java.util.Date getLastCurrentVarPointUpdateTime() {
+        return lastCurrentVarPointUpdateTime;
+    }
 
-	/**
-	 * @return
-	 */
-	public Double getPeakLead() {
-		return peakLead;
-	}
-	/**
-	 * @param double1
-	 */
-	public void setCurrentVoltLoadPointValue(Double double1) {
-		currentVoltLoadPointValue = double1;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.util.Date
+     */
+    public java.util.Date getLastOperationTime() {
+        return lastOperationTime;
+    }
 
-	/**
-	 * @param double1
-	 */
-	public void setOffPkLag(Double double1) {
-		offPkLag = double1;
-	}
+    /**
+     * Insert the method's description here.
+     */
+    public String getMapLocationID() {
+        return mapLocationID;
+    }
 
-	/**
-	 * @param double1
-	 */
-	public void setOffPkLead(Double double1) {
-		offPkLead = double1;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Integer
+     */
+    public java.lang.Integer getMaxDailyOperation() {
+        return maxDailyOperation;
+    }
 
-	/**
-	 * @param double1
-	 */
-	public void setPeakLag(Double double1) {
-		peakLag = double1;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Boolean
+     */
+    public java.lang.Boolean getMaxOperationDisableFlag() {
+        return maxOperationDisableFlag;
+    }
 
-	/**
-	 * @param double1
-	 */
-	public void setPeakLead(Double double1) {
-		peakLead = double1;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Boolean
+     */
+    public java.lang.Boolean getNewPointDataReceivedFlag() {
+        return newPointDataReceivedFlag;
+    }
 
-	/**
-	 * @return
-	 */
-	public Boolean getVerificationFlag() {
-		return verificationFlag;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Boolean
+     */
+    public java.lang.Boolean getPeakTimeFlag() {
+        return peakTimeFlag;
+    }
 
-	/**
-	 * @param boolean1
-	 */
-	public void setVerificationFlag(Boolean boolean1) {
-		verificationFlag = boolean1;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Boolean
+     */
+    public java.lang.Boolean getRecentlyControlledFlag() {
+        return recentlyControlledFlag;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getControlUnits() {
-		return controlUnits;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @return java.lang.Double
+     */
+    public java.lang.Double getVarValueBeforeControl() {
+        return varValueBeforeControl;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getCurrentVarLoadPointID() {
-		return currentVarLoadPointID;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newBusUpdateFlag java.lang.Boolean
+     */
+    public void setBusUpdateFlag(java.lang.Boolean newBusUpdateFlag) {
+        busUpdateFlag = newBusUpdateFlag;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getCurrentWattLoadPointID() {
-		return currentWattLoadPointID;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newCcFeeders java.util.Vector
+     */
+    public void setCcFeeders(java.util.Vector newCcFeeders) {
+        ccFeeders = newCcFeeders;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setControlUnits(String string) {
-		controlUnits = string;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newCurrentDailyOperations java.lang.Integer
+     */
+    public void setCurrentDailyOperations(
+            java.lang.Integer newCurrentDailyOperations) {
+        currentDailyOperations = newCurrentDailyOperations;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setCurrentVarLoadPointID(Integer integer) {
-		currentVarLoadPointID = integer;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newCurrentVarLoadPointValue java.lang.Double
+     */
+    public void setCurrentVarLoadPointValue(
+            java.lang.Double newCurrentVarLoadPointValue) {
+        currentVarLoadPointValue = newCurrentVarLoadPointValue;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setCurrentWattLoadPointID(Integer integer) {
-		currentWattLoadPointID = integer;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newCurrentWattLoadPointValue java.lang.Double
+     */
+    public void setCurrentWattLoadPointValue(
+            java.lang.Double newCurrentWattLoadPointValue) {
+        currentWattLoadPointValue = newCurrentWattLoadPointValue;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getCurrentVoltLoadPointID() {
-		return currentVoltLoadPointID;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newDecimalPlaces java.lang.Integer
+     */
+    public void setDecimalPlaces(java.lang.Integer newDecimalPlaces) {
+        decimalPlaces = newDecimalPlaces;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getDailyOperationsAnalogPointId() {
-		return dailyOperationsAnalogPointId;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newEstimatedVarLoadPointValue java.lang.Double
+     */
+    public void setEstimatedVarLoadPointValue(
+            java.lang.Double newEstimatedVarLoadPointValue) {
+        estimatedVarLoadPointValue = newEstimatedVarLoadPointValue;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getEstimatedPowerFactorPointId() {
-		return estimatedPowerFactorPointId;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newLastCurrentVarPointUpdateTime java.util.Date
+     */
+    public void setLastCurrentVarPointUpdateTime(
+            java.util.Date newLastCurrentVarPointUpdateTime) {
+        lastCurrentVarPointUpdateTime = newLastCurrentVarPointUpdateTime;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getEstimatedVarLoadPointID() {
-		return estimatedVarLoadPointID;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newLastOperationTime java.util.Date
+     */
+    public void setLastOperationTime(java.util.Date newLastOperationTime) {
+        lastOperationTime = newLastOperationTime;
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getPowerFactorPointId() {
-		return powerFactorPointId;
-	}
+    /**
+     * Insert the method's description here.
+     */
+    public void setMapLocationID(String newMapLocationID) {
+        mapLocationID = newMapLocationID;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setCurrentVoltLoadPointID(Integer integer) {
-		currentVoltLoadPointID = integer;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newMaxDailyOperation java.lang.Integer
+     */
+    public void setMaxDailyOperation(java.lang.Integer newMaxDailyOperation) {
+        maxDailyOperation = newMaxDailyOperation;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setDailyOperationsAnalogPointId(Integer integer) {
-		dailyOperationsAnalogPointId = integer;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newMaxOperationDisableFlag java.lang.Boolean
+     */
+    public void setMaxOperationDisableFlag(
+            java.lang.Boolean newMaxOperationDisableFlag) {
+        maxOperationDisableFlag = newMaxOperationDisableFlag;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setEstimatedPowerFactorPointId(Integer integer) {
-		estimatedPowerFactorPointId = integer;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newNewPointDataReceivedFlag java.lang.Boolean
+     */
+    public void setNewPointDataReceivedFlag(
+            java.lang.Boolean newNewPointDataReceivedFlag) {
+        newPointDataReceivedFlag = newNewPointDataReceivedFlag;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setEstimatedVarLoadPointID(Integer integer) {
-		estimatedVarLoadPointID = integer;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newPeakTimeFlag java.lang.Boolean
+     */
+    public void setPeakTimeFlag(java.lang.Boolean newPeakTimeFlag) {
+        peakTimeFlag = newPeakTimeFlag;
+    }
 
-	/**
-	 * @param integer
-	 */
-	public void setPowerFactorPointId(Integer integer) {
-		powerFactorPointId = integer;
-	}
-	
-	public void setSwitchOverStatus(Boolean b) {
-		switchOverStatus  = b;
-		
-	}
-	public Boolean getSwitchOverStatus() {
-		return switchOverStatus;
-	}
-	public Integer getCurrentvoltpointquality() {
-		return currentvoltpointquality;
-	}
-	public void setCurrentvoltpointquality(Integer currentvoltpointquality) {
-		this.currentvoltpointquality = currentvoltpointquality;
-	}
-	public Integer getCurrentwattpointquality() {
-		return currentwattpointquality;
-	}
-	public void setCurrentwattpointquality(Integer currentwattpointquality) {
-		this.currentwattpointquality = currentwattpointquality;
-	}
-	public String getSolution() {
-		return solution;
-	}
-	public void setSolution(String solution) {
-		this.solution = solution;
-	}
-	public Double getTargetvarvalue() {
-		return targetvarvalue;
-	}
-	public void setTargetvarvalue(Double targetvarvalue) {
-		this.targetvarvalue = targetvarvalue;
-	}
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newRecentlyConrolledFlag java.lang.Boolean
+     */
+    public void setRecentlyControlledFlag(
+            java.lang.Boolean newRecentlyConrolledFlag) {
+        recentlyControlledFlag = newRecentlyConrolledFlag;
+    }
+
+    /**
+     * Insert the method's description here. Creation date: (11/19/2001 12:01:28
+     * PM)
+     * @param newVarValueBeforeControl java.lang.Double
+     */
+    public void setVarValueBeforeControl(
+            java.lang.Double newVarValueBeforeControl) {
+        varValueBeforeControl = newVarValueBeforeControl;
+    }
+
+    /**
+     * Returns the powerFactorValue.
+     * @return Double
+     */
+    public Double getPowerFactorValue() {
+        return powerFactorValue;
+    }
+
+    /**
+     * Sets the powerFactorValue.
+     * @param powerFactorValue The powerFactorValue to set
+     */
+    public void setPowerFactorValue(Double powerFactorValue) {
+        this.powerFactorValue = powerFactorValue;
+    }
+
+    /**
+     * Returns the estimatedPFValue.
+     * @return Double
+     */
+    public Double getEstimatedPFValue() {
+        return estimatedPFValue;
+    }
+
+    /**
+     * Sets the estimatedPFValue.
+     * @param estimatedPFValue The estimatedPFValue to set
+     */
+    public void setEstimatedPFValue(Double estimatedPFValue) {
+        this.estimatedPFValue = estimatedPFValue;
+    }
+
+    /**
+     * @return
+     */
+    public Boolean getWaiveControlFlag() {
+        return waiveControlFlag;
+    }
+
+    /**
+     * @param boolean1
+     */
+    public void setWaiveControlFlag(Boolean boolean1) {
+        waiveControlFlag = boolean1;
+    }
+
+    /**
+     * @return
+     */
+    public Double getCurrentVoltLoadPointValue() {
+        return currentVoltLoadPointValue;
+    }
+
+    /**
+     * @return
+     */
+    public Double getOffPkLag() {
+        return offPkLag;
+    }
+
+    /**
+     * @return
+     */
+    public Double getOffPkLead() {
+        return offPkLead;
+    }
+
+    /**
+     * @return
+     */
+    public Double getPeakLag() {
+        return peakLag;
+    }
+
+    /**
+     * @return
+     */
+    public Double getPeakLead() {
+        return peakLead;
+    }
+
+    /**
+     * @param double1
+     */
+    public void setCurrentVoltLoadPointValue(Double double1) {
+        currentVoltLoadPointValue = double1;
+    }
+
+    /**
+     * @param double1
+     */
+    public void setOffPkLag(Double double1) {
+        offPkLag = double1;
+    }
+
+    /**
+     * @param double1
+     */
+    public void setOffPkLead(Double double1) {
+        offPkLead = double1;
+    }
+
+    /**
+     * @param double1
+     */
+    public void setPeakLag(Double double1) {
+        peakLag = double1;
+    }
+
+    /**
+     * @param double1
+     */
+    public void setPeakLead(Double double1) {
+        peakLead = double1;
+    }
+
+    /**
+     * @return
+     */
+    public Boolean getVerificationFlag() {
+        return verificationFlag;
+    }
+
+    /**
+     * @param boolean1
+     */
+    public void setVerificationFlag(Boolean boolean1) {
+        verificationFlag = boolean1;
+    }
+
+    /**
+     * @return
+     */
+    public String getControlUnits() {
+        return controlUnits;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getCurrentVarLoadPointID() {
+        return currentVarLoadPointID;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getCurrentWattLoadPointID() {
+        return currentWattLoadPointID;
+    }
+
+    /**
+     * @param string
+     */
+    public void setControlUnits(String string) {
+        controlUnits = string;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setCurrentVarLoadPointID(Integer integer) {
+        currentVarLoadPointID = integer;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setCurrentWattLoadPointID(Integer integer) {
+        currentWattLoadPointID = integer;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getCurrentVoltLoadPointID() {
+        return currentVoltLoadPointID;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getDailyOperationsAnalogPointId() {
+        return dailyOperationsAnalogPointId;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getEstimatedPowerFactorPointId() {
+        return estimatedPowerFactorPointId;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getEstimatedVarLoadPointID() {
+        return estimatedVarLoadPointID;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getPowerFactorPointId() {
+        return powerFactorPointId;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setCurrentVoltLoadPointID(Integer integer) {
+        currentVoltLoadPointID = integer;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setDailyOperationsAnalogPointId(Integer integer) {
+        dailyOperationsAnalogPointId = integer;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setEstimatedPowerFactorPointId(Integer integer) {
+        estimatedPowerFactorPointId = integer;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setEstimatedVarLoadPointID(Integer integer) {
+        estimatedVarLoadPointID = integer;
+    }
+
+    /**
+     * @param integer
+     */
+    public void setPowerFactorPointId(Integer integer) {
+        powerFactorPointId = integer;
+    }
+
+    public void setSwitchOverStatus(Boolean b) {
+        switchOverStatus = b;
+
+    }
+
+    public Boolean getSwitchOverStatus() {
+        return switchOverStatus;
+    }
+
+    public Integer getCurrentPtQuality(int pointType) {
+        if (pointType == PointUnits.UOMID_KVAR)
+            return getCurrentVarLoadPointID();
+        else if (pointType == PointUnits.UOMID_KW)
+            return getCurrentwattpointquality();
+        else if (pointType == PointUnits.UOMID_KVOLTS)
+            return getCurrentvoltpointquality();
+        return null;
+    }
+
+    public Integer getCurrentvoltpointquality() {
+        return currentvoltpointquality;
+    }
+
+    public void setCurrentvoltpointquality(Integer currentvoltpointquality) {
+        this.currentvoltpointquality = currentvoltpointquality;
+    }
+
+    public Integer getCurrentwattpointquality() {
+        return currentwattpointquality;
+    }
+
+    public void setCurrentwattpointquality(Integer currentwattpointquality) {
+        this.currentwattpointquality = currentwattpointquality;
+    }
+
+    public String getSolution() {
+        return solution;
+    }
+
+    public void setSolution(String solution) {
+        this.solution = solution;
+    }
+
+    public Double getTargetvarvalue() {
+        return targetvarvalue;
+    }
+
+    public void setTargetvarvalue(Double targetvarvalue) {
+        this.targetvarvalue = targetvarvalue;
+    }
 
 }
