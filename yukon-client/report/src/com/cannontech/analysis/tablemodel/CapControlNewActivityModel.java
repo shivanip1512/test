@@ -388,10 +388,17 @@ public class CapControlNewActivityModel extends ReportModelBase
 		if( req != null)
 		{
 			String param = req.getParameter(ATT_ORDER_BY);
-			if( param != null)
-				setOrderBy(Integer.valueOf(param).intValue());
-			else
-				setOrderBy(ORDER_BY_CAP_BANK_NAME);
+			if( param != null) {
+                try {
+                    setOrderBy(Integer.valueOf(param).intValue());
+                } catch (NumberFormatException e) {
+                    // sometimes when report radio is first selected, the order by for another
+                    // report is sent in here as a string
+                    setOrderBy(ORDER_BY_CAP_BANK_NAME);
+                }
+            } else {
+                setOrderBy(ORDER_BY_CAP_BANK_NAME);
+            }
 							
 		}
 	}
