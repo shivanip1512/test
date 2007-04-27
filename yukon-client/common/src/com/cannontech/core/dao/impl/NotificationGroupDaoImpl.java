@@ -68,13 +68,11 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao
 	{
 		synchronized( databaseCache )
 		{		
-			for( int i = 0; i < databaseCache.getAllContactNotificationGroupsWithNone().size(); i++ )
+            List<LiteNotificationGroup> groups = databaseCache.getAllContactNotificationGroupsWithNone();
+			for( LiteNotificationGroup group : groups )
 			{
-				LiteNotificationGroup lGrp =
-						(LiteNotificationGroup)databaseCache.getAllContactNotificationGroups().get(i);
-
-				if( groupID_ == lGrp.getNotificationGroupID() )
-					return lGrp;
+				if( groupID_ == group.getNotificationGroupID() )
+					return group;
 			}
 		}
 		
