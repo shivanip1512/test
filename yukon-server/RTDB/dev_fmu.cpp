@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_fmu
@@ -8,11 +7,14 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/04/18 20:04:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/04/27 16:49:18 $
 *
 * HISTORY      :
 * $Log: dev_fmu.cpp,v $
+* Revision 1.5  2007/04/27 16:49:18  mfisher
+* moved CVS header to top so Slick's diff would ignore it
+*
 * Revision 1.4  2007/04/18 20:04:12  mfisher
 * YUK-3192
 * Changed CtiString::appendLong() to CtiString::append() so that you can append nulls to the raw config string
