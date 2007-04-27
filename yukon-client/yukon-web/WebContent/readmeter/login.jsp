@@ -20,10 +20,10 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
 <link rel="stylesheet" href="RMBGStyle.css" type="text/css">
 </head>
 
-<body bgcolor="#666699" text="#000000" leftmargin="0" topmargin="0" link="#FFFFFF" vlink="#FFFFFF" alink="#FFFFFF">
+<body bgcolor="#0066CC" text="#000000" leftmargin="0" topmargin="0" link="#FFFFFF" vlink="#FFFFFF" alink="#FFFFFF">
 <table width=100% border="0" cellspacing="0" cellpadding="0" align="center">
   <tr> 
-    <td bgcolor="#666699" height="80"> 
+    <td bgcolor="#0066CC" height="80"> 
       
         <table width="100%" height="75" border="0" cellspacing="0" cellpadding="0">
           <tr> 

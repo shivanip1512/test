@@ -10,8 +10,8 @@
           		<tr>
 					<td colspan="3" height="74" background="images/Header.gif">&nbsp;</td>
  				</tr>
-          		<tr bgcolor="#000077"> 
-		            <td height = "28" class="Header3" width="420">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
+          		<tr bgcolor="#0066CC"> 
+		            <td height = "28" class="Header3" width="420">&nbsp;&nbsp;<font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
 		            	<font color="#f8f8f8" size="2" face="Arial, Helvetica, sans-serif" class="HeaderCellCrucial">Next import attempt: <%= webImpMain.getNextImportTime() %>. </font>
 		      			</em></font></td>
 		          	<td valign="middle" width="180">&nbsp;</td>

@@ -1,7 +1,7 @@
 
 
-.lm_optUnsel 	{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:130 px;}
-.lm_optSel   	{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #666699; cursor:default; width:130 px;}
+.lm_optUnsel 	{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #0066CC; cursor:default; width:130 px;}
+.lm_optSel   	{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #0066CC; color: #FFFFFF;   border: 1px #0066CC; cursor:default; width:130 px;}
 
 
 .confMsg		{ font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #000000 }

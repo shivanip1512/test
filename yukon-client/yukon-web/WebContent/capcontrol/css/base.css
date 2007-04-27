@@ -156,7 +156,7 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 .optDeselect {
 	text-decoration: none;
 	background-color: white;
-	border: 1px #666699;
+	border: 1px #0066CC;
 	cursor:pointer;
 	width: 120px;
 }
@@ -164,7 +164,7 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 .optSelect {
 	text-decoration: none;
 	background-color: #003399;
-	border: 1px #666699;
+	border: 1px #0066CC;
 	cursor:pointer;
 	width: 120px;
 }

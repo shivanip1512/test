@@ -236,7 +236,7 @@ else
                           <tr> 
                     <td class="HeaderCell">
 					<div align="left">
-					   &nbsp;&nbsp;Programs for : <font color="##666699"><%= lmCntrArea.getYukonName() %></font>
+					   &nbsp;&nbsp;Programs for : <font color="##0066CC"><%= lmCntrArea.getYukonName() %></font>
 					   <BR>
 					</div>
 					</td>

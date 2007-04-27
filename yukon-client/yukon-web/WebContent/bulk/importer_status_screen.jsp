@@ -35,14 +35,14 @@ RESULTS OF LAST IMPORT<br>
 	<tbody>
 		<tr>
 			<th width="369" align="left" class="HeaderCell">Last import occurred at: <font
-				color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><EM><font
+				color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><EM><font
 				color="#ff0000"><%=webImp.getLastImportTime()%></font></EM></font></th>
 		</tr>
 		<tr>
 			<th width="369" align="left" class="HeaderCellCrucial"><font
-				color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><EM><font
+				color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><EM><font
 				color="#ff0000"><%=webImp.getTotalSuccesses()%></font></EM></font> of <font
-				color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><EM><font
+				color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><EM><font
 				color="#ff0000"><%=webImp.getTotalAttempts()%></font></EM></font> entries were
 			successfully imported.</th>
 		</tr>

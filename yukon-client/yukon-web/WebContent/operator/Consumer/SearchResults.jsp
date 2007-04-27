@@ -134,7 +134,7 @@ function navPage()
       <tr>
         <td><%=navHTML%></td>
         <td align='right'>Page(1-<%=maxPageNo%>)
-          <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='<%=maxPageDigit%>' value='<%=pageIndx%>' onkeypress='if (event.keyCode == 13) {navPage();return false;}'>
+          <input type='text' id='GoPage' style='border:1px solid #0066CC; font:11px' size='<%=maxPageDigit%>' value='<%=pageIndx%>' onkeypress='if (event.keyCode == 13) {navPage();return false;}'>
           <input type='button' id='Go' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href="<%=pageName%>?page="+document.getElementById("GoPage").value;'>
         </td>
       </tr>

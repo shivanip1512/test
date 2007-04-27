@@ -738,7 +738,7 @@ public class CommandDeviceBean
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>";
 		html += "        <tr>";
 		html += "          <td colspan=2 align='right'>Entries per Page:" + LINE_SEPARATOR;
-		html += "            <input type='text' id='PageSize' style='border:1px solid #666699; font:11px' size='1' value='" + getPageSize() +"'>" + LINE_SEPARATOR;
+		html += "            <input type='text' id='PageSize' style='border:1px solid #0066CC; font:11px' size='1' value='" + getPageSize() +"'>" + LINE_SEPARATOR;
 		html += "            <input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"SelectDevice.jsp?pageSize=\" + document.getElementById(\"PageSize\").value;'>" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>";
@@ -767,7 +767,7 @@ public class CommandDeviceBean
         
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "          <td align='right'>Page(" + getPage() + "-" + maxPageNo + "):" + LINE_SEPARATOR;
-		html += "            <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='1' value='" + getPage() +"'>" + LINE_SEPARATOR;
+		html += "            <input type='text' id='GoPage' style='border:1px solid #0066CC; font:11px' size='1' value='" + getPage() +"'>" + LINE_SEPARATOR;
 		html += "            <input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"SelectDevice.jsp?page_=\" + document.getElementById(\"GoPage\").value;'>" + LINE_SEPARATOR;
         
 		html += "          </td>" + LINE_SEPARATOR;

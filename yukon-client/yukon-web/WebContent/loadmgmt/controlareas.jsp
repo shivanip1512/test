@@ -35,7 +35,7 @@
               <tr>
                 <td id="header" colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="images/Header.gif"/>">&nbsp;</td>
               </tr>
-              <tr bgcolor="#666699"> 
+              <tr bgcolor="#0066CC"> 
                 
                 <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp; 
                   Load Management
@@ -120,7 +120,7 @@ if( DaoFactory.getAuthDao().hasPAOAccess((LiteYukonUser) session.getAttribute(Se
                           <tr class="HeaderCell"> 
                               
                             <td width="409"><span class="HeaderCell">&nbsp;&nbsp; 
-                              Control Areas : <font color="##666699"><%= lmSession.getAreaView() %> </font> </span></td>
+                              Control Areas : <font color="##0066CC"><%= lmSession.getAreaView() %> </font> </span></td>
 
                               <td width="191"> 
                                 <div align="right"> </div>

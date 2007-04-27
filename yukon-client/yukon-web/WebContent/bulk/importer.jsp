@@ -33,7 +33,7 @@ th {
 .HeaderCellCrucial {
 	color: white;
 	font-weight: bold;
-	background-color: #000077
+	background-color: #0066CC
 }
 -->
 </style>
@@ -47,7 +47,7 @@ th {
 </script>
 </head>
 
-<body bgcolor="#000077" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000" onload="init()">
+<body bgcolor="#0066CC" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>

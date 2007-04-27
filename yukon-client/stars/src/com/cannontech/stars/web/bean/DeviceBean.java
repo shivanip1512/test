@@ -158,7 +158,7 @@ public class DeviceBean {
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td align='right'>Page(1-").append(maxPageNo).append("): ")
-				.append("<input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='").append(maxPageDigit).append("' value='").append(page).append("'> ")
+				.append("<input type='text' id='GoPage' style='border:1px solid #0066CC; font:11px' size='").append(maxPageDigit).append("' value='").append(page).append("'> ")
 				.append("<input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"").append(pageName).append("?page=\" + document.getElementById(\"GoPage\").value;'>")
 				.append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
