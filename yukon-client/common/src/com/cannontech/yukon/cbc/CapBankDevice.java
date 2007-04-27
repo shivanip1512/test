@@ -7,6 +7,24 @@ package com.cannontech.yukon.cbc;
  */
 public class CapBankDevice extends StreamableCapObject
 {
+	public static final int LOCAL_CONTROL = 0;
+	public static final int FAULT_CURRENT_CONTROL = 1;
+	public static final int EMERGENCY_VOLTAGE = 2;
+	public static final int TIME_SCHEDULE = 3;
+	public static final int VOLTAGE = 4;
+	public static final int DIGITAL1 = 5;
+	public static final int ANALOG1 = 6;
+	public static final int DIGITAL2 = 7;
+	public static final int ANALOG2 = 8;
+	public static final int DIGITAL3 = 9;
+	public static final int ANALOG3 = 10;
+	public static final int DIGITAL4 = 11;
+	public static final int TEMPERATURE = 12;
+	public static final int REMOTE = 13;
+	public static final int NEUTRAL_LOCKOUT = 14;
+	public static final int BROWN_OUT = 15;
+	public static final int BAD_ACTIVE_RELAY = 16;
+	
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
 
@@ -31,7 +49,8 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer recloseDelay = null;	
 	private int origFeederID = 0;
 	private Integer currentDailyOperations = null;	
-	
+	private Boolean ignoreFlag = null;
+	private Integer ignoreReason = null;
 
 
 
@@ -52,6 +71,14 @@ public class CapBankDevice extends StreamableCapObject
 					paoType_, paoDescription_, paoDisableFlag_ );
 	
 	}
+	
+	public Boolean isIgnoreFlag() {
+		return ignoreFlag;
+	}
+	public Integer getIgnoreReason() {
+		return ignoreReason;
+	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (1/10/2001 8:53:46 AM)
@@ -207,6 +234,12 @@ public class CapBankDevice extends StreamableCapObject
 		}
 	
 		return false;
+	}
+	public void setIgnoreFlag(Boolean ignoreFlag) {
+		this.ignoreFlag = ignoreFlag;
+	}
+	public void setIgnoreReason(Integer ignoreReason) {
+		this.ignoreReason = ignoreReason;
 	}
 	/**
 	 * Insert the method's description here.

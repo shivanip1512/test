@@ -45,7 +45,10 @@ public class SubBus extends StreamableCapObject
 	private Double offPkLead = new Double(0.0);
 	private Double currentVoltLoadPointValue = null;
 	private Boolean verificationFlag = null;
-
+    private Integer currentwattpointquality = null;
+    private Integer currentvoltpointquality = null;
+    private Double targetvarvalue = null;
+    private String solution = null;
 
 	//should only contain objects of type Feeder
 	private java.util.Vector ccFeeders = null;
@@ -587,6 +590,30 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	}
 	public Boolean getSwitchOverStatus() {
 		return switchOverStatus;
+	}
+	public Integer getCurrentvoltpointquality() {
+		return currentvoltpointquality;
+	}
+	public void setCurrentvoltpointquality(Integer currentvoltpointquality) {
+		this.currentvoltpointquality = currentvoltpointquality;
+	}
+	public Integer getCurrentwattpointquality() {
+		return currentwattpointquality;
+	}
+	public void setCurrentwattpointquality(Integer currentwattpointquality) {
+		this.currentwattpointquality = currentwattpointquality;
+	}
+	public String getSolution() {
+		return solution;
+	}
+	public void setSolution(String solution) {
+		this.solution = solution;
+	}
+	public Double getTargetvarvalue() {
+		return targetvarvalue;
+	}
+	public void setTargetvarvalue(Double targetvarvalue) {
+		this.targetvarvalue = targetvarvalue;
 	}
 
 }

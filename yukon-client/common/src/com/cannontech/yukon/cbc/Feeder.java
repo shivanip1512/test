@@ -46,7 +46,11 @@ public class Feeder extends StreamableCapObject
 	private Double offPkLead = new Double(0.0);
 	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Double currentVoltLoadPointValue = null;
-
+    private Integer currentwattpointquality = null;
+    private Integer currentvoltpointquality = null;
+    private Double targetvarvalue = null;
+    private String solution = null;
+    
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
 	
@@ -588,6 +592,30 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	 */
 	public void setMaxOperationDisableFlag(Boolean boolean1) {
 		maxOperationDisableFlag = boolean1;
+	}
+	public Integer getCurrentvoltpointquality() {
+		return currentvoltpointquality;
+	}
+	public void setCurrentvoltpointquality(Integer currentvoltpointquality) {
+		this.currentvoltpointquality = currentvoltpointquality;
+	}
+	public Integer getCurrentwattpointquality() {
+		return currentwattpointquality;
+	}
+	public void setCurrentwattpointquality(Integer currentwattpointquality) {
+		this.currentwattpointquality = currentwattpointquality;
+	}
+	public String getSolution() {
+		return solution;
+	}
+	public void setSolution(String solution) {
+		this.solution = solution;
+	}
+	public Double getTargetvarvalue() {
+		return targetvarvalue;
+	}
+	public void setTargetvarvalue(Double targetvarvalue) {
+		this.targetvarvalue = targetvarvalue;
 	}
 
 }

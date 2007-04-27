@@ -108,7 +108,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setOffPkLead( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentVoltLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentVoltLoadPointValue( new Double( vstr.extractDouble() ) );
-    
+	feeder.setCurrentwattpointquality(new Integer( vstr.extractInt() ));
+	feeder.setCurrentvoltpointquality(new Integer( vstr.extractInt() ));
+	feeder.setTargetvarvalue( new Double( vstr.extractDouble() ));
+	feeder.setSolution((String) vstr.restoreObject( SimpleMappings.CString ));
     feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
 }
 
@@ -176,7 +179,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( feeder.getCurrentVoltLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentVoltLoadPointValue().doubleValue() );
 
-
+	vstr.insertInt( feeder.getCurrentwattpointquality() );
+	vstr.insertInt( feeder.getCurrentvoltpointquality() );
+	vstr.insertDouble( feeder.getTargetvarvalue() );
+	vstr.saveObject(feeder.getSolution(), SimpleMappings.CString);
 
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
