@@ -37,7 +37,6 @@ import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.BareReportModelAdapter;
 import com.cannontech.analysis.tablemodel.DatedModelAttributes;
-import com.cannontech.analysis.tablemodel.LoadableModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelDelegate;
 import com.cannontech.analysis.tablemodel.ReportModelLayout;
@@ -259,12 +258,13 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
                getDateFormat().format(datedModel.getStopDate());
         }
         
-        if (bareModel instanceof LoadableModel) {
-            LoadableModel loadModel = (LoadableModel) bareModel;
-            return getDateFormat().format(loadModel.getLoadDate());
-        }
+        // won't work because report is "created" before data is loaded
+//        if (bareModel instanceof LoadableModel) {
+//            LoadableModel loadModel = (LoadableModel) bareModel;
+//            return getDateFormat().format(loadModel.getLoadDate());
+//        }
         
-        return "";
+        return getDateFormat().format(new Date());
     }
 
     private DateFormat getDateFormat() {
