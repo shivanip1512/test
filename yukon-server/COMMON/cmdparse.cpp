@@ -1411,6 +1411,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     CtiString CmdStr(_CmdStr);
     CtiString   temp2;
     CtiString   token;
+    UINT        flag   = 0;
     boost::regex    re_rolenum("role *" + str_num);
     boost::regex    re_rawcmd("raw (func(tion)? )?start ?= ?" + str_hexnum + "( " + str_num + ")?");
     boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
@@ -1618,6 +1619,11 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 }
             }
         }
+        if(CmdStr.contains(" update"))
+        {
+            flag |= CMD_FLAG_UPDATE;
+        }
+        _cmd["flag"]  = CtiParseValue( flag );
     }
     else
     {
@@ -1913,7 +1919,7 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
     {
         flag |= CMD_FLAG_FROZEN;
     }
-    _cmd["flag"]  = CtiParseValue( flag   );
+    _cmd["flag"]  = CtiParseValue( flag );
 
 
 }
