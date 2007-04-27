@@ -11,10 +11,8 @@ import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.model.Program;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.message.notif.NotifLMControlMsg;
 import com.cannontech.message.notif.ProgramActionMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
@@ -96,8 +94,16 @@ public class ProgramActionMessageHandler extends NotifHandler {
 
                 return notif;
             }
-            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
-                // do nothing
+            public void notificationComplete(Contactable contactable, NotifType notifType, boolean success) {
+                logNotificationStatus("PA NOTIF STATUS", success, contactable, notifType, this);
+            }
+            
+            public void logIndividualNotification(LiteContactNotification destination, Contactable contactable, 
+                    NotifType notifType, boolean success) {
+                logNotificationActivity("PA NOTIF", success, destination, contactable, notifType, this);
+            }
+            public String toString() {
+                return "Commercial Curtailment action Notification";
             }
         };
         Set<LiteNotificationGroup> notificationGroupsForProgram = 

@@ -37,6 +37,6 @@ public class ContactableCustomer extends ContactableBase {
     }
     
     public String toString() {
-        return _liteCustomer.toString() + "[CusID " + _liteCustomer.getCustomerID() + "]";
+        return _liteCustomer.toString() + "[customerId=" + _liteCustomer.getCustomerID() + "]";
     }
 }

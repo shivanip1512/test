@@ -35,10 +35,6 @@ public class AlarmMessageHandler extends NotifHandler {
         for (int i = 0; i < msg.notifGroupIds.length; i++) {
             int notifGroupId = msg.notifGroupIds[i];
             LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(notifGroupId);
-            if (liteNotifGroup.isDisabled()) {
-                log.warn("Ignoring notification request because notification group is disabled: group=" + liteNotifGroup);
-                continue;
-            }
             
             NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
             outputNotification(notifFormatter, liteNotifGroup);
@@ -98,12 +94,21 @@ public class AlarmMessageHandler extends NotifHandler {
             public Notification buildNotification(Contactable contact) {
                 return notif;
             }
+            public void notificationComplete(Contactable contactable, NotifType notifType, boolean success) {
+                logNotificationStatus("ALARM NOTIF STATUS", success, contactable, notifType, this);
+            }
             
-            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
-                // do nothing
+            public void logIndividualNotification(LiteContactNotification destination, Contactable contactable, 
+                    NotifType notifType, boolean success) {
+                logNotificationActivity("ALARM NOTIF", success, destination, contactable, notifType, this);
+            }
+            
+            public String toString() {
+                return "Alarm Notification";
             }
         };
         return notifFormatter;
     }
+
 
 }

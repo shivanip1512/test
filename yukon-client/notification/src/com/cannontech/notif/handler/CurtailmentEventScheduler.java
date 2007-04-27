@@ -5,6 +5,7 @@ import java.util.*;
 import com.cannontech.cc.dao.*;
 import com.cannontech.cc.model.*;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
@@ -149,6 +150,17 @@ public class CurtailmentEventScheduler extends EventScheduler {
                 eventNotif.setState(success ? NotificationState.SUCCEEDED : NotificationState.FAILED);
                 eventNotif.setNotificationTime(new Date());
                 curtailmentEventNotifDao.save(eventNotif);
+
+                NotifHandler.logNotificationStatus("CE NOTIF STATUS", success, contact, notifType, this);
+            }
+            
+            public void logIndividualNotification(LiteContactNotification destination, Contactable contactable, NotifType notifType, boolean success) {
+                NotifHandler.logNotificationActivity("CE NOTIF", success, destination, contactable, notifType, this);
+            }
+            
+            @Override
+            public String toString() {
+                return "Curtailment Event " + event.getDisplayName() + " " + eventNotif.getReason() + " Notification";
             }
         };
         return notifBuilder;

@@ -21,7 +21,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
 
     public void handleNotification(NotificationBuilder notifFormatter,
             Contactable contact) {
-        boolean success = false;
+        boolean atLeastOneSucceeded = false;
         try {
             CTILogger.debug("Using " + notifFormatter + " for " + contact);
             List emailList = contact.getNotifications(getTypeChecker());
@@ -52,6 +52,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
             emailMsg.setBody(emailBody);
 
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
+                boolean success = false;
                 LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
                 String emailTo = emailNotif.getNotification();
                 // Set the recipient of the email message and attempt to send.
@@ -60,6 +61,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
                 try {
                     emailMsg.setRecipient(emailTo);
                     emailMsg.send();
+                    atLeastOneSucceeded = true;
                     success = true;
                     CTILogger.debug("Sent \"" + emailSubject + "\" to " + emailTo);
                 } catch (MessagingException e) {
@@ -67,6 +69,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
                                    + " to address " + emailTo + ".",
                                    e);
                 }
+                notifFormatter.logIndividualNotification(emailNotif, contact, getNotificationMethod(), success);
             }
             
         } catch (Exception e) {
@@ -74,7 +77,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
                             + notifFormatter + " to " + contact + ".",
                             e);
         } finally {
-            notifFormatter.notificationComplete(contact, getNotificationMethod(), success);
+            notifFormatter.notificationComplete(contact, getNotificationMethod(), atLeastOneSucceeded);
         }
     }
 

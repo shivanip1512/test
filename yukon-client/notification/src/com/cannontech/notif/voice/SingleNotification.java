@@ -19,7 +19,7 @@ import com.cannontech.user.UserUtils;
 /**
  * 
  */
-public class SingleNotification implements PropertyChangeListener {
+public class SingleNotification {
     public static final String STATE_COMPLETE = "Complete";
     public static final String STATE_READY = "Ready";
     public static final String STATE_INITIAL = "Initial";
@@ -40,6 +40,7 @@ public class SingleNotification implements PropertyChangeListener {
     private Contactable _contactable;
     private Call _nextCall;
     private String _token;
+    private NotificationStatusLogger _notificationLogger;
     static private AtomicInteger _nextToken = new AtomicInteger(0);
 
 	
@@ -52,7 +53,7 @@ public class SingleNotification implements PropertyChangeListener {
 	}
 	
 	public Call createNewCall() throws NoRemainingCallsException {
-	    LiteContactNotification contactNotif;
+	    final LiteContactNotification contactNotif;
         synchronized (_phoneIterator) {
             if (!_phoneIterator.hasNext()) {
                 throw new NoRemainingCallsException();
@@ -70,7 +71,23 @@ public class SingleNotification implements PropertyChangeListener {
             PhoneNumber phoneNumber = new PhoneNumber(contactNotif.getNotification());
             ContactPhone contactPhone = new ContactPhone(phoneNumber, contactNotif.getContactID());
     		_nextCall = new Call(contactPhone, _message);
-            _nextCall.addPropertyChangeListener(this);
+            _nextCall.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    // check for changes to a call's state
+                    if (evt.getPropertyName().equals(Call.CALL_STATE)) {
+                        CallState callState = (CallState) evt.getNewValue();
+                        if (callState instanceof Confirmed) {
+                            _notificationLogger.logIndividualNotification(contactNotif, true);
+                            setState(STATE_COMPLETE);
+                        } else if (callState instanceof Connecting) {
+                            setState(STATE_CALLING);
+                        } else if (callState.isDone()) {
+                            _notificationLogger.logIndividualNotification(contactNotif, false);
+                            setState(STATE_READY);
+                        }
+                    }
+                }
+            });
             CTILogger.info("Created " + _nextCall + " for " + this);
             return _nextCall;
         }
@@ -141,5 +158,9 @@ public class SingleNotification implements PropertyChangeListener {
 
     public Contactable getContactable() {
         return _contactable;
+    }
+
+    public void setNotificationLogger(NotificationStatusLogger notificationLogger) {
+        _notificationLogger = notificationLogger;
     }
 }

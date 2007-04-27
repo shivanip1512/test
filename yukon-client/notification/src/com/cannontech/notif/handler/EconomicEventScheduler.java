@@ -8,6 +8,7 @@ import com.cannontech.cc.model.*;
 import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
@@ -147,7 +148,19 @@ public class EconomicEventScheduler extends EventScheduler {
                 eventNotif.setState(success ? NotificationState.SUCCEEDED : NotificationState.FAILED);
                 eventNotif.setNotificationTime(new Date());
                 economicEventNotifDao.save(eventNotif);
+
+                NotifHandler.logNotificationStatus("EE NOTIF STATUS", success, contact, notifType, this);
             }
+            
+            public void logIndividualNotification(LiteContactNotification destination, Contactable contactable, NotifType notifType, boolean success) {
+                NotifHandler.logNotificationActivity("EE NOTIF", success, destination, contactable, notifType, this);
+            }
+            
+            @Override
+            public String toString() {
+                return "Economic Event " + event.getDisplayName() + " " + reason + " Notification";
+            }
+
         };
         return notifBuilder;
     }

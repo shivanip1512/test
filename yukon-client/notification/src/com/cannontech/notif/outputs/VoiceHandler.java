@@ -6,10 +6,9 @@ import java.beans.PropertyChangeListener;
 import org.jdom.Document;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.notif.voice.*;
 import com.cannontech.notif.voice.callstates.Confirmed;
 import com.cannontech.notif.voice.callstates.Unconfirmed;
@@ -25,11 +24,9 @@ public class VoiceHandler extends OutputHandler
     private NotificationQueue _queue;
     private boolean _acceptNewNotifications = false;
     private NotificationTransformer _transformer;
-    private final SystemLogHelper _systemLogHelper;
     
     public VoiceHandler(ClientConnection dispatchConnection) {
         super("voice");
-        _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_NOTIFCATION, dispatchConnection);
                 
         _queue = new NotificationQueue();
         
@@ -57,15 +54,17 @@ public class VoiceHandler extends OutputHandler
                public void propertyChange(PropertyChangeEvent evt) {
                    String newState = (String) evt.getNewValue();
                    if (newState.equals(SingleNotification.STATE_COMPLETE)) {
-                       _systemLogHelper.log(this + "was succesfull", 
-                                            "Successful Voice Notification");
                        notifBuilder.notificationComplete(contact, getNotificationMethod(), true);
                    } else if (newState.equals(SingleNotification.STATE_FAILED)) {
-                       _systemLogHelper.log(this + "was not succesfull", 
-                                            "Failed Voice Notification");
                        notifBuilder.notificationComplete(contact, getNotificationMethod(), false);
                    }
                 } 
+            });
+            
+            singleNotification.setNotificationLogger(new NotificationStatusLogger() {
+                public void logIndividualNotification(LiteContactNotification destination, boolean success) {
+                    notifBuilder.logIndividualNotification(destination, contact, getNotificationMethod(), success);
+                }
             });
             
             // Add the notification to the queue.

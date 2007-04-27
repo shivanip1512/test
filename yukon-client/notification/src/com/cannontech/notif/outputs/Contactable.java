@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.notification.NotifType;
 
@@ -94,6 +95,9 @@ public class Contactable {
     public boolean supportsNotificationMethod(NotifType notificationMethod) {
         return true;
     }
-
+    
+    public LiteCICustomer getCustomer() throws UnknownCustomerException {
+        return _contactableBase.getContactableCustomer();
+    }
 
 }

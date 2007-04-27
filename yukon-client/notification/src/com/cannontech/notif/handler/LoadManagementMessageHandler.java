@@ -8,8 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteNotificationGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.message.notif.NotifLMControlMsg;
 import com.cannontech.message.util.Message;
@@ -99,20 +98,23 @@ public class LoadManagementMessageHandler extends NotifHandler {
 
                 return notif;
             }
-            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
-                // do nothing
+            
+            public void notificationComplete(Contactable contactable, NotifType notifType, boolean success) {
+                logNotificationStatus("LM NOTIF STATUS", success, contactable, notifType, this);
+            }
+            
+            public void logIndividualNotification(LiteContactNotification destination, Contactable contactable, 
+                    NotifType notifType, boolean success) {
+                logNotificationActivity("LM NOTIF", success, destination, contactable, notifType, this);
+            }
+            public String toString() {
+                return "LoadManagement " + actionString + " Notification";
             }
         };
 
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
             LiteNotificationGroup notificationGroup = 
                 DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(msg.notifGroupIds[i]);
-            
-            if (notificationGroup.isDisabled()) {
-                log.warn("Ignoring notification request because notification group is disabled: group=" + notificationGroup);
-                continue;
-            }
-            
             
             outputNotification(notifFormatter, notificationGroup);
         }
