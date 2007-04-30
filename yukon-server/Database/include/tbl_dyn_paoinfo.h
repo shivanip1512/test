@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/01/26 19:56:15 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2007/04/30 21:17:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,6 +113,12 @@ public:
         Key_MCT_DNP_AccumulatorCRC2,
         Key_MCT_DNP_AccumulatorCRC3,
         Key_MCT_DNP_AccumulatorCRC4,
+
+        //  run-time info
+        Key_MCT_LLPInterest_Time,
+        Key_MCT_LLPInterest_Channel,
+        Key_MCT_LLPInterest_RequestBegin,
+        Key_MCT_LLPInterest_RequestEnd,
 
         Key_FreezeCounter,
         Key_ExpectedFreeze,
@@ -247,6 +253,11 @@ protected:
     static const string _key_mct_precanned_meter_number;
     static const string _key_mct_precanned_table_type;
 
+    static const string _key_mct_llp_interest_time;
+    static const string _key_mct_llp_interest_channel;
+    static const string _key_mct_llp_interest_request_begin;
+    static const string _key_mct_llp_interest_request_end;
+
     static const string _key_mct_dnp_realtime1_crc;
     static const string _key_mct_dnp_realtime2_crc;
     static const string _key_mct_dnp_binary_crc;
@@ -264,27 +275,27 @@ protected:
     static const string _key_udp_port;
 
     static const string _key_fmu_softspec_lsb;
-    static const string _key_fmu_softspec_msb;                  
-    static const string _key_fmu_revision;                      
-    static const string _key_fmu_datatransfer_comms_type;       
-    static const string _key_fmu_serial_no;                     
-    static const string _key_fmu_valid_message_type;            
-    static const string _key_fmu_monitor_comms_type;            
-    static const string _key_fmu_attached_device_baud;          
-    static const string _key_fmu_attached_device_protocol;      
-    static const string _key_fmu_attached_device_rssi_address;  
+    static const string _key_fmu_softspec_msb;
+    static const string _key_fmu_revision;
+    static const string _key_fmu_datatransfer_comms_type;
+    static const string _key_fmu_serial_no;
+    static const string _key_fmu_valid_message_type;
+    static const string _key_fmu_monitor_comms_type;
+    static const string _key_fmu_attached_device_baud;
+    static const string _key_fmu_attached_device_protocol;
+    static const string _key_fmu_attached_device_rssi_address;
     static const string _key_fmu_attached_device_flex_code_set;
-    static const string _key_fmu_bluetooth_settings;            
-    static const string _key_fmu_bluetooth_pin;                 
-    static const string _key_fmu_datalog_buffer_wrapped;        
-    static const string _key_fmu_datalog_index;                
-    static const string _key_fmu_datalog_max_index;             
-    static const string _key_fmu_datalog_entries;               
-    static const string _key_fmu_datalog_number_unreported;     
-    static const string _key_fmu_datalog_start_index;           
-    static const string _key_fmu_datalog_last_reported_index;      
+    static const string _key_fmu_bluetooth_settings;
+    static const string _key_fmu_bluetooth_pin;
+    static const string _key_fmu_datalog_buffer_wrapped;
+    static const string _key_fmu_datalog_index;
+    static const string _key_fmu_datalog_max_index;
+    static const string _key_fmu_datalog_entries;
+    static const string _key_fmu_datalog_number_unreported;
+    static const string _key_fmu_datalog_start_index;
+    static const string _key_fmu_datalog_last_reported_index;
     static const string _key_fmu_datatransfer_port_select_comm_config;
-    static const string _key_fmu_monitor_port_select_comm_config;     
+    static const string _key_fmu_monitor_port_select_comm_config;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
@@ -354,6 +365,7 @@ public:
     //  we actually want to limit the input conversions into setValue, because we
     //    need to be able to convert them from string form in the getValue functions
     CtiTableDynamicPaoInfo &setValue(int i);
+    CtiTableDynamicPaoInfo &setValue(unsigned int i);
     CtiTableDynamicPaoInfo &setValue(long l);
     CtiTableDynamicPaoInfo &setValue(unsigned long l);
     CtiTableDynamicPaoInfo &setValue(double d);
