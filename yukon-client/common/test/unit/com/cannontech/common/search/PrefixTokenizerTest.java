@@ -17,7 +17,7 @@ public class PrefixTokenizerTest extends TestCase {
      */
     
     public void testNext() throws Exception {
-        String testInput = "Hello my -name is 65412";
+        String testInput = "Hello-my -name (is) /65412";
         List<String> expectedList = Arrays.asList(new String[] {
             "h",
             "he",
@@ -26,11 +26,10 @@ public class PrefixTokenizerTest extends TestCase {
             "hello",
             "m",
             "my",
-            "-",
-            "-n",
-            "-na",
-            "-nam",
-            "-name",
+            "n",
+            "na",
+            "nam",
+            "name",
             "i",
             "is",
             "6",
@@ -68,7 +67,9 @@ public class PrefixTokenizerTest extends TestCase {
             String tokeText = tok.termText();
             tokeTextList.add(tokeText);
         }
-        assertEquals("Lists don't match", tokeTextList, expectedList);
+        
+        
+        assertEquals("Lists don't match", expectedList, tokeTextList);
     }
 
 }
