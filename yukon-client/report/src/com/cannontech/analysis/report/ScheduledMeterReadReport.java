@@ -19,9 +19,6 @@ import org.jfree.report.ReportFooter;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.TotalItemCountFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.ui.FloatDimension;
@@ -41,7 +38,6 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class ScheduledMeterReadReport extends YukonReportBase
 {
-	private TotalItemCountFunction totalItemCount = null;
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf MissedMeterModel.
@@ -281,25 +277,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		collGrpGroup.setHeader(header);		
 		return collGrpGroup;
 	}
-	
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{
-		super.getExpressions();
-
-		totalItemCount = new TotalItemCountFunction();
-		totalItemCount.setName("totalItemCount");
-		totalItemCount.setGroup(ScheduledMeterReadModel.STATUS_CODE_STRING + ReportFactory.NAME_GROUP);
-		totalItemCount.setActive(true);
-		expressions.add(totalItemCount);
-
-		return expressions;
-	}
-
 
 	/**
 	 * Create a GroupList and all Group(s) to it.
@@ -364,6 +341,8 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		factory = ReportFactory.createGroupLabelElementDefault("Counts", 
 				getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getPositionX(), 
 				1, getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
+		factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+		footer.addElement(factory.createElement());
 		
 		Iterator iter = ((ScheduledMeterReadModel)getModel()).getTotals().entrySet().iterator();
 		int offset = 8;
@@ -387,7 +366,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 			factory = ReportFactory.createGroupLabelElementDefault(entry.getValue().toString(), 
 				getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getPositionX(), 
 				offset, getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
-			factory.setHorizontalAlignment(ElementAlignment.CENTER);
+			factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 			footer.addElement(factory.createElement());
 			
 			//Doing some magic to adjust the offset for text that exceeds the given height (by length too long)
