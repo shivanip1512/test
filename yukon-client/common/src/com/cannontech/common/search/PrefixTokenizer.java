@@ -32,8 +32,13 @@ public class PrefixTokenizer extends Tokenizer {
      * tokenizer generates as tokens adjacent sequences of characters which
      * satisfy this predicate.  Characters for which this is false are used to
      * define token boundaries and are not included in tokens. */
-    protected boolean isTokenChar(char c) {
-        return !(Character.isWhitespace(c));
+    public static boolean isTokenChar(char c) {
+        return !((Character.isWhitespace(c)) || 
+                (c == '_') || 
+                (c == '-') || 
+                (c == '(') ||
+                (c == ')') ||
+                (c == '/'));
     }
 
     /** Called on each token character to normalize it before it is added to the
