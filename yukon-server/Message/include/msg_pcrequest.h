@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcrequest.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/04/30 21:18:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,14 +25,14 @@ class IM_EX_MSG CtiRequestMsg : public CtiMessage
 {
 private:
 
-    long        _device_id;
-    string   _command_string;
-    long        _route_id;             // What route is to be used to address this device..
-    int         _macro_offset;         // Which offset into a macro route should be attempted if the routeid is a macro.
-    int         _attempt_num;          // Number of tries on this particular route. A zero or one have the same effect.
-    long        _transmission_id;      // A number which will be echo'd back in any CtiReturnMsg caused by this CtiRequestMsg
-    long        _user_message_id;      // A number which will be echo'd back in any CtiReturnMsg caused by this CtiRequestMsg
-    int         _options_field;        // Options specific to the message.  One such is a "NO STATS' flag telling the bg to not process statistics on the request.
+    long    _device_id;
+    string  _command_string;
+    long    _route_id;             // What route is to be used to address this device..
+    int     _macro_offset;         // Which offset into a macro route should be attempted if the routeid is a macro.
+    int     _attempt_num;          // Number of tries on this particular route. A zero or one have the same effect.
+    long    _transmission_id;      // A number which will be echo'd back in any CtiReturnMsg caused by this CtiRequestMsg
+    long    _user_message_id;      // A number which will be echo'd back in any CtiReturnMsg caused by this CtiRequestMsg
+    int     _options_field;        // Options specific to the message.  One such is a "NO STATS' flag telling the bg to not process statistics on the request.
 
 public:
     RWDECLARE_COLLECTABLE( CtiRequestMsg );
@@ -42,14 +42,14 @@ public:
     CtiRequestMsg();
 
     CtiRequestMsg(long device_id,
-                     const string& command_string,
-                     long user_message_id = 0L,
-                     long transmission_id = 0L,
-                     long route_id        = 0L,
-                     int macro_offset     = 0,
-                     int attempt_num      = 0,
-                     int options_field    = 0,
-                     int priority_base    = 7);
+                  const string& command_string,
+                  long user_message_id = 0L,
+                  long transmission_id = 0L,
+                  long route_id        = 0L,
+                  int  macro_offset    = 0,
+                  int  attempt_num     = 0,
+                  int  options_field   = 0,
+                  int  priority_base   = 7);
 
     CtiRequestMsg(const CtiRequestMsg &aRef);
     CtiRequestMsg& operator=(const CtiRequestMsg& aRef);
