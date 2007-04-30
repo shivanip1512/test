@@ -17,7 +17,7 @@ public class PrefixTokenizerTest extends TestCase {
      */
     
     public void testNext() throws Exception {
-        String testInput = "Hello-my -name (is) /65412";
+        String testInput = "Hello_my -name (is) /65412";
         List<String> expectedList = Arrays.asList(new String[] {
             "h",
             "he",
