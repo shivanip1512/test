@@ -212,12 +212,15 @@ public class ReportBean
 	 */
 	public JFreeReport createReport() {
 	    try {
+            //Collect the data for the model
+	    	//It is important to collect the data before the JFreeReport is created so that any data collected may 
+	    	//  be already available during the ReportHeaders/Footers creation. 
+            getModel().collectData();
+
             //Create an instance of JFreeReport from the YukonReportBase
             YukonReportBase report = reportController.getReport();
             JFreeReport jfreeReport = report.createReport();
             
-            //Collecto the data for the model and set the freeReports data
-            getModel().collectData();
             jfreeReport.setData(getModel());
             
             return jfreeReport;
