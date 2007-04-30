@@ -23,10 +23,13 @@
 
 .loginMain {
 	background: #fff;
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .loginTopSection {
-	width: 40%;
+	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 10px;
@@ -34,7 +37,7 @@
 
 .loginMainSection {
 	padding: 10px;
-	width: 40%;
+	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 }
