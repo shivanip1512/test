@@ -151,8 +151,6 @@ public abstract class DBEditorForm
 		try {
 			Transaction t = Transaction.createTransaction( Transaction.INSERT, db );
 			t.execute();
-
-			generateDBChangeMsg( db, DBChangeMsg.CHANGE_TYPE_ADD );
 		}
 		
         
@@ -170,7 +168,17 @@ public abstract class DBEditorForm
 
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
+		
+		try{
+			generateDBChangeMsg( db, DBChangeMsg.CHANGE_TYPE_ADD );
+		}catch( Exception e )
+		{
+			CTILogger.error( e.getMessage(), e );
+			facesMsg.setDetail( "Error with Connection to Servers, " + e.getMessage() );
+			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );
 
+			throw new TransactionException(e.getMessage(), e); //chuck this thing up			
+		}
 	}
 
 	/**
