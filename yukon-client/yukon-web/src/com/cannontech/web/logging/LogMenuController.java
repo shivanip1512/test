@@ -42,21 +42,9 @@ public class LogMenuController extends LogController {
        
         //lists to hold log file names
         List<String> localLogList = new ArrayList<String>();
-               
-        //create file filter to only allow log files thru
-        FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".xml") || name.endsWith(".log");
-            }
-        };
-        //extract local log file names and add to a list
-        File[] localFiles = getLocalDir().listFiles(filter);
-        if (!ArrayUtils.isEmpty(localFiles)) {
-            for (File logFile : localFiles) {
-                localLogList.add(logFile.getName());
-            }
-        }
-        
+        localLogList = populateFileList(localLogList, new String(), getLocalDir());
+        java.util.Collections.reverse(localLogList);
+
         //add local list to model
         mav.addObject("localLogList", localLogList);
         
@@ -66,5 +54,24 @@ public class LogMenuController extends LogController {
     @Required
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
+    }
+    
+    private List<String> populateFileList(List<String> localLogList, String parent, File file) {
+        if (!file.isDirectory()) return localLogList;
+        
+        if (!file.getName().equals("Log")) {
+            parent = parent + file.getName() + System.getProperty("file.separator");
+        }
+
+        File[] localFiles = file.listFiles();
+        for (File logFile : localFiles) {
+            if (logFile.isDirectory()) {
+                localLogList = populateFileList(localLogList, parent, logFile);
+            }
+            if (logFile.getName().endsWith("xml") || logFile.getName().endsWith("log")) {
+                localLogList.add(parent + logFile.getName());
+            }
+        }
+        return localLogList;
     }
 }
