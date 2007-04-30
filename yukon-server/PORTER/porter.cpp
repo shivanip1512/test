@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.106 $
-* DATE         :  $Date: 2007/03/14 19:33:01 $
+* REVISION     :  $Revision: 1.107 $
+* DATE         :  $Date: 2007/04/30 21:19:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,6 +324,22 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error initializing shared port for " << ptPort->getName() << endl;
         }
+    }
+}
+
+static void applyDeviceInitialization(const long unusedid, CtiDeviceSPtr RemoteDevice, void *unused)
+{
+    extern CtiPILServer PIL;
+
+    list< CtiRequestMsg * > request_list;
+
+    RemoteDevice->deviceInitialization(request_list);
+
+    while( !request_list.empty() )
+    {
+        PIL.putQueue(request_list.front());
+
+        request_list.pop_front();
     }
 }
 
@@ -1017,6 +1033,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
     }
 
+    //  Some devices need to fire off commands on startup - specifically, MCTs may need to resume LLP collection
+    DeviceManager.apply(applyDeviceInitialization, NULL);
+
     /* Startup is done so main process becomes input thread */
     for(;!PorterQuit;)
     {
@@ -1473,7 +1492,7 @@ INT RefreshPorterRTDB(void *ptr)
         }
 
         DeviceManager.refresh(DeviceFactory, isNotADevice, NULL, chgid, catstr, devstr);
-        
+
         if(pChg == NULL)
         {
             attachRouteManagerToDevices(&DeviceManager, &RouteManager);
@@ -1490,7 +1509,7 @@ INT RefreshPorterRTDB(void *ptr)
                 pDev->setPointDeviceMap(&PointToDeviceMap);
             }
         }
-        
+
     }
 
     if(!PorterQuit)
