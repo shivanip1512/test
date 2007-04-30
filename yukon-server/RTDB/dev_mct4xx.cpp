@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/04/30 21:22:57 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2007/04/30 21:27:37 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -569,6 +569,8 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
         {
             //  reset it, that way it'll end immediately
             _llpInterest.time_end = 0;
+
+            setDynamicInfo(Keys::Key_MCT_LLPInterest_RequestEnd, _llpInterest.time_end);
 
             CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
