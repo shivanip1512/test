@@ -19,7 +19,12 @@ public class YukonObjectSearchAnalyzer extends Analyzer {
 
     @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {
-        TokenStream stream = new WhitespaceTokenizer(reader);
+        TokenStream stream = new WhitespaceTokenizer(reader){
+            @Override
+            protected boolean isTokenChar(char c) {
+                return PrefixTokenizer.isTokenChar(c);
+            }
+        };
         stream = new LowerCaseFilter(stream);
         return stream;
     }
