@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/04/13 20:19:28 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2007/04/30 21:22:57 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -733,11 +733,12 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                         }
                         else
                         {
-                            //  FIXME:  we must replicate this functionality in the decode portion - right now, _llpInterest.offset
-                            //            is being overwritten, resulting in faulty decodes
+                            //  align to the beginning of an interval
                             request_time  = time_start.seconds() - (time_start.seconds() % interval_len);
-                            request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
+                            //  we report interval-ending, but request interval-beginning
+                            request_time -= interval_len;
 
+                            //  align this to the beginning of an interval as well
                             _llpInterest.time_end = time_end.seconds() - (time_end.seconds() % interval_len);
 
                             //  this is the number of seconds from the current pointer
@@ -802,6 +803,12 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             OutMessage->Buffer.BSt.Length   = 13;
 
                             function = Emetcon::GetValue_LoadProfile;
+
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpInterest.time +
+                                                                                                     _llpInterest.offset);
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpInterest.time_end);
 
                             if( strstr(OutMessage->Request.CommandStr, " background") )
                             {
@@ -2715,6 +2722,8 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
                 _llpInterest.time_end = _llpInterest.time + _llpInterest.offset + block_len + interval_len;
 
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpInterest.time_end);
+
                 //  reset the "in progress" flag
                 InterlockedExchange(&_llpInterest.in_progress, false);
             }
@@ -2725,8 +2734,10 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             if( !_llpInterest.retry )
             {
-                _llpInterest.time    = 0;
+                _llpInterest.time  = 0;
                 _llpInterest.retry = true;
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
 
                 resultString += ", retrying";
 
@@ -2748,7 +2759,11 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
             else
             {
                 resultString += " - try message again";
+
+                _llpInterest.time    = 0;
                 _llpInterest.retry = false;
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
 
                 //  reset the "in progress" flag
                 InterlockedExchange(&_llpInterest.in_progress, false);
@@ -3508,6 +3523,50 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     return retVal;
 }
+
+
+void CtiDeviceMCT4xx::deviceInitialization( list< CtiRequestMsg * > &request_list )
+{
+    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time) )
+    {
+        _llpInterest.time = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time);
+    }
+
+    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel) )
+    {
+        _llpInterest.channel = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel) - 1;
+    }
+
+    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time)
+        && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel)
+        && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin)
+        && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd) )
+    {
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin) >
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time) &&
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd) >
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin) )
+        {
+            int interval_len = getLoadProfileInterval(_llpInterest.channel);
+
+            CtiTime time_begin(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin) + interval_len),
+                    time_end  (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd));
+
+            CtiString lp_request_str = "getvalue lp ";
+
+            lp_request_str += "channel " + CtiNumStr(_llpInterest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
+
+            list< CtiMessage * > vgList;
+            list< CtiMessage * > retList;
+
+            CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(), lp_request_str);
+            newReq->setMessagePriority(ScanPriority_LoadProfile);
+
+            request_list.push_back(newReq);
+        }
+    }
+}
+
 
 void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6])
 {
