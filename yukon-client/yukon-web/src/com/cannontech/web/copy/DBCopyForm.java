@@ -34,8 +34,8 @@ public class DBCopyForm extends DBEditorForm {
 
     }
 
-    public void init(int id) {
-        origObject = CBCCopyUtils.getDBPersistentByID(id);
+    public void init(int id, int type) {
+        origObject = CBCCopyUtils.getDBPersistentByID(id, type);
         if (CBCCopyUtils.isPoint(origObject)) {
             setPaoName(((PointBase) origObject).getPoint().getPointName());
             showCopyPoints = false;

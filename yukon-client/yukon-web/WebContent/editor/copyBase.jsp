@@ -17,11 +17,13 @@
     //****
 
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
+    int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
+    System.out.println("type: "+type);
 	DBCopyForm cbcCopyForm = new DBCopyForm();
     if( id != PAOGroups.INVALID ) {
         JSFUtil.resetBackingBean("cbcCopyForm");
         cbcCopyForm = (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
-        cbcCopyForm.init(id);
+        cbcCopyForm.init(id, type);
 
     }
 %>

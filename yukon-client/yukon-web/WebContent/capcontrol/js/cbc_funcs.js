@@ -439,30 +439,30 @@ function editorPost()
 // -------------------------------------------
 function copyPost()
 {
-
     var elemSubs = document.getElementsByName('cti_chkbxSubs');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
     var validElems = new Array();
+    var isPoint = 0;
+    var isCap = 0;
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
-    getValidChecks( elemBanks, validElems );
-    getValidChecks( elemPoints, validElems );
-
+    isCap   += getValidChecks( elemBanks, validElems );
+	isPoint += getValidChecks( elemPoints, validElems );
     //only allow the editing of the zeroth element for now
     if ( validElems.length <= 0 )
         alert('You must check the item you want to edit first');
     else {      
         if (validElems.length > 1)
             alert ("You can only copy 1 item at a time"); 
-        window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value');        
-        }
-     
-    
+        var type = 0;   
+        if (isPoint)  type = 2;
+        if(isCap)    type =1;
+        window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value') + '&type=' + type;        
+    }
 }
-
 // -------------------------------------------
 //Posts to the correct URL with the checked item
 // for editing
@@ -509,6 +509,7 @@ function post( href )
 function getValidChecks( elems, validElems )
 {
     var cnt = validElems.length;
+    var returncount = 0;
     for( var i = 0; i < elems.length; i++ )
     {
         //validate the elements
@@ -516,10 +517,10 @@ function getValidChecks( elems, validElems )
         if( elems[i].checked )
         {
             validElems[cnt++] = elems[i];
+            returncount = 1;
         }
-
     }
-
+    return returncount;
 }
 
 // -------------------------------------------

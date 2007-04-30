@@ -9,10 +9,13 @@ import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
@@ -119,16 +122,20 @@ public class CBCCopyUtils {
 			return false;
 	}
 
-	public static DBPersistent getDBPersistentByID(int copyObjectID) {
-		LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(copyObjectID);
+	public static DBPersistent getDBPersistentByID(int copyObjectID, int type) {
 		DBPersistent originalDbPers = null;
-		if (litePAO != null) {
-			originalDbPers = DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePAO);
-		} else {
+		if (type == 0 || type == 1)
+        {
+            LiteBase  lite= DaoFactory.getPaoDao().getLiteYukonPAO(copyObjectID);
+           if(lite != null)
+           {
+               originalDbPers = DaoFactory.getDbPersistentDao().retrieveDBPersistent(lite);
+           }
+        }
+         else  if (type  == 2){
 			LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(copyObjectID);
 			if (litePoint != null) {
-				originalDbPers = DaoFactory.getDbPersistentDao()
-						.retrieveDBPersistent(litePoint);
+				originalDbPers = DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePoint);
 			}
 		}
 		return originalDbPers;
