@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/02/22 17:46:43 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2007/04/30 21:20:35 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,15 +188,16 @@ public:
     INT         ReportError(INT mess);
 
     /* Properly defined by the device types themselves... */
-    virtual INT ResetDevicePoints();
-    virtual INT RefreshDevicePoints();
+    virtual void deviceInitialization(list< CtiRequestMsg * > &request_list);
+    virtual INT  ResetDevicePoints();
+    virtual INT  RefreshDevicePoints();
     virtual bool orphanDevicePoint(LONG id);
-    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
-    virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
-    virtual INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 12);
-    virtual INT LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 6);
-    virtual INT ResultDecode(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    virtual INT ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT  GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
+    virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
+    virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 12);
+    virtual INT  LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 6);
+    virtual INT  ResultDecode (INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT  ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     // This one is a preprocessing method which calls the other ExecuteRequest method.
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, const OUTMESS *OutTemplate = NULL);
@@ -256,11 +257,13 @@ public:
     bool setDynamicInfo(const CtiTableDynamicPaoInfo &paoinfo);
     bool setDynamicInfo(Keys k, const string        &value);
     bool setDynamicInfo(Keys k, const int           &value);
+    bool setDynamicInfo(Keys k, const unsigned int  &value);
     bool setDynamicInfo(Keys k, const long          &value);
     bool setDynamicInfo(Keys k, const unsigned long &value);
     bool setDynamicInfo(Keys k, const double        &value);
     bool getDynamicInfo(Keys k, string        &destination) const;
     bool getDynamicInfo(Keys k, int           &destination) const;
+    bool getDynamicInfo(Keys k, unsigned int  &destination) const;
     bool getDynamicInfo(Keys k, long          &destination) const;
     bool getDynamicInfo(Keys k, unsigned long &destination) const;
     bool getDynamicInfo(Keys k, double        &destination) const;

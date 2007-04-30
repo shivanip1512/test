@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/02/22 21:49:17 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2007/04/30 21:20:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -173,6 +173,11 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
     return;
 }
 
+
+//  override if the device needs to do anything immediately on Porter startup
+void CtiDeviceBase::deviceInitialization(list< CtiRequestMsg * > &request_list)
+{
+}
 
 INT CtiDeviceBase::ResetDevicePoints()
 {
@@ -915,6 +920,10 @@ bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string 
     return setInfo(_paoInfo, getID(), k, value);
 }
 bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const int &value)
+{
+    return setInfo(_paoInfo, getID(), k, value);
+}
+bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const unsigned int &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
