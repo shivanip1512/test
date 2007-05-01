@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2007/04/30 21:27:37 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2007/05/01 16:43:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2722,9 +2722,10 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
             {
                 resultString += "Load profile request complete\n";
 
-                _llpInterest.time_end = _llpInterest.time + _llpInterest.offset + block_len + interval_len;
+                _llpInterest.offset += block_len + interval_len;
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpInterest.time_end);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpInterest.time +
+                                                                                         _llpInterest.offset);
 
                 //  reset the "in progress" flag
                 InterlockedExchange(&_llpInterest.in_progress, false);
