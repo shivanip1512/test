@@ -65,7 +65,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
                         row.Feeder = rs.getString("Feeder");
                         row.CapBank = rs.getString("CapBank");
                         row.CBC = rs.getString("CBC");
-                        row.numRetries = rs.getString("numRetries");
+                        row.numRetries = rs.getString("NumRetries");
 
                         data.add(row);
                     } catch (java.sql.SQLException e) {

@@ -115,7 +115,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         while (bodyColumns.hasNext()) {
             ColumnLayoutData layoutData = bodyColumns.next();
             TextFieldElementFactory factory;
-            int modelIndex = columIndexLookup.get(layoutData.getFieldName());
+            int modelIndex = getModelIndex(layoutData);
             Class<?> columnClass = getModel().getColumnClass(modelIndex);
             if (Number.class.isAssignableFrom(columnClass)) {
                 NumberFieldElementFactory numFactory = new NumberFieldElementFactory();
@@ -139,6 +139,14 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         }
         
         return items;
+    }
+
+    private int getModelIndex(ColumnLayoutData layoutData) {
+        Integer value = columIndexLookup.get(layoutData.getFieldName());
+        if (value == null) {
+            throw new RuntimeException("Field name doesn't exist in model: " + layoutData.getFieldName());
+        }
+        return value;
     }
     
     protected void applyElementProperties(TextElementFactory factory, ColumnLayoutData layoutData) {
