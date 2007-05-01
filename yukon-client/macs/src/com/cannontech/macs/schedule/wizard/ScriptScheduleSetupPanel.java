@@ -413,7 +413,6 @@ private javax.swing.JComboBox getBillingGroupTypeComboBox() {
 			ivjBillingGroupTypeComboBox = new javax.swing.JComboBox();
 			ivjBillingGroupTypeComboBox.setName("BillingGroupTypeComboBox");
 			ivjBillingGroupTypeComboBox.setToolTipText("The type of group for billing generation.");
-			ivjBillingGroupTypeComboBox.setVisible(false);
 			// user code begin {1}
 			for( int i = 0; i < DeviceMeterGroup.getValidBillGroupTypeDisplayStrings().length; i++)
 			    ivjBillingGroupTypeComboBox.addItem(DeviceMeterGroup.getValidBillGroupTypeDisplayStrings()[i]);
@@ -441,7 +440,6 @@ private javax.swing.JLabel getBillingGroupTypeLabel() {
 			ivjBillingGroupTypeLabel.setToolTipText("The type of group for billing generation.");
 			ivjBillingGroupTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjBillingGroupTypeLabel.setText("Group Type:");
-			ivjBillingGroupTypeLabel.setVisible(false);
 			// user code begin {1}
 			ivjBillingGroupTypeLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_TYPE_PARAM));
 			// user code end
