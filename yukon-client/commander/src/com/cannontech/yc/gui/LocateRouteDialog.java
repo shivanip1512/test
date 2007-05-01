@@ -1,5 +1,7 @@
 package com.cannontech.yc.gui;
 
+import java.awt.Frame;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/25/2002 3:46:52 PM)
@@ -18,8 +20,8 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
 	/**
 	 * ClearPrintButtonPanel constructor comment.
 	 */
-	public LocateRouteDialog() {
-		super();
+	public LocateRouteDialog(Frame owner, String title, boolean modal) {
+		super(owner, title, modal);
 		initialize();
 	}
 	/**
@@ -287,21 +289,7 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
 		// user code begin {2}
 		// user code end
 	}
-	/**
-	 * main entrypoint - starts the part when it is run as an application
-	 * @param args java.lang.String[]
-	 */
-	public static void main(java.lang.String[] args) {
-		try {
-			final LocateRouteDialog aLocateRouteDialog;
-			aLocateRouteDialog = new LocateRouteDialog();
-			aLocateRouteDialog.showLocateDialog();
-			
-		} catch (Throwable exception) {
-			System.err.println("Exception occurred in main() of java.lang.Object");
-			exception.printStackTrace(System.out);
-		}
-	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (6/3/2002 4:10:09 PM)

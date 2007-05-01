@@ -900,7 +900,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	{
 		if( locRouteDialog == null)
 		{
-			locRouteDialog = new LocateRouteDialog();
+			locRouteDialog = new LocateRouteDialog(this, "LocateRoute", true);
 			locRouteDialog.addItems(getYC().getAllRoutes());
 			locRouteDialog.getLocateButton().addActionListener(this);
 			locRouteDialog.getRouteComboBox().addActionListener(this);
