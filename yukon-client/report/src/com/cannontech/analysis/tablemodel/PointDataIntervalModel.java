@@ -217,6 +217,8 @@ public class PointDataIntervalModel extends ReportModelBase
 			else if ( getPointType() == DEMAND_ACC_POINT_TYPE)
 			{
 				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT) + "' ");
+	            //Do not allow LP data, those points fall into the LP point type option.
+	            sql.append(" AND (P.POINTOFFSET < " + PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND + " OR P.POINTOFFSET > " + PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND + ") ");				
 			}
 			else if ( getPointType() == PULSE_ACC_POINT_TYPE)
 			{
