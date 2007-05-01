@@ -502,7 +502,7 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     LONG startSecondsFromDayBegin = proposed_start_from_1901 - startTime.seconds();
     LONG stopSecondsFromDayBegin = proposed_stop_from_1901 - startTime.seconds();
 
-    if(controlArea.getCurrentDailyStopTime() == 0 && controlArea.getCurrentDailyStopTime() == 0)
+    if(controlArea.getCurrentDailyStartTime() == 0 && controlArea.getCurrentDailyStopTime() == 0)
     {
         retVal = true;
     }
