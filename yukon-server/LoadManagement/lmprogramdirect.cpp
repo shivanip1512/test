@@ -2451,7 +2451,11 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, vector<Cti
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " - LM Program: " << getPAOName() << " is no longer in a valid control window, stopping program control" << endl;
         }
-        stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901);
+        if( stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) != FALSE )
+        {
+            // Let the world know we just auto stopped?
+            scheduleStopNotification(CtiTime());
+        }
         returnBoolean = TRUE;
     }
     else
