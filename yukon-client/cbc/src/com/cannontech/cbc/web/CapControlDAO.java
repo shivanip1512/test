@@ -136,14 +136,8 @@ public interface CapControlDAO {
 	 */
 	public abstract int getParentSubBusID(int childID);
 
-	/**
-	 * 
-	 * @param id - Point Id
-	 * @return String containing parent names for Point Id
-	 * @comments the fact that it is a point is checked on the front end    
-	 */
 
-	public abstract String getParentNames(int id);
+
 
     public HashMap getAreaStateMap();
 }

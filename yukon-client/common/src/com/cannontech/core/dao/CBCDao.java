@@ -12,4 +12,8 @@ public interface CBCDao {
     public  List getAllSubsForUser(LiteYukonUser user);
 
     public List<LitePoint> getPaoPoints(YukonPAObject sub);
+
+    public Integer getParentForController(int id);
+
+    public Integer getParentForPoint(int id);
 }

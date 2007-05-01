@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CBCDao;
 import com.cannontech.core.dao.PaoDao;
@@ -25,12 +29,19 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.cbc.CBCUtils;
 
 public class CBCDaoImpl  implements CBCDao{
+
+
+
+
     private PointDao pointDao;
     private PaoDao paoDao;
     private AuthDao authDao;
     private StateDao stateDao;
     private DynamicDataSource dynamicDataSource;
+    private JdbcTemplate jdbcOps;
     
+
+
     public CBCDaoImpl() {
         super();
     }
@@ -124,10 +135,44 @@ public class CBCDaoImpl  implements CBCDao{
         this.dynamicDataSource = dynamicDataSource;
     }
 
+    public void setJdbcOps(JdbcTemplate jdbcOps) {
+        this.jdbcOps = jdbcOps;
+    }
+
 
 
     public List<LitePoint> getPaoPoints(YukonPAObject pao) {
         return  pointDao.getLitePointsByPaObjectId(pao.getPAObjectID());
+    }
+
+
+
+    public Integer getParentForController(int id) {
+        String sql = "select deviceid from capbank where controldeviceid = ?";
+        Integer parentID = 0;
+        try{
+            parentID = jdbcOps.queryForInt(sql, new Integer[] {id});
+        }
+        catch (DataAccessException dae)
+        {
+            CTILogger.debug("Could not find parent for cbc:" + id);
+        }
+        return parentID;
+    }
+
+
+
+    public Integer getParentForPoint(int id) {
+        String sql = "select paobjectid from point where pointid = ?";
+        Integer parentID = 0;
+        try{
+            parentID = jdbcOps.queryForInt(sql, new Integer[] {id});
+        }
+        catch (DataAccessException dae)
+        {
+            CTILogger.debug("Could not find parent for cbc:" + id);
+        }
+        return parentID;
     }
 }
 

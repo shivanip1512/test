@@ -17,6 +17,8 @@
 <%
 	// String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, CBCSessionInfo.STR_LAST_SEARCH, null);
+	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
+	psp.setLinkedToEditors(true);
 	if( srchCriteria == null )
 		srchCriteria = cbcSession.getLastSearchCriteria();
 
@@ -91,34 +93,11 @@ for( int i = 0; i < items.length; i++ )
 
 				<td><%= item.getDescription()%></td>
 				<td>
-	<% 
-		
-		int parID = item.getParentID();
-		
-		if( parID > CtiUtilities.NONE_ZERO_ID ) { %>
-				<%if (capControlCache.isCapBank(parID)) { //check to see if point has a parent%>
-				<%=capControlCache.getParentNames(parID)%>
-				<% }else { %>
-				<%= item.getParent()%>
-				<%}%>
-	<% } else {
-			parID = capControlCache.getParentSubBusID(item.getItemID());
-				
-			if( parID <= CtiUtilities.NONE_ZERO_ID ) { %>
-				<%=item.getParent()%>
-		<% } else { 
-				SubBus pBus = capControlCache.getSubBus( new Integer(parID) ); %>
-
-				<% if( pBus != null) { %>
-					<a href="#" class="<%=css%>"
-						onclick="postMany('parentForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=pBus.getCcId()%>, '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=pBus.getCcArea()%>')">
-					<%=pBus.getCcName()%></a>
-				<% } else { %>
-					<span class="<%=css%>" >
-					<%=item.getParent()%></span>
-				<% } %>
-		<% } %>
-	<% } %>
+<% 
+	boolean isPoint = item.getParentID() != CtiUtilities.NONE_ZERO_ID;
+	String parentString = (!isPoint) ? psp.printPAO(item.getItemID()) :  psp.printPoint(item.getItemID());
+%>
+	<%=parentString %>
 				</td>
 			</tr>
 <% } %>

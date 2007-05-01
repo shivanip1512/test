@@ -307,7 +307,8 @@ for( int i = 0; i < capBanks.length; i++ )
 {
 	CapBankDevice capBank = capBanks[i];
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-    LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(capBank.getControlDeviceID().intValue());
+	int deviceID = capBank.getControlDeviceID().intValue();
+    LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 %>
 				<tr class="<%=css%>">
 										

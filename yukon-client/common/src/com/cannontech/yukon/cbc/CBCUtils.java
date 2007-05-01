@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.RowMapper;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
@@ -449,6 +450,46 @@ public final class CBCUtils {
             return (checkable.getCurrentPtQuality(type.intValue()) > 0) ? true : false;
 
         return false;
+    }
+
+    public static boolean isController(int id) {
+        LiteYukonPAObject lite = null;
+        try{
+        
+            lite = DaoFactory.getPaoDao().getLiteYukonPAO(id);
+        }
+        catch(NotFoundException nfe)
+        {
+            return false;
+        }
+        int type = lite.getType();
+        switch (type) {
+            case PAOGroups.CBC_7010:
+            case PAOGroups.CBC_7011:
+            case PAOGroups.CBC_7012:
+            case PAOGroups.CBC_7020:
+            case PAOGroups.CBC_7022:
+            case PAOGroups.CBC_7023:
+            case PAOGroups.CBC_7024:
+            case PAOGroups.CBC_EXPRESSCOM:
+            case PAOGroups.CAPBANKCONTROLLER:
+                return true;
+        default:
+            return false;
+            
+        }
+    }
+
+    public static boolean isPoint(int id) {
+        try
+       {
+            DaoFactory.getPointDao().getLitePoint(id);
+       }
+       catch(NotFoundException nfe)
+       {
+           return false;
+       }
+        return true;
     }
 
 }

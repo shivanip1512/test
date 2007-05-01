@@ -473,7 +473,11 @@ private void handleDeletedSubs( int itemID )
  */
 private void handleSubBuses( CBCSubstationBuses busesMsg )
 {
-	for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
+	if (busesMsg.isAllSubs())
+    {
+	    clearAllSubMaps();
+    }
+    for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
 	{
 		CTILogger.debug(
 				new ModifiedDate(new Date().getTime()).toString()
@@ -513,28 +517,31 @@ private void handleCBCCommand( CBCCommand cbcCmd ) {
  */
 private synchronized void handleSubBus( SubBus subBus ) 
 {	
-	Validate.notNull(subBus, "subBus can't be null");
-	//remove the old subBus from the area hashmap just in case the area changed
-
+	
+    Validate.notNull(subBus, "subBus can't be null");
+    //remove the old subBus from the area hashmap just in case the area changed
+	subBusMap.remove(subBus.getCcId());
 	subBusMap.put( subBus.getCcId(), subBus );
 	Vector feeders = subBus.getCcFeeders();
 
 	NativeIntVector capBankIDs = new NativeIntVector(32);
 	for( int i = 0; i < feeders.size(); i++ )
 	{		
-		Feeder feeder = (Feeder)feeders.elementAt(i);
-		feederMap.put( feeder.getCcId(), feeder );
+        Feeder feeder = (Feeder)feeders.elementAt(i);
+        feederMap.remove(feeder.getCcId());
+        feederMap.put( feeder.getCcId(), feeder );
 		
 		for( int j = 0; j < feeder.getCcCapBanks().size(); j++ )
 		{
 			CapBankDevice capBank = (CapBankDevice)feeder.getCcCapBanks().get(j);
-			capBankMap.put( capBank.getCcId(), capBank );
-
+			capBankMap.remove(capBank.getCcId());
+            capBankMap.put( capBank.getCcId(), capBank );
 			capBankIDs.add( capBank.getCcId().intValue() );
 		}
 	}
 	
-	//map all capbanks to their parent SubBus
+    subToBankMap.remove(subBus.getCcId());
+    //map all capbanks to their parent SubBus
 	subToBankMap.put( subBus.getCcId(), capBankIDs.toArray() );
 
 	//server side update to the objMap
@@ -555,6 +562,13 @@ private synchronized void handleSubBus( SubBus subBus )
  */
 
 
+private synchronized void clearAllSubMaps() {
+    subBusMap.clear();
+    feederMap.clear();
+    capBankMap.clear();
+    subToBankMap.clear();
+}
+
 /**
  * Allows access the a CBCClientConnection instance
  * @return
@@ -568,7 +582,7 @@ protected CBCClientConnection getConnection()
  * Renew the cache.
  * Creation date: (6/11/2001 3:36:24 PM)
  */
-public synchronized void refresh()
+public synchronized boolean refresh()
 {
 	CTILogger.debug("Refreshing CapControl Cache");
 	
@@ -576,7 +590,9 @@ public synchronized void refresh()
 		getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
 	} catch ( IOException ioe ) {
 		CTILogger.error( "Exception occured during a refresh_cache operation", ioe );
-	}
+		return false;
+    }
+    return true;
 }
 
 /**
@@ -599,30 +615,26 @@ public void messageReceived( MessageEvent e )
 	}
 
 }
-/**
- * 
- * @param id - Point Id
- * @return String containing parent names for Point Id
- * @comments the fact that it is a point is checked on the front end    
- */
 
-public String getParentNames(int id){
-    if (isCapBank(id)){
-        CapBankDevice cb = getCapBankDevice(new Integer(id));
-        return getParentNames(cb.getParentID()) + ":" + cb.getCcName();
+
+public CBCArea getCBCArea(int id) {
+  for (Iterator iter = cbcAreas.iterator(); iter.hasNext();) {
+    CBCArea area = (CBCArea) iter.next();
+    if (area.getPaoID().intValue() == id)
+    {
+        return area;
     }
-    else if (isFeeder(id)){
-        Feeder f = getFeeder(new Integer(id));
-        return getParentNames(f.getParentID()) + ":" + f.getCcName();
-    }
-    else if (isSubBus(id)){
-        SubBus sb = getSubBus(new Integer(id));
-        return sb.getCcName();
-    }
-    else {
-        return "Invalid device id passed - CapControl Search"; 
-    }
- }
+  }
+  return null;
+}
+
+
+
+
+private boolean isController(int id) {
+    
+    return CBCUtils.isController (id);
+}
 
 public CBCWebUpdatedObjectMap getUpdatedObjMap() {
 	if (updatedObjMap == null)

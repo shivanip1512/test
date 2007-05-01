@@ -28,7 +28,7 @@ import com.cannontech.util.ColorUtil;
  * @author rneuharth
  */
 public class CBCDisplay {
-    public static final String SYMBOL_SIGNAL_QUALITY = "!*";
+    public static final String SYMBOL_SIGNAL_QUALITY = "(*)";
     public static final String STR_NA = "  NA";
     public static final String DASH_LINE = "  ----";
     public static final String STR_UNKNOWN = "Unknown";

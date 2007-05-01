@@ -23,6 +23,7 @@
     <property name="authDao" ref="authDao" />
     <property name="stateDao" ref="stateDao" />
     <property name="dynamicDataSource" ref="dynamicDataSource" />
+    <property name="jdbcOps" ref="jdbcTemplate"/> 
  </bean>
   <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
   	<property name="databaseCache" ref="databaseCache" />

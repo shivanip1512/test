@@ -87,9 +87,6 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getOrphanedFeeders();
 	}
 
-	public String getParentNames(int id) {
-		return _ccDao.getParentNames(id);
-	}
 
 	public int getParentSubBusID(int childID) {
 		return _ccDao.getParentSubBusID(childID);
