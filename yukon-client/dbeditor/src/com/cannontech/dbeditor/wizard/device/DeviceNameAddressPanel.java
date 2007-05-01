@@ -71,15 +71,9 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code end
 }
 
-
     private void checkPaoAddresses(int address) {
 
-        String[] devices = null;
-        if (DeviceTypesFuncs.isCCU(getDeviceType())) {
-            devices = DeviceIDLCRemote.isAddressUnique(address, null, null);
-        } else {
-            devices = DeviceCarrierSettings.isAddressUnique(address, null);
-        }
+        String[] devices = DeviceCarrierSettings.isAddressUnique(address, null);
 
         if (devices.length > 0) {
             String devStr = new String();
@@ -465,7 +459,7 @@ public Object getValue(Object val)
 		{
 			//special case, we must add 4190000 to every address for Repeater900
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
-                  new Integer(address.intValue() + 4190000) );
+                  new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
 		}		
 		else
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
@@ -474,8 +468,7 @@ public Object getValue(Object val)
 	else  //didn't find it
 		throw new Error("Unable to determine device type when attempting to set the address");
 
-	if (DeviceTypesFuncs.isMCT(getDeviceType()) || DeviceTypesFuncs.isRepeater(getDeviceType())
-                || DeviceTypesFuncs.isCCU(getDeviceType())) {
+	if (DeviceTypesFuncs.isMCT(getDeviceType()) || DeviceTypesFuncs.isRepeater(getDeviceType())) {
 
         // Check for unique address
 	    checkPaoAddresses(address.intValue());

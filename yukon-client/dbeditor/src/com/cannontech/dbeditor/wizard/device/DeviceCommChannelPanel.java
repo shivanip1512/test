@@ -44,6 +44,7 @@ import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.database.db.device.DeviceVerification;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.route.CarrierRoute;
@@ -188,59 +189,27 @@ private void checkAddress()
 		 || DeviceTypesFuncs.isRTU(deviceType) ))
 	{
 	
-		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-												com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+        String[] devices = DeviceIDLCRemote.isAddressUnique(address, null, portID);
 
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		java.util.Vector devices = new java.util.Vector(5);
+        if (devices.length > 0) {
+            String devStr = new String();
+            for (int i = 0; i < devices.length; i++) {
+                devStr += "          " + devices[i] + "\n";
+            }
+            int res = JOptionPane.showConfirmDialog(this,
+                                                    "The address '"
+                                                            + address
+                                                            + "' is already used by the following devices,\n"
+                                                            + "are you sure you want to use it again?\n"
+                                                            + devStr,
+                                                    "Address Already Used",
+                                                    JOptionPane.YES_NO_OPTION,
+                                                    JOptionPane.WARNING_MESSAGE);
 
-		String sql = 
-				"select y.paoname " +
-				"from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " + 
-				TABLE_NAME + " d, " + "DeviceDirectCommSettings p " +
-				"where y.paobjectid= d.deviceid " +
-				"and d.address= " + address + " and y.paobjectid= p.deviceid and p.portid= " + portID;
-		try
-		{
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery( sql.toString() );
-			
-			while( rset.next() )
-			{
-				devices.add( rset.getString(1) );
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			try
-			{
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			}
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}
-		}
-	
-		if( devices.size() > 0 )
-		{
-			//setErrorString("Physical address already used by another device");
-
-			javax.swing.JOptionPane.showMessageDialog(
-							this, 
-							"Physical address already used by another device on this com channel.", 
-							"Address Already Used",
-							
-							javax.swing.JOptionPane.WARNING_MESSAGE );
-
-			throw new CancelInsertException("Device was not inserted");
-		}
+            if (res == JOptionPane.NO_OPTION) {
+                throw new CancelInsertException("Device was not inserted");
+            }
+        }
 	}
 
 }

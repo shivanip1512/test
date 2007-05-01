@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.db.pao.YukonPAObject;
 
 /**
@@ -93,12 +94,15 @@ public void initialize( Integer deviceID, Integer address ) {
     public static String[] isAddressUnique(int address, Integer excludedPAOId) {
 
         JdbcOperations ops = JdbcTemplateHelper.getYukonTemplate();
+        
+        // Special case for repeater 900 - has an address offset
+        int address900 = address + Repeater900.ADDRESS_OFFSET;
 
         String sql = "select y.paoname from " + YukonPAObject.TABLE_NAME + " y, " + TABLE_NAME
-                + " d " + "where y.paobjectid=d.deviceid " + "and d.address=?"
+                + " d where y.paobjectid=d.deviceid and (d.address=? or d.address=?)"
                 + (excludedPAOId != null ? " and y.paobjectid <> " + excludedPAOId : "");
 
-        List<String> devices = ops.queryForList(sql, new Object[] { address }, String.class);
+        List<String> devices = ops.queryForList(sql, new Object[] { address, address900 }, String.class);
 
         return devices.toArray(new String[] {});
 

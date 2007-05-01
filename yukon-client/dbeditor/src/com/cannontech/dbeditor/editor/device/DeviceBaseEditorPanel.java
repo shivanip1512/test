@@ -182,7 +182,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
      * @param portID - id of port to check addresses for
      * @return True if address is unique
      */
-    private boolean checkForDuplicateAddresses(int address, int portID) {
+    private boolean checkForDuplicateAddresses(int address, Integer portID) {
         String[] devices = DeviceIDLCRemote.isAddressUnique(address, new Integer(paoID), portID);
 
         if (devices.length > 0) {
@@ -2113,14 +2113,13 @@ public boolean isInputValid()
       	return false;
    	}
 
-   	if( DeviceTypesFuncs.isMCT(getDeviceType()) )
+   	if( DeviceTypesFuncs.isMCT(getDeviceType()) || DeviceTypesFuncs.isRepeater(getDeviceType()) ) {
       	return checkMCTAddresses( address );
+    }
       
 	//verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
 	LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-	if(DeviceTypesFuncs.isCarrier(getDeviceType()) || DeviceTypesFuncs.isVirtualDevice(getDeviceType()))
-		return true;
-	else if((! PAOGroups.isDialupPort(port.getType())) && (DeviceTypesFuncs.isCCU(getDeviceType()) || DeviceTypesFuncs.isRTU(getDeviceType()) ))
+	if((! PAOGroups.isDialupPort(port.getType())) && (DeviceTypesFuncs.isCCU(getDeviceType()) || DeviceTypesFuncs.isRTU(getDeviceType()) ))
 	{
 		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
 		return checkForDuplicateAddresses(address, port.getLiteID() );   	
