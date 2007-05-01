@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.cbc.CBCDisplay;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -69,11 +70,9 @@ public class OnelineDisplayManager {
             return oldWebDisplay.getOnelineSubBusValueAt((SubBus) stream,
                                                          dispCol);
         } else if (roleID == CBCOnelineSettingsRole.FDR_ROLEID) {
-            // Integer dispCol = stats.getPropColumnMap().get(rolePropID);
             return (String) oldWebDisplay.getFeederValueAt((Feeder) stream,
                                                            dispCol);
         } else if (roleID == CBCOnelineSettingsRole.CAP_ROLEID) {
-            // Integer dispCol = stats.getPropColumnMap().get(rolePropID);
             return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream,
                                                    dispCol.intValue())
                                 .toString();
@@ -108,7 +107,7 @@ public class OnelineDisplayManager {
                                    (ExtraUpdatableTextElement) temp,
                                    labelName,
                                    content,
-                                   "!*",
+                                   CBCDisplay.SYMBOL_SIGNAL_QUALITY,
                                    Color.RED);
                temp.addExtraElement(t);
             }
@@ -143,7 +142,7 @@ public class OnelineDisplayManager {
     }
 
     private int getRoleID(int rolePropID) {
-        int roleID = (rolePropID / 100);
+        Integer roleID = DaoFactory.getCBCDao().getRoleID(rolePropID);
         return roleID;
     }
     

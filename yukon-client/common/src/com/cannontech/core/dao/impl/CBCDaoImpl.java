@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CBCDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
@@ -20,12 +22,14 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.cbc.CBCUtils;
 
 public class CBCDaoImpl  implements CBCDao{
@@ -39,7 +43,14 @@ public class CBCDaoImpl  implements CBCDao{
     private StateDao stateDao;
     private DynamicDataSource dynamicDataSource;
     private JdbcTemplate jdbcOps;
+    private IDatabaseCache databaseCache;
     
+
+
+    public void setDatabaseCache(IDatabaseCache databaseCache) {
+        this.databaseCache = databaseCache;
+    }
+
 
 
     public CBCDaoImpl() {
@@ -173,6 +184,20 @@ public class CBCDaoImpl  implements CBCDao{
             CTILogger.debug("Could not find parent for cbc:" + id);
         }
         return parentID;
+    }
+    
+    public Integer getRoleID (Integer rolePropID) {
+        List<LiteYukonRoleProperty> roleProps = Collections.EMPTY_LIST;
+        synchronized (databaseCache) {
+            roleProps   = databaseCache.getAllYukonRoleProperties();
+        }        
+        for (LiteYukonRoleProperty property : roleProps) {
+            if (property.getRolePropertyID() == rolePropID.intValue())
+            {
+                return property.getRoleID();
+            }
+        }
+        throw new NotFoundException ("Role ID Could not be found");
     }
 }
 
