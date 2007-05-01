@@ -10,7 +10,23 @@ public class TransmitterTreeModel extends DeviceTreeModel
  * @param root javax.swing.tree.TreeNode
  */
 public TransmitterTreeModel() {
-	super( new DBTreeNode("Transmitters") );
+	this( true );
+}
+/**
+ * TransmitterTreeModel constructor comment.
+ * @param root javax.swing.tree.TreeNode
+ */
+public TransmitterTreeModel( boolean showPointNodes)
+{
+	this( showPointNodes, new DBTreeNode("Transmitters") );
+}
+/**
+ * TransmitterTreeModel constructor comment.
+ * @param root javax.swing.tree.TreeNode
+ */
+public TransmitterTreeModel( boolean showPointNodes, DBTreeNode rootNode_ )
+{
+	super( showPointNodes, rootNode_ );
 }
 /**
  * Insert the method's description here.
