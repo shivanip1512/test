@@ -98,3 +98,17 @@ alter table ccfeederbanklist modify tripOrder number not null;
 /**** END JON!!!! THIS DON't WORKY WORKY!!! ********/
 
 
+
+/***** Thain's changes ********/
+
+/** Old code **/
+insert into StateGroup values (-8, 'TwoStateActive', 'Status');
+insert into State values(-8, 0, 'Active', 0, 6, 0);
+insert into State values(-8, 1, 'Inactive', 2, 6, 0);  
+
+/**  Change to: **/
+insert into StateGroup values (-8, 'TwoStateActive', 'Status');
+insert into State values(-8, 0, 'Inactive', 2, 6, 0);
+insert into State values(-8, 1, 'Active', 0, 6, 0);  
+
+
