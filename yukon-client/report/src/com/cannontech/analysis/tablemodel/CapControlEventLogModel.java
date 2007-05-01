@@ -221,29 +221,25 @@ public class CapControlEventLogModel extends ReportModelBase
 					}			
 				}
 				
-				//Process/Load the last entry. 
-				if( !isShowAllActivity())	//Selectively add to data Vector.
-				{
-					if( prevCapBankID == Device.SYSTEM_DEVICE_ID || getControlStates() == null)//if no states to compare to, add them all.
-					{
-						getData().addAll(tempObjects);
-					}								
-					else 
-					{
-						for (int i = 0; i < getControlStates().length; i++)
-						{
-							if( ccStatusData.getControlStatus().intValue() == getControlStates()[i])
-							{
-								getData().addAll(tempObjects);
-								break;
-							}
-						}
-					}
-				}
-				else
-					getData().addAll(tempObjects);	//Add all objects at some point!
-				
-				tempObjects.clear();				
+                if (ccStatusData != null) { // only do this if we actually have results to work with.
+                    //Process/Load the last entry. 
+                    if (!isShowAllActivity()) //Selectively add to data Vector.
+                    {
+                        if (prevCapBankID == Device.SYSTEM_DEVICE_ID || getControlStates() == null)//if no states to compare to, add them all.
+                        {
+                            getData().addAll(tempObjects);
+                        } else {
+                            for (int i = 0; i < getControlStates().length; i++) {
+                                if (ccStatusData.getControlStatus().intValue() == getControlStates()[i]) {
+                                    getData().addAll(tempObjects);
+                                    break;
+                                }
+                            }
+                        }
+                    } else
+                        getData().addAll(tempObjects); //Add all objects at some point!
+                }				
+                tempObjects.clear();				
 
 				if(getData() != null)
 				{
