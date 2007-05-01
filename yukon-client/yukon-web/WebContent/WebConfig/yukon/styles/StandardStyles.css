@@ -216,6 +216,7 @@ div.titledContainer .r5{margin: 0 0px 0 5px; width: 1px;}
 
 div.titledContainer .bottomBar{
 	position: relative;
+	margin-bottom: 5px;
 	top: 5px;
 	left: 5px;
 	right: 5px;

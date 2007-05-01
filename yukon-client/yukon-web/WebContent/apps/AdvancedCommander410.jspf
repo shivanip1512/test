@@ -240,7 +240,7 @@
   			</jsp:body>
   		</cti:titledContainer>
 			  
-		<div style="float:left">
+		<div>
 			<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 				<tr> 
 			  		<td align="right"><span class="NavText">
@@ -250,7 +250,7 @@
 			  		</td>
 				</tr>
 		  	</table>
-	  	<div>
+	  	</div>
 <% 
 	}
 %>	 		
