@@ -1,5 +1,6 @@
 package com.cannontech.yukon.cbc;
 
+
 /**
  * Insert the type's description here.
  * Creation date: (8/18/00 4:23:32 PM)
@@ -7,24 +8,15 @@ package com.cannontech.yukon.cbc;
  */
 public class CapBankDevice extends StreamableCapObject
 {
-	public static final int LOCAL_CONTROL = 0;
-	public static final int FAULT_CURRENT_CONTROL = 1;
-	public static final int EMERGENCY_VOLTAGE = 2;
-	public static final int TIME_SCHEDULE = 3;
-	public static final int VOLTAGE = 4;
-	public static final int DIGITAL1 = 5;
-	public static final int ANALOG1 = 6;
-	public static final int DIGITAL2 = 7;
-	public static final int ANALOG2 = 8;
-	public static final int DIGITAL3 = 9;
-	public static final int ANALOG3 = 10;
-	public static final int DIGITAL4 = 11;
-	public static final int TEMPERATURE = 12;
-	public static final int REMOTE = 13;
-	public static final int NEUTRAL_LOCKOUT = 14;
-	public static final int BROWN_OUT = 15;
-	public static final int BAD_ACTIVE_RELAY = 16;
 	
+    private final static String[] IGNORE_REASON = {
+
+    "LOCAL_CONTROL", "FAULT_CURRENT_CONTROL", "EMERGENCY_VOLTAGE",
+            "TIME_SCHEDULE", "VOLTAGE", "DIGITAL1", "ANALOG1", "DIGITAL2",
+            "ANALOG2", "DIGITAL3", "ANALOG3", "DIGITAL4", "TEMPERATURE",
+            "REMOTE", "NEUTRAL_LOCKOUT", "BROWN_OUT", "BAD_ACTIVE_RELAY" };
+    
+
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
 
@@ -464,5 +456,9 @@ public class CapBankDevice extends StreamableCapObject
 	public void setCurrentDailyOperations(Integer integer) {
 		currentDailyOperations = integer;
 	}
+    
+    public static String getIgnoreReason (int idx) {
+        return IGNORE_REASON[idx];
+    }
 
 }

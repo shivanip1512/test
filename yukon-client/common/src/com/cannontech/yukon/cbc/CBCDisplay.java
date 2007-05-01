@@ -125,22 +125,32 @@ public class CBCDisplay {
         }
 
         case CB_STATUS_COLUMN: {
-            if (capBank.getControlStatus().intValue() < 0 || capBank.getControlStatus()
-                                                                    .intValue() >= getCBCStateNames().length) {
+            boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 || capBank.getControlStatus()
+                                                                                .intValue() >= getCBCStateNames().length;
+           int controlStatus = capBank.getControlStatus().intValue();                                                                    
+            if (capBankInUnknownState) {
                 CTILogger.info("*** A CapBank state was found that has no corresponding status.");
-                return STR_UNKNOWN + " (" + capBank.getControlStatus()
-                                                   .intValue() + ")";
+                
+                return STR_UNKNOWN + " (" + controlStatus + ")";
             } else {
-                if (capBank.getCcDisableFlag().booleanValue() == true)
-                    return "DISABLED : " + (capBank.getOperationalState()
-                                                   .equalsIgnoreCase(CapBank.FIXED_OPSTATE) ? CapBank.FIXED_OPSTATE
-                            : getCBCStateNames()[capBank.getControlStatus()
-                                                        .intValue()].getStateText());
-                else
-                    return (capBank.getOperationalState()
-                                   .equalsIgnoreCase(CapBank.FIXED_OPSTATE) ? CapBank.FIXED_OPSTATE + " : "
-                            : "") + getCBCStateNames()[capBank.getControlStatus()
-                                                              .intValue()].getStateText();
+                boolean isCapBankDisabled = capBank.getCcDisableFlag().booleanValue() == true;
+                boolean isFixedState = capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE);
+                String currentState = getCBCStateNames()[controlStatus].getStateText();
+                boolean showIgnoreReason = capBank.isIgnoreFlag();
+                
+                if (isCapBankDisabled) {
+
+                    String disStateString = "DISABLED : " + (isFixedState ? CapBank.FIXED_OPSTATE
+                                                : currentState);
+                    disStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+                    return disStateString;
+                } else {
+
+                    String EnStateString = (isFixedState ? CapBank.FIXED_OPSTATE + " : "
+                                                : "") + currentState;
+                    EnStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+                    return EnStateString;
+                }
             }
         }
 
