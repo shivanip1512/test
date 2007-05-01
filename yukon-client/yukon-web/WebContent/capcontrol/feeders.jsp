@@ -268,8 +268,8 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
               	<td id="cb_state_td_hdr1" style="display:none"/>
                 <td/>
                 <td/>
-                <td/>
               	<td>Parent Feeder </td>
+                <td/>              	
               	<td/>
               <tr/> 
              <tr class="columnHeader lAlign">
