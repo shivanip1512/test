@@ -124,3 +124,9 @@ insert into devicetypecommand values(-576, -127, 'VersacomSerial', 22, 'N', -1)
 insert into devicetypecommand values(-577, -128, 'VersacomSerial', 23, 'N', -1)
 insert into devicetypecommand values(-578, -129, 'VersacomSerial', 24, 'N', -1)
 /**********************/
+
+/* 3.4 and HEAD*/
+insert into YukonListEntry values (1064,1005,-1,'ExpressStat Heat Pump',1313);
+insert into LMThermostatSchedule (ScheduleID, ScheduleName, ThermostatTypeID, AccountID, InventoryID) select max(scheduleID) + 1, '(none)', 1064, 0, 0 from LMThermostatSchedule;
+insert into ECToGenericMapping (EnergyCompanyID, ItemID, MappingCategory) select 0, max(scheduleID), 'LMThermostatSchedule' from LMThermostatSchedule
+
