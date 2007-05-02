@@ -94,7 +94,6 @@ public class PointForm extends DBEditorForm
         //getArchiveIntervalComboBox().setSelectedItem("5 minute");
     }
 
-    private boolean archiveStatusData = false;
     public PointForm()
     {
         super();
@@ -676,8 +675,8 @@ public SelectItem[] getEmailNotifcations() {
         String pointType = PointTypes.getType( PointTypes.STATUS_POINT );
         Point point = getPointBase().getPoint();
         if (point.getPointType().equalsIgnoreCase( pointType)) {
-            if (archiveStatusData) 
-                point.setArchiveType(PointTypes.ARCHIVE_ON_CHANGE);
+            if (point.isArchiveStatusData()) 
+        		point.setArchiveType(PointTypes.ARCHIVE_ON_CHANGE);
             else
                 point.setArchiveType(PointTypes.ARCHIVE_NONE);
                 
@@ -801,15 +800,4 @@ public SelectItem[] getEmailNotifcations() {
         return true;
     }
 
-
-
-    public boolean isArchiveStatusData() {
-        return archiveStatusData;
-    }
-
-
-
-    public void setArchiveStatusData(boolean archiveStatusData) {
-        this.archiveStatusData = archiveStatusData;
-    }
 }

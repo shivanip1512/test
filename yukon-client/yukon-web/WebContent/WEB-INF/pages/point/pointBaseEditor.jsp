@@ -54,7 +54,7 @@
 	<f:subview id="archive_point_status" rendered="#{ptEditorForm.visibleTabs['PointStatus']}" >
 	<f:verbatim ><fieldset><legend>Archive</legend></f:verbatim>	
 		<x:outputLabel for="archive_checkbox" value="Archive: "/>
-		<x:selectBooleanCheckbox id="archive_checkbox" value="#{ptEditorForm.archiveStatusData}"/>
+		<x:selectBooleanCheckbox id="archive_checkbox" value="#{ptEditorForm.pointBase.point.archiveStatusData}"/>
 		<f:verbatim></fieldset></f:verbatim>
 	</f:subview>	
 	

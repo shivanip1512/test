@@ -5,6 +5,7 @@ package com.cannontech.database.db.point;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointLogicalGroups;
+import com.cannontech.database.data.point.PointTypes;
 
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
@@ -24,7 +25,8 @@ public class Point extends com.cannontech.database.db.DBPersistent
 	private Integer pointOffset = null;
 	private String archiveType = null;
 	private Integer archiveInterval = null;
-
+    private boolean archiveStatusData = false;
+	
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -308,6 +310,12 @@ public void setArchiveInterval(Integer newValue) {
  * @param newValue java.lang.String
  */
 public void setArchiveType(String newValue) {
+	if ( newValue.equalsIgnoreCase(PointTypes.ARCHIVE_NONE)){
+		this.setArchiveStatusData(false);
+	}else{
+		this.setArchiveStatusData(true);
+	}
+	
 	this.archiveType = newValue;
 }
 /**
@@ -400,6 +408,14 @@ public boolean isAlarmsDisabled() {
 public void setAlarmsDisabled( boolean val ) {
 	setAlarmInhibit( 
 		val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
+}
+
+public boolean isArchiveStatusData() {
+	return archiveStatusData;
+}
+
+public void setArchiveStatusData(boolean archiveStatusData) {
+	this.archiveStatusData = archiveStatusData;
 }
 
 }
