@@ -112,3 +112,15 @@ insert into State values(-8, 0, 'Inactive', 2, 6, 0);
 insert into State values(-8, 1, 'Active', 0, 6, 0);  
 
 
+/********* Jason's changes: Please also add to 3.4 -- Update existing command labels and add 3 new commands *************/
+update command set label = 'Install Emetcon Gold 3' where commandid = -126
+update command set label = 'Install Emetcon Gold 2' where commandid = -125
+
+insert into command values(-127, 'putconfig raw 39 0', 'Install Emetcon Silver 1', 'VersacomSerial')
+insert into command values(-128, 'putconfig raw 39 1', 'Install Emetcon Silver 2', 'VersacomSerial')
+insert into command values(-129, 'putconfig raw 39 2', 'Install Emetcon Silver 3', 'VersacomSerial')
+
+insert into devicetypecommand values(-576, -127, 'VersacomSerial', 22, 'N', -1)
+insert into devicetypecommand values(-577, -128, 'VersacomSerial', 23, 'N', -1)
+insert into devicetypecommand values(-578, -129, 'VersacomSerial', 24, 'N', -1)
+/**********************/
