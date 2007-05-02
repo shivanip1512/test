@@ -8,8 +8,9 @@ public class PointQualCheckUpdatTextList extends UpdatableTextList implements
         PointQualityCheckable, ExtraUpdatableTextElement {
 
     private PointQualityCheckable pointCheckable;
+
     private Integer type;
-    
+
     public Integer getType() {
         return type;
     }
@@ -45,4 +46,6 @@ public class PointQualCheckUpdatTextList extends UpdatableTextList implements
     public boolean conditionToAddOnItTrue() {
         return CBCUtils.checkSignalQuality(getPointCheckable(), getType());
     }
+
+
 }
