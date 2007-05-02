@@ -71,6 +71,8 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			session.setAttribute(ServletUtil.ATT_YC_BEAN, new YCBean());
 			localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		}
+        
+        localBean.setPeakProfileDays(Integer.valueOf(req.getParameter("numDays")));
 		
 		/**Debug print of all parameter names.*/
 /*		java.util.Enumeration enum1 = req.getParameterNames();

@@ -156,7 +156,7 @@
                     			</td>
                     			<td>
                     				Days:
-                      		  	<input type="text" size="1" id="numDaysID" name="numDays" value="5">
+                      		  	<input type="text" size="1" id="numDaysID" name="numDays" value="${YC_BEAN.peakProfileDays}">
                     			</td>
 			  			<td valign="bottom" align="right"> 
 							<a href="javascript:submitCommand('PeakReport',<%= channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="link" id="PRChannel1ID"

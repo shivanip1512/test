@@ -79,6 +79,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	/** A Date for LP query */
 	private Date lpDate = null;
+    
+    private int peakProfileDays = 5;
 	
 	/** A pointID for selecting Data (historical RPH mainly)*/
 	private int pointID = PointTypes.SYS_PID_SYSTEM;
@@ -1121,4 +1123,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	  		return pointData.getStr();
 	  	return defaultValue;
     }
+
+    public int getPeakProfileDays() {
+        return peakProfileDays;
+    }
+
+    public void setPeakProfileDays(int peakProfileDays) {
+        this.peakProfileDays = peakProfileDays;
+    }
+    
+    
 }
