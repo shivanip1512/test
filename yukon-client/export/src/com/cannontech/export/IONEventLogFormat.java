@@ -1,5 +1,8 @@
 package com.cannontech.export;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class IONEventLogFormat extends ExportFormatBase
 {
 	private final char[] ignoreChars = new char[]{',', ' '};
@@ -85,9 +88,7 @@ public class IONEventLogFormat extends ExportFormatBase
 		super.setIsAppend(true);
 	}
 
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
-	 */
+	@Override
 	public void parseDatFile()
 	{
 		com.cannontech.common.util.KeysAndValuesFile kavFile = new com.cannontech.common.util.KeysAndValuesFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
@@ -133,9 +134,7 @@ public class IONEventLogFormat extends ExportFormatBase
 		
 	}		
 	
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#buildKeysAndValues()
-	 */
+	@Override
 	public String[][] buildKeysAndValues()
 	{
 		String[] keys = new String[5];
@@ -161,9 +160,7 @@ public class IONEventLogFormat extends ExportFormatBase
 		return new String[][]{keys, values};
 	}
 	
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#retrieveExportData()
-	 */
+	@Override
 	public void retrieveData()
 	{
 		long timer = System.currentTimeMillis();
@@ -434,5 +431,24 @@ public class IONEventLogFormat extends ExportFormatBase
 				return validCauseHandleString[i];
 		}
 		return String.valueOf(causeHandle);	//default value back...I guess.
+	}
+	
+	@Override
+	public void writeToFile()
+	{
+		super.writeToFile();
+		if( getRecordVector().size() > 0){
+			//Now, write a second backup file. yyyyMMdd_hhmmss_EXPORT_FILENAME
+			try {
+				SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss");
+				java.io.FileWriter outputFileWriter = new java.io.FileWriter(getExportDirectory() + format.format(new Date()) + "_" + getExportFileName() );
+				outputFileWriter.write( getOutputAsStringBuffer().toString() );
+				outputFileWriter.flush();
+				outputFileWriter.close();		
+			}
+			catch (java.io.IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
 	}
 }
