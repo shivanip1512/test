@@ -11,8 +11,10 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.PoolManager;
 
 
 public class CapControlOperationsModel extends BareDatedReportModelBase<CapControlOperationsModel.ModelRow> implements CapControlFilterable {
@@ -64,36 +66,67 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     }
 
     public void doLoadData() {
-
         StringBuffer sql = buildSQLStatement();
-        CTILogger.info(sql.toString()); 
-        
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
+        CTILogger.info(sql.toString());
 
-                row.cbcName = rs.getString("cbcName");
-                row.bankName = rs.getString("bankName");
-                row.opTime = rs.getTimestamp("opTime");
-                row.operation = rs.getString("operation");
-                row.confTime = rs.getTimestamp("confTime");
-                row.confStatus = rs.getString("confStatus");
-                row.feederName = rs.getString("feederName");
-                row.feederId = rs.getInt("feederId");
-                row.subName = rs.getString("subName");
-                row.subBusId = rs.getInt("subBusId");
-                row.region = rs.getString("region");
-                row.bankSize = rs.getInt("bankSize");
-                row.protocol = rs.getString("protocol");
-                row.ipAddress = rs.getString("ipAddress");
-                row.serialNum = rs.getString("serialNum");
-                row.slaveAddress = rs.getString("slaveAddress");
-                
-                data.add(row);
+        java.sql.Connection conn = null;
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rs = null;
+
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            if (conn == null) {
+                CTILogger.error(getClass() + ":  Error getting database connection.");
+                return;
+            } else {
+                pstmt = conn.prepareStatement(sql.toString());
+
+                pstmt.setTimestamp(1,new java.sql.Timestamp(getStartDate().getTime()));
+                pstmt.setTimestamp(2,new java.sql.Timestamp(getStopDate().getTime()));
+
+                rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    try {
+                        CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
+
+                        row.cbcName = rs.getString("cbcName");
+                        row.bankName = rs.getString("bankName");
+                        row.opTime = rs.getTimestamp("opTime");
+                        row.operation = rs.getString("operation");
+                        row.confTime = rs.getTimestamp("confTime");
+                        row.confStatus = rs.getString("confStatus");
+                        row.feederName = rs.getString("feederName");
+                        row.feederId = rs.getInt("feederId");
+                        row.subName = rs.getString("subName");
+                        row.subBusId = rs.getInt("subBusId");
+                        row.region = rs.getString("region");
+                        row.bankSize = rs.getInt("bankSize");
+                        row.protocol = rs.getString("protocol");
+                        row.ipAddress = rs.getString("ipAddress");
+                        row.serialNum = rs.getString("serialNum");
+                        row.slaveAddress = rs.getString("slaveAddress");
+                        data.add(row);
+                    } catch (java.sql.SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        });
-        
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null)
+                    pstmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+            }
+        }
         CTILogger.info("Report Records Collected from Database: " + data.size());
+        return;
     }
     
     public StringBuffer buildSQLStatement()
@@ -102,7 +135,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("el2.datetime as confTime, el2.text as confStatus, yp1.paoName as feederName, yp1.paobjectId as feederId,  yp2.paoName as subName, ");
         sql.append("yp2.paobjectid as subBusId, yp2.description as region, cb.bankSize as bankSize, cb.controllertype as protocol, p.value as ipAddress, ");
         sql.append("cbc.serialnumber as serialNum, da.slaveAddress as slaveAddress "); 
-        sql.append("from ( select op.logid as oid,  min(aaa.confid) as cid  from (select logid, pointid from cceventlog where text like '%Close sent,%' or text like '%Open sent,%' ) op ");
+        sql.append("from ( select op.logid as oid,  min(aaa.confid) as cid  from (select logid, pointid from cceventlog where datetime > ? and datetime < ? and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
         sql.append("left join (select el.logid as opid, min(el2.logid) as confid from cceventlog el ");
         sql.append("join cceventlog el2 on el2.pointid = el.pointid left outer join  (select a.logid as aid, min(b.logid) as next_aid "); 
         sql.append("from cceventlog a, cceventlog b where a.pointid = b.pointid ");
