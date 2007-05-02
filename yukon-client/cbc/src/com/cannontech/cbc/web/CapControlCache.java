@@ -474,27 +474,32 @@ private void handleDeletedSubs( int itemID )
  */
 private void handleSubBuses( CBCSubstationBuses busesMsg )
 {
-    if (busesMsg.isAllSubs())
+	//If this is a full reload of all subs.
+	if (busesMsg.isAllSubs())
     {
-        clearAllSubMaps();
+	    clearAllSubMaps();
+	    for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
+			CTILogger.debug(
+					new ModifiedDate(new Date().getTime()).toString()
+					+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
+					+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
+		}
+		//add the each subbus to the cache
+		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
+			handleSubBus( busesMsg.getSubBusAt(i) );
+    }else if( busesMsg.isAddSub() ){
+    	//If this is just adding subs
+		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
+			handleSubBus( busesMsg.getSubBusAt(i) );
+    }else if( busesMsg.isUpdateSub()){
+    	//If this is an update to an existing sub.
+		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ){
+			//remove old
+			handleDeletedSubs( busesMsg.getSubBusAt(i).getCcId() );
+			//add updated
+			handleSubBus( busesMsg.getSubBusAt(i) );
+		}
     }
-    for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
-    {
-        CTILogger.debug(
-                new ModifiedDate(new Date().getTime()).toString()
-                + " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
-                + "/" + busesMsg.getSubBusAt(i).getCcArea() );
-
-        //if the user can not see this sub, let us remove it
-        //if( !DaoFactory.getAuthDao().userHasAccessPAO( ownerUser, busesMsg.getSubBusAt(i).getCcId().intValue() ) )
-            //busesMsg.removeSubBusAt( i );
-    }
-
-
-    //add the each subbus to the cache
-    for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
-        handleSubBus( busesMsg.getSubBusAt(i) );
-    
 }
 
 /**
