@@ -229,8 +229,9 @@
             <link>/analysis/Reports.jsp?groupType=100</link>
             <requireProperty value="ReportingRole.SETTLEMENT_REPORTS_GROUP"/>
           </option>
-          <option id="cni" name="C&amp;I">
+          <option id="cni" property="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP_LABEL">
             <link>/analysis/Reports.jsp?groupType=8</link>
+            <requireProperty value="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP"/>
           </option>
         </sublinks>
       </option>
