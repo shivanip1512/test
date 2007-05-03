@@ -288,7 +288,12 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					}
 					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
 
-			    } catch (PaoAuthorizationException e) {
+					if ( command.toLowerCase().startsWith("getvalue lp channel"))
+					{
+					    localBean.loadRPHData();
+					}
+
+                } catch (PaoAuthorizationException e) {
                     localBean.setErrorMsg("You do not have permission to execute command: " + e.getPermission());
 			    }
 			}
