@@ -28,7 +28,7 @@ public class LiteRawPointHistory extends LiteBase
 	public LiteRawPointHistory( int pntID ) 
 	{
 		super();
-		setLiteID(pntID);
+		setPointID(pntID);
 		setLiteType(LiteTypes.RAWPOINTHISTORY);
 	}
 	/**

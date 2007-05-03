@@ -127,6 +127,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 				//IGNORE, we're clearing it out, we have the right to do this.
 			}
 			clearErrorMsg();
+            clearCurrentData();
 		}
 	}
 
