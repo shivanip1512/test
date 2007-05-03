@@ -1,11 +1,16 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.YukonGroupRoleDefs;
@@ -113,6 +118,27 @@ public class RoleDaoImpl implements RoleDao
 		
 		return authDao.getRolePropValueGroup( group, rolePropertyID, defaultValue );
 	}
+    
+    public LiteYukonRole getRoleID (Integer rolePropID) {
+        List<LiteYukonRoleProperty> roleProps = Collections.EMPTY_LIST;
+        List<LiteYukonRole> roles = Collections.EMPTY_LIST;
+        synchronized (databaseCache) {
+            roleProps   = databaseCache.getAllYukonRoleProperties();
+            roles = databaseCache.getAllYukonRoles();
+        }        
+        for (LiteYukonRoleProperty property : roleProps) {
+           if (property.getRolePropertyID() == rolePropID.intValue())
+           {
+            for (LiteYukonRole role : roles) {
+                if (property.getRoleID() == role.getRoleID())
+                {
+                    return role;
+                }
+            }
+           }
+        }
+        throw new NotFoundException ("Role ID Could not be found");
+    }
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#hasLoadedGlobals()
@@ -126,7 +152,7 @@ public class RoleDaoImpl implements RoleDao
 	 * Dont let anyone instantiate me
 	 * @see java.lang.Object#Object()
 	 */
-	private RoleDaoImpl() {
+	public RoleDaoImpl() {
 	}
 
 
