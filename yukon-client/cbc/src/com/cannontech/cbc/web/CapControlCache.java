@@ -457,7 +457,7 @@ private synchronized void handleAreaList(CBCSubAreas areas)
  * Removes this subbus from all the structures in cache. 
  * @param msg
  */
-private void handleDeletedSubs( int itemID )
+private void handleDeletedSub( int itemID )
 {   
     Integer id = new Integer(itemID);
     subBusMap.remove( id );
@@ -474,32 +474,39 @@ private void handleDeletedSubs( int itemID )
  */
 private void handleSubBuses( CBCSubstationBuses busesMsg )
 {
-	//If this is a full reload of all subs.
+    logAllSubs(busesMsg);
+    //If this is a full reload of all subs.
 	if (busesMsg.isAllSubs())
     {
-	    clearAllSubMaps();
-	    for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
-			CTILogger.debug(
-					new ModifiedDate(new Date().getTime()).toString()
-					+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
-					+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
-		}
-		//add the each subbus to the cache
-		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
-			handleSubBus( busesMsg.getSubBusAt(i) );
-    }else if( busesMsg.isAddSub() ){
-    	//If this is just adding subs
-		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
-			handleSubBus( busesMsg.getSubBusAt(i) );
-    }else if( busesMsg.isUpdateSub()){
-    	//If this is an update to an existing sub.
-		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ){
-			//remove old
-			handleDeletedSubs( busesMsg.getSubBusAt(i).getCcId() );
-			//add updated
-			handleSubBus( busesMsg.getSubBusAt(i) );
-		}
+	    clearAllMaps();
     }
+    else if( busesMsg.isUpdateSub()){
+    	//If this is an update to an existing sub.
+        handleDeletedSubs(busesMsg);
+    }
+    //add the each subbus to the cache
+    handleAllSubs(busesMsg);
+}
+
+private void handleDeletedSubs(CBCSubstationBuses busesMsg) {
+    for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ){
+    	//remove old
+    	handleDeletedSub( busesMsg.getSubBusAt(i).getCcId() );
+    }
+}
+
+private void logAllSubs(CBCSubstationBuses busesMsg) {
+    for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
+    	CTILogger.debug(
+    			new ModifiedDate(new Date().getTime()).toString()
+    			+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
+    			+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
+    }
+}
+
+private void handleAllSubs(CBCSubstationBuses busesMsg) {
+    for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
+    	handleSubBus( busesMsg.getSubBusAt(i) );
 }
 
 /**
@@ -512,7 +519,7 @@ private void handleCBCCommand( CBCCommand cbcCmd ) {
         //delete the given subID
         case CBCCommand.DELETE_ITEM:
             if( isSubBus(cbcCmd.getDeviceID()) )
-                handleDeletedSubs( cbcCmd.getDeviceID() );
+                handleDeletedSub( cbcCmd.getDeviceID() );
     }
 
 }
@@ -568,7 +575,7 @@ private synchronized void handleSubBus( SubBus subBus )
  */
 
 
-private synchronized void clearAllSubMaps() {
+private synchronized void clearAllMaps() {
     subBusMap.clear();
     feederMap.clear();
     capBankMap.clear();
@@ -635,12 +642,6 @@ public CBCArea getCBCArea(int id) {
 }
 
 
-
-
-private boolean isController(int id) {
-    
-    return CBCUtils.isController (id);
-}
 
 public CBCWebUpdatedObjectMap getUpdatedObjMap() {
     if (updatedObjMap == null)
