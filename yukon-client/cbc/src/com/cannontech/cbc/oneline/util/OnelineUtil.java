@@ -17,9 +17,12 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxComponent;
 
@@ -231,6 +234,22 @@ public class OnelineUtil {
     public static String createBookmarkLink(int id) {
         String link = "/capcontrol/oneline/OnelineBookmarkServlet?itemid=" + id;
         return link;
+    }
+    
+    public static int getYukonType (StreamableCapObject obj) {
+        if (obj instanceof SubBus)
+        {
+            return PAOGroups.CAP_CONTROL_SUBBUS;
+        }
+        else if (obj instanceof Feeder)
+        {
+            return PAOGroups.CAP_CONTROL_FEEDER;
+        }
+        else if(obj instanceof CapBankDevice)
+        {
+            return PAOGroups.CAPBANK;
+        }
+        return 0;
     }
 
 }

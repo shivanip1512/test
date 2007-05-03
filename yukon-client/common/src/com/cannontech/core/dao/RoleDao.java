@@ -1,5 +1,6 @@
 package com.cannontech.core.dao;
 
+import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 
 public interface RoleDao {
@@ -46,5 +47,13 @@ public interface RoleDao {
      * @return
      */
     public boolean hasLoadedGlobals();
+    
+    /**
+     * retrieves a role based on the role property id
+     * throws NotFoundException 
+     * @param rolePropID
+     * @return
+     */
+    public LiteYukonRole getRoleID (Integer rolePropID);
 
 }
