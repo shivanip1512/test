@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.163 $
-* DATE         :  $Date: 2006/11/28 16:22:36 $
+* REVISION     :  $Revision: 1.164 $
+* DATE         :  $Date: 2007/05/03 14:29:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -237,7 +237,7 @@ bool NonViableConnection(CtiServer::ptr_type &CM, void* d)
 
 CtiVanGogh::~CtiVanGogh()
 {
-    PointMgr.storeDirtyRecords();
+    //PointMgr.storeDirtyRecords();
 
     _signalMsgQueue.clearAndDestroy();
 }
@@ -7679,15 +7679,55 @@ void CtiVanGogh::stopDispatch()
     _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
-    if(RW_THR_TIMEOUT == ConnThread_.join(30000)) ConnThread_.terminate();
+    if(RW_THR_TIMEOUT == ConnThread_.join(30000)) 
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating connection thread " << __FILE__ << " at:" << __LINE__ << endl;
+        ConnThread_.terminate();
+    }
     _pendingOpThread.join();
-    if(RW_THR_TIMEOUT == _rphThread.join(30000)) _rphThread.terminate();
-    if(RW_THR_TIMEOUT == _archiveThread.join(30000)) _archiveThread.terminate();
-    if(RW_THR_TIMEOUT == _timedOpThread.join(30000)) _timedOpThread.terminate();
-    if(RW_THR_TIMEOUT == _dbThread.join(30000)) _dbThread.terminate();
-    if(RW_THR_TIMEOUT == _dbSigThread.join(30000)) _dbSigThread.terminate();
-    if(RW_THR_TIMEOUT == _dbSigEmailThread.join(30000)) _dbSigEmailThread.terminate();
-    if(RW_THR_TIMEOUT == _appMonitorThread.join(30000)) _appMonitorThread.terminate();
+    if(RW_THR_TIMEOUT == _rphThread.join(30000))
+    { 
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating RPH thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _rphThread.terminate();
+    }
+    if(RW_THR_TIMEOUT == _archiveThread.join(30000))
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating archive thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _archiveThread.terminate();
+    }
+    if(RW_THR_TIMEOUT == _timedOpThread.join(30000))
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating timed op thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _timedOpThread.terminate();
+    }
+    if(RW_THR_TIMEOUT == _dbThread.join(30000))
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating database thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _dbThread.terminate();
+    }
+    if(RW_THR_TIMEOUT == _dbSigThread.join(30000))
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating dbsig thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _dbSigThread.terminate();
+    }
+    if(RW_THR_TIMEOUT == _dbSigEmailThread.join(30000))
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating email thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _dbSigEmailThread.terminate();
+    }
+    if(RW_THR_TIMEOUT == _appMonitorThread.join(30000))
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Terminating app thread " << __FILE__ << " at:" << __LINE__ << endl;
+        _appMonitorThread.terminate();
+    }
     ThreadMonitor.join();
 
     PointMgr.storeDirtyRecords();
