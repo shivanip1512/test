@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/04/20 19:48:24 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/05/03 14:31:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,8 +69,11 @@ int DispatchMainFunction(int argc, char **argv)
             Sleep(3000);
         }
 
-        if( RW_THR_COMPLETED != VanGogh.join(30000) ) //30 seconds to shut down before I kill.
+        if( RW_THR_COMPLETED != VanGogh.join( (gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))*1000) )
         {
+            std::wstring file = L"Dispatch";
+            file += L".DMP";
+            CreateDump(GetCurrentProcessId(), file.c_str(), 0, NULL, NULL);
             cerr << "***** EXCEPTION ******* Terminating Dispatch" << endl;
             VanGogh.terminate();
         }
