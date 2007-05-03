@@ -179,7 +179,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             <x:outputText styleClass="legendLikeLabel" value="CapBank Points"/>
             <f:verbatim><br><br></f:verbatim>
             <x:div forceId="true" id = "CapBankPointsDiv" styleClass="scrollVerySmall">
-             <x:dataList forceId="true" id="CapBankPointsList" var="item" value="#{capControlForm.capBankPointList}" layout="unorderedList" styleClass="listWithNoBullets">                    
+             <x:dataList id="CapBankPointsList" var="item" value="#{capControlForm.capBankPointList}" layout="unorderedList" styleClass="listWithNoBullets">                    
                <x:panelGroup>
                 <f:verbatim>&nbsp;&nbsp;&nbsp;</f:verbatim>
                   <x:commandLink id="ptLink" value="#{item.pointName}" actionListener="#{capControlForm.capBankPointClick}" >
