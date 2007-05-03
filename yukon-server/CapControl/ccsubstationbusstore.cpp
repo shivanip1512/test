@@ -2308,7 +2308,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
-                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                                currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control"));
                             }
                             else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
@@ -2317,7 +2318,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
-                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                                currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control"));
                             }
                         }
@@ -2348,7 +2350,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                            currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control"));
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
@@ -2357,7 +2360,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control"));
                         }
                     }
@@ -2413,7 +2417,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                            currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control"));
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
@@ -2422,7 +2427,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control"));
                         }
                     }
@@ -2773,7 +2779,9 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 
                 inserter << feeder->getPAOId()
                          << currentCapBank->getPAOId()
-                         << currentCapBank->getControlOrder();
+                         << currentCapBank->getControlOrder()
+                         << currentCapBank->getTripOrder()
+                         << currentCapBank->getCloseOrder();
 
                 inserter.execute( conn );
             }
@@ -5703,6 +5711,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
     CtiTime currentDateTime;
     //list <CtiCCSubstationBusPtr> modifiedSubsList;
     CtiMultiMsg_vec modifiedSubsList;
+    ULONG msgBitMask = 0x00000000;
 
 
     try
@@ -5722,8 +5731,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
             }
             while (!_reloadList.empty())
             {
-
-                CC_DBRELOAD_INFO reloadTemp = _reloadList.front();
+                                CC_DBRELOAD_INFO reloadTemp = _reloadList.front();
 
                 switch (reloadTemp.objecttype)
                 {
@@ -5767,6 +5775,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                               dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" modified "<< endl;
                                          }
                                          modifiedSubsList.push_back(tempSub);
+                                         msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                      }
                                      else
                                      {
@@ -5806,6 +5815,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                          dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" modified "<< endl;
                                     }
                                     modifiedSubsList.push_back(tempSub);
+                                    msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                 }
                                 else
                                 {
@@ -5856,6 +5866,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                      if (tempSub != NULL)
                                      {
                                          modifiedSubsList.push_back(tempSub);
+                                         msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                      }
                                  }
                              }
@@ -5871,6 +5882,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 if (tempSub != NULL)
                                 {
                                     modifiedSubsList.push_back(tempSub);
+                                    msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                 }
                             }
                             deleteFeeder(reloadTemp.objectId);
@@ -5891,6 +5903,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
                             executor->Execute();
                             delete executor;
+                            msgBitMask |= CtiCCSubstationBusMsg::AllSubBusesSent;
+
 
                         }
                         else  // ChangeTypeAdd, ChangeTypeUpdate
@@ -5903,6 +5917,10 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             if (tempSub != NULL) 
                             {
                                 modifiedSubsList.push_back(tempSub);
+                                if (reloadTemp.action == ChangeTypeAdd) 
+                                    msgBitMask |= CtiCCSubstationBusMsg::SubBusAdded;
+                                else
+                                    msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                             }
                         }
                         break;
@@ -5934,6 +5952,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     if (tempSub->getParentId() == tempArea->getPAOId()) 
                                     {
                                         modifiedSubsList.push_back(tempSub);
+                                        msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                     }
                                 }
                                     
@@ -5971,7 +5990,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 locateOrphans(&_orphanedCapBanks, &_orphanedFeeders, _paobject_capbank_map, _paobject_feeder_map,
                                      _capbank_feeder_map, _feeder_subbus_map);
 
-                //CtiCapController::getInstance()->registerForAdditionalPoints(modifiedSubsList);//_reregisterforpoints = TRUE;
                 try
                 {
 
@@ -6010,7 +6028,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
 
                 _lastindividualdbreloadtime.now();
-                ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
+
                 if ( _wassubbusdeletedflag )
                 {
                     msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent | CtiCCSubstationBusMsg::SubBusDeleted;
@@ -6054,7 +6072,12 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 }
 
                 CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,msgBitMask));
+                CtiCCExecutor* executor;
+
+                if (msgBitMask & CtiCCSubstationBusMsg::AllSubBusesSent) 
+                    executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses,msgBitMask));
+                else
+                    executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,msgBitMask));
                 executor->Execute();
                 delete executor;
                 executor = f.createExecutor(new CtiCCCapBankStatesMsg(*_ccCapBankStates));

@@ -1812,7 +1812,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
             {
                 //have we went past the max daily ops
                 if( currentCapBank->getMaxDailyOps() > 0 &&
-                    currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() )//only send once
+                    (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() && !_END_DAY_ON_TRIP) ||
+                     (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() + 1 && _END_DAY_ON_TRIP))//only send once
                 {
                     string text("CapBank Exceeded Max Daily Operations");
                     string additional("CapBank: ");
@@ -1847,7 +1848,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     }
                 }
 
-                if( !currentCapBank->getDisableFlag() || _END_DAY_ON_TRIP)
+                if( !currentCapBank->getDisableFlag())
                     returnCapBank = currentCapBank;
                 break;
             }
@@ -2402,6 +2403,14 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             setIVControl(getIVControlTot() / getIVCount());
         if (getIWCount() > 0)
             setIWControl(getIWControlTot() / getIVCount());
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
+                    getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl;
+            dout << CtiTime() << " - USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
+                    getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
+        }
      //resetting integration total...
         if (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits))
             setIVControlTot(getCurrentVoltLoadPointValue());
@@ -2413,6 +2422,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     }
 
     setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits,setpoint,getIVControl(),getIWControl()));
+    setTargetVarValue( getKVARSolution() + getIVControl());
    
 
     //if current var load is outside of range defined by the set point plus/minus the bandwidths

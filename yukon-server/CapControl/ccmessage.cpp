@@ -685,6 +685,7 @@ void CtiCCSubstationBusMsg::saveGuts(RWvostream& strm) const
 ULONG CtiCCSubstationBusMsg::AllSubBusesSent = 0x00000001;
 ULONG CtiCCSubstationBusMsg::SubBusDeleted   = 0x00000002;
 ULONG CtiCCSubstationBusMsg::SubBusAdded     = 0x00000004;
+ULONG CtiCCSubstationBusMsg::SubBusModified  = 0x00000008;
 
 
 /*===========================================================================

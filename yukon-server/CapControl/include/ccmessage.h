@@ -353,6 +353,7 @@ public:
     static ULONG AllSubBusesSent;
     static ULONG SubBusDeleted;
     static ULONG SubBusAdded;
+    static ULONG SubBusModified;
 
 private:
     CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0) {};

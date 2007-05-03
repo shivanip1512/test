@@ -2248,8 +2248,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             //break;
                         }
                         else if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
-                        {
+                        {   
+                            
                             CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
+                            if (twoWayPts->getIgnoredIndicatorId() == pointID) 
+                            {
+                                if (twoWayPts->getIgnoredIndicator() != value) 
+                                {
+                                   currentCapBank->setIgnoreFlag(TRUE);
+                                   // currentCapBank->setToggleIgnoreReason(flag);
+                                   currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                }
+                            }
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
                             {   
                                 if (twoWayPts->getCapacitorBankStateId() == pointID) 
@@ -2261,14 +2271,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     currentCapBank->setReportedCBCState(twoWayPts->getCapacitorBankState());
 
                                     store->set2wayFlagUpdate(TRUE);
-                                }
-                                else if (twoWayPts->getIgnoredIndicatorId() == pointID) 
-                                {
-                                    if (twoWayPts->getIgnoredIndicator() != value) 
-                                    {
-                                       // currentCapBank->setIgnoredIndicator(value);
-                                       // currentCapBank->setToggleIgnoreReason(flag);
-                                    }
                                 }
                                 if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
                                 {
@@ -2288,6 +2290,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 }
                                 else if (twoWayPts->getIgnoredReasonId() == pointID) 
                                 {
+                                    currentCapBank->setIgnoredReason(value);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                                 }
                                 if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
                                 {

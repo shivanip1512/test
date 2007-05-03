@@ -3622,13 +3622,15 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
                     oldFeederCapBanks.erase(oldFeederCapBanks.begin());
                     currentCapBank->setControlOrder(shuffledOrder);
-                    tempShufflingCapBankList.insert(currentCapBank);
+                    tempShufflingCapBankList.push_back(currentCapBank);
                     shuffledOrder++;
                 }
                 while(tempShufflingCapBankList.size()>0)
                 {
-                    oldFeederCapBanks.push_back(tempShufflingCapBankList.at(0));
-                    tempShufflingCapBankList.erase(oldFeederCapBanks.begin());
+
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tempShufflingCapBankList.front();
+                    oldFeederCapBanks.push_back(currentCapBank);
+                    tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
                 }
             }
         }
@@ -3683,7 +3685,9 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                     }
                     while(tempShufflingCapBankList.size()>0)
                     {
-                        newFeederCapBanks.push_back(tempShufflingCapBankList.at(0));
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tempShufflingCapBankList.front();
+
+                        newFeederCapBanks.push_back(currentCapBank);
                         tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
                     }
                 }
@@ -3862,6 +3866,8 @@ void CtiCCPointDataMsgExecutor::Execute()
                             { 
                                 logToCCEvent = TRUE; 
                             } 
+
+                            currentCapBank->setIgnoreFlag(FALSE);
 
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setControlStatus((LONG)value);

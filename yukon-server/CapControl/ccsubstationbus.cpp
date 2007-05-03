@@ -2266,6 +2266,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         }
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
+        setSolution(text);
 
         //we should disable bus if the flag says so
         if( getMaxOperationDisableFlag() )
@@ -2350,7 +2351,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                         setIVControl(getIVControlTot() / getIVCount());
                     if (getIWCount() > 0)
                         setIWControl(getIWControlTot() / getIVCount());
-
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
+                                getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl;
+                        dout << CtiTime() << " - USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
+                                getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
+                    }
                     //resetting integration total...
                     if (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits))
                         setIVControlTot(getCurrentVoltLoadPointValue());
@@ -2366,6 +2373,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                    !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
                     setPoint = (getPeakTimeFlag()?getPeakPFSetPoint():getOffPeakPFSetPoint());
                 setKVARSolution(calculateKVARSolution(_controlunits,setPoint, getIVControl(), getIWControl()));
+                setTargetVarValue( getKVARSolution() + getIVControl());
 
                 
                 if( !_IGNORE_NOT_NORMAL_FLAG ||
@@ -2403,6 +2411,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Control Inhibited - Not Normal Var Quality, in sub bus: " << getPAOName() << endl;
                             }
+                            setSolution("Not Normal Quality.  Var Control Inhibited.");
                         }
                     }
                     else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
@@ -2441,6 +2450,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Control Inhibited - Not Normal Volt Quality, in sub bus: " << getPAOName() << endl;
                             }
+                            setSolution("Not Normal Quality.  Volt Control Inhibited.");
                         }
                     }
                     else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
@@ -2465,8 +2475,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                         }
                         else
                         {
-                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - Not Normal Quality, in sub bus: " << getPAOName() << endl;
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Not Normal Quality, in sub bus: " << getPAOName() << endl;
+                            }
+                            setSolution("Not Normal Quality.  PF Control Inhibited.");
                         }
                     }
                     else
@@ -2477,8 +2490,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 }
                 else
                 {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Not Normal Quality, in sub bus: " << getPAOName() << endl;
+                   {
+                       CtiLockGuard<CtiLogger> logger_guard(dout);
+                       dout << CtiTime() << " - Not Normal Quality, in sub bus: " << getPAOName() << endl;
+                   }
+                   setSolution("Not Normal Quality.  Control Inhibited.");
                 }
 
                 clearOutNewPointReceivedFlags();
@@ -2502,8 +2518,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
 DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue)
 {
     DOUBLE returnKVARSolution = 0.0;
-    if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::KVARControlUnits) ||
-        !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::KVARControlUnits) )
+    if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::KVARControlUnits) )
     {
         returnKVARSolution = setPoint - varValue;
     }
@@ -2613,6 +2628,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                                 dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
                                 dout << " Current Date Time:       " << currentDateTime << endl;
                             }
+                            setSolution("Control Inhibited by Reclose Delay on Cap: "+capBank->getPAOName());
                         }
                         else
                         {
@@ -5024,7 +5040,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         confirmValue = getCurrentVarLoadPointValue();
                     }
-
 
 
                     if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
