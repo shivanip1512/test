@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 
 /**
  * A dialog that provides some environment information , and optionally, some 
@@ -124,11 +125,12 @@ private void init() {
 		_listData.addElement("Version      : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() );
 	
 	    _listData.addElement("JRE Version  : " + System.getProperty("java.version") );
+	    _listData.addElement("DB URL       : " + PoolManager.getInstance().getPrimaryUrl() );
+	    _listData.addElement("DB USser     : " + PoolManager.getInstance().getPrimaryUser() );
 
 		/* ALWAYS leave this as the last thing */
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
 		_listData.addElement("DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
-		_listData.addElement("DB Alias     : " + CtiUtilities.getDatabaseAlias() );
 		_listData.addElement("User         : " + ClientSession.getInstance().getUser().getUsername() );
 
 	}

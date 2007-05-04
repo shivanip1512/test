@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.database.PoolManager;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.util.ServletUtil;
 
@@ -26,6 +27,7 @@ import com.cannontech.util.ServletUtil;
  */
 public class LogMenuController extends LogController {
     private AuthDao authDao;
+    private PoolManager poolManager;
     
     /**
     * Stores all log filenames from local and remote directories
@@ -39,12 +41,27 @@ public class LogMenuController extends LogController {
         authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         
         ModelAndView mav = new ModelAndView("menu");
+        
+        mav.addObject("dbUser", poolManager.getPrimaryUser());
+        mav.addObject("dbUrl", poolManager.getPrimaryUrl());
        
         //lists to hold log file names
         List<String> localLogList = new ArrayList<String>();
-        localLogList = populateFileList(localLogList, new String(), getLocalDir());
-        java.util.Collections.reverse(localLogList);
-
+               
+        //create file filter to only allow log files thru
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".xml") || name.endsWith(".log");
+            }
+        };
+        //extract local log file names and add to a list
+        File[] localFiles = getLocalDir().listFiles(filter);
+        if (!ArrayUtils.isEmpty(localFiles)) {
+            for (File logFile : localFiles) {
+                localLogList.add(logFile.getName());
+            }
+        }
+        
         //add local list to model
         mav.addObject("localLogList", localLogList);
         
@@ -55,23 +72,9 @@ public class LogMenuController extends LogController {
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
-    
-    private List<String> populateFileList(List<String> localLogList, String parent, File file) {
-        if (!file.isDirectory()) return localLogList;
-        
-        if (!file.getName().equals("Log")) {
-            parent = parent + file.getName() + System.getProperty("file.separator");
-        }
 
-        File[] localFiles = file.listFiles();
-        for (File logFile : localFiles) {
-            if (logFile.isDirectory()) {
-                localLogList = populateFileList(localLogList, parent, logFile);
-            }
-            if (logFile.getName().endsWith("xml") || logFile.getName().endsWith("log")) {
-                localLogList.add(parent + logFile.getName());
-            }
-        }
-        return localLogList;
+    @Required
+    public void setPoolManager(PoolManager poolManager) {
+        this.poolManager = poolManager;
     }
 }

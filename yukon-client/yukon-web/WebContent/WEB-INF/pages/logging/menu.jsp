@@ -3,10 +3,12 @@
 <cti:standardPage title="Log File Menu" module="blank">
 <cti:standardMenu/>
 
-<!-- menu.jsp shows a menu of local and remote log filenames -->
+<h3>DB Connection</h3>
+JDBC URL: ${dbUrl}<br>
+JDBC User: ${dbUser}<br>
 
 <!-- Display and link to the local log files -->
-<b><c:out value="Local Log Files"/></b><br>
+<h3>Local Log Files</h3>
 <ul style="font-size: 10px">
 <c:forEach var="file" items="${localLogList}">
 <li>

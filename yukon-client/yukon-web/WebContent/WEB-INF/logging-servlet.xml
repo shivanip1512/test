@@ -7,6 +7,7 @@
     <!-- create a bean for LogMenuController.java -->
     <bean id="logMenuController" class="com.cannontech.web.logging.LogMenuController">
       <property name="authDao" ref="authDao"/>
+      <property name="poolManager" ref="databasePoolManager"/>
     </bean>
     
     <!-- create a bean for LogViewController.java -->
@@ -43,6 +44,11 @@
                          <ref bean="logDownloadController" />
                     </entry>    
                </map>
+          </property>
+          <property name="interceptors">
+              <list>
+                  <ref bean="yukonLoginCheckInterceptor"/>
+              </list>
           </property>
      </bean>
     

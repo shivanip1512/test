@@ -38,6 +38,8 @@ public class PoolManager {
     private Map<String, DataSource> wrappedPools = new HashMap<String, DataSource>();
 
     private static ConfigurationSource configSource = null;
+    private String primaryUrl;
+    private String primaryUser;
 
     private PoolManager() {
         init();
@@ -93,11 +95,11 @@ public class PoolManager {
         // see if we have some very specific settings
         registerDriver();
 
-        String url = getConnectionUrl();
-        log.info("DB URL=" + url);
+        primaryUrl = getConnectionUrl();
+        log.info("DB URL=" + primaryUrl);
 
-        String user = configSource.getRequiredString("DB_USERNAME");
-        log.info("DB username=" + user);
+        primaryUser = configSource.getRequiredString("DB_USERNAME");
+        log.info("DB username=" + primaryUser);
         String password = configSource.getRequiredString("DB_PASSWORD");
         log.info("DB password=" + password);
 
@@ -116,8 +118,8 @@ public class PoolManager {
         }
         
         BasicDataSource bds = new BasicDataSource();
-        bds.setUrl(url);
-        bds.setUsername(user);
+        bds.setUrl(primaryUrl);
+        bds.setUsername(primaryUser);
         bds.setPassword(password);
         bds.setInitialSize(init);
         bds.setMaxActive(max);
@@ -248,6 +250,14 @@ public class PoolManager {
         log.debug("Setting ConfigurationSource to " + configSource);
         PoolManager.configSource = configSource;
         instance = null;
+    }
+
+    public String getPrimaryUrl() {
+        return primaryUrl;
+    }
+
+    public String getPrimaryUser() {
+        return primaryUser;
     }
 
 }

@@ -18,6 +18,9 @@
        new Spring code.
     -->
     <bean id="wrappedYukonDataSource" class="com.cannontech.database.PoolManager" factory-method="getWrappedYukonDataSource"/>
+
+    <!-- The following should not be used as a means to get a datasource or connection -->
+    <bean id="databasePoolManager" class="com.cannontech.database.PoolManager" factory-method="getInstance"/>
     <!--  
         The following two beans will get overridden by Hibernate versions if the context loaded
         includes the hibernateContext.xml file.
