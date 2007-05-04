@@ -18,6 +18,8 @@ public interface DeviceDao {
     public LiteYukonPAObject getLiteDevice(final int deviceID);
 
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID);
+    
+    public String getFormattedDeviceName(LiteYukonPAObject device);
 
     /**
      * This returns a LiteYukonPaobject for the meterNumber.

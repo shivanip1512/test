@@ -1,12 +1,19 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
+
+import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -17,6 +24,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class DeviceDaoImpl implements DeviceDao {
     
     private PaoDao paoDao;
+    private RoleDao roleDao;
     private IDatabaseCache databaseCache;
         
 /**
@@ -117,6 +125,30 @@ public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category
     return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
 }
 
+public String getFormattedDeviceName(LiteYukonPAObject device) {
+    // the formatting string could be from a role property
+    String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
+    boolean needMeterNumber = SimpleTemplateProcessor.contains(formattingStr, "meterNumber");
+    Map<String, String> values = new HashMap<String, String>(6);
+    if (needMeterNumber) {
+        LiteDeviceMeterNumber liteDeviceMeterNumber = getLiteDeviceMeterNumber(device.getLiteID());
+        
+        String meterNumber;
+        if (liteDeviceMeterNumber == null) {
+            meterNumber = "n/a";
+        } else {
+            meterNumber = liteDeviceMeterNumber.getMeterNumber();
+        }
+        values.put("meterNumber", meterNumber);
+    }
+    values.put("name", device.getPaoName());
+    values.put("description", device.getPaoDescription());
+    values.put("id", Integer.toString(device.getLiteID()));
+    values.put("address", Integer.toString(device.getAddress()));
+    String result = SimpleTemplateProcessor.process(formattingStr, values);
+    return result;
+}
+
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getDevicesByPort(int)
  */
@@ -135,7 +167,12 @@ public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddres
 public void setDatabaseCache(IDatabaseCache databaseCache) {
     this.databaseCache = databaseCache;
 }
+@Required
 public void setPaoDao(PaoDao paoDao) {
     this.paoDao = paoDao;
+}
+@Required
+public void setRoleDao(RoleDao roleDao) {
+    this.roleDao = roleDao;
 }
 }

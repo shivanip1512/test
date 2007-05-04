@@ -49,6 +49,7 @@
   </bean>	
   <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" >
     <property name="paoDao" ref="paoDao"/>
+    <property name="roleDao" ref="roleDao"/>
     <property name="databaseCache" ref="databaseCache"/>
   </bean>
   <bean id="energyCompanyDao" class="com.cannontech.core.dao.impl.EnergyCompanyDaoImpl" >
