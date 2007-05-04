@@ -6,6 +6,9 @@ insert into YukonRoleProperty values(-1114,-2,'Inherit Parent App Cats','true','
 
 insert into YukonListEntry values (1064,1005,-1,'ExpressStat Heat Pump',1313);
 
+insert into YukonRoleProperty values(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
+insert into YukonRoleProperty values(-20894,-201,'Opt Out Today Only','false','Prevents operator side opt outs from being available for scheduling beyond the current day.');
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

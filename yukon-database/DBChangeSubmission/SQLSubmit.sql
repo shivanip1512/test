@@ -130,6 +130,8 @@ insert into YukonListEntry values (1064,1005,-1,'ExpressStat Heat Pump',1313);
 insert into LMThermostatSchedule (ScheduleID, ScheduleName, ThermostatTypeID, AccountID, InventoryID) select max(scheduleID) + 1, '(none)', 1064, 0, 0 from LMThermostatSchedule;
 insert into ECToGenericMapping (EnergyCompanyID, ItemID, MappingCategory) select 0, max(scheduleID), 'LMThermostatSchedule' from LMThermostatSchedule
 
+insert into YukonRoleProperty values(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
+insert into YukonRoleProperty values(-20894,-201,'Opt Out Today Only','false','Prevents operator side opt outs from being available for scheduling beyond the current day.');
 /* 3.4 and HEAD Changes for 2 new capcontrol view      START*/
 
 CREATE VIEW [dbo].[CCOperations_View]
