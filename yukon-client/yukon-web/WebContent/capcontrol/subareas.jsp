@@ -24,6 +24,17 @@
     <cti:crumbLink url="subareas.jsp" title="SubBus Areas"/>
 </cti:breadCrumbs>
 
+<% 
+String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.ALLOW_CONTROLS);
+if (allowCtlVal!=null)
+{
+	boolean allowControl = Boolean.valueOf(allowCtlVal);
+		if (allowControl) {%>
+			<div id="systemCommandLink" align="right" > </div>
+			<%	} 
+
+}
+%>    
     <cti:titledContainer title="Substation Bus Areas" id="last_titled_container">
           
 		<form id="areaForm" action="subs.jsp" method="post">
@@ -132,12 +143,21 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','ar
 Event.observe(window, 'load', function () {
     getServerData();     
 });
-
+//register the event handler for the system command
+if ($('systemCommandLink'))
+{
+	Event.observe(window, 'load', function () {
+	     new Ajax.PeriodicalUpdater('systemCommandLink', 
+	     '/spring/capcontrol/cbcAjaxController?action=updateSystemCommandMenu', 
+	      {method:'post', asynchronous:true, frequency: 5});
+	      
+	      });
+}
 function getServerData() {
-var els = document.getElementsByName('area_state');
-for (var i=0; i < els.length; i++) {
-     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', 
-                                {method:'post', asynchronous:true, parameters:'areaIndex='+i, frequency:5, onSuccess: updateAreaMenu});
+	var els = document.getElementsByName('area_state');
+	for (var i=0; i < els.length; i++) {
+	     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', 
+	                                {method:'post', asynchronous:true, parameters:'areaIndex='+i, frequency:5, onSuccess: updateAreaMenu});
      
 
 }

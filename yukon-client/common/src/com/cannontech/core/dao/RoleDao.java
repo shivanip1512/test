@@ -54,6 +54,6 @@ public interface RoleDao {
      * @param rolePropID
      * @return
      */
-    public LiteYukonRole getRoleID (Integer rolePropID);
+    public LiteYukonRole getLiteRole (Integer rolePropID);
 
 }

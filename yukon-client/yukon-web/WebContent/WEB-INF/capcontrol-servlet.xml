@@ -12,17 +12,35 @@
 				<entry key="/capAddInfo*">
 					<ref bean="capBankAdditionalController" />
 				</entry>
+				<entry key="/cbcAjaxController">
+					<ref bean="cbcAjaxController" />
+				</entry>
 			</map>
 		</property>
 	</bean>
-
-	<bean id="viewResolver"
+	<!-- View Resolvers -->
+	<bean id="viewResolverJSFPages"
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/pages/cbc/" />
 		<property name="suffix" value=".jsp" />
+		<property name="order">
+			<value>1</value>
+		</property>
 	</bean>
+
+	<bean id="viewResolver3Tier"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/capcontrol/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order">
+			<value>2</value>
+		</property>
+	</bean>
+	<!-- Controllers -->
 
 	<bean id="ccPointTimestampController"
 		class="com.cannontech.web.editor.CCPointTimestampServlet">
@@ -30,5 +48,18 @@
 	</bean>
 	<bean id="capBankAdditionalController"
 		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
-
+	<bean id="cbcAjaxController"
+		class="com.cannontech.web.editor.CBCAjaxMultiActionController">
+		<property name="methodNameResolver">
+			<ref bean="methodNameResolver" />
+		</property>
+	</bean>
+	
+	<!-- Method name resolvers -->
+	<bean id="methodNameResolver"
+		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="paramName">
+			<value>action</value>
+		</property>
+	</bean>
 </beans>

@@ -575,3 +575,26 @@ function handleOpcountDiv (cmd_div_name) {
 	return cmdDiv;
 }
 
+
+function handleSystemCommand() {
+	var message ='';
+	systemIsOn = $('systemCommandLink').getElementsByTagName ('a')[0].id == 'systemOn';
+	if (systemIsOn)
+		message = 'You are turning the system off. Please confirm...';	
+	else
+		message = 'You are turning the system back on. Please confirm...';	
+
+	confirm (message);
+	sendSystemEnableCommand (systemIsOn);
+}
+
+function sendSystemEnableCommand (systemIsOn) {
+	new Ajax.Request("/spring/capcontrol/cbcAjaxController?action=executeSystemCommand", 
+		{
+			method:"post", 
+			parameters:"turnSystemOff=" + systemIsOn, 
+			asynchronous:true
+			});
+
+}
+
