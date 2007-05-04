@@ -761,19 +761,24 @@ public class CBCDisplay {
 
         case SUB_TARGET_COLUMN: {
             // decide which set Point we are to use
-            if (subBus.getPeakTimeFlag().booleanValue()) {
+            double targetVarValue = subBus.getTargetvarvalue().doubleValue();
+            String tagetVarFmtString = CommonUtils.formatDecimalPlaces(targetVarValue, 0);
 
+            if (subBus.getPeakTimeFlag().booleanValue()) {
+                
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
                                                                  .doubleValue(),
-                                                           0) + "% close, " + CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
+                                                           0) + "% close > " + tagetVarFmtString + " > " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
                                                                                                                     .doubleValue(),
-                                                                                                              0) + "% trip";
+                                                                                                              1) + "% trip";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
                                                                  .doubleValue(),
-                                                           0) + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
+                                                           0) + " > " + tagetVarFmtString + " > " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
                                                                                                                .doubleValue(),
                                                                                                          0) + " Pk";
             } else {
@@ -781,13 +786,15 @@ public class CBCDisplay {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
                                                                  .doubleValue(),
-                                                           0) + "% close, " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
+                                                           0) + "% close > " + tagetVarFmtString + " > " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
                                                                                                                     .doubleValue(),
                                                                                                               0) + "% trip";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
                                                                  .doubleValue(),
-                                                           0) + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
+                                                           0) + " > " + tagetVarFmtString + " > " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
                                                                                                                .doubleValue(),
                                                                                                          0) + " OffPk";
             }
