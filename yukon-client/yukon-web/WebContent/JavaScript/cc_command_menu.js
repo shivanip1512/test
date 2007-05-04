@@ -584,8 +584,14 @@ function handleSystemCommand() {
 	else
 		message = 'You are turning the system back on. Please confirm...';	
 
-	confirm (message);
-	sendSystemEnableCommand (systemIsOn);
+	if (confirm (message))
+	{
+		sendSystemEnableCommand (systemIsOn);
+	}
+	else
+	{
+		alert ('Command cancelled successfully.');
+	}
 }
 
 function sendSystemEnableCommand (systemIsOn) {
