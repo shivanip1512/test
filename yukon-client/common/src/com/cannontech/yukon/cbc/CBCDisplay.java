@@ -3,6 +3,7 @@ package com.cannontech.yukon.cbc;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -194,7 +195,10 @@ public class CBCDisplay {
     public synchronized Object getSubBusValueAt(SubBus subBus, int col) {
         if (subBus == null)
             return "";
-
+        NumberFormat num = NumberFormat.getNumberInstance();
+        num.setMaximumFractionDigits(1);
+        num.setMinimumFractionDigits(1);
+        
         int decPlaces = subBus.getDecimalPlaces().intValue();
         switch (col) {
         case SUB_NAME_COLUMN: {
@@ -240,9 +244,9 @@ public class CBCDisplay {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
                                                                  .doubleValue(),
-                                                           0) + "% close, " + CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
+                                                           0) + "%C : " + num.format(subBus.getTargetvarvalue()) + " : " + CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
                                                                                                                     .doubleValue(),
-                                                                                                              0) + "% trip";
+                                                                                                              0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
                                                                  .doubleValue(),
@@ -254,9 +258,9 @@ public class CBCDisplay {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
                                                                  .doubleValue(),
-                                                           0) + "% close, " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
+                                                           0) + "%C : " + num.format(subBus.getTargetvarvalue()) + " : " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
                                                                                                                     .doubleValue(),
-                                                                                                              0) + "% trip";
+                                                                                                              0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
                                                                  .doubleValue(),
@@ -444,7 +448,10 @@ public class CBCDisplay {
     public synchronized Object getFeederValueAt(Feeder feeder, int col) {
         if (feeder == null)
             return "";
-
+        NumberFormat num = NumberFormat.getNumberInstance();
+        num.setMaximumFractionDigits(1);
+        num.setMinimumFractionDigits(1);
+        
         int decPlaces = feeder.getDecimalPlaces();
         switch (col) {
         case FDR_NAME_COLUMN: {
@@ -482,9 +489,9 @@ public class CBCDisplay {
 
                     return CommonUtils.formatDecimalPlaces(feeder.getPeakLag()
                                                                  .doubleValue(),
-                                                           0) + "% close, " + CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
+                                                           0) + "%C : " + num.format( feeder.getTargetvarvalue() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
                                                                                                                     .doubleValue(),
-                                                                                                              0) + "% trip";
+                                                                                                              0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
                                                                  .doubleValue(),
@@ -496,9 +503,9 @@ public class CBCDisplay {
 
                     return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag()
                                                                  .doubleValue(),
-                                                           0) + "% close, " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
+                                                           0) + "%C : " + num.format( feeder.getTargetvarvalue() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
                                                                                                                     .doubleValue(),
-                                                                                                              0) + "% trip";
+                                                                                                              0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
                                                                  .doubleValue(),
