@@ -7,6 +7,8 @@
       Currently, beans are loaded via a parent context specified in web.xml.
     </description>
     
+    <bean id="yukonLoginCheckInterceptor" class="com.cannontech.web.util.YukonLoginInterceptor"/>
+    
     <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
           factory-method="getLocalConfiguration">
     </bean>

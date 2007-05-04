@@ -276,6 +276,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>static</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<description>Handles user authentication.</description>
 		<servlet-name>LoginController</servlet-name>
 		<servlet-class>
@@ -712,6 +720,11 @@
 	<servlet-mapping>
 		<servlet-name>capcontrol</servlet-name>
 		<url-pattern>/spring/capcontrol/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>static</servlet-name>
+		<url-pattern>/spring/static/*</url-pattern>
 	</servlet-mapping>
 
 	<!--  The following mappings used to be handled by the invoker servlet -->

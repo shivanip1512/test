@@ -1,6 +1,10 @@
 package com.cannontech.web.taglib;
 
+import java.io.IOException;
+
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -27,49 +31,50 @@ public class CheckLoginTag extends TagSupport {
 	}
     
     
+    public static boolean checkLogin(PageContext pageContext) throws JspException {
+        HttpServletRequest request = 
+            (HttpServletRequest) pageContext.getRequest();
+        HttpServletResponse response = 
+            (HttpServletResponse) pageContext.getResponse();
+
+        try {
+            return checkLogin(request, response);
+        } catch(Exception e ) {
+                throw new JspException("Caught error while checking login", e);
+            }
+        }
+    
     /**
      * Checks the login. Can be called from other tags.
      * @param pageContext
      * @return
      * @throws JspException
      */
-    public static boolean checkLogin(PageContext pageContext) throws JspException {
-        try {
-            javax.servlet.http.HttpSession session;
-            
-            if( (session = pageContext.getSession()) != null ) {             
-                if(session.getAttribute("YUKON_USER") != null ) {
-                    return true;
-                }
+    public static boolean checkLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        javax.servlet.http.HttpSession session;
+        if( (session = request.getSession()) != null ) {             
+            if(session.getAttribute("YUKON_USER") != null ) {
+                return true;
             }
+        }
 
-            
-            javax.servlet.http.HttpServletRequest request = 
-                (javax.servlet.http.HttpServletRequest) pageContext.getRequest();
-            javax.servlet.http.HttpServletResponse response = 
-                (javax.servlet.http.HttpServletResponse) pageContext.getResponse();
-            
-            String redirectURL = "/login.jsp";
-            Cookie[] cookies = request.getCookies();
-            if(cookies != null) {       
-                for(int i = 0; i < cookies.length; i++) {
-                    Cookie c = cookies[i];
-                    System.out.println(c.getName());
-                    if(c.getName().equalsIgnoreCase(LoginController.LOGIN_URL_COOKIE)) {
-                        redirectURL = c.getValue();
-                        break;
-                    }
+        String redirectURL = "/login.jsp";
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {       
+            for(int i = 0; i < cookies.length; i++) {
+                Cookie c = cookies[i];
+                System.out.println(c.getName());
+                if(c.getName().equalsIgnoreCase(LoginController.LOGIN_URL_COOKIE)) {
+                    redirectURL = c.getValue();
+                    break;
                 }
             }
-            
-            if (redirectURL.startsWith("/"))
-                redirectURL = request.getContextPath() + redirectURL;
-            
-            response.sendRedirect(redirectURL);
         }
-        catch(Exception e ) {
-            throw new JspException(e.getMessage());
-        }
+
+        if (redirectURL.startsWith("/"))
+            redirectURL = request.getContextPath() + redirectURL;
+
+        response.sendRedirect(redirectURL);
 
         return false;
     }
