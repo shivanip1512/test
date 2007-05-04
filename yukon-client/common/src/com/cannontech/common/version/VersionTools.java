@@ -1,5 +1,6 @@
 package com.cannontech.common.version;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -216,33 +217,37 @@ private final static boolean tableExists( String tableName_ )
  */
 public synchronized final static String getYUKON_VERSION() 
 {
-	if( yukonVersion == null ) {
-		try {
-            ClassLoader classLoader = VersionTools.class.getClassLoader();
-            Enumeration<URL> resources = classLoader.getResources("META-INF/MANIFEST.MF");
+    if( yukonVersion == null ) {
+        ClassLoader classLoader = VersionTools.class.getClassLoader();
+        Enumeration<URL> resources;
+        try {
+            resources = classLoader.getResources("META-INF/MANIFEST.MF");
             while (resources.hasMoreElements()) {
-                URL it = resources.nextElement();
-                InputStream stream = it.openStream();
-                Manifest manifest = new Manifest(stream);
-                yukonVersion = manifest.getMainAttributes().getValue(KEY_YUKON_VERSION);
+                URL it = null;
+                try {
+                    it = resources.nextElement();
+                    InputStream stream = it.openStream();
+                    Manifest manifest = new Manifest(stream);
+                    yukonVersion = manifest.getMainAttributes().getValue(KEY_YUKON_VERSION);
+                } catch (Exception e) {
+                }
                 if (yukonVersion != null) {
                     CTILogger.debug("Found Yukon Version '" + yukonVersion + "' on " + it);
                     break;
                 }
             }
-		}
-		catch ( Exception e ) {
-			CTILogger.warn("Caught exception looking up yukon version, setting to 'unknown'", e);
+        } catch ( IOException e ) {
+            CTILogger.warn("Caught exception looking up yukon version, setting to 'unknown'", e);
             yukonVersion = "unknown";
-		}
-		
-		if ( yukonVersion == null ) {
-		    CTILogger.warn("Yukon version was not found, setting to 'undefined'");
+        }
+
+        if ( yukonVersion == null ) {
+            CTILogger.warn("Yukon version was not found, setting to 'undefined'");
             yukonVersion = "undefined";
-        }		
-	}
-	
-	return yukonVersion;
+        }	
+    }
+
+    return yukonVersion;
 }
 
 public static Boolean getStaticLoadGroupMapping() {
