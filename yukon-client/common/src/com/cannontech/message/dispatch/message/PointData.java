@@ -1,11 +1,13 @@
 package com.cannontech.message.dispatch.message;
 
+import com.cannontech.core.dynamic.PointValueHolder;
+
 /**
  * Insert the type's description here.
  * Creation date: (1/28/00 11:17:22 AM)
  * @author: 
  */
-public class PointData extends com.cannontech.message.util.Message 
+public class PointData extends com.cannontech.message.util.Message implements PointValueHolder
 {
 	private int id;
 	private int type;
