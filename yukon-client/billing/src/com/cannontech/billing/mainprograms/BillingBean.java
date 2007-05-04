@@ -11,10 +11,8 @@ import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.roles.yukon.BillingRole;
 
 public class BillingBean implements java.util.Observer
 {
@@ -31,7 +29,7 @@ public class BillingBean implements java.util.Observer
 	private String outputFile = "";
 	private boolean removeMult = false;
 	private boolean appendToFile = false;
-	private String endDateStr = null;
+	private Date endDate = null;
 	private int timer = 0;
 	private String timerString = "";
 
@@ -141,22 +139,24 @@ public void setFileFormat(int newFileFormat)
 
 public Date getEndDate()
 {
-	CTILogger.info(" Getting End Date! " + getBillingDefaults().getEndDate());
-	return getBillingDefaults().getEndDate();
+	if( endDate == null)
+		endDate = getBillingDefaults().getEndDate();
+	CTILogger.info(" Getting End Date! " + endDate);
+	return endDate;
 }
 public void setEndDate(Date newEndDate)
 {
-	if( getBillingDefaults().getEndDate().compareTo(newEndDate) != 0)
+	if( endDate.compareTo(newEndDate) != 0)
 	{
-		CTILogger.info("Changing End Date from: " + getBillingDefaults().getEndDate() +" to: " + newEndDate);
+		endDate = newEndDate;
+		CTILogger.info("Changing End Date from: " + endDate +" to: " + newEndDate);
 		getBillingDefaults().setEndDate(newEndDate);
 	}
 }
 public void setEndDateStr(String newEndDateStr)
 {
-	endDateStr = newEndDateStr;
 	try {
-		setEndDate( dateFormat.parse(endDateStr));
+		setEndDate( dateFormat.parse(newEndDateStr));
 	}
 	catch (java.text.ParseException e) {
 		CTILogger.error(e);
