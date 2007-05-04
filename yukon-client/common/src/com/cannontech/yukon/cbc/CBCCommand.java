@@ -41,6 +41,8 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
     public static final int ENABLE_SYSTEM = 25;
     public static final int DISABLE_SYSTEM = 26;
     public static final int FLIP_7010_CAPBANK = 27;
+    public static final int SYSTEM_STATUS = 28;
+
 
 	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY = 30;
@@ -168,4 +170,9 @@ public void setCommand(int newValue) {
 public void setDeviceID(int newDeviceID) {
 	deviceID = newDeviceID;
 }
+
+public boolean isSystemDisabled () {
+    return (getCommand() == SYSTEM_STATUS && getDeviceID() == 0);
+}
+
 }

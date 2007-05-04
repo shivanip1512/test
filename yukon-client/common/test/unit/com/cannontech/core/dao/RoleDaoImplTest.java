@@ -57,13 +57,13 @@ public class RoleDaoImplTest {
         //our role id is 1:
         //LiteYukonRole role = new LiteYukonRole();
         //role.setRoleID(1);
-        LiteYukonRole roleID = roleDao.getRoleID(3);
+        LiteYukonRole roleID = roleDao.getLiteRole(3);
         assertTrue(roleID.getRoleID() == 1);
     }
 
     @Test (expected= NotFoundException.class)
     public void testGetRolePropFromRoleIDNotFound(){
         //we have role props 1,2,3. do not have 4
-        roleDao.getRoleID(4);
+        roleDao.getLiteRole(4);
     }
 }

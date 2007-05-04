@@ -74,6 +74,7 @@ public class CapControlCache implements MessageListener, CapControlDAO
 
     //Map<areaName(String)>, <state (Boolean)>
     private HashMap areaStateMap = new HashMap();
+    private Boolean systemStatusOn = Boolean.TRUE;
     /**
  * CapControlCache constructor.
  */
@@ -512,16 +513,33 @@ private void handleAllSubs(CBCSubstationBuses busesMsg) {
 /**
  * Process a command message from the server
  */
-private void handleCBCCommand( CBCCommand cbcCmd ) {
+private void handleCBCCommand( CBCCommand serverConfirmation ) {
 
-    switch( cbcCmd.getCommand() ) {
-
+    switch( serverConfirmation.getCommand() ) {
         //delete the given subID
         case CBCCommand.DELETE_ITEM:
-            if( isSubBus(cbcCmd.getDeviceID()) )
-                handleDeletedSub( cbcCmd.getDeviceID() );
+            if( isSubBus(serverConfirmation.getDeviceID()) )
+                handleDeletedSub( serverConfirmation.getDeviceID() );
+            break;
+        case CBCCommand.SYSTEM_STATUS:
+            handleSystemCommand(serverConfirmation);
+            break;
     }
+}
 
+private void handleSystemCommand(CBCCommand serverConfirmation) 
+{
+    synchronized (systemStatusOn ) 
+    {
+        if (serverConfirmation.isSystemDisabled())
+        {
+            systemStatusOn = Boolean.FALSE;
+        }
+        else 
+        {
+            systemStatusOn = Boolean.TRUE;
+        }
+    }
 }
 
 /**
@@ -669,6 +687,10 @@ private void initAreaStateMap() {
 private void resetAreaStateMap() {
     areaStateMap = new HashMap();
     getAreaStateMap();
+}
+
+public Boolean getSystemStatusOn() {
+    return systemStatusOn;
 }
 
 

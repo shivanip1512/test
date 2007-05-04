@@ -1,12 +1,10 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -119,7 +117,7 @@ public class RoleDaoImpl implements RoleDao
 		return authDao.getRolePropValueGroup( group, rolePropertyID, defaultValue );
 	}
     
-    public LiteYukonRole getRoleID (Integer rolePropID) {
+    public LiteYukonRole getLiteRole (Integer rolePropID) {
         List<LiteYukonRoleProperty> roleProps = Collections.EMPTY_LIST;
         List<LiteYukonRole> roles = Collections.EMPTY_LIST;
         synchronized (databaseCache) {

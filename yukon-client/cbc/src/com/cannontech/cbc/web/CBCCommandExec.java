@@ -56,7 +56,7 @@ public class CBCCommandExec
 		}
 		else 
 		{
-			_executeCommand( 
+			executeCommand( 
 				_paoID,
 				_cmdID );			
 		}
@@ -75,7 +75,7 @@ public class CBCCommandExec
 
 	public boolean execute_FeederCmd( int _cmdID, int _paoID )
 	{
-		_executeCommand( 
+		executeCommand( 
 			_paoID,
 			_cmdID );			
 
@@ -92,11 +92,11 @@ public class CBCCommandExec
 			
 			if( CapBankDevice.isInAnyOpenState(bank) )
 			{
-				_executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_OPEN );
+				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_OPEN );
 			}
 			else if( CapBankDevice.isInAnyCloseState(bank) )
 			{
-				_executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
+				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
 			}
 		}
 		else if( _cmdID == CBCCommand.CLOSE_CAPBANK 
@@ -107,7 +107,7 @@ public class CBCCommandExec
 		{
 			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankDevice( new Integer(_paoID) );
 			
-			_executeCommand( 
+			executeCommand( 
 				bank.getControlDeviceID().intValue(),
 				_cmdID );			
 		}
@@ -176,7 +176,7 @@ public class CBCCommandExec
 			//be sure we are not sending any commands that would not matter
 			// to the capbank
 			if( _isValidBankCmd(_paoID, _cmdID) )
-				_executeCommand( 
+				executeCommand( 
 					_paoID,
 					_cmdID );
 		}
@@ -225,7 +225,7 @@ public class CBCCommandExec
 	 * Used to send a command to the CBC server.
 	 * @param int, int
 	 */
-	private void _executeCommand(int _paoID, int _cmdOperation )
+	public void executeCommand(int _paoID, int _cmdOperation )
 	{
 		CBCCommand cmd = new CBCCommand();
 		cmd.setDeviceID( _paoID );
