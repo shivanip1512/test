@@ -465,7 +465,7 @@ update ccfeederbanklist set closeOrder = ControlOrder;
 alter table ccfeederbanklist modify closeOrder number not null;
 
 alter table ccfeederbanklist add tripOrder number;
-/*Still need to add the PL/SQL loops for julie's cap control stuff before this column can be finalized*/
+/*PL/SQL loops for this column were not added until 3.4.2 update scripts*/
 /*alter table ccfeederbanklist modify tripOrder numeric not null;*/
 
 alter table capcontrolstrategy add integrateflag char(1);

@@ -8,6 +8,91 @@ update YukonRole set Category = 'Capacitor Control' where Category = 'CBC Onelin
 update State set Text = 'Inactive' where StateGroupID = -8 and RawState = 0;
 update State set Text = 'Active' where StateGroupID = -8 and RawState = 1;
 
+/* @start-block */
+declare
+v_paoid number(6);
+v_areaname varchar2(60);
+cursor c_areaname is select distinct description  as areaname from yukonpaobject where type = 'CCSUBBUS';
+begin
+select max(paobjectid) into v_paoid from yukonpaobject;
+v_paoid := v_paoid + 1;
+open c_areaname;
+fetch c_areaname into v_areaname;
+          
+   while(c_areaname%found)
+      loop
+          insert into yukonpaobject(paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+                  select v_paoid,
+                   'CAPCONTROL',
+                   'CAPCONTROL',
+                   v_areaname,
+                   'CCAREA',
+                   '(none)',
+                   'N',
+                   '-----' from yukonpaobject;
+            v_paoid := v_paoid + 1;
+			fetch c_areaname into v_areaname;
+         
+     end loop;
+close c_areaname;
+end;
+/* @end-block */
+
+/* @start-block */
+declare
+v_areaid number;
+v_areaname1 varchar2(60);
+v_subid number;
+v_subdesc varchar2(60);
+v_order number := 1;
+cursor c_areaid is (select paobjectid, paoname from yukonpaobject where type = 'CCAREA');
+cursor c_subarea is (select paobjectid as subid, description from yukonpaobject where type = 'CCSUBBUS');
+begin
+    open c_areaid;
+    fetch c_areaid into v_areaid, v_areaname1;
+    while(c_areaid%found)
+       loop
+		insert into capcontrolarea values (v_areaid, 0);
+		v_order := 1;
+		open c_subarea;
+		fetch c_subarea into v_subid, v_subdesc;
+		while (c_subarea%found)
+			loop	
+				if (v_areaname1 = v_subdesc) then 
+					insert into ccsubareaassignment values (v_areaid, v_subid, v_order);
+					v_order := v_order + 1;
+				end if;
+				fetch c_subarea into v_subid, v_subdesc;
+			end loop;
+		close c_subarea;
+		fetch c_areaid into v_areaid, v_areaname1;	
+	end loop;
+	close c_areaid;
+end;
+/* @end-block */
+
+/* @start-block */
+declare
+v_tripOrder number;
+v_deviceid number;
+v_feedid number;
+v_maxclose number;
+cursor c_deviceid is select deviceid from ccfeederbanklist;
+begin
+	open c_deviceid;
+      	loop
+			fetch c_deviceid into v_deviceid;
+			exit when c_deviceid%notfound;	 	
+			select feederid into v_feedid from ccfeederbanklist where deviceid = v_deviceid;
+        	select max(closeOrder) into v_maxclose from ccfeederbanklist where feederid = v_feedid group by feederid;
+        	select (v_maxclose - controlorder + 1) into v_tripOrder from ccfeederbanklist where deviceid = v_deviceid;
+        	update ccfeederbanklist set triporder = v_tripOrder where deviceid = v_deviceid;
+	end loop;
+ close c_deviceid;
+end;
+/* @end-block */
+alter table ccfeederbanklist modify tripOrder number not null;
+
 update command set label = 'Install Emetcon Gold 3' where commandid = -126;
 update command set label = 'Install Emetcon Gold 2' where commandid = -125;
 
