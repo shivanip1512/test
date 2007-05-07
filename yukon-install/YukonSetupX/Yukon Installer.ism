@@ -129,6 +129,7 @@
 		<row><td>Test Applications</td><td>{19DD76F0-6036-41C1-834A-BBF35CCB2E27}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat</td><td>{1916AD56-3897-4C43-B9FB-855DDF10DD54}</td><td>WEB</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Trending</td><td>{80517A6D-166D-4D3F-AD25-9574C367F38F}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WebStart</td><td>{30A26494-ED84-43A4-BC4F-5435AB698447}</td><td>STATIC</td><td>0</td><td/><td/><td>51713</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Yukon Commander</td><td>{2AEBAB6E-C8E8-49DB-BCDA-2BC6A9A5675A}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Yukon Web Deployment</td><td>{16FEC28B-89F4-40C5-96D1-C2B9916AFA77}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
@@ -255,6 +256,7 @@
 		<row><td>ROOT</td><td>WEBAPPS</td><td>ROOT</td><td/><td>0</td><td/></row>
 		<row><td>RUNTIME</td><td>TARGETDIR</td><td>Runtime</td><td/><td>0</td><td/></row>
 		<row><td>SERVER</td><td>TARGETDIR</td><td>Server</td><td/><td>0</td><td/></row>
+		<row><td>STATIC</td><td>SERVER</td><td>Static</td><td/><td>0</td><td/></row>
 		<row><td>SUPPORTDIR</td><td/><td>Support Folder</td><td/><td>0</td><td/></row>
 		<row><td>StartMenuFolder</td><td/><td>Start Menu</td><td/><td>3</td><td/></row>
 		<row><td>StartupFolder</td><td/><td>Startup</td><td/><td>3</td><td/></row>
@@ -347,6 +349,7 @@
 		<row><td>{52095A08-45B8-4DDD-AF60-1CAEDAA000DA}</td><td>Test Applications</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Config Properties</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
+		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>WebStart</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Yukon Web Deployment</td></row>
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td>Help</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>JRE 1.5</td></row>
@@ -494,6 +497,7 @@
 		<row><td>jnt.exe</td><td>Common Bin</td><td>JNT.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\JNT.exe</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jntservices.dll</td><td>Common Bin</td><td>JNTServices.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\JNTServices.dll</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jradius_client.jar</td><td>Common Bin</td><td>jradius-client.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jradius-client.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>jre_1_5_0_11_windows_i586_p.</td><td>WebStart</td><td>jre-1_5_0_11-windows-i586-p.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;\jre-1_5_0_11-windows-i586-p.exe</td><td>1</td><td/></row>
 		<row><td>jta.jar</td><td>Common Bin</td><td>jta.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jta.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jtds.jar</td><td>Common Bin</td><td>jtds.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jtds.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jvm.cfg</td><td>Yukon Web Deployment</td><td>jvm.cfg</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\lib\i386\jvm.cfg</td><td>1</td><td>NewSubFolder6</td></row>
@@ -643,6 +647,7 @@
 		<row><td>Test Applications</td><td>0</td><td/><td>_354574D2_8BC0_4882_BC03_99625A4D6FFF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tomcat</td><td>0</td><td/><td>_ACE6A785_AC16_421A_B47E_17326DAEFEFB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Trending</td><td>0</td><td/><td>_50D94099_1A69_4897_A090_198AF9997FDF_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WebStart</td><td/><td/><td>_5F0E457D_7E3C_437D_BC66_C4C0D3E0EE48_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Yukon Commander</td><td>0</td><td/><td>_A03A7FEB_6DF3_44C0_BB54_F687122C9235_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Yukon Web Deployment</td><td/><td/><td>_74CD4651_0ABD_495A_A921_E6CA555AD264_FILTER</td><td/><td/><td/><td/></row>
 	</table>
@@ -936,6 +941,7 @@
 		<row><td>PATH_TO_TOMCAT 5 SERVIC_FILES</td><td>Z:\install\Tomcat 5 Service Install</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT5SERVICEI_FILES</td><td>Z:\install\Tomcat5ServiceInstall</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT_FILES</td><td>Z:\install\Tomcat Service Install</td><td/><td>2</td></row>
+		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>Z:\install\WebStartJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKONINSTALLJRE_FILES</td><td>Z:\install\YukonInstallJRE</td><td/><td>2</td></row>
 		<row><td>PROGRAMFILES</td><td>&lt;ProgramFilesFolder&gt;</td><td/><td>2</td></row>
 		<row><td>ProgramFilesFolder</td><td/><td/><td>1</td></row>
