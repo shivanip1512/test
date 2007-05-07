@@ -1,5 +1,4 @@
 table.itemPickerResultTable {
-    font-size: 80%;
     width: 100%;
     border-collapse: collapse;
 }
@@ -8,12 +7,18 @@ table.itemPickerResultTable th {
     text-align: left;
 }
 
-itemPicker_commandLinks {
-    font-size: 80%;
+.query {
+	float: left;
+}
+
+.itemPicker_commandLinks {
+	position: absolute;
+	top: 10px;
+	right: 10px;
 }
 
 #itemPicker_resultAreaFixed {
-    height: 349px;
+    height: 20em;
 }
 
 #itemPicker_popup {
@@ -21,10 +26,9 @@ itemPicker_commandLinks {
     background: white;
     opacity: .93;
     left: 120px;
-    right: 120px;
     top: 30px;
-    width: 500px;
-    height: 390px;
+    width: 35em;
+    height: 32em;
     border: 3px ridge #696;
     padding: 10px;
     z-index: 100;
@@ -51,19 +55,23 @@ table.itemPickerResultTable tr.itemPicker_currentItemRow {
 }
 
 table#itemPicker_navTable {
-    width: 100%;
+	position: absolute;
+	bottom: 0px;
+	margin-right: 10px;
+	padding-right: 10px;
+    width: 95%;
 }
 
 table#itemPicker_navTable td.left {
     text-align: left;
-    width: 60px;
+    width: 30px;
 }
 table#itemPicker_navTable td.center {
     text-align: center;
 }
 table#itemPicker_navTable td.right {
     text-align: right;
-    width: 60px;
+    width: 30px;
 }
 
 .itemPicker_selectedLink {
