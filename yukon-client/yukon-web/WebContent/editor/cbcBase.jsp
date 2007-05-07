@@ -91,8 +91,14 @@ addLockButtonForButtonGroup("foot_buttons");
                 </f:facet>
 
 
-                <x:panelTabbedPane id="tabPane" style="width: 100%; vertical-align: top;" selectedIndex="#{capControlForm.selectedPanelIndex}">
-                    <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}" >
+                <x:panelTabbedPane id="tabPane" 
+                	activeTabStyleClass="activeTab"
+                	style="width: 100%; vertical-align: top;" 
+                	selectedIndex="#{capControlForm.selectedPanelIndex}"
+                	serverSideTabSwitch="true"
+                	>
+                	<x:tabChangeListener type="com.cannontech.web.editor.model.CCTabChangeListener"/>
+                    <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcGeneralEditor.jsp"/>
                     </x:panelTab>
 

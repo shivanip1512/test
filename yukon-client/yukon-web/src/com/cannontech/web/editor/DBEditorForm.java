@@ -276,7 +276,7 @@ public abstract class DBEditorForm
 	/**
 	 * @return
 	 */
-	protected DBPersistent getDbPersistent()
+	public DBPersistent getDbPersistent()
 	{
 		return dbPersistent;
 	}

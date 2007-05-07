@@ -880,6 +880,14 @@ public class CapControlForm extends DBEditorForm{
 		System.arraycopy(temp, 0, kwkvarPoints, 1, temp.length);
 	}
 
+    public void clearfaces() {
+        FacesMessage facesMessage = new FacesMessage();
+        facesMessage.setDetail("");   
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        currentInstance.addMessage("cti_db_update",
+                facesMessage);
+    }
+    
 	/**
 	 * Executes any last minute object updates before writting the data to the
 	 * databse. The return value is where the requested value is redirected as

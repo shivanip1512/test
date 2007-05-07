@@ -250,4 +250,11 @@ legend, .legendLikeLabel{
     padding-right: 5px;
 }
 
-
+.myFaces_panelTabbedPane_activeHeaderCell input {
+color: black;
+padding: 2px 5px;
+border: 2px solid;
+border-color: white;
+background-color: white;
+display: block;
+}
