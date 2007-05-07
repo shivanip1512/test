@@ -20,24 +20,18 @@
 #include "test_cmdparse_output.h"
 #include "cmdparse.h"
 
+#define BOOST_AUTO_TEST_MAIN "Test CommandParse"
+#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
 
-void testString()
+BOOST_AUTO_UNIT_TEST(testString)
 {
     for(int i=0; i<TEST_SIZE; i++){
         CtiCommandParser  parse(inputString[i]);
         std::cout << "input string: " << inputString[i] << std::endl;
         BOOST_CHECK_EQUAL( parse.asString(), outputString[i]); 
     }
-}
-
-
-test_suite*
-init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-    test_suite* test= BOOST_TEST_SUITE( "Test cmdparse" );
-    test->add( BOOST_TEST_CASE( &testString ) );
-    return test; 
 }
 
 

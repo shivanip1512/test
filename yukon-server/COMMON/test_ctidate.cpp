@@ -21,9 +21,11 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+#define BOOST_AUTO_TEST_MAIN "Test CtiDate"
+#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
-void test_ctidate_methods()
+BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
 {
     // check the function match between CtiTime and RWTime
     RWDate rw_date = RWDate();
@@ -88,7 +90,7 @@ void test_ctidate_methods()
 }
 
 
-void test_ctidate_operators()
+BOOST_AUTO_UNIT_TEST(test_ctidate_operators)
 {
     // check the operators
     CtiDate d = CtiDate();
@@ -140,13 +142,13 @@ void test_ctidate_operators()
 }
 
 
-test_suite*
-init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-    test_suite* test= BOOST_TEST_SUITE( "Test CtiDate" );
-    test->add( BOOST_TEST_CASE( &test_ctidate_methods )) ;
-    test->add( BOOST_TEST_CASE( &test_ctidate_operators ));
-    
-    return test; 
-}
+//test_suite
+//init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
+//    test_suite* test= BOOST_TEST_SUITE( "Test CtiDate" );
+//    test->add( BOOST_TEST_CASE( &test_ctidate_methods )) ;
+//    test->add( BOOST_TEST_CASE( &test_ctidate_operators ));
+//    
+//    return test; 
+//}
 
 

@@ -9,8 +9,10 @@
  * 
  * 
  */
+#define BOOST_AUTO_TEST_MAIN "Test CtiTime"
 
 #include <boost/test/unit_test.hpp>
+#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
@@ -33,12 +35,13 @@ using namespace boost::gregorian;
 using namespace boost::posix_time;
 using namespace std;
 
-void test_ptime(){
+BOOST_AUTO_UNIT_TEST(test_ptime)
+{
     ptime pt = from_time_t((time_t)0);
     std::cout << to_simple_string(pt) << std::endl;
 }
 
-void test_rwtime_methods()
+BOOST_AUTO_UNIT_TEST(test_rwtime_methods)
 {
     int timeduration = 60*60;
     RWTime rt1;
@@ -77,7 +80,7 @@ void test_rwtime_methods()
 
 
 
-void test_ctitime_methods()
+BOOST_AUTO_UNIT_TEST(test_ctitime_methods)
 {
 
     // check the functionality match between CtiTime and RWTime
@@ -148,7 +151,7 @@ void test_ctitime_methods()
     BOOST_CHECK_EQUAL( rw3.isValid(), d3.isValid() );
 }
 
-void test_ctitime_specials()
+BOOST_AUTO_UNIT_TEST(test_ctitime_specials)
 {
 
     //check boost special values
@@ -207,7 +210,7 @@ void test_ctitime_specials()
 }
 
 
-void test_ctitime_operators()
+BOOST_AUTO_UNIT_TEST(test_ctitime_operators)
 {
     // check the == operator
     CtiTime d;
@@ -255,7 +258,7 @@ void test_ctitime_operators()
 }
 
 
-void test_ctitime_DST()
+BOOST_AUTO_UNIT_TEST(test_ctitime_DST)
 {
     //explicitly create a time 1:00, then add 1 hour to it, which results the boundary of DST
     CtiTime ict(CtiTime::beginDST(2005).date(), 1, 0 ,0 );
@@ -321,9 +324,7 @@ void test_ctitime_DST()
 
 }
 
-
-
-void test_locale()
+BOOST_AUTO_UNIT_TEST(test_locale)
 {
     using namespace boost::gregorian;
     using namespace boost::posix_time;
@@ -337,18 +338,16 @@ void test_locale()
     std::cout << "using default locale: " << ss.str() << std::endl;
 }
 
-
-
-test_suite*
-init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-    test_suite* test= BOOST_TEST_SUITE( "Test CtiTime" );
-    test->add( BOOST_TEST_CASE( &test_rwtime_methods )) ;
-    test->add( BOOST_TEST_CASE( &test_ctitime_methods )) ;
-    test->add( BOOST_TEST_CASE( &test_ctitime_operators ));
-    test->add( BOOST_TEST_CASE( &test_ctitime_specials ));
-    test->add( BOOST_TEST_CASE( &test_locale ) );
-    test->add( BOOST_TEST_CASE( &test_ctitime_DST ) );
-    return test; 
-}
+//test_suite*
+//init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
+//    test_suite* test= BOOST_TEST_SUITE( "Test CtiTime" );
+//    test->add( BOOST_TEST_CASE( test_rwtime_methods )) ;
+//    test->add( BOOST_TEST_CASE( test_ctitime_methods )) ;
+//    test->add( BOOST_TEST_CASE( test_ctitime_operators ));
+//    test->add( BOOST_TEST_CASE( test_ctitime_specials ));
+//    test->add( BOOST_TEST_CASE( test_locale ) );
+//    test->add( BOOST_TEST_CASE( test_ctitime_DST ) );
+//    return test; 
+//}
 
 

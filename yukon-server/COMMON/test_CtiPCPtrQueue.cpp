@@ -7,9 +7,11 @@
  * Testing the Cti Producer Consumer Pointer Queue
  *
  */
+#define BOOST_AUTO_TEST_MAIN "Test CtiPCPtrQueue"
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
+#include <boost/test/auto_unit_test.hpp>
 #include "ctipcptrqueue.h"
 using namespace std;
 
@@ -20,7 +22,8 @@ int threadTest = 0;
 CtiPCPtrQueue<int> threadQ;
 boost::mutex mutex;
 
-void test_writeread(){
+BOOST_AUTO_UNIT_TEST(test_writeread)
+{
     CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
     int *itemOne, *itemTwo, *temp1, *temp2, *garbage;
     itemOne = new int(1);
@@ -66,7 +69,8 @@ void test_writeread(){
 
 }
 
-void test_tryRead(){
+BOOST_AUTO_UNIT_TEST(test_tryRead)
+{
     CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
     int *itemOne, *itemTwo, *temp1, *temp2, *gar;
     itemOne = new int(1);
@@ -100,7 +104,7 @@ void test_tryRead(){
     BOOST_CHECK_EQUAL(tester, true);
 }
 
-void readOne( )//for MultiThread Test
+BOOST_AUTO_UNIT_TEST(readOne)//for MultiThread Test
 {
    int *temp;
    bool tester;
@@ -118,7 +122,8 @@ void readOne( )//for MultiThread Test
    }
 }
 
-void test_timeOutMultiThread(){//first three should read fine, Last should time out.
+BOOST_AUTO_UNIT_TEST(test_timeOutMultiThread)
+{//first three should read fine, Last should time out.
     boost::thread_group threads;
     int *one   = new int(1), 
         *two   = new int(2), 
@@ -132,15 +137,4 @@ void test_timeOutMultiThread(){//first three should read fine, Last should time 
     threads.join_all();
 
 }
-
-test_suite*
-init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-    test_suite* test= BOOST_TEST_SUITE( "Test CtiPCPtrQueue" );
-    test->add( BOOST_TEST_CASE( &test_writeread ) );
-    test->add( BOOST_TEST_CASE( &test_tryRead ) );
-    test->add ( BOOST_TEST_CASE( & test_timeOutMultiThread ) );
-    
-    return test; 
-}
-
 

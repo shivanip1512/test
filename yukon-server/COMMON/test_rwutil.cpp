@@ -8,7 +8,9 @@
  * test rwutil.h
  * 
  */
+#define BOOST_AUTO_TEST_MAIN "Test RW Utils"
 
+#include <boost/test/auto_unit_test.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include <string>
@@ -18,7 +20,7 @@
 
 using boost::unit_test_framework::test_suite;
 
-void test_to_boost_date()
+BOOST_AUTO_UNIT_TEST(test_to_boost_date)
 {
     RWDate rw_date = RWDate();
     date d = to_boost_date(rw_date);
@@ -28,7 +30,7 @@ void test_to_boost_date()
 }
 
 
-void test_stringCompareIgnoreCase()
+BOOST_AUTO_UNIT_TEST(test_stringCompareIgnoreCase)
 {
     std::string s1 = "My Compare";
     std::string s2 = "my cOmParE";
@@ -36,15 +38,3 @@ void test_stringCompareIgnoreCase()
 
 
 }
-
-
-test_suite*
-init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-    test_suite* test= BOOST_TEST_SUITE( "Test rwutil" );
-    test->add( BOOST_TEST_CASE( &test_stringCompareIgnoreCase ) );
-    test->add( BOOST_TEST_CASE( &test_to_boost_date ) );
-    
-    return test; 
-}
-
-
