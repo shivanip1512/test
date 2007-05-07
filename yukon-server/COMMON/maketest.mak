@@ -278,8 +278,7 @@ statistics.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 stdexcepthdlr.obj:	yukon.h precompiled.h ctidbgmem.h stdexcepthdlr.h \
 		dlldefs.h
 test_cmdparse.obj:	test_cmdparse_input.h test_cmdparse_output.h \
-		cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h \
-		test_ctitime.h
+		cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h
 test_ctidate.obj:	ctidate.h dlldefs.h logger.h thread.h mutex.h \
 		guard.h numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h
 test_ctipcptrqueue.obj:	ctipcptrqueue.h mutex.h dlldefs.h guard.h \
