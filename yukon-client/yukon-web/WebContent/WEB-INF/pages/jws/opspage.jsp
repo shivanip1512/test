@@ -24,7 +24,7 @@ If you think Java is already installed, you may also attempt to start the
 application.
 </div>
 <div id="javaWebStartLinks" style="text-align:center;padding: 15px;">
-<a href="http://www.java.com/getjava/" onclick="jwsClosePopup()">Install Java</a>
+<a href="<c:url value="/spring/static/jre-1_5_0_11-windows-i586-p.exe"/>" onclick="jwsClosePopup()">Install Java</a>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="javascript:jwsRelaunchCurrent()">Relaunch Application</a>
 </div>
