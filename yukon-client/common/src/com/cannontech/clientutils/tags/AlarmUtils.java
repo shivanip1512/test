@@ -27,6 +27,10 @@ public class AlarmUtils
 	 */
 	public static String getAlarmConditionText( int conditionID_, int ptType_, int ptID_ )
 	{
+        if (conditionID_ < 0) {
+            return "undefined";
+        }
+        
 		switch( ptType_ )
 		{
 			case PointTypes.STATUS_POINT:
