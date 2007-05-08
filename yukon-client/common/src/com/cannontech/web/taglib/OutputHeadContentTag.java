@@ -26,12 +26,12 @@ import com.cannontech.web.menu.ModuleBase;
  * within the StandardPageTag.
  */
 public class OutputHeadContentTag extends BodyTagSupport {
-    List layoutScriptFiles = null;
-    List layoutCssFiles = null;
+    private List<String> layoutCssFiles = null;
+    private List<String> layoutScriptFiles;
 
     public int doStartTag() throws JspException {
-        layoutScriptFiles = new ArrayList();
-        layoutCssFiles = new ArrayList();
+        layoutScriptFiles = new ArrayList<String>();
+        layoutCssFiles = new ArrayList<String>();
         return EVAL_BODY_BUFFERED;
     }
     
@@ -52,11 +52,9 @@ public class OutputHeadContentTag extends BodyTagSupport {
     }
     
     private void handleJavaScriptFiles() throws IOException {
-        Set finalScriptList = new LinkedHashSet();
+        Set<String> finalScriptList = new LinkedHashSet<String>();
         
-        // get script files declared in the layout file
-        for (Iterator iter = layoutScriptFiles.iterator(); iter.hasNext();) {
-            String file = (String) iter.next();
+        for (String file : layoutScriptFiles) {
             finalScriptList.add(file);
         }
         

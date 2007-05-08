@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -38,6 +39,7 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
     public static final String CTI_SHOW_MENU = "ctiShowMenu";
     public static final String CTI_MENU_SELECTION = "ctiMenuSelection";
+    public static final String CTI_STANDARD_PAGE_INSTANCE = "ctiStandardPageInstance";
     
     public static final String HTML_QUIRKS = "quirks";
     public static final String HTML_TRANSITIONAL = "transitional";
@@ -84,7 +86,10 @@ public class StandardPageTag extends BodyTagSupport {
         
         cssFiles = new ArrayList<String>();
         scriptFiles = new ArrayList<String>();
-         return EVAL_BODY_BUFFERED;
+        
+        pageContext.setAttribute(CTI_STANDARD_PAGE_INSTANCE, this, PageContext.REQUEST_SCOPE);
+        
+        return EVAL_BODY_BUFFERED;
     }
     
     public int doAfterBody() throws JspException {
@@ -129,6 +134,11 @@ public class StandardPageTag extends BodyTagSupport {
         }finally {
             cleanup();
         }
+    }
+    
+    public static StandardPageTag find(JspContext context) {
+        Object attribute = context.getAttribute(CTI_STANDARD_PAGE_INSTANCE, PageContext.REQUEST_SCOPE);
+        return (StandardPageTag) attribute;
     }
     
     private void cleanup() {

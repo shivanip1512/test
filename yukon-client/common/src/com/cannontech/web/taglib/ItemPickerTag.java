@@ -19,7 +19,7 @@ public class ItemPickerTag extends SimpleTagSupport {
     
     public void startOfTag(String newPickerJsFile) {
         // make sure our script file is included
-        StandardPageTag spTag = (StandardPageTag) findAncestorWithClass(this, StandardPageTag.class);
+        StandardPageTag spTag = StandardPageTag.find(getJspContext());
         if (spTag != null) {
             spTag.addScriptFile("/JavaScript/itemPicker.js");
             spTag.addScriptFile(newPickerJsFile);

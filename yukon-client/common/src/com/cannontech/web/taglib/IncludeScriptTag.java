@@ -10,15 +10,16 @@ public class IncludeScriptTag extends TagSupport {
         return SKIP_BODY;
     }
     public int doEndTag() throws JspException {
-        StandardPageTag spTag = (StandardPageTag) TagSupport.findAncestorWithClass(this, StandardPageTag.class);
-        if (spTag != null) {
-            spTag.addScriptFile(getLink());
-            return EVAL_PAGE;
-        }
-        
+        // check if in OHCTag first because StandardPageTag will always be found
         OutputHeadContentTag ohcTag = (OutputHeadContentTag) TagSupport.findAncestorWithClass(this, OutputHeadContentTag.class);
         if (ohcTag != null) {
             ohcTag.addScriptFile(getLink());
+            return EVAL_PAGE;
+        }
+        
+        StandardPageTag spTag = StandardPageTag.find(pageContext);
+        if (spTag != null) {
+            spTag.addScriptFile(getLink());
             return EVAL_PAGE;
         }
         
