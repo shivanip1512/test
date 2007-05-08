@@ -58,12 +58,12 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
     BOOST_CHECK_EQUAL( temp2, itemTwo );
 
     //Test reading off an empty queue
-    garbage = q->read();
+    q->read(garbage, 20);
     BOOST_CHECK_EQUAL(garbage == NULL, true);
 
     //Test reading off a closed empty queue
     q->close();
-    garbage = q->read();
+    q->read(garbage, 20);
     BOOST_CHECK_EQUAL(garbage == NULL, true);
 
 
