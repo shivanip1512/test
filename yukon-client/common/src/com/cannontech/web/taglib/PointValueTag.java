@@ -6,6 +6,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -44,9 +45,14 @@ public class PointValueTag extends SimpleTagSupport {
         
         String valueString = "";
         if (pointValue.getType() != PointTypes.STATUS_POINT) {
-            LiteUnitMeasure unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(pointId);
-            String unitMeasureName = unitOfMeasure.getUnitMeasureName();
-            valueString = pointValue.getValue() + " " + unitMeasureName;
+            String unitMeasureName;
+            try {
+                LiteUnitMeasure unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(pointId);
+                unitMeasureName = unitOfMeasure.getUnitMeasureName();
+                valueString = pointValue.getValue() + " " + unitMeasureName;
+            } catch (NotFoundException e) {
+                valueString = Double.toString(pointValue.getValue());
+            }
         } else {
             LitePoint litePoint = pointDao.getLitePoint(pointId);
             int stateGroupId = litePoint.getStateGroupID();
