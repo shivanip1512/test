@@ -2,7 +2,9 @@ package com.cannontech.database.db.capcontrol;
 
 import java.util.Date;
 
-public class CCEventLog {
+import com.cannontech.core.dao.DaoFactory;
+
+public class CCEventLog implements RecentControls{
 
 public static int COL_DATETIME = 1;
 public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
@@ -103,6 +105,23 @@ public Long getValue() {
 
 public void setValue(Long value) {
 	this.value = value;
+}
+
+public String getEvent() {
+    return text;
+}
+
+public String getItem() {
+    int id = (getFeederId().intValue() > 0)  ? getFeederId().intValue() : getSubId().intValue(); 
+    return DaoFactory.getPaoDao().getYukonPAOName(id);
+}
+
+public Date getTimestamp() {
+    return dateTime;
+}
+
+public String getUser() {
+    return userName;
 }
 
 

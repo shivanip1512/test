@@ -35,6 +35,7 @@
 <script type="text/JavaScript" src="../JavaScript/xmlhttp.js"></script>
 <script type="text/JavaScript" src="../JavaScript/ol/overlib_mini.js"></script>
 <script type="text/JavaScript" src="../JavaScript/validation.js"></script>
+<script type="text/JavaScript" src="../JavaScript/cc/filter.js"></script>
 
  <link href="../editor/css/greybox/greybox.css" rel="stylesheet" type="text/css" media="all" /> 
 <script type="text/javascript" src="../JavaScript/GreyBox/AmiJS.js"></script>

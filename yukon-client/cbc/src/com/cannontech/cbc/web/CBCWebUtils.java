@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.SystemLogData;
 import com.cannontech.database.db.capcontrol.CCEventLog;
+import com.cannontech.database.db.capcontrol.RecentControls;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
@@ -294,7 +294,7 @@ public class CBCWebUtils implements CBCParamValues
 	
 	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlDAO theCache, int prevDaysCount) {
 	    String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
-	    List ccEvents = new ArrayList(100);
+	    List<RecentControls> ccEvents = new ArrayList<RecentControls>();
 	    long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
 	    java.sql.Timestamp timestamp = new java.sql.Timestamp( startTS );
 			    
@@ -316,14 +316,14 @@ public class CBCWebUtils implements CBCParamValues
 		    				CCEventLog row = new CCEventLog(); 
 		    				row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
 		    				row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
-		    				row.setDateTime((Timestamp)(( rs.getTimestamp(3))));
+		    				row.setDateTime((( rs.getTimestamp(3))));
 		    				row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
 		    				row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
 		    				row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
 		    				row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
 		    				row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
-		    				row.setText((String) ( rs.getString(9)));
-		    				row.setUserName((String) ( rs.getString(10)));
+		    				row.setText(( rs.getString(9)));
+		    				row.setUserName(( rs.getString(10)));
 		    				return row;        				
 		    			}
 		    		});
@@ -342,13 +342,13 @@ public class CBCWebUtils implements CBCParamValues
 			    				SystemLog row = new SystemLog();
 			    				row.setLogID(new Integer (rs.getBigDecimal(1).intValue()));
 			    				row.setPointID(new Integer (rs.getBigDecimal(2).intValue()));
-			    				row.setDateTime((Timestamp)(( rs.getTimestamp(3))));			    				
+			    				row.setDateTime((( rs.getTimestamp(3))));			    				
 			    				row.setSoe_tag(new Integer(rs.getBigDecimal(4).intValue()));
 			    				row.setType(new Integer (rs.getBigDecimal(5).intValue()));
 			    				row.setPriority(new Integer(rs.getBigDecimal(6).intValue()));
-			    				row.setAction((String)rs.getString(7));
-			    				row.setDescription((String)rs.getString(8));
-			    				row.setUserName((String)rs.getString(9));
+			    				row.setAction((rs.getString(7)));
+			    				row.setDescription(rs.getString(8));
+			    				row.setUserName(rs.getString(9));
 			    				rs.getBigDecimal(10).intValue();
 			    				return row;        				
 			    			}
