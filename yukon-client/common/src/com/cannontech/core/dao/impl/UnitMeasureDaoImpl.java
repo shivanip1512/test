@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -35,15 +36,19 @@ public final class UnitMeasureDaoImpl implements UnitMeasureDao {
     
     public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
 
-        String sql =
-            "select u.UoMID, u.UoMName, u.CalcType, u.LongName  from " +
-            "unitmeasure u inner join pointunit pu " +
-            "on u.uomid=pu.uomid " +
-            "where pu.pointid=?";
+        try {
+            String sql =
+                "select u.UoMID, u.UoMName, u.CalcType, u.LongName  from " +
+                "unitmeasure u inner join pointunit pu " +
+                "on u.uomid=pu.uomid " +
+                "where pu.pointid=?";
 
-        LiteUnitMeasure lum =
-            jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, pointID);
-        return lum;
+            LiteUnitMeasure lum =
+                jdbcOps.queryForObject(sql, liteUnitMeasureRowMapper, pointID);
+            return lum;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
     }
 
     public LiteUnitMeasure getLiteUnitMeasure(int uomid)  {        

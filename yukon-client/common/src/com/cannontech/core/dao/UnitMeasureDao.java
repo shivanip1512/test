@@ -14,8 +14,10 @@ public interface UnitMeasureDao {
     
     /**
      * Returns the unit of measure information for a given point id.
+     * If the point does not have a unit of measure defined (status
+     * points and system points don't), this method will return null).
      * @param pointID
-     * @return LiteUnitMeasure
+     * @return LiteUnitMeasure or null if it doesn't exist
      */
     public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID);
 
