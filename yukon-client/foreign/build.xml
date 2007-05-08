@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<project name="foreign" default="all">
+
+   <property file="../build/build.properties"/>
+
+   <target name="all" depends="clean,build">
+    </target>
+   
+
+	<target name="build">
+       <mkdir dir="build"/>
+       
+       <javac srcdir="src" destdir="build" target="${yukon.javac.target}" 
+ 	      source="${yukon.javac.source}" debug="${yukon.javac.debug}">                               
+          <classpath>
+             <fileset dir="${yukon.lib}">
+                <include name="**/*.jar"/>
+             </fileset>
+	      </classpath> 
+     	</javac>
+
+		<jar jarfile="${yukon.lib}/foreign.jar" basedir="build/" manifest="resource/manifest.mf">
+            <fileset dir="src">
+                <include name="**/*.xml"/>
+            </fileset>
+		</jar>
+	</target>
+
+	<target name="install" depends="build">
+   		<jar jarfile="${yukon.client.bin}/foreign.jar" basedir="build/" manifest="resource/manifest.mf">
+		</jar>   			
+	</target>
+   
+   <target name="clean">
+       <delete dir="build"/>        
+
+    </target>
+   
+</project>
