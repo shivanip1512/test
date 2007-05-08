@@ -1,11 +1,15 @@
 package com.cannontech.database.db.point;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import com.cannontech.database.data.point.SystemLogData;
+import com.cannontech.database.db.capcontrol.RecentControls;
 
 /**
  * This type was created in VisualAge.
  */
-public class SystemLog extends com.cannontech.database.db.DBPersistent implements SystemLogData 
+public class SystemLog extends com.cannontech.database.db.DBPersistent implements SystemLogData, RecentControls 
 {
 	private Integer logID = null;
 	private Integer pointID = null;
@@ -316,5 +320,19 @@ public void update() throws java.sql.SQLException
 	Object constraintValues[] = { getLogID() };
 
 	update( TABLE_NAME, COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+}
+
+
+public String getEvent() {
+    return description;
+}
+public String getItem() {
+    return action;
+}
+public Date getTimestamp() {
+    return dateTime;
+}
+public String getUser() {
+    return userName;
 }
 }
