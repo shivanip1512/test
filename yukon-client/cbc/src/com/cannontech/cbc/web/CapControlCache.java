@@ -515,16 +515,69 @@ private void handleAllSubs(CBCSubstationBuses busesMsg) {
  */
 private void handleCBCCommand( CBCCommand serverConfirmation ) {
 
+    int deviceID = serverConfirmation.getDeviceID();
     switch( serverConfirmation.getCommand() ) {
         //delete the given subID
         case CBCCommand.DELETE_ITEM:
-            if( isSubBus(serverConfirmation.getDeviceID()) )
-                handleDeletedSub( serverConfirmation.getDeviceID() );
+            handleDeleteItem(deviceID);
             break;
         case CBCCommand.SYSTEM_STATUS:
             handleSystemCommand(serverConfirmation);
             break;
     }
+}
+
+
+
+
+
+private void handleDeleteItem(int deviceID) {
+    if( isSubBus(deviceID) )
+        handleDeletedSub( deviceID );
+    else if (isFeeder(deviceID))
+        handleDeletedFeeder(deviceID);
+    else if (isCapBank(deviceID))
+        handleDeletedCap(deviceID);
+    else if (isCBCArea (deviceID))
+        handleDeleteArea (deviceID);
+}
+
+private void handleDeleteArea(int deviceID) {
+    synchronized (cbcAreas) {
+        List<CBCArea> cachedAreas = getCbcAreas();
+        List<CBCArea> workCopy = new Vector<CBCArea>();
+        workCopy.addAll(cachedAreas);
+        for (Iterator iter = cachedAreas.iterator(); iter.hasNext();) {
+            CBCArea area = (CBCArea) iter.next();
+            if (area.getPaoID().intValue() == deviceID)
+            {
+                workCopy.remove(area);
+            }
+        }
+        cachedAreas.clear();
+        cachedAreas.addAll(workCopy);
+    }
+}
+
+private boolean isCBCArea(int deviceID) {
+    synchronized (cbcAreas) {
+        for (Iterator iter = cbcAreas.iterator(); iter.hasNext();) {
+            CBCArea area = (CBCArea) iter.next();
+            if (area.getPaoID().intValue() == deviceID)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+private void handleDeletedCap(int deviceID) {
+    capBankMap.remove(deviceID);
+}
+
+private void handleDeletedFeeder(int deviceID) {
+    feederMap.remove(deviceID);    
 }
 
 private void handleSystemCommand(CBCCommand serverConfirmation) 
