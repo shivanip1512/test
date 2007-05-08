@@ -24,4 +24,34 @@
       <constructor-arg value="/WEB-INF/module_config.xml"/>
       <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
     </bean>
+    
+    <bean id="widgetInput.deviceId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="deviceId"/>
+        <property name="description" value="the id of the Yukon device"/>
+        <property name="required" value="true"/>
+    </bean>
+    
+    <bean id="widgetInput.pointId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="pointId"/>
+        <property name="description" value="the id of the Yukon point"/>
+        <property name="required" value="true"/>
+    </bean>
+    <bean id="readCurrentTimeWidget"
+    	class="com.cannontech.web.widget.ReadCurrentTimeWidget">
+    	<property name="title" value="Get Current Time"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+    </bean>
+    
+    <bean id="pointValueDisplayWidget"
+    	class="com.cannontech.web.widget.PointValueDisplayWidget">
+    	<property name="title" value="Point Value Widget"/>
+        <property name="identityPath" value="common/pointIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.pointId"/>
+           </set>
+        </property>
+        <property name="pointDao" ref="pointDao"/>
+    </bean>
+    
 </beans>

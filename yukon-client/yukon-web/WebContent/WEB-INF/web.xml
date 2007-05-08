@@ -276,6 +276,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>widgetDispatcher</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>static</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -720,6 +728,11 @@
 	<servlet-mapping>
 		<servlet-name>capcontrol</servlet-name>
 		<url-pattern>/spring/capcontrol/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>widgetDispatcher</servlet-name>
+		<url-pattern>/spring/widget/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

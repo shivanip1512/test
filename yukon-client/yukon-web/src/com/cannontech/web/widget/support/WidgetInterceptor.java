@@ -1,0 +1,36 @@
+package com.cannontech.web.widget.support;
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+public class WidgetInterceptor extends HandlerInterceptorAdapter {
+
+    @SuppressWarnings("unchecked")
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
+        
+        Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
+        if (existingParams == null) {
+            existingParams = new HashMap<String, String>();
+        }
+        
+        Map<String,String> reqParams = new HashMap<String, String>();
+        Enumeration parameterNames = request.getParameterNames();
+        while (parameterNames.hasMoreElements()) {
+            String name = (String) parameterNames.nextElement();
+            String value = request.getParameter(name);
+            reqParams.put(name, value);
+        }
+        
+        Map<String, String> newParams = WidgetUtils.combineParameters(reqParams, existingParams);
+        request.setAttribute("widgetParameters", newParams);
+        return true;
+    }
+
+}

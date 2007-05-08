@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!--  This is a custom HandlerMapping that uses the path property from the 
+          JnlpController classes to determine if the controller matches. -->
+    <bean class="com.cannontech.web.widget.support.WidgetHandlerMapping">
+      <property name="order" value="1"/>
+      <property name="interceptors">
+        <list>
+        <bean class="com.cannontech.web.widget.support.WidgetInterceptor"/>
+        </list>
+      </property>
+    </bean>
+    
+    <bean id="otherHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    
+
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="com.cannontech.web.widget.support.WidgetAwareJstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/widget/"/>
+        <property name="suffix" value=""/>
+    </bean>
+    
+    <bean class="com.cannontech.web.widget.support.WidgetExceptionHandler"/>
+    
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <bean name="/test/*" class="com.cannontech.web.widget.support.WidgetTestController"/>
+    
+</beans>

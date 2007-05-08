@@ -9,19 +9,18 @@ function hideRevealSectionSetup(id, section, showInitially) {
     $(id + '_minusImg').hide();
     $(id + '_plusImg').show();
   };
-  Event.observe(window, 'load', function() {
-    if (showInitially) {
-      doShow();
-    } else {
-      doHide();
-    }
+  
+  if (showInitially) {
+    doShow();
+  } else {
+    doHide();
+  }
 
-    $(id + '_span').observe('click', function(event) {
-      if ($(section).visible()) {
-        doHide();
-      } else {
-        doShow();
-      }
-    });
+  $(id + '_span').observe('click', function(event) {
+    if ($(section).visible()) {
+      doHide();
+    } else {
+      doShow();
+    }
   });
 }

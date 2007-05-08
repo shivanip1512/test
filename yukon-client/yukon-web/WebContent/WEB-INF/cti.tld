@@ -317,7 +317,7 @@
    <attribute>
       <name>id</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
    <attribute>
       <name>styleClass</name>
@@ -450,6 +450,71 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>beanLookup</name>
+    <tag-class>com.cannontech.web.widget.support.BeanLookupTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>bean</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>pointValue</name>
+    <tag-class>com.cannontech.web.taglib.PointValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>pointId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>pointValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>deviceName</name>
+    <tag-class>com.cannontech.web.taglib.DeviceNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>deviceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>device</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>uniqueIdentifier</name>
+    <tag-class>com.cannontech.web.taglib.UniqueIdentifierTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>prefix</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
   <function>
     <name>equalsIgnoreCase</name>
     <function-class>com.cannontech.common.util.StringUtils</function-class>
@@ -487,6 +552,22 @@
     <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
     <function-signature>
         boolean isCapControlSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
+    </function-signature>
+  </function>
+    
+  <function>
+    <name>combineWidgetParams</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.util.Map combineParameters(java.util.Map, java.util.Map)
+    </function-signature>
+  </function>
+    
+  <function>
+    <name>jsonString</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.lang.String generateJsonString(java.util.Map)
     </function-signature>
   </function>
     
