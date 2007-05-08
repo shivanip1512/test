@@ -123,17 +123,17 @@ public class RoleDaoImpl implements RoleDao
         synchronized (databaseCache) {
             roleProps   = databaseCache.getAllYukonRoleProperties();
             roles = databaseCache.getAllYukonRoles();
-        }        
-        for (LiteYukonRoleProperty property : roleProps) {
-           if (property.getRolePropertyID() == rolePropID.intValue())
-           {
-            for (LiteYukonRole role : roles) {
-                if (property.getRoleID() == role.getRoleID())
-                {
-                    return role;
+            for (LiteYukonRoleProperty property : roleProps) {
+               if (property.getRolePropertyID() == rolePropID.intValue())
+               {
+                for (LiteYukonRole role : roles) {
+                    if (property.getRoleID() == role.getRoleID())
+                    {
+                        return role;
+                    }
                 }
+               }
             }
-           }
         }
         throw new NotFoundException ("Role ID Could not be found");
     }
