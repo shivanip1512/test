@@ -69,6 +69,13 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     protected IndexUpdateInfo processDBChange(int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB) {
             // Device change msg
+            
+            if(id == 0) {
+                // Bulk dbchange msg - rebuild index;
+                this.rebuildIndex();
+                return null;
+            }
+            
             return this.processPaoChange(id);
         }
 
@@ -88,7 +95,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" WHERE pao.paoid = ?");
+        sql.append(" WHERE paobjectid = ?");
 
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { paoId },

@@ -99,6 +99,13 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
     protected IndexUpdateInfo processDBChange(int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB && "DEVICE".equalsIgnoreCase(category)) {
             // Device change msg
+            
+            if(id == 0) {
+                // Bulk dbchange msg - rebuild index;
+                this.rebuildIndex();
+                return null;
+            }
+            
             return this.processDeviceChange(id);
         } else if (database == DBChangeMsg.CHANGE_POINT_DB
                 && DBChangeMsg.CAT_POINT.equals(category)) {
