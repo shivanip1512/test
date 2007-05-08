@@ -104,7 +104,7 @@ BOOST_AUTO_UNIT_TEST(test_tryRead)
     BOOST_CHECK_EQUAL(tester, true);
 }
 
-BOOST_AUTO_UNIT_TEST(readOne)//for MultiThread Test
+void readOne()//for MultiThread Test
 {
    int *temp;
    bool tester;
