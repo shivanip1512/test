@@ -1,6 +1,7 @@
 package com.cannontech.servlet.nav;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 
