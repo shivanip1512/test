@@ -93,3 +93,11 @@ insert into devicetypecommand values (-638, -112, 'MCT-470', 28, 'Y', -1)
 insert into devicetypecommand values (-639, -113, 'MCT-470', 29, 'Y', -1)
 
 /***************************************************/
+
+
+/* device formatter */
+insert into YukonRole values(-8,'Configuration','Yukon','Miscellaneous Yukon configuration settings');
+insert into YukonRoleProperty values(-1700,-8,'Device Display Template','{name}','Defines the format for displaying devices. Available placeholders: {name},{description},{meterNumber},{id},{address}');
+insert into YukonGroupRole values(-280,-1,-8,-1700,'{name}');
+
+/* end device formatter */
