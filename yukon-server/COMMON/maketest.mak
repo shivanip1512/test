@@ -78,15 +78,15 @@ copy:
 	@echo:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(@B).exe \
+	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
 	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                -copy ..\$(@B).exe $(YUKONOUTPUT)
-                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
-                @%cd $(CWD)
-                @echo.
+	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
+	@%cd $(CWD)
+	@echo.
 
 ######################################################################################
 ctidate.obj:    yukon.h ctidate.h
