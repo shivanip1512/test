@@ -8,7 +8,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.util.ServletUtil;
 
 public class WidgetExceptionHandler implements HandlerExceptionResolver {
     private Logger log = YukonLogManager.getLogger(WidgetExceptionHandler.class);
@@ -17,7 +16,8 @@ public class WidgetExceptionHandler implements HandlerExceptionResolver {
                                          Object handler, Exception ex) {
         log.warn("Error processing this widget", ex);
         ModelAndView mav = new ModelAndView("widgetError.jsp");
-        mav.addObject("stackTrace", ServletUtil.printNiceHtmlStackTrace(ex));
+        //TODO fix after ServletUtil is changed
+        mav.addObject("stackTrace", "keep your pants on, this is coming...");
         mav.addObject("errorMessage", ex.getMessage());
         return mav;
     }
