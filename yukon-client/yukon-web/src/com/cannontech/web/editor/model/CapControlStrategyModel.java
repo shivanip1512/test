@@ -16,8 +16,17 @@ public class CapControlStrategyModel {
     private CapControlStrategy strategy = null;
     private HashMap enableTable = new HashMap(10);
     private HashMap valueTable = new HashMap(10);
+    private boolean resetPkOffPkVals;
     
     
+
+    public boolean isResetPkOffPkVals() {
+        return resetPkOffPkVals;
+    }
+
+    public void setResetPkOffPkVals(boolean resetPkOffPkVals) {
+        this.resetPkOffPkVals = resetPkOffPkVals;
+    }
 
     public Boolean getIntegrateFlag() {
         return strategy.getIntegrateFlag().equalsIgnoreCase("Y");
@@ -266,6 +275,7 @@ public class CapControlStrategyModel {
 
     public void resetValues(ValueChangeEvent vce) {
         resetValueTable();
+        setResetPkOffPkVals(true);
     }
     
     public boolean isKVarAlgorithm () {

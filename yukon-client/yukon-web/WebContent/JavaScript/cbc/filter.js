@@ -5,7 +5,7 @@ function dateFilter(selectID, values, type) {
 	{
 		url += "&value=" + values[i];
 	}
-	dayCnt = $('rcDateFilter').options[$('rcDateFilter').selectedIndex].value;
+	dayCnt = $(selectID).options[$(selectID).selectedIndex].value;
 	url+= "&dayCnt=" + dayCnt;
 	window.location.replace(url);
 }

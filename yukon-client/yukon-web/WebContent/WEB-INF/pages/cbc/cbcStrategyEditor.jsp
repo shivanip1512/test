@@ -3,7 +3,47 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
+<f:verbatim>
+<script type="text/JavaScript">
+	
+	Event.observe(window, 'load', function() {resetVals()});
+	
+	function controlAlgoChanged () {
+		$("controlAlgoToggle").value = "true";
+		document.forms[0].submit();
+	}
 
+	function resetVals() {
+		if ($("controlAlgoToggle").value == "true")
+		{
+			if ($("Peak_Leading"))
+				$("Peak_Leading").value = "0.0";
+			if ($("Offpeak_Leading"))
+				$("Offpeak_Leading").value = "0.0";
+			if ($("Peak_Lagging"))
+				$("Peak_Lagging").value = "0.0";
+			if($ ("Offpeak_Lagging"))
+				$("Offpeak_Lagging").value = "0.0";
+			if($("peak_upper"))
+				$("peak_upper").value = "0.0";
+			if($("offpeak_upper"))
+				$("offpeak_upper").value = "0.0";
+			if($("peak_lower"))
+				$("peak_lower").value = "0.0";
+			if($("offpeak_lower"))
+				$("offpeak_lower").value = "0.0";
+			if($("Target_Peak_PF_Point"))
+				$("Target_Peak_PF_Point").value = "0.0";
+			if($("Target_OffPeak_PF_point"))			
+				$("Target_OffPeak_PF_point").value = "0.0";
+			
+			$("controlAlgoToggle").value = "false";
+		}
+	}
+
+</script>
+
+</f:verbatim>
 <f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] ||capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
 
     <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
@@ -12,7 +52,7 @@
 		<x:outputLabel for="Area_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
 		<x:selectOneMenu id="Area_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
 				value="#{capControlForm.PAOBase.capControlArea.strategyID}" 
-                valueChangeListener="#{capControlForm.newStrategySelected}">
+                valueChangeListener="#{capControlForm.newStrategySelected}" >
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
 		
@@ -159,7 +199,7 @@
             <f:verbatim><br/><fieldset><legend>Strategy Peaks</legend></f:verbatim>
 
 			<x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
-			<x:selectOneMenu id="Control_Algorithm" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
+			<x:selectOneMenu id="Control_Algorithm" onchange="controlAlgoChanged();" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlUnits}" 
                     valueChangeListener="#{capControlForm.currentStratModel.resetValues}"   
                     >
@@ -252,13 +292,16 @@
                     </td>
                     <td id="peakLead1"> 
             </f:verbatim>
-                <x:inputText forceId="true" id="Peak_Leading" size="7"
+                <x:inputText
+                forceId="true" id="Peak_Leading" size="7"
                              disabled="#{!capControlForm.editingCBCStrategy}"
                              rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LEAD]
                              && !capControlForm.currentStratModel.PFAlgorithm}" 
                              required="true"
                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_LEAD]}" 
-                                valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                                valueChangeListener="#{capControlForm.currentStratModel.dataChanged}" 
+                                
+                                >
                                 <f:validateDoubleRange minimum="-999999" maximum="999999" />
                 </x:inputText>
                 <x:inputText forceId="true" id="PF_Peak_Leading" size="7"
@@ -480,5 +523,6 @@
             </x:selectManyCheckbox>
    <f:verbatim></fieldset></f:verbatim>
          </h:column>
-    </h:panelGrid>           
+    </h:panelGrid>
+	<x:inputHidden forceId="true" id="controlAlgoToggle" value="#{capControlForm.currentStratModel.resetPkOffPkVals}" />
 </f:subview>
