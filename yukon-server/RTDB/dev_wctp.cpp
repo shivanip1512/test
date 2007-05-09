@@ -113,12 +113,11 @@ bool CtiDeviceWctpTerminal::devicePacingExceeded()
     if(pagesPerMinute > 0)
     {
         CtiTime now;
-        CtiTime newbatch = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
 
-        if(now >= newbatch)
+        if(now >= _pacingTimeStamp)
         {
             _pagesPerMinute = 1;
-            _pacingTimeStamp = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
+            _pacingTimeStamp = nextScheduledTimeAlignedOnRate( now, 60 );
             _pacingReport = false;
         }
         else if(_pagesPerMinute >= pagesPerMinute)   // This time is allowed for the paging company to clear buffers.
@@ -127,7 +126,7 @@ bool CtiDeviceWctpTerminal::devicePacingExceeded()
             {
                 _pacingReport = true;
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
+                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << _pacingTimeStamp << endl;
             }
 
             toofast = true;
