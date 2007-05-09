@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.164 $
-* DATE         :  $Date: 2007/05/03 14:29:58 $
+* REVISION     :  $Revision: 1.165 $
+* DATE         :  $Date: 2007/05/09 20:47:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,7 +136,8 @@ void ApplyGroupControlStatusVerification(const long key, CtiPointSPtr pPoint, vo
 {
     CtiVanGogh *pVG = (CtiVanGogh *)d;
 
-    if(pPoint->isStatus() &&
+    if(pPoint->getID() != 0 &&
+       pPoint->isStatus() &&
        pPoint->isPseudoPoint() &&
        boost::static_pointer_cast<CtiPointStatus>(pPoint)->getPointStatus().getControlType() != NoneControlType &&
        boost::static_pointer_cast<CtiPointStatus>(pPoint)->getPointStatus().getControlOffset() == 1 &&
