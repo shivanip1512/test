@@ -4,6 +4,7 @@ package miscl;
 import junit.framework.TestCase;
 
 import com.cannontech.web.editor.CapControlForm;
+import com.cannontech.web.wizard.CBCWizardModel;
 
 /**
  * example to to create cap control objects
@@ -16,7 +17,7 @@ public class TestSubCreation extends TestCase {
 
     public void testCreateSub () {
         CapControlForm form = new CapControlForm();
-        form.getWizData().setName("Elliot's Sub 11");
+        ((CBCWizardModel)form.getWizData()).setName("Elliot's Sub 11");
         form.initWizard (4000);
         form.create();
     

@@ -1,5 +1,6 @@
 package com.cannontech.web.exceptions;
 
+import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.database.TransactionException;
 
 public class AltBusNeedsSwitchPointException extends TransactionException {

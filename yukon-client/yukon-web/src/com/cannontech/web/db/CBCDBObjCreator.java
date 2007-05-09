@@ -1,5 +1,7 @@
 package com.cannontech.web.db;
 
+
+import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
@@ -30,7 +32,7 @@ public class CBCDBObjCreator {
 	/**
 	 * Forces a WizModel for a new CBC object to be given
 	 */
-	public CBCDBObjCreator( CBCWizardModel cbcWizModel ) {
+	public CBCDBObjCreator( EditorDataModel cbcWizModel ) {
 		super();
 		
 		if( cbcWizModel == null )
@@ -86,7 +88,7 @@ public class CBCDBObjCreator {
 			if( getCbcWizardModel().isCreateNested() ) {
 
 				int cbcType = getCbcWizardModel().getNestedWizard().getSelectedType();
-				DBPersistent cbcObj = (YukonPAObject)CCYukonPAOFactory.createCapControlPAO( cbcType );
+				DBPersistent cbcObj = CCYukonPAOFactory.createCapControlPAO( cbcType );
 
 				//set some of the standard fields
 				((YukonPAObject)cbcObj).setDisabled( getCbcWizardModel().getNestedWizard().getDisabled().booleanValue() );
@@ -132,8 +134,8 @@ public class CBCDBObjCreator {
 	/**
 	 * @param model
 	 */
-	public void setCbcWizardModel(CBCWizardModel model) {
-		cbcWizardModel = model;
+	public void setCbcWizardModel(EditorDataModel model) {
+		cbcWizardModel = (CBCWizardModel) model;
 	}
 
 }

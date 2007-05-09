@@ -8,10 +8,12 @@ import javax.faces.event.ValueChangeEvent;
 
 import org.apache.myfaces.component.html.ext.HtmlInputText;
 
+
+import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.web.util.CapControlModelUtil;
 
-public class CapControlStrategyModel {
+public class CapControlStrategyModel implements EditorDataModel{
 
     private CapControlStrategy strategy = null;
     private HashMap enableTable = new HashMap(10);
@@ -292,6 +294,10 @@ public class CapControlStrategyModel {
     public boolean isVoltVar () {
      String algo = strategy.getControlUnits();
      return CapControlModelUtil.isVoltVar(algo);
+    }
+
+    public void updateDataModel() {
+        updateModel();
     }
     
 

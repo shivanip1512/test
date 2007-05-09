@@ -7,7 +7,6 @@ import org.apache.myfaces.custom.tabbedpane.TabChangeListener;
 
 import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.util.JSFParamUtil;
-import com.cannontech.web.util.JSFUtil;
 
 public class CCTabChangeListener implements TabChangeListener {
 

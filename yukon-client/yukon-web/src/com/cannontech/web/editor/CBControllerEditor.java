@@ -2,13 +2,10 @@ package com.cannontech.web.editor;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
@@ -17,6 +14,12 @@ import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
+
+import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
+import com.cannontech.cbc.exceptions.PortDoesntExistException;
+import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
+import com.cannontech.cbc.exceptions.SerialNumberExistsException;
+import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.web.CBCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -39,10 +42,6 @@ import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
-import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
-import com.cannontech.web.exceptions.PortDoesntExistException;
-import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
-import com.cannontech.web.exceptions.SerialNumberExistsException;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -51,7 +50,7 @@ import com.cannontech.yukon.cbc.CBCUtils;
  * @author ryan
  *
  */
-public class CBControllerEditor {
+public class CBControllerEditor implements ICBControllerModel {
 
     private YukonPAObject deviceCBC = null;
     
@@ -108,8 +107,11 @@ public class CBControllerEditor {
 
 
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isEditingIntegrity()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isEditingIntegrity()
      */
     public boolean isEditingIntegrity() {
 
@@ -117,8 +119,11 @@ public class CBControllerEditor {
                                                          .containsKey(DeviceScanRate.TYPE_INTEGRITY);
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isEditingException()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isEditingException()
      */
     public boolean isEditingException() {
 
@@ -126,20 +131,29 @@ public class CBControllerEditor {
                                                          .containsKey(DeviceScanRate.TYPE_EXCEPTION);
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setEditingIntegrity(boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setEditingIntegrity(boolean)
      */
     public void setEditingIntegrity(boolean val) {
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setEditingException(boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setEditingException(boolean)
      */
     public void setEditingException(boolean val) {
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isTwoWay()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isTwoWay()
      */
     public boolean isTwoWay() {
         if (getPaoCBC() != null)
@@ -147,6 +161,12 @@ public class CBControllerEditor {
         return false;
     }
     
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isOneWay()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isOneWay()
+     */
     public boolean isOneWay() {
         if (getPaoCBC() != null) {
         	if ( !isTwoWay() && (getPaoCBC() instanceof ICapBankController) )
@@ -156,24 +176,32 @@ public class CBControllerEditor {
         
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getPaoCBC()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getPaoCBC()
      */
     public YukonPAObject getPaoCBC() {
 
         return deviceCBC;
     }
 
-    /**
-     * @param deviceCBC
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setPaoCBC(com.cannontech.database.data.pao.YukonPAObject)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setPaoCBC(com.cannontech.database.data.pao.YukonPAObject)
      */
     public void setPaoCBC(YukonPAObject deviceCBC) {
         this.deviceCBC = deviceCBC;
     }
 
-    /**
-     * Gets the full DB object from the database so we can operate on
-     * the whole thing.
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#retrieveDB()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#retrieveDB()
      */
     public void retrieveDB() {
 
@@ -192,6 +220,12 @@ public class CBControllerEditor {
 
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getPointList()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getPointList()
+     */
     public TreeNode getPointList() {
         if (pointList == null) {
 	    	pointList = new TreeNodeBase("root", "Points", false);
@@ -235,37 +269,85 @@ public class CBControllerEditor {
 		return pointList;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getSelectedPointFormatString()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getSelectedPointFormatString()
+     */
     public String getSelectedPointFormatString() {
         return "Add Point";
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getCbcControllerStatusMessage()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getCbcControllerStatusMessage()
+     */
     public String getCbcControllerStatusMessage() {
         return cbcControllerStatusMessage;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setCbcControllerStatusMessage(java.lang.String)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setCbcControllerStatusMessage(java.lang.String)
+     */
     public void setCbcControllerStatusMessage(String msgStr) {
         this.cbcControllerStatusMessage = msgStr;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getPointTree()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getPointTree()
+     */
     public HtmlTree getPointTree() {
 
     	return pointTree;
     
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
     public void setPointTree(HtmlTree pointTree) {
     	this.pointTree = pointTree;
 
 	}
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isEditingController()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isEditingController()
+     */
     public boolean isEditingController() {
         return editingController;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setEditingController(boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setEditingController(boolean)
+     */
     public void setEditingController(boolean editingController) {
         this.editingController = editingController;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#checkForErrors()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#checkForErrors()
+     */
     public void checkForErrors() throws PortDoesntExistException,
             MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SQLException, SerialNumberExistsException {
         
@@ -393,6 +475,12 @@ public class CBControllerEditor {
 	}
     
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#pointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#pointClick(javax.faces.event.ActionEvent)
+     */
     public void pointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         //save the state of the point tree before changing the page
@@ -422,6 +510,12 @@ public class CBControllerEditor {
         }
     }
     
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#addPointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#addPointClick(javax.faces.event.ActionEvent)
+     */
     public void addPointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         //save the state of the point tree before changing the page
@@ -443,6 +537,12 @@ public class CBControllerEditor {
             }
         }
     }
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#deletePointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#deletePointClick(javax.faces.event.ActionEvent)
+     */
     public void deletePointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         //save the state of the point tree before changing the page
@@ -494,22 +594,46 @@ public class CBControllerEditor {
 
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setPointList(org.apache.myfaces.custom.tree2.TreeNode)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setPointList(org.apache.myfaces.custom.tree2.TreeNode)
+     */
 	public void setPointList(TreeNode pointList) {
 		this.pointList = pointList;
 	}
 
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getSerialNumber()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getSerialNumber()
+     */
 	public long getSerialNumber() {
 		return serialNumber;
 	}
 
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setSerialNumber(long)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setSerialNumber(long)
+     */
 	public void setSerialNumber(long serialNumber) {
 		this.serialNumber = serialNumber;
 	}
 	
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#resetSerialNumber()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#resetSerialNumber()
+     */
 	public void resetSerialNumber () {  	
     	if (deviceCBC != null) {
 			if (deviceCBC instanceof CapBankController702x) {          
@@ -543,6 +667,12 @@ public class CBControllerEditor {
 
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isDevice702X()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isDevice702X()
+     */
 	public boolean isDevice702X() {
 		if (getPaoCBC() != null) {
 			int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
@@ -553,6 +683,12 @@ public class CBControllerEditor {
 		return false;		
 	}
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isDevice701X()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#isDevice701X()
+     */
 	public boolean isDevice701X() {
 		if (getPaoCBC() != null) {
 			int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
@@ -565,12 +701,24 @@ public class CBControllerEditor {
 
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getDeviceType()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#getDeviceType()
+     */
 	public int getDeviceType() {
 		return deviceType;
 	}
 
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setDeviceType(int)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICBControllerEditor#setDeviceType(int)
+     */
 	public void setDeviceType(int deviceType) {
 		this.deviceType = deviceType;
 

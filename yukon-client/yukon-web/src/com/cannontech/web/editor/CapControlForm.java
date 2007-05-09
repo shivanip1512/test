@@ -28,6 +28,17 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
+
+import com.cannontech.cbc.exceptions.CBCExceptionMessages;
+import com.cannontech.cbc.exceptions.FormWarningException;
+import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
+import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
+import com.cannontech.cbc.exceptions.PortDoesntExistException;
+import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
+import com.cannontech.cbc.exceptions.SerialNumberExistsException;
+import com.cannontech.cbc.model.EditorDataModel;
+import com.cannontech.cbc.model.ICBControllerModel;
+import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -51,6 +62,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -69,20 +81,11 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
-import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
-import com.cannontech.web.editor.model.EditorDataModel;
 import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
-import com.cannontech.web.exceptions.CBCExceptionMessages;
-import com.cannontech.web.exceptions.FormWarningException;
-import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
-import com.cannontech.web.exceptions.PAODoesntHaveNameException;
-import com.cannontech.web.exceptions.PortDoesntExistException;
-import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
-import com.cannontech.web.exceptions.SerialNumberExistsException;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
@@ -95,7 +98,7 @@ import com.cannontech.yukon.cbc.CBCUtils;
  * @author ryan
  * 
  */
-public class CapControlForm extends DBEditorForm{
+public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	/**
      * 
      */
@@ -120,10 +123,10 @@ public class CapControlForm extends DBEditorForm{
 	private List unassignedFeeders = null;
 
 	// possible selection types for every wizard panel
-	private CBCWizardModel wizData = null;
+	private EditorDataModel wizData = null;
 
 	// possible editor for the CBC a CapBank belongs to
-	private CBControllerEditor cbControllerEditor = null;
+	private ICBControllerModel cbControllerEditor = null;
 
 	private LiteYukonPAObject[] unusedCCPAOs = null;
 
@@ -169,7 +172,7 @@ public class CapControlForm extends DBEditorForm{
 
     private EditorDataModel dataModel = null;
     
-    private CapControlStrategyModel currentStratModel = null;
+    private EditorDataModel currentStratModel = null;
 
     
     
@@ -182,9 +185,10 @@ public class CapControlForm extends DBEditorForm{
     }
 
 
-    /**
-	 * Hold all the CBCStrategies in memory for quicker access.
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCbcStrategies()
+     */
 	public SelectItem[] getCbcStrategies() {
 
 		if (cbcStrategies == null) {
@@ -206,9 +210,9 @@ public class CapControlForm extends DBEditorForm{
 		return cbcStrategies;
 	}
 
-	/**
-	 * Hold a the CBCStrategies in memory for quicker access.
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCbcStrategiesMap()
+     */
 	public HashMap getCbcStrategiesMap() {
 
 		if (cbcStrategiesMap == null) {
@@ -221,9 +225,10 @@ public class CapControlForm extends DBEditorForm{
 		return cbcStrategiesMap;
 	}
 
-	/**
-	 * Hold a the KwkvarPaos SelectableItems in memory for quicker access.
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getKwkvarPaos()
+     */
 	public SelectItem[] getKwkvarPaos() {
         
 		if (kwkvarPaos == null) {
@@ -245,9 +250,10 @@ public class CapControlForm extends DBEditorForm{
 		return kwkvarPaos;
 	}
 
-	/**
-	 * Hold a the KwkvarPoints SelectableItems in memory for quicker access.
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getKwkvarPoints()
+     */
 	public SelectItem[] getKwkvarPoints() {
 
 		if (kwkvarPoints == null) {
@@ -259,10 +265,10 @@ public class CapControlForm extends DBEditorForm{
 		return kwkvarPoints;
 	}
 
-	/**
-	 * Returns the currently selected strategyID for the given Sub or Feeder
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCurrentStrategyID()
+     */
 	public int getCurrentStrategyID() {
 
 		int stratID = CtiUtilities.NONE_ZERO_ID;
@@ -280,31 +286,34 @@ public class CapControlForm extends DBEditorForm{
 		return stratID;
 	}
     
-    /**
-     * Returns data model for currently selected strategy
-     * 
-     * */
-    public CapControlStrategyModel getCurrentStratModel () {
+
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCurrentStratModel()
+     */
+    public EditorDataModel getCurrentStratModel () {
         if (currentStratModel == null)
         {
             CapControlStrategy strat = (CapControlStrategy) cbcStrategiesMap.get(getCurrentStrategyID());
             currentStratModel = new CapControlStrategyModel (strat);
         }
-        currentStratModel.updateModel();
+        ((CapControlStrategyModel) currentStratModel).updateModel();
         return currentStratModel;
         
     }
     
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#newStrategySelected(javax.faces.event.ValueChangeEvent)
+     */
     public void newStrategySelected (ValueChangeEvent vce)
     {
         resetCurrentStratModel();
 
     }
-    /**
-	 * Returns all available VAR points
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getVarTreeData()
+     */
 	public TreeNode getVarTreeData() {
 
 		if (varTreeData == null){
@@ -316,10 +325,10 @@ public class CapControlForm extends DBEditorForm{
 		return varTreeData;
 	}
 
-	/**
-	 * Returns all available WATT points
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getWattTreeData()
+     */
 	public TreeNode getWattTreeData() {
 		if (wattTreeData == null){
 			wattTreeData =  new TreeNodeBase("root", "Watt Points", false);
@@ -331,10 +340,10 @@ public class CapControlForm extends DBEditorForm{
 	}
 
 
-	/**
-	 * Returns all available Volt points
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getVoltTreeData()
+     */
 	public TreeNode getVoltTreeData() {
 		if (voltTreeData == null){
 			voltTreeData = new TreeNodeBase("root", "Volt Points", false);
@@ -364,10 +373,10 @@ public class CapControlForm extends DBEditorForm{
 		return unusedCCPAOs;
 	}
 
-	/**
-	 * Returns all status points that are available for a CapBank to use for its
-	 * control point
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCapBankPoints()
+     */
 	public TreeNode getCapBankPoints() {
 
 		TreeNode rootNode = new TreeNodeBase("root",
@@ -456,10 +465,10 @@ public class CapControlForm extends DBEditorForm{
 		return rootNode;
 	}
 
-	/**
-	 * Event fired when the Var Point selection has changed
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#varPtTeeClick(javax.faces.event.ActionEvent)
+     */
 	public void varPtTeeClick(ActionEvent ae) {
 
 		String val = (String) FacesContext.getCurrentInstance()
@@ -476,10 +485,10 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	/**
-	 * Event fired when the Dual Bus 2-way status point selection has changed
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#twoWayPtsTeeClick(javax.faces.event.ActionEvent)
+     */
 	public void twoWayPtsTeeClick(ActionEvent ae) {
 
 		String val = (String) FacesContext.getCurrentInstance()
@@ -498,12 +507,20 @@ public class CapControlForm extends DBEditorForm{
 		setDualSubBusEdited(true);
 	}
 
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#selectedTwoWayPointClick(javax.faces.event.ActionEvent)
+     */
 	public void selectedTwoWayPointClick(ActionEvent ae) {
         
 	    //for some reason that works better then doin them separately
         selectedAltSubBusClick(ae);
     }
 
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#selectedAltSubBusClick(javax.faces.event.ActionEvent)
+     */
 	public void selectedAltSubBusClick(ActionEvent ae){
         
 	    resetCurrentDivOffset();
@@ -513,10 +530,10 @@ public class CapControlForm extends DBEditorForm{
         getSelectedSubBusFormatString();
     }
 	
-	/**
-	 * Event fired when the Dual Bus sub bus pao selection has changed
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#subBusPAOsClick(javax.faces.event.ActionEvent)
+     */
 	public void subBusPAOsClick(ActionEvent ae) {
 
         String val = (String) FacesContext.getCurrentInstance()
@@ -537,9 +554,10 @@ public class CapControlForm extends DBEditorForm{
         setDualSubBusEdited(true);
     }
 
-	/**
-	 * Event fired when the Watt Point selection has changed
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#wattPtTeeClick(javax.faces.event.ActionEvent)
+     */
 	public void wattPtTeeClick(ActionEvent ae) {
 
 		String val = (String) FacesContext.getCurrentInstance()
@@ -556,10 +574,10 @@ public class CapControlForm extends DBEditorForm{
 	}
 
 
-	/**
-	 * Event fired when the Volt Point selection has changed
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#voltPtTeeClick(javax.faces.event.ActionEvent)
+     */
 	public void voltPtTeeClick(ActionEvent ae) {
 
 		String val = (String) FacesContext.getCurrentInstance()
@@ -575,9 +593,10 @@ public class CapControlForm extends DBEditorForm{
 					.setCurrentVoltLoadPointID(new Integer(val));
 	}
 
-	/**
-	 * Restores the object from the database
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#initItem(int, int)
+     */
 	public void initItem(int id, int type) {
 
 		DBPersistent dbObj = null;
@@ -603,12 +622,13 @@ public class CapControlForm extends DBEditorForm{
 		initItem();
 	}
 
-	/**
-	 * Inits the wizard for the creation of a particular object type
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#initWizard(int)
+     */
 	public void initWizard(int paoType) {
 
-		getWizData().setWizPaoType(paoType);
+		((CBCWizardModel) getWizData()).setWizPaoType(paoType);
 
 		initPanels(paoType);
 	}
@@ -671,10 +691,10 @@ public class CapControlForm extends DBEditorForm{
     }
 
 
-    /**
-	 * Reset any data structures and allow the parent to do its thing
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#resetForm()
+     */
 	public void resetForm() {
 
 		resetStrategies();
@@ -841,24 +861,20 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	/**
-	 * The instance of the underlying base object
-	 * 
-	 */
-	// public YukonPAObject getPAOBase() {
-	// return (YukonPAObject)getDbPersistent();
-	// }
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getPAOBase()
+     */
 	public DBPersistent getPAOBase() {
         
             return getDbPersistent();
         
      }
 
-	/**
-	 * Fired when the kwkvarPaos component is changed
-	 * 
-	 * @param ev
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#kwkvarPaosChanged(javax.faces.event.ValueChangeEvent)
+     */
 	public void kwkvarPaosChanged(ValueChangeEvent ev) {
 
 		if (ev == null || ev.getNewValue() == null)
@@ -880,6 +896,10 @@ public class CapControlForm extends DBEditorForm{
 		System.arraycopy(temp, 0, kwkvarPoints, 1, temp.length);
 	}
 
+
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#clearfaces()
+     */
     public void clearfaces() {
         FacesMessage facesMessage = new FacesMessage();
         facesMessage.setDetail("");   
@@ -888,13 +908,10 @@ public class CapControlForm extends DBEditorForm{
                 facesMessage);
     }
     
-	/**
-	 * Executes any last minute object updates before writting the data to the
-	 * databse. The return value is where the requested value is redirected as
-	 * defined in our faces-config.xml
-	 * @throws SQLException 
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#update()
+     */
 	public void update() throws SQLException {
 
 		// this message will be filled in by the super class
@@ -903,7 +920,7 @@ public class CapControlForm extends DBEditorForm{
 		try {
 			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy()) {
-                CapControlStrategy currentStrategy = getCurrentStratModel().getStrategy();
+                CapControlStrategy currentStrategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
                 updateDBObject(currentStrategy, facesMsg);
                 
 				// clear out the memory of any list of Strategies
@@ -1081,7 +1098,7 @@ public class CapControlForm extends DBEditorForm{
 		if  (dbObj instanceof CapBank)
         {
         // set the parent to use the newly created supporting items
-    		if (getWizData().isCreateNested()) {
+    		if (((CBCWizardModel) getWizData()).isCreateNested()) {
     			// set the CapBanks ControlDeviceID to be the ID of the CBC we just
     			// created
     			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
@@ -1116,11 +1133,10 @@ public class CapControlForm extends DBEditorForm{
            addDBObject(additionalInfo, facesMsg);
     }
 
-	/**
-	 * Executes the creation of the current DB object. We stuff the current DB
-	 * persistent object with the newlay created one so our jump to the editor
-	 * page will use the new created DB object.
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#create()
+     */
 	public String create() {
 
 		// creates the DB object
@@ -1130,7 +1146,7 @@ public class CapControlForm extends DBEditorForm{
 		try {
 
 			// if there is a secondaryType set, use that value to creat the PAO
-			int paoType = getWizData().getSelectedType();
+			int paoType = ((CBCWizardModel) getWizData()).getSelectedType();
 			DBPersistent dbObj = null;
 			int editorType = -1;
 
@@ -1138,9 +1154,9 @@ public class CapControlForm extends DBEditorForm{
 			if (paoType == DBEditorTypes.PAO_SCHEDULE) {
 
 				dbObj = new PAOSchedule();
-				((PAOSchedule) dbObj).setDisabled(getWizData().getDisabled()
+				((PAOSchedule) dbObj).setDisabled(((CBCWizardModel) getWizData()).getDisabled()
 						.booleanValue());
-				((PAOSchedule) dbObj).setScheduleName(getWizData().getName());
+				((PAOSchedule) dbObj).setScheduleName(((CBCWizardModel) getWizData()).getName());
 
 				addDBObject(dbObj, facesMsg);
 				itemID = ((PAOSchedule) dbObj).getScheduleID().intValue();
@@ -1150,13 +1166,13 @@ public class CapControlForm extends DBEditorForm{
 						.createCapControlPAO(paoType);
                 
 
-				((YukonPAObject) dbObj).setDisabled(getWizData().getDisabled()
+				((YukonPAObject) dbObj).setDisabled(((CBCWizardModel) getWizData()).getDisabled()
 						.booleanValue());
 				
 				
 				// for CBCs that have a portID with it
 				if (DeviceTypesFuncs.cbcHasPort(paoType))
-					((ICapBankController) dbObj).setCommID(getWizData()
+					((ICapBankController) dbObj).setCommID(((LiteYukonPAObject) getWizData())
 							.getPortID());
                 
 
@@ -1164,7 +1180,7 @@ public class CapControlForm extends DBEditorForm{
 				
 				//make sure we configured the object correctly
 				//before we insert it into DB
-				errorCheckOnCreate(dbObj, getWizData());
+				errorCheckOnCreate(dbObj, (CBCWizardModel) getWizData());
 	
 				addDBObject(dbObj, facesMsg);
 				itemID = ((YukonPAObject) dbObj).getPAObjectID().intValue();
@@ -1223,7 +1239,7 @@ public class CapControlForm extends DBEditorForm{
 	 * @throws PAODoesntHaveNameException
 	 */
 	private void errorCheckOnCreate(DBPersistent dbObj, CBCWizardModel wizData) throws PAODoesntHaveNameException {
-		if (!getWizData().getName().equalsIgnoreCase("")){
+		if (!((CBCWizardModel) getWizData()).getName().equalsIgnoreCase("")){
 			((YukonPAObject) dbObj).setPAOName(wizData.getName());			
 		}
 		else {		
@@ -1232,9 +1248,21 @@ public class CapControlForm extends DBEditorForm{
 		}
 	}
 
-	/**
-	 * Puts our form into CBC editing mode
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#showScanRate(javax.faces.event.ValueChangeEvent)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#showScanRate(javax.faces.event.ValueChangeEvent)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#showScanRate(javax.faces.event.ValueChangeEvent)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#showScanRate(javax.faces.event.ValueChangeEvent)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#showScanRate(javax.faces.event.ValueChangeEvent)
+     */
 	public void showScanRate(ValueChangeEvent ev) {
 
 		if (ev == null || ev.getNewValue() == null)
@@ -1271,10 +1299,22 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	/**
-	 * Returns the editor object for the internal CBC editor
-	 */
-	public CBControllerEditor getCBControllerEditor() {
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getCBControllerEditor()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getCBControllerEditor()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getCBControllerEditor()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getCBControllerEditor()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCBControllerEditor()
+     */
+	public ICBControllerModel getCBControllerEditor() {
 	   
 		if (cbControllerEditor == null) {
             int paoId = itemID;			
@@ -1288,31 +1328,33 @@ public class CapControlForm extends DBEditorForm{
 		return cbControllerEditor;
 	}
 
-	/**
-	 * Sets the editor object for the internal CBC editor
-	 */
-	public void setCBControllerEditor(CBControllerEditor cbCntrlEditor) {
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setCBControllerEditor(adapter.ICBControllerModel)
+     */
+	public void setCBControllerEditor(ICBControllerModel cbCntrlEditor) {
 		cbControllerEditor = cbCntrlEditor;
 	}
 
-	/**
-	 * Tells us if we are editing a CBC
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isEditingController()
+     */
 	public boolean isEditingController() {
 		return editingController;
 	}
 
-	/**
-	 * Tells us if we are editing a CBC
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setEditingController(boolean)
+     */
 	public void setEditingController(boolean val) {
 		editingController = val;
 	}
 
-	/**
-	 * Creates a strategy
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#createStrategy()
+     */
 	public void createStrategy() {
         currentStratModel = null;
         CapControlStrategy ccStrat = CCYukonPAOFactory
@@ -1351,10 +1393,10 @@ public class CapControlForm extends DBEditorForm{
 		}
 	}
 
-	/**
-	 * Delete the selected Strategy
-	 * 
-	 */
+
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#deleteStrategy()
+     */
 	public void deleteStrategy() {
 
 		// this message will be filled in by the super class
@@ -1429,18 +1471,40 @@ public class CapControlForm extends DBEditorForm{
 		}
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getPAODescLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getPAODescLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getPAODescLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getPAODescLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getPAODescLabel()
+     */
 	public String getPAODescLabel() {
 		return paoDescLabel;
 	}
 
-	/**
-	 * Returns the parent object to the current DB object
-	 * 
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getParent()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getParent()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getParent()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getParent()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getParent()
+     */
 	public String getParent() {
 
 		int parentID = CtiUtilities.NONE_ZERO_ID;
@@ -1463,11 +1527,21 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	/**
-	 * Adds an element from one table to another by the given id
-	 * 
-	 * @param event
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#treeSwapAddAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#treeSwapAddAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#treeSwapAddAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#treeSwapAddAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#treeSwapAddAction()
+     */
 	public void treeSwapAddAction() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
@@ -1585,10 +1659,21 @@ public class CapControlForm extends DBEditorForm{
 
     
 
-	/**
-	 * Removed an element from one table to another by the given id
-	 * 
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#treeSwapRemoveAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#treeSwapRemoveAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#treeSwapRemoveAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#treeSwapRemoveAction()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#treeSwapRemoveAction()
+     */
 	public void treeSwapRemoveAction() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
@@ -1642,11 +1727,21 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	/**
-	 * Builds up the available CapBanks and unavailable CapBanks for assignment
-	 * to a feeder. Also, inits panel state based on the editor object that is
-	 * set.
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#initEditorPanels()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#initEditorPanels()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#initEditorPanels()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#initEditorPanels()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#initEditorPanels()
+     */
 	public void initEditorPanels() {
 		if (getDbPersistent() instanceof CapControlFeeder) {
 			com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = ((CapControlFeeder) getDbPersistent())
@@ -1699,73 +1794,193 @@ public class CapControlForm extends DBEditorForm{
 				LiteComparators.liteStringComparator);
 	}
 
-	/**
-	 * @param string
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setPaoDescLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setPaoDescLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setPaoDescLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setPaoDescLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setPaoDescLabel(java.lang.String)
+     */
 	public void setPaoDescLabel(String string) {
 		paoDescLabel = string;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#isEditingCBCStrategy()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isEditingCBCStrategy()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isEditingCBCStrategy()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#isEditingCBCStrategy()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isEditingCBCStrategy()
+     */
 	public boolean isEditingCBCStrategy() {
 		return editingCBCStrategy;
 	}
 
-	/**
-	 * @param b
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setEditingCBCStrategy(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setEditingCBCStrategy(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setEditingCBCStrategy(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setEditingCBCStrategy(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setEditingCBCStrategy(boolean)
+     */
 	public void setEditingCBCStrategy(boolean b) {
 		editingCBCStrategy = b;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getTimeInterval()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getTimeInterval()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getTimeInterval()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getTimeInterval()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getTimeInterval()
+     */
 	public SelectItem[] getTimeInterval() {
 
 		return CBCSelectionLists.TIME_INTERVAL;
 	}
 
-	/**
-	 * @return all time values >= 5 minutes
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getScheduleRepeatTime()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getScheduleRepeatTime()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getScheduleRepeatTime()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getScheduleRepeatTime()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getScheduleRepeatTime()
+     */
 	public SelectItem[] getScheduleRepeatTime() {
 		return CBCSelectionLists.getTimeSubList(300);
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getUnassignedBanks()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getUnassignedBanks()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getUnassignedBanks()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getUnassignedBanks()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getUnassignedBanks()
+     */
 	public List getUnassignedBanks() {
 		return unassignedBanks;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getUnassignedFeeders()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getUnassignedFeeders()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getUnassignedFeeders()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getUnassignedFeeders()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getUnassignedFeeders()
+     */
 	public List getUnassignedFeeders() {
 		return unassignedFeeders;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getChildLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getChildLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getChildLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getChildLabel()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getChildLabel()
+     */
 	public String getChildLabel() {
 		return childLabel;
 	}
 
-	/**
-	 * @param string
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setChildLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setChildLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setChildLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setChildLabel(java.lang.String)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setChildLabel(java.lang.String)
+     */
 	public void setChildLabel(String string) {
 		childLabel = string;
 	}
 
-	/**
-	 * Converter for allowing an array of Integers for our DaysofWeek string
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setStratDaysOfWeek(java.lang.String[])
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setStratDaysOfWeek(java.lang.String[])
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setStratDaysOfWeek(java.lang.String[])
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setStratDaysOfWeek(java.lang.String[])
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setStratDaysOfWeek(java.lang.String[])
+     */
 	public void setStratDaysOfWeek(String[] newDaysOfWeek) {
 
 		CapControlStrategy strat = (CapControlStrategy) getCbcStrategiesMap()
@@ -1782,9 +1997,21 @@ public class CapControlForm extends DBEditorForm{
 		strat.setDaysOfWeek(buff.toString());
 	}
 
-	/**
-	 * Converter for allowing an array of Integers for our DaysofWeek string
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getStratDaysOfWeek()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getStratDaysOfWeek()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getStratDaysOfWeek()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getStratDaysOfWeek()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getStratDaysOfWeek()
+     */
 	public String[] getStratDaysOfWeek() {
 
 		CapControlStrategy strat = (CapControlStrategy) getCbcStrategiesMap()
@@ -1803,9 +2030,21 @@ public class CapControlForm extends DBEditorForm{
 		return (String[]) retList.toArray(strArray);
 	}
 
-	/**
-	 * Tells us if our current CapBank uses a CBC for control or not
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#isControllerCBC()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isControllerCBC()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isControllerCBC()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#isControllerCBC()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isControllerCBC()
+     */
 	public boolean isControllerCBC() {
 
 		if (getDbPersistent() instanceof CapBank) {
@@ -1834,11 +2073,21 @@ public class CapControlForm extends DBEditorForm{
            return false;
 	}
 
-	/**
-	 * Returns true if the DB object is a CapBank and the OpState is FIXED
-	 * 
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#isBankControlPtVisible()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isBankControlPtVisible()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isBankControlPtVisible()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#isBankControlPtVisible()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isBankControlPtVisible()
+     */
 	public boolean isBankControlPtVisible() {
 
 		if (getDbPersistent() instanceof CapBank) {
@@ -1848,9 +2097,21 @@ public class CapControlForm extends DBEditorForm{
 			return false;
 	}
 
-	/**
-	 * Adds a schedule for a PAO
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#addSchedule()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#addSchedule()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#addSchedule()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#addSchedule()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#addSchedule()
+     */
 	public void addSchedule() {
 
 		if (!(getDbPersistent() instanceof CapControlSubBus))
@@ -1867,10 +2128,22 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
-	/**
-	 * @return
-	 */
-	public CBCWizardModel getWizData() {
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getWizData()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getWizData()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getWizData()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getWizData()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getWizData()
+     */
+	public EditorDataModel getWizData() {
 
 		if (wizData == null)
 			wizData = new CBCWizardModel();
@@ -1878,10 +2151,21 @@ public class CapControlForm extends DBEditorForm{
 		return wizData;
 	}
 
-	/**
-	 * Returns true if our current CBCStrategy is set to do some form of Voltage
-	 * control, else false is returned
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#isVoltageControl()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isVoltageControl()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isVoltageControl()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#isVoltageControl()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isVoltageControl()
+     */
 	public boolean isVoltageControl() {
 
 		if (getCurrentStrategyID() != CtiUtilities.NONE_ZERO_ID) {
@@ -1897,6 +2181,21 @@ public class CapControlForm extends DBEditorForm{
 
 	
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getSubBusList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSubBusList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSubBusList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getSubBusList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getSubBusList()
+     */
 	public LiteYukonPAObject[] getSubBusList() {
 		
 		if (subBusList == null) {
@@ -1907,6 +2206,21 @@ public class CapControlForm extends DBEditorForm{
 				.toArray(new LiteYukonPAObject[subBusList.size()]);
 	}
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getSwitchPointList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSwitchPointList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSwitchPointList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getSwitchPointList()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getSwitchPointList()
+     */
 	public TreeNode getSwitchPointList() {
 	    TreeNode rootData = new TreeNodeBase("root","Switch Points", false);
         Set points = PointLists.getAllTwoStateStatusPoints();
@@ -1915,6 +2229,21 @@ public class CapControlForm extends DBEditorForm{
         return rootData;
     }
     
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getSelectedSubBusFormatString()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSelectedSubBusFormatString()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSelectedSubBusFormatString()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getSelectedSubBusFormatString()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getSelectedSubBusFormatString()
+     */
 	public String getSelectedSubBusFormatString() {
 
 		String retString = new String();
@@ -1947,6 +2276,21 @@ public class CapControlForm extends DBEditorForm{
 	}
 
     
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getSelectedTwoWayPointsFormatString()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSelectedTwoWayPointsFormatString()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSelectedTwoWayPointsFormatString()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getSelectedTwoWayPointsFormatString()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getSelectedTwoWayPointsFormatString()
+     */
     public String getSelectedTwoWayPointsFormatString() {
 		String retString = new String(" ");
 		Integer pointId = null;
@@ -2001,10 +2345,40 @@ public class CapControlForm extends DBEditorForm{
 
 	}
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getDualBusSwitchPointTree()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getDualBusSwitchPointTree()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getDualBusSwitchPointTree()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getDualBusSwitchPointTree()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getDualBusSwitchPointTree()
+     */
 	public HtmlTree getDualBusSwitchPointTree() {
 		return dualBusSwitchPointTree;
 	}
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setDualBusSwitchPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setDualBusSwitchPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setDualBusSwitchPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setDualBusSwitchPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setDualBusSwitchPointTree(org.apache.myfaces.custom.tree2.HtmlTree)
+     */
 	public void setDualBusSwitchPointTree(HtmlTree tree) {
 		this.dualBusSwitchPointTree = tree;
 	}
@@ -2013,10 +2387,40 @@ public class CapControlForm extends DBEditorForm{
 
 
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getEnableDualBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getEnableDualBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getEnableDualBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getEnableDualBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getEnableDualBus()
+     */
     public Boolean getEnableDualBus() {
         return enableDualBus;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setEnableDualBus(java.lang.Boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setEnableDualBus(java.lang.Boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setEnableDualBus(java.lang.Boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setEnableDualBus(java.lang.Boolean)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setEnableDualBus(java.lang.Boolean)
+     */
     public void setEnableDualBus(Boolean enableDualBus) {
         this.enableDualBus = enableDualBus;
         updateDualBusEnabled();         
@@ -2039,37 +2443,138 @@ public class CapControlForm extends DBEditorForm{
 	}
 	
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#isDualSubBusEdited()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isDualSubBusEdited()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isDualSubBusEdited()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#isDualSubBusEdited()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isDualSubBusEdited()
+     */
 	public boolean isDualSubBusEdited() {
 		return isDualSubBusEdited;
 	}
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setDualSubBusEdited(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setDualSubBusEdited(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setDualSubBusEdited(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setDualSubBusEdited(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setDualSubBusEdited(boolean)
+     */
 	public void setDualSubBusEdited(boolean isDualSubBusEdited) {
 		this.isDualSubBusEdited = isDualSubBusEdited;
 	}
 
-    /**
-     * getters and setters for the smart scrolling functionality on the front end
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getOldSubBus()
      */
     
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getOldSubBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getOldSubBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getOldSubBus()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getOldSubBus()
+     */
     public Integer getOldSubBus() {
         return oldSubBus;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setOldSubBus(java.lang.Integer)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setOldSubBus(java.lang.Integer)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setOldSubBus(java.lang.Integer)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setOldSubBus(java.lang.Integer)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setOldSubBus(java.lang.Integer)
+     */
     public void setOldSubBus(Integer oldSubBus) {
         this.oldSubBus = oldSubBus;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getOffsetMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getOffsetMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getOffsetMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getOffsetMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getOffsetMap()
+     */
     public Map getOffsetMap() {
         return offsetMap;
     }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setOffsetMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setOffsetMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setOffsetMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setOffsetMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setOffsetMap(java.util.Map)
+     */
     public void setOffsetMap(Map offsetMap) {
         this.offsetMap = offsetMap;
     }
 
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getSelectedPanelIndex()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSelectedPanelIndex()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getSelectedPanelIndex()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getSelectedPanelIndex()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getSelectedPanelIndex()
+     */
     public int getSelectedPanelIndex() {
         if (isEditingController())
         {
@@ -2094,6 +2599,21 @@ public class CapControlForm extends DBEditorForm{
         
     }
     
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getPaoName()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getPaoName()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getPaoName()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getPaoName()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getPaoName()
+     */
     public String getPaoName() {
     	String retStr = "";
     	if (getDbPersistent() != null) {
@@ -2111,11 +2631,41 @@ public class CapControlForm extends DBEditorForm{
         return retStr;
     }
     
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getCapBankPointList()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getCapBankPointList()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getCapBankPointList()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getCapBankPointList()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getCapBankPointList()
+     */
     public LitePoint[] getCapBankPointList() {
         List temp = DaoFactory.getPointDao().getLitePointsByPaObjectId(((YukonPAObject)getDbPersistent()).getPAObjectID().intValue());
         return (LitePoint[])temp.toArray(new LitePoint [temp.size()]);        
     }
     
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#capBankPointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#capBankPointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#capBankPointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#capBankPointClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#capBankPointClick(javax.faces.event.ActionEvent)
+     */
     public void capBankPointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         try {
@@ -2143,16 +2693,61 @@ public class CapControlForm extends DBEditorForm{
     }
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#isSwitchPointEnabled()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isSwitchPointEnabled()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#isSwitchPointEnabled()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#isSwitchPointEnabled()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#isSwitchPointEnabled()
+     */
 	public boolean isSwitchPointEnabled() {
 		return switchPointEnabled;
 	}
 
 
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setSwitchPointEnabled(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setSwitchPointEnabled(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setSwitchPointEnabled(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setSwitchPointEnabled(boolean)
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setSwitchPointEnabled(boolean)
+     */
 	public void setSwitchPointEnabled(boolean switchPointEnabled) {
 		this.switchPointEnabled = switchPointEnabled;
 	}
 	
 	//delegate to this class because generic class doesn't have to know about business rules	
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getControlMethods()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getControlMethods()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getControlMethods()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getControlMethods()
+     */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getControlMethods()
+     */
 	public SelectItem[]  getControlMethods () {
 	String algorithm = ((CapControlStrategy)getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() ))).getControlUnits();
 	
@@ -2173,6 +2768,21 @@ public class CapControlForm extends DBEditorForm{
 	}
     
     
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlFormAdapter#getPointNameMap()
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlForm#getPointNameMap()
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlForm#getPointNameMap()
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControl#getPointNameMap()
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlModel#getPointNameMap()
+         */
         public Map getPointNameMap () {
             int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
             int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
@@ -2193,10 +2803,40 @@ public class CapControlForm extends DBEditorForm{
          }
          
 
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlFormAdapter#setPointNameMap(java.util.Map)
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlForm#setPointNameMap(java.util.Map)
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlForm#setPointNameMap(java.util.Map)
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControl#setPointNameMap(java.util.Map)
+         */
+        /* (non-Javadoc)
+         * @see com.cannontech.web.editor.ICapControlModel#setPointNameMap(java.util.Map)
+         */
         public void setPointNameMap (Map m) {
              pointNameMap = (HashMap) m;
          }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getPaoNameMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getPaoNameMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getPaoNameMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getPaoNameMap()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getPaoNameMap()
+     */
     public Map getPaoNameMap () {
         int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
         int wattPoint = getControlPoint(PointUnits.UOMID_KW);
@@ -2207,7 +2847,22 @@ public class CapControlForm extends DBEditorForm{
         return paoNameMap;
      }
      
-     public void setPaoNameMap (Map m) {
+     /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setPaoNameMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setPaoNameMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setPaoNameMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setPaoNameMap(java.util.Map)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setPaoNameMap(java.util.Map)
+     */
+    public void setPaoNameMap (Map m) {
          paoNameMap = (HashMap) m;
      }
     
@@ -2249,6 +2904,21 @@ public class CapControlForm extends DBEditorForm{
     }
 
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#paoClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#paoClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#paoClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#paoClick(javax.faces.event.ActionEvent)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#paoClick(javax.faces.event.ActionEvent)
+     */
     public void paoClick(ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         try {
@@ -2279,6 +2949,21 @@ public class CapControlForm extends DBEditorForm{
     }
 
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#getDataModel()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getDataModel()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#getDataModel()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#getDataModel()
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#getDataModel()
+     */
     public EditorDataModel getDataModel() {
        if (dataModel == null) {
         if (getDbPersistent() != null)
@@ -2288,6 +2973,21 @@ public class CapControlForm extends DBEditorForm{
     }
 
 
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlFormAdapter#setDataModel(com.cannontech.web.editor.model.EditorDataModel)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setDataModel(com.cannontech.web.editor.model.EditorDataModel)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlForm#setDataModel(adapter.EditorDataModel)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControl#setDataModel(adapter.EditorDataModel)
+     */
+    /* (non-Javadoc)
+     * @see com.cannontech.web.editor.ICapControlModel#setDataModel(adapter.EditorDataModel)
+     */
     public void setDataModel(EditorDataModel dataModel) {
         this.dataModel = dataModel;
     }

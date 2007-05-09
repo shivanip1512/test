@@ -9,13 +9,10 @@
 <%@ page import="com.cannontech.database.data.capcontrol.CapBankController702x" %>
 
 <%@ page import="com.cannontech.database.db.DBPersistent" %>
-<%@ page import="com.cannontech.servlet.nav.DBEditorTypes" %>
+<%@ page import="com.cannontech.database.data.pao.DBEditorTypes" %>
 
 <%
-
-
-    
-CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+  CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
   String itemid = JSFParamUtil.getJSFReqParam("itemid");
   if (itemid != null)
     capControlForm.initItem(Integer.parseInt(itemid), DBEditorTypes.EDITOR_CAPCONTROL);

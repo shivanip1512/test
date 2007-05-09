@@ -3,12 +3,9 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <jsp:directive.page import="com.cannontech.web.editor.CapControlForm"/>
 <jsp:directive.page import="com.cannontech.web.util.JSFParamUtil"/>
-<jsp:directive.page import="com.cannontech.servlet.nav.DBEditorTypes"/>
+<jsp:directive.page import="com.cannontech.database.data.pao.DBEditorTypes"/>
 <%
-
-
-
-CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+  CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
   String itemid = JSFParamUtil.getJSFReqParam("itemid");
   if (itemid != null)
     capControlForm.initItem(Integer.parseInt(itemid), DBEditorTypes.EDITOR_CAPCONTROL);

@@ -29,7 +29,6 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-//import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao To change the template for this generated type comment go to
@@ -53,7 +52,6 @@ public class PointUtil {
             newVal.getDBPersistentVector().add(val);
 
             // accumulator point is automatically added
-            com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
 
             PointDao pointDao = DaoFactory.getPointDao();
             //int pointID = DaoFactory.getPointDao().getNextPointId();
@@ -317,8 +315,8 @@ public class PointUtil {
        int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId, type);
 	switch (type){
        case PointTypes.ANALOG_POINT:
-           point = (AnalogPoint) PointFactory.createPoint(PointTypes.ANALOG_POINT);
-           point = (AnalogPoint) PointFactory.createAnalogPoint(name,
+           point =  PointFactory.createPoint(PointTypes.ANALOG_POINT);
+           point =  PointFactory.createAnalogPoint(name,
                                                                       paoId,
                                                                       point.getPoint()
                                                                                  .getPointID(),
@@ -329,15 +327,15 @@ public class PointUtil {
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
        case PointTypes.STATUS_POINT:
-           point = (StatusPoint)PointFactory.createBankStatusPt(paoId);
+           point = PointFactory.createBankStatusPt(paoId);
            point.getPoint().setPointName(name);
            point.getPoint().setPointOffset( new Integer ( validPointOffset) );
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            
        case PointTypes.DEMAND_ACCUMULATOR_POINT:
-           point = (AccumulatorPoint)PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
-           point = (AccumulatorPoint)PointFactory.createDmdAccumPoint(name, 
+           point = PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
+           point = PointFactory.createDmdAccumPoint(name, 
                                                     paoId, 
                                                                       point.getPoint().getPointID(),
                                                                       TypeBase.POINT_OFFSET, 
@@ -356,7 +354,7 @@ public class PointUtil {
            break;
            
        case PointTypes.CALCULATED_STATUS_POINT:
-           point = (StatusPoint)PointFactory.createCalcStatusPoint(paoId, name);
+           point = PointFactory.createCalcStatusPoint(paoId, name);
            dbPersistentVector.getDBPersistentVector().add(point); 
            break;
            
@@ -373,7 +371,7 @@ public class PointUtil {
     public static void insertIntoDB(DBPersistent pointVector) throws TransactionException {
         if (pointVector != null) {
             try {
-                pointVector = (DBPersistent) Transaction.createTransaction(Transaction.INSERT,
+                pointVector = Transaction.createTransaction(Transaction.INSERT,
                                                                            pointVector)
                                                         .execute();
             

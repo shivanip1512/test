@@ -1,5 +1,7 @@
 package com.cannontech.web.wizard;
 
+
+import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -7,7 +9,7 @@ import com.cannontech.database.data.pao.PAOGroups;
  * Stores the sub types for wizards
  * @author ryan
  */
-public class CBCWizardModel {
+public class CBCWizardModel implements CBCCreationModel{
 	
 	private String name = null;
 	private Boolean disabled = new Boolean(false);
@@ -35,97 +37,94 @@ public class CBCWizardModel {
 		super();
 	}
 
-	/**
-	 * Returns the type that is selected based on on the fact that if the 
-	 *  secondaryType is set return it, else return type
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getSelectedType()
+     */
 	public int getSelectedType() {
 		return getSecondaryType() == null || getSecondaryType().intValue() == PAOGroups.INVALID
 					? getWizPaoType() : getSecondaryType().intValue();
 	}
 	
-	/**
-	 * Returns all the CBC that require a port for communications.
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#isPortNeeded()
+     */
 	public boolean isPortNeeded() {
 		return DeviceTypesFuncs.cbcHasPort( getSecondaryType().intValue() );
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getWizPaoType()
+     */
 	public int getWizPaoType() {
 		return wizPaoType;
 	}
 
-	/**
-	 * @param i
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#setWizPaoType(int)
+     */
 	public void setWizPaoType(int i) {
 		wizPaoType = i;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getDisabled()
+     */
 	public Boolean getDisabled() {
 		return disabled;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getName()
+     */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param boolean1
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#setDisabled(java.lang.Boolean)
+     */
 	public void setDisabled(Boolean boolean1) {
 		disabled = boolean1;
 	}
 
-	/**
-	 * @param string
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#setName(java.lang.String)
+     */
 	public void setName(String string) {
 		name = string;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getSecondaryType()
+     */
 	public Integer getSecondaryType() {
 		return secondaryType;
 	}
 
-	/**
-	 * @param integer
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#setSecondaryType(java.lang.Integer)
+     */
 	public void setSecondaryType(Integer integer) {
 		secondaryType = integer;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getPortID()
+     */
 	public Integer getPortID() {
 		return portID;
 	}
 
-	/**
-	 * @param integer
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#setPortID(java.lang.Integer)
+     */
 	public void setPortID(Integer integer) {
 		portID = integer;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#getNestedWizard()
+     */
 	public CBCWizardModel getNestedWizard() {
 		
 		if( nestedWizard == null )
@@ -134,18 +133,25 @@ public class CBCWizardModel {
 		return nestedWizard;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#isCreateNested()
+     */
 	public boolean isCreateNested() {
 		return createNested;
 	}
 
-	/**
-	 * @return
-	 */
+	/* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#setCreateNested(boolean)
+     */
 	public void setCreateNested( boolean val ) {
 		createNested = val;
 	}
+
+    /* (non-Javadoc)
+     * @see com.cannontech.web.wizard.CreateModel#updateDataModel()
+     */
+    public void updateDataModel() {
+        
+    }
 
 }

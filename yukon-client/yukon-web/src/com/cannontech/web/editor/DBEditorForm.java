@@ -26,7 +26,7 @@ import com.cannontech.yukon.conns.ConnPool;
  * Form for executing editor changes for DBPersitants
  *
  */
-public abstract class DBEditorForm
+public abstract class DBEditorForm 
 {
 	//data object that represents what is being edited
     private DBPersistent dbPersistent = null;

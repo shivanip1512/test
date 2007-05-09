@@ -6,6 +6,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -15,7 +16,6 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.editor.DBEditorForm;
-import com.cannontech.web.exceptions.CBCExceptionMessages;
 import com.cannontech.web.util.CBCCopyUtils;
 
 public class DBCopyForm extends DBEditorForm {

@@ -7,6 +7,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.servlet.nav.DBEditorNav;
@@ -45,7 +46,7 @@ public class PAOScheduleForm extends DBEditorForm {
 		int elemID = Integer.parseInt( (String)paramMap.get("schedID") );
 		//String elemID = (String)paramMap.get("schedID");
 		
-		CapControlForm f = new CapControlForm();
+        CapControlForm f = new CapControlForm();
 		f.initItem( elemID, DBEditorNav.EDITOR_SCHEDULE );
 
 		context.getExternalContext().getSessionMap().put(

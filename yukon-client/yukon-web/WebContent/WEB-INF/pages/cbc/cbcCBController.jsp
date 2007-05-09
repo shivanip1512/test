@@ -1,21 +1,11 @@
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.util.JSFParamUtil" %>
-<%@ page import="com.cannontech.util.ParamUtil" %>
-<%@ page import="com.cannontech.stars.util.ServerUtils" %>
-<%@ page import="com.cannontech.database.data.lite.LiteFactory" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
-<%@ page import="com.cannontech.database.db.DBPersistent" %>
-<%@ page import="com.cannontech.servlet.nav.DBEditorTypes" %>
-<%@ page import="com.cannontech.database.data.pao.YukonPAObject" %>
-<%@ page import="com.cannontech.web.editor.CBControllerEditor" %>
-<%@ page import="com.cannontech.web.util.JSFUtil" %>
-<%@ page import="com.cannontech.servlet.nav.DBEditorTypes" %>
+<jsp:directive.page import="com.cannontech.database.data.pao.DBEditorTypes"/>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%
-
-CapControlForm capControlForm =
+    CapControlForm capControlForm =
     (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
   String itemid = JSFParamUtil.getJSFReqParam("itemid");
   

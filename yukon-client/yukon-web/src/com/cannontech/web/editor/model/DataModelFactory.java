@@ -1,5 +1,7 @@
 package com.cannontech.web.editor.model;
 
+
+import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.db.DBPersistent;
 
