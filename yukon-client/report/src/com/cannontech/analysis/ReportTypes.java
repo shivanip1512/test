@@ -7,6 +7,7 @@
 package com.cannontech.analysis;
 
 import com.cannontech.analysis.controller.CBCInventoryController;
+import com.cannontech.analysis.controller.CapBankOperationsPerformanceController;
 import com.cannontech.analysis.controller.CapControlRetriesController;
 import com.cannontech.analysis.controller.CapControlConfirmationPercentageController;
 import com.cannontech.analysis.controller.CapControlOperationsController;
@@ -120,9 +121,10 @@ public class ReportTypes
     public static final int CAP_CONTROL_OPERATIONS = 37;
     public static final int CBC_INVENTORY = 38;
     public static final int CAP_CONTROL_CONFIRMATION_PERCENTAGE = 39;
-    public static final int CAP_CONTROL_BANK_PERFORMANCE = 40;
+    public static final int CAP_CONTROL_RETRIES = 40;
+    public static final int CAP_BANK_OPERATIONS_PERFORMANCE = 41;
     
-    public static final int SCHEDULED_METER_READ_DATA = 41;
+    public static final int SCHEDULED_METER_READ_DATA = 42;
     
 	private static Class[] typeToClassMap =
 	{
@@ -174,6 +176,7 @@ public class ReportTypes
         CBCInventoryController.class,
         CapControlConfirmationPercentageController.class,
         CapControlRetriesController.class,
+        CapBankOperationsPerformanceController.class,
         
         ScheduledMeterReadModel.class
 	};
@@ -231,7 +234,8 @@ public class ReportTypes
     public static final String CAP_CONTROL_OPERATIONS_STRING= "CapControl Operations";
     public static final String CBC_INVENTORY_STRING= "CBC Inventory";
     public static final String CAP_CONTROL_CONFIRMATION_PERCENTAGE_STRING = "Cap Control Confirmation Percentage";
-    public static final String CAP_CONTROL_BANK_PERFORMANCE_STRING= "Cap Control Bank Performance";
+    public static final String CAP_CONTROL_RETRIES_STRING= "Cap Control Retries Report";
+    public static final String CAP_BANK_OPERATIONS_PERFORMANCE_STRING= "CapBank Operations Performance Report";
     
     public static final String SCHEDULED_METER_READ_STRING = "Scheduled Meter Reads";
     
@@ -287,7 +291,8 @@ public class ReportTypes
         CAP_CONTROL_OPERATIONS_STRING,
         CBC_INVENTORY_STRING,
         CAP_CONTROL_CONFIRMATION_PERCENTAGE_STRING,
-        CAP_CONTROL_BANK_PERFORMANCE_STRING,
+        CAP_CONTROL_RETRIES_STRING,
+        CAP_BANK_OPERATIONS_PERFORMANCE_STRING,
         
         SCHEDULED_METER_READ_STRING
 	};
@@ -337,7 +342,7 @@ public class ReportTypes
 						POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
-	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA, MAX_DAILY_OPERATIONS, CAP_CONTROL_STATE_COMPARISON, CAP_CONTROL_OPERATIONS, CBC_INVENTORY, CAP_CONTROL_CONFIRMATION_PERCENTAGE, CAP_CONTROL_BANK_PERFORMANCE};
+	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA, MAX_DAILY_OPERATIONS, CAP_CONTROL_STATE_COMPARISON, CAP_CONTROL_OPERATIONS, CBC_INVENTORY, CAP_CONTROL_CONFIRMATION_PERCENTAGE, CAP_CONTROL_RETRIES, CAP_BANK_OPERATIONS_PERFORMANCE};
 	private static int[] databaseGroupReportTypes = new int[]{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA};
 	private static int[] starsGroupReportTypes = new int[]{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
 			STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,
