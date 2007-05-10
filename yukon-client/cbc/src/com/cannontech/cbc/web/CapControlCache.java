@@ -215,8 +215,6 @@ public  SubBus[] getSubsByArea(Integer areaID)
     List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
     //SubBus[] subs = new SubBus[intList.size()];
     List<SubBus> subList = new ArrayList<SubBus>();
-    synchronized (subList)
-    {
         for (Integer id : intList) {
             SubBus sub = (SubBus) subBusMap.get(id);
             if (sub != null)
@@ -224,7 +222,6 @@ public  SubBus[] getSubsByArea(Integer areaID)
                 subList.add(sub);
             }
         }
-    }
     SubBus[] subs = subList.toArray(new SubBus[]{});
     //before returning, sort our SubBuses based on the name
     Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
