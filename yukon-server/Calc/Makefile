@@ -5,6 +5,7 @@ all:
         @$(MAKE) -nologo -f makepch.mak
 #        @$(MAKE) -nologo -f makedll.mak
         @$(MAKE) -nologo -f makeexe.mak
+	@$(MAKE) -nologo -f maketest.mak
 
 copy:
 #        @$(MAKE) -nologo -f makedll.mak $@
@@ -15,6 +16,7 @@ copy:
 deps:
 #        @$(MAKE) -nologo -f makedll.mak $@
         @$(MAKE) -nologo -f makeexe.mak $@
+	@$(MAKE) -nologo -f maketest.mak $@
 
 
 clean:
