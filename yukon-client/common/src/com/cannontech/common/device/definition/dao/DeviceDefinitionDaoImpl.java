@@ -16,13 +16,19 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.definition.model.CommandDefinition;
+import com.cannontech.common.device.definition.model.CommandDefinitionImpl;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
+import com.cannontech.common.device.definition.model.PointReference;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplateImpl;
+import com.cannontech.common.device.definition.model.castor.Cmd;
+import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
 import com.cannontech.common.device.definition.model.castor.Point;
+import com.cannontech.common.device.definition.model.castor.PointRef;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -46,6 +52,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private UnitMeasureDao unitMeasureDao = null;
     private StateDao stateDao = null;
 
+    // Maps containing all of the data in the deviceDefinition.xml file
+
     // Map<DeviceType, Map<Attribute, PointTemplate>>
     private Map<Integer, Map<Attribute, PointTemplate>> deviceAttributePointTemplateMap = null;
 
@@ -60,6 +68,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     // Map<ChangeGroup, Set<DeviceDefinition>
     private Map<String, Set<DeviceDefinition>> changeGroupDevicesMap = null;
+
+    // Map<DeviceType, Set<CommandDefinition>
+    private Map<Integer, Set<CommandDefinition>> deviceCommandMap = null;
 
     public void setInputFile(InputStream inputFile) {
         this.inputFile = inputFile;
@@ -164,6 +175,25 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     }
 
+    public Set<CommandDefinition> getAffected(DeviceBase device, Set<PointTemplate> pointSet) {
+
+        Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
+
+        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+        Set<CommandDefinition> allCommandSet = this.deviceCommandMap.get(deviceType);
+
+        for (CommandDefinition command : allCommandSet) {
+            for (PointTemplate point : pointSet) {
+                if (command.affectsPoint(point)) {
+                    commandSet.add(command);
+                    break;
+                }
+            }
+        }
+
+        return commandSet;
+    }
+
     /**
      * Method to initialize the AttributeDao. This method will read the
      * deviceAttributes from the xml file and load the appropriate point
@@ -176,6 +206,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
         this.changeGroupDevicesMap = new HashMap<String, Set<DeviceDefinition>>();
         this.deviceAttributePointTemplateMap = new HashMap<Integer, Map<Attribute, PointTemplate>>();
+        this.deviceCommandMap = new HashMap<Integer, Set<CommandDefinition>>();
 
         InputStreamReader reader = null;
         try {
@@ -305,6 +336,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         Map<Attribute, PointTemplate> pointMap = new HashMap<Attribute, PointTemplate>();
         Set<PointTemplate> pointSet = new HashSet<PointTemplate>();
 
+        Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
+
         if (device.getPoints() != null) {
             Point[] points = device.getPoints().getPoint();
             for (Point point : points) {
@@ -313,12 +346,59 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                     pointMap.put(template.getAttribute(), template);
                 }
                 pointSet.add(template);
+
+                if (pointNameTemplateMap.containsKey(template.getName())) {
+                    throw new RuntimeException("Point name: " + template.getName() + " is used twice for device type: " + javaConstant + " in the deviceDefinition.xml file - point names must be unique within a device type");
+                }
+                pointNameTemplateMap.put(template.getName(), template);
             }
         }
-
         this.deviceAllPointTemplateMap.put(deviceType, pointSet);
         this.deviceAttributePointTemplateMap.put(deviceType, pointMap);
 
+        // Add device commands
+        Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
+        if (device.getCommands() != null) {
+            Command[] commands = device.getCommands().getCommand();
+            for (Command command : commands) {
+                CommandDefinition definition = this.createCommandDefinition(command,
+                                                                            pointNameTemplateMap);
+                commandSet.add(definition);
+            }
+        }
+        this.deviceCommandMap.put(deviceType, commandSet);
+    }
+
+    /**
+     * Helper method to convert a castor command to a command definition
+     * @param command - Command to convert
+     * @param pointNameTemplateMap
+     * @return The command definition representing the castor command
+     */
+    private CommandDefinition createCommandDefinition(Command command,
+            Map<String, PointTemplate> pointNameTemplateMap) {
+
+        CommandDefinition definition = new CommandDefinitionImpl();
+
+        // Add command text
+        Cmd[] cmds = command.getCmd();
+        for (Cmd cmd : cmds) {
+            definition.addCommandString(cmd.getText());
+        }
+
+        // Add point reference
+        PointRef[] pointRefs = command.getPointRef();
+        for (PointRef pointRef : pointRefs) {
+            if (!pointNameTemplateMap.containsKey(pointRef.getName())) {
+                throw new RuntimeException("Point name: " + pointRef.getName() + " not found.  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file.");
+            }
+            PointReference pointReference = new PointReference();
+            pointReference.setPointName(pointRef.getName());
+            pointReference.setExpectedMsgs(pointRef.getExpectedMsgs());
+            definition.addAffectedPoint(pointReference);
+        }
+
+        return definition;
     }
 
     /**

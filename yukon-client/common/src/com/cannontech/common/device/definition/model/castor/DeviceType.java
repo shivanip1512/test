@@ -68,6 +68,11 @@ public class DeviceType implements java.io.Serializable {
      */
     private com.cannontech.common.device.definition.model.castor.Points _points;
 
+    /**
+     * Field _commands
+     */
+    private com.cannontech.common.device.definition.model.castor.Commands _commands;
+
 
       //----------------/
      //- Constructors -/
@@ -82,6 +87,17 @@ public class DeviceType implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'commands'.
+     * 
+     * @return Commands
+     * @return the value of field 'commands'.
+     */
+    public com.cannontech.common.device.definition.model.castor.Commands getCommands()
+    {
+        return this._commands;
+    } //-- com.cannontech.common.device.definition.model.castor.Commands getCommands() 
 
     /**
      * Returns the value of field 'displayGroup'.
@@ -205,6 +221,16 @@ public class DeviceType implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'commands'.
+     * 
+     * @param commands the value of field 'commands'.
+     */
+    public void setCommands(com.cannontech.common.device.definition.model.castor.Commands commands)
+    {
+        this._commands = commands;
+    } //-- void setCommands(com.cannontech.common.device.definition.model.castor.Commands) 
 
     /**
      * Sets the value of field 'displayGroup'.

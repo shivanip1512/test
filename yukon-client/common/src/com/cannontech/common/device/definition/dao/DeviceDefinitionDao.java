@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.device.DeviceBase;
@@ -87,5 +88,14 @@ public interface DeviceDefinitionDao {
      *         method is called)
      */
     public abstract Set<DeviceDefinition> getChangeableDevices(DeviceDefinition deviceDefinition);
+
+    /**
+     * Method to get a list of command definitions for the given device which
+     * affect one or more of the points in the given set of points
+     * @param device - Device to get commands for
+     * @param pointSet - Set of points to get affecting commands for
+     * @return The set of commands affecting one or more of the points
+     */
+    public Set<CommandDefinition> getAffected(DeviceBase device, Set<PointTemplate> pointSet);
 
 }

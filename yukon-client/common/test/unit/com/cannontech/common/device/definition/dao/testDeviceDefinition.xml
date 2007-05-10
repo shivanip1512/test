@@ -45,13 +45,25 @@ This file contains default device and point information for all of the devices i
                 <unitofmeasure value="measure1"/>
                 
             </point>
-                <point type="Status">
+            <point type="Status">
                 <name>status1</name>
                 <offset value="1"/>
                 <stategroup value="state0"/>
             </point>
             
         </points>
+        <commands>
+        	<command name="command1">
+        		<cmd text="do command1" />
+        		<pointRef name="pulse1"/>
+        	</command>
+        	<command name="command2">
+        		<cmd text="do command2" />
+        		<cmd text="continue command2" />
+        		<pointRef name="pulse1" expectedMsgs="2"/>
+        		<pointRef name="pulse2"/>
+        	</command>
+        </commands>
     </device>
     <device>
         <type value="2" javaConstant="constant2" changeGroup="change1" />

@@ -10,8 +10,11 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.definition.model.CommandDefinition;
+import com.cannontech.common.device.definition.model.CommandDefinitionImpl;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
+import com.cannontech.common.device.definition.model.PointReference;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.common.mock.MockDevice;
@@ -284,6 +287,68 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         } catch (Exception e) {
             fail("Threw wrong type of exception: " + e.getClass());
         }
+    }
+
+    /**
+     * Test getAffected()
+     */
+    public void testGetAffected() {
+
+        Set<PointTemplate> points = new HashSet<PointTemplate>();
+        Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
+
+        // Define expected points
+        PointTemplateImpl point0 = new PointTemplateImpl("status1", 0, 0, 0.0, 0, 0, false, null);
+        PointTemplateImpl point1 = new PointTemplateImpl("pulse1",
+                                                         2,
+                                                         2,
+                                                         1.0,
+                                                         1,
+                                                         0,
+                                                         true,
+                                                         Attribute.USAGE);
+        PointTemplateImpl point2 = new PointTemplateImpl("pulse2",
+                                                         2,
+                                                         4,
+                                                         1.0,
+                                                         1,
+                                                         0,
+                                                         false,
+                                                         new Attribute("pulse2"));
+
+        // Define expected command definitions
+        CommandDefinitionImpl command1 = new CommandDefinitionImpl();
+        command1.addCommandString("do command1");
+        command1.addAffectedPoint(new PointReference("pulse1", 0));
+
+        CommandDefinitionImpl command2 = new CommandDefinitionImpl();
+        command2.addCommandString("do command2");
+        command2.addCommandString("continue command2");
+        command2.addAffectedPoint(new PointReference("pulse1", 2));
+        command2.addAffectedPoint(new PointReference("pulse2", 0));
+
+        
+        // Test with no expected commands
+        points.add(point0);
+        Set<CommandDefinition> actualCommands = dao.getAffected(device, points);
+        assertEquals("Expected no commands", expectedCommandSet, actualCommands);
+
+        // Test with one expected command
+        points.clear();
+        points.add(point2);
+        expectedCommandSet.add(command2);
+
+        actualCommands = dao.getAffected(device, points);
+        assertEquals("Expected 1 command", expectedCommandSet, actualCommands);
+
+        // Test with two expected commands
+        points.clear();
+        points.add(point1);
+        expectedCommandSet.add(command1);
+
+        actualCommands = dao.getAffected(device, points);
+        assertEquals("Expected 2 commands", expectedCommandSet, actualCommands);
+
     }
 
     /**

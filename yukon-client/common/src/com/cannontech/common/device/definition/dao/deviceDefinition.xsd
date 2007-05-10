@@ -42,6 +42,7 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="points" type="pointsType" minOccurs="0" maxOccurs="1" />
+            <xs:element name="commands" type="commandsType" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
     </xs:complexType>
 
@@ -101,6 +102,30 @@
         <xs:attribute name="type" type="xs:string" minOccurs="1" maxOccurs="1" />
         <xs:attribute name="init" type="xs:boolean" default="false"/>
     </xs:attributeGroup>
-
+    
+    <xs:complexType name="commandsType">
+        <xs:all>
+            <xs:sequence>
+                <xs:element name="command" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="cmd" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+			                        <xs:attribute name="text" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="pointRef" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+			                        <xs:attribute name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+			                        <xs:attribute name="expectedMsgs" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" default="0"  />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:all>
+    </xs:complexType>
 
 </xs:schema>
