@@ -188,4 +188,5 @@ if (areastate == 'DISABLED')
       <cti:titledContainer title="Current Status">
           <div id="cmd_msg_div" />
       </cti:titledContainer>
+      </div>
 </cti:standardPage>

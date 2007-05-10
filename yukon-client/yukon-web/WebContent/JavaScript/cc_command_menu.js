@@ -512,15 +512,15 @@ msg_div.style.color = color;
 $("outerDiv").style.position = 'absolute';
 var last_titled_cont  = $('last_titled_container'); 
 if (last_titled_cont != null) {
-	$("outerDiv").style.left = last_titled_cont.width;
-	$("outerDiv").style.top =  last_titled_cont.height;
+	$("outerDiv").style.left = last_titled_cont.style.width;
+	$("outerDiv").style.top =  last_titled_cont.style.height;
 }
 else {
 	$("outerDiv").style.left = 0;
 	$("outerDiv").style.top =  0;
 }
 $("outerDiv").style.width = 200; 
-var titledCont = new CTITitledContainer (cmd_name);
+//var titledCont = new CTITitledContainer (cmd_name);
 
 msg_div.innerHTML = cmd_name + ":" + msg;
 var timeout = 0;
