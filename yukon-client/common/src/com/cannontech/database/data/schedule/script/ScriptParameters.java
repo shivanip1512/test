@@ -60,6 +60,7 @@ public interface ScriptParameters
     public static final String BILLING_GROUP_TYPE_PARAM = "BillingGroupType";
     public static final String BILLING_ENERGY_DAYS_PARAM = "BillingEnergyDays";
     public static final String BILLING_DEMAND_DAYS_PARAM = "BillingDemandDays";
+    public static final String BILLING_GROUP_NAME_PARAM = "BillGroupName";
     
     //IED parameters
     public static final String IED_FLAG_PARAM = "IEDFlag";

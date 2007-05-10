@@ -74,6 +74,7 @@ public class ScriptTemplate implements ScriptParameters
             paramToValueMap.put(BILLING_FILE_NAME_PARAM, "Billing.txt");
             paramToValueMap.put(BILLING_FILE_PATH_PARAM, "C:/yukon/server/export/");
             paramToValueMap.put(BILLING_FORMAT_PARAM, "none");
+            paramToValueMap.put(BILLING_GROUP_NAME_PARAM, "");
             paramToValueMap.put(BILLING_GROUP_TYPE_PARAM, "collect");
             paramToValueMap.put(BILLING_ENERGY_DAYS_PARAM, "7");
             paramToValueMap.put(BILLING_DEMAND_DAYS_PARAM, "30");
@@ -119,6 +120,7 @@ public class ScriptTemplate implements ScriptParameters
 			paramToDescMap.put(BILLING_FILE_NAME_PARAM, "The name of the billing file.");
 			paramToDescMap.put(BILLING_FILE_PATH_PARAM, "Directory to write the Billing File to.");
 			paramToDescMap.put(BILLING_FORMAT_PARAM, "The format of the billing file.  If \"none\", no file will be generated.");
+			paramToDescMap.put(BILLING_GROUP_NAME_PARAM, "The name of the meter group to put in billing file.");
 			paramToDescMap.put(BILLING_GROUP_TYPE_PARAM, "The type of group for billing generation.");
 			paramToDescMap.put(BILLING_ENERGY_DAYS_PARAM, "The number of days previous to read energy.");
 			paramToDescMap.put(BILLING_DEMAND_DAYS_PARAM, "The number of days previous to read demand.");
@@ -247,7 +249,7 @@ public class ScriptTemplate implements ScriptParameters
 	    code += "if { $" + BILLING_FORMAT_PARAM + " != \"none\" } {" + ENDLINE;
 	    code += "    " + COMMENT + "Wait a bit to allow dispatch to complete" + ENDLINE;
 	    code += "    wait 300" + ENDLINE + ENDLINE;
-	    code += "    exportBillingFile $" + GROUP_NAME_PARAM + " $" + BILLING_GROUP_TYPE_PARAM + " $" + BILLING_FORMAT_PARAM;
+	    code += "    exportBillingFile $" + BILLING_GROUP_NAME_PARAM + " $" + BILLING_GROUP_TYPE_PARAM + " $" + BILLING_FORMAT_PARAM;
 	    code += " $" + BILLING_FILE_NAME_PARAM + " $" + BILLING_FILE_PATH_PARAM + " $" + BILLING_ENERGY_DAYS_PARAM + " $" + BILLING_DEMAND_DAYS_PARAM + ENDLINE;
 	    code += "}" + ENDLINE;
 	    code += COMMENT + END + BILLING + ENDLINE;
@@ -406,6 +408,7 @@ public class ScriptTemplate implements ScriptParameters
 	    	paramList += buildDisplayOnlyParameter(BILLING_FLAG_PARAM);
 		    paramList += buildSetParameter(BILLING_FILE_NAME_PARAM);
 		    paramList += buildSetParameter(BILLING_FILE_PATH_PARAM);
+		    paramList += buildSetParameter(BILLING_GROUP_NAME_PARAM);
 		    paramList += buildSetParameter(BILLING_GROUP_TYPE_PARAM);
 		    paramList += buildSetParameter(BILLING_FORMAT_PARAM);
 		    paramList += buildSetParameter(BILLING_ENERGY_DAYS_PARAM);

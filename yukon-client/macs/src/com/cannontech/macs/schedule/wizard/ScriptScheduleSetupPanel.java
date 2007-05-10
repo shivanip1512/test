@@ -83,6 +83,8 @@ public class ScriptScheduleSetupPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JCheckBox ivjSendEmailCheckBox = null;
 	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
 	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
+	private javax.swing.JComboBox ivjBillingGroupComboBox = null;
+	private javax.swing.JLabel ivjBillingGroupNameLabel = null;
 	private javax.swing.JLabel ivjBillingFormatLabel = null;
 	private javax.swing.JPanel ivjMeterReadSetupPanel = null;
 	private javax.swing.JLabel ivjExampleLabel = null;
@@ -130,9 +132,11 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		repaint();
 	}
 	else if (e.getSource() == getGroupTypeComboBox()) {
-		loadGroupComboBox(getGroupTypeComboBox().getSelectedIndex());
+		loadGroupComboBox(getGroupComboBox(), getGroupTypeComboBox().getSelectedIndex());
 	}
-	
+	else if (e.getSource() == getBillingGroupTypeComboBox()) {
+		loadGroupComboBox(getBillingGroupComboBox(), getBillingGroupTypeComboBox().getSelectedIndex());
+	}	
     fireInputUpdate();
 	// user code begin {2}
 	// user code end
@@ -451,6 +455,51 @@ private javax.swing.JLabel getBillingGroupTypeLabel() {
 	}
 	return ivjBillingGroupTypeLabel;
 }
+
+/**
+ * Return the GroupComboBox property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getBillingGroupComboBox() {
+	if (ivjBillingGroupComboBox == null) {
+		try {
+			ivjBillingGroupComboBox = new javax.swing.JComboBox();
+			ivjBillingGroupComboBox.setName("BillingGroupComboBox");
+			// user code begin {1}
+			ivjBillingGroupComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_NAME_PARAM));
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjBillingGroupComboBox;
+}
+/**
+ * Return the GroupNameLabel property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getBillingGroupNameLabel() {
+	if (ivjBillingGroupNameLabel == null) {
+		try {
+			ivjBillingGroupNameLabel = new javax.swing.JLabel();
+			ivjBillingGroupNameLabel.setName("BillingGroupNameLabel");
+			ivjBillingGroupNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			ivjBillingGroupNameLabel.setText("Group Name:");
+			// user code begin {1}
+			ivjBillingGroupNameLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_NAME_PARAM));
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjBillingGroupNameLabel;
+}
 /**
  * Return the BillingPanel property value.
  * @return javax.swing.JPanel
@@ -465,31 +514,31 @@ private javax.swing.JPanel getBillingPanel() {
 			ivjBillingPanel.setLayout(new java.awt.GridBagLayout());
 
 			java.awt.GridBagConstraints constraintsBilllingFilePathLabel = new java.awt.GridBagConstraints();
-			constraintsBilllingFilePathLabel.gridx = 0; constraintsBilllingFilePathLabel.gridy = 5;
+			constraintsBilllingFilePathLabel.gridx = 0; constraintsBilllingFilePathLabel.gridy = 6;
 			constraintsBilllingFilePathLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsBilllingFilePathLabel.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getBilllingFilePathLabel(), constraintsBilllingFilePathLabel);
 
 			java.awt.GridBagConstraints constraintsBillingFilePathTextBox = new java.awt.GridBagConstraints();
-			constraintsBillingFilePathTextBox.gridx = 1; constraintsBillingFilePathTextBox.gridy = 5;
+			constraintsBillingFilePathTextBox.gridx = 1; constraintsBillingFilePathTextBox.gridy = 6;
 			constraintsBillingFilePathTextBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsBillingFilePathTextBox.weightx = 1.0;
 			constraintsBillingFilePathTextBox.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getBillingFilePathTextBox(), constraintsBillingFilePathTextBox);
 
 			java.awt.GridBagConstraints constraintsBillingFileBrowseButton = new java.awt.GridBagConstraints();
-			constraintsBillingFileBrowseButton.gridx = 3; constraintsBillingFileBrowseButton.gridy = 5;
+			constraintsBillingFileBrowseButton.gridx = 3; constraintsBillingFileBrowseButton.gridy = 6;
 			constraintsBillingFileBrowseButton.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getBillingFileBrowseButton(), constraintsBillingFileBrowseButton);
 
 			java.awt.GridBagConstraints constraintsBillingFileNameLabel = new java.awt.GridBagConstraints();
-			constraintsBillingFileNameLabel.gridx = 0; constraintsBillingFileNameLabel.gridy = 4;
+			constraintsBillingFileNameLabel.gridx = 0; constraintsBillingFileNameLabel.gridy = 5;
 			constraintsBillingFileNameLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsBillingFileNameLabel.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getBillingFileNameLabel(), constraintsBillingFileNameLabel);
 
 			java.awt.GridBagConstraints constraintsBillingFileNameTextField = new java.awt.GridBagConstraints();
-			constraintsBillingFileNameTextField.gridx = 1; constraintsBillingFileNameTextField.gridy = 4;
+			constraintsBillingFileNameTextField.gridx = 1; constraintsBillingFileNameTextField.gridy = 5;
 			constraintsBillingFileNameTextField.gridwidth = 2;
 			constraintsBillingFileNameTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsBillingFileNameTextField.weightx = 1.0;
@@ -497,7 +546,7 @@ private javax.swing.JPanel getBillingPanel() {
 			getBillingPanel().add(getBillingFileNameTextField(), constraintsBillingFileNameTextField);
 
 			java.awt.GridBagConstraints constraintsBillingFormatComboBox = new java.awt.GridBagConstraints();
-			constraintsBillingFormatComboBox.gridx = 1; constraintsBillingFormatComboBox.gridy = 1;
+			constraintsBillingFormatComboBox.gridx = 1; constraintsBillingFormatComboBox.gridy = 2;
 			constraintsBillingFormatComboBox.gridwidth = 2;
 			constraintsBillingFormatComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsBillingFormatComboBox.weightx = 1.0;
@@ -505,19 +554,19 @@ private javax.swing.JPanel getBillingPanel() {
 			getBillingPanel().add(getBillingFormatComboBox(), constraintsBillingFormatComboBox);
 
 			java.awt.GridBagConstraints constraintsEnergyDaysLabel = new java.awt.GridBagConstraints();
-			constraintsEnergyDaysLabel.gridx = 0; constraintsEnergyDaysLabel.gridy = 3;
+			constraintsEnergyDaysLabel.gridx = 0; constraintsEnergyDaysLabel.gridy = 4;
 			constraintsEnergyDaysLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsEnergyDaysLabel.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getEnergyDaysLabel(), constraintsEnergyDaysLabel);
 
 			java.awt.GridBagConstraints constraintsDemandDaysLabel = new java.awt.GridBagConstraints();
-			constraintsDemandDaysLabel.gridx = 0; constraintsDemandDaysLabel.gridy = 2;
+			constraintsDemandDaysLabel.gridx = 0; constraintsDemandDaysLabel.gridy = 3;
 			constraintsDemandDaysLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsDemandDaysLabel.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getDemandDaysLabel(), constraintsDemandDaysLabel);
 
 			java.awt.GridBagConstraints constraintsDemandDaysTextField = new java.awt.GridBagConstraints();
-			constraintsDemandDaysTextField.gridx = 1; constraintsDemandDaysTextField.gridy = 2;
+			constraintsDemandDaysTextField.gridx = 1; constraintsDemandDaysTextField.gridy = 3;
 			constraintsDemandDaysTextField.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsDemandDaysTextField.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsDemandDaysTextField.weightx = 1.0;
@@ -525,18 +574,31 @@ private javax.swing.JPanel getBillingPanel() {
 			getBillingPanel().add(getDemandDaysTextField(), constraintsDemandDaysTextField);
 
 			java.awt.GridBagConstraints constraintsEnergyDaysTextField = new java.awt.GridBagConstraints();
-			constraintsEnergyDaysTextField.gridx = 1; constraintsEnergyDaysTextField.gridy = 3;
+			constraintsEnergyDaysTextField.gridx = 1; constraintsEnergyDaysTextField.gridy = 4;
 			constraintsEnergyDaysTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsEnergyDaysTextField.weightx = 1.0;
 			constraintsEnergyDaysTextField.insets = new java.awt.Insets(4, 4, 4, 150);
 			getBillingPanel().add(getEnergyDaysTextField(), constraintsEnergyDaysTextField);
 
 			java.awt.GridBagConstraints constraintsBillingFormatLabel = new java.awt.GridBagConstraints();
-			constraintsBillingFormatLabel.gridx = 0; constraintsBillingFormatLabel.gridy = 1;
+			constraintsBillingFormatLabel.gridx = 0; constraintsBillingFormatLabel.gridy = 2;
 			constraintsBillingFormatLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsBillingFormatLabel.insets = new java.awt.Insets(4, 4, 4, 4);
 			getBillingPanel().add(getBillingFormatLabel(), constraintsBillingFormatLabel);
+			
+			java.awt.GridBagConstraints constraintsBillingGroupLabel = new java.awt.GridBagConstraints();
+			constraintsBillingGroupLabel.gridx = 0; constraintsBillingGroupLabel.gridy = 1;
+			constraintsBillingGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsBillingGroupLabel.insets = new java.awt.Insets(4, 4, 4, 4);
+			getBillingPanel().add(getBillingGroupNameLabel(), constraintsBillingGroupLabel);
 
+			java.awt.GridBagConstraints constraintsBillingGroupComboBox = new java.awt.GridBagConstraints();
+			constraintsBillingGroupComboBox.gridx = 1; constraintsBillingGroupComboBox.gridy = 1;
+			constraintsBillingGroupComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsBillingGroupComboBox.weightx = 1.0;
+			constraintsBillingGroupComboBox.insets = new java.awt.Insets(4, 4, 4, 4);
+			getBillingPanel().add(getBillingGroupComboBox(), constraintsBillingGroupComboBox);
+			
 			java.awt.GridBagConstraints constraintsBillingGroupTypeLabel = new java.awt.GridBagConstraints();
 			constraintsBillingGroupTypeLabel.gridx = 0; constraintsBillingGroupTypeLabel.gridy = 0;
 			constraintsBillingGroupTypeLabel.anchor = java.awt.GridBagConstraints.WEST;
@@ -2259,6 +2321,8 @@ private void initialize() {
 	getMaxRetryHoursTextField().addCaretListener(this);
 	
 	getGenerateBillingCheckBox().addItemListener(this);
+	getBillingGroupComboBox().addActionListener(this);
+	getBillingGroupTypeComboBox().addActionListener(this);
 	getBillingFormatComboBox().addItemListener(this);
 	getBillingFileNameTextField().addCaretListener(this);
 	getDemandDaysTextField().addCaretListener(this);
@@ -2300,15 +2364,15 @@ private void initSwingCompValues()
 
     if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup")){
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING);
-        loadGroupComboBox(DeviceMeterGroup.TEST_COLLECTION_GROUP);
+        loadGroupComboBox(getGroupComboBox(), DeviceMeterGroup.TEST_COLLECTION_GROUP);
     }
     else if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup")) {
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING);
-        loadGroupComboBox(DeviceMeterGroup.BILLING_GROUP);
+        loadGroupComboBox(getGroupComboBox(), DeviceMeterGroup.BILLING_GROUP);
     }
     else { //if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING);
-        loadGroupComboBox(DeviceMeterGroup.COLLECTION_GROUP);
+        loadGroupComboBox(getGroupComboBox(), DeviceMeterGroup.COLLECTION_GROUP);
     }
     //This must be set after the groupTypeComboBox is set, then we have the group values for the correct type loaded
     getGroupComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(GROUP_NAME_PARAM));
@@ -2322,12 +2386,21 @@ private void initSwingCompValues()
     getDemandDaysTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_DEMAND_DAYS_PARAM));
     getEnergyDaysTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_ENERGY_DAYS_PARAM));
     
-    if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup"))
+    if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup")) {
         getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING);
-    else if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup"))
+        loadGroupComboBox(getBillingGroupComboBox(), DeviceMeterGroup.TEST_COLLECTION_GROUP);
+    }
+    else if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup")) {
         getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING);
-    else //if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
+        loadGroupComboBox(getBillingGroupComboBox(), DeviceMeterGroup.BILLING_GROUP);
+    }
+    else { //if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
         getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING);
+        loadGroupComboBox(getBillingGroupComboBox(), DeviceMeterGroup.COLLECTION_GROUP);
+    }
+    
+    //This must be set after the billingGroupTypeComboBox is set, then we have the group values for the correct type loaded
+    getBillingGroupComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_NAME_PARAM));
     
     //Notification setup
     enableContainer(getNotificationPanel(), Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(NOTIFICATION_FLAG_PARAM)).booleanValue());
@@ -2459,9 +2532,11 @@ private void loadParamMapFromSwingComp()
     getScriptTemplate().getParamToValueMap().put(BILLING_FILE_NAME_PARAM, getBillingFileNameTextField().getText());
     getScriptTemplate().getParamToValueMap().put(BILLING_FILE_PATH_PARAM, getBillingFilePathTextBox().getText());
     getScriptTemplate().getParamToValueMap().put(BILLING_FORMAT_PARAM, getBillingFormatComboBox().getSelectedItem().toString());
-    getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, getBillingGroupTypeComboBox().getSelectedItem().toString());
     getScriptTemplate().getParamToValueMap().put(BILLING_ENERGY_DAYS_PARAM, getEnergyDaysTextField().getText());
     getScriptTemplate().getParamToValueMap().put(BILLING_DEMAND_DAYS_PARAM, getDemandDaysTextField().getText());
+
+    if( getBillingGroupComboBox().getItemCount() > 0)	//make sure there are items here before "getting" a selected item
+        getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_NAME_PARAM, getBillingGroupComboBox().getSelectedItem().toString());
 
     if( getBillingGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING))
         getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, "altgroup");
@@ -2686,8 +2761,8 @@ public void valueChanging(JCValueEvent arg0)
 		frozenRegisterGroup = group;
 	}
 	
-	public void loadGroupComboBox(int groupType) {
-		getGroupComboBox().removeAllItems();
+	public void loadGroupComboBox(javax.swing.JComboBox comboBox, int groupType) {
+		comboBox.removeAllItems();
 		String [] groups = null;
 		try {
 			if( groupType == DeviceMeterGroup.TEST_COLLECTION_GROUP) {
@@ -2698,7 +2773,7 @@ public void valueChanging(JCValueEvent arg0)
 				groups = DeviceMeterGroup.getDeviceCollectionGroups();
 			}
 			for (int i = 0; i < groups.length; i++)
-				getGroupComboBox().addItem(groups[i]);
+				comboBox.addItem(groups[i]);
 		} catch (SQLException e1) {
 			CTILogger.error(e1);
 		}
