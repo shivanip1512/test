@@ -20,7 +20,7 @@ public class DynamicLineState implements OnelineState {
                 state = OnelineUtil.SUB_ST_DIS;
             } else if (subBus.getRecentlyControlledFlag().booleanValue()) {
 
-                if (disp.getSubBusPendingState(subBus) != null) {
+                if (subBus.getRecentlyControlledFlag().booleanValue()) {
                     state = OnelineUtil.SUB_ST_PENDING;
                 }
 

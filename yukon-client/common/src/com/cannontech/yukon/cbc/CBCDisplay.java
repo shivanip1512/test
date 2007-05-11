@@ -743,7 +743,8 @@ public class CBCDisplay {
      * @return
      */
 
-    public String getOnelineSubBusValueAt(SubBus subBus, Integer col) {
+    public String getOnelineSubBusValueAt(SubBus subBus, Integer col) 
+    {
         if (subBus == null)
             return "";
 
