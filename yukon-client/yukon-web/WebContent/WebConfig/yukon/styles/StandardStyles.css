@@ -250,3 +250,18 @@ img.cssicon, input.cssicon {
   border: none;
   vertical-align: middle;
 }
+
+table.nameValueTable {
+	border: none;
+	border-collapse: collapse; 
+	width: 100%;
+}
+
+table.nameValueTable td.name {
+	width: 40%;
+	font-weight: bold;
+}
+
+table.nameValueTable td.value {
+	width: 60%;
+}

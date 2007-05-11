@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.util.SimpleTemplateProcessor;
@@ -128,6 +129,7 @@ public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category
 public String getFormattedDeviceName(LiteYukonPAObject device) {
     // the formatting string could be from a role property
     String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
+    Validate.notNull(formattingStr, "Device display template role property does not exist.");
     boolean needMeterNumber = SimpleTemplateProcessor.contains(formattingStr, "meterNumber");
     Map<String, String> values = new HashMap<String, String>(6);
     if (needMeterNumber) {
