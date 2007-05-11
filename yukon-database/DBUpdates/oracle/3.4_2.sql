@@ -194,4 +194,4 @@ GROUP BY op.LogID) OpConf INNER JOIN
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.4', 'Jon', '07-May-2007', 'Latest Update', 2 );
