@@ -1249,7 +1249,7 @@
             </point>
             
             <point type="Analog">
-                <name>kWh</name>
+                <name>kWh - analog</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -1498,7 +1498,7 @@
             </point>
             
             <point type="Analog">
-                <name>kWh</name>
+                <name>kWh - analog</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
