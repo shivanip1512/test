@@ -23,6 +23,11 @@
  *    ---------------------------------------------------
  *    History:
  *      $Log$
+ *      Revision 1.9  2007/05/11 19:05:06  tspar
+ *      YUK-3880
+ *
+ *      Refactored a few interfaces.
+ *
  *      Revision 1.8  2006/01/16 21:09:52  mfisher
  *      removed RogueWave stuff out of comments
  *
@@ -111,6 +116,9 @@ const CHAR * CtiFDRAcsMulti::KEY_LINK_TIMEOUT = "FDR_ACSMULTI_LINK_TIMEOUT_SECON
 // Constructors, Destructor, and Operators
 CtiFDRAcsMulti::CtiFDRAcsMulti()
 : CtiFDRScadaServer(string("ACSMULTI"))
+{}
+
+void CtiFDRAcsMulti::startup()
 {
     init();
     _helper = new CtiFDRScadaHelper<CtiAcsId>(this);
@@ -897,7 +905,7 @@ extern "C" {
 
         // make a point to the interface
         acsInterface = new CtiFDRAcsMulti();
-
+        acsInterface->startup();
         // now start it up
         return acsInterface->run();
     }

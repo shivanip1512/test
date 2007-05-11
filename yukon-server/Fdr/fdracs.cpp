@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.16 $
-*    DATE         :  $Date: 2007/04/10 23:42:07 $
+*    REVISION     :  $Revision: 1.17 $
+*    DATE         :  $Date: 2007/05/11 19:05:06 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.17  2007/05/11 19:05:06  tspar
+      YUK-3880
+
+      Refactored a few interfaces.
+
       Revision 1.16  2007/04/10 23:42:07  tspar
       Added even more protection against bad input when tokenizing.
 
@@ -203,14 +208,11 @@ const CHAR * CtiFDR_ACS::KEY_LINK_TIMEOUT = "FDR_ACS_LINK_TIMEOUT_SECONDS";
 // Constructors, Destructor, and Operators
 CtiFDR_ACS::CtiFDR_ACS()
 : CtiFDRSingleSocket(string("ACS"))
-{   
-    init();
-}
+{}
 
 
 CtiFDR_ACS::~CtiFDR_ACS()
-{
-}
+{}
 
 /*************************************************
 * Function Name: CtiFDR_ACS::config()
@@ -1476,7 +1478,7 @@ extern "C" {
 
         // make a point to the interface
         acsInterface = new CtiFDR_ACS();
-
+        acsInterface->init();
         // now start it up
         return acsInterface->run();
     }

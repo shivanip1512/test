@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.20 $
-*    DATE         :  $Date: 2007/05/11 14:53:10 $
+*    REVISION     :  $Revision: 1.21 $
+*    DATE         :  $Date: 2007/05/11 19:05:06 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.21  2007/05/11 19:05:06  tspar
+      YUK-3880
+
+      Refactored a few interfaces.
+
       Revision 1.20  2007/05/11 14:53:10  tspar
       YUK-3839 FDR Text Import UTC time
 
@@ -140,11 +145,7 @@ const CHAR * CtiFDR_TextImport::KEY_RENAME_SAVE_FILE = "FDR_TEXTIMPORT_RENAME_SA
 CtiFDR_TextImport::CtiFDR_TextImport()
 : CtiFDRTextFileBase(string("TEXTIMPORT"))
 {  
-    // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
-    getReceiveFromList().setPointList (recList);
-    recList = NULL;
-    init();
+
 
 }
 
@@ -178,6 +179,11 @@ CtiFDR_TextImport &CtiFDR_TextImport::setDeleteFileAfterImport (bool aFlag)
 
 BOOL CtiFDR_TextImport::init( void )
 {
+    // init these lists so they have something
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    getReceiveFromList().setPointList (recList);
+    recList = NULL;
+
     // init the base class
     Inherited::init();    
     _threadReadFromFile = rwMakeThreadFunction(*this, 
@@ -1356,7 +1362,7 @@ extern "C" {
 
         // make a point to the interface
         textImportInterface = new CtiFDR_TextImport();
-
+        textImportInterface->init();
         // now start it up
         return textImportInterface->run();
     }
