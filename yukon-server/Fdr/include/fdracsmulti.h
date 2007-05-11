@@ -14,6 +14,9 @@
  *                 design document for more information
  *    History: 
  *      $Log$
+ *      Revision 1.4  2007/05/11 19:20:27  tspar
+ *      missed file
+ *
  *      Revision 1.3  2005/12/20 17:17:15  tspar
  *      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
  *
@@ -208,7 +211,8 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 
         enum {ACS_Open = 0, ACS_Closed = 1, ACS_Invalid=99};
 
-        
+        void startup();
+
     protected:
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
     
