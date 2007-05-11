@@ -161,7 +161,7 @@ function enableDates(value)
 						for (int i = 0; i < rptTypes.length; i++){%>
 				    	<tr>
 						  <td class="main">
-						  <input type="radio" name="type" value="<%=rptTypes[i]%>" <%=(rptTypes[i]==REPORT_BEAN.getType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><%=ReportTypes.getReportName(rptTypes[i])%>
+						  <input type="radio" name="type" value="<%=rptTypes[i]%>" <%=(rptTypes[i]==REPORT_BEAN.getType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<%= ReportTypes.getReportDescription(rptTypes[i]) %>"><%=ReportTypes.getReportName(rptTypes[i])%></font>
 						  </td>
 						</tr>
 					    <%}

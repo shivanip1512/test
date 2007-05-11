@@ -238,6 +238,18 @@ public class ReportTypes
     public static final String CAP_BANK_OPERATIONS_PERFORMANCE_STRING= "CapBank Operations Performance Report";
     
     public static final String SCHEDULED_METER_READ_STRING = "Scheduled Meter Reads";
+
+    public static final String CAPBANK_DATA_DESCRIPTION = "Detailed report of the capbanks, including information on its location, size, cbc, feeder and substation bus.";
+    public static final String CAP_CONTROL_NEW_ACTIVITY_DESCRIPTION = "Detailed report of capbank activity, including manual and automated controls, operation outcomes, and capcontrol database changes.'";
+    public static final String CAP_CONTROL_STATUS_DESCRIPTION = "Detailed report of cap bank statuses, based on var response information";
+    public static final String CAP_CONTROL_SCHEDULE_EVENT_LOG_DESCRIPTION = "Detailed report of ending bank status activity or all schedule activity";    
+    public static final String MAX_DAILY_OPERATIONS_DESCRIPTION = "Detailed report showing a 6 week history of capbanks that have reached max daily operations limit.";
+    public static final String CAP_CONTROL_STATE_COMPARISON_DESCRIPTION= "Detailed report showing a comparison of capbank states set by var response against its two way cbc reported state.";
+    public static final String CAP_CONTROL_OPERATIONS_DESCRIPTION= "Detailed report showing capbank operations and their related outcomes.";
+    public static final String CBC_INVENTORY_DESCRIPTION= "Detailed report showing cbc information and attached parent objects.";
+    public static final String CAP_CONTROL_CONFIRMATION_PERCENTAGE_DESCRIPTION = "Detailed report showing operational percentages for failed, questionable, and successful operation outcomes.";
+    public static final String CAP_CONTROL_RETRIES_DESCRIPTION = "Detailed report showing capbank control retry information.";
+    public static final String CAP_BANK_OPERATIONS_PERFORMANCE_DESCRIPTION = "Detailed report showing capbank operational information for combinations of failed, questionable, and successful outcomes based on a user entered percentage level.";
     
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -297,6 +309,25 @@ public class ReportTypes
         SCHEDULED_METER_READ_STRING
 	};
 
+    /** Report Description to enum mapping */
+    public static final String[] reportDescription = {
+        "", "",
+        "","","","","","","","","","",
+        "","","","","","","","","","",
+        //Capcontrol
+        CAPBANK_DATA_DESCRIPTION,
+        CAP_CONTROL_NEW_ACTIVITY_DESCRIPTION,
+        CAP_CONTROL_STATUS_DESCRIPTION,
+        CAP_CONTROL_SCHEDULE_EVENT_LOG_DESCRIPTION,
+        "","","","","","","","","",
+        MAX_DAILY_OPERATIONS_DESCRIPTION,
+        CAP_CONTROL_STATE_COMPARISON_DESCRIPTION,
+        CAP_CONTROL_OPERATIONS_DESCRIPTION,
+        CBC_INVENTORY_DESCRIPTION,
+        CAP_CONTROL_CONFIRMATION_PERCENTAGE_DESCRIPTION,
+        CAP_BANK_OPERATIONS_PERFORMANCE_DESCRIPTION,
+        ""
+    };    
 
 	/* Report groupings */	
 	public static final int ADMIN_REPORTS_GROUP = 0;
@@ -416,7 +447,10 @@ public class ReportTypes
 	{
 		return reportName[reportType];
 	}
-	
+	public static String getReportDescription(int reportType)
+    {
+	    return reportDescription[reportType];
+    }
 	/**
 	 * Returns the Group string name for reportGroupType
 	 * @param reportGroupType
