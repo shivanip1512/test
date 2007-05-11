@@ -93,11 +93,20 @@ function validate(form) {
                         <tr> 
                           <td align="right" width="120">Start Date:</td>
                           <td width="168"> 
-                            <input type="text" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>">
-                            <a href="javascript:openCalendar(document.getElementById('StartDate'))"
-							  onMouseOver="window.status='Start Date Calendar';return true;"
-							  onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
-                            </a>
+                            <%boolean optOutTodayOnly = false; %>
+                            <cti:checkProperty propertyid="<%= ConsumerInfoRole.OPT_OUT_TODAY_ONLY %>"> 
+                            	<%optOutTodayOnly = true; %>
+                           	</cti:checkProperty>
+                          	<%if(! optOutTodayOnly) {%>
+	                            <input type="text" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>" >
+		                            <a href="javascript:openCalendar(document.getElementById('StartDate'))"
+									  onMouseOver="window.status='Start Date Calendar';return true;"
+									  onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+		                            </a>
+	                        <%} else { %>
+	                        	<%= datePart.format(new Date()) %>
+	                        	<input type="hidden" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>" >	
+	                        <%} %>
 						  </td>
                         </tr>
                         <tr> 

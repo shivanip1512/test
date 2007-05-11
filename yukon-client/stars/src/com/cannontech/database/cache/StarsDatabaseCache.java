@@ -100,32 +100,41 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		}
 		return instance;
 	}
-	
-	public void loadData() 
-    {
-	    getAllWebConfigurations();
-		
-        // Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
-		DefaultDatabaseCache.getInstance().getAllContacts();
-		
-		ArrayList allCompanies = getAllEnergyCompanies();
-		final LiteStarsEnergyCompany[] companies = new LiteStarsEnergyCompany[ allCompanies.size() ];
-		allCompanies.toArray( companies );
-		
-		Thread initThrd = new Thread(new Runnable() {
-			public void run() {
-                for (int i = 0; i < companies.length; i++) {
-					if (!ECUtils.isDefaultEnergyCompany( companies[i] )) 
-                    {
-						companies[i].loadAllInventory( true );
-                        companies[i].loadAllCustomerAccounts( true );
-                        companies[i].loadAllWorkOrders( true );
+    
+    public void fireLoadThread(ArrayList energyCompanies) {
+        final ArrayList companies = energyCompanies;
+        Thread initThrd = new Thread(new Runnable() {
+            public void run() {
+                for (int i = 0; i < companies.size(); i++) {
+                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+                    if (!ECUtils.isDefaultEnergyCompany( company )) {
+                        // Fire the data loading threads off, and wait for all of them to stop
+                        company.loadAllInventory( false );
+                        company.loadAllCustomerAccounts( false );
+                        company.loadAllWorkOrders( false );
+                        company.loadAllInventory( true );
+                        company.loadAllCustomerAccounts( true );
+                        company.loadAllWorkOrders( true );
                     }
                 }
-			}
-		});
-		initThrd.start();
-	}
+            }
+        });
+        initThrd.start();
+    }
+	
+    public void loadData() {
+        getAllWebConfigurations();
+        
+        
+        // Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
+        DefaultDatabaseCache.getInstance().getAllContacts();
+        
+        ArrayList allCompanies = getAllEnergyCompanies();
+        final LiteStarsEnergyCompany[] companies = new LiteStarsEnergyCompany[ allCompanies.size() ];
+        allCompanies.toArray( companies );
+        
+        fireLoadThread(allCompanies);
+    }
 
 	public void refreshCache() {
 		if (energyCompanies != null) {
@@ -175,23 +184,35 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		if (CtiUtilities.isTrue( preloadData )) {
 			getAllWebConfigurations();
 			
-			Thread initThrd = new Thread(new Runnable() {
-				public void run() {
-					for (int i = 0; i < descendants.size(); i++) {
-						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-						if (!ECUtils.isDefaultEnergyCompany( company )) {
-							// Fire the data loading threads off, and wait for all of them to stop
-							company.loadAllInventory( true );
-							company.loadAllCustomerAccounts( true );
-							company.loadAllWorkOrders( true );
-						}
-					}
-				}
-			});
-			initThrd.start();
+            fireLoadThread(descendants);
 		}
 	}
 
+     public void refreshInventory() {
+        if (energyCompanies != null) {
+            synchronized (energyCompanies) {
+                for (int i = 0; i < energyCompanies.size(); i++)
+                    ((LiteStarsEnergyCompany) energyCompanies.get(i)).clearInventory();
+            }
+        }
+        
+        DefaultDatabaseCache.getInstance().releaseAllCache();
+        
+        final ArrayList companies = energyCompanies;
+        Thread initThrd = new Thread(new Runnable() {
+            public void run() {
+                for (int i = 0; i < companies.size(); i++) {
+                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+                    if (!ECUtils.isDefaultEnergyCompany( company )) {
+                        company.loadAllInventory( false );
+                        company.loadAllInventory( true );
+                    }
+                }
+            }
+        });
+        initThrd.start();
+    }
+    
 	/*
 	 * Start implementation of class functions
 	 */
@@ -406,8 +427,20 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-            LiteYukonPAObject litePao = null;
+		    LiteYukonPAObject litePao = null;
             
+            /*
+            * Need to handle a msg with an id of zero
+            * This is the bulk importer telling everybody that there have been mass changes
+            * 
+            * TODO: Separate out mcts from the rest of inventory so we don't have to reload
+            * all accounts and inventory.  Adding a proper DAO layer to STARS would go a long way
+            * towards this.
+            */
+           if(msg.getId() == 0) {
+               refreshInventory();
+           }
+
             /*
              * Why look this up if it has just been deleted from cache?
              *TODO: Will need to add more functionality to handle deletes and adds if STARS is tied
@@ -420,63 +453,63 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                 return;
             }
             
-			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				
-				if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
-					if (!ECUtils.isSingleEnergyCompany( energyCompany ))
-						handleRouteChange( msg, energyCompany );
-				}
-				else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
-					ArrayList programs = new ArrayList( energyCompany.getPrograms() );
-					for (int j = 0; j < programs.size(); j++) {
-						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
-						if (liteProg.getDeviceID() == msg.getId()) {
-							handleLMProgramChange( msg, energyCompany, liteProg );
-							return;
-						}
-					}
-				}
-				else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
-					ArrayList programs = new ArrayList( energyCompany.getPrograms() );
-					StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
-					
-					for (int j = 0; j < programs.size(); j++) {
-						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
-						boolean groupFound = false;
-						
-						for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
-							if (liteProg.getGroupIDs()[k] == msg.getId()) {
-								handleLMGroupChange( msg, energyCompany, liteProg );
-								groupFound = true;
-								break;
-							}
-						}
-						
-						if (!groupFound) {
-							// Program could contain a macro group, while a LM group in that macro group is changed
-							StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram( categories, liteProg.getProgramID() );
-							for (int k = 0; k < starsProg.getAddressingGroupCount(); k++) {
-								if (starsProg.getAddressingGroup(k).getEntryID() == msg.getId()) {
-									handleLMGroupChange( msg, energyCompany, liteProg );
-									break;
-								}
-							}
-						}
-					}
-				}
-				else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
-					ArrayList inventory = energyCompany.getAllInventory();
-					for (int j = 0; j < inventory.size(); j++) {
-						LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
-						if (liteInv.getDeviceID() == msg.getId()) {
-							handleDeviceChange( msg, energyCompany, liteInv );
-							return;
-						}
-					}
-				}
-			}
-		}
+    		for (int i = 0; i < companies.size(); i++) {
+    			LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+    			
+    			if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
+    				if (!ECUtils.isSingleEnergyCompany( energyCompany ))
+    					handleRouteChange( msg, energyCompany );
+    			}
+    			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
+    				ArrayList programs = new ArrayList( energyCompany.getPrograms() );
+    				for (int j = 0; j < programs.size(); j++) {
+    					LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+    					if (liteProg.getDeviceID() == msg.getId()) {
+    						handleLMProgramChange( msg, energyCompany, liteProg );
+    						return;
+    					}
+    				}
+    			}
+    			else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
+    				ArrayList programs = new ArrayList( energyCompany.getPrograms() );
+    				StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
+    				
+    				for (int j = 0; j < programs.size(); j++) {
+    					LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+    					boolean groupFound = false;
+    					
+    					for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
+    						if (liteProg.getGroupIDs()[k] == msg.getId()) {
+    							handleLMGroupChange( msg, energyCompany, liteProg );
+    							groupFound = true;
+    							break;
+    						}
+    					}
+    					
+    					if (!groupFound) {
+    						// Program could contain a macro group, while a LM group in that macro group is changed
+    						StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram( categories, liteProg.getProgramID() );
+    						for (int k = 0; k < starsProg.getAddressingGroupCount(); k++) {
+    							if (starsProg.getAddressingGroup(k).getEntryID() == msg.getId()) {
+    								handleLMGroupChange( msg, energyCompany, liteProg );
+    								break;
+    							}
+    						}
+    					}
+    				}
+    			}
+    			else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
+    				ArrayList inventory = energyCompany.getAllInventory();
+    				for (int j = 0; j < inventory.size(); j++) {
+    					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
+    					if (liteInv.getDeviceID() == msg.getId()) {
+    						handleDeviceChange( msg, energyCompany, liteInv );
+    						return;
+    					}
+    				}
+    			}
+    		}
+    	}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
 			if (msg.getCategory().equals( DBChangeMsg.CAT_YUKON_USER )) {
 				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( msg.getId() );

@@ -491,6 +491,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
     }
     
+    
+    
     private synchronized boolean isLoadInventoryTaskRunning() {
         TimeConsumingTask task = ProgressChecker.getTask( loadInvTaskID );
         if (task == null) return false;
@@ -677,6 +679,34 @@ public class LiteStarsEnergyCompany extends LiteBase {
         memberLoginIDs = null;
     }
     
+    public void clearInventory() {
+        // If the inventory loading task is alive, cancel it first
+        TimeConsumingTask loadInvTask = ProgressChecker.getTask( loadInvTaskID );
+        if (loadInvTask != null) loadInvTask.cancel();
+        
+        // Wait up to 3 seconds for it to stop
+        for (int i = 0; i < 6; i++) {
+                if ((loadInvTask == null
+                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED
+                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_CANCELED
+                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR))
+                break;
+            
+            try {
+                Thread.sleep( 500 );
+            }
+            catch (InterruptedException e) {}
+        }
+        
+        if (loadInvTaskID > 0) {
+            ProgressChecker.removeTask( loadInvTaskID );
+            loadInvTaskID = 0;
+        }
+        
+        inventoryLoaded = false;
+        inventory = null;
+    }
+    
     public String getEnergyCompanySetting(int rolePropertyID) {
         String value = DaoFactory.getAuthDao().getRolePropertyValue( DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), rolePropertyID );
         if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
@@ -789,12 +819,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     /**
-     * Get all appliance categories including those inherited from the parent company
-     * (may need to add a role property to control this in the future).
+     * Get all appliance categories including those inherited from the parent company if allowed to do so
      */
     public synchronized ArrayList getAllApplianceCategories() {
         ArrayList appCats = new ArrayList( getApplianceCategories() );
-        if (getParent() != null)
+        boolean inheritCats = getEnergyCompanySetting( EnergyCompanyRole.INHERIT_PARENT_APP_CATS ).equalsIgnoreCase("true");
+        if (getParent() != null && inheritCats)
             appCats.addAll( 0, getParent().getAllApplianceCategories() );
         
         return appCats;
@@ -3158,6 +3188,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         boolean hasBasic = false;
         boolean hasEpro = false;
         boolean hasComm = false;
+        boolean hasPump = false;
         
         YukonSelectionList devTypeList = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
         for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
@@ -3168,6 +3199,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 hasEpro = true;
             else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
                 hasComm = true;
+            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP)
+                hasPump = true;
         }
         
         starsDftThermSchedules = new StarsDefaultThermostatSchedules();
@@ -3184,6 +3217,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         if (hasComm) {
             StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
                     getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT), this );
+            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
+        }
+        if (hasPump) {
+            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
+                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), this );
             starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
         }
         

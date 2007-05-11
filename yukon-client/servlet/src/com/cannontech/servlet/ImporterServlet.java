@@ -95,7 +95,7 @@ public class ImporterServlet extends HttpServlet {
                 if(lineNo == 1)
                     continue;
                 String[] columns = StarsUtils.splitString( line, "," );
-                if (columns.length != ImportData.SETTER_COLUMNS.length)
+                if (columns.length < ImportData.SETTER_COLUMNS.length - 2)
                     session.setAttribute("LOAD_IMPORTDATA_ERROR", "Incorrect number of fields.");
                 ImportData currentEntry = new ImportData();
                 currentEntry.setAddress( ((String) columns[0]).trim() );
@@ -105,9 +105,14 @@ public class ImporterServlet extends HttpServlet {
                 currentEntry.setCollectionGrp( ((String) columns[4]).trim() );
                 currentEntry.setAltGrp( ((String) columns[5]).trim() );
                 currentEntry.setTemplateName( ((String) columns[6]).trim() );
-                currentEntry.setBillingGroup( ((String) columns[7]).trim() );
-                currentEntry.setSubstationName( ((String) columns[8]).trim() );
-                
+                currentEntry.setBillingGroup(" ");
+                currentEntry.setSubstationName(" ");
+                //possibly ignore these non-mandatory columns
+                if(columns.length >= ImportData.SETTER_COLUMNS.length - 1)
+                    currentEntry.setBillingGroup( ((String) columns[7]).trim() );
+                if(columns.length == ImportData.SETTER_COLUMNS.length)
+                    currentEntry.setSubstationName( ((String) columns[8]).trim() );
+                    
                 try {
                     Transaction.createTransaction(Transaction.INSERT, currentEntry).execute();
                     session.setAttribute("LOAD_IMPORTDATA_SUCCESS", "Successfully inserted " + (lineNo-1) + " lines into the ImportData table.");

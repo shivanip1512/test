@@ -35,6 +35,8 @@
 		thermNoStr = "InvNo=" + thermNo;
 	}
 	
+	String thermoType = thermoSettings.getStarsThermostatProgram().getThermostatType().toString();
+	
 	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
 		if (request.getParameter("OmitTimeout") != null)
 			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
@@ -82,7 +84,11 @@
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-              <%@ include file="../../include/therm_manual2.jspf" %>
+              <% if (thermoType.compareTo(StarsThermostatTypes.EXPRESSSTAT_HEATPUMP.toString()) == 0) { %>
+              		<%@ include file="../../include/therm_manual_emheat.jspf" %>
+              <% } else { %>
+              	<%@ include file="../../include/therm_manual2.jspf" %>
+              <% } %>
 			  <p align="center" class="MainText">
 			    <%@ include file="../../include/copyright.jsp" %>
 			  </p>

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatTypes.java,v 1.31 2006/06/21 17:12:24 alauinger Exp $
+ * $Id: StarsThermostatTypes.java,v 1.32 2007/05/11 22:28:33 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -16,7 +16,7 @@ import java.util.Hashtable;
 /**
  * 
  * 
- * @version $Revision: 1.31 $ $Date: 2006/06/21 17:12:24 $
+ * @version $Revision: 1.32 $ $Date: 2007/05/11 22:28:33 $
 **/
 public class StarsThermostatTypes implements java.io.Serializable {
 
@@ -55,6 +55,21 @@ public class StarsThermostatTypes implements java.io.Serializable {
     **/
     public static final StarsThermostatTypes COMMERCIAL = new StarsThermostatTypes(COMMERCIAL_TYPE, "Commercial");
 
+    /**
+     * The Commercial type
+    **/
+    public static final int EXPRESSSTAT_HEATPUMP_TYPE = 3;
+
+    /**
+     * The instance of the Commercial type
+    **/
+    public static final StarsThermostatTypes EXPRESSSTAT_HEATPUMP = new StarsThermostatTypes(EXPRESSSTAT_HEATPUMP_TYPE, "ExpressStat Heat Pump");
+
+    /**
+     * The total number of thermostat types in the system
+     */
+    public static final int NUMBER_OF_THERMO_TYPES = 4;
+    
     private static java.util.Hashtable _memberTable = init();
 
     private int type = -1;

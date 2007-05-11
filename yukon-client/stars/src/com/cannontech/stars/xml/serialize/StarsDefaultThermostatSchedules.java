@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDefaultThermostatSchedules.java,v 1.22 2006/06/21 17:12:14 alauinger Exp $
+ * $Id: StarsDefaultThermostatSchedules.java,v 1.23 2007/05/11 22:28:33 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -16,10 +16,12 @@ import java.util.Vector;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
+import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
+
 /**
  * 
  * 
- * @version $Revision: 1.22 $ $Date: 2006/06/21 17:12:14 $
+ * @version $Revision: 1.23 $ $Date: 2007/05/11 22:28:33 $
 **/
 public class StarsDefaultThermostatSchedules implements java.io.Serializable {
 
@@ -53,7 +55,7 @@ public class StarsDefaultThermostatSchedules implements java.io.Serializable {
     public void addStarsThermostatProgram(StarsThermostatProgram vStarsThermostatProgram)
         throws java.lang.IndexOutOfBoundsException
     {
-        if (!(_starsThermostatProgramList.size() < 3)) {
+        if (!(_starsThermostatProgramList.size() < StarsThermostatTypes.NUMBER_OF_THERMO_TYPES)) {
             throw new IndexOutOfBoundsException();
         }
         _starsThermostatProgramList.addElement(vStarsThermostatProgram);

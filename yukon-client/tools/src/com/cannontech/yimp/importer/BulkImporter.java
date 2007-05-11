@@ -280,7 +280,7 @@ public void runImport(List<ImportData> imps) {
 		else {
 			if( updateDeviceID != null) {
 				notUpdate = false;
-                log.error("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
+                log.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
 		   	}
 			boolean isDuplicate = DBFuncs.IsDuplicateName(name);
 			if(isDuplicate && notUpdate) {
@@ -370,7 +370,7 @@ public void runImport(List<ImportData> imps) {
                     errorMsg.append("has an unknown substation or a substation with no routes; ");
                 }
             }
-            else if(notUpdate) {
+            else if(!notUpdate) {
                 log.error("Import entry with name " + name + " has no specified route.");
     			badEntry = true;
     			errorMsg.append("has no route specified; ");	
@@ -395,6 +395,7 @@ public void runImport(List<ImportData> imps) {
                                             errorMsg.toString(), now.getTime(), billGrp, 
                                             substationName, ImportFuncs.FAIL_INVALID_DATA);
 			failures.add(currentFailure);
+            log.error("Unable to update device with address " + address + "and name " + name + ".");
 		}
 		else if( updateDeviceID != null) {
 			YukonPAObject pao = new YukonPAObject();
@@ -443,18 +444,23 @@ public void runImport(List<ImportData> imps) {
     					dr = (DeviceRoutes)t.execute();
     				}
                 }
-                else if(routeIDsFromSub.size() > 0) {
+                /*else if(routeIDsFromSub.size() > 0) {
                     for(int i = 0; i < routeIDsFromSub.size(); i++) {
-                        /*TODO: do we want to change the route based on substation
+                        TODO: do we want to change the route based on substation
                          * on an update since there will be no porter communication to verify?
                          * Or will there be porter communication to verify even on an update?
-                         */
-                    }
-                }
-			} catch (TransactionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                         
+                    }*/
+                log.info("Updated " + pao.getType() + " with name " + name + " with address " + address + ".");  
+                successCounter++;
+            } catch (TransactionException e) {
+                GregorianCalendar now = new GregorianCalendar();
+                currentFailure = new ImportFail(address, name, routeName, 
+                                                meterNumber, collectionGrp, altGrp, templateName, 
+                                                errorMsg.toString(), now.getTime(), billGrp, 
+                                                substationName, ImportFuncs.FAIL_INVALID_DATA);
+                failures.add(currentFailure);
+            }
 		}
 		//actual 410 creation
 		else {
@@ -481,9 +487,11 @@ public void runImport(List<ImportData> imps) {
              * if sub specified, a porter thread will attempt to find the right one; for now
              * just use the first in the list.
              */
-            if(routeID.intValue() == -12 && routeIDsFromSub.size() > 0) {
-                current400Series.getDeviceRoutes().setRouteID(routeIDsFromSub.get(0));
-                usingSub  = true;
+            if(routeID.intValue() == -12) {
+                if (routeIDsFromSub.size() > 0) {
+                    current400Series.getDeviceRoutes().setRouteID((Integer)routeIDsFromSub.get(0));
+                    usingSub  = true;
+                }
             }
             else
                 current400Series.getDeviceRoutes().setRouteID(routeID);
@@ -513,7 +521,7 @@ public void runImport(List<ImportData> imps) {
                 Transaction.createTransaction(Transaction.INSERT, pc).execute();
                 
 				successVector.add(imps.get(j));
-				log.info(current400Series.getPAOClass() + " with name " + name + " with address " + address + "successfully imported.");
+				log.info(current400Series.getPAOType() + " with name " + name + " with address " + address + "successfully imported.");
 				
 				successCounter++;
 			}
@@ -525,7 +533,7 @@ public void runImport(List<ImportData> imps) {
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
 				failures.add(currentFailure);
-				log.error(current400Series.getPAOClass() + " with name " + name + "failed on INSERT into database.");
+				log.error(current400Series.getPAOType() + " with name " + name + "failed on INSERT into database.");
 			}
 			finally {
 				try {
@@ -885,7 +893,7 @@ private void handleSuccessfulLocate(Return returnMsg) {
         else
             throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
         Transaction.createTransaction(Transaction.UPDATE, retMCT).execute();
-        log.info(retMCT.getPAOClass() + "with name " + retMCT.getPAOName() + " was successfully located on route with ID " + routeID + ".");
+        log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route with ID " + routeID + ".");
         
         //interval write
         porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );

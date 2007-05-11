@@ -65,6 +65,11 @@
 			  <%@ include file="../../include/therm_schedule2.jspf" %>
 <%
 	}
+	else if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_HEATPUMP_TYPE) {
+%>
+			  <%@ include file="../../include/therm_schedule3.jspf" %>
+<%
+	}
 %>
 			  <p align="center" class="MainText">
 			    <%@ include file="../../include/copyright.jsp" %>
