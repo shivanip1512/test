@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.19 $
-*    DATE         :  $Date: 2007/02/15 23:22:08 $
+*    REVISION     :  $Revision: 1.20 $
+*    DATE         :  $Date: 2007/05/11 14:53:10 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.20  2007/05/11 14:53:10  tspar
+      YUK-3839 FDR Text Import UTC time
+
+      Added a UTC time conversion. We can now accept UTC time by adding a 'U' flag in place of the normal DST flag. FDR will convert the time given to local time before returning it.
+
       Revision 1.19  2007/02/15 23:22:08  jrichter
       took out check for sign.
 
@@ -98,6 +103,7 @@
 #include <wininet.h>
 #include <fcntl.h>
 #include <io.h>
+#include <time.h>
 
 /** include files **/
 #include "ctitime.h"
@@ -114,6 +120,9 @@
 #include "fdrtextfilebase.h"
 #include "fdrtextimport.h"
 #include "utility.h"
+
+
+int calcUTCOffset();
 
 CtiFDR_TextImport * textImportInterface;
 
@@ -239,18 +248,24 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string aTime, CHAR aDstFlag)
             ts.tm_year -= 1900;
             ts.tm_mon--;
 
-            if (aDstFlag == 'D' || aDstFlag == 'd')
-            {
-                ts.tm_isdst = TRUE;
-            } else
-            {
-                ts.tm_isdst = FALSE;
+            if( aDstFlag == 'D' || aDstFlag == 'd' ){
+                ts.tm_hour;
+                ts.tm_isdst = 1;//true
+            }else if( aDstFlag == 'S' || aDstFlag == 's' ){
+                ts.tm_isdst = 0;//false
+            }else{
+                ts.tm_isdst = -1;// not available
             }
 
             try
             {
-                retVal = CtiTime(&ts);
-
+                if( ts.tm_isdst == -1 ){//utc time, gotta convert to local time
+                    time_t tt = mktime(&ts);
+                    retVal = CtiTime(&ts);
+                    retVal.addSeconds(-1*3600*calcUTCOffset());
+                }else{
+                    retVal = CtiTime(&ts);
+                }
                 // if CtiTime can't make a time ???
                 if (!retVal.isValid())
                 {
@@ -266,6 +281,20 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string aTime, CHAR aDstFlag)
     return retVal;
 }
 
+int calcUTCOffset(){
+    //calculate UTC difference and add(or subtract) the hours.
+    //Warning: this will only work properly for time zones which - from UTC.
+    // This should be replaced fast when we get a better Time library such as Boost 1.33.1
+    struct tm *loc= new struct tm();
+    struct tm *utc;
+    time_t tt;
+    CtiTime time = CtiTime(CtiDate(10,5,2007),1,0,0);
+    time.extract(loc);
+    tt = mktime(loc);
+    utc = gmtime(&tt);
+
+    return (utc->tm_hour - loc->tm_hour);
+}
 USHORT CtiFDR_TextImport::ForeignToYukonQuality (string aQuality)
 {
     USHORT Quality = NonUpdatedQuality;
