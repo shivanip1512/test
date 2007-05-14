@@ -34,4 +34,5 @@ copy:
 deps:
         @$(MAKE) -nologo -f makebase.mak $@
         @$(MAKE) -nologo -f makecmdline.mak $@
+	@$(MAKE) -nologo -f maketest.mak $@
 
