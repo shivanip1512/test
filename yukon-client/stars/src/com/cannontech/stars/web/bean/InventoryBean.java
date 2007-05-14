@@ -894,15 +894,6 @@ public class InventoryBean {
             htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
             htmlBuf.append("      <input type='button' name='ChooseSelected' value='Manipulate Selected' onclick='manipSelected()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
-            /*htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
-            htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeSelected()>").append(LINE_SEPARATOR);
-            htmlBuf.append("    </td>").append(LINE_SEPARATOR);*/
-            htmlBuf.append("    <td>").append(LINE_SEPARATOR);
-            if (referer != null)
-                htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
-            else
-                htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append(LINE_SEPARATOR);
-            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
             htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
             htmlBuf.append("</table>").append(LINE_SEPARATOR);
         }
