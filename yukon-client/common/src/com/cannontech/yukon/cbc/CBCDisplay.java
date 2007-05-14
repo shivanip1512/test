@@ -37,13 +37,14 @@ public class CBCDisplay {
 
     // Column numbers for the CabBank display
     public static final int CB_NAME_COLUMN = 0;
-    public static final int CB_BANK_ADDRESS_COLUMN = 1;
+    public static final int CB_CONTROLLER = 1;
     public static final int CB_BANK_SIZE_COLUMN = 2;
     public static final int CB_STATUS_COLUMN = 3;
     public static final int CB_TIME_STAMP_COLUMN = 4;
     public static final int CB_OP_COUNT_COLUMN = 5;
     public static final int CB_PARENT_COLUMN = 6;
     public static final int CB_CURRENT_DAILY_OP_COLUMN = 7;
+    
 
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
@@ -116,14 +117,13 @@ public class CBCDisplay {
         if (capBank == null)
             return "";
 
+        Integer controlDeviceID = capBank.getControlDeviceID();
+        String controllerName = (controlDeviceID != 0) ? DaoFactory.getPaoDao().getYukonPAOName(controlDeviceID) : DASH_LINE;
         switch (col) {
         case CB_NAME_COLUMN: {
             return capBank.getCcName() + " (" + capBank.getControlOrder() + ")";
         }
 
-        case CB_BANK_ADDRESS_COLUMN: {
-            return capBank.getCcArea();
-        }
 
         case CB_STATUS_COLUMN: {
             boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 || capBank.getControlStatus()
@@ -184,6 +184,9 @@ public class CBCDisplay {
         case CB_CURRENT_DAILY_OP_COLUMN: {
             return capBank.getCurrentDailyOperations();
         }
+        
+        case CB_CONTROLLER:
+            return controllerName;
         default:
             return null;
         }

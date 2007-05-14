@@ -43,10 +43,20 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer currentDailyOperations = null;	
 	private Boolean ignoreFlag = null;
 	private Integer ignoreReason = null;
+    
+    private Boolean ovUVDisabled = Boolean.TRUE;
 
 
 
-	/**
+	public Boolean getOvUVDisabled() {
+        //here to fake the return
+        //boolean retVal = ((Math.random() * 100) > 50) ?  true : false; 
+        return ovUVDisabled;
+    }
+    public void setOvUVDisabled(Boolean ovUVDisabled) {
+        this.ovUVDisabled = ovUVDisabled;
+    }
+    /**
 	 * CapBankDevice constructor comment.
 	 */
 	public CapBankDevice() {

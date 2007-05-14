@@ -5,6 +5,10 @@ import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.tag.CBCTagHandler;
 import com.cannontech.cbc.oneline.tag.OnelineTags;
+import com.cannontech.cbc.web.CBCWebUtils;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 
@@ -34,19 +38,29 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
     }
 
     public void addStateInfo() {
-        String name = "CapState_" + getCurrentCapIdFromMessage();
+        String elementID = "CapState_" + getCurrentCapIdFromMessage();
+        String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
+                                                       getCurrentCapIdFromMessage());
+        String disableCapOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
+                                                              getCurrentCapIdFromMessage());
+        String standAloneReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_CB_OPERATIONAL_STATE,
+                                                          getCurrentCapIdFromMessage());
+
         HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement",
-                                                            name);
+                                                            elementID);
         stateInfo.addProperty("isDisable", isDisabled().toString());
         stateInfo.addProperty("isOVUVDis", String.valueOf(isOVUVDisabled()));
         stateInfo.addProperty("isStandalone", String.valueOf(isStandalone()));
-        String standAloneReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_CB_OPERATIONAL_STATE,
-                                                          getCurrentCapIdFromMessage());
         stateInfo.addProperty("standAloneReason", standAloneReason);
-        String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                       getCurrentCapIdFromMessage());
         stateInfo.addProperty("disableCapReason", disableReason);
+        stateInfo.addProperty("disableCapOVUVReason", disableCapOVUVReason);
+
         stateInfo.addProperty("paoName", parent.getStreamable().getCcName());
+        Integer id = parent.getStreamable().getControlDeviceID();
+        LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(id);
+        boolean isTwoWay = CBCUtils.isTwoWay( lite );
+        stateInfo.addProperty("scanOptionDis", "" + !isTwoWay);
+
         graph.add(stateInfo);
 
     }

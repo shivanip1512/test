@@ -97,16 +97,16 @@ public class CapBankTagView extends LxAbstractView implements TagView {
         if (states.isDisabled().booleanValue())
             tagString += "D:";
         else
-            tagString += "-:";
+            tagString += ":";
         if (states.isOVUVDisabled())
             tagString += "V:";
         else
-            tagString += "-:";
+            tagString += ":";
         if (states.isStandalone())
 
             tagString += "S";
         else
-            tagString += "-";
+            tagString += "";
         return tagString;
     }
 

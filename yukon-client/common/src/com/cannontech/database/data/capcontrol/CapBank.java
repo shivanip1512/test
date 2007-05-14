@@ -40,6 +40,10 @@ public class CapBank extends CapControlDeviceBase {
     public static final String ENABLE_OPSTATE = "capEnabled";
     public static final String DISABLE_OPSTATE = "capDisabled";
 
+
+    public static final String ENABLE_OVUV_OPSTATE = "capOVUVEnabled";
+    public static final String DISABLE_OVUV_OPSTATE = "capOVUVDisabled";
+
     private com.cannontech.database.db.capcontrol.CapBank capBank = null;
     private List ccMonitorBankList = new ArrayList();
 

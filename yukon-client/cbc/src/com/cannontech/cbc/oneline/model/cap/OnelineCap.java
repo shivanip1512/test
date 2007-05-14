@@ -172,10 +172,7 @@ public class OnelineCap implements OnelineObject {
     }
 
     public boolean isOVUVDisabled() {
-        // TODO Add method implementation when CapBank table will have a column
-        // for
-        // OVUV disabled
-        return false;
+        return getStreamable().getOvUVDisabled().booleanValue();
     }
 
     public boolean isStandalone() {

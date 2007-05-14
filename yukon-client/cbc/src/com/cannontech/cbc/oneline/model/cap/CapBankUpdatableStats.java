@@ -25,6 +25,8 @@ public class CapBankUpdatableStats extends LxAbstractView implements
 
     private UpdatableTextList bankSize = new UpdatableTextList(CBCOnelineSettingsRole.CAP_BANK_SIZE, this);
     private UpdatableTextList opcount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_OPCNT, this);
+    private UpdatableTextList cbcName = new UpdatableTextList(CBCOnelineSettingsRole.CAP_CBC_NAME, this);
+
     public LxAbstractGraph graph;
     public OnelineCap parentCap;
     private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
@@ -49,6 +51,8 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     private void initPropLabelMap() {
         propLabelMap.put(CBCOnelineSettingsRole.CAP_OPCNT, "Op Count:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE, "Bank Size");
+        propLabelMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, "CBC:");
+
     }
 
     private void initPropColumnMap() {
@@ -56,6 +60,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
                           CBCDisplay.CB_BANK_SIZE_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_OPCNT,
                           CBCDisplay.CB_OP_COUNT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, CBCDisplay.CB_CONTROLLER);
     }
 
     private CapBankDevice getStreamable() {
@@ -139,6 +144,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     public void initAllStats() {
         allStats.add(opcount);
         allStats.add(bankSize);
+        allStats.add(cbcName);
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();
         }

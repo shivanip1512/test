@@ -34,4 +34,8 @@ public class SubImgState implements OnelineState {
         groupName = n;
      }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
 }

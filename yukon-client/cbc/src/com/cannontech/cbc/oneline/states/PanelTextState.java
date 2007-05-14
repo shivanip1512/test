@@ -38,4 +38,8 @@ public class PanelTextState implements OnelineState {
         groupName = n;
     }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
 }

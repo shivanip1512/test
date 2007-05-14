@@ -36,6 +36,9 @@ function openPopupWin(elem, compositeIdType) {
 	
 	type = compositeIdType.split("_")[0];
 	id = compositeIdType.split("_")[1];
+	//will only be present with cap banks
+	disScan = compositeIdType.split("_")[2];
+	
 	var url;
 	if (type == ALL_POPUP_TYPES.subCommand) {
 		url = createSubMenu();
@@ -62,7 +65,7 @@ function openPopupWin(elem, compositeIdType) {
 	}
 	
 	else if (type == ALL_POPUP_TYPES.childCapMaint) {
-					url = createCapbankMaint(id);
+					url = createCapbankMaint(id, disScan);
 	}
 	else if (type == ALL_POPUP_TYPES.childCapDBChange) {
 						url = createCapbankDBChange(id);
@@ -258,31 +261,54 @@ function createSubTagMenu() {
 
 function createCapTagMenu (paoID) {
 	//state var	
+	//variables pushed from the server
+	var paoName = getState("CapState_" + paoID, "paoName"); //name of the capbank
+	//capbank states
 	var isDis = getState("CapState_" + paoID, "isDisable");
-	var paoName = getState("CapState_" + paoID, "paoName");
+	var isOVUVDis = getState("CapState_" + paoID, "isOVUVDis");
+	var isStandalone = getState("CapState_" + paoID, "isStandalone");
+	//reasons
+	var disableCapReason = getState("CapState_" + paoID, "disableCapReason");
+	var disableCapOVUVReason = getState("CapState_" + paoID, "disableCapOVUVReason");
+	var aloneReason = getState("CapState_" + paoID, "standAloneReason");
+	
+	//variables used to hold command information
+	//we need to for enablement and ovuv because it is
+	//a tag as well a command
+	var disableCap;
 	var disCapTag;
-	debug = 1;
+	var disCapOVUV;
+	var disCapOVUVTag;
+	
 	if (isDis == "true")
 	{
 		disableCap = new Command (paoID, ALL_CAP_CMDS.enable_capbank, ALL_CMD_TYPES.cap);
 		disCapTag = new Command (paoID, ALL_TAG_CMDS.capEnabled, ALL_CMD_TYPES.tag);
-		var disableCapReason = getState("CapState_" + paoID, "disableCapReason");
 	}
 	else 
 	{
 		disableCap = new Command (paoID, ALL_CAP_CMDS.disable_capbank, ALL_CMD_TYPES.cap);
 		disCapTag = new Command (paoID, ALL_TAG_CMDS.capDisabled, ALL_CMD_TYPES.tag);	
 	}
-	var isOVUVDis = getState("CapState_" + paoID, "isOVUVDis");
-	var isStandalone = getState("CapState_" + paoID, "isStandalone");
+	if (isOVUVDis == "true")
+	{
+		disCapOVUV = new Command (paoID, ALL_CAP_CMDS.bank_enable_ovuv, ALL_CMD_TYPES.cap);
+		disCapOVUVTag = new Command (paoID, ALL_TAG_CMDS.capOVUVEnabled, ALL_CMD_TYPES.tag);
+	}
+	else 
+	{
+		disCapOVUV = new Command (paoID, ALL_CAP_CMDS.bank_disable_ovuv, ALL_CMD_TYPES.cap);
+		disCapOVUVTag = new Command (paoID, ALL_TAG_CMDS.capOVUVDisabled, ALL_CMD_TYPES.tag);	
+	}
+	
 	if (isStandalone == "true")
 	{
 		aloneCap = new Command (paoID, ALL_TAG_CMDS.switched, ALL_CMD_TYPES.tag);
-		var aloneReason = getState("CapState_" + paoID, "standAloneReason");
 	}
 	else
+	{
 		aloneCap = new Command (paoID, ALL_TAG_CMDS.standalone, ALL_CMD_TYPES.tag);
-		
+	}	
 	var str='';
 	str += '<html>';
 	str+='<body style="background-color:black">';
@@ -302,6 +328,7 @@ function createCapTagMenu (paoID) {
 	str+= 				paoID;
 	str+='">';
 	str+='				<input type="hidden" id="executeQueue_' + paoID + '" val=""/>';
+	//***********DIS/EN CAP***********//
 	str+='					<input name="';
 	str+=					disableCap.createName();
 	str+='" type="checkbox" onclick="addCommand(this); '; 
@@ -310,15 +337,16 @@ function createCapTagMenu (paoID) {
 	str+=					' checked ';
 	str+='> <font color="white">Disable<\/font><\/><\/br>';
 	str += generateReasonSpan((isDis == "true"),  disCapTag.createName() + 'ReasonSpan' , disableCapReason);
-	str+='					<input  name="';
-	str+=					"OVUDDisPlaceHolder"
-	str+='" type="checkbox" onclick="say(\'This feature is not yet implemented\');closePopupWindow()"; ';
+	//***********OV/UV***********//
+	str+='					<input name="';
+	str+=					disCapOVUV.createName();
+	str+='" type="checkbox" onclick="addCommand(this); '; 
+	str+=' addCommand(\'' + disCapOVUVTag.createName() +'\'); setReason(\'' + disCapOVUVTag.createName() + '\', \'' + disableCapOVUVReason + '\', this)"';
 	if (isOVUVDis == "true")
-			str+=					' checked ';
-	str+='> <font color="white">Disable OV\/UV<\/font><\/><\/br>';
-	str+='					<span id="';
-	str+=					"OVUDDisPlaceHolderReasonSpan"
-	str+='" style="display: none"><\/span><\/br>';
+	str+=					' checked ';
+	str+='> <font color="white">Disable OVUV<\/font><\/><\/br>';
+	str += generateReasonSpan((isOVUVDis == "true"),  disCapOVUVTag.createName() + 'ReasonSpan' , disableCapOVUVReason);
+	//***********STANDALONE****************//
 	str+='					<input   name="';
 	str+=					aloneCap.createName();
 	str+='" type="checkbox" onclick="addCommand(this); setReason(this, \'' + aloneReason + '\')"';
@@ -326,6 +354,7 @@ function createCapTagMenu (paoID) {
 			str+=					' checked';
 	str+='> <font color="white">Standalone<\/font><\/><\/br>';
 		str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
+	//************************	
 	str+='<\/span><\/br>';
 	str+='				<\/span>';
 	str+='			<\/td>';
@@ -340,12 +369,14 @@ function createCapTagMenu (paoID) {
 	str += '</html>';
 
 return str;
+
 }
 function createCapBankMenu(paoID) {
 	var open = new Command (paoID, ALL_CAP_CMDS.open_capbank, ALL_CMD_TYPES.cap);
 	var close = new Command (paoID, ALL_CAP_CMDS.close_capbank, ALL_CMD_TYPES.cap);
 	var confirm = new Command (paoID, ALL_CAP_CMDS.confirm_open, ALL_CMD_TYPES.cap);
 	var paoName = getState("CapState_" + paoID, "paoName");
+	var disScan = getState("CapState_" + paoID, "scanOptionDis");
 	var str = "";
 	str += "<html>";
 	str += "<body>";
@@ -375,7 +406,7 @@ function createCapBankMenu(paoID) {
 	str += "			<tr>";
 	str += "				<td  style=\"color=gray\">";
 	str += "				<a href=\"javascript:void(0)\" onclick=\"disableAll();openPopupWin(this, '"; 
-	str += 					ALL_POPUP_TYPES.childCapMaint + "_" + paoID;
+	str += 					ALL_POPUP_TYPES.childCapMaint + "_" + paoID + "_" + disScan;
 	str += "')\" style=\"color:white\">Maintenance </a>";
 	str += "				</td>";
 	str += "				<td >";
@@ -555,10 +586,9 @@ function say(word) {
 		alert("hello!");
 	}
 }
-function createCapbankMaint(paoID) {
+function createCapbankMaint(paoID, disScan) {
 var scan = new Command (paoID, ALL_CAP_CMDS.scan_2way_dev, ALL_CMD_TYPES.cap);
 var ovUVEn = new Command (paoID, ALL_CAP_CMDS.bank_enable_ovuv, ALL_CMD_TYPES.cap);
-
 var str='';
 str+='<html>';
 str+='	<body style="background-color: black">';
@@ -567,7 +597,10 @@ str+='		<tr>';
 str+='			<td>';
 str+='				<input type="submit"  name="';
 str+=				scan.createName();
-str+='" value="Scan" onclick="disableAll(); submit(this); reset(this)"\/>';
+str+='" value="Scan" '
+if (disScan == "true")
+str+=				' disabled = "true" ' ;
+str+='onclick="disableAll(); submit(this); reset(this)"\/>';
 str+='			<\/td>';
 str+='			<td align="right" valign="top">';
 str+='				<a  href="javascript:void(0)" style="color=white;" onclick="closeCurrentPopupWindow()"title="Click To Close" > x <\/a>';

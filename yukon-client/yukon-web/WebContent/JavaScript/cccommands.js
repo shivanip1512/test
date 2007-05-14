@@ -14,7 +14,8 @@ var ALL_CAP_CMDS = {confirm_open:8, open_capbank:6, close_capbank:7, bank_enable
 var ALL_TAG_CMDS = {standalone:"Stand Alone", switched:"Switched", 
 					capEnabled:"capEnabled", capDisabled:"capDisabled", 
 					feederEnabled:"feederEnabled", feederDisabled:"feederDisabled",
-					subEnabled:"subEnabled", subDisabled:"subDisabled"
+					subEnabled:"subEnabled", subDisabled:"subDisabled",
+					capOVUVEnabled:"capOVUVEnabled", capOVUVDisabled:"capOVUVDisabled"
 					};
 					
 function executeCommand(string) {

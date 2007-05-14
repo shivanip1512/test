@@ -59,4 +59,8 @@ public class DynamicLineState implements OnelineState {
         groupName = n;
      }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
 }

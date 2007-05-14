@@ -34,8 +34,10 @@ public class OnelineTags {
                     CapBank.STANDALONE_OPSTATE, CapBank.SWITCHED_OPSTATE }),
             new TagGroup(TAGGRP_ENABLEMENT, new String[] {
                     CapBank.ENABLE_OPSTATE,
-                    CapBank.DISABLE_OPSTATE })
-
+                    CapBank.DISABLE_OPSTATE }),
+            new TagGroup(TAGGRP_OVUV_ENABLEMENT, new String[] {
+                            CapBank.ENABLE_OVUV_OPSTATE,
+                            CapBank.DISABLE_OVUV_OPSTATE })
     };
 
     private TagGroup[] feederTagStates = { new TagGroup(TAGGRP_ENABLEMENT,
