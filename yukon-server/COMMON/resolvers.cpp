@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2007/03/29 20:39:01 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2007/05/14 16:42:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -184,6 +184,10 @@ INT resolvePointType(const string& _rwsTemp)
     else if(rwsTemp == "analogoutput")
     {
         Ret = AnalogOutputPointType;
+    }
+    else
+    {
+        Ret = InvalidPointType;
     }
 
     return Ret;
