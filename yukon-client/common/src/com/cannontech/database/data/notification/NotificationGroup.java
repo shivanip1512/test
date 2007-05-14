@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.notification.AlarmCategory;
 import com.cannontech.database.db.point.PointAlarming;
 
@@ -104,7 +105,8 @@ public void delete() throws java.sql.SQLException
 	delete(NotifDestinationMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
 	delete(ContactNotifGroupMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
 	delete(CustomerNotifGroupMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
-	
+    delete(LMDirectNotificationGroupList.TABLE_NAME, "NotificationGrpID", getNotificationGroup().getNotificationGroupID());
+    
 	getNotificationGroup().delete();
 }
 /**
