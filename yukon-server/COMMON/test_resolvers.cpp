@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/05/14 16:42:18 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/05/14 17:51:34 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ BOOST_AUTO_UNIT_TEST(test_resolveAmpUseType)
     tempName = "default 1 fail 2";
     amptype = RouteAmpDefault1Fail2;
     BOOST_CHECK_EQUAL(resolveAmpUseType(tempName), amptype);
-    tempName = "efault 2 fail 1";
+    tempName = "default 2 fail 1";
     amptype = RouteAmpDefault2Fail1;
     BOOST_CHECK_EQUAL(resolveAmpUseType(tempName), amptype);
     tempName = "amp 1";
