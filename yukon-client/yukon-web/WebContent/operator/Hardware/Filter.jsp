@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <jsp:useBean id="filterBean" class="com.cannontech.stars.web.bean.FilterBean" scope="page"/>
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 
@@ -18,6 +19,7 @@
 	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
 	<%pageContext.setAttribute("filterConsumptionType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
+	<%pageContext.setAttribute("backOnePage", ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
@@ -165,7 +167,7 @@
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
                   	</td>
                   	<td width="75" align="right"> 
-                    	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='Inventory.jsp'">
+                    	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='${backOnePage}'">
                   	</td>
               	</tr>
         	</table>
