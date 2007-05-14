@@ -218,12 +218,6 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
         switch (unitOfMeasure) {
 
-        case PointUnits.UOMID_KWH:
-        case PointUnits.UOMID_KW:
-            type = ReadingType.ELECTRIC;
-
-            break;
-
         case PointUnits.UOMID_KVARH:
         case PointUnits.UOMID_KVAR:
             type = ReadingType.KVAR;
@@ -243,6 +237,13 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
         case PointUnits.UOMID_GAS_CFT:
             type = ReadingType.GAS;
+
+            break;
+            
+        case PointUnits.UOMID_KWH:
+        case PointUnits.UOMID_KW:
+        default:
+            type = ReadingType.ELECTRIC;
 
             break;
         }

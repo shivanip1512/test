@@ -256,7 +256,8 @@ public class ExtendedTOUFormat extends FileFormatBase {
             code = ExtendedTOURecord.WATER_CODE;
         } else if (unitOfMeasure.equals(GasCFT)) {
             code = ExtendedTOURecord.GAS_CODE;
-        }
+        } else //default to Electric
+        	code = ExtendedTOURecord.ELECTRIC_CODE;
 
         return code;
     }

@@ -34,5 +34,6 @@
 	{
 		session.setAttribute(ServletUtil.ATT_BILLING_BEAN, new com.cannontech.billing.mainprograms.BillingBean());
 		billingBean = (com.cannontech.billing.mainprograms.BillingBean)session.getAttribute(ServletUtil.ATT_BILLING_BEAN);
+		billingBean.setLiteYukonUser((LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER));
 	}
 %>

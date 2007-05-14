@@ -12,7 +12,10 @@ import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.roles.yukon.BillingRole;
 
 public class BillingBean implements java.util.Observer
 {
@@ -22,16 +25,19 @@ public class BillingBean implements java.util.Observer
 	private BillingFile billingFile = null;
 
 	private int fileFormat = FileFormatTypes.INVALID;
-	private int demandDaysPrev = 30;
-	private int energyDaysPrev = 7;
+	private int demandDaysPrev = -1;
+	private int energyDaysPrev = -1;
 	private String billGroup = "Default";
 	private int billGroupType = DeviceMeterGroup.COLLECTION_GROUP;
-	private String outputFile = "";
-	private boolean removeMult = false;
-	private boolean appendToFile = false;
+	private String outputFile = null;
+	private String inputFile = null;
+	private Boolean removeMult = null;
+	private Boolean appendToFile = null;
 	private Date endDate = null;
 	private int timer = 0;
 	private String timerString = "";
+	
+	private LiteYukonUser liteYukonUser = null;
 
 /**
  * BillingBean constructor comment.
@@ -79,9 +85,9 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 	(new Integer( getDemandDaysPrev()).intValue()),
 	(new Integer( getEnergyDaysPrev()).intValue()),
 	getBillGroup(),getBillGroupType(),
-	"c:/yukon/client/export/BeanTest.txt",
+	getOutputFile(),
 	getRemoveMult(),
-	"",
+	getInputFile(),
 	getEndDate(),
 	getAppendToFile());
 
@@ -126,6 +132,10 @@ public BillingFileDefaults getBillingDefaults()
 }
 public int getFileFormat()
 {
+	if( fileFormat == FileFormatTypes.INVALID) {
+		String format = DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.DEFAULT_BILLING_FORMAT, null);
+		fileFormat = FileFormatTypes.getFormatID(format);
+	}
 	return fileFormat;
 }
 public void setFileFormat(int newFileFormat)
@@ -166,6 +176,8 @@ public void setEndDateStr(String newEndDateStr)
 	
 public int getDemandDaysPrev()
 {
+	if( demandDaysPrev < 0)
+		demandDaysPrev = Integer.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.DEMAND_DAYS_PREVIOUS, null)).intValue();
 	return demandDaysPrev;
 }
 /**
@@ -177,8 +189,6 @@ public java.util.Date getDemandStartDate()
 {
 	return getBillingDefaults().getDemandStartDate();
 }
-	
-
 
 public void setDemandDaysPrev(int newDemandDaysPrev)
 {
@@ -188,6 +198,8 @@ public void setDemandDaysPrev(int newDemandDaysPrev)
 
 public int getEnergyDaysPrev()
 {
+	if (energyDaysPrev < 0)
+		energyDaysPrev = Integer.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.ENERGY_DAYS_PREVIOUS, null)).intValue();
 	return energyDaysPrev;
 }
 public void setEnergyDaysPrev(int newEnergyDaysPrev)
@@ -198,22 +210,25 @@ public void setEnergyDaysPrev(int newEnergyDaysPrev)
 
 public boolean getAppendToFile()
 {
-	return appendToFile;
+	if( appendToFile == null)
+		appendToFile = Boolean.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.APPEND_TO_FILE, null));
+	return appendToFile.booleanValue();
 }
 public void setAppendToFile(boolean isAppendToFile)
 {
-	appendToFile = isAppendToFile;
+	appendToFile = Boolean.valueOf(isAppendToFile);
 }
 
 public boolean getRemoveMult()
 {
-	return removeMult;
+	if (removeMult == null)
+		removeMult = Boolean.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.REMOVE_MULTIPLIER, null));
+	return removeMult.booleanValue();
 }
 public void setRemoveMult(boolean isRemoveMult)
 {
-	removeMult = isRemoveMult;
+	removeMult = Boolean.valueOf(isRemoveMult);
 }
-
 
 public String getBillGroup()
 {
@@ -286,5 +301,19 @@ public synchronized void update(java.util.Observable obs, Object data)
 		src.deleteObserver( this );
 		enableTimer(false);
 	}
+}
+public LiteYukonUser getLiteYukonUser() {
+	return liteYukonUser;
+}
+public void setLiteYukonUser(LiteYukonUser liteYukonUser) {
+	this.liteYukonUser = liteYukonUser;
+}
+public String getInputFile() {
+	if( inputFile == null)
+		inputFile = DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.INPUT_FILE, null);
+	return inputFile;
+}
+public void setInputFile(String inputFile) {
+	this.inputFile = inputFile;
 }
 }
