@@ -29,7 +29,7 @@ BOOST_AUTO_UNIT_TEST(testString)
 {
     for(int i=0; i<TEST_SIZE; i++){
         CtiCommandParser  parse(inputString[i]);
-        std::cout << "input string: " << inputString[i] << std::endl;
+        //std::cout << "input string: " << inputString[i] << std::endl;
         BOOST_CHECK_EQUAL( parse.asString(), outputString[i]); 
     }
 }
