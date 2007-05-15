@@ -83,6 +83,7 @@ public:
     BOOL getVerificationDoneFlag() const;
     BOOL getRetryOpenFailedFlag() const;
     BOOL getRetryCloseFailedFlag() const;
+    BOOL getOvUvDisabledFlag() const;
     LONG getUDPPort() const;
     const string& getIpAddress() const;
     LONG getReportedCBCState() const;
@@ -139,6 +140,7 @@ public:
     CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
     CtiCCCapBank& setRetryOpenFailedFlag(BOOL retryOpenFailedFlag);
     CtiCCCapBank& setRetryCloseFailedFlag(BOOL retryCloseFailedFlag);
+    CtiCCCapBank& setOvUvDisabledFlag(BOOL ovUvDisabledFlag);
     CtiCCCapBank& setUDPPort(LONG value);
     CtiCCCapBank& setIpAddress(ULONG value);
     CtiCCCapBank& setReportedCBCState(LONG value);
@@ -249,6 +251,7 @@ private:
     BOOL _verificationDoneFlag;
     BOOL _retryOpenFailedFlag;
     BOOL _retryCloseFailedFlag;
+    BOOL _ovUvDisabledFlag;
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;
     LONG _udpPortNumber;

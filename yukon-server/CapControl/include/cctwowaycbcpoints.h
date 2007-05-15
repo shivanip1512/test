@@ -39,7 +39,7 @@ public:
   //RWDECLARE_COLLECTABLE( CtiCCTwoWayPoints )
 
 
-    CtiCCTwoWayPoints();
+    CtiCCTwoWayPoints(LONG paoid);
     CtiCCTwoWayPoints(RWDBReader& rdr);
     CtiCCTwoWayPoints(const CtiCCTwoWayPoints& cap);
 
@@ -134,6 +134,7 @@ public:
 
     
     
+    CtiCCTwoWayPoints& setPAOId(LONG paoId);
     CtiCCTwoWayPoints& setCapacitorBankStateId(LONG pointId);
     CtiCCTwoWayPoints& setCapacitorBankState(LONG value);
     CtiCCTwoWayPoints& setReCloseBlockedId(LONG pointId);

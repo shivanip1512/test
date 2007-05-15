@@ -148,6 +148,9 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::FLIP_7010_CAPBANK:
         Flip7010Device();
         break;
+    case CtiCCCommand::SYSTEM_STATUS:
+        SendSystemStatus();
+        break;
         
     default:
         {
@@ -851,13 +854,15 @@ void CtiCCCommandExecutor::EnableOvUv()
                         additional += currentCapBank->getPAODescription();
                         additional += ")";
                     }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
 
                     INT seqId = CCEventSeqIdGen();
                     currentSubstationBus->setEventSequence(seqId);
-                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlEnableOvUv, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
+                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getControlPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlEnableOvUv, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
 
+                    currentCapBank->setOvUvDisabledFlag(FALSE);
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                     found = TRUE;
                     break;
                 }
@@ -938,6 +943,8 @@ void CtiCCCommandExecutor::DisableOvUv()
                     currentSubstationBus->setEventSequence(seqId);
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlDisableOvUv, currentSubstationBus->getEventSequence(), 0, text, _command->getUser()));
 
+                    currentCapBank->setOvUvDisabledFlag(TRUE);
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                     found = TRUE;
                     break;
 
@@ -970,13 +977,19 @@ void CtiCCCommandExecutor::DisableOvUv()
 }
 
 /*---------------------------------------------------------------------------
-    Disable OV/UV
+    DeleteItem
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DeleteItem()
 {
     CtiCCClientListener::getInstance()->BroadcastMessage(_command);
 }
-
+/*---------------------------------------------------------------------------
+    SendSystemStatus
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::SendSystemStatus()
+{
+    CtiCCClientListener::getInstance()->BroadcastMessage(_command);
+}
 
 /*---------------------------------------------------------------------------
     OpenCapBank
@@ -1613,6 +1626,10 @@ void CtiCCCommandExecutor::EnableSystem()
     CtiCCExecutorFactory f;
     CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
     executor->Execute();
+
+    executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 1));
+    executor->Execute();
+
     delete executor;
 }
 
@@ -1657,6 +1674,8 @@ void CtiCCCommandExecutor::DisableSystem()
     
     CtiCCExecutorFactory f;
     CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+    executor->Execute();
+    executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 0));
     executor->Execute();
     delete executor;
 

@@ -1098,7 +1098,6 @@ CtiConnection* CtiCapController::getDispatchConnection()
             {
                 //Connect to Dispatch
                 _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
-                _dispatchConnection->setName("CapControl to Dispatch");
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
@@ -1181,7 +1180,6 @@ CtiConnection* CtiCapController::getPILConnection()
             {
                 //Connect to Pil
                 _pilConnection = new CtiConnection( pil_port, pil_host );
-                _pilConnection->setName("CapControl to Pil");
 
                 //Send a registration message to Pil
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
@@ -2258,8 +2256,28 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 if (twoWayPts->getIgnoredIndicator() != value) 
                                 {
                                    currentCapBank->setIgnoreFlag(TRUE);
-                                   // currentCapBank->setToggleIgnoreReason(flag);
                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                   string text = string("CBC rejected command!");
+                                   string text1 = string("Var: CBC rejected command!, ");
+                                   if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                       currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
+                                       currentCapBank->getControlStatus() == CtiCCCapBank::Open ) 
+                                   {
+                                       currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                                       text1 += "OpenFail";
+                                   }
+                                   else if (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
+                                       currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
+                                       currentCapBank->getControlStatus() == CtiCCCapBank::Close ) 
+                                   {
+                                       currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                                       text1 += "CloseFail";
+                                   }
+                                   
+                                   sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                   getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control"));
+                                   currentCapBank->setLastStatusChangeTime(CtiTime());
+
                                 }
                             }
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
@@ -2279,6 +2297,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Set a cbc 2 way status point..."<< endl;
                                 }
+                                if (twoWayPts->getAutoVoltControl() && currentCapBank->getOvUvDisabledFlag()) 
+                                {
+                                    currentCapBank->setOvUvDisabledFlag(FALSE);
+                                }
+
                             }
                             else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value))
                             {

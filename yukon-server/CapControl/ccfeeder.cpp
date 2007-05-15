@@ -2635,7 +2635,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
                 if( capBank != NULL )
                 {
-                    DOUBLE adjustedBankKVARIncrease = (leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
+                    DOUBLE adjustedBankKVARIncrease = -(leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
                     if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
                         string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
@@ -5007,8 +5007,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted Feeder into DynamicCCFeeder: " << getPAOName() << endl;
             }
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            
+            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
+
             RWDBInserter inserter = dynamicCCFeederTable.inserter();
 
             inserter << _paoid
@@ -5030,7 +5030,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
             << (_waivecontrolflag?"Y":"N")
-            << string(*addFlags, 20)
+            << string2RWCString(addFlags)
             << _currentvoltloadpointvalue
             << _eventSeq
             << _currentVerificationCapBankId
@@ -5263,6 +5263,8 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _offpkVARlag = right._offpkVARlag;
         _peakVARlead = right._peakVARlead;
         _offpkVARlead = right._offpkVARlead;
+        _peakpfsetpoint = right._peakpfsetpoint;
+        _offpkpfsetpoint = right._offpkpfsetpoint;
         _displayorder = right._displayorder;
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
@@ -5485,7 +5487,9 @@ void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
     _peakVARlag = strategy->getPeakVARLag();
     _offpkVARlag = strategy->getOffPeakVARLag();       
     _peakVARlead = strategy->getPeakVARLead();
-    _offpkVARlead = strategy->getOffPeakVARLead();       
+    _offpkVARlead = strategy->getOffPeakVARLead(); 
+    _peakpfsetpoint = strategy->getPeakPFSetPoint();
+    _offpkpfsetpoint = strategy->getOffPeakPFSetPoint();
     _peakstarttime = strategy->getPeakStartTime();           
     _peakstoptime = strategy->getPeakStopTime();
     _controlinterval = strategy->getControlInterval();       

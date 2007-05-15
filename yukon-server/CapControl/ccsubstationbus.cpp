@@ -2273,6 +2273,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         {
             setDisableFlag(TRUE);
             setBusUpdatedFlag(TRUE);
+            setSolution(text + "  Sub Disabled. Automatic Control Inhibited.");
             //store->UpdateSubstation(currentSubstationBus);
             string text = string("Substation Bus Disabled");
             string additional = string("Bus: ");
@@ -2890,7 +2891,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                     if (!currentFeeder->getDisableFlag())
                     {    
-                        DOUBLE adjustedBankKVARIncrease = (leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
+                        DOUBLE adjustedBankKVARIncrease = -(leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
                         if( adjustedBankKVARIncrease <= getKVARSolution() )
                         {
 
@@ -5676,7 +5677,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted substation bus into DynamicCCSubstationBus: " << getPAOName() << endl;
             }
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             RWDBInserter inserter = dynamicCCSubstationBusTable.inserter();
             //TS FLAG
@@ -5701,7 +5702,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
             << string((_waivecontrolflag?"Y":"N"))
-            << string(*addFlags, 20)
+            << string2RWCString(addFlags)
             << _currentVerificationCapBankId
             << _currentVerificationFeederId 
             << _currentCapBankToVerifyAssumedOrigState
@@ -7936,6 +7937,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _offpkVARlag = right._offpkVARlag;
         _peakVARlead = right._peakVARlead;
         _offpkVARlead = right._offpkVARlead;
+        _peakpfsetpoint = right._peakpfsetpoint;
+        _offpkpfsetpoint = right._offpkpfsetpoint;
         _decimalplaces = right._decimalplaces;
         _nextchecktime = right._nextchecktime;
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
@@ -8197,7 +8200,9 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
     _peakVARlag = strategy->getPeakVARLag();                      
     _offpkVARlag = strategy->getOffPeakVARLag();                
     _peakVARlead = strategy->getPeakVARLead();                      
-    _offpkVARlead = strategy->getOffPeakVARLead();                
+    _offpkVARlead = strategy->getOffPeakVARLead();
+    _peakpfsetpoint = strategy->getPeakPFSetPoint();
+    _offpkpfsetpoint = strategy->getOffPeakPFSetPoint();
     _peakstarttime = strategy->getPeakStartTime();                    
     _peakstoptime = strategy->getPeakStopTime();                      
     _controlinterval = strategy->getControlInterval();                

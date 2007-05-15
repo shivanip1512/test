@@ -88,6 +88,7 @@ private:
     void DisableSystem();
     void Scan2WayDevice();
     void Flip7010Device();
+    void SendSystemStatus();
 
     CtiCCCommand* _command;
 };

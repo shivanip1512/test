@@ -100,7 +100,8 @@ public:
         SCAN_2WAY_DEVICE,  //24
         ENABLE_SYSTEM,  //25
         DISABLE_SYSTEM,  //26
-        FLIP_7010_CAPBANK  //25
+        FLIP_7010_CAPBANK,  //27
+        SYSTEM_STATUS  //28
     };
 
     CtiCCCommand(LONG command);

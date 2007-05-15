@@ -28,9 +28,9 @@ extern ULONG _CC_DEBUG;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCTwoWayPoints::CtiCCTwoWayPoints()
+CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
 {
-    _paoid = 0;                     
+    _paoid = paoid;                     
     _capacitorBankStateId = 0;      
     _capacitorBankState = 0;        
     _reCloseBlockedId = 0;          
@@ -114,8 +114,8 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints()
     _ovuvCountResetDate = gInvalidCtiTime;                          
     _lastOvUvDateTime = gInvalidCtiTime;
 
-    _insertDynamicDataFlag = FALSE;     
-    _dirty = FALSE;   
+    _insertDynamicDataFlag = TRUE;     
+    _dirty = TRUE;   
 
     return;
 }
@@ -481,6 +481,11 @@ const CtiTime& CtiCCTwoWayPoints::getLastOvUvDateTime() const
     return _lastOvUvDateTime;
 }
 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setPAOId(LONG paoId) 
+{
+    _paoid = paoId;
+    return *this;
+}
 
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankStateId(LONG pointId) 
 {
@@ -1382,7 +1387,9 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             << dynamicCCTwoWayTable["ovuvtracktime"].assign( _ovuvTrackTime )
             << dynamicCCTwoWayTable["lastovuvdatetime"].assign( toRWDBDT((CtiTime)_lastOvUvDateTime) ) //toAdd
             << dynamicCCTwoWayTable["neutralcurrentsensor"].assign( _neutralCurrentSensor )
-            << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"].assign( _neutralCurrentAlarmSetPoint );
+            << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"].assign( _neutralCurrentAlarmSetPoint )
+            << dynamicCCTwoWayTable["ipaddress"].assign( _udpIpAddress )
+            << dynamicCCTwoWayTable["udpport"].assign( _udpPortNumber );
 
             updater.execute( conn );
 
@@ -1456,7 +1463,9 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                      << _ovuvTrackTime
                      << _lastOvUvDateTime 
                      << _neutralCurrentSensor
-                     << _neutralCurrentAlarmSetPoint;
+                     << _neutralCurrentAlarmSetPoint
+                     << _udpIpAddress
+                     << _udpPortNumber;
            
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -2192,7 +2201,7 @@ void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
     INT lastControl;  
     INT condition = 0;
 
-    //rdr["deviceid"] >> _paoid;
+    rdr["deviceid"] >> _paoid;
     rdr["recloseblocked"] >> _reCloseBlocked;
     rdr["controlmode"] >> _controlMode;
     rdr["autovoltcontrol"] >> _autoVoltControl;
@@ -2238,6 +2247,9 @@ void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
 
     _uvCondition = condition & 0x01;
     _ovCondition = condition & 0x02;
+
+    _insertDynamicDataFlag = FALSE;
+    _dirty = false;
 
 
 }

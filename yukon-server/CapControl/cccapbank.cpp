@@ -91,7 +91,7 @@ CtiCCCapBank::~CtiCCCapBank()
 CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 {
     if ( _twoWayPoints == NULL )
-          _twoWayPoints = new CtiCCTwoWayPoints();
+          _twoWayPoints = new CtiCCTwoWayPoints(_controldeviceid);
     
     return _twoWayPoints;
 
@@ -425,6 +425,11 @@ BOOL CtiCCCapBank::getRetryCloseFailedFlag() const
 {
     return _retryCloseFailedFlag;
 }
+BOOL CtiCCCapBank::getOvUvDisabledFlag() const
+{
+    return _ovUvDisabledFlag;
+}
+
 
 /*---------------------------------------------------------------------------
     getVCtrlIndex
@@ -934,6 +939,23 @@ CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
 
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setOvUvDisabledFlag
+    
+    Sets the ovUvDisabledFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
+{
+
+    if (_ovUvDisabledFlag != ovUvDisabledFlag)
+    {
+        _dirty = TRUE;
+    }
+    _ovUvDisabledFlag = ovUvDisabledFlag;
+
+    return *this;
+}
+
 
 
 CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
@@ -1465,7 +1487,8 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _originalfeederid
     >> _currentdailyoperations
     >> _ignoreFlag
-    >> _ignoreReason;
+    >> _ignoreReason
+    >> _ovUvDisabledFlag;
 
     _laststatuschangetime = CtiTime(tempTime1);
 }
@@ -1509,7 +1532,8 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _originalfeederid
     << _currentdailyoperations
     << _ignoreFlag   
-    << _ignoreReason;
+    << _ignoreReason
+    << _ovUvDisabledFlag;
 }
 
 /*---------------------------------------------------------------------------
@@ -1560,6 +1584,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _verificationDoneFlag = right._verificationDoneFlag;      
         _retryOpenFailedFlag = right._retryOpenFailedFlag;
         _retryCloseFailedFlag = right._retryCloseFailedFlag;           
+        _ovUvDisabledFlag = right._ovUvDisabledFlag;
 
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
@@ -1644,6 +1669,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setVerificationFlag(FALSE);
     setRetryOpenFailedFlag(FALSE);
     setRetryCloseFailedFlag(FALSE);
+    setOvUvDisabledFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
 
@@ -1686,6 +1712,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
     _retryOpenFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
     _retryCloseFailedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
+    _ovUvDisabledFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["twowaycbcstate"] >> _reportedCBCState;
@@ -1773,9 +1800,14 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
             addFlags[3] = (_retryOpenFailedFlag?'Y':'N');
             addFlags[4] = (_retryCloseFailedFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
-                                      char2string(*(addFlags+2)) + char2string(*(addFlags+3)) +
-                                      char2string(*(addFlags+4)) +string(15, *(addFlags + 5)));
+            addFlags[5] = (_ovUvDisabledFlag?'Y':'N');
+            _additionalFlags = char2string(*addFlags);
+            _additionalFlags.append(char2string(*(addFlags+1)));
+            _additionalFlags.append(char2string(*(addFlags+2))); 
+            _additionalFlags.append(char2string(*(addFlags+3)));
+            _additionalFlags.append(char2string(*(addFlags+4))); 
+            _additionalFlags.append(char2string(*(addFlags+5))); 
+            _additionalFlags.append("NNNNNNNNNNNNNN");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
@@ -1791,7 +1823,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["assumedstartverificationstatus"].assign(_assumedOrigCapBankPos)
             << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
             << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
-            << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags[0])
+            << dynamicCCCapBankTable["additionalflags"].assign(string2RWCString(_additionalFlags))
             << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
             << dynamicCCCapBankTable["twowaycbcstate"].assign(_reportedCBCState)
             << dynamicCCCapBankTable["twowaycbcstatetime"].assign( toRWDBDT((CtiTime)_reportedCBCStateTime) );
@@ -1840,7 +1872,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                     ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData(conn, currentDateTime);
                 }
             }  */
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             RWDBInserter inserter = dynamicCCCapBankTable.inserter();
 
@@ -1855,7 +1887,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << _assumedOrigCapBankPos
             << _prevVerificationControlStatus
             << _vCtrlIndex
-            << string(*addFlags, 20)
+            << string2RWCString(addFlags)
             << _currentdailyoperations
             << _reportedCBCState
             << _reportedCBCStateTime;

@@ -913,6 +913,21 @@ void CtiCCSubstationBusStore::reset()
             dumpAllDynamicData();
         }
         CtiTime currentDateTime = CtiTime();
+        BOOL systemEnabled = FALSE;
+        for(LONG h=0;h<_ccGeoAreas->size();h++)
+        {
+            CtiCCAreaPtr area =  (CtiCCAreaPtr)(*_ccGeoAreas).at(h);
+            if (!area->getDisableFlag()) 
+            {
+                systemEnabled = TRUE;
+                break;
+            }
+        }
+        CtiCCExecutorFactory f;
+        CtiCCExecutor*executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, systemEnabled));
+        executor->Execute();
+        delete executor;
+        
         for(LONG i=0;i<_ccSubstationBuses->size();i++)
         {
             CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
@@ -5731,7 +5746,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
             }
             while (!_reloadList.empty())
             {
-                                CC_DBRELOAD_INFO reloadTemp = _reloadList.front();
+                CC_DBRELOAD_INFO reloadTemp = _reloadList.front();
 
                 switch (reloadTemp.objecttype)
                 {
@@ -5837,7 +5852,12 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
                             deleteCapBank(reloadTemp.objectId);
                             if(isCapBankOrphan(reloadTemp.objectId) )
-                               removeFromOrphanList(reloadTemp.objectId);
+                               removeFromOrphanList(reloadTemp.objectId); 
+
+                            CtiCCExecutorFactory f;
+                            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
+                            executor->Execute();
+                            delete executor;
 
                         }
                         break;
@@ -5888,6 +5908,12 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             deleteFeeder(reloadTemp.objectId);
                             if(isFeederOrphan(reloadTemp.objectId) )
                                removeFromOrphanList(reloadTemp.objectId);
+
+                            CtiCCExecutorFactory f;
+                            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
+                            executor->Execute();
+                            delete executor;
+
                         
                         }
                         break;
