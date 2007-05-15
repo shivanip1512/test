@@ -1,4 +1,4 @@
-package com.cannontech.importer.point;
+package com.cannontech.importer.progress;
 
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.VirtualDevice;

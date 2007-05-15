@@ -1,8 +1,10 @@
-package com.cannontech.importer.point;
+package com.cannontech.importer.progress;
 
 import java.io.*;
 import java.util.Iterator;
 import com.cannontech.database.PoolManager;
+import com.cannontech.importer.point.PointImportUtility;
+
 import java.sql.Connection;
 
 public class ProgressImporter {

@@ -1,4 +1,4 @@
-package com.cannontech.importer.point;
+package com.cannontech.importer.progress;
 
 import java.sql.Connection;
 import java.sql.SQLException;
