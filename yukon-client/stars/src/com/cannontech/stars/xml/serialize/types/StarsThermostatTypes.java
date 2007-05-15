@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatTypes.java,v 1.32 2007/05/11 22:28:33 jdayton Exp $
+ * $Id: StarsThermostatTypes.java,v 1.33 2007/05/15 16:33:16 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -16,7 +16,7 @@ import java.util.Hashtable;
 /**
  * 
  * 
- * @version $Revision: 1.32 $ $Date: 2007/05/11 22:28:33 $
+ * @version $Revision: 1.33 $ $Date: 2007/05/15 16:33:16 $
 **/
 public class StarsThermostatTypes implements java.io.Serializable {
 
@@ -117,6 +117,7 @@ public class StarsThermostatTypes implements java.io.Serializable {
         members.put("ExpressStat", EXPRESSSTAT);
         members.put("EnergyPro", ENERGYPRO);
         members.put("Commercial", COMMERCIAL);
+        members.put("ExpressStat Heat Pump", EXPRESSSTAT_HEATPUMP);
         return members;
     } //-- java.util.Hashtable init() 
 

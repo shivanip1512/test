@@ -1,6 +1,6 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ page import="com.cannontech.database.cache.functions.CustomerFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
 <%
 /* Required predefined variables:
@@ -57,7 +57,7 @@
         
     
     int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
-    LiteCustomer customer = CustomerFuncs.getLiteCustomer(customerId);
+    LiteCustomer customer = DaoFactory.getCustomerDao().getLiteCustomer(customerId);
     String tempUnit = customer.getTemperatureUnit();
     
     if (request.getParameter("tempUnit") != null) {
@@ -216,8 +216,8 @@ function prepareSubmit() {
                   <tr> 
                     <td width="25">&nbsp;</td>
 <%
-	String scheduleStr = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) :
-			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED);
+	String scheduleStr = (isOperator)? DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) :
+			DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED);
 %>
                     <td width="576" class="TableCell">Please use the thermostat 
                       below to temporarily change your current settings. To adjust 

@@ -1,5 +1,4 @@
-<%@ page import="com.cannontech.database.data.customer.CustomerFactory" %>
-<%@ page import="com.cannontech.database.cache.functions.CustomerFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
 
 <%
@@ -57,7 +56,7 @@
     if(accountInfo != null)
     {
 	    int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
-	   	customer = CustomerFuncs.getLiteCustomer(customerId);
+	   	customer = DaoFactory.getCustomerDao().getLiteCustomer(customerId);
 	   	tempUnit = customer.getTemperatureUnit();
 	}
 	    
@@ -290,8 +289,8 @@ function init() {
                               2) Slide thermometers to change start times.<br>
                               3) Adjust your cooling or heating temperatures.<br>
 <%
-	String instrLink = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS) :
-			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_THERM_INSTRUCTIONS);
+	String instrLink = (isOperator)? DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS) :
+			DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_THERM_INSTRUCTIONS);
 	if (StarsUtils.forceNotNone(instrLink).length() == 0) {
 %>
                               <a class="Link1" href="Instructions.jsp" onclick="return warnUnsavedChanges()">Click 
