@@ -394,7 +394,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             }
             PointReference pointReference = new PointReference();
             pointReference.setPointName(pointRef.getName());
-            pointReference.setExpectedMsgs(pointRef.getExpectedMsgs());
             definition.addAffectedPoint(pointReference);
         }
 

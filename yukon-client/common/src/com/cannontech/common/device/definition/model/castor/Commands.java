@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: Commands.java,v 1.1 2007/05/10 19:52:44 jkoponen Exp $
+ * $Id: Commands.java,v 1.2 2007/05/15 15:11:11 jkoponen Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Class Commands.
  * 
- * @version $Revision: 1.1 $ $Date: 2007/05/10 19:52:44 $
+ * @version $Revision: 1.2 $ $Date: 2007/05/15 15:11:11 $
  */
 public class Commands extends CommandsType 
 implements java.io.Serializable

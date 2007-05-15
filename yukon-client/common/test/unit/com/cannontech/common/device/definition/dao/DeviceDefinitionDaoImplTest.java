@@ -319,13 +319,13 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Define expected command definitions
         CommandDefinitionImpl command1 = new CommandDefinitionImpl();
         command1.addCommandString("do command1");
-        command1.addAffectedPoint(new PointReference("pulse1", 0));
+        command1.addAffectedPoint(new PointReference("pulse1"));
 
         CommandDefinitionImpl command2 = new CommandDefinitionImpl();
         command2.addCommandString("do command2");
         command2.addCommandString("continue command2");
-        command2.addAffectedPoint(new PointReference("pulse1", 2));
-        command2.addAffectedPoint(new PointReference("pulse2", 0));
+        command2.addAffectedPoint(new PointReference("pulse1"));
+        command2.addAffectedPoint(new PointReference("pulse2"));
 
         
         // Test with no expected commands

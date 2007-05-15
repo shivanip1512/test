@@ -117,7 +117,6 @@
                             <xs:element name="pointRef" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
 			                        <xs:attribute name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
-			                        <xs:attribute name="expectedMsgs" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" default="0"  />
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>

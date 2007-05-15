@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: PointRefDescriptor.java,v 1.1 2007/05/10 19:52:44 jkoponen Exp $
+ * $Id: PointRefDescriptor.java,v 1.2 2007/05/15 15:11:11 jkoponen Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * Class PointRefDescriptor.
  * 
- * @version $Revision: 1.1 $ $Date: 2007/05/10 19:52:44 $
+ * @version $Revision: 1.2 $ $Date: 2007/05/15 15:11:11 $
  */
 public class PointRefDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -96,49 +96,6 @@ public class PointRefDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         { //-- local scope
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");
-            fieldValidator.setValidator(typeValidator);
-        }
-        desc.setValidator(fieldValidator);
-        //-- _expectedMsgs
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_expectedMsgs", "expectedMsgs", org.exolab.castor.xml.NodeType.Attribute);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                PointRef target = (PointRef) object;
-                if(!target.hasExpectedMsgs())
-                    return null;
-                return new java.lang.Integer(target.getExpectedMsgs());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    PointRef target = (PointRef) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteExpectedMsgs();
-                        return;
-                    }
-                    target.setExpectedMsgs( ((java.lang.Integer)value).intValue());
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        };
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _expectedMsgs
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
-            IntegerValidator typeValidator = new IntegerValidator();
-            typeValidator.setMinInclusive(1);
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

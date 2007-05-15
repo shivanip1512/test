@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: PointRef.java,v 1.1 2007/05/10 19:52:43 jkoponen Exp $
+ * $Id: PointRef.java,v 1.2 2007/05/15 15:11:10 jkoponen Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Class PointRef.
  * 
- * @version $Revision: 1.1 $ $Date: 2007/05/10 19:52:43 $
+ * @version $Revision: 1.2 $ $Date: 2007/05/15 15:11:10 $
  */
 public class PointRef implements java.io.Serializable {
 
@@ -37,16 +37,6 @@ public class PointRef implements java.io.Serializable {
      * Field _name
      */
     private java.lang.String _name;
-
-    /**
-     * Field _expectedMsgs
-     */
-    private int _expectedMsgs;
-
-    /**
-     * keeps track of state for field: _expectedMsgs
-     */
-    private boolean _has_expectedMsgs;
 
 
       //----------------/
@@ -64,26 +54,6 @@ public class PointRef implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method deleteExpectedMsgs
-     * 
-     */
-    public void deleteExpectedMsgs()
-    {
-        this._has_expectedMsgs= false;
-    } //-- void deleteExpectedMsgs() 
-
-    /**
-     * Returns the value of field 'expectedMsgs'.
-     * 
-     * @return int
-     * @return the value of field 'expectedMsgs'.
-     */
-    public int getExpectedMsgs()
-    {
-        return this._expectedMsgs;
-    } //-- int getExpectedMsgs() 
-
-    /**
      * Returns the value of field 'name'.
      * 
      * @return String
@@ -93,18 +63,6 @@ public class PointRef implements java.io.Serializable {
     {
         return this._name;
     } //-- java.lang.String getName() 
-
-    /**
-     * Method hasExpectedMsgs
-     * 
-     * 
-     * 
-     * @return boolean
-     */
-    public boolean hasExpectedMsgs()
-    {
-        return this._has_expectedMsgs;
-    } //-- boolean hasExpectedMsgs() 
 
     /**
      * Method isValid
@@ -151,17 +109,6 @@ public class PointRef implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'expectedMsgs'.
-     * 
-     * @param expectedMsgs the value of field 'expectedMsgs'.
-     */
-    public void setExpectedMsgs(int expectedMsgs)
-    {
-        this._expectedMsgs = expectedMsgs;
-        this._has_expectedMsgs = true;
-    } //-- void setExpectedMsgs(int) 
 
     /**
      * Sets the value of field 'name'.

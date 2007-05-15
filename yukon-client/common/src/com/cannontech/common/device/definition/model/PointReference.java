@@ -6,21 +6,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class PointReference {
 
     private String pointName = null;
-    private int expectedMsgs = 0;
 
-    public PointReference() {}
+    public PointReference() {
+    }
 
-    public PointReference(String pointName, int expectedMsgs) {
+    public PointReference(String pointName) {
         this.pointName = pointName;
-        this.expectedMsgs = expectedMsgs;
-    }
-
-    public int getExpectedMsgs() {
-        return expectedMsgs;
-    }
-
-    public void setExpectedMsgs(int expectedMsgs) {
-        this.expectedMsgs = expectedMsgs;
     }
 
     public String getPointName() {
@@ -39,13 +30,11 @@ public class PointReference {
             return true;
         }
         PointReference pointRef = (PointReference) obj;
-        return new EqualsBuilder().append(pointName, pointRef.getPointName())
-                                  .append(expectedMsgs, pointRef.getExpectedMsgs())
-                                  .isEquals();
+        return new EqualsBuilder().append(pointName, pointRef.getPointName()).isEquals();
     }
 
     public int hashCode() {
-        return new HashCodeBuilder(81, 91).append(pointName).append(expectedMsgs).toHashCode();
+        return new HashCodeBuilder(81, 91).append(pointName).toHashCode();
     }
 
 }
