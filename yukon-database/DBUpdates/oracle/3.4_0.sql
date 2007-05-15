@@ -90,7 +90,7 @@ create table ImportPendingComm (
    TemplateName	       	varchar2(64)          not null,
    BillGrp             	varchar2(64)          not null, 
    SubstationName      	varchar2(64)          not null
-)
+);
 
 alter table ImportPendingComm
    add constraint PK_IMPPENDINGCOMM primary key  (DeviceID);
