@@ -605,6 +605,7 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
             {
                 //Connect to Dispatch
                 _dispatchConnection = CTIDBG_new CtiConnection( dispatch_port, dispatch_host );
+                _dispatchConnection->setName("LM to Dispatch");
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
@@ -683,6 +684,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
             {
                 //Connect to Pil
                 _pilConnection = CTIDBG_new CtiConnection( pil_port, pil_host );
+                _pilConnection->setName("LM to Pil");
 
                 //Send a registration message to Pil
                 CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
@@ -733,6 +735,7 @@ CtiConnection* CtiLoadManager::getNotificationConnection()
             {
                 //Connect to Pil
                 _notificationConnection  = CTIDBG_new CtiConnection( notification_port, notification_host.c_str() );
+                _notificationConnection->setName("LM to Notification");
             }
         } 
 

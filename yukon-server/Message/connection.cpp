@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/06/15 20:41:55 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/05/15 16:33:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -988,7 +988,7 @@ INT CtiConnection::establishConnection(INT freq)
             }
         }
 
-        if( !(++sleepCount % 60) && (getDebugLevel() & DEBUGLEVEL_CONNECTION) )      // once per minute....
+        if( !(++sleepCount % 60) )      // once per minute....
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " InThread  : " << who() << " connection is not valid. " << endl;
@@ -1018,7 +1018,7 @@ INT CtiConnection::waitForConnect()
 
     while( !_valid )       /* We loop here until the connection goes valid... */
     {
-        if((getDebugLevel() & DEBUGLEVEL_CONNECTION) && !(++waitCount % 60))
+        if( !(++waitCount % 60) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " OutThread : " << who() << " connection is not valid. " << endl;
