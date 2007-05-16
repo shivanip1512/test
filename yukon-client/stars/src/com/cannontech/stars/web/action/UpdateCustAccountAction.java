@@ -133,7 +133,11 @@ public class UpdateCustAccountAction implements ActionBase {
 			int workIndex = -1;
 			int emailIndex = -1;
 			
-			for(int j = 0; j < primContact.getContactNotificationCount(); j++)
+            String homePhone = req.getParameter("HomePhone");
+            String workPhone = req.getParameter("WorkPhone");
+            String email = req.getParameter("Email");
+            
+            for(int j = 0; j < primContact.getContactNotificationCount(); j++)
 			{
 				if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
 					homeIndex = j;
@@ -142,36 +146,55 @@ public class UpdateCustAccountAction implements ActionBase {
 				else if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
 					emailIndex = j;
 			}
-			
-			ContactNotification homePhone = ServletUtils.createContactNotification(
-					req.getParameter("HomePhone"), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+
 			if (homePhone != null) 
 			{
-				if(homeIndex != -1)
-					primContact.getContactNotification()[homeIndex] = homePhone;
+                if( homePhone.length() < 1) {
+                    primContact.removeContactNotification(homeIndex);
+                    if(workIndex > homeIndex)
+                        workIndex--;
+                    if(emailIndex > homeIndex)
+                        emailIndex--;
+                }
+			    else if(homeIndex != -1)
+					primContact.getContactNotification()[homeIndex].setNotification(homePhone);
 				else
-					primContact.addContactNotification( homePhone );
+					primContact.addContactNotification( ServletUtils.createContactNotification(homePhone, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ) );
 			} 
 			
-			ContactNotification workPhone = ServletUtils.createContactNotification(
-					req.getParameter("WorkPhone"), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
 			if (workPhone != null)
 			{
-				if(workIndex != -1)
-					primContact.getContactNotification()[workIndex] = workPhone;
+                if( workPhone.length() < 1) {
+                    primContact.removeContactNotification(workIndex);
+                    if(homeIndex > workIndex)
+                        homeIndex--;
+                    if(emailIndex > homeIndex)
+                        emailIndex--;
+                }
+			    else if(workIndex != -1)
+					primContact.getContactNotification()[workIndex].setNotification(workPhone);
 				else
-					primContact.addContactNotification( workPhone );
+					primContact.addContactNotification( ServletUtils.createContactNotification(workPhone, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE ) );
 			} 
 			
-			ContactNotification email = ServletUtils.createContactNotification(
-					req.getParameter("Email"), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 			if (email != null) 
 			{
-				email.setDisabled( req.getParameter("NotifyControl") == null );
-				if(emailIndex != -1)
-					primContact.getContactNotification()[emailIndex] = email;
-				else
-					primContact.addContactNotification( email );
+                if( email.length() < 1) {
+                    primContact.removeContactNotification(emailIndex);
+                    if(homeIndex > emailIndex)
+                        homeIndex--;
+                    if(workIndex > emailIndex)
+                        workIndex--;
+                }
+			    else if(emailIndex != -1) {
+					primContact.getContactNotification()[emailIndex].setNotification(email);
+                    primContact.getContactNotification()[emailIndex].setDisabled(req.getParameter("NotifyControl") == null);
+                }
+				else {
+                    ContactNotification emailNotif = ServletUtils.createContactNotification(email, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+                    emailNotif.setDisabled( req.getParameter("NotifyControl") == null );
+					primContact.addContactNotification( emailNotif );
+                }
 			} 
             
 			updateAccount.setPrimaryContact( primContact );
