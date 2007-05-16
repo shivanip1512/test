@@ -1,307 +1,379 @@
 <?xml version="1.0" ?>
-<project name="Yukon CruiseControl Ant Build Script" default="targets" basedir=".">
+<project name="Yukon CruiseControl Ant Build Script" default="targets" basedir="..">
 
-    <property environment="env"/>
-    <tstamp/>
-    <property name="tag.date" value="${DSTAMP}"/>
-    <property name="tag.time" value="${TSTAMP}"/>
-    <property name="yukon.build.version" value="${tag.date}_${yukon.tag}_${tag.time}"/>
-	<property name="build.label" value="3_4_0_cc"/>
-	<property name="yukon.dir" value="./yukon"/>
-	<property name="log.dir" value="./logs"/>
-	<property name="dist.dir" value="./dist"/>
-	<property name="temp.dir" value="./temp"/>
-	 	      	     	     
+    <property environment="env" />
+    <tstamp />
+    <property name="tag.date" value="${DSTAMP}" />
+    <property name="tag.time" value="${TSTAMP}" />
+    <property name="yukon.build.version" value="${tag.date}_${yukon.tag}_${tag.time}" />
+    <property name="build.label" value="3_4_0_cc" />
+    <property name="module.name" value="yukon" />
+    <property name="log.dir" value="./logs" />
+    <property name="dist.dir" value="./dist" />
+    <property name="temp.dir" value="./temp" />
+    <property name="client.lib" value="${module.name}/yukon-client/lib" />
+    <property name="install.lib" value="${module.name}/yukon-install/build" />
+    <property name="server.bin" value="${module.name}/yukon-server/bin" />
+
     <target name="targets">
-        <echo message="The following targets are available"/>
-        <echo message="                  		For all the build targets:"/>
-        <echo message="                  		define build.label to embed a label or version into the software"/>
-        <echo message=" tag            			- tag the current sandbox, define yukon.tag"/> 
-        <echo message="                  		I.e. build.label=3_3_3 will create a tag like TG20061003_3_3_3_103043"/>
-        <echo message=" branch         			- branch the current sandbox, define yukon.tag"/>
-        <echo message="                  		I.e. build.label=3_3_3 will result in a branch tag like BR20061003_3_3_3_103043"/>    	
-    	<echo message=""/>
-    	<echo message="checkout					- cvs checkout client,server,install,database"/>
-    	<echo message="checkout-client			- cvs checkout yukon-client module"/>
-    	<echo message="checkout-server			- cvs checkout yukon-server module"/>
-    	<echo message="checkout-install			- cvs checkout yukon-install module"/>
-    	<echo message="checkout-database 		- cvs checkout yukon-database module"/>
-    	<echo message=""/>
-    	<echo message="update					- cvs update client,server,install,database"/>
-    	<echo message="update-client			- cvs update yukon-client module"/>
-    	<echo message="update-server			- cvs update yukon-server module"/>
-    	<echo message="update-install			- cvs update yukon-install module"/>
-    	<echo message="update-database			- cvs update yukon-database module"/>
-    	<echo message=""/>
-    	<echo message="clean					- delete everything and start over clean"/>
-    	<echo message="clean-client				- delete yukon-client and start over clean"/>
-    	<echo message="clean-server				- delete yukon-server and start over clean"/>
-        <echo message="clean-install			- delete yukon-install and start over clean"/>
-    	<echo message="clean-database			- delete yukon-database and start over clean"/>
-    	<echo message="cleandist				- delete old packages and zip files"/>
-    	<echo message=""/>
-    	<echo message="build					- clean, checkout, compile, and package everything"/>
-    	<echo message="build-client				- clean, checkout, and compile yukon-client module"/>
-    	<echo message="build-server				- clean, checkout, and compile yukon-server module"/>
-    	<echo message="build-install			- clean, checkout, and compile yukon-install and yukon-database modules"/>
-    	<echo message="buildquick				- update, compile, and package everything"/>
-    	<echo message="buildquick-client		- update, and compile yukon-client module"/>
-    	<echo message="buildquick-server		- update, and compile yukon-server module"/>
-    	<echo message="buildquick-install		- update, and compile yukon-install and yukon-database modules"/>    	
-    	<echo message="builddist				- packages and zips everything up for distribution "/>
-    </target>	
-    	
-    	<!--
-        <echo message=" builddist      - "/>
-        <echo message=" checkout       - checkout the entire Yukon project"/>
-        <echo message="                  define yukon.tag to checkout a specific tag or branch"/>
-        <echo message=" update         - cvs update the entire Yukon project"/>
-        <echo message="                  define yukon.tag to update to a specific tag or branch"/>
-        <echo message=" clean          - delete everything and start over clean"/>
-        <echo message=" build          - compiles everything"/>
-        <echo message=" buildclient    - compiles the Yukon clients and web applications"/>        
-        <echo message=" buildserver    - compiles the Yukon background services"/>
-        <echo message=" buildinstaller - packages everything up into a Installshield installer"/> 
-        <echo message=" builddist      - packages and zips everything up for distribution "/>
-        <echo message="                  For all the build targets:"/>
-        <echo message="                  define build.label to embed a label or version into the software"/>
-        <echo message=" tag            - tag the current sandbox, define yukon.tag"/> 
-        <echo message="                  I.e. build.label=3_3_3 will create a tag like TG20061003_3_3_3_103043"/>
-        <echo message=" branch         - branch the current sandbox, define yukon.tag"/>
-        <echo message="                  I.e. build.label=3_3_3 will result in a branch tag like BR20061003_3_3_3_103043"/>
-    </target> -->
-            
-<!--
-    <target name="checktagdefined" depends="init">
-        <condition property="isyukontagdefined">
-            <isset property="yukon.tag" />
-        </condition>    
-    </target>	
-
-    <target name="checkouthead" unless="isyukontagdefined">
-        <echo message="checking out the main trunk (HEAD)"/>
-        <cvs dest="." package="yukon" />
+        <echo message="The following targets are available" />
+        <echo message="                  		For all the build targets:" />
+        <echo message="                  		define build.label to embed a label or version into the software" />
+        <echo message=" tag            			- tag the current sandbox, define yukon.tag" />
+        <echo message="                  		I.e. build.label=3_3_3 will create a tag like TG20061003_3_3_3_103043" />
+        <echo message=" branch         			- branch the current sandbox, define yukon.tag" />
+        <echo message="                  		I.e. build.label=3_3_3 will result in a branch tag like BR20061003_3_3_3_103043" />
+        <echo message="" />
+        <echo message=" checkout				- cvs checkout the entire Yukon project" />
+        <echo message="                  		  define yukon.tag to checkout a specific tag or branch" />
+        <echo message="" />
+        <echo message=" update					- cvs update the entire Yukon project" />
+        <echo message="                  		  define yukon.tag to update a specific tag or branch" />
+        <echo message=" update-client			- cvs update yukon-client module" />
+        <echo message=" update-server			- cvs update yukon-server module" />
+        <echo message="" />
+        <echo message=" clean					- delete everything and start over clean" />
+        <echo message=" cleandist				- delete old packages and zip files" />
+        <echo message="" />
+        <echo message=" build					- clean, checkout, compile, and package everything" />
+        <echo message=" build-client				- cvs update, and compile yukon-client module" />
+        <echo message=" build-server				- cvs update, and compile yukon-server module" />
+        <echo message=" build-install				- InstallShield"/>
+        <echo message=" builddist				- packages and zips everything up for distribution " />
+        <echo message="" />
     </target>
 
-    <target name="checkouttag" if="isyukontagdefined">
-        <echo message="checking out by tag or branch: ${yukon.tag}"/>
-        <cvs dest="." tag="${yukon.tag}" package="yukon" />
-    </target>	
--->
-
-	<target name="checkout" depends="checkout-client,checkout-server,checkout-install,checkout-database"/>
-	
-	<target name="checkout-client">
-		<echo message="checking out module yukon-client"/>
-		<cvs dest="${yukon.dir}" package="yukon-client"/>
-	</target>
-		
-    <target name="checkout-server">
-		<echo message="checking out module yukon-server"/>
-    	<cvs dest="${yukon.dir}" package="yukon-server"/>
-	</target>
-	
-	<target name="checkout-install">
-		<echo message="checking out module yukon-install"/>
-		<cvs dest="./yukon" package="yukon-install"/>
-	</target>
-	
-	<target name="checkout-database">
-		<echo message="checking out module yukon-database"/>
-		<cvs dest="./yukon" package="yukon-database"/>
+    <target name="init_date">
+    	<tstamp>
+          <format property="cvstimestamp" pattern="yyyy-MM-dd HH:mm:ss" locale="en,US"/>
+        </tstamp>
     </target>
-	
-	<target name="update" depends="update-client,update-server,update-install,update-database"/>
-	
-	<target name="update-client">
-		<echo message="updating module yukon-client"/>
-		<cvs dest="${yukon.dir}/yukon-client" command="update -A -d"/> 
-    </target>
-		
-	<target name="update-server">
-		<echo message="updating module yukon-server"/>
-		<cvs dest="${yukon.dir}/yukon-server" command="update -A -d"/> 
-	</target>
-	
-	<target name="update-install">
-		<echo message="updating module yukon-install"/>
-		<cvs dest="${yukon.dir}/yukon-install" command="update -A -d"/> 
-	</target>	
-	
-	<target name="update-database">
-		<echo message="updating module yukon-database"/>
-		<cvs dest="${yukon.dir}/yukon-database" command="update -A -d"/> 
-	</target>	
-	
-
-	
-	<target name="build" depends="clean,checkout,buildTarget,builddist"/>
-	<target name="buildquick" depends="update,buildTarget,cleandist,builddist"/>
-	<target name="buildTarget" depends="build-clientTarget,build-serverTarget,build-installTarget"/>
-	
-	<target name="build-client" depends="clean-client,checkout-client,build-clientTarget"/>
-	<target name="buildquick-client" depends="update-client,build-clientTarget"/>
-	<target name="build-clientTarget">
-		<echo message="building module yukon-client"/>
-		<mkdir dir="${log.dir}"/>
     
-		<exec failonerror="false" 
-			  dir="${yukon.dir}/yukon-client/build" 
-			  executable="cmd.exe" 
-			  error="${log.dir}/client-error.log"
-			  output="${log.dir}/client-output.log"
-		      resultproperty="errorcode">
-			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
-		</exec>
-	   
-	    <loadfile property="errormessage"
-	    		  srcFile="${log.dir}/client-error.log"/>
-	    
-	    <loadfile property="erroroutput"
-	         	  srcFile="${log.dir}/client-output.log"/>
-	    
-	    <echo message="${erroroutput}"/>
-	    
-	    <fail message="${errormessage}">
-	    	<condition>
-	        	<isfailure code="${errorcode}"/>
-		    </condition>
-		</fail>    
+    <target name="init_tag">
+        <condition property="yukon.tag" value="${yukon.tag}" else="HEAD">
+        	<isset property="yukon.tag"/>
+        </condition> 
+    </target>
 
-		<exec failonerror="true" dir="${yukon.dir}/yukon-client/build" executable="cmd.exe">
-			<arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
-		</exec>	
-	</target>
-	
-	
-	<target name="build-server" depends="clean-server,checkout-server,build-serverTarget"/>
-	<target name="buildquick-server" depends="update-server,build-serverTarget"/>
-	<target name="build-serverTarget">
-		<echo message="building module yukon-server"/>
-		<mkdir dir="${log.dir}"/>
+    <target name="init_cvs" depends="init_date,init_tag"/>
+    
+    <target name="checkout" depends="init_cvs">
+        <echo message="checking out module yukon by tag or branch: ${yukon.tag}" />
+        <cvs dest="${basedir}" 
+             tag="${yukon.tag}"
+             package="${module.name}"
+             reallyquiet="false"/>
+    </target>
 
-		<exec failonerror="false" 
-			  dir="${yukon.dir}/yukon-server/" 
-			  executable="cmd.exe" 
-			  error="${log.dir}/server-error.log"
-			  output="${log.dir}/server-output.log"
-		      resultproperty="errorcode">
-			<arg line="/c buildhereexit.cmd ${build.label}"/>
-		</exec>
-	   
-	    <loadfile property="errormessage"
-	    		  srcFile="${log.dir}/server-error.log"/>
-	    
-	    <loadfile property="erroroutput"
-	         	  srcFile="${log.dir}/server-output.log"/>
-	    
-	    <echo message="${erroroutput}"/>
-	    
-	    <fail message="${errormessage}">
-	    	<condition>
-	        	<isfailure code="${errorcode}"/>
-		    </condition>
-		</fail>  	       
-	</target>
-	
-	<target name="buid-install" depends="clean-install,clean-database,checkout-install,checkout-database,build-installTarget"/>
-	<target name="buildquick-install" depends="update-install,update-database,build-installTarget"/>
-	<target name="build-installTarget">
-		<mkdir dir="${log.dir}"/>
-		<copy todir="d:/software/install/lib/server">
-	    	<fileset dir="${yukon.dir}/yukon-server/bin" includes="*.exe,*.dll"/>
-	    </copy>
+    <target name="update" depends="init_cvs">
+        <echo message="updating module yukon by timestamp: ${cvstimestamp}" />
+        <cvs dest="${module.name}" 
+             command="update -A -d" 
+             reallyquiet="false"
+             date="${cvstimestamp}"/>
+    </target>
 
-		<copy todir="d:/software/install/lib/client">
-	    	<fileset dir="${yukon.dir}/yukon-client/lib"/>
-	    </copy>
+    <target name="update-client" depends="init_cvs">
+        <echo message="updating module yukon-client by timestamp: ${cvstimestamp}" />
+        <cvs dest="${module.name}/yukon-client" 
+             command="update -A -d" 
+             reallyquiet="false"
+        	 date="${cvstimestamp}"/>
+    </target>
 
-	   <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe"/>
-	   <property name="isfile" location='${yukon.dir}\yukon-install\YukonSetupX\Yukon Installer.ism'/>
-	    
-		<exec failonerror="false" 
-			  executable="${isshield}" 
-			  error="${log.dir}/install-error.log"
-			  output="${log.dir}/install-output.log"
-		      resultproperty="errorcode">
-			<arg line="-p '${isfile}'"/>
-		</exec>
-	   
-	    <loadfile property="errormessage"
-	    		  srcFile="${log.dir}/install-error.log"/>
-	    
-	    <loadfile property="erroroutput"
-	         	  srcFile="${log.dir}/install-output.log"/>
-	    
-	    <echo message="${erroroutput}"/>
-	    
-	    <fail message="${errormessage}">
-	    	<condition>
-	        	<isfailure code="${errorcode}"/>
-		    </condition>
-		</fail> 	    	
-	</target>
+    <target name="update-server" depends="init_cvs">
+        <echo message="updating module yukon-server by timestamp: ${cvstimestamp}" />
+        <cvs dest="${module.name}/yukon-server" 
+             command="update -A -d"
+             reallyquiet="false"
+             date="${cvstimestamp}"/>
+    </target>
+
+    <target name="build" depends="clean,checkout,buildTarget,builddist" />
+    <target name="buildTarget" depends="build-clientTarget,build-serverTarget,build-installTarget" />
+
+    <target name="build-client" depends="update-client,build-clientTarget" />
+    <target name="build-clientTarget">
+        <echo message="building module yukon-client" />
+        <mkdir dir="${log.dir}" />
+
+        <exec failonerror="false" dir="${module.name}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
+            <arg line="/c antExit.bat -Dyukon.build.version=${build.label} build" />
+        </exec>
+
+        <loadfile property="errormessage" srcFile="${log.dir}/client-error.log" />
+        <loadfile property="erroroutput" srcFile="${log.dir}/client-output.log" />
+
+        <condition property="out" value="${erroroutput}" else="">
+            <isfailure code="${errorcode}"/>
+        </condition>
+
+        <echo message="${out}" />
+
+        <fail message="${errormessage}">
+            <condition>
+                <isfailure code="${errorcode}" />
+            </condition>
+        </fail>
+
+        <antcall target="runUnitTests" />
+
+        <antcall target="signclient" />
+
+    </target>
+
+
+    <target name="build-server" depends="update-server,build-serverTarget" />
+    <target name="build-serverTarget">
+        <echo message="building module yukon-server" />
+        <mkdir dir="${log.dir}" />
+        <!--
+        <replace file="${module.name}/yukon-server/COMMON/include/id_build.h" token="BUILDLABEL" value="${build.label}"/>
+-->
+        <exec failonerror="false" dir="${module.name}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
+            <arg line="/c buildhereexit.cmd '${build.label}'" />
+        </exec>
+
+        <loadfile property="errormessage" srcFile="${log.dir}/server-error.log" />
+        <loadfile property="erroroutput" srcFile="${log.dir}/server-output.log" />
+
+        <condition property="out" value="${erroroutput}" else="">
+            <isfailure code="${errorcode}"/>
+        </condition>
+
+        <echo message="${out}" />
+
+        <fail message="${errormessage}">
+            <condition>
+                <isfailure code="${errorcode}" />
+            </condition>
+        </fail>
+        
+        <!-- C++ Unit Tests -->
+        <mkdir dir="${module.name}/yukon-server/bin/unittests"/>
+        <exec failonerror="false" dir="${module.name}/yukon-server/bin/" executable="cmd.exe" error="${log.dir}/servertests-error.log" output="${log.dir}/servertests-output.log" resultproperty="testserrorcode">
+			<arg line="/c runalltestsexit.cmd unittests/"/>
+        </exec>
+        
+        <loadfile property="testserrormessage" srcFile="${log.dir}/servertests-error.log" />
+        <loadfile property="testserroroutput" srcFile="${log.dir}/servertests-output.log" />
+        
+        <condition property="testsout" value="${erroroutput}" else="">
+            <isfailure code="${testserrorcode}"/>
+        </condition>
+        
+        <echo message="${testsout}" />
+        
+        <fail message="${testserrormessage}">
+            <condition>
+                <isfailure code="${testserrorcode}" />
+            </condition>
+        </fail>
+    </target>
+
+	<target name="build-install" depends="build-installTarget"/>
+    <target name="build-installTarget">
+        <echo message="building module yukon-install" />
+        <mkdir dir="${log.dir}" />
+
+        <!-- Alarm Monitor Component -->
+        <copy todir="${install.lib}/Alarm Monitor/bin" preservelastmodified="true">
+            <fileset file="${client.lib}/monitor.jar" />
+            <fileset file="${module.name}/yukon-client/monitor/resource/YukonNoAlarm.ico" />
+        </copy>
+
+        <!-- Calculation Server Component -->
+        <copy todir="${install.lib}/Calculation Server/bin" file="${server.bin}/calc_logic.exe" preservelastmodified="true"/>
+
+        <!-- Cap Control Component -->
+        <copy todir="${install.lib}/Cap Control/bin" file="${server.bin}/capcontrol.exe" preservelastmodified="true"/>
+
+        <!-- Common Bin Component -->
+        <copy todir="${install.lib}/Common Bin/bin" preservelastmodified="true">
+            <fileset dir="${client.lib}" excludes="*.conf,*.txt,*.xml,*.properties,*.debug,images/**,commands/**,monitor.jar,dbeditor.jar,esub-editor.jar,commercialcurtailment.jar,graph.jar,tdc.jar,yc.jar,yukon.war" casesensitive="false">
+
+            </fileset>
+        </copy>
+
+        <!-- Common Directories Component -->
+        <copy todir="${install.lib}/Common Directories/Config/Example" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
+
+        <!-- Common Dlls Component -->
+        <copy todir="${install.lib}/Common Dlls/Bin" preservelastmodified="true">
+            <fileset dir="${server.bin}" includes="*.dll" excludes="*fdr*.dll,interp.dll,tcl81d.dll" casesensitive="false" />
+            <fileset dir="${module.name}/yukon-install/resources/common_dlls" />
+        </copy>
+
+        <!-- Config Properties Component -->
+        <copy todir="${install.lib}/Config Properties" preservelastmodified="true">
+            <fileset dir="${module.name}/yukon-install/resources" includes="*Logging.xml," casesensitive="false">
+            </fileset>
+        </copy>
+
+        <!-- Database Editor Component -->
+        <copy todir="${install.lib}/Database Editor/bin" file="${client.lib}/dbeditor.jar" preservelastmodified="true"/>
+
+        <!-- ESub Editor Component -->
+        <copy todir="${install.lib}/ESub Editor" preservelastmodified="true">
+            <fileset file="${client.lib}/esub-editor.jar" />
+            <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.gif" />
+            <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.ico" />
+        </copy>
+
+        <!-- Foreign Data Router Component -->
+        <copy todir="${install.lib}/Foreign Data Router/bin" preservelastmodified="true">
+            <fileset dir="${server.bin}" includes="*fdr*" />
+        </copy>
+
+        <!-- Help Component -->
+        <copy todir="${install.lib}/Help" preservelastmodified="true">
+            <fileset file="${module.name}/yukon-help/tdc/out/Tabular_Data_Console_Help.chm" />
+            <fileset file="${module.name}/yukon-help/commander/out/Yukon_Commander_Help.chm" />
+            <fileset file="${module.name}/yukon-help/dbeditor/out/Yukon_Database_Editor_Help.chm" />
+            <fileset file="${module.name}/yukon-help/trending/out/Yukon_Trending_Help.chm" />
+        </copy>
+
+        <!-- Initial Server Config Component -->
+        <copy todir="${install.lib}/Initial Server Config/Config" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
+
+        <!-- JRE 1.5 Component -->
+        <copy todir="${install.lib}/JRE 1.5" preservelastmodified="true">
+            <fileset dir="${module.name}/yukon-install/JRE" />
+        </copy>
+
+        <!-- Load Management Component -->
+        <copy todir="${install.lib}/Load Management/bin" file="${server.bin}/loadmanagement.exe" preservelastmodified="true"/>
+
+        <!-- MACS Server Component -->
+        <copy todir="${install.lib}/MACS Server/bin" preservelastmodified="true">
+            <fileset dir="${server.bin}" includes="ctish.exe,interp.dll,macs.exe,tcl81d.dll" />
+        </copy>
+
+        <copy todir="${install.lib}/MACS Server/MACScripts" file="${server.bin}/init.tcl" preservelastmodified="true"/>
+
+        <!-- Message Dispatcher Component -->
+        <copy todir="${install.lib}/Message Dispatcher/bin" file="${server.bin}/dispatch.exe" preservelastmodified="true"/>
+
+        <!-- Notification Component -->
+        <copy todir="${install.lib}/Notification" preservelastmodified="true">
+            <fileset dir="${client.lib}" includes="commercialcurtailment.jar,notifserver.conf" />
+        </copy>
+
+        <!-- Port Control Component -->
+        <copy todir="${install.lib}/Port Control/bin" file="${server.bin}/porter.exe" preservelastmodified="true"/>
+
+        <!-- Scanner Component -->
+        <copy todir="${install.lib}/Scanner/bin" file="${server.bin}/scanner.exe" preservelastmodified="true"/>
+
+        <!-- Tabular Data Console Component -->
+        <copy todir="${install.lib}/Tabular Data Console/bin" preservelastmodified="true">
+            <fileset dir="${client.lib}" includes="graph.jar,tdc.jar" />
+        </copy>
+
+        <!-- Test Application Component -->
+        <copy todir="${install.lib}/Test Applications/bin" preservelastmodified="true">
+            <fileset dir="${server.bin}" includes="*test.exe,poker.exe" />
+        </copy>
+
+        <!-- Tomcat Component -->
+        <copy todir="${install.lib}/Tomcat" preservelastmodified="true">
+            <fileset dir="${module.name}/yukon-install/Tomcat5" />
+        </copy>
+
+        <!-- Yukon Commander Component -->
+        <copy todir="${install.lib}/Yukon Commander/bin" file="${client.lib}/yc.jar" preservelastmodified="true"/>
+
+        <!-- Yukon Web Deployment Component -->
+        <copy todir="${install.lib}/Yukon Web Deployment/bin" preservelastmodified="true">
+            <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll" />
+            <fileset file="${client.lib}/yukon.war" />
+        </copy>
+
+        <copy todir="${install.lib}/Yukon Web Deployment/bin/client" file="${module.name}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
+
+        <copy todir="${install.lib}/Yukon Web Deployment/lib" file="${module.name}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
+
+        <copy todir="${install.lib}/Yukon Web Deployment/lib/i386" file="${module.name}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
+
+        <!-- This will be pointing to the install engine in yukon-install module -->
+        <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
+        <property name="isshield" value="IsSABld.exe" />
+        <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
+        <property name="isfile" location='${module.name}\yukon-install\YukonSetupX\Yukon Installer.ism' />
+
+        <exec failonerror="false" executable="${isshield}" error="${log.dir}/install-error.log" output="${log.dir}/install-output.log" resultproperty="errorcode">
+            <arg line="-p '${isfile}'" />
+        </exec>
+
+        <!-- NOT YET <delete dir="${install.lib}"/> NOT YET -->
+
+        <loadfile property="errormessage" srcFile="${log.dir}/install-error.log" />
+        <loadfile property="erroroutput" srcFile="${log.dir}/install-output.log" />
+
+        <condition property="out" value="${erroroutput}" else="">
+            <length file="${log.dir}/install-error.log" when="ne" length="0" />
+        </condition>
+
+        <length file="${log.dir}/install-error.log" property="file.length" />
+        <echo message="file length: ${file.length}" />
+        <echo message="${out}" />
+
+        <fail message="${errormessage}">
+            <condition>
+                <isfailure code="${errorcode}" />
+            </condition>
+        </fail>
+    </target>
 
 
 
     <target name="builddist">
-    	<mkdir dir="${temp.dir}"/>
+        <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/installer">
-            <fileset dir="${yukon.dir}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1"/>
+            <fileset dir="${module.name}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
         </copy>
         <copy todir="${temp.dir}/eSubImages">
-            <fileset dir="${yukon.dir}/yukon-client/esub/images"/>
+            <fileset dir="${module.name}/yukon-client/esub/images" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseCreation">
-            <fileset dir="${yukon.dir}/yukon-database/CreationScripts"/>
+            <fileset dir="${module.name}/yukon-database/CreationScripts" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/Oracle">
-            <fileset dir="${yukon.dir}/yukon-database/DBUpdates/oracle"/>
+            <fileset dir="${module.name}/yukon-database/DBUpdates/oracle" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/SqlServer">
-            <fileset dir="${yukon.dir}/yukon-database/DBUpdates/sqlserver"/>
+            <fileset dir="${module.name}/yukon-database/DBUpdates/sqlserver" />
         </copy>
-        <mkdir dir="${dist.dir}"/>
-     	<zip destfile="${dist.dir}/yukon_${tag.date}_${build.label}_${tag.time}.zip">
-            <fileset dir="${temp.dir}"/>
+        <mkdir dir="${dist.dir}" />
+        <zip destfile="${dist.dir}/yukon_${tag.date}_${build.label}_${tag.time}.zip">
+            <fileset dir="${temp.dir}" />
         </zip>
-        <delete dir="${temp.dir}"/>
-    </target>	
+        <delete dir="${temp.dir}" />
+    </target>
 
     <target name="cleandist">
-        <delete dir="${dist.dir}"/>
-    </target>	
-	
-	<target name="clean">
-		<delete dir="${yukon.dir}"/>
-		<delete dir="${dist.dir}"/>
-		<delete dir="${log.dir}"/>
-	</target>
-	
-	<target name="clean-client">
-		<delete dir="${yukon.dir}/yukon-client"/>
-	</target>
-	
-	<target name="clean-server">
-		<delete dir="${yukon.dir}/yukon-server"/>
- 	</target>
-		
-	<target name="clean-install">
-		<delete dir="${yukon.dir}/yukon-install"/>
+        <delete dir="${dist.dir}" />
     </target>
-		
-    <target name="clean-database">
-		<delete dir="${yukon.dir}/yukon-database"/>
+
+    <target name="clean">
+        <delete dir="${module.name}" />
+        <delete dir="${dist.dir}" />
+        <delete dir="${log.dir}" />
     </target>
-	
-	<target name="publish">
-		<loadresource property="message">
-		       <file file="${error.log}"/>
-		</loadresource>
-		<echo message="FAILURE: ${message}"/>
-	</target>
-	
-<!--	
+
+    <target name="runUnitTests">
+        <exec failonerror="true" dir="${module.name}/yukon-client/build" executable="cmd.exe">
+            <arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests" />
+        </exec>
+    </target>
+
+    <target name="signclient">
+        <exec failonerror="true" dir="${module.name}/yukon-client/build" executable="cmd.exe">
+            <arg line="/c antExit.bat sign" />
+        </exec>
+    </target>
+
+    <!--	
     <target name="buildquick" depends="update,build,runUnitTests,cleandist,builddist">
     </target>
 
