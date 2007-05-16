@@ -57,7 +57,8 @@ public class MaxDailyOpsModel extends ReportModelBase {
         setFilterModelTypes(new ReportFilter[]{
         		ReportFilter.CAPCONTROLSUBBUS,
         		ReportFilter.CAPBANK,
-        		ReportFilter.CAPCONTROLFEEDER}
+        		ReportFilter.CAPCONTROLFEEDER,
+                ReportFilter.AREA}
             );
     }
     
@@ -116,6 +117,8 @@ public class MaxDailyOpsModel extends ReportModelBase {
         + "join yukonpaobject yp2 on yp2.paobjectid = fb.feederid "
         + "left outer join ccfeedersubassignment fs on fs.feederid = fb.feederid "
         + "join yukonpaobject yp3 on yp3.paobjectid = fs.substationbusid "
+        + "left outer join ccsubareaassignment saa on saa.substationbusid = fs.substationbusid "
+        + "left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid "
         );
         
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
@@ -137,6 +140,14 @@ public class MaxDailyOpsModel extends ReportModelBase {
         
             if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
                 sql.append( "where yp3.paobjectid in ('" + getPaoIDs()[0]);
+                for (int i = 1; i < getPaoIDs().length; i++) {
+                    sql.append("', '" + getPaoIDs()[i]);
+                }
+                sql.append("') ");
+            }
+            
+            if(getFilterModelType().equals(ReportFilter.AREA)) {
+                sql.append( "where ca.paobjectid in ('" + getPaoIDs()[0]);
                 for (int i = 1; i < getPaoIDs().length; i++) {
                     sql.append("', '" + getPaoIDs()[i]);
                 }

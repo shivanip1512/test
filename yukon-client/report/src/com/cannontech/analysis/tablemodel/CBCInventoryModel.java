@@ -27,6 +27,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> areaIds;
     
     public CBCInventoryModel() {
     }
@@ -105,6 +106,8 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         sql.append("left outer join yukonpaobject yp3 on yp3.paobjectid = sf.substationbusid ");
         sql.append("left outer join deviceaddress da on da.deviceid = cb.controldeviceid ");
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p on p.paobjectid = yp.paobjectid ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sf.substationbusid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         
@@ -121,6 +124,11 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         }else if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp3.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            result = "ca.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
@@ -153,6 +161,13 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
      */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
+     */
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        this.areaIds = areaIds;
     }
     
 }

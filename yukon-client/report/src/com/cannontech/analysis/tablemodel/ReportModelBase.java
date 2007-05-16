@@ -58,7 +58,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			CAPCONTROLSUBBUS("Substation Bus"),
 			CAPCONTROLFEEDER("Cap Feeder"),
 			CAPBANK("Cap Bank"),
-			SCHEDULE("Schedule");
+			SCHEDULE("Schedule"),
+            AREA("Area");
 
 		private String filterTitle;
 		

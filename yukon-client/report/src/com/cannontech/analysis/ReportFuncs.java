@@ -321,7 +321,22 @@ public class ReportFuncs
 	            }
 	        }
 	        return caps;
-		} else if( filter.equals(ReportFilter.SCHEDULE)) {
+		} else if( filter.equals(ReportFilter.AREA)) {
+            List allPaos = cache.getAllYukonPAObjects();
+            List areas = null;
+            if( allPaos != null)
+            {
+                areas= new ArrayList();
+                for (int i = 0; i < allPaos.size(); i++)
+                {
+                    LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+                    if(lPao.getType() == PAOGroups.CAP_CONTROL_AREA) {                        
+                        areas.add(lPao);
+                    }
+                }
+            }
+            return areas;
+        }else if( filter.equals(ReportFilter.SCHEDULE)) {
 			DeviceReadJobLogDao deviceReadJobLogDao = (DeviceReadJobLogDao) YukonSpringHook.getBean("deviceReadJobLogDao");
 			return deviceReadJobLogDao.getAllSchedules();
 		}else {

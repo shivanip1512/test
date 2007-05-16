@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -62,7 +63,10 @@ public class CapBankListModel extends ReportModelBase
 	{
 		super();
         setFilterModelTypes(new ReportFilter[]{
-                ReportFilter.CAPCONTROLSUBBUS
+                ReportFilter.CAPCONTROLSUBBUS,
+                ReportFilter.CAPCONTROLFEEDER,
+                ReportFilter.CAPBANK,
+                ReportFilter.AREA
                 }
             );
 	}	
@@ -110,15 +114,37 @@ public class CapBankListModel extends ReportModelBase
 			"(devicecbc cbcd join yukonpaobject cbcy on cbcd.deviceid = cbcy.paobjectid) on c.controldeviceid =cbcd.deviceid) " +
 			"left outer join " +
 			"(yukonpaobject ysub join ccfeedersubassignment subl on ysub.paobjectid = subl.substationbusid) " +
-			"on subl.feederid = fdrl.feederid" );
+			"on subl.feederid = fdrl.feederid " +
+            "left outer join ccsubareaassignment saa on saa.substationbusid = subl.substationbusid " +
+            "left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid");
 			
         if (getPaoIDs() != null && getPaoIDs().length > 0)
         {
-            sql.append(" WHERE SUB1.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
-            for (int i = 1; i < getPaoIDs().length; i++)
-                sql.append(" , " + getPaoIDs()[i]);
-                    
-            sql.append(")");
+            if(getFilterModelType().equals(ReportFilter.AREA)) {
+                sql.append(" WHERE ca.paobjectid IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPBANK)) {
+                sql.append(" WHERE y.paobjectid IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) {
+                sql.append(" WHERE yfdr.paobjectid IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
+                sql.append(" WHERE subl.substationbusid IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }
         }
         
 		if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[1].equals(getOrderBy()) )

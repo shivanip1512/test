@@ -15,6 +15,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> areaIds;
     
     static public class ModelRow {
         public String Region;
@@ -118,10 +119,10 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         sql.append("left outer join (select CBCName, count(*) Questionable from ccoperations_view where Optime  between ? and ? ");
         sql.append("and (ConfStatus like '%OpenQuestionable' or  ConfStatus like '%CloseQuestionable') group by CBCName ) as Q on T.CBCName = Q.CBCName ");
         sql.append("left outer join (select CBCName, count(*) Success from ccoperations_view where Optime  between ? and ? ");
-         
         sql.append("and (ConfStatus like '%Closed' or  ConfStatus like '%Open') group by CBCName ) as SS on T.CBCName = SS.CBCName )S ");
         sql.append("inner join (Select Region , OpCenter, TA, SubName , subID, FeederName, FdrId, CBCName, cbcId, bankName, bankID, Protocol from ccinventory_view ) rs on S.CBCName = RS.CBCName  ");
-        //sql.append("where ISNULL( rs.Region,0)  = ISNULL(@Region, ISNULL( rs.Region,0)) ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = rs.subID ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         
@@ -140,6 +141,12 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "rs.subId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }
+        if(areaIds != null && !areaIds.isEmpty()) {
+            result = "ca.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
@@ -163,6 +170,13 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
 
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
+     */
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        this.areaIds = areaIds;
     }
 
     public int getRowCount() {

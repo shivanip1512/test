@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -88,7 +89,9 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new ReportFilter[]{
-		        ReportFilter.CAPCONTROLSUBBUS}
+		        ReportFilter.CAPCONTROLSUBBUS,
+                ReportFilter.CAPCONTROLFEEDER,
+                ReportFilter.AREA}
 			);
 	}
 
@@ -125,19 +128,33 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID, DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, CCFBL.CONTROLORDER " +
-				" FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL " +
-				" WHERE CCF.FEEDERID = CCFBL.FEEDERID " +
+				" FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL, ccsubareaassignment saa, capcontrolarea ca  " +
+				" WHERE saa.substationbusid = CCF.substationbusid and saa.areaid = ca.areaid and CCF.FEEDERID = CCFBL.FEEDERID " +
 				" AND DCC.CAPBANKID = CCFBL.DEVICEID");
-				if (getPaoIDs() != null && getPaoIDs().length > 0)
-				{
-				    sql.append(" AND CCF.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
-				    for (int i = 1; i < getPaoIDs().length; i++)
-				        sql.append(" , " + getPaoIDs()[i]);
-				            
-				    sql.append(")");
-				}
-				if (getControlStates() != null && getControlStates().length > 0)
-				{
+                
+                if (getPaoIDs() != null && getPaoIDs().length > 0) {
+                    if(getFilterModelType().equals(ReportFilter.AREA)) { //fix
+                        sql.append(" AND ca.areaid IN ( " + getPaoIDs()[0] +" ");
+                        for (int i = 1; i < getPaoIDs().length; i++)
+                            sql.append(" , " + getPaoIDs()[i]);
+                                
+                        sql.append(")");
+                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { //fix
+                        sql.append(" AND CCFBL.FEEDERID IN ( " + getPaoIDs()[0] +" ");
+                        for (int i = 1; i < getPaoIDs().length; i++)
+                            sql.append(" , " + getPaoIDs()[i]);
+                                
+                        sql.append(")");
+                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { //fix
+                        sql.append(" AND CCF.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+                        for (int i = 1; i < getPaoIDs().length; i++)
+                            sql.append(" , " + getPaoIDs()[i]);
+                                
+                        sql.append(")");
+                    }
+                }
+                
+				if (getControlStates() != null && getControlStates().length > 0) {
 				    sql.append(" AND DCC.CONTROLSTATUS IN ( " + getControlStates()[0] +" ");
 				    for (int i = 1; i < getControlStates().length; i++)
 				        sql.append(" , " + getControlStates()[i]);

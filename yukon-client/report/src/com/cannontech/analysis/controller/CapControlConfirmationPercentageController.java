@@ -20,7 +20,8 @@ public class CapControlConfirmationPercentageController extends CapControlReport
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPBANK,
-            ReportFilter.CAPCONTROLFEEDER};
+            ReportFilter.CAPCONTROLFEEDER,
+            ReportFilter.AREA};
     private TimeZone timeZone = TimeZone.getDefault();
     
     public CapControlConfirmationPercentageController() {
@@ -59,15 +60,23 @@ public class CapControlConfirmationPercentageController extends CapControlReport
         if (filterModelType == ReportFilter.CAPCONTROLFEEDER.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
             filterableModel.setFeederIdsFilter(idsSet);
         } else if (filterModelType == ReportFilter.CAPBANK.ordinal()) {
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
             filterableModel.setCapBankIdsFilter(idsSet);
         } else if (filterModelType == ReportFilter.CAPCONTROLSUBBUS.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
+        } else if (filterModelType == ReportFilter.AREA.ordinal()) {
+            filterableModel.setCapBankIdsFilter(null);
+            filterableModel.setFeederIdsFilter(null);
+            filterableModel.setAreaIdsFilter(idsSet);
+            filterableModel.setSubbusIdsFilter(null);
         }
         
         String param = request.getParameter(ReportModelBase.ATT_START_DATE);

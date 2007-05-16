@@ -9,5 +9,7 @@ public interface CapControlFilterable {
     public abstract void setFeederIdsFilter(Set<Integer> feederIds);
 
     public abstract void setSubbusIdsFilter(Set<Integer> subbusIds);
+    
+    public abstract void setAreaIdsFilter(Set<Integer> areaIds);
 
 }

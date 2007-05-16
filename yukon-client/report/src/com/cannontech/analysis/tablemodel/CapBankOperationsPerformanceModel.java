@@ -21,6 +21,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> areaIds;
     private String queryType;
     private String queryPercent = "100";
     
@@ -105,7 +106,10 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         sql.append("join state s on s.rawstate = dcb.controlstatus and s.stategroupid = 3 ");
         sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) as status on status.paoname = abc.bankname ");
         sql.append("join (select distinct (bankname), cbcname, feedername, feederid, subname, subbusid, region from ccoperations_view ");
-        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) as d on abc.bankname = d.bankname where abc.qPercent >= " + queryPercent + " ");
+        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) as d on abc.bankname = d.bankname ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = d.subbusid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+        sql.append("where abc.qPercent >= " + queryPercent + " ");
         
         String result = null;
         
@@ -122,6 +126,11 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         }else if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "d.subbusid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            result = "ca.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
@@ -154,6 +163,13 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
      */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
+     */
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        this.areaIds = areaIds;
     }
 
     public void setQueryType(String type_) {

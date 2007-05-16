@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlActivityData;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -70,7 +71,10 @@ public class CapControlNewActivityModel extends ReportModelBase
 	{
 		super(start_, stop_);
         setFilterModelTypes(new ReportFilter[]{
-                ReportFilter.CAPCONTROLSUBBUS}
+                ReportFilter.CAPCONTROLSUBBUS,
+                ReportFilter.CAPCONTROLFEEDER,
+                ReportFilter.CAPBANK,
+                ReportFilter.AREA}
             );
 	}	
 	/**
@@ -107,26 +111,46 @@ public class CapControlNewActivityModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	("SELECT SUB.SUBSTATIONBUSID, FEED.FEEDERID, CB.DEVICEID, CB.CONTROLDEVICEID, BANKSIZE, ACTION, SL.DESCRIPTION, SL.DATETIME " +
-		    " FROM YUKONPAOBJECT CBPAO, CAPBANK CB, CAPCONTROLFEEDER FEED, CCFEEDERBANKLIST BANK, CCFEEDERSUBASSIGNMENT SUB, SYSTEMLOG SL " +
+		    " FROM ccsubareaassignment saa, capcontrolarea ca, YUKONPAOBJECT CBPAO, CAPBANK CB, CAPCONTROLFEEDER FEED, CCFEEDERBANKLIST BANK, CCFEEDERSUBASSIGNMENT SUB, SYSTEMLOG SL " +
 		    " WHERE SL.POINTID IN (" + 
 			    " SELECT DISTINCT POINTID FROM POINT P " +
 			    " WHERE P.PAOBJECTID = CB.DEVICEID " + 
 			    " OR P.PAOBJECTID = FEED.FEEDERID " + 
 			    " OR P.PAOBJECTID = SUB.SUBSTATIONBUSID " + 
 			    " OR P.PAOBJECTID = CB.CONTROLDEVICEID) " +
+            " and  saa.substationbusid = SUB.substationbusid and saa.areaid = ca.areaid" +
 		    " AND CBPAO.PAOCLASS = '" + PAOGroups.STRING_CAT_CAPCONTROL + "' " +
 		    " AND CB.DEVICEID = CBPAO.PAOBJECTID " +
 		    " AND FEED.FEEDERID = BANK.FEEDERID " +
 		    " AND BANK.DEVICEID = CB.DEVICEID "+
 		    " AND SUB.FEEDERID = FEED.FEEDERID "+
 		    " AND DATETIME > ? AND DATETIME <= ? ");
-        if (getPaoIDs() != null && getPaoIDs().length > 0)
-        {
-            sql.append(" AND SUB.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
-            for (int i = 1; i < getPaoIDs().length; i++)
-                sql.append(" , " + getPaoIDs()[i]);
-                    
-            sql.append(")");
+        if (getPaoIDs() != null && getPaoIDs().length > 0){
+            if(getFilterModelType().equals(ReportFilter.AREA)) {
+                sql.append(" AND ca.areaid IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPBANK)) {
+                sql.append(" AND CB.DEVICEID IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) {
+                sql.append(" AND FEED.FEEDERID IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
+                sql.append(" AND SUB.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }
         }
             sql.append(" ORDER BY SUB.SUBSTATIONBUSID, FEED.FEEDERID ");
 		

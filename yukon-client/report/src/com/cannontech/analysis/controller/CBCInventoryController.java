@@ -11,7 +11,8 @@ public class CBCInventoryController extends CapControlReportControllerBase {
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
     		ReportFilter.CAPCONTROLSUBBUS,
     		ReportFilter.CAPBANK,
-    		ReportFilter.CAPCONTROLFEEDER};
+    		ReportFilter.CAPCONTROLFEEDER,
+            ReportFilter.AREA};
 
     public CBCInventoryController() {
         super();

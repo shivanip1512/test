@@ -34,6 +34,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> areaIds;
     
     public CapControlStateComparisonModel() {
     }
@@ -106,6 +107,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
         sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
         sql.append("left outer join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sf.substationbusid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         
@@ -124,6 +127,12 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp3.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }
+        if(areaIds != null && !areaIds.isEmpty()) {
+            result = "ca.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
@@ -155,6 +164,13 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
      */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
+     */
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        this.areaIds = areaIds;
     }
     
 }

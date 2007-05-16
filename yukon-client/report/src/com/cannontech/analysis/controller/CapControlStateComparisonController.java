@@ -11,7 +11,8 @@ public class CapControlStateComparisonController extends CapControlReportControl
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPBANK,
-            ReportFilter.CAPCONTROLFEEDER};
+            ReportFilter.CAPCONTROLFEEDER,
+            ReportFilter.AREA};
     
     public CapControlStateComparisonController() {
         super();

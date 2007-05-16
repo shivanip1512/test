@@ -21,6 +21,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> areaIds;
     
     public CapControlOperationsModel() {
     }
@@ -125,6 +126,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left join devicecbc cbc on cbc.deviceid = cb.controldeviceid ");
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = yp2.paobjectid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         
@@ -141,6 +144,11 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         }else if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp2.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            result = "ca.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
@@ -173,6 +181,13 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
      */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
+     */
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        this.areaIds = areaIds;
     }
     
 }

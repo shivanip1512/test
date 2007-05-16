@@ -15,6 +15,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> areaIds;
     
     static public class ModelRow {
         public String Region;
@@ -106,6 +107,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join yukonpaobject yp1 on yp1.paobjectid = fs.substationbusid ");
         sql.append("join ccsubareaassignment sa on sa.substationbusid = fs.substationbusid ");
         sql.append("join  yukonpaobject yp on yp.paobjectid = sa.areaid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = sa.areaid ");
         
         String result = null;
         
@@ -124,6 +126,12 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp1.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }
+        if(areaIds != null && !areaIds.isEmpty()) {
+            result = "ca.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
@@ -147,13 +155,20 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
+     */
+    public void setAreaIdsFilter(Set<Integer> areaIds) {
+        this.areaIds = areaIds;
+    }
 
     public int getRowCount() {
         return data.size();
     }
 
     public String getTitle() {
-        return "CapControl Retries Report";
+        return "Cap Control Retries Report";
     }
     
 }
