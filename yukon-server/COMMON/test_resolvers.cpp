@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/05/14 17:51:34 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/05/17 22:22:40 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -182,6 +182,8 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "repeater 921";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "repeater 902";
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "repeater 800";
     devType = TYPE_REPEATER800;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
@@ -342,12 +344,10 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     tempName = "mct-430a";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct-430s";
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName) == devType, false);
+    tempName = "mct-430sn";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "mct-430el";
-    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "mct-430lg";
-    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "mct-430in";
+    tempName = "mct-430s4";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "lmt-2";
     devType = TYPELMT2;
