@@ -107,8 +107,8 @@ public interface DeviceTypes extends TypeBase
     
     public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
 	public final static int RTU_MODBUS				= DEVICE_OFFSET + 85;
-    public final static int MCT430EL                  = DEVICE_OFFSET + 86;
-    public final static int MCT430LG                  = DEVICE_OFFSET + 87;
+    public final static int MCT430A                  = DEVICE_OFFSET + 86;
+    public final static int MCT430S4                  = DEVICE_OFFSET + 87;
 	
 	
     public final static int CBC_7022                = DEVICE_OFFSET + 88;
@@ -123,15 +123,17 @@ public interface DeviceTypes extends TypeBase
     public final static int MCT410FL                = DEVICE_OFFSET + 95;
     public final static int MCT410GL                = DEVICE_OFFSET + 96;
     
-    public final static int MCT430IN                  = DEVICE_OFFSET + 97;
+    public final static int MCT430SN                  = DEVICE_OFFSET + 97;
     
     public final static int CCU721                  = DEVICE_OFFSET + 98;
 
     public final static int SIMPLE_SCHEDULE                = DEVICE_OFFSET + 99;
     public final static int SCRIPT                        = DEVICE_OFFSET + 100;
     
+    public final static int REPEATER_902      = DEVICE_OFFSET + 101;
+    
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 100;
+	public final static int DEVICE_TYPES_COUNT = 101;
 	
 
 	//all the possible text representation of each device type.
@@ -169,9 +171,9 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_410GL = {"MCT-410GL"};
 	
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
-    public static final String[] STRING_MCT_430EL = {"MCT-430EL"};
-    public static final String[] STRING_MCT_430LG = {"MCT-430LG"};
-    public static final String[] STRING_MCT_430IN = {"MCT-430IN"};
+    public static final String[] STRING_MCT_430A = {"MCT-430A"};
+    public static final String[] STRING_MCT_430S4 = {"MCT-430S4"};
+    public static final String[] STRING_MCT_430SN = {"MCT-430SN"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
@@ -182,6 +184,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_213 = {"MCT-213", "MCT213"};
 	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
+	public static final String[] STRING_REPEATER_902 = {"REPEATER 902"};   
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
    	public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
 	public static final String[] STRING_RTU_MODBUS = {"RTU-MODBUS", "RTUMODBUS"};

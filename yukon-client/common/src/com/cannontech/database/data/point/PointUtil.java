@@ -19,8 +19,8 @@ import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCT410CL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT410_KWH_Only;
-import com.cannontech.database.data.device.MCT430EL;
-import com.cannontech.database.data.device.MCT430LG;
+import com.cannontech.database.data.device.MCT430A;
+import com.cannontech.database.data.device.MCT430S4;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
@@ -37,7 +37,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 public class PointUtil {
 
     public static DBPersistent generatePointsForMCT(Object val) {
-        if (val instanceof MCT310 || val instanceof MCT310IL || val instanceof MCT310ID || val instanceof MCT310IDL || val instanceof MCT410IL || val instanceof MCT470 || val instanceof MCT410_KWH_Only || val instanceof MCT410CL || val instanceof MCT430EL || val instanceof MCT430LG) {
+        if (val instanceof MCT310 || val instanceof MCT310IL || val instanceof MCT310ID || val instanceof MCT310IDL || val instanceof MCT410IL || val instanceof MCT470 || val instanceof MCT410_KWH_Only || val instanceof MCT410CL || val instanceof MCT430A || val instanceof MCT430S4) {
             if (val instanceof MCT400SeriesBase) {
                 // sloppy way of setting a 400 series load profile default...
                 // improve this later
@@ -204,7 +204,7 @@ public class PointUtil {
             
             double mult = 1.0;
             // analog points for 470s and 430s
-            if (val instanceof MCT470 || val instanceof MCT430EL || val instanceof MCT430LG) 
+            if (val instanceof MCT470 || val instanceof MCT430A || val instanceof MCT430S4) 
             {
                 if( val instanceof MCT470 )
                 {
@@ -225,7 +225,7 @@ public class PointUtil {
                 if( val instanceof MCT470 )
                 {
                     mult = 1.0;
-                }else if (val instanceof MCT430EL)
+                }else if (val instanceof MCT430A)
                 {
                     mult = .001;
                 }else 
@@ -260,7 +260,7 @@ public class PointUtil {
                 if( val instanceof MCT470 )
                 {
                     mult = 1.0;
-                }else if (val instanceof MCT430EL)
+                }else if (val instanceof MCT430A)
                 {
                     mult = .001;
                 }else 

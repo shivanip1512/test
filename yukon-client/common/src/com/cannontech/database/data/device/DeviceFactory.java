@@ -155,14 +155,14 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.MCT410GL:
 		    returnDevice = new MCT410GL();
 		    break;
-        case PAOGroups.MCT430EL:
-            returnDevice = new MCT430EL();
+        case PAOGroups.MCT430A:
+            returnDevice = new MCT430A();
             break;
-        case PAOGroups.MCT430LG:
-            returnDevice = new MCT430LG();
+        case PAOGroups.MCT430S4:
+            returnDevice = new MCT430S4();
             break;
-        case PAOGroups.MCT430IN:
-            returnDevice = new MCT430IN();
+        case PAOGroups.MCT430SN:
+            returnDevice = new MCT430SN();
             break;
 		case PAOGroups.MCT470:
 			returnDevice = new MCT470();
@@ -197,6 +197,9 @@ public final static DeviceBase createDevice(int deviceType) {
 
 		case PAOGroups.REPEATER:
 			returnDevice = new Repeater900();
+			break;
+		case PAOGroups.REPEATER_902:
+			returnDevice = new Repeater902();
 			break;
 		case PAOGroups.REPEATER_800:
 			returnDevice = new Repeater800();

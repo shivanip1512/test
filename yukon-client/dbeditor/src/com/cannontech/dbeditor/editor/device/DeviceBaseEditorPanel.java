@@ -25,6 +25,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.Repeater902;
 import com.cannontech.database.data.device.SNPPTerminal;
 import com.cannontech.database.data.device.Schlumberger;
 import com.cannontech.database.data.device.Series5Base;
@@ -1714,7 +1715,7 @@ public Object getValue(Object val)
 			if( val instanceof com.cannontech.database.data.device.CarrierBase )
 			{
 
-				if( devType == PAOGroups.REPEATER ) //val instanceof Repeater900
+				if( devType == PAOGroups.REPEATER || devType == PAOGroups.REPEATER_902) //val instanceof Repeater900
 				{
 					((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + 4190000) );
 				}
@@ -2173,7 +2174,7 @@ private void setCarrierBaseValue( CarrierBase cBase )
 {
 	Integer address = cBase.getDeviceCarrierSettings().getAddress();
 
-	if( cBase instanceof Repeater900 )
+	if( cBase instanceof Repeater900 || cBase instanceof Repeater902 )
 		address = new Integer( address.intValue() - 4190000 );
       
    if( cBase instanceof com.cannontech.database.data.device.MCT_Broadcast )

@@ -164,8 +164,8 @@
         </points>
     </device>
     <device>
-        <type value="1086" javaConstant="MCT430EL"/>
-        <displayName value="MCT-430EL"/>
+        <type value="1086" javaConstant="MCT430A"/>
+        <displayName value="MCT-430A"/>
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
@@ -237,8 +237,8 @@
         </points>
     </device>
     <device>
-        <type value="1087" javaConstant="MCT430LG"/>
-        <displayName value="MCT-430LG"/>
+        <type value="1087" javaConstant="MCT430S4"/>
+        <displayName value="MCT-430S4"/>
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
@@ -310,8 +310,8 @@
         </points>
     </device>
         <device>
-        <type value="1097" javaConstant="MCT430IN"/>
-        <displayName value="MCT-430IN"/>
+        <type value="1097" javaConstant="MCT430SN"/>
+        <displayName value="MCT-430SN"/>
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
@@ -948,7 +948,8 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
-    </device>
+     </device>
+<!--
         <device>
         <type value="1096" javaConstant="MCT410GL" changeGroup="mct"/>
         <displayName value="MCT-410GL"/>
@@ -1138,6 +1139,8 @@
             </point>
         </points>
     </device>
+ -->
+ 
     <device>
         <type value="1022" javaConstant="MCT370" changeGroup="mct"/>
         <displayName value="MCT-370"/>
@@ -2881,6 +2884,18 @@
     <device>
         <type value="1027" javaConstant="REPEATER" changeGroup="repeater"/>
         <displayName value="REPEATER 900"/>
+        <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point type="Status">
+                <name>Communication Status (CVD)</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+    </device>
+    <device>
+        <type value="1101" javaConstant="REPEATER_902" changeGroup="repeater"/>
+        <displayName value="REPEATER 902"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
             <point type="Status">

@@ -36,9 +36,9 @@ import com.cannontech.database.data.device.MCT410CL;
 import com.cannontech.database.data.device.MCT410FL;
 import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
-import com.cannontech.database.data.device.MCT430EL;
-import com.cannontech.database.data.device.MCT430IN;
-import com.cannontech.database.data.device.MCT430LG;
+import com.cannontech.database.data.device.MCT430A;
+import com.cannontech.database.data.device.MCT430SN;
+import com.cannontech.database.data.device.MCT430S4;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
@@ -311,17 +311,17 @@ public void runImport(List<ImportData> imps) {
             badEntry = true;
             errorMsg.append("address out of MCT410GL range; "); 
         }
-        else if(template400SeriesBase instanceof MCT430LG && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430LG, Long.parseLong(address))) {
+        else if(template400SeriesBase instanceof MCT430S4 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S4, Long.parseLong(address))) {
             log.error("Import entry with name " + name + " has an incorrect MCT430LG address.");
             badEntry = true;
             errorMsg.append("address out of MCT430LG range; "); 
         }
-        else if(template400SeriesBase instanceof MCT430EL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430EL, Long.parseLong(address))) {
+        else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address))) {
             log.error("Import entry with name " + name + " has an incorrect MCT430EL address.");
             badEntry = true;
             errorMsg.append("address out of MCT430EL range; "); 
         }
-        else if(template400SeriesBase instanceof MCT430IN && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430IN, Long.parseLong(address))) {
+        else if(template400SeriesBase instanceof MCT430SN && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SN, Long.parseLong(address))) {
             log.error("Import entry with name " + name + " has an incorrect MCT430IN address.");
             badEntry = true;
             errorMsg.append("address out of MCT430IN range; "); 

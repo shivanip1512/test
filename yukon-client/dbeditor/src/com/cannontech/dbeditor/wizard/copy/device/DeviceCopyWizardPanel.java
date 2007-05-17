@@ -220,6 +220,7 @@ protected DataInputPanel getNextInputPanel(
 	}	
 	else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
 				&& (getDeviceType() == DeviceTypes.REPEATER 
+                || getDeviceType() == DeviceTypes.REPEATER_902
                 || getDeviceType() == DeviceTypes.REPEATER_800
                 || getDeviceType() == DeviceTypes.REPEATER_801
                 || getDeviceType() == DeviceTypes.REPEATER_921))
@@ -259,9 +260,9 @@ protected DataInputPanel getNextInputPanel(
 		}
 	}else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
             && (getDeviceType() == DeviceTypes.MCT470
-                    || getDeviceType() == DeviceTypes.MCT430LG
-                    || getDeviceType() == DeviceTypes.MCT430EL
-                    || getDeviceType() == DeviceTypes.MCT430IN
+                    || getDeviceType() == DeviceTypes.MCT430S4
+                    || getDeviceType() == DeviceTypes.MCT430A
+                    || getDeviceType() == DeviceTypes.MCT430SN
                     || getDeviceType() == DeviceTypes.MCT410IL
                     || getDeviceType() == DeviceTypes.MCT410CL
                     || getDeviceType() == DeviceTypes.MCT410FL
@@ -311,9 +312,9 @@ protected DataInputPanel getNextInputPanel(
         getCapBankCntrlCreationPanel().setFirstFocus();
 		return getCapBankCntrlCreationPanel();
     }else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
-                                                    || getDeviceType() == DeviceTypes.MCT430LG
-                                                    || getDeviceType() == DeviceTypes.MCT430EL
-                                                    || getDeviceType() == DeviceTypes.MCT430IN
+                                                    || getDeviceType() == DeviceTypes.MCT430S4
+                                                    || getDeviceType() == DeviceTypes.MCT430A
+                                                    || getDeviceType() == DeviceTypes.MCT430SN
                                                     || getDeviceType() == DeviceTypes.MCT410IL
                                                     || getDeviceType() == DeviceTypes.MCT410CL
                                                     || getDeviceType() == DeviceTypes.MCT410FL
@@ -426,9 +427,9 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
     {
 		return (currentPanel == getCapBankCntrlCreationPanel());
     }else if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
-                                                                 || getDeviceType() == DeviceTypes.MCT430LG
-                                                                 || getDeviceType() == DeviceTypes.MCT430EL
-                                                                 || getDeviceType() == DeviceTypes.MCT430IN
+                                                                 || getDeviceType() == DeviceTypes.MCT430S4
+                                                                 || getDeviceType() == DeviceTypes.MCT430A
+                                                                 || getDeviceType() == DeviceTypes.MCT430SN
                                                                  || getDeviceType() == DeviceTypes.MCT410IL
                                                                  || getDeviceType() == DeviceTypes.MCT410CL
                                                                  || getDeviceType() == DeviceTypes.MCT410FL
@@ -444,15 +445,16 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
                                                                  || getDeviceType() == DeviceTypes.MCT213
                                                                  || getDeviceType() == DeviceTypes.MCT210
                                                                  || getDeviceType() == DeviceTypes.REPEATER
+                                                                 || getDeviceType() == DeviceTypes.REPEATER_902
                                                                  || getDeviceType() == DeviceTypes.REPEATER_800
                                                                  || getDeviceType() == DeviceTypes.REPEATER_801
                                                                  || getDeviceType() == DeviceTypes.REPEATER_921))
     {
         return false;
     }else if((currentPanel == getRoutePanel()) && (getDeviceType() == DeviceTypes.MCT470
-                                                                || getDeviceType() == DeviceTypes.MCT430LG
-                                                                || getDeviceType() == DeviceTypes.MCT430EL
-                                                                || getDeviceType() == DeviceTypes.MCT430IN
+                                                                || getDeviceType() == DeviceTypes.MCT430S4
+                                                                || getDeviceType() == DeviceTypes.MCT430A
+                                                                || getDeviceType() == DeviceTypes.MCT430SN
                                                                 || getDeviceType() == DeviceTypes.MCT410IL
                                                                 || getDeviceType() == DeviceTypes.MCT410CL
                                                                 || getDeviceType() == DeviceTypes.MCT410FL

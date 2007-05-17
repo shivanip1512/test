@@ -1523,8 +1523,8 @@ public void setValue(Object val)
 		
 		if(deviceType == PAOGroups.MCT410IL
 			|| deviceType == PAOGroups.MCT410CL
-            || deviceType == PAOGroups.MCT430EL
-            || deviceType == PAOGroups.MCT430LG
+            || deviceType == PAOGroups.MCT430A
+            || deviceType == PAOGroups.MCT430S4
 			|| deviceType == PAOGroups.MCT470)
 		{
 			getChannel2CheckBox().setEnabled(true);
@@ -1575,7 +1575,7 @@ public void setValue(Object val)
 		 getChannel4CheckBox().setVisible(false);
 	  }
       
-	  else if( deviceType == PAOGroups.MCT470 || deviceType == PAOGroups.MCT430EL || deviceType == PAOGroups.MCT430LG)
+	  else if( deviceType == PAOGroups.MCT470 || deviceType == PAOGroups.MCT430A || deviceType == PAOGroups.MCT430S4)
 	  {
 	  	getChannel2CheckBox().setEnabled(true);
 		getChannel3CheckBox().setEnabled(true);	

@@ -183,12 +183,12 @@ public final static int getDeviceType(String typeString)
 	    return MCT410GL;
    else if (isStringDevice(compareString, STRING_MCT_470))
       return MCT470;
-   else if (isStringDevice(compareString, STRING_MCT_430EL))
-       return MCT430EL;
-   else if (isStringDevice(compareString, STRING_MCT_430LG))
-       return MCT430LG;
-   else if (isStringDevice(compareString, STRING_MCT_430IN))
-       return MCT430IN;
+   else if (isStringDevice(compareString, STRING_MCT_430A))
+       return MCT430A;
+   else if (isStringDevice(compareString, STRING_MCT_430S4))
+       return MCT430S4;
+   else if (isStringDevice(compareString, STRING_MCT_430SN))
+       return MCT430SN;
    else if (isStringDevice(compareString, STRING_MCT_318))
 	  return MCT318;
    else if (isStringDevice(compareString, STRING_MCT_360))
@@ -207,6 +207,8 @@ public final static int getDeviceType(String typeString)
       return MCTBROADCAST;
    else if (isStringDevice(compareString, STRING_REPEATER))
 	  return REPEATER;
+   else if (isStringDevice(compareString, STRING_REPEATER_902))
+	   return REPEATER_902;
    else if (isStringDevice(compareString, STRING_RTU_DNP))
      return RTU_DNP;
    else if (isStringDevice(compareString, STRING_RTU_MODBUS))
@@ -465,17 +467,19 @@ public final static String getPAOTypeString(int type)
 		    return STRING_MCT_410FL[0];
 		case MCT410GL:
 		    return STRING_MCT_410GL[0];
-        case MCT430EL:
-            return STRING_MCT_430EL[0];
-        case MCT430LG:
-            return STRING_MCT_430LG[0];
-        case MCT430IN:
-            return STRING_MCT_430IN[0];
+        case MCT430A:
+            return STRING_MCT_430A[0];
+        case MCT430S4:
+            return STRING_MCT_430S4[0];
+        case MCT430SN:
+            return STRING_MCT_430SN[0];
 		case MCT470:
 			return STRING_MCT_470[0];
 		
 		case REPEATER:
 			return STRING_REPEATER[0];
+		case REPEATER_902:
+			return STRING_REPEATER_902[0];
      	case RTU_DNP:
         	return STRING_RTU_DNP[0];
 		case RTU_MODBUS:

@@ -26,6 +26,7 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.Repeater902;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
@@ -554,7 +555,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			else if (val instanceof CarrierBase)
 			{
 				 Integer addressHolder = new Integer(getAddressTextField().getText());
-				 if(val instanceof Repeater900)
+				 if(val instanceof Repeater900 || val instanceof Repeater902)
 				  	addressHolder = new Integer(addressHolder.intValue() + 4190000);
 				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
 				 
@@ -905,7 +906,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
       if( val instanceof CarrierBase )
       {
       	 addressHolder = new Integer(((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString());
-         if(val instanceof Repeater900 )
+         if(val instanceof Repeater900 || val instanceof Repeater902)
          	addressHolder = new Integer(addressHolder.intValue() - 4190000);
          getAddressTextField().setText( addressHolder.toString() );
       }

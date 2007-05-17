@@ -22,11 +22,11 @@ import com.cannontech.database.data.device.Ion7700;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.Repeater902;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -455,7 +455,7 @@ public Object getValue(Object val)
    }
    else if( val instanceof CarrierBase )
 	{
-		if( val instanceof Repeater900 )
+		if( val instanceof Repeater900 || val instanceof Repeater902 )
 		{
 			//special case, we must add 4190000 to every address for Repeater900
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( 

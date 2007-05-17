@@ -57,8 +57,8 @@ public class MeterReadFactory {
                 meterReadObject = new MCT410();
                 break;
     
-            case DeviceTypes.MCT430EL:
-            case DeviceTypes.MCT430LG:
+            case DeviceTypes.MCT430A:
+            case DeviceTypes.MCT430S4:
                 meterReadObject = new MCT430();
                 break;
     

@@ -161,9 +161,9 @@ public final static boolean isLoopable(int intType)
 		intType == MCT410CL ||
 		intType == MCT410FL ||
 		intType == MCT410GL ||
-        intType == MCT430EL ||
-        intType == MCT430LG ||
-        intType == MCT430IN ||
+        intType == MCT430A ||
+        intType == MCT430S4 ||
+        intType == MCT430SN ||
 		intType == MCT470) //||
 //		isRTU(intType) ) //FUTURE
 		return true;
@@ -237,9 +237,9 @@ public final static boolean isCarrier(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:      
@@ -248,6 +248,7 @@ public final static boolean isCarrier(int deviceType)
 		case MCT360:
 		case MCT370:
 		case REPEATER:
+		case REPEATER_902:
 		case REPEATER_800:
         case REPEATER_801:
         case REPEATER_921:
@@ -456,9 +457,9 @@ public final static boolean isLoadProfile4Channel(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:
 			return true;
 	
@@ -500,9 +501,9 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:
 			return true;
 		default:
@@ -536,9 +537,9 @@ public final static boolean isMCTOnly(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:
 		case MCT310CT:
     	case MCT310IM:
@@ -578,9 +579,9 @@ public final static boolean isMCT(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:
@@ -657,9 +658,9 @@ public static boolean isMCT4XX( int type )
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:  
 			return true;
 		default :
@@ -770,6 +771,7 @@ public final static boolean isRepeater(int deviceType)
 	switch(deviceType)
 	{	
 		case REPEATER:
+		case REPEATER_902:
 		case REPEATER_800:
         case REPEATER_801:
         case REPEATER_921:
@@ -843,6 +845,7 @@ public final static boolean isTransmitter(int deviceType)
 		case LCU_ER:
 		case LCU_T3026:
 		case REPEATER:
+		case REPEATER_902:
 		case REPEATER_800:
         case REPEATER_801:
         case REPEATER_921:
@@ -905,9 +908,9 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430EL:
-        case MCT430LG:
-        case MCT430IN:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SN:
 		case MCT470:
 		case MCT310CT:
 		case MCT310IM:

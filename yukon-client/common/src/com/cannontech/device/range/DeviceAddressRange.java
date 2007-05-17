@@ -51,6 +51,9 @@ public class DeviceAddressRange
    	private static final RangeBase RANGE_REPEATER900 = 
         new RangeBase( 464, 4302, "Valid range for " + DeviceTypes.STRING_REPEATER[0] + " addresses is 464 to 4302" );
 
+   	private static final RangeBase RANGE_REPEATER902 = 
+   		new RangeBase( 464, 4302, "Valid range for " + DeviceTypes.STRING_REPEATER_902[0] + " addresses is 464 to 4302" );
+
    	private static final RangeBase RANGE_CCU711 = 
         new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_CCU_711[0] + " addresses is 0 to 127" );
    	
@@ -95,17 +98,17 @@ public class DeviceAddressRange
 	   		return RANGE_MCT470;	
 		}
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430EL)
+        if(deviceType_ == DeviceTypesFuncs.MCT430A)
         {
             return RANGE_MCT430A;    
         }
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430LG)
+        if(deviceType_ == DeviceTypesFuncs.MCT430S4)
         {
             return RANGE_MCT430S;    
         }
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430IN)
+        if(deviceType_ == DeviceTypesFuncs.MCT430SN)
         {
             return RANGE_MCT430IN;    
         }
@@ -130,9 +133,13 @@ public class DeviceAddressRange
       	{
          	return RANGE_MCT;
       	}
-      	else if( DeviceTypes.REPEATER == deviceType_ )
+      	else if( DeviceTypes.REPEATER == deviceType_)
       	{
          	return RANGE_REPEATER900;
+      	}
+      	else if( DeviceTypes.REPEATER_902 == deviceType_)
+      	{
+      		return RANGE_REPEATER902;
       	}
       	else if( DeviceTypes.CCU711 == deviceType_ )
       	{
