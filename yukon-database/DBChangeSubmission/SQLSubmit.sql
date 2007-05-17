@@ -13,3 +13,13 @@ create unique  index Indx_SchedNm on paoschedule (
 schedulename
 )
 /*** END JULIE: to go into 3.4 and head ****/
+
+
+/*** Jason: to go into 3.4 and head ****/
+
+update yukonpaobject set type='MCT-430A' where type = 'MCT-430EL'
+update yukonpaobject set type='MCT-430S4' where type = 'MCT-430LG'
+update yukonpaobject set type='MCT-430SN' where type = 'MCT-430IN'
+
+
+/***************************************/
