@@ -47,7 +47,7 @@
 #include "fdrtelegyr.h"
 
 /** local definitions **/
-#define FDR_TELEGYR_VERSION   "2.0.5.3"
+#define FDR_TELEGYR_VERSION   "2.1.1"
 #define PRIORITY              1         //only 1 is supported at this point
 
 /** global used to start the interface by c functions **/
@@ -206,6 +206,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
 
    //connect to the Telegyr server
    status = api_connect( _controlCenter.getChannelID(), op, pw, sn, _controlCenter.getAccess(), &groupValid, &sysType );
+
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
       dout << CtiTime::now() << " api_connect (in connect) returned " << status << endl; 
@@ -231,6 +232,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
 //=================================================================================================================================
 //can't tell the ems to delete the groups you've registered for unless we're connected to the client
 //FIXME : may have to add a delete counters if someone wants them
+//NOTE: this can only be done every 5 minutes or so or ems gets cranky and stops talking to us
 //=================================================================================================================================
 
 void CtiFDRTelegyr::deleteGroups( void )
@@ -262,6 +264,13 @@ void CtiFDRTelegyr::deleteGroups( void )
          {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << CtiTime::now() << " || Delete-all-groups returns: " << status << " on channel " << ch <<  endl;
+         }
+      }
+      else
+      {
+         {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << " *** WARNING ****   group size if zero" <<  endl;
          }
       }
    }
@@ -361,7 +370,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
                dout << CtiTime::now() <<" TelegyrAPI init() returned code " << status << endl;
-               dout << CtiTime::now() <<" Wait 30 seconds " << status << endl;
+               dout << CtiTime::now() <<" Waiting 30 seconds " << endl;
             }
 
             pSelf.sleep( 30000 );
@@ -461,51 +470,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      case API_GET_SPO_MEA:
                         {
                            receivedAnalog( arraySize, group_num, group_type, first_index, last_index, result );
-/*
-                           if( !_skipProcessing )
-                           {
-                              APICLI_GET_MEA *measurands = NULL;
-                              measurands = new APICLI_GET_MEA[arraySize];
-
-                              if( measurands != NULL )
-                              {
-                                 status = api_unpack_measurands( measurands );
-
-                                 if( status == API_NORMAL )
-                                 {
-                                    //we might only get a few points back, so we'll have to adjust
-                                    //for where they are on the FDR side of things during processing
-                                    for( int index = 0; index < last_index - first_index + 1 ; index++ )
-                                    {
-                                       if( result[index] == API_NORMAL )
-                                       {
-                                          processAnalog( measurands[index], group_num, group_type, index );
-                                       }
-                                       else
-                                       {
-                                          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-                                          {
-                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                             dout << CtiTime::now() << " result " << result[index] << endl;
-                                          }
-                                          processBadPoint( group_num, index );
-                                       }
-                                    }
-                                 }
-                                 else
-                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime::now() << " TelegyrAPI api_unpack_measurands() failed: " << status << endl;
-                                 }
-                                 delete [] measurands;
-                              }
-                           }
-                           else
-                           {
-                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << CtiTime::now() << " Skipped Processing Analog Data" << endl;
-                           }
-*/
                         }
                         break;
 
@@ -513,49 +477,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      case API_GET_SPO_IND:
                         {
                            receivedDigital( arraySize,  group_num,  group_type,  first_index,  last_index,  result );
-/*
-                           if( !_skipProcessing )
-                           {
-                              APICLI_GET_IND *indications = NULL;
-                              indications = new APICLI_GET_IND[arraySize];
-
-                              if( indications != NULL )
-                              {
-                                 status = api_unpack_indications( indications );
-
-                                 if( status == API_NORMAL )
-                                 {
-                                    for( int index = 0; index < last_index-first_index+1 ; index++ )
-                                    {
-                                       if( result[index] == API_NORMAL )
-                                       {
-                                          processDigital( indications[index], group_num, group_type, index );
-                                       }
-                                       else
-                                       {
-                                          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-                                          {
-                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                             dout << CtiTime::now() << " result " << result[index] << endl;
-                                          }
-                                          processBadPoint( group_num, index );
-                                       }
-                                    }
-                                 }
-                                 else
-                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime::now() << " TelegyrAPI api_unpack_indications() failed: " << status << endl;
-                                 }
-                                 delete [] indications;
-                              }
-                           }
-                           else
-                           {
-                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << CtiTime::now() << " Skipped Processing Digital Data" << endl;
-                           }
-*/
                         }
                         break;
 
@@ -563,49 +484,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      case API_GET_SPO_CNT:
                         {
                            receivedCounter( arraySize,  group_num,  group_type,  first_index,  last_index,  result );
-/*
-                           if( !_skipProcessing )
-                           {
-                              APICLI_GET_CNT *counters = NULL;
-                              counters = new APICLI_GET_CNT[arraySize];
-
-                              if( counters != NULL )
-                              {
-                                 status = api_unpack_counter_values( counters );
-
-                                 if( status == API_NORMAL )
-                                 {
-                                    for( int index = 0; index < last_index-first_index+1 ; index++ )
-                                    {
-                                       if( result[index] == API_NORMAL )
-                                       {
-                                          processCounter( counters[index], group_num, group_type, index );
-                                       }
-                                       else
-                                       {
-                                          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-                                          {
-                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                             dout << CtiTime::now() << " result " << result[index] << endl;
-                                          }
-                                          processBadPoint( group_num, index );
-                                       }
-                                    }
-                                 }
-                                 else
-                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime::now() << " TelegyrAPI api_unpack_counter_values() failed: " << status << endl;
-                                 }
-                                 delete [] counters;
-                              }
-                           }
-                           else
-                           {
-                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << CtiTime::now() << " Skipped Processing Counter Data" << endl;
-                           }
-*/
                         }
                         break;
                      }
@@ -641,7 +519,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
                      buildAndRegisterGroups();
                      _reloadTimer = CtiTime::now();
-//                     _regFlag = true;
                   }
                   break;
 
@@ -710,6 +587,8 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             }
             else
             {
+               badMsgCount = noDataAction( badMsgCount );
+               /*
                //if we stop getting data for some # minutes, we'll try to re-connect
                badMsgCount++;
 
@@ -735,6 +614,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
                   badMsgCount = 0;
                }
+               */
             }
 
             if( _reloadPending )
@@ -826,6 +706,8 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                }
             }
 
+            badMsgCount = noDataAction( badMsgCount );
+            /*
             //if we stop getting data for some # minutes, we'll try to re-connect
             badMsgCount++;
 
@@ -849,7 +731,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
                badMsgCount = 0;
             }
-
+            */
          }
       }
 
@@ -861,6 +743,8 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
       delete [] applicationName;
       delete [] apiVer;
 
+      halt();
+/*
       if( isConnected() )
       {
          {
@@ -931,7 +815,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             }
          }
       }
-
+*/
       return;
    }
    catch( RWCancellation &cancellationMsg )
@@ -1240,8 +1124,14 @@ bool CtiFDRTelegyr::loadGroupLists( void )
          //empty the 2 entry thing is completly arbitrary
          //===================================================================================
 
-         if( ( pointList->entries() == 0 ) || ( pointList->entries() > 0 ) )
+//         if( ( pointList->entries() == 0 ) || ( pointList->entries() > 0 ) )
+         if( pointList->entries() >= 0 )
          {
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << CtiTime::now() << " *** " << pointList->entries() << " points to process" << endl;
+            }
+
             // get iterator on list
             CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
 
@@ -1334,7 +1224,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                }
             }
 
-            //set the old (global) list equal to the new list
+            _groupList = groupList;
          }
          else
          {
@@ -2281,3 +2171,126 @@ void CtiFDRTelegyr::receivedCounter( int arraySize, int group_num, int group_typ
    }
 }
 
+//=================================================================================================================================
+//if we stop getting data for some # minutes, we'll try to re-connect
+//=================================================================================================================================
+
+int CtiFDRTelegyr::noDataAction( int no_msg_count )
+{
+   no_msg_count++;
+
+   if( no_msg_count > _panicNumber )
+   {
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << CtiTime::now() << " ---- Data Timeout: Starting Over " << endl;
+      }
+
+      deleteGroups();//debug
+
+      api_disconnect( _controlCenter.getChannelID(), API_VALID );
+      setConnected( false );
+
+      int end = api_end();
+
+      _inited = -1;  
+
+      if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime::now() << " ---- API shutdown returned " << end << endl;
+      }
+
+      no_msg_count = 0;
+   }
+
+   return no_msg_count;
+}
+
+//=================================================================================================================================
+//=================================================================================================================================
+
+void CtiFDRTelegyr::halt( void )
+{
+   int               func_status;
+   int               channel_id;
+   int               group_type;
+   int               group_num;
+   APICLI_TIME       group_time;
+   int               first_index;
+   int               last_index;
+   int               more;
+   int               result[256];
+
+   if( isConnected() )
+   {
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime::now() << " ---- Going to delete due to shutdown" << endl;
+      }
+
+      CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );         
+      deleteGroups();
+
+      for( int i = 0; i < 1000; i++ )
+      {
+         int reason = -1;
+         int returnCode = api_get_queued_data( 0,
+                                               API_NO_TIMEOUT,
+                                               &reason,
+                                               &func_status,
+                                               &channel_id,
+                                               &group_type,
+                                               &group_num,
+                                               &group_time,
+                                               &first_index,
+                                               &last_index,
+                                               &more,
+                                               &result[0] );
+
+         if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime::now() << " ---- Shutdown queued data got code " << returnCode << "; reason " << reason << endl;
+         }
+
+         if( ( reason == API_DISC_NOTIFY ) || ( reason == API_DELALL_RES ) )
+         {
+            break;
+         }
+
+         Sleep( 100 );
+      }
+
+      if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime::now() << " ---- Going to disconnect due to shutdown" << endl;
+      }
+
+      int disconn = api_disconnect( _controlCenter.getChannelID(), API_VALID );
+
+      if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime::now() << " ---- Disconnect returned " << disconn << endl;
+      }
+
+      if( _inited == API_NORMAL )
+      {
+         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime::now() << " ---- Stopping the api due to shutdown" << endl;
+         }
+
+         int end = api_end();
+
+         if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime::now() << " ---- API shutdown returned " << end << endl;
+         }
+      }
+   }
+}

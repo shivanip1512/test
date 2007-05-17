@@ -44,7 +44,6 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
    private:
 
       bool        _connected;
-//      bool        _regFlag;
       bool        _quit;
       bool        _reloadPending;
       bool        _skipProcessing;
@@ -136,7 +135,9 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       void receivedAnalog( int arraySize, int group_num, int group_type, int first, int last, int result[] );
       void receivedDigital( int arraySize, int group_num, int group_type, int first, int last, int result[] );
       void receivedCounter( int arraySize, int group_num, int group_type, int first, int last, int result[] );
+      void halt( void );
 
+      int noDataAction( int no_msg_count );
       int readConfig( void );
 
       string decipherReason( int transmissionReason );
