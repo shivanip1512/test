@@ -182,8 +182,10 @@ function prepareSubmit(form) {
 				break;
 			}
 		}
-        
-        int groupID = program.getGroupID();
+        int groupID = 0;
+        if(program != null) {
+       	 	groupID = program.getGroupID();
+       	} 	
 %>
                   <tr> 
                     <input type="hidden" name="ProgID" value="<%= suProg.getProgramID() %>">
