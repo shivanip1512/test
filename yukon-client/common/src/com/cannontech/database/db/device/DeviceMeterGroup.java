@@ -109,7 +109,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	   
 	   com.cannontech.database.SqlStatement stmt =
 	      new com.cannontech.database.SqlStatement(
-	         "SELECT DISTINCT BillingGroup FROM " + TABLE_NAME, 
+	         "SELECT DISTINCT BillingGroup FROM " + TABLE_NAME + " ORDER BY BillingGroup", 
 	         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 	                                     
 	   try
@@ -139,7 +139,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	 	
 	 	com.cannontech.database.SqlStatement stmt =
 	 		new com.cannontech.database.SqlStatement(
-		 		"SELECT DISTINCT CollectionGroup FROM " + TABLE_NAME, 
+		 		"SELECT DISTINCT CollectionGroup FROM " + TABLE_NAME + " ORDER BY COLLECTIONGROUP", 
 	         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 	 												 
 	 	try
@@ -235,7 +235,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	 	
 	 	com.cannontech.database.SqlStatement stmt =
 	 		new com.cannontech.database.SqlStatement(
-		 		"SELECT DISTINCT TestCollectionGroup FROM " + TABLE_NAME, 
+		 		"SELECT DISTINCT TestCollectionGroup FROM " + TABLE_NAME + " ORDER BY TESTCOLLECTIONGROUP", 
 	         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 	 												 
 	 	try
