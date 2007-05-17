@@ -16,6 +16,7 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private MessageEncoder messageEncoder;
     private YukonDeviceLookup yukonDeviceLookup;
     private String bindingKeyRegEx = "";
+    private boolean ignoreEventBit = false;
     private PointValueUpdater faultGenerator = new NullPointValueUpdater();
     private PointValueUpdater no60Generator = new NullPointValueUpdater();
     private PointValueUpdater latGenerator = new NullPointValueUpdater();
@@ -23,6 +24,7 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private PointValueUpdater batteryVoltageGenerator = new NullPointValueUpdater();
     private PointValueUpdater deviceTemperatureGenerator = new NullPointValueUpdater();
     private PointValueUpdater batteryLowGenerator = new NullPointValueUpdater();
+    private PointValueUpdater faultLatchGenerator = new NullPointValueUpdater();
 
     public void processMessage(int repId, int appCode, char[] message) {
         if (appCode == 0x22) {
@@ -53,14 +55,17 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         log.debug("Processing message for repId=" + repId + ": " + message);
         
         Date toi = message.getTimestampOfIntercept();
-        if (message.isStatusEventTransBit() && message.getLastEvent().isPopulated()) {
+        if ((message.isStatusEventTransBit() || ignoreEventBit) && message.getLastEvent().isPopulated()) {
             boolean fault = message.getLastEvent().isFaultDetected();
             long millis = toi.getTime() - message.getLastEvent().getSecondsSinceEvent() * 1000;
             Date eventDate = new Date(millis);
             faultGenerator.writePointDataMessage(repId, fault, eventDate);
         } else {
-            log.info("Got status message without supervisory bit set.");
+            log.info("Got supervisory message or event message without lastEvent populated");
         }
+        
+        boolean latchedFault = message.isStatusLatchedFault();
+        faultLatchGenerator.writePointDataMessage(repId, latchedFault, toi);
         
         boolean no60 = message.isStatusNo60HzOrUnderLineCurrent();
         no60Generator.writePointDataMessage(repId, no60, toi);
@@ -140,6 +145,14 @@ public class FaultDetectProcessor implements SensusMessageHandler {
 
     public void setBatteryLowGenerator(PointValueUpdater batteryLowGenerator) {
         this.batteryLowGenerator = batteryLowGenerator;
+    }
+
+    public void setIgnoreEventBit(boolean ignoreEventBit) {
+        this.ignoreEventBit = ignoreEventBit;
+    }
+
+    public void setFaultLatchGenerator(PointValueUpdater faultLatchGenerator) {
+        this.faultLatchGenerator = faultLatchGenerator;
     }
 
 

@@ -1,6 +1,8 @@
 package com.cannontech.sensus;
 
 import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -8,18 +10,20 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.cannontech.clientutils.YukonLogManager;
 
-public class SensusMessageListener implements MessageListener {
+public class SensusMessageListener implements MessageListener, InitializingBean {
     private Logger log = YukonLogManager.getLogger(SensusMessageListener.class);
     SensusMessageHandler sensusMessageHandler;
+    int messageCount = 0;
 
     public void onMessage(Message msg) {
         try {
             if (msg instanceof ObjectMessage) {
                 ObjectMessage om = (ObjectMessage) msg;
-                log.debug("Got object message: " + om);
+                messageCount++;
                 //logOutProperties(om);
                 Object m = om.getObject();
                 if (m instanceof char[]) {
@@ -54,6 +58,17 @@ public class SensusMessageListener implements MessageListener {
 
     public void setSensusMessageHandler(SensusMessageHandler sensusMessageHandler) {
         this.sensusMessageHandler = sensusMessageHandler;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerTask() {
+
+            public void run() {
+                log.debug("Message count = " + messageCount);
+            }
+        }, 5000, 10000);
+        
     }
 
     
