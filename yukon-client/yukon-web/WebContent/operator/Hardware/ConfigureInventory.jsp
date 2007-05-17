@@ -73,7 +73,7 @@
 			 	<tr>
 					<td width> 
 	                	<div align="center"> 
-	                    	<input type="button" name="InvenReturn" value="Return to Inventory" onclick="returnToInven(this.form)">
+	                    	<input type="button" name="InvenReturn" value="Return to Inventory" onclick='location.href="../Hardware/Inventory.jsp"'>
 	                    </div>
 	                </td>
 	           	</tr>
@@ -84,18 +84,6 @@
     <script language="JavaScript">
 		function init()
 		{
-		}
-		
-		function returnToFilters(form)
-		{
-		    form.REDIRECT.value += "/operator/Hardware/Filter.jsp";
-		    form.submit();
-		}
-        
-		function returnToInven(form)
-		{
-			form.REDIRECT.value += "/operator/Hardware/Inventory.jsp";
-		    form.submit();
 		}
 		
 		function scheduleBatch(form) 
