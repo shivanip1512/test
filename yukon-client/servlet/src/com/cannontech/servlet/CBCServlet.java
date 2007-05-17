@@ -396,7 +396,7 @@ private boolean handleCapBankGET( HttpServletRequest req, String ids, ResultXML[
 	{
 		/*param0*/CBCDisplay.getHTMLFgColor(capBank),
 		/*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN).toString(),
-		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN).toString(),
+		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN).toString(),
 		/*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN).toString(),
 		/*param4*/allow_ovuv,
 		/*param5*/liteStates

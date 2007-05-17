@@ -419,10 +419,7 @@ for( int i = 0; i < capBanks.length; i++ )
                     </td>
 					<td>
 					<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
-					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_CURRENT_DAILY_OP_COLUMN)%></a>
-					/
-					<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
-					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN)%></a>
+					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN)%></a>
 					</td>
 				</tr>
 				<% } %>
