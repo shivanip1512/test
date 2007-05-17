@@ -167,7 +167,7 @@ public class SearchCustAccountAction implements ActionBase {
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO) {
             	/* Search by phone number */
             	try {
-            		String phoneNo = ServletUtils.formatPhoneNumber( searchAccount.getSearchValue() );
+            		String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchAccount.getSearchValue() );
 					accountList = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
             	}
             	catch (WebClientException e) {

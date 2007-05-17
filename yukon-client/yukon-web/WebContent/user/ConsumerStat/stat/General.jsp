@@ -244,7 +244,7 @@
 	}
 	
 	ContactNotification homePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
+	String homePhoneNo = (homePhone != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone.getNotification()) : "";
 %>
                   </td>
                   <td width="171" valign="top"><span class="SubtitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 

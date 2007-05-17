@@ -252,9 +252,9 @@ public class NewCustAccountAction implements ActionBase {
 			
 			// Format the phone number after the information has been saved
 			if (homePhone != null)
-				homePhone.setNotification( ServletUtils.formatPhoneNumber(homePhone.getNotification()) );
+				homePhone.setNotification( ServletUtils.formatPhoneNumberForStorage(homePhone.getNotification()) );
 			if (workPhone != null)
-				workPhone.setNotification( ServletUtils.formatPhoneNumber(workPhone.getNotification()) );
+				workPhone.setNotification( ServletUtils.formatPhoneNumberForStorage(workPhone.getNotification()) );
 			
 			for (int i = 0; i < account.getAdditionalContactCount(); i++) {
 				ContactNotification homePhone2 = ServletUtils.getContactNotification(
@@ -263,9 +263,9 @@ public class NewCustAccountAction implements ActionBase {
 						account.getAdditionalContact(i), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
 				
 				if (homePhone2 != null)
-					homePhone2.setNotification( ServletUtils.formatPhoneNumber(homePhone2.getNotification()) );
+					homePhone2.setNotification( ServletUtils.formatPhoneNumberForStorage(homePhone2.getNotification()) );
 				if (workPhone2 != null)
-					workPhone2.setNotification( ServletUtils.formatPhoneNumber(workPhone2.getNotification()) );
+					workPhone2.setNotification( ServletUtils.formatPhoneNumberForStorage(workPhone2.getNotification()) );
 			}
 			
 			StarsOperation operation = new StarsOperation();

@@ -25,8 +25,8 @@
 		}
 		
 		ecTemp.setCompanyName( request.getParameter("CompanyName") );
-		ecTemp.setMainPhoneNumber( request.getParameter("PhoneNo") );
-		ecTemp.setMainFaxNumber( request.getParameter("FaxNo") );
+		ecTemp.setMainPhoneNumber( ServletUtils.formatPhoneNumberForStorage(request.getParameter("PhoneNo")) );
+		ecTemp.setMainFaxNumber( ServletUtils.formatPhoneNumberForStorage(request.getParameter("FaxNo")) );
 		ecTemp.setEmail( request.getParameter("Email") );
 		ecTemp.setTimeZone( request.getParameter("TimeZone") );
 		ServletUtils.saveRequest(request, session, new String[] {"Route", "OperatorGroup", "CustomerGroup", "AdminEmail", "OptOutNotif"});
@@ -166,14 +166,14 @@ function addCustomerGroup(form) {
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>" size="30" onchange="setContentChanged(true)">
+                          <input type="text" name="PhoneNo" value="<%= ServletUtils.formatPhoneNumberForDisplay(ec.getMainPhoneNumber()) %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>" size="30" onchange="setContentChanged(true)">
+                          <input type="text" name="FaxNo" value="<%= ServletUtils.formatPhoneNumberForDisplay(ec.getMainFaxNumber()) %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

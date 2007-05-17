@@ -239,10 +239,10 @@ function setCommercial() {
                         </td>
 <%
 	ContactNotification homePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
+	String homePhoneNo = (homePhone != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone" maxlength="20" size="20" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -251,10 +251,10 @@ function setCommercial() {
                         </td>
 <%
 	ContactNotification workPhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo = (workPhone != null)? workPhone.getNotification() : "";
+	String workPhoneNo = (workPhone != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

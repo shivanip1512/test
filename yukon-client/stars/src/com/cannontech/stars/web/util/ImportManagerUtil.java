@@ -530,7 +530,7 @@ public class ImportManagerUtil {
 	    if (fields[IDX_HOME_PHONE].trim().length() > 0) {
 			try {
 				ContactNotification homePhone = ServletUtils.createContactNotification(
-						ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+						ServletUtils.formatPhoneNumberForStorage(fields[IDX_HOME_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
 				if (homePhone != null) primContact.addContactNotification( homePhone );
 			}
 			catch (WebClientException e) {
@@ -541,7 +541,7 @@ public class ImportManagerUtil {
 	    if (fields[IDX_WORK_PHONE].trim().length() > 0) {
 			try {
 				ContactNotification workPhone = ServletUtils.createContactNotification(
-						ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+						ServletUtils.formatPhoneNumberForStorage(fields[IDX_WORK_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
 				if (workPhone != null) primContact.addContactNotification( workPhone );
 			}
 			catch (WebClientException e) {

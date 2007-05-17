@@ -418,7 +418,7 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
 			try {
-				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
+				String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
 				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
                 liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 			}

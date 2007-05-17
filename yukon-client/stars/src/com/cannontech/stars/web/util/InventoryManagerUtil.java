@@ -550,7 +550,7 @@ public class InventoryManagerUtil {
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
-			String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
+			String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
 			ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}

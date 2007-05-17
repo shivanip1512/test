@@ -256,10 +256,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
+	String homePhoneNo = (homePhone != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone" maxlength="20" size="20" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -268,10 +268,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo = (workPhone != null)? workPhone.getNotification() : "";
+	String workPhoneNo = (workPhone != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -333,10 +333,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone2 = ServletUtils.getContactNotification(contacts[0], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo2 = (homePhone2 != null)? homePhone2.getNotification() : "";
+	String homePhoneNo2 = (homePhone2 != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone2.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= homePhoneNo2 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone2" maxlength="20" size="20" value="<%= homePhoneNo2 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -345,10 +345,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone2 = ServletUtils.getContactNotification(contacts[0], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo2 = (workPhone2 != null)? workPhone2.getNotification() : "";
+	String workPhoneNo2 = (workPhone2 != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone2.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= workPhoneNo2 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone2" maxlength="20" size="20" value="<%= workPhoneNo2 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -373,10 +373,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone3 = ServletUtils.getContactNotification(contacts[1], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo3 = (homePhone3 != null)? homePhone3.getNotification() : "";
+	String homePhoneNo3 = (homePhone3 != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone3.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= homePhoneNo3 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone3" maxlength="20" size="20" value="<%= homePhoneNo3 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -385,10 +385,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone3 = ServletUtils.getContactNotification(contacts[1], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo3 = (workPhone3 != null)? workPhone3.getNotification() : "";
+	String workPhoneNo3 = (workPhone3 != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone3.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= workPhoneNo3 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone3" maxlength="20" size="20" value="<%= workPhoneNo3 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -413,10 +413,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone4 = ServletUtils.getContactNotification(contacts[2], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo4 = (homePhone4 != null)? homePhone4.getNotification() : "";
+	String homePhoneNo4 = (homePhone4 != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone4.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="HomePhone4" maxlength="14" size="14" value="<%= homePhoneNo4 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone4" maxlength="20" size="20" value="<%= homePhoneNo4 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -425,10 +425,10 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone4 = ServletUtils.getContactNotification(contacts[2], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo4 = (workPhone4 != null)? workPhone4.getNotification() : "";
+	String workPhoneNo4 = (workPhone4 != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone4.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= workPhoneNo4 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone4" maxlength="20" size="20" value="<%= workPhoneNo4 %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>

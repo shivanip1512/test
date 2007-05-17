@@ -37,6 +37,7 @@ import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
+import com.cannontech.util.PhoneNumber;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -287,92 +288,46 @@ public class ServletUtils {
 		}
 	}
 	
-	/**
-	 * Format phone number to format "[...-#-###-]###-#### x#..."
-	 * E.g. 763-595-7777 x5529 (5529 is the extension number)
-	 * In the original string, each segment between adjacent "-" above must be consecutive
-	 */
-	public static String formatPhoneNumber(String phoneNo) throws WebClientException {
+    /**
+     * Strips a phone number down to a simple string of digits
+     */
+	public static String formatPhoneNumberForSearch(String phoneNo) throws WebClientException {
 		phoneNo = phoneNo.trim();
 		if (phoneNo.equals("")) return "";
-		
-		String errorMsg = "Invalid phone number format '" + phoneNo + "', the phone number should be in the form of 'xxx-xxx-xxxx'";
-    	
-		StringBuffer formatedPhoneNo = new StringBuffer();
-		int n = phoneNo.length() - 1;	// position of digit counted from the last
-		
-		// Everything after the first character "x" is considered extension number and copied into the phone number
-		int extStartIdx = phoneNo.indexOf( 'x' );
-		if (extStartIdx < 0) extStartIdx = phoneNo.indexOf( 'X' );
-		
-		if (extStartIdx >= 0) {
-			formatedPhoneNo.append(" x").append( phoneNo.substring(extStartIdx+1) );
-			n = extStartIdx - 1;
-		}
-    	
-		/* Find the last 4 digits */
-		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-			n--;
-		if (n < 0)
-			throw new WebClientException( errorMsg );
-    	
-		for (int i = 1; i < 4; i++) {
-			n--;
-			if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-				throw new WebClientException( errorMsg );
-		}
-		formatedPhoneNo.insert( 0, phoneNo.substring(n, n+4) );
-    	
-		/* Find the middle 3 digits */
-		n--;
-		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-			n--;
-		if (n < 0)
-			throw new WebClientException( errorMsg );
-    	
-		for (int i = 1; i < 3; i++) {
-			n--;
-			if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-				throw new WebClientException( errorMsg );
-		}
-		formatedPhoneNo.insert( 0, '-' );
-		formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
-    	
-		/* Find the 3-digit area code */
-		n--;
-		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-			n--;
-		if (n < 0) return formatedPhoneNo.toString();
-    	
-		for (int i = 1; i < 3; i++) {
-			n--;
-			if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-				throw new WebClientException( errorMsg );
-		}
-		formatedPhoneNo.insert( 0, '-' );
-		formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
-    	
-		/* Find the 1 digit before area code of 800 number or long distance */
-		n--;
-		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-			n--;
-		if (n < 0) return formatedPhoneNo.toString();
-		formatedPhoneNo.insert( 0, '-' );
-		formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
-    	
-		/* Save all the remaining digits (country code etc.) in one segment */
-		n--;
-		while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
-			n--;
-		if (n < 0) return formatedPhoneNo.toString();
-		formatedPhoneNo.insert( 0, '-' );
-		for (; n >= 0; n--) {
-			if (Character.isDigit( phoneNo.charAt(n) ))
-				formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
-		}
-    	
-		return formatedPhoneNo.toString();
+        
+        //get rid of US country code (long distance)
+        if(phoneNo.startsWith("1"))
+            phoneNo = phoneNo.replaceFirst("1", "");
+        
+        return formatPhoneNumberForStorage(phoneNo);
 	}
+    
+    public static String formatPhoneNumberForStorage(String phoneNo) throws WebClientException {
+        phoneNo = phoneNo.trim();
+        if (phoneNo.equals("")) return "";
+        
+        char[] checkDigits = phoneNo.toCharArray();
+        for(char j: checkDigits) {
+            if(!Character.isDigit(j) && j != '-' && j != 'x' && j != '(' && j != ')' && j != ' ')
+                throw new WebClientException("Invalid phone number format '" + phoneNo + "'.  The phone number contains non-digits.");
+        }
+        
+        return PhoneNumber.extractDigits(phoneNo);
+    }
+    
+    public static String formatPhoneNumberForDisplay(String phoneNo) throws WebClientException {
+        phoneNo = phoneNo.trim();
+        if (phoneNo.equals("")) return "";
+        
+        /*//verify no non-digits are present
+        char[] checkDigits = phoneNo.toCharArray();
+        for(char j: checkDigits) {
+            if(!Character.isDigit(j) && j != '-' && j != 'x' && j != '(' && j != ')' && j != ' ')
+                throw new WebClientException("Invalid phone number format '" + phoneNo + "'.  The phone number contains non-digits.");
+        }*/
+        
+        return PhoneNumber.format(phoneNo);
+    }
     
     public static String formatPin(String pin) throws WebClientException 
     {

@@ -51,9 +51,9 @@
 	String desc = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_UTILITY);
 	String address = ServletUtils.formatAddress(energyCompany.getCompanyAddress()) + "<br>";
 	String phoneNo = (energyCompany.getMainPhoneNumber().trim().length() > 0)?
-			"Ph: " + energyCompany.getMainPhoneNumber() + "<br>" : "";
+			"Ph: " + ServletUtils.formatPhoneNumberForDisplay(energyCompany.getMainPhoneNumber()) + "<br>" : "";
 	String faxNo = (energyCompany.getMainFaxNumber().trim().length() > 0)?
-			"Fax: " + energyCompany.getMainFaxNumber() + "<br>" : "";
+			"Fax: " + ServletUtils.formatPhoneNumberForDisplay(energyCompany.getMainFaxNumber()) + "<br>" : "";
 	String email = (energyCompany.getEmail().trim().length() > 0)?
 			"<a href='mailto:" + energyCompany.getEmail() + "' class='Link1'>Email: " + energyCompany.getEmail() + "</a><br>" : "";
 	

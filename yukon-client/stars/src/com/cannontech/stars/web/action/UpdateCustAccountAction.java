@@ -135,6 +135,8 @@ public class UpdateCustAccountAction implements ActionBase {
 			
             String homePhone = req.getParameter("HomePhone");
             String workPhone = req.getParameter("WorkPhone");
+            homePhone = ServletUtils.formatPhoneNumberForStorage(homePhone);
+            workPhone = ServletUtils.formatPhoneNumberForStorage(workPhone);
             String email = req.getParameter("Email");
             
             for(int j = 0; j < primContact.getContactNotificationCount(); j++)

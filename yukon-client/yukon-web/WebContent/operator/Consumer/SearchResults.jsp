@@ -213,10 +213,10 @@ function navPage()
 					
 					StringBuffer phoneNo = new StringBuffer();
 					if (homePhone.length() > 0)
-						phoneNo.append( homePhone ).append( "(H)" );
+						phoneNo.append( ServletUtils.formatPhoneNumberForDisplay(homePhone) ).append( "(H)" );
 					if (workPhone.length() > 0) {
 						if (phoneNo.length() > 0) phoneNo.append( ", " );
-						phoneNo.append( workPhone ).append( "(W)" );
+						phoneNo.append( ServletUtils.formatPhoneNumberForDisplay(workPhone) ).append( "(W)" );
 					}
 					if (phoneNo.length() == 0) phoneNo.append( "(none)" );
 %>

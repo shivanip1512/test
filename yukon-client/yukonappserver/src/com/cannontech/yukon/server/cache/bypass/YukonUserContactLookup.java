@@ -6,6 +6,8 @@
  */
 package com.cannontech.yukon.server.cache.bypass;
 
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.db.contact.Contact;
@@ -175,19 +177,29 @@ public class YukonUserContactLookup
     public static LiteContact[] loadContactsByPhoneNumber(String phone, boolean partialMatch)
     {
         com.cannontech.database.SqlStatement stmt;
-        
+        com.cannontech.database.SqlStatement stmtRevised = null;
         /*
          * Just get the ContactIDs first.  We'll want to do a retrieve so we get notifications, etc.
          */
         if(partialMatch)
         {        
             stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION LIKE '%" + phone + "'", "yukon");
+                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION LIKE '%" + phone + 
+                                                           "%' AND NOTIFICATIONCATEGORYID IN (SELECT ENTRYID FROM " + YukonListEntry.TABLE_NAME +
+                                                           " WHERE YUKONDEFINITIONID =" + YukonListEntryTypes.YUK_DEF_ID_PHONE + ")", "yukon");
+            //legacy numbers have hyphens in the db; let's at least attempt to be understanding about it
+            if(phone.length() == 10)
+                stmtRevised = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
+                                                            ContactNotification.TABLE_NAME + " WHERE NOTIFICATION LIKE '%" + phone.substring(0, 3) + "-" + phone.substring(3, 6) + "-" + phone.substring(6) +
+                                                            "' AND NOTIFICATIONCATEGORYID IN (SELECT ENTRYID FROM " + YukonListEntry.TABLE_NAME +
+                                                           " WHERE YUKONDEFINITIONID =" + YukonListEntryTypes.YUK_DEF_ID_PHONE + ")", "yukon");
         }
         else
         {
             stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION = '" + phone + "'", "yukon");
+                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION = '" + phone + 
+                                                           "' AND NOTIFICATIONCATEGORYID IN (SELECT ENTRYID FROM " + YukonListEntry.TABLE_NAME +
+                                                           " WHERE YUKONDEFINITIONID =" + YukonListEntryTypes.YUK_DEF_ID_PHONE + ")", "yukon");
         }
         
         LiteContact[] foundContacts;
@@ -197,11 +209,23 @@ public class YukonUserContactLookup
             stmt.execute();
             
             foundContacts = new LiteContact[stmt.getRowCount()];
-            for( int j = 0; j < stmt.getRowCount(); j++ )
-            {
+
+            for( int j = 0; j < stmt.getRowCount(); j++ ) {
                 LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
                 newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
                 foundContacts[j] = newlyFound;
+            }
+            
+            //legacy phone numbers have hyphens in the db; let's at least attempt to be understanding about it
+            if(partialMatch && foundContacts.length < 1 && stmtRevised != null) {
+                stmtRevised.execute();
+                foundContacts = new LiteContact[stmtRevised.getRowCount()];
+                
+                for( int j = 0; j < stmtRevised.getRowCount(); j++ ) {
+                    LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmtRevised.getRow(j)[0]).intValue());
+                    newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
+                    foundContacts[j] = newlyFound;
+                }
             }
             
             return foundContacts;

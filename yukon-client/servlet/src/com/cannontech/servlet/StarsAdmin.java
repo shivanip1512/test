@@ -575,14 +575,14 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (req.getParameter("PhoneNo").length() > 0) {
 				if (notifPhone != null) {
-					notifPhone.setNotification( req.getParameter("PhoneNo") );
+					notifPhone.setNotification( ServletUtils.formatPhoneNumberForStorage(req.getParameter("PhoneNo")) );
 					notifPhone.setOpCode( Transaction.UPDATE );
 				}
 				else {
 					notifPhone = new com.cannontech.database.db.contact.ContactNotification();
 					notifPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_PHONE) );
 					notifPhone.setDisableFlag( "Y" );
-					notifPhone.setNotification( req.getParameter("PhoneNo") );
+					notifPhone.setNotification( ServletUtils.formatPhoneNumberForStorage(req.getParameter("PhoneNo")) );
 					notifPhone.setOpCode( Transaction.INSERT );
 					
 					contact.getContactNotifVect().add( notifPhone );
@@ -591,14 +591,14 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (req.getParameter("FaxNo").length() > 0) {
 				if (notifFax != null) {
-					notifFax.setNotification( req.getParameter("FaxNo") );
+					notifFax.setNotification( ServletUtils.formatPhoneNumberForStorage(req.getParameter("FaxNo")) );
 					notifFax.setOpCode( Transaction.UPDATE );
 				}
 				else {
 					notifFax = new com.cannontech.database.db.contact.ContactNotification();
 					notifFax.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_FAX) );
 					notifFax.setDisableFlag( "Y" );
-					notifFax.setNotification( req.getParameter("FaxNo") );
+					notifFax.setNotification( ServletUtils.formatPhoneNumberForStorage(req.getParameter("FaxNo")) );
 					notifFax.setOpCode( Transaction.INSERT );
 					
 					contact.getContactNotifVect().add( notifFax );
@@ -1014,8 +1014,8 @@ public class StarsAdmin extends HttpServlet {
 			}
         	
 			company.getServiceCompany().setCompanyName( req.getParameter("CompanyName") );
-			company.getServiceCompany().setMainPhoneNumber( ServletUtils.formatPhoneNumber(req.getParameter("PhoneNo")) );
-			company.getServiceCompany().setMainFaxNumber( ServletUtils.formatPhoneNumber(req.getParameter("FaxNo")) );
+			company.getServiceCompany().setMainPhoneNumber( ServletUtils.formatPhoneNumberForStorage(req.getParameter("PhoneNo")) );
+			company.getServiceCompany().setMainFaxNumber( ServletUtils.formatPhoneNumberForStorage(req.getParameter("FaxNo")) );
 			company.getServiceCompany().setHIType( req.getParameter("Type") );
 			contactDB.setContLastName( req.getParameter("ContactLastName") );
 			contactDB.setContFirstName( req.getParameter("ContactFirstName") );

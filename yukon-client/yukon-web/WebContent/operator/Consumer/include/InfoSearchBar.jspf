@@ -6,10 +6,10 @@
 	StringBuffer contPhoneNo = new StringBuffer();
 	ContactNotification contHomePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
 	if (contHomePhone != null)
-		contPhoneNo.append(", ").append(contHomePhone.getNotification()).append("(H)");
+		contPhoneNo.append(", ").append(ServletUtils.formatPhoneNumberForDisplay(contHomePhone.getNotification())).append("(H)");
 	ContactNotification contWorkPhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
 	if (contWorkPhone != null)
-		contPhoneNo.append(", ").append(contWorkPhone.getNotification()).append("(W)");
+		contPhoneNo.append(", ").append(ServletUtils.formatPhoneNumberForDisplay(contWorkPhone.getNotification())).append("(W)");
 %>
       <% if(account.getCompany() != null && account.getCompany().length() > 0) { %> <span class="NavText"><%=account.getCompany() %></span><br> <%}%>
       <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><%= contPhoneNo.toString() %> 

@@ -410,7 +410,7 @@ function revealLog() {
 <% } else { %>
                                   <%= company.getCompanyName() %><br>
                                   <%= ServletUtils.formatAddress( company.getCompanyAddress() ) %><br>
-                                  <%= company.getMainPhoneNumber() %> </td>
+                                  <%= ServletUtils.formatPhoneNumberForDisplay(company.getMainPhoneNumber()) %> </td>
 <% } %>
                               </tr>
                             </table>

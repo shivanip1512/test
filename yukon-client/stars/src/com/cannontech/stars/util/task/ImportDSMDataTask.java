@@ -1147,7 +1147,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				try {
 					ContactNotification homePhone = ServletUtils.createContactNotification(
-							ServletUtils.formatPhoneNumber(fields[25].trim()), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+							ServletUtils.formatPhoneNumberForStorage(fields[25].trim()), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
 					if (homePhone != null) primContact.addContactNotification( homePhone );
 				}
 				catch (WebClientException e) {
@@ -1156,7 +1156,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				try {
 					ContactNotification sitePhone = ServletUtils.createContactNotification(
-							ServletUtils.formatPhoneNumber(fields[26].trim()), YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
+							ServletUtils.formatPhoneNumberForStorage(fields[26].trim()), YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
 					if (sitePhone != null) primContact.addContactNotification( sitePhone );
 				}
 				catch (WebClientException e) {

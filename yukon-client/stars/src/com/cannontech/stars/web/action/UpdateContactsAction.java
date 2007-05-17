@@ -153,7 +153,7 @@ public class UpdateContactsAction implements ActionBase {
 						if (notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
 							|| notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE)
                         {
-                            notifications[i - tricksy] = ServletUtils.formatPhoneNumber( notifications[i - tricksy] );
+                            notifications[i - tricksy] = ServletUtils.formatPhoneNumberForStorage( notifications[i - tricksy] );
                         }
                         else if(notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_PIN || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN)
                         {
