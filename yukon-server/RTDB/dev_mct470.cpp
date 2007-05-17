@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2007/04/23 14:55:37 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2007/05/17 22:24:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4256,7 +4256,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                         case IED_Type_GE_kV2c:
                         {
-                            rate = (DSt->Message[4] >> 2) & 0x03;
+                            rate = DSt->Message[4] & 0x07;
 
                             resultString += getName() + " / current TOU rate: ";
 
