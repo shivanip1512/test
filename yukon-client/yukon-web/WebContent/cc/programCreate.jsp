@@ -15,16 +15,27 @@
             fatalClass="jsfFatal"/> 
 </div>
 <h:form>
-<div>
-Program Name: <t:inputText value="#{sProgramDetail.program.name}">
-  <f:validateLength minimum="2" />
-</t:inputText>
-</div>
-<div>Program Type: 
-<t:selectOneMenu value="#{sProgramDetail.program.programType}" >
+
+<div class="section">
+<table class="horizBorders">
+<tr>
+  <td><t:outputLabel value="Program Type" styleClass="propertyEntry"/></td>
+  <td><t:selectOneMenu value="#{sProgramDetail.program.programType}" >
   <f:selectItems value="#{sProgramDetail.availableTypes}"/>
   <f:converter converterId="objectConverter"/>
-</t:selectOneMenu></div>
+</t:selectOneMenu>
+  </td>
+</tr>
+<tr>
+  <td><t:outputLabel value="Program Name" styleClass="propertyEntry"/></td>
+  <td><t:inputText value="#{sProgramDetail.program.name}">
+        <f:validateLength minimum="2" />
+      </t:inputText>
+  </td>
+</tr>
+</table>
+</div>
+
 
 <div>
 <h:commandButton action="#{sProgramDetail.saveNew}" value="Create"/>

@@ -74,6 +74,8 @@ public class ProgramDetailBean {
         assignedGroups = Collections.emptyList();
         assignedNotificationGroups = Collections.emptyList();
         
+        program.setIdentifierPrefix("EVENT-");
+        program.setLastIdentifier(0);
         
         return "create";
     }
