@@ -23,3 +23,11 @@ update yukonpaobject set type='MCT-430SN' where type = 'MCT-430IN'
 
 
 /***************************************/
+
+/**  Thain: to go into head(3.5)  Not finalized yet, I will update when its ready. */
+
+insert into FDRInterface values (25, 'SANMIGUEL', 'Receive', 'f' );
+insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 
+'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
+
+/** End Thain   */
