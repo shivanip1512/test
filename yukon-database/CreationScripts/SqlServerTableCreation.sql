@@ -7309,6 +7309,11 @@ alter table PAOSchedule
    add constraint PK_PAOSCHEDULE primary key nonclustered (ScheduleID)
 go
 
+create unique index Indx_SchedName on PAOSchedule (
+ScheduleName ASC
+)
+go
+
 /*==============================================================*/
 /* Table: PAOScheduleAssignment                                 */
 /*==============================================================*/
@@ -10046,6 +10051,7 @@ insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'true', 'display V
 
 insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
+insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
 
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key nonclustered (RolePropertyID)
