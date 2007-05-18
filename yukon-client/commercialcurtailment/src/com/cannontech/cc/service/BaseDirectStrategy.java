@@ -61,8 +61,8 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
     }
     
     @Override
-    public void deleteEvent(final CurtailmentEvent event, LiteYukonUser user) {
-        super.deleteEvent(event, user);
+    protected void doBeforeDeleteEvent(CurtailmentEvent event, LiteYukonUser user) {
+        super.doBeforeDeleteEvent(event, user);
         sendMessages(event, new DoWithId() {
             public void forProgram(int lmProgramId) {
                 loadManagementService.stopProgram(lmProgramId);

@@ -232,13 +232,17 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         boolean success = getNotificationProxy()
             .attemptDeleteCurtailmentNotification(event.getId(), true);
 
-        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "deleted");
+        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), success ? "deleted" : "deleted (failed)");
         if (success) {
+            doBeforeDeleteEvent(event, user);
             curtailmentEventDao.delete(event);
         } else {
             // this is crude, but it will work for the time being
             throw new RuntimeException("DB State might have been lost while deleting event.");
         }
+    }
+    
+    protected void doBeforeDeleteEvent(final CurtailmentEvent event, LiteYukonUser user) {
     }
     
     @Transactional
