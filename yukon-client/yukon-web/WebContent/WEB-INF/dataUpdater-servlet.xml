@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean name="/update" class="com.cannontech.web.updater.DataUpdaterController" >
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="dataUpdaterService" ref="dataUpdaterService"/>
+    </bean>
+    
+</beans>

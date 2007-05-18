@@ -67,4 +67,55 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
+    <!-- Update Service -->
+        
+    <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="timeSource">
+            <ref bean="timeSource" />
+        </property>
+        <property name="backs">
+            <map>
+                <entry key="POINT">
+                    <ref local="pointUpdateBackingService" />
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="pointUpdateBackingService"
+        class="com.cannontech.web.updater.point.PointUpdateBackingService" abstract="false"
+        singleton="true" lazy-init="default" autowire="default" dependency-check="default">
+        <property name="maxCacheSize">
+            <value type="int">1000</value>
+        </property>
+        <property name="asyncDataSource">
+            <ref bean="asyncDynamicDataSource" />
+        </property>
+        <property name="pointFormattingService">
+            <ref bean="pointFormattingService" />
+        </property>
+        <property name="timeSource">
+            <ref bean="timeSource" />
+        </property>
+        <property name="maxOverSize">
+            <value type="int">100</value>
+        </property>
+    </bean>
+    
+    <bean id="pointDataUpdateRegistrationService"
+        class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false"
+        singleton="true" lazy-init="default" autowire="default" dependency-check="default">
+        <property name="updaterService">
+            <ref local="dataUpdaterService" />
+        </property>
+    </bean>
+    
+    <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="registrationService" ref="pointDataUpdateRegistrationService"/>
+    </bean>
+    
 </beans>

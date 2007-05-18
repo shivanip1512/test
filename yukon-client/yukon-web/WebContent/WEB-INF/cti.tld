@@ -469,7 +469,7 @@
   
   <tag>
     <name>pointValue</name>
-    <tag-class>com.cannontech.web.taglib.PointValueTag</tag-class>
+    <tag-class>com.cannontech.web.updater.point.PointValueTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <name>pointId</name>
@@ -477,7 +477,7 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
-      <name>pointValue</name>
+      <name>format</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
