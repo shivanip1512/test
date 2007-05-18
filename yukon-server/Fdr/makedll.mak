@@ -128,7 +128,6 @@ fdrpi.dll \
 fdrxa21lm.dll \
 fdrlivedata.dll \
 fdrwabash.dll \
-fdrareva.dll \
 fdrtristatesub.dll 
 
 
@@ -315,14 +314,6 @@ fdrwabash.dll: fdrwabash.obj Makefile
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 $(CC) $(DLLFLAGS) fdrwabash.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
-                @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
-                @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
-                @%cd $(CWD)  
-
-fdrareva.dll: fdrareva.obj Makefile
-                @%cd $(OBJ)
-                @echo Building  ..\$@
-                $(CC) $(DLLFLAGS) fdrareva.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
                 @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)  
