@@ -10,6 +10,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
@@ -162,7 +163,7 @@ public class MR_EAImpl extends MR_EASoap_BindingImpl
                 if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)   //kW
                 {
                     DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-                    PointData pointData = dds.getPointData(lp.getPointID());
+                    PointValueHolder pointData = dds.getPointValue(lp.getPointID());
                     if( pointData != null)
                     {
                         mr.setKW(new Float(pointData.getValue()));
@@ -174,7 +175,7 @@ public class MR_EAImpl extends MR_EASoap_BindingImpl
                 else if ( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT && lp.getPointOffset() == 1)  //kWh
                 {
                     DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-                    PointData pointData = dds.getPointData(lp.getPointID());
+                    PointValueHolder pointData = dds.getPointValue(lp.getPointID());
                     if( pointData != null)
                     {
                         mr.setPosKWh(new BigInteger(String.valueOf(new Double(pointData.getValue()).intValue())));

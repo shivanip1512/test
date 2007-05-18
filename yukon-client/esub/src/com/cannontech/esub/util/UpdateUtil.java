@@ -3,11 +3,11 @@ package com.cannontech.esub.util;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
@@ -16,9 +16,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.esub.PointAttributes;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -41,7 +39,7 @@ public class UpdateUtil {
             
             if(lp.getPointType() == PointTypes.STATUS_POINT)
             {
-                PointData pData = dynamicDataSource.getPointData(pointID);
+                PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
         
                 if (pData != null) {
                     LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
@@ -83,7 +81,7 @@ public class UpdateUtil {
     		
     		boolean prev = false;	
     		if( (displayAttrib & PointAttributes.VALUE) != 0 ) {			
-        		PointData pData = dynamicDataSource.getPointData(pointID);
+                PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
     
     			if (pData != null) {
     				DecimalFormat f = new DecimalFormat();
@@ -142,7 +140,7 @@ public class UpdateUtil {
     		}
     									
     		if( (displayAttrib & PointAttributes.LAST_UPDATE) != 0 ) {
-    			PointData pData = dynamicDataSource.getPointData(pointID);
+                PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
     			if(pData != null ) {
     				if( prev ) 
     					text += " ";
@@ -228,7 +226,7 @@ public class UpdateUtil {
                 
                 if(lp.getPointType() == PointTypes.STATUS_POINT){
                 
-                    PointData pData = dynamicDataSource.getPointData(pointID);
+                    PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
                     
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
@@ -254,7 +252,7 @@ public class UpdateUtil {
                 
                 if(lp.getPointType() == PointTypes.STATUS_POINT)
                 {
-                    PointData pData = dynamicDataSource.getPointData(pointID);
+                    PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
             
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
@@ -294,7 +292,7 @@ public class UpdateUtil {
 		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
         DynamicDataSource dynamicDataSource = 
             (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-		PointData pData = dynamicDataSource.getPointData(pointID);
+        PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
         LiteYukonImage img;
         if (lp.getPointType() == PointTypes.STATUS_POINT)
         {
@@ -312,8 +310,7 @@ public class UpdateUtil {
 	public static boolean isControllable(int pointID) {
         DynamicDataSource dynamicDataSource = 
             (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-        PointData pData = dynamicDataSource.getPointData(pointID);
-		int tags = (int) pData.getTags();
+		int tags = dynamicDataSource.getTags(pointID);
         
 		return ((tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0) &&
 				!((tags & Signal.MASK_ANY_CONTROL_DISABLE) != 0);

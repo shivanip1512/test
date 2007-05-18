@@ -8,6 +8,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -21,7 +22,6 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxComponent;
@@ -141,7 +141,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         change = true;
                     }
                 } else {
-                    PointData pData = dynamicDataSource.getPointData(liteColorPoint.getLiteID());
+                    PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao()
@@ -169,7 +169,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         change = true;
                     }
                 } else {
-                    PointData pData = dynamicDataSource.getPointData(liteThicknessPoint.getLiteID());
+                    PointValueHolder pData = dynamicDataSource.getPointValue(liteThicknessPoint.getLiteID());
 
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao()
@@ -197,7 +197,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         change = true;
                     }
                 } else {
-                    PointData pData = dynamicDataSource.getPointData(liteArrowPoint.getLiteID());
+                    PointValueHolder pData = dynamicDataSource.getPointValue(liteArrowPoint.getLiteID());
 
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao()
@@ -225,7 +225,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         change = true;
                     }
                 } else {
-                    PointData pData = dynamicDataSource.getPointData(liteOpacityPoint.getLiteID());
+                    PointValueHolder pData = dynamicDataSource.getPointValue(liteOpacityPoint.getLiteID());
 
                     if (pData != null) {
                         LiteState ls = DaoFactory.getStateDao()
@@ -323,7 +323,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     change = true;
                 }
             } else {
-                PointData pData = dynamicDataSource.getPointData(lp.getLiteID());
+                PointValueHolder pData = dynamicDataSource.getPointValue(lp.getLiteID());
                 if (pData != null) {
                     LiteState ls = DaoFactory.getStateDao()
                                              .getLiteState(lp.getStateGroupID(),
@@ -371,7 +371,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                             change = true;
                         }
                     } else {
-                        PointData pData = dynamicDataSource.getPointData(liteColorPoint.getLiteID());
+                        PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                         if (pData != null) {
                             LiteState ls = DaoFactory.getStateDao()
@@ -399,7 +399,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                             change = true;
                         }
                     } else {
-                        PointData pData = dynamicDataSource.getPointData(liteTextPoint.getLiteID());
+                        PointValueHolder pData = dynamicDataSource.getPointValue(liteTextPoint.getLiteID());
 
                         if (pData != null) {
                             LiteState ls = DaoFactory.getStateDao()

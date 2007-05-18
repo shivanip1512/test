@@ -8,10 +8,22 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 /**
  * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm, 
  * and database change data asynchronously.  
+ * 
+ * If modifying this class, look at PointUpdateBackingService to see if some
+ * of that code could be moved into here or into DynamicDataSource.
  * @author alauinger
  *
  */
 public interface AsyncDynamicDataSource {
+    
+    /**
+     * Registers a listener to receive PointData events for the given
+     * points, returns the current value.
+     * @see removePointDataListener
+     * @param l         the listener to add
+     * @param pointId   the pointId the listener will receive events for
+     */
+    public PointValueHolder getAndRegisterForPointData(PointDataListener l, int pointId);
     
     /**
      * Registers a listener to receive PointData events for the given

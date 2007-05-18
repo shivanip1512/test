@@ -15,6 +15,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -56,7 +57,7 @@ public class CBCDaoImpl  implements CBCDao{
      * @see com.cannontech.cbc.daoimpl.CBCDao#getCBCPointTimeStamps(java.lang.Integer)
      */
     public List getCBCPointTimeStamps (Integer cbcID) {
-        List pointList = new ArrayList (10);
+        List<CBCPointTimestampParams> pointList = new ArrayList<CBCPointTimestampParams>(10);
         
         List points = pointDao.getLitePointsByPaObjectId(cbcID.intValue());
         for (int i = 0; i < points.size(); i++) {       
@@ -67,9 +68,9 @@ public class CBCDaoImpl  implements CBCDao{
                 pointTimestamp.setPointName(point.getPointName());
             }
             //wait for the point data to initialize
-            PointData pointData = new PointData();
+            PointValueHolder pointData = new PointData();
             try {
-                pointData = dynamicDataSource.getPointData(point.getLiteID());
+                pointData = dynamicDataSource.getPointValue(point.getLiteID());
             }
             catch(DynamicDataAccessException ddae) {
                 // Should this code really just use a default pointdata if one couldn't

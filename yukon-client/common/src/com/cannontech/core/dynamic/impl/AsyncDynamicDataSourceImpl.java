@@ -7,8 +7,12 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.SignalListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
@@ -33,6 +37,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     private DispatchProxy dispatchProxy;
     private IServerConnection dispatchConnection;
     private IDatabaseCache databaseCache;
+    private DynamicDataSource dynamicDataSource;
     
     private Map<Integer, LinkedHashSet<PointDataListener>> pointIdPointDataListeners =
         new HashMap<Integer, LinkedHashSet<PointDataListener>>();
@@ -74,6 +79,11 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             }
             listeners.add(l);
         }
+    }
+    
+    public PointValueHolder getAndRegisterForPointData(PointDataListener l, int pointId) {
+        registerForPointData(l, Collections.singleton(pointId));
+        return dynamicDataSource.getPointValue(pointId);
     }
 
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
@@ -291,4 +301,9 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
         return listeners;
     }    
+    
+    @Required
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
 }

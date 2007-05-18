@@ -1,6 +1,5 @@
 package com.cannontech.core.dynamic;
 
-import com.cannontech.message.dispatch.message.PointData;
 
 /**
  * Implement this interface to receive PointData from Yukon.
@@ -8,5 +7,5 @@ import com.cannontech.message.dispatch.message.PointData;
  * @author alauinger
  */
 public interface PointDataListener {
-    public void pointDataReceived(PointData pointData);
+    public void pointDataReceived(PointValueHolder pointData);
 }

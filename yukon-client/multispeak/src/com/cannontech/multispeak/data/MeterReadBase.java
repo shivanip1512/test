@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.service.MeterRead;
 import com.cannontech.spring.YukonSpringHook;
@@ -66,7 +66,7 @@ public abstract class MeterReadBase implements ReadableDevice{
         List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
         for (LitePoint litePoint : litePoints) {
             DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-            PointData pointData = dds.getPointData(litePoint.getPointID());
+            PointValueHolder pointData = dds.getPointValue(litePoint.getPointID());
             if( pointData != null)
                 populate(litePoint.getPointType(), litePoint.getPointOffset(), litePoint.getUofmID(), pointData.getPointDataTimeStamp(), pointData.getValue());
         }

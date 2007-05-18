@@ -3,6 +3,7 @@ package com.cannontech.core.dao.impl;
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
@@ -18,7 +19,7 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
      * @see com.cannontech.core.dao.SimplePointAccessDao#getPointValue(com.cannontech.database.data.lite.LitePoint)
      */
     public double getPointValue(LitePoint point) throws PointDataException {
-        PointData pointData = dynamicDataSource.getPointData(point.getPointID());
+        PointValueHolder pointData = dynamicDataSource.getPointValue(point.getPointID());
         //Validate.notNull(pointData, "No PointData in cache for pointId " + point.getPointID());
         if (pointData != null) {
             return pointData.getValue();

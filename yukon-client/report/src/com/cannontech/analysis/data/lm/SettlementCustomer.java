@@ -19,6 +19,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -98,7 +99,7 @@ public class SettlementCustomer
 		Double returnVal = null;
 
         DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-        PointData pointData = dds.getPointData(pointID);
+        PointValueHolder pointData = dds.getPointValue(pointID);
 		if (pointData != null)
         {
             if( pointData.getPointDataTimeStamp().after(startDate) &&           //after the startDate

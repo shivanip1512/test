@@ -9,7 +9,10 @@ import com.cannontech.message.dispatch.message.Signal;
 
 /**
  * DynamicDataSource can be used to obtain dynamic/current point
- * related Yukon data.  
+ * related Yukon data.
+ *   
+ * If modifying this class, look at PointUpdateBackingService to see if some
+ * of that code could be moved into here or into AsyncDynamicDataSource.
  * @author alauinger
  *
  */
@@ -18,14 +21,31 @@ public interface DynamicDataSource {
     public void putValue(PointData pointData) throws DynamicDataAccessException;
     public void putValue(int pointId, double value) throws DynamicDataAccessException;
     
-    public PointData getPointData(int pointId) throws DynamicDataAccessException;;
-    public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;;
+    /**
+     * Please use getPointValue to avoid creating a dependency on the actual PointData message
+     * @param pointId
+     * @return
+     * @throws DynamicDataAccessException
+     */
+    @Deprecated
+    public PointData getPointData(int pointId) throws DynamicDataAccessException;
+    /**
+     * Please use getPointValue to avoid creating a dependency on the actual PointData message
+     * @param pointId
+     * @return
+     * @throws DynamicDataAccessException
+     */
+    @Deprecated
+    public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
+    
+    public PointValueHolder getPointValue(int pointId) throws DynamicDataAccessException;
+    public Set<? extends PointValueHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public Set<Signal> getSignals(int pointId) throws DynamicDataAccessException;
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) throws DynamicDataAccessException;
     
-    public Set<Signal> getSignalsByCategory(int alarmCategoryId) throws DynamicDataAccessException;;
+    public Set<Signal> getSignalsByCategory(int alarmCategoryId) throws DynamicDataAccessException;
     
-    public Integer getTags(int pointId) throws DynamicDataAccessException;;
+    public Integer getTags(int pointId) throws DynamicDataAccessException;
     public Set<Integer> getTags(Set<Integer> pointIds) throws DynamicDataAccessException;
 }

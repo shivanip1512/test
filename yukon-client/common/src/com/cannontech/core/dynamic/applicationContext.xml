@@ -9,6 +9,7 @@
 		<property name="dispatchConnection" ref="dispatchConnection"/>
 		<property name="dispatchProxy" ref="dispatchProxy"/>
 		<property name="databaseCache" ref="databaseCache"/>
+		<property name="dynamicDataSource" ref="dynamicDataSource"/>
 	 </bean>
 	 <bean id="dynamicDataSource" class="com.cannontech.core.dynamic.impl.DynamicDataSourceImpl">
 	 	<property name="dynamicDataCache" ref="dynamicDataCache"/>
