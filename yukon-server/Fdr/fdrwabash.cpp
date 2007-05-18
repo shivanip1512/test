@@ -16,24 +16,23 @@ const char * FDRWabash::KEY_INITIAL_LOAD = "FDR_WABASH_WRITE_INITIAL_LOAD";
 
 FDRWabash::FDRWabash()
 : CtiFDRInterface(string("WABASH"))
+{}
+
+BOOL FDRWabash::init()
 {
-    ;
     //get FDRManager, pass in the interface name/type call get
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " FDRWabash has started. \n";
     }
+
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (recList);
     recList = NULL;
 
-    init();
-}
-
-BOOL FDRWabash::init()
-{
     Inherited::init();
+
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -340,7 +339,9 @@ int FDRWabash::processMessageFromForeignSystem( char* )
 *
 */
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 
 /************************************************************************
@@ -359,7 +360,7 @@ extern "C" {
 
         // make a point to the interface
         wabashInterface = new FDRWabash();
-
+        wabashInterface->init();
         // now start it up
         return wabashInterface->run();
     }
@@ -383,5 +384,7 @@ extern "C" {
 
         return 0;
     }
+#ifdef __cplusplus
 }
+#endif
 

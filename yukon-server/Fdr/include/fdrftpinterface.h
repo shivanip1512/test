@@ -21,6 +21,7 @@
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 #include "dlldefs.h"
+#include <wininet.h>
 #include "fdrinterface.h"
 
 class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
