@@ -20,6 +20,7 @@ var ALL_TAG_CMDS = {standalone:"Stand Alone", switched:"Switched",
 					
 function executeCommand(string) {
 	args = string.split("_");
+	//say(string);
 	if (args.length == 3) {
 		var comm = new Command(args[1], args[2], args[0]);
 		comm.execute();

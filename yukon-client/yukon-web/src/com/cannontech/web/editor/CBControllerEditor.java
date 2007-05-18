@@ -107,6 +107,10 @@ public class CBControllerEditor implements ICBControllerModel {
 
 
 
+    public CBControllerEditor() {}
+
+
+
     /* (non-Javadoc)
      * @see com.cannontech.web.editor.ICBControllerEditor#isEditingIntegrity()
      */

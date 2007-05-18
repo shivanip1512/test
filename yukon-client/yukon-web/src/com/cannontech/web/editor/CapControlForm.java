@@ -40,6 +40,7 @@ import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.point.CBCPointFactory;
+import com.cannontech.common.search.criteria.CBCControlPointCriteria;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
@@ -1321,8 +1322,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             if ((getDbPersistent() instanceof CapBankController702x) ||
             		(getDbPersistent() instanceof CapBankController)){
                 setEditingController(true);
-                }            
-           cbControllerEditor = new CBControllerEditor(paoId);
+                cbControllerEditor = new CBControllerEditor(paoId);
+                }
+            else
+            {
+                cbControllerEditor = new CBControllerEditor();
+            }
         }
         
 		return cbControllerEditor;
