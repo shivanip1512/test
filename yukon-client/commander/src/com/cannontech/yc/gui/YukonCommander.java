@@ -1754,7 +1754,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	/**
 	 * Sets the ycClass.modelType
 	 * Valid types located in - com.cannontech.database.model.ModelFactory.DEVICE, DEVICE_METERNUMBER, 
-	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, EDITABLE_xxx
+	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, BILLINGGROUP, EDITABLE_xxx
 	 * @param typeSelected int
 	 */
 	private void setModelType(int typeSelected)
@@ -1951,7 +1951,8 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			setTitle(displayTitle + " - " + getYC().getDeviceType() + " # " + getSerialNumber().toString());
 		}
 		else if( getModelType() == ModelFactory.COLLECTIONGROUP ||
-				getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
+				getModelType() == ModelFactory.TESTCOLLECTIONGROUP ||
+				getModelType() == ModelFactory.BILLING_GROUP)
 		{
 			getYC().setDeviceType(CommandCategory.STRING_CMD_COLLECTION_GROUP);
 			setTitle(displayTitle + " : " + selectedItem.toString());
@@ -2159,6 +2160,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			tempModel.add( ModelFactory.CAPBANKCONTROLLER);
 			tempModel.add( ModelFactory.COLLECTIONGROUP);
 			tempModel.add( ModelFactory.TESTCOLLECTIONGROUP);
+			tempModel.add( ModelFactory.BILLING_GROUP);
 
 			boolean needDefault = true;
 			ClientSession session = ClientSession.getInstance();
