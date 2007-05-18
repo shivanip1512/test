@@ -46,6 +46,10 @@ public class CommercialCurtailmentBean {
         return "M/d/yy H:mm";
     }
     
+    public String getNotificationTimeFormat() {
+        return "M/d/yy H:mm:ss";
+    }
+    
     public LiteEnergyCompany getEnergyCompany() {
         return DaoFactory.getEnergyCompanyDao().getEnergyCompany(getYukonUser());
     }
