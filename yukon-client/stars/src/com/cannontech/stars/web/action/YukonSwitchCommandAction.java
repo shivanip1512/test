@@ -739,6 +739,8 @@ public class YukonSwitchCommandAction implements ActionBase {
                             CTILogger.error( e.getMessage(), e );
                         }
 					}
+                    else if(liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() == 0) 
+                        throw new WebClientException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups."); 
 				}
 			}
 		}

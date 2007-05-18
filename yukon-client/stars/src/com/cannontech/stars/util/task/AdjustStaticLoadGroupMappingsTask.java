@@ -50,8 +50,7 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 /**
  * @author yao
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * TODO: See YUK-3063 for details on this topic at Xcel
  */
 public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	
