@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2007/04/17 16:11:39 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2007/05/18 18:49:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1756,33 +1756,33 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                 else if( parse.getCommandStr().find(" kv2c") != string::npos )
                 {
                     //  must search from most to least specific kv flavor - kv2c, then kv2, then kv
-                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommand;
-                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::FuncWrite_IEDCommandLen;
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommandWithData;
+                    OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
                     OutMessage->Buffer.BSt.Message[1] = 8;     //  meter type: GE kV2c
-                    OutMessage->Buffer.BSt.Message[2] = 1;     //  meter num:  1?
+                    OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  1?
                     OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9
                     OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
                     OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
                 }
                 else if( parse.getCommandStr().find(" kv2") != string::npos )
                 {
-                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommand;
-                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::FuncWrite_IEDCommandLen;
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommandWithData;
+                    OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
                     OutMessage->Buffer.BSt.Message[1] = 5;     //  meter type: GE kV2
-                    OutMessage->Buffer.BSt.Message[2] = 1;     //  meter num:  1?
+                    OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  1?
                     OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9
                     OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
                     OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
                 }
                 else if( parse.getCommandStr().find(" kv") != string::npos )
                 {
-                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommand;
-                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::FuncWrite_IEDCommandLen;
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommandWithData;
+                    OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
                     OutMessage->Buffer.BSt.Message[1] = 4;     //  meter type: GE kV
-                    OutMessage->Buffer.BSt.Message[2] = 1;     //  meter num:  1?
+                    OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  1?
                     OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9
                     OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
                     OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set

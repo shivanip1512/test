@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2007/04/17 16:12:40 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/05/18 18:49:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -436,6 +436,7 @@ public:
         //  ditto
         FuncWrite_IEDCommand            = 0xd0,
         FuncWrite_IEDCommandLen         =    4,
+        FuncWrite_IEDCommandWithData    = 0xd1,
     };
 
     CtiDeviceMCT470( );
