@@ -8,6 +8,7 @@ import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.util.SimpleTemplateProcessor;
+import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
@@ -128,9 +129,10 @@ public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category
 
 public String getFormattedDeviceName(LiteYukonPAObject device) {
     // the formatting string could be from a role property
+    TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
     String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
     Validate.notNull(formattingStr, "Device display template role property does not exist.");
-    boolean needMeterNumber = SimpleTemplateProcessor.contains(formattingStr, "meterNumber");
+    boolean needMeterNumber = templateProcessor.contains(formattingStr, "meterNumber");
     Map<String, String> values = new HashMap<String, String>(6);
     if (needMeterNumber) {
         LiteDeviceMeterNumber liteDeviceMeterNumber = getLiteDeviceMeterNumber(device.getLiteID());
@@ -147,7 +149,7 @@ public String getFormattedDeviceName(LiteYukonPAObject device) {
     values.put("description", device.getPaoDescription());
     values.put("id", Integer.toString(device.getLiteID()));
     values.put("address", Integer.toString(device.getAddress()));
-    String result = SimpleTemplateProcessor.process(formattingStr, values);
+    String result = templateProcessor.process(formattingStr, values);
     return result;
 }
 
