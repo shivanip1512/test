@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.model.OnelineLogos;
-import com.cannontech.cbc.oneline.model.OnelineNavPanel;
+import com.cannontech.cbc.oneline.model.OnelineControlPanel;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
@@ -22,7 +22,7 @@ public class OneLineDrawing {
     private List<OnelineFeeder> feeders = new ArrayList<OnelineFeeder>(0);
     private List<OnelineCap> caps = new ArrayList<OnelineCap>(0);
     private OnelineLogos logos = null;
-    private OnelineNavPanel navPanel;
+    private OnelineControlPanel controlPanel;
 
     public OneLineDrawing(OneLineParams p) {
         drawing = new Drawing();
@@ -94,13 +94,13 @@ public class OneLineDrawing {
     }
 
     public void addNavigationPanel() {
-        navPanel = new OnelineNavPanel ();
-        navPanel.setLayoutParams(layoutParams);
-        navPanel.addDrawing (this);
+        controlPanel = new OnelineControlPanel ();
+        controlPanel.setLayoutParams(layoutParams);
+        controlPanel.addDrawing (this);
     }
 
-    public OnelineNavPanel getNavPanel() {
-        return navPanel;
+    public OnelineControlPanel getControlPanel() {
+        return controlPanel;
     }
 
 

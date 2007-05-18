@@ -99,7 +99,8 @@ public class OneLineParams {
     }
 
     public void setRedirectURL(String redirectURL) {
-        this.redirectURL = redirectURL;
+        if (redirectURL != null)
+            this.redirectURL = redirectURL;
     }
 
     public void setUser(LiteYukonUser u) {

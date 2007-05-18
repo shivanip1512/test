@@ -55,6 +55,7 @@ public class OnelineUtil {
     public static final String IMG_EDITOR = "edit.gif";
     public static final String IMG_QUESTION = "question.gif";
     public static final String IMG_PTTIMESTAMP = "magnifier.gif";
+    public static final String IMG_REGENERATE = "regenerate.gif";
 
     
 

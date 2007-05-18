@@ -5,7 +5,6 @@ import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.tag.CBCTagHandler;
 import com.cannontech.cbc.oneline.tag.OnelineTags;
-import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -49,8 +48,10 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
         HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement",
                                                             elementID);
         stateInfo.addProperty("isDisable", isDisabled().toString());
-        stateInfo.addProperty("isOVUVDis", String.valueOf(isOVUVDisabled()));
-        stateInfo.addProperty("isStandalone", String.valueOf(isStandalone()));
+        boolean ovuvDisabled = isOVUVDisabled();
+        stateInfo.addProperty("isOVUVDis", String.valueOf(ovuvDisabled));
+        boolean standalone = isStandalone();
+        stateInfo.addProperty("isStandalone", String.valueOf(standalone));
         stateInfo.addProperty("standAloneReason", standAloneReason);
         stateInfo.addProperty("disableCapReason", disableReason);
         stateInfo.addProperty("disableCapOVUVReason", disableCapOVUVReason);

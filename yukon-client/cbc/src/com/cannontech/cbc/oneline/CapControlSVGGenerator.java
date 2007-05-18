@@ -89,19 +89,19 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
                 elem.setAttributeNS(null,
                                     "onclick",
-                                    "openPopupWin (evt.getTarget, \"" + CommandPopups.SUB_TAG + "_" + paoID + "\")");
+                                    "openPopupWin (evt.getTarget(), \"" + CommandPopups.SUB_TAG + "_" + paoID + "\")");
             } else if (StringUtils.contains(comp.getName(),
                                             CommandPopups.FEEDER_TAG)) {
                 elem.setAttributeNS(null,
                                     "onclick",
-                                    "openPopupWin (evt.getTarget, \"" + CommandPopups.FEEDER_TAG + "_" + paoID + "\")");
+                                    "openPopupWin (evt.getTarget(), \"" + CommandPopups.FEEDER_TAG + "_" + paoID + "\")");
 
             }
 
             else if (StringUtils.contains(comp.getName(), CommandPopups.CAP_TAG)) {
                 elem.setAttributeNS(null,
                                     "onclick",
-                                    "openPopupWin (evt.getTarget, \"" + CommandPopups.CAP_TAG + "_" + paoID + "\")");
+                                    "openPopupWin (evt.getTarget(), \"" + CommandPopups.CAP_TAG + "_" + paoID + "\")");
 
             }
 
