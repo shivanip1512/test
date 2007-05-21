@@ -44,19 +44,19 @@
     </target>
 
     <target name="init_date">
-    	<tstamp>
-          <format property="cvstimestamp" pattern="yyyy-MM-dd HH:mm:ss" locale="en,US"/>
+        <tstamp>
+            <format property="cvstimestamp" pattern="yyyy-MM-dd HH:mm:ss" locale="en,US"/>
         </tstamp>
     </target>
-    
+
     <target name="init_tag">
         <condition property="yukon.tag" value="${yukon.tag}" else="HEAD">
-        	<isset property="yukon.tag"/>
-        </condition> 
+            <isset property="yukon.tag"/>
+        </condition>
     </target>
 
     <target name="init_cvs" depends="init_date,init_tag"/>
-    
+
     <target name="checkout" depends="init_cvs">
         <echo message="checking out module yukon by tag or branch: ${yukon.tag}" />
         <cvs dest="${basedir}" 
@@ -148,22 +148,22 @@
                 <isfailure code="${errorcode}" />
             </condition>
         </fail>
-        
+
         <!-- C++ Unit Tests -->
         <mkdir dir="${module.name}/yukon-server/bin/unittests"/>
         <exec failonerror="false" dir="${module.name}/yukon-server/bin/" executable="cmd.exe" error="${log.dir}/servertests-error.log" output="${log.dir}/servertests-output.log" resultproperty="testserrorcode">
-			<arg line="/c runalltestsexit.cmd unittests/"/>
+            <arg line="/c runalltestsexit.cmd unittests/"/>
         </exec>
-        
+
         <loadfile property="testserrormessage" srcFile="${log.dir}/servertests-error.log" />
         <loadfile property="testserroroutput" srcFile="${log.dir}/servertests-output.log" />
-        
+
         <condition property="testsout" value="${erroroutput}" else="">
             <isfailure code="${testserrorcode}"/>
         </condition>
-        
+
         <echo message="${testsout}" />
-        
+
         <fail message="${testserrormessage}">
             <condition>
                 <isfailure code="${testserrorcode}" />
@@ -171,7 +171,7 @@
         </fail>
     </target>
 
-	<target name="build-install" depends="build-installTarget"/>
+    <target name="build-install" depends="build-installTarget"/>
     <target name="build-installTarget">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />
@@ -278,6 +278,11 @@
         <!-- Tomcat Component -->
         <copy todir="${install.lib}/Tomcat" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/Tomcat5" />
+        </copy>
+
+        <!-- WebStart Component -->
+        <copy todir="${install.lib/WebStart" preserverlastmodified="true">
+            <fileset dir="${module.name}/yukon-install/WebStartJRE" />
         </copy>
 
         <!-- Yukon Commander Component -->

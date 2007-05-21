@@ -384,211 +384,6 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>acme.jar</td><td>Common Bin</td><td>acme.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\acme.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>activation.jar</td><td>Common Bin</td><td>activation.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\activation.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>alarmmonitor.ico</td><td>Common Bin</td><td>AlarmMonitor.ico</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\AlarmMonitor.ico</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>almtest.exe</td><td>Test Applications</td><td>almtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\almtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>antlr_2.7.6rc1.jar</td><td>Common Bin</td><td>antlr-2.7.6rc1.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\antlr-2.7.6rc1.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>appserver.conf</td><td>Common Bin</td><td>appserver.conf</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\appserver.conf</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>asm.jar</td><td>Common Bin</td><td>asm.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\asm.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>asm_attrs.jar</td><td>Common Bin</td><td>asm-attrs.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\asm-attrs.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>batik.jar</td><td>Common Bin</td><td>batik.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\batik.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>billing.bat</td><td>Common Bin</td><td>billing.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\billing.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>billing.jar</td><td>Common Bin</td><td>billing.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\billing.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>boost_thread_vc6_mt_gd_1_31.</td><td>Common Dlls</td><td>boost_thread-vc6-mt-gd-1_31.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\boost_thread-vc6-mt-gd-1_31.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>calc_logic.exe</td><td>Calculation Server</td><td>calc_logic.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\calc_logic.exe</td><td>1</td><td>NewSubFolder66</td></row>
-		<row><td>calchist.jar</td><td>Common Bin</td><td>calchist.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\calchist.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>cannonstyle.css</td><td>Common Bin</td><td>CannonStyle.css</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\CannonStyle.css</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>capcontrol.exe</td><td>Cap Control</td><td>capcontrol.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\capcontrol.exe</td><td>1</td><td>NewSubFolder82</td></row>
-		<row><td>castor_xml.jar</td><td>Common Bin</td><td>castor-xml.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\castor-xml.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>cbc.jar</td><td>Common Bin</td><td>cbc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\cbc.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>cbctest.exe</td><td>Test Applications</td><td>cbctest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cbctest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>cglib_2.1.3.jar</td><td>Common Bin</td><td>cglib-2.1.3.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\cglib-2.1.3.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>classes12.jar</td><td>Common Bin</td><td>classes12.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\classes12.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>clrdump.dll</td><td>Common Dlls</td><td>ClrDump.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\ClrDump.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>cmdline.dll</td><td>Common Dlls</td><td>cmdline.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cmdline.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>cmdtest.exe</td><td>Test Applications</td><td>cmdtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cmdtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>commandericon.ico</td><td>Common Bin</td><td>CommanderIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\CommanderIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commercialcurtailment.jar</td><td>Notification</td><td>commercialcurtailment.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commercialcurtailment.jar</td><td>1</td><td/></row>
-		<row><td>common.jar</td><td>Common Bin</td><td>common.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\common.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_beanutils_1.7.0.jar</td><td>Common Bin</td><td>commons-beanutils-1.7.0.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-beanutils-1.7.0.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_collections_3.2.jar</td><td>Common Bin</td><td>commons-collections-3.2.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-collections-3.2.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_dbcp_1.2.1.jar</td><td>Common Bin</td><td>commons-dbcp-1.2.1.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-dbcp-1.2.1.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_discovery.jar</td><td>Common Bin</td><td>commons-discovery.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-discovery.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_lang_2.3.jar</td><td>Common Bin</td><td>commons-lang-2.3.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-lang-2.3.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_logging_1.1.jar</td><td>Common Bin</td><td>commons-logging-1.1.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-logging-1.1.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>commons_pool_1.3.jar</td><td>Common Bin</td><td>commons-pool-1.3.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-pool-1.3.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>conftest.exe</td><td>Test Applications</td><td>conftest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\conftest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>contest.exe</td><td>Test Applications</td><td>contest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\contest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>cparms.dll</td><td>Common Dlls</td><td>cparms.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cparms.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>cparmtest.exe</td><td>Test Applications</td><td>cparmtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cparmtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>cti_fdr.dll</td><td>Foreign Data Router</td><td>cti_fdr.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cti_fdr.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>ctibase.dll</td><td>Common Dlls</td><td>ctibase.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctibase.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>cticonfig.dll</td><td>Common Dlls</td><td>cticonfig.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\cticonfig.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>cticparms.dll</td><td>Common Dlls</td><td>cticparms.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cticparms.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctidbres.dll</td><td>Common Dlls</td><td>ctidbres.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctidbres.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctidbsrc.dll</td><td>Common Dlls</td><td>ctidbsrc.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctidbsrc.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctidevdb.dll</td><td>Common Dlls</td><td>ctidevdb.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctidevdb.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctiholidaydb.dll</td><td>Common Dlls</td><td>ctiholidaydb.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctiholidaydb.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctimsg.dll</td><td>Common Dlls</td><td>ctimsg.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctimsg.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctipil.dll</td><td>Common Dlls</td><td>ctipil.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctipil.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctipntdb.dll</td><td>Common Dlls</td><td>ctipntdb.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctipntdb.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctiprot.dll</td><td>Common Dlls</td><td>ctiprot.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctiprot.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctiprtdb.dll</td><td>Common Dlls</td><td>ctiprtdb.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctiprtdb.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctiseasondb.dll</td><td>Common Dlls</td><td>ctiseasondb.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctiseasondb.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctish.exe</td><td>MACS Server</td><td>ctish.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\ctish.exe</td><td>1</td><td>NewSubFolder75</td></row>
-		<row><td>ctisvr.dll</td><td>Common Dlls</td><td>ctisvr.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctisvr.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ctivg.dll</td><td>Common Dlls</td><td>ctivg.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctivg.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>dailypeaks.bat</td><td>Common Bin</td><td>DailyPeaks.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\DailyPeaks.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>dbeditor.jar</td><td>Database Editor</td><td>dbeditor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\dbeditor.jar</td><td>1</td><td>NewSubFolder74</td></row>
-		<row><td>dbeditoricon.ico</td><td>Common Bin</td><td>dbEditorIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\dbEditorIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>dbghelp.dll</td><td>Common Dlls</td><td>dbghelp.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\dbghelp.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>dbt15d.dll</td><td>Common Dlls</td><td>dbt15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\dbt15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>dbtoolsframe.bat</td><td>Common Bin</td><td>DBToolsFrame.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\DBToolsFrame.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>dbupdater.bat</td><td>Common Bin</td><td>DBUpdater.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\DBUpdater.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>devtest.exe</td><td>Test Applications</td><td>devtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\devtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>dispatch.exe</td><td>Message Dispatcher</td><td>dispatch.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\dispatch.exe</td><td>1</td><td>NewSubFolder78</td></row>
-		<row><td>dom4j.jar</td><td>Common Bin</td><td>dom4j.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\dom4j.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>ecs_1.4.2.jar</td><td>Common Bin</td><td>ecs-1.4.2.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\ecs-1.4.2.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>ejb3_persistence.jar</td><td>Common Bin</td><td>ejb3-persistence.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\ejb3-persistence.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>esub.jar</td><td>Common Bin</td><td>esub.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\esub.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>esub_editor.jar</td><td>ESub Editor</td><td>esub-editor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\esub-editor.jar</td><td>1</td><td/></row>
-		<row><td>esubeditoricon.gif</td><td>ESub Editor</td><td>esubEditorIcon.gif</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\esubEditorIcon.gif</td><td>1</td><td/></row>
-		<row><td>esubeditoricon.ico</td><td>ESub Editor</td><td>esubEditorIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\esubEditorIcon.ico</td><td>1</td><td/></row>
-		<row><td>export.jar</td><td>Common Bin</td><td>export.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\export.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>fdr.exe</td><td>Foreign Data Router</td><td>fdr.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdr.exe</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdracs.dll</td><td>Foreign Data Router</td><td>fdracs.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdracs.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrbepc.dll</td><td>Foreign Data Router</td><td>fdrbepc.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrbepc.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrcygnet.dll</td><td>Foreign Data Router</td><td>fdrcygnet.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrcygnet.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrdsm2filein.dll</td><td>Foreign Data Router</td><td>fdrdsm2filein.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrdsm2filein.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrdsm2import.dll</td><td>Foreign Data Router</td><td>fdrdsm2import.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrdsm2import.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrinet.dll</td><td>Foreign Data Router</td><td>fdrinet.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrinet.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrlivedata.dll</td><td>Foreign Data Router</td><td>fdrlivedata.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrlivedata.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrlodestarimport_enh.dll</td><td>Foreign Data Router</td><td>fdrlodestarimport_enh.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrlodestarimport_enh.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrlodestarimport_std.dll</td><td>Foreign Data Router</td><td>fdrlodestarimport_std.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrlodestarimport_std.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrpi.dll</td><td>Foreign Data Router</td><td>fdrpi.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrpi.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrrccs.dll</td><td>Foreign Data Router</td><td>fdrrccs.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrrccs.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrrdex.dll</td><td>Foreign Data Router</td><td>fdrrdex.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrrdex.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrstec.dll</td><td>Foreign Data Router</td><td>fdrstec.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrstec.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrtelegyr.dll</td><td>Foreign Data Router</td><td>fdrtelegyr.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrtelegyr.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrtextexport.dll</td><td>Foreign Data Router</td><td>fdrtextexport.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrtextexport.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrtextimport.dll</td><td>Foreign Data Router</td><td>fdrtextimport.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrtextimport.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrtristate.dll</td><td>Foreign Data Router</td><td>fdrtristate.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrtristate.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrvalmet.dll</td><td>Foreign Data Router</td><td>fdrvalmet.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\fdrvalmet.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>fdrwabash.dll</td><td>Foreign Data Router</td><td>fdrwabash.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\fdrwabash.dll</td><td>1</td><td>NewSubFolder79</td></row>
-		<row><td>graph.jar</td><td>Tabular Data Console</td><td>graph.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\graph.jar</td><td>1</td><td>NewSubFolder90</td></row>
-		<row><td>graphicon.ico</td><td>Common Bin</td><td>GraphIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\GraphIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>hibernate3.jar</td><td>Common Bin</td><td>hibernate3.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\hibernate3.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>hibernate_annotations.jar</td><td>Common Bin</td><td>hibernate-annotations.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\hibernate-annotations.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>hpi.dll1</td><td>Yukon Web Deployment</td><td>hpi.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\hpi.dll</td><td>1</td><td>NewSubFolder4</td></row>
-		<row><td>init.tcl</td><td>MACS Server</td><td>init.tcl</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\init.tcl</td><td>1</td><td>NewSubFolder77</td></row>
-		<row><td>int15d.dll</td><td>Common Dlls</td><td>int15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\int15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>interp.dll</td><td>MACS Server</td><td>interp.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\interp.dll</td><td>1</td><td>NewSubFolder75</td></row>
-		<row><td>itext.jar</td><td>Common Bin</td><td>itext.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\itext.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jar.exe1</td><td>Yukon Web Deployment</td><td>jar.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\jar.exe</td><td>1</td><td>NewSubFolder4</td></row>
-		<row><td>java.dll1</td><td>Yukon Web Deployment</td><td>java.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\java.dll</td><td>1</td><td>NewSubFolder4</td></row>
-		<row><td>jcfield401k.jar</td><td>Common Bin</td><td>jcfield401K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcfield401K.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jcommon.jar</td><td>Common Bin</td><td>jcommon.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcommon.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jcpagelayout450k.jar</td><td>Common Bin</td><td>jcpagelayout450K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcpagelayout450K.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jdom.jar</td><td>Common Bin</td><td>jdom.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jdom.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jfreechart.jar</td><td>Common Bin</td><td>jfreechart.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jfreechart.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jfreereport.jar</td><td>Common Bin</td><td>jfreereport.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jfreereport.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jloox30.jar</td><td>Common Bin</td><td>jloox30.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jloox30.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jnt.exe</td><td>Common Bin</td><td>JNT.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\JNT.exe</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jntservices.dll</td><td>Common Bin</td><td>JNTServices.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\JNTServices.dll</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jradius_client.jar</td><td>Common Bin</td><td>jradius-client.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jradius-client.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jre_1_5_0_11_windows_i586_p.</td><td>WebStart</td><td>jre-1_5_0_11-windows-i586-p.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;\jre-1_5_0_11-windows-i586-p.exe</td><td>1</td><td/></row>
-		<row><td>jta.jar</td><td>Common Bin</td><td>jta.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jta.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jtds.jar</td><td>Common Bin</td><td>jtds.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jtds.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>jvm.cfg</td><td>Yukon Web Deployment</td><td>jvm.cfg</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\lib\i386\jvm.cfg</td><td>1</td><td>NewSubFolder6</td></row>
-		<row><td>jvm.dll</td><td>Yukon Web Deployment</td><td>jvm.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\client\jvm.dll</td><td>1</td><td>NewSubFolder5</td></row>
-		<row><td>kill.exe</td><td>Common Dlls</td><td>KILL.EXE</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\KILL.EXE</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>led.jar</td><td>Common Bin</td><td>led.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\led.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>loadcontrol.jar</td><td>Common Bin</td><td>loadcontrol.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\loadcontrol.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>loadmanagement.exe</td><td>Load Management</td><td>loadmanagement.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\loadmanagement.exe</td><td>1</td><td>NewSubFolder81</td></row>
-		<row><td>loadsshed.bat</td><td>Common Bin</td><td>LoadsShed.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\LoadsShed.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>log4j_1.2.14.jar</td><td>Common Bin</td><td>log4j-1.2.14.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\log4j-1.2.14.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>logic.dll</td><td>Common Dlls</td><td>logic.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\logic.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>lucene_core_2.0.0.jar</td><td>Common Bin</td><td>lucene-core-2.0.0.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\lucene-core-2.0.0.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>macs.exe</td><td>MACS Server</td><td>macs.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\macs.exe</td><td>1</td><td>NewSubFolder75</td></row>
-		<row><td>macs.jar</td><td>Common Bin</td><td>macs.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\macs.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mail.jar</td><td>Common Bin</td><td>mail.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mail.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>master.cfg</td><td>Common Directories</td><td>master.cfg</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\master.cfg</td><td>1</td><td>NewSubFolder70</td></row>
-		<row><td>master.cfg1</td><td>Initial Server Config</td><td>master.cfg</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\master.cfg</td><td>1</td><td>NewSubFolder84</td></row>
-		<row><td>mccmd.dll</td><td>Common Dlls</td><td>mccmd.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\mccmd.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>memtest.exe</td><td>Test Applications</td><td>memtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\memtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>monitor.jar</td><td>Alarm Monitor</td><td>monitor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\monitor.jar</td><td>1</td><td>NewSubFolder73</td></row>
-		<row><td>msq15d.dll</td><td>Common Dlls</td><td>msq15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\msq15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>msvcp60d.dll</td><td>Common Dlls</td><td>MSVCP60D.DLL</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\MSVCP60D.DLL</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>msvcrtd.dll</td><td>Common Dlls</td><td>MSVCRTD.DLL</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\MSVCRTD.DLL</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>mx4j.jar</td><td>Common Bin</td><td>mx4j.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mx4j_impl.jar</td><td>Common Bin</td><td>mx4j-impl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-impl.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mx4j_jmx.jar1</td><td>Common Bin</td><td>mx4j-jmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-jmx.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mx4j_remote.jar</td><td>Common Bin</td><td>mx4j-remote.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-remote.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mx4j_rimpl.jar</td><td>Common Bin</td><td>mx4j-rimpl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-rimpl.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mx4j_rjmx.jar</td><td>Common Bin</td><td>mx4j-rjmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-rjmx.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>mx4j_tools.jar</td><td>Common Bin</td><td>mx4j-tools.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-tools.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>net15d.dll</td><td>Common Dlls</td><td>net15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\net15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>notification.jar</td><td>Common Bin</td><td>notification.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\notification.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>notifserver.conf</td><td>Notification</td><td>notifserver.conf</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\notifserver.conf</td><td>1</td><td/></row>
-		<row><td>ntwdblib.dll</td><td>Common Dlls</td><td>ntwdblib.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\ntwdblib.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>odb15d.dll</td><td>Common Dlls</td><td>odb15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\odb15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>ora15d.dll</td><td>Common Dlls</td><td>ora15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\ora15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>parsetest.exe</td><td>Test Applications</td><td>parsetest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\parsetest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>pcmtest.exe</td><td>Test Applications</td><td>pcmtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\pcmtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>piltest.exe</td><td>Test Applications</td><td>piltest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\piltest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>plogtest.exe</td><td>Test Applications</td><td>plogtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\plogtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>poi.jar</td><td>Common Bin</td><td>poi.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\poi.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>pointcreate.bat</td><td>Common Bin</td><td>pointCreate.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\pointCreate.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>pointtest.exe</td><td>Test Applications</td><td>pointtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\pointtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>poker.exe</td><td>Test Applications</td><td>poker.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\poker.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>porter.exe</td><td>Port Control</td><td>porter.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\porter.exe</td><td>1</td><td>NewSubFolder71</td></row>
-		<row><td>portglob.dll</td><td>Common Dlls</td><td>portglob.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\portglob.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>porttest.exe</td><td>Test Applications</td><td>porttest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\porttest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>proclog.dll</td><td>Common Dlls</td><td>proclog.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\proclog.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>remotelogging.xml</td><td>Config Properties</td><td>remoteLogging.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\remoteLogging.xml</td><td>1</td><td/></row>
-		<row><td>report.jar</td><td>Common Bin</td><td>report.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\report.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>reportingicon.gif</td><td>Common Bin</td><td>ReportingIcon.gif</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\ReportingIcon.gif</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>reportingicon.ico</td><td>Common Bin</td><td>ReportingIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\ReportingIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>routetest.exe</td><td>Test Applications</td><td>routetest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\routetest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>rt.jar</td><td>Yukon Web Deployment</td><td>rt.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\lib\rt.jar</td><td>1</td><td>NewSubFolder1</td></row>
-		<row><td>rwav.jar</td><td>Common Bin</td><td>rwav.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\rwav.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>saprotocol.dll</td><td>Common Dlls</td><td>SAprotocol.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\SAprotocol.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>scanner.exe</td><td>Scanner</td><td>scanner.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\scanner.exe</td><td>1</td><td>NewSubFolder2</td></row>
-		<row><td>scansup.dll</td><td>Common Dlls</td><td>scansup.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\scansup.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>service.dll</td><td>Common Dlls</td><td>service.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\service.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>services.jar</td><td>Common Bin</td><td>services.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\services.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>setjavapath.bat</td><td>Common Bin</td><td>setjavapath.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\setjavapath.bat</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>sigsinktest.exe</td><td>Test Applications</td><td>sigsinktest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\sigsinktest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>sigsrctest.exe</td><td>Test Applications</td><td>sigsrctest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\sigsrctest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>spring.jar</td><td>Common Bin</td><td>spring.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_aspects.jar</td><td>Common Bin</td><td>spring-aspects.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-aspects.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>sqlserver.jar</td><td>Common Bin</td><td>SqlServer.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\SqlServer.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>systray4j.dll</td><td>Common Bin</td><td>systray4j.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\systray4j.dll</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>tabletest.exe</td><td>Test Applications</td><td>tabletest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\tabletest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>tcl81d.dll</td><td>MACS Server</td><td>tcl81d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\tcl81d.dll</td><td>1</td><td>NewSubFolder75</td></row>
-		<row><td>tcpsup.dll</td><td>Common Dlls</td><td>tcpsup.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\tcpsup.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>tdc.jar</td><td>Tabular Data Console</td><td>tdc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\tdc.jar</td><td>1</td><td>NewSubFolder90</td></row>
-		<row><td>tdcicon.ico</td><td>Common Bin</td><td>tdcIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\tdcIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>thr15d.dll</td><td>Common Dlls</td><td>thr15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\thr15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>tls7015d.dll</td><td>Common Dlls</td><td>tls7015d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\tls7015d.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>tools.jar1</td><td>Common Bin</td><td>tools.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\tools.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>verify.dll1</td><td>Yukon Web Deployment</td><td>verify.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\verify.dll</td><td>1</td><td>NewSubFolder4</td></row>
-		<row><td>vgsinktest.exe</td><td>Test Applications</td><td>vgsinktest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\vgsinktest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>vgsrctest.exe</td><td>Test Applications</td><td>vgsrctest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\vgsrctest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>vvr_tools.jar</td><td>Common Bin</td><td>vvr_tools.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\vvr_tools.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>wintail.exe</td><td>Common Dlls</td><td>wintail.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\wintail.exe</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>wrapper.dll</td><td>Common Bin</td><td>Wrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\Wrapper.dll</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>wrapper.exe</td><td>Common Bin</td><td>Wrapper.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\Wrapper.exe</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>wrapper.jar</td><td>Common Bin</td><td>wrapper.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\wrapper.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>xerces_c_1_7_0d.dll</td><td>Common Dlls</td><td>xerces-c_1_7_0D.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\xerces-c_1_7_0D.dll</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>xercesimpl.jar</td><td>Common Bin</td><td>xercesImpl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\xercesImpl.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>yc.jar</td><td>Yukon Commander</td><td>yc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yc.jar</td><td>1</td><td>NewSubFolder89</td></row>
-		<row><td>yukon.war</td><td>Yukon Web Deployment</td><td>yukon.war</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yukon.war</td><td>1</td><td>NewSubFolder4</td></row>
-		<row><td>yukonappserver.jar</td><td>Common Bin</td><td>yukonappserver.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\yukonappserver.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>yukonlogging.xml</td><td>Config Properties</td><td>yukonLogging.xml</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yukonLogging.xml</td><td>1</td><td/></row>
-		<row><td>yukonnoalarm.ico</td><td>Alarm Monitor</td><td>YukonNoAlarm.ico</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\YukonNoAlarm.ico</td><td>1</td><td>NewSubFolder73</td></row>
-		<row><td>zip.dll1</td><td>Yukon Web Deployment</td><td>zip.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;\bin\zip.dll</td><td>1</td><td>NewSubFolder4</td></row>
 	</table>
 
 	<table name="Font">
@@ -657,36 +452,6 @@
 		<col def="s72">Component_</col>
 		<col def="S72">ISSubFolder_Parent</col>
 		<col def="s255">Path</col>
-		<row><td>NewSubFolder1</td><td>Yukon Web Deployment</td><td/><td>lib</td></row>
-		<row><td>NewSubFolder2</td><td>Scanner</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder3</td><td>Trending</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder4</td><td>Yukon Web Deployment</td><td/><td>bin</td></row>
-		<row><td>NewSubFolder5</td><td>Yukon Web Deployment</td><td>NewSubFolder4</td><td>client</td></row>
-		<row><td>NewSubFolder6</td><td>Yukon Web Deployment</td><td>NewSubFolder1</td><td>i386</td></row>
-		<row><td>NewSubFolder66</td><td>Calculation Server</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder67</td><td>Common Directories</td><td/><td>Log</td></row>
-		<row><td>NewSubFolder68</td><td>Common Directories</td><td/><td>Export</td></row>
-		<row><td>NewSubFolder69</td><td>Common Directories</td><td/><td>Config</td></row>
-		<row><td>NewSubFolder70</td><td>Common Directories</td><td>NewSubFolder69</td><td>Example</td></row>
-		<row><td>NewSubFolder71</td><td>Port Control</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder72</td><td>Common Dlls</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder73</td><td>Alarm Monitor</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder74</td><td>Database Editor</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder75</td><td>MACS Server</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder76</td><td>MACS Server</td><td/><td>MACSftp</td></row>
-		<row><td>NewSubFolder77</td><td>MACS Server</td><td/><td>MACSscripts</td></row>
-		<row><td>NewSubFolder78</td><td>Message Dispatcher</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder79</td><td>Foreign Data Router</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder80</td><td>Foreign Data Router</td><td/><td>Import</td></row>
-		<row><td>NewSubFolder81</td><td>Load Management</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder82</td><td>Cap Control</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder83</td><td>Test Applications</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder84</td><td>Initial Server Config</td><td/><td>Config</td></row>
-		<row><td>NewSubFolder85</td><td>Common Bin</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder86</td><td>Common Bin</td><td/><td>Log</td></row>
-		<row><td>NewSubFolder87</td><td>Common Bin</td><td/><td>Export</td></row>
-		<row><td>NewSubFolder89</td><td>Yukon Commander</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder90</td><td>Tabular Data Console</td><td/><td>Bin</td></row>
 	</table>
 
 	<table name="ISDRMFile">
@@ -730,9 +495,33 @@
 		<col def="S0">IncludeFiles</col>
 		<col def="S0">ExcludeFiles</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>Help</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\newhelp</td><td>1</td><td>*.chm</td><td/><td>2</td></row>
-		<row><td>JRE 1.5</td><td>&lt;PATH_TO_YUKONINSTALLJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT5SERVICEI_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Alarm Monitor</td><td>&lt;PATH_TO_ALARM_MONITOR_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Calculation Server</td><td>&lt;PATH_TO_CALCULATION_SERVER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Cap Control</td><td>&lt;PATH_TO_CAP_CONTROL_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Common Bin</td><td>&lt;PATH_TO_COMMON_BIN_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Common Directories</td><td>&lt;PATH_TO_COMMON_DIRECTORIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Common Dlls</td><td>&lt;PATH_TO_COMMON_DLLS_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Config Properties</td><td>&lt;PATH_TO_CONFIG_PROPERTIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Database Editor</td><td>&lt;PATH_TO_DATABASE_EDITOR_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>ESub Editor</td><td>&lt;PATH_TO_ESUB_EDITOR_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Foreign Data Router</td><td>&lt;PATH_TO_DATA_ROUTER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Help</td><td>&lt;PATH_TO_HELP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Initial Server Config</td><td>&lt;PATH_TO_INITIAL_SERV_CONF_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>JRE 1.5</td><td>&lt;PATH_TO_JRE15_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Java Service Manager</td><td>&lt;PATH_TO_JAVA_SERVICE_MAN_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Load Management</td><td>&lt;PATH_TO_LOAD_MAN_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>MACS Server</td><td>&lt;PATH_TO_MACS_SERVER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Message Dispatcher</td><td>&lt;PATH_TO_MESS_DISPATCHER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Notification</td><td>&lt;PATH_TO_NOTIFICATION_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Port Control</td><td>&lt;PATH_TO_PORT_CONTROL_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Scanner</td><td>&lt;PATH_TO_SCANNER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Tabular Data Console</td><td>&lt;PATH_TO_TAB_DATA_CON_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Test Applications</td><td>&lt;PATH_TO_TEST_APP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Trending</td><td>&lt;PATH_TO_TRENDING_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>WebStart</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Yukon Commander</td><td>&lt;PATH_TO_YUKON_COMMANDER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Yukon Web Deployment</td><td>&lt;PATH_TO_YUKON_WEB_DEP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 	</table>
 
 	<table name="ISFeatureExtended">
@@ -932,17 +721,42 @@
 		<row><td>ISProductFolder</td><td/><td/><td>1</td></row>
 		<row><td>ISProjectDataFolder</td><td>1</td><td/><td>1</td></row>
 		<row><td>ISProjectFolder</td><td/><td/><td>1</td></row>
+		<row><td>PATH_TO_ALARM_MONITOR_FILES</td><td>yukon\yukon-install\build\Alarm Monitor</td><td/><td>2</td></row>
 		<row><td>PATH_TO_BIN_FILES</td><td>C:\j2sdk1.4.1_06\bin</td><td/><td>2</td></row>
+		<row><td>PATH_TO_CALCULATION_SERVER_FILES</td><td>yukon\yukon-install\build\Calculation Server</td><td/><td>2</td></row>
+		<row><td>PATH_TO_CAP_CONTROL_FILES</td><td>yukon\yukon-install\build\Cap Control</td><td/><td>2</td></row>
 		<row><td>PATH_TO_CLIENT_FILES</td><td>Z:\install\lib\client</td><td/><td>2</td></row>
+		<row><td>PATH_TO_COMMON_BIN_FILES</td><td>yukon\yukon-install\build\Common Bin</td><td/><td>2</td></row>
+		<row><td>PATH_TO_COMMON_DIRECTORIES_FILES</td><td>yukon\yukon-install\build\Common Directories</td><td/><td>2</td></row>
+		<row><td>PATH_TO_COMMON_DLLS_FILES</td><td>yukon\yukon-install\build\Common Dlls</td><td/><td>2</td></row>
+		<row><td>PATH_TO_CONFIG_PROPERTIES_FILES</td><td>yukon\yukon-install\build\Config Properties</td><td/><td>2</td></row>
+		<row><td>PATH_TO_DATABASE_EDITOR_FILES</td><td>yukon\yukon-install\build\Database Editor</td><td/><td>2</td></row>
+		<row><td>PATH_TO_DATA_ROUTER_FILES</td><td>yukon\yukon-install\build\Foreign Data Router</td><td/><td>2</td></row>
+		<row><td>PATH_TO_ESUB_EDITOR_FILES</td><td>yukon\yukon-install\build\ESub Editor</td><td/><td>2</td></row>
+		<row><td>PATH_TO_HELP_FILES</td><td>yukon\yukon-install\build\Help</td><td/><td>2</td></row>
+		<row><td>PATH_TO_INITIAL_SERV_CONF_FILES</td><td>yukon\yukon-install\build\Initial Server Config</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JAVA BACKUP_FILES</td><td>Z:\Java backup</td><td/><td>2</td></row>
+		<row><td>PATH_TO_JAVA_SERVICE_MAN_FILES</td><td>yukon\yukon-install\build\Java Service Manager</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JDK_FILES</td><td>Z:\java\archive\jdk</td><td/><td>2</td></row>
+		<row><td>PATH_TO_JRE15_FILES</td><td>yukon\yukon-install\build\JRE 1.5</td><td/><td>2</td></row>
+		<row><td>PATH_TO_LOAD_MAN_FILES</td><td>yukon\yukon-install\build\Load Management</td><td/><td>2</td></row>
+		<row><td>PATH_TO_MACS_SERVER_FILES</td><td>yukon\yukon-install\build\MACS Server</td><td/><td>2</td></row>
+		<row><td>PATH_TO_MESS_DISPATCHER_FILES</td><td>yukon\yukon-install\build\Message Dispatcher</td><td/><td>2</td></row>
+		<row><td>PATH_TO_NOTIFICATION_FILES</td><td>yukon\yukon-install\build\Notification</td><td/><td>2</td></row>
+		<row><td>PATH_TO_PORT_CONTROL_FILES</td><td>yukon\yukon-install\build\Port Control</td><td/><td>2</td></row>
 		<row><td>PATH_TO_ROGUEWAVE</td><td>Y:\RogueWave\workspaces\WINNT4\MSVC60\15d\lib</td><td/><td>2</td></row>
+		<row><td>PATH_TO_SCANNER_FILES</td><td>yukon\yukon-install\build\Scanner</td><td/><td>2</td></row>
 		<row><td>PATH_TO_SERVER_FILES</td><td>Z:\install\lib\server</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TAB_DATA_CON_FILES</td><td>yukon\yukon-install\build\Tabular Data Console</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TEST_APP_FILES</td><td>yukon\yukon-install\build\Test Applications</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT 5 SERVIC_FILES</td><td>Z:\install\Tomcat 5 Service Install</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT5SERVICEI_FILES</td><td>Z:\install\Tomcat5ServiceInstall</td><td/><td>2</td></row>
-		<row><td>PATH_TO_TOMCAT_FILES</td><td>Z:\install\Tomcat Service Install</td><td/><td>2</td></row>
-		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>Z:\install\WebStartJRE</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TOMCAT_FILES</td><td>yukon\yukon-install\build\Tomcat</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TRENDING_FILES</td><td>yukon\yukon-install\build\Trending</td><td/><td>2</td></row>
+		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>yukon\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKONINSTALLJRE_FILES</td><td>Z:\install\YukonInstallJRE</td><td/><td>2</td></row>
+		<row><td>PATH_TO_YUKON_COMMANDER_FILES</td><td>yukon\yukon-install\build\Yukon Commander</td><td/><td>2</td></row>
+		<row><td>PATH_TO_YUKON_WEB_DEP_FILES</td><td>yukon\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
 		<row><td>PROGRAMFILES</td><td>&lt;ProgramFilesFolder&gt;</td><td/><td>2</td></row>
 		<row><td>ProgramFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>SystemFolder</td><td/><td/><td>1</td></row>
