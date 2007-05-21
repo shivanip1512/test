@@ -39,9 +39,7 @@
                   <tr> 
                     <td class="MainText" align="center">Please enter the import 
                       file(s). Leave the field empty if you do not have the corresponding 
-                      file.<br>
-                      Do not select the &quot;Pre-scan...&quot; check box unless 
-                      you are instructed to do so.</td>
+                      file.</td>
                   </tr>
                 </table>
                 <br>
@@ -57,11 +55,6 @@
                     <td width="70%"> 
                       <input type="file" name="HwFile" size="35">
                     </td>
-                  </tr>
-                  <tr align="center"> 
-                    <td colspan="2" class="MainText"> 
-                      <input type="checkbox" name="PreScan" value="true">
-                      Pre-scan the import file(s) to check for potential problems.</td>
                   </tr>
                   <tr align="center"> 
                     <td colspan="2" class="MainText">Email (to receive log file): 
