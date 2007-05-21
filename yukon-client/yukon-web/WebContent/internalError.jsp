@@ -7,6 +7,11 @@
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
 <%@page import="com.cannontech.common.util.CtiUtilities"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
+<jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
+<jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
+<jsp:directive.page import="com.cannontech.servlet.filter.WrappedUniqueException"/>
+<jsp:directive.page import="org.apache.commons.lang.exception.ExceptionUtils"/>
+<jsp:directive.page import="com.cannontech.servlet.filter.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
 
@@ -18,6 +23,7 @@ Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.excep
 // if the above returned null, this page was probably called via the JSP exception handler
 // because this page is declared as an error page, the exception object will be populated
 throwable = (Throwable)ObjectUtils.defaultIfNull(throwable, exception);
+String errorKey = (String)request.getAttribute(ErrorHelperFilter.LOG_KEY);
 Throwable root = CtiUtilities.getRootCause(throwable);
 
 Object status_code = request.getAttribute("javax.servlet.error.status_code");
@@ -29,15 +35,13 @@ error_type = ObjectUtils.defaultIfNull(error_type, "no error type");
 Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
 request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
 
-StringWriter sw = new StringWriter();
-PrintWriter p = new PrintWriter(sw);
-p.write(
-	"<b>Yukon Version:</b> " + VersionTools.getYUKON_VERSION() +
-	"<br><b>Status code:</b> " + status_code.toString() +
-	"<br><b>Message</b>: " + message.toString() +
-	"<br><b>Error type</b>: " + error_type.toString() +
-	"<br><b>Request URI</b>: " + request_uri.toString());		
-    ServletUtil.printNiceHtmlStackTrace(throwable, p);
+boolean showStack = true;
+try {
+    String suppressStackStr = DaoFactory.getAuthDao().getRolePropertyValue( ServletUtil.getYukonUser(request), WebClientRole.SUPPRESS_ERROR_PAGE_DETAILS );
+    showStack = !BooleanUtils.toBoolean(suppressStackStr);
+} finally {
+}
+
 %>
 
 <html>
@@ -89,11 +93,22 @@ function showStack( chkBox ) {
 <div id="error">
 <div id="errorImg"><img src="<%=request.getContextPath()%><%= logo %>"></div>
 <div id="errorMain">An error occured while processing your request</div>
+<% if (errorKey == null) { %>
 <div id="errorSub">Try to execute your request again.</div>
+<% } else { %>
+<div id="errorSub">Try to execute your request again (<%=errorKey %>).</div>
+<% } %>
+<% if (showStack) { %>
 <div id="showMore"><a href="javascript:showStack()">Detailed information</a></div>
 <div style="display: none" id="stackTrace">
-    <%=sw.getBuffer().toString()%>
+    <b>Yukon Version:</b> <%= VersionTools.getYUKON_VERSION()%>
+    <br><b>Status code:</b> <%= status_code.toString()%>
+    <br><b>Message</b>: <%= message.toString()%>
+    <br><b>Error type</b>: <%= error_type.toString()%>
+    <br><b>Request URI</b>: <%= request_uri.toString()%>      
+    <%= ServletUtil.printNiceHtmlStackTrace(throwable)%>
 </div>
+<% } %>
 </body>
 
 </html>

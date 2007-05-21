@@ -2,6 +2,7 @@ package com.cannontech.util;
 
 import java.awt.Color;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -1209,7 +1210,9 @@ public static Date roundToMinute(Date toRound) {
      * @param t the Throwable who's stack trace will be printed
      * @param p the PrintWriter on which the stack trace will be printed
      */
-    public static void printNiceHtmlStackTrace(Throwable t, PrintWriter p) {
+    public static String printNiceHtmlStackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter p = new PrintWriter (sw);
         String[] keyWords = {"com.cannontech", "org.apache.myfaces.lifecycle"};
         synchronized (p) {
             p.write("<pre>");
@@ -1246,5 +1249,6 @@ public static Date roundToMinute(Date toRound) {
             }
             p.write("</pre>");
         }
+        return sw.toString();
     }
 }

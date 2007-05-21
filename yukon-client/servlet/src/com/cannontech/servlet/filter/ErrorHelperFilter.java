@@ -14,11 +14,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.MDC;
 
@@ -31,6 +31,7 @@ public class ErrorHelperFilter  implements Filter {
 
 	private static final String SERVLET_STARTUP_ERROR = "comcannontechSERVLET_STARTUP_ERROR";
     private static final String SERVLET_STARTUP_ERROR_ROOT_MESSAGE = "comcannontechSERVLET_STARTUP_ERROR_ROOT_MESSAGE";
+    public static final String LOG_KEY = "comcannontechSERVLET_ERROR_LOG_KEY";
     private ServletContext servletContext;
 
     public void init(FilterConfig arg0) throws ServletException {
@@ -122,7 +123,8 @@ public class ErrorHelperFilter  implements Filter {
 			chain.doFilter(request, response);
 		} catch (Error e) {
 			Throwable rc = CtiUtilities.getRootCause(e);
-            CTILogger.error("Servlet error filter caught an Error processing: " + getRequestInfo(request), rc);
+            String key = setupUniqueLogKey(request);
+            CTILogger.error("Servlet error filter caught an Error processing {" + key + "}: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -130,7 +132,8 @@ public class ErrorHelperFilter  implements Filter {
 			}
 		} catch (RuntimeException re) {
 		    Throwable rc = CtiUtilities.getRootCause(re);
-			CTILogger.error("Servlet error filter caught a RuntimeException processing: " + getRequestInfo(request), rc);
+		    String key = setupUniqueLogKey(request);
+			CTILogger.error("Servlet error filter caught a RuntimeException processing {" + key + "}: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -138,7 +141,8 @@ public class ErrorHelperFilter  implements Filter {
 			}
 		} catch (Throwable t) {
 		    Throwable rc = CtiUtilities.getRootCause(t);
-			CTILogger.error("Servlet error filter caught a Throwable processing: " + getRequestInfo(request), rc);
+		    String key = setupUniqueLogKey(request);
+			CTILogger.error("Servlet error filter caught a Throwable processing {" + key + "}: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -150,6 +154,12 @@ public class ErrorHelperFilter  implements Filter {
         }
 		
 	}
+    
+    private String setupUniqueLogKey(ServletRequest request) {
+        String uniqueKey = "YK" + RandomStringUtils.randomNumeric(10);
+        request.setAttribute(LOG_KEY, uniqueKey);
+        return uniqueKey;
+    }
 
 	public void destroy() {
 	}
