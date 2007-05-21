@@ -8,9 +8,7 @@ package com.cannontech.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -134,45 +132,143 @@ public class ImportManager extends HttpServlet {
 		resp.sendRedirect( redirect );
 	}
 	
-	private void importCustomerAccounts(List items, StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+	private void importCustomerAccounts(final List items, final StarsYukonUser user, final HttpServletRequest req, final HttpSession session) {
+		final LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			FileItem custFile = getUploadFile( items, "CustFile" );
-			FileItem hwFile = getUploadFile( items, "HwFile" );
-			String email = getFormField( items, "Email" );
-			String preScan = getFormField( items, "PreScan" );
+			final FileItem custFile = getUploadFile( items, "CustFile" );
+			final FileItem hwFile = getUploadFile( items, "HwFile" );
+			final String email = getFormField( items, "Email" );
 			
 			if (custFile == null && hwFile == null)
 				throw new WebClientException( "No import file is provided" );
                  
             String logMsg = "Customer account import process started.";
             ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, logMsg );
-			TimeConsumingTask task = new ImportCustAccountsTask( energyCompany, custFile, hwFile, email, preScan != null, new Integer(user.getUserID()) );
-			long id = ProgressChecker.addTask( task );
-			
-			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
-			for (int i = 0; i < 5; i++) 
-            {
-				try 
-                {
-					Thread.sleep(1000);
+
+            final Integer userId = new Integer(user.getUserID());
+
+			final TimeConsumingTask task = new ImportCustAccountsTask() {
+				private TimeConsumingTask preScanTask;
+				private TimeConsumingTask realTask;
+				
+				public void run() {
+					this.setStatus(ImportCustAccountsTask.STATUS_RUNNING);
+					preScanTask = new ImportCustAccountsTask(energyCompany, custFile, hwFile, email, true, userId);
+					long preScanId = ProgressChecker.addTask(preScanTask);
+					
+					for (preScanTask = ProgressChecker.getTask(preScanId); ((preScanTask.getStatus() != ImportCustAccountsTask.STATUS_FINISHED) ||
+							(preScanTask.getStatus() != ImportCustAccountsTask.STATUS_ERROR));) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException ignore) {}
+						
+						if (preScanTask.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+							ProgressChecker.removeTask(preScanId);
+							break;
+						}
+						
+						if (preScanTask.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+							ProgressChecker.removeTask(preScanId);
+							this.setStatus(ImportCustAccountsTask.STATUS_ERROR);
+							return;
+						}
+					}
+					
+					realTask = new ImportCustAccountsTask(energyCompany, custFile, hwFile, email, false, userId);
+					long realTaskId = ProgressChecker.addTask(realTask);
+					
+					for (realTask = ProgressChecker.getTask(realTaskId); ((realTask.getStatus() != ImportCustAccountsTask.STATUS_FINISHED) ||
+							(realTask.getStatus() != ImportCustAccountsTask.STATUS_ERROR));) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException ignore) {}
+						
+						if (realTask.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+							ProgressChecker.removeTask(realTaskId);
+							this.setStatus(ImportCustAccountsTask.STATUS_FINISHED);
+							break;
+						}
+						
+						if (realTask.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+							ProgressChecker.removeTask(realTaskId);
+							this.setStatus(ImportCustAccountsTask.STATUS_ERROR);
+							return;
+						}
+					}
+					
+					this.setStatus(ImportCustAccountsTask.STATUS_FINISHED);
 				}
-				catch (InterruptedException e) {}
 				
-				task = ProgressChecker.getTask(id);
+				public String getProgressMsg() {
+					return (realTask != null) ? realTask.getProgressMsg() : (preScanTask != null) ? preScanTask.getProgressMsg() : "Pre-scanning import file(s)"; 
+				}
 				
-				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) 
-                {
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
-					ProgressChecker.removeTask( id );
+				public Collection getErrorList() {
+					if (preScanTask != null && preScanTask.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+						return ((ImportCustAccountsTask) preScanTask).getErrorList();
+					}
+					if (realTask != null && realTask.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+						return ((ImportCustAccountsTask) realTask).getErrorList();
+					}
+					return new java.util.HashSet();
+				}
+				
+				public void cancel() {
+					if (this.getStatus() == ImportCustAccountsTask.STATUS_RUNNING) {
+						this.setStatus(ImportCustAccountsTask.STATUS_CANCELING);
+						if (preScanTask != null) {
+							preScanTask.cancel();
+							while (preScanTask.getStatus() != ImportCustAccountsTask.STATUS_CANCELED||
+								   preScanTask.getStatus() != ImportCustAccountsTask.STATUS_ERROR ||
+								   preScanTask.getStatus() != ImportCustAccountsTask.STATUS_FINISHED) {
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException ignore) {}
+								
+								if (preScanTask.getStatus() == ImportCustAccountsTask.STATUS_CANCELED) {
+									break;
+								}
+							}
+						}
+						if (realTask != null) {
+							realTask.cancel();
+							while (realTask.getStatus() != ImportCustAccountsTask.STATUS_CANCELED ||
+								   realTask.getStatus() != ImportCustAccountsTask.STATUS_ERROR ||
+								   realTask.getStatus() != ImportCustAccountsTask.STATUS_FINISHED) {
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException ignore) {}
+								
+								if (realTask.getStatus() == ImportCustAccountsTask.STATUS_CANCELED) {
+									break;
+								}
+							}
+						}
+						this.setStatus(ImportCustAccountsTask.STATUS_CANCELED);
+					}
+				}
+			};
+			
+			
+			long id = ProgressChecker.addTask(task);
+			int x;
+			TimeConsumingTask t;
+			for (t = ProgressChecker.getTask(id), x = 0; x < 5; x++ ) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ignore) {}
+				
+				if (t.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, t.getProgressMsg());
+					ProgressChecker.removeTask(id);
 					return;
 				}
 				
-				if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) 
-                {
-					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
-					ProgressChecker.removeTask( id );
+				if (t.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+					session.setAttribute("errorList", ((ImportCustAccountsTask) t).getErrorList());
+					ProgressChecker.removeTask(id);
+					redirect = req.getContextPath() + "/operator/Consumer/ImportManagerView.jsp";
 					return;
 				}
 			}

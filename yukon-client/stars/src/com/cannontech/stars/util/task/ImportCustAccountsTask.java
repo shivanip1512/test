@@ -6,14 +6,8 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
+import java.io.*;
+import java.util.*;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -170,6 +164,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	int numHwRemoved = 0;
     
     int comparableDigitEndIndex = 0;
+    
+    private Map hwLines;
+	private Map custLines;
+
+	public ImportCustAccountsTask() {
+		
+	}
 	
 	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, FileItem custFile, FileItem hwFile, String email, boolean preScan, Integer userID) 
     {
@@ -197,6 +198,27 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		}
 		
 		return null;
+	}
+	
+	public Collection getErrorList() {
+		if (custLines != null) {
+			return cleanList(custLines.values());
+		}
+		if (hwLines != null) {
+			return cleanList(hwLines.values());
+		}
+		return new ArrayList();
+	}
+	
+	private Collection cleanList(final Collection c) {
+		List list = new ArrayList();
+		for (java.util.Iterator i = c.iterator(); i.hasNext();) {
+			String[] value = (String[]) i.next();
+			if (value.length > 1 && value[1] != null) {
+				list.add(value);
+			}
+		}
+		return list;
 	}
 
 	/* (non-Javadoc)
@@ -227,9 +249,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 		// Pre-scan the import file(s). If customer and hardware information is in the same file,
 		// no optimization will be preformed.
-		Hashtable custFieldsMap = new Hashtable();	// Map from account # (String) to customer fields (String[])
-		Hashtable hwFieldsMap = new Hashtable();	// Map from serial # (String) to account # (String)
-		
+		Map custFieldsMap = new HashMap();	// Map from account # (String) to customer fields (String[])
+		Map hwFieldsMap = new HashMap();	// Map from serial # (String) to account # (String)
+
 		status = STATUS_RUNNING;
 		
         try {
@@ -250,20 +272,28 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			importLog.println("Start time: " + StarsUtils.formatDate( now, energyCompany.getDefaultTimeZone() ));
 			importLog.println();
 			
+			int errors = 0;
+			
 			if (custFile != null) {
 				custFieldsList = new ArrayList();
 				ArrayList addedUsernames = new ArrayList();
 				ArrayList removedUsernames = new ArrayList();
+				custLines = new TreeMap();
 				boolean hwInfoContained = false;
 				
 				BufferedReader reader = new BufferedReader(new InputStreamReader(custFile.getInputStream()));
 				String line = null;
 				int lineNo = 0;
+				Integer lineNoKey;
 				
 				while ((line = reader.readLine()) != null) {
 					lineNo++;
+					lineNoKey = new Integer(lineNo);
+					
 					if (line.trim().length() == 0 || line.charAt(0) == '#')
 						continue;
+
+					custLines.put(new Integer(lineNo), new String[]{line, null});
 					
 					position = "customer file line #" + lineNo;
 					
@@ -307,16 +337,26 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 					
 					String[] columns = StarsUtils.splitString( line, "," );
-					if (columns.length > numCustCol)
-						throw new WebClientException( "Incorrect number of fields" );
-					
+					if (columns.length > numCustCol) {
+						errors++;
+						String[] value = (String[]) custLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
+
 					String[] custFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_ACCOUNT_FIELDS );
 					custFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 					setCustomerFields( custFields, columns, custColIdx );
-					
-					if (custFields[ImportManagerUtil.IDX_ACCOUNT_NO].trim().length() == 0)
-						throw new WebClientException( "Account # cannot be empty" );
-					
+
+					if (custFields[ImportManagerUtil.IDX_ACCOUNT_NO].trim().length() == 0) {
+						errors++;
+						String[] value = (String[]) custLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
+
 					insertSpecified = custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("INSERT");
                     /*
                      * Some customers use rotation digits on the end of account numbers.
@@ -328,7 +368,15 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                     LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 					
 					if (!preScan) {
-						liteAcctInfo = importAccount( custFields, energyCompany );
+						try {
+							liteAcctInfo = importAccount( custFields, energyCompany );
+						} catch (Exception ex) {
+							errors++;
+							String[] value = (String[]) custLines.get(lineNoKey);
+							value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
+							custLines.put(lineNoKey, value);
+							continue;
+						}
 					}
 					else {
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -433,18 +481,32 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							
 							// Check if the username already exists
 							if (checkUsername) {
-								if (custFields[ImportManagerUtil.IDX_PASSWORD].length() == 0)
-									throw new WebClientException( "Password cannot be empty" );
-								
+								if (custFields[ImportManagerUtil.IDX_PASSWORD].length() == 0) {
+									errors++;
+									String[] value = (String[]) custLines.get(lineNoKey);
+									value[1] = "[line: " + lineNo + " error: Password cannot be empty]";
+									custLines.put(lineNoKey, value);
+									continue;
+								}	
+
 								String username = custFields[ImportManagerUtil.IDX_USERNAME];
-								if (addedUsernames.contains( username ))
-									throw new WebClientException( "Username would have already been added by the import program" );
-								
+								if (addedUsernames.contains( username )) {
+									errors++;
+									String[] value = (String[]) custLines.get(lineNoKey);
+									value[1] = "[line: " + lineNo + " error: Username would have already been added by the import program]";
+									custLines.put(lineNoKey, value);
+									continue;
+								}
+
 								if (removedUsernames.contains( username ))
 									removedUsernames.remove( username );
-								else if (DaoFactory.getYukonUserDao().getLiteYukonUser( username ) != null)
-									throw new WebClientException( "Username already exists" );
-								
+								else if (DaoFactory.getYukonUserDao().getLiteYukonUser( username ) != null) {
+									errors++;
+									String[] value = (String[]) custLines.get(lineNoKey);
+									value[1] = "[line: " + lineNo + " error: Username already exists]";
+									custLines.put(lineNoKey, value);
+									continue;
+								}
 								addedUsernames.add( username );
 							}
 						}
@@ -480,16 +542,25 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							continue;
 						}
 						
-						if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0)
-							throw new WebClientException("Device type cannot be empty");
-						
+						if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0) {
+							errors++;
+							String[] value = (String[]) custLines.get(lineNoKey);
+							value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
+							custLines.put(lineNoKey, value);
+							continue;
+						}
+
                         insertSpecified = hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("INSERT");
                         
 						YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 						YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
-						if (deviceType == null)
-							throw new WebClientException("Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"");
-						
+						if (deviceType == null) {
+							errors++;
+							String[] value = (String[]) custLines.get(lineNoKey);
+							value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"]";
+							custLines.put(lineNoKey, value);
+							continue;
+						}
 						String[] appFields = null;
 						if (hwColIdx[COL_APP_TYPE] != -1) {
 							appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
@@ -497,14 +568,24 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 						
 						if (!preScan) {
-							LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
-							
-							if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
-								&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
-							{
-								int[][] programs = getEnrolledProgram( hwFields, energyCompany );
-								if (programs != null)
-									programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
+							try {
+								LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
+
+								if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
+										&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
+								{
+
+									int[][] programs = getEnrolledProgram( hwFields, energyCompany );
+									if (programs != null) {
+										programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
+									}
+								}
+							} catch (WebClientException e) {
+								errors++;
+								String[] value = (String[]) custLines.get(lineNoKey);
+								value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
+								custLines.put(lineNoKey, value);
+								continue;
 							}
 						}
 						else {
@@ -533,9 +614,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							}
 							else {
 								// Insert/update a hardware in an account, if hardware already exists in another account, report an error 
-								if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
-									throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in account #" + acctNo);
-								
+								if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )) {
+									errors++;
+									String[] value = (String[]) custLines.get(lineNoKey);
+									value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in account #" + acctNo + "]";
+									custLines.put(lineNoKey, value);
+									continue;
+								}
+
 								if (acctNo != null && acctNo.equals( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
 									hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "UPDATE";
 								else
@@ -559,18 +645,26 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				
 				numAcctTotal = custFieldsList.size();
 			}
+
+			if (errors != 0) throw new Exception("Failed to import " + errors + " lines");
 			
 			if (hwFile != null) {
 				hwFieldsList = new ArrayList();
 				
 				BufferedReader reader = new BufferedReader(new InputStreamReader(hwFile.getInputStream()));
 				String line = null;
+				hwLines = new TreeMap();
 				int lineNo = 0;
+				Integer lineNoKey;
 				
 				while ((line = reader.readLine()) != null) {
 					lineNo++;
+					lineNoKey = new Integer(lineNo);
+					
 					if (line.trim().length() == 0 || line.charAt(0) == '#')
 						continue;
+
+					hwLines.put(new Integer(lineNo), new String[]{line, null});
 					
 					position = "hardware file line #" + lineNo;
 					
@@ -604,24 +698,49 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 					
 					String[] columns = StarsUtils.splitString( line, "," );;
-					if (columns.length > numHwCol)
-						throw new WebClientException( "Incorrect number of fields" );
-					
+					if (columns.length > numHwCol) {
+						errors++;
+						String[] value = (String[]) hwLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
+
 					String[] hwFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
 					hwFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 					setHardwareFields( hwFields, columns, hwColIdx );
 					
-					if (hwFields[ImportManagerUtil.IDX_ACCOUNT_ID].trim().length() == 0)
-						throw new WebClientException( "Account # cannot be empty" );
-					if (hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0)
-						throw new WebClientException( "Serial # cannot be empty" );
-					if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0)
-						throw new WebClientException( "Device type cannot be empty" );
+					if (hwFields[ImportManagerUtil.IDX_ACCOUNT_ID].trim().length() == 0) {
+						errors++;
+						String[] value = (String[]) hwLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
+					if (hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0) {
+						errors++;
+						String[] value = (String[]) hwLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Serial # cannot be empty]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
+					if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0) {
+						errors++;
+						String[] value = (String[]) hwLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
 					
 					YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 					YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
-					if (deviceType == null)
-						throw new WebClientException("Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"");
+					if (deviceType == null) {
+						errors++;
+						String[] value = (String[]) hwLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"]";
+						custLines.put(lineNoKey, value);
+						continue;
+					}
 					
 					String[] custFields = null;
 					if (preScan)
@@ -643,7 +762,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								continue;
 							}
 							else {
-								throw new WebClientException( "Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " will be removed by the import program" );
+								errors++;
+								String[] value = (String[]) hwLines.get(lineNoKey);
+								value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " will be removed by the import program]";
+								custLines.put(lineNoKey, value);
+								continue;
 							}
 						}
 					}
@@ -663,7 +786,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								continue;
 							}
 							else {
-								throw new WebClientException( "Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist" );
+								errors++;
+								String[] value = (String[]) hwLines.get(lineNoKey);
+								value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist]";
+								custLines.put(lineNoKey, value);
+								continue;
 							}
 						}
 					}
@@ -677,19 +804,25 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 					
 					if (!preScan) {
-                        LiteInventoryBase liteInv;
-                        try {
-                            liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );                            
-                        }
-						catch (WebClientException e) {
-						    continue;
-                        }
-						if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
-							&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
-						{
-							int[][] programs = getEnrolledProgram( hwFields, energyCompany );
-							if (programs != null)
-                                programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
+						LiteInventoryBase liteInv;
+						try {
+							liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );                            
+
+							if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
+									&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
+							{
+
+								int[][] programs = getEnrolledProgram( hwFields, energyCompany );
+								if (programs != null) {
+									programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
+								}
+							}
+						} catch (WebClientException e) {
+							errors++;
+							String[] value = (String[]) hwLines.get(lineNoKey);
+							value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
+							custLines.put(lineNoKey, value);
+							continue;
 						}
 					}
 					else {
@@ -712,9 +845,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							}
 						}
 						else {
-							if (acctNo != null && !acctNo.equals("") && (custFields != null && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )))
-								throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account");
-							
+							if (acctNo != null && !acctNo.equals("") && (custFields != null && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))) {
+								errors++;
+								String[] value = (String[]) hwLines.get(lineNoKey);
+								value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account]";
+								custLines.put(lineNoKey, value);
+								continue;
+							}
+
 							if (acctNo != null && acctNo.equals( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] ))
 								hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "UPDATE";
 							else
@@ -737,74 +875,30 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				
 				numHwTotal = hwFieldsList.size();
 			}
-			
-			if (preScan) {
-				// The data has been pre-scanned, now actually import the data
-				// set the preScan flag to false so the import log will be sent later
-				preScan = false;
-				
-				if (custFile != null) {
-					for (int i = 0; i < numAcctTotal; i++) {
-						String[] custFields = (String[]) custFieldsList.get(i);
-						String[] hwFields = null;
-						String[] appFields = null;
-						
-						position = "customer file line #" + custFields[ImportManagerUtil.IDX_LINE_NUM];
-						
-						LiteStarsCustAccountInformation liteAcctInfo = importAccount(custFields, energyCompany);
-						
-						if (hwFile == null && hwFieldsList != null) {
-							hwFields = (String[]) hwFieldsList.get(i);
-							if (appFieldsList != null) appFields = (String[]) appFieldsList.get(i);
-							
-							if (hwFields != null) {
-								LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
-								
-								if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
-									&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
-								{
-									int[][] programs = getEnrolledProgram( hwFields, energyCompany );
-									if (programs != null)
-										programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
-								}
-							}
-						}
-						
-						if (isCanceled) {
-							status = STATUS_CANCELED;
-							throw new Exception();
-						}
-					}
+
+			if (errors != 0) {
+				/*
+				final String separator = System.getProperty("file.separator");
+				final String fileName = ServerUtils.getStarsTempDir() + separator + "stars_import.log";
+				final String csvFileName = ServerUtils.getStarsTempDir() + separator + "stars_import.csv";
+
+				final java.io.FileWriter writer = new java.io.FileWriter(new File(fileName));
+				final java.io.FileWriter csvWriter = new java.io.FileWriter(new File(csvFileName));
+
+				for (int x = 0; x < errorList.size(); x++) {
+					String line = (String) errorList.get(x);
+					writer.write(line + LINE_SEPARATOR);
+					writer.flush();
+
+					String csvLine = line.split("\\]\\s")[1];
+					csvWriter.write(csvLine + LINE_SEPARATOR);
+					csvWriter.flush();
 				}
-				
-				if (hwFile != null) {
-					for (int i = 0; i < numHwTotal; i++) {
-						String[] hwFields = (String[]) hwFieldsList.get(i);
-						String[] appFields = null;
-						if (appFieldsList != null) appFields = (String[]) appFieldsList.get(i);
-						
-						position = "hardware file line #" +  hwFields[ImportManagerUtil.IDX_LINE_NUM];
-						
-						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
-						if (liteAcctInfo == null)
-							throw new WebClientException( "Account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist" );
-						
-						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
-						
-						if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
-							&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
-						{
-							int[][] programs = getEnrolledProgram( hwFields, energyCompany );
-							if (programs != null)
-								programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
-						}
-						
-						if (isCanceled) {
-							status = STATUS_CANCELED;
-							throw new Exception();
-						}
-					}
-				}
+
+				writer.close();
+				csvWriter.close();
+				 */
+				throw new Exception("Failed to import " + errors + " lines");
 			}
 			
 			status = STATUS_FINISHED;
@@ -819,40 +913,43 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			else {
 				CTILogger.error( e.getMessage(), e );
 				status = STATUS_ERROR;
-				
+
+				errorMsg = e.getMessage();
+				/*
 				if (position != null)
 					errorMsg = "An error occured at " + position;
 				else
 					errorMsg = "The Import process failed";
 				if (e instanceof WebClientException)
 					errorMsg += ": " + e.getMessage();
+				 */
 			}
 
             ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, errorMsg );
 		}
-		finally {
-			if (importLog != null) {
-				importLog.println();
-				importLog.println("Stop time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
-				importLog.println();
-				if (errorMsg != null) importLog.println( errorMsg );
-				importLog.println(getImportProgress());
-				importLog.close();
-				
-				try {
-					if (email != null && email.trim().length() > 0 && !preScan)
-						sendImportLog( logFile, email, energyCompany );
-				}
-				catch (Exception e) {
-					status = STATUS_ERROR;
-					if (errorMsg != null)
-						errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
-					else
-						errorMsg = "Failed to send the import log by email";
-				}
+		//finally {
+		if (importLog != null) {
+			importLog.println();
+			importLog.println("Stop time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
+			importLog.println();
+			if (errorMsg != null) importLog.println( errorMsg );
+			importLog.println(getImportProgress());
+			importLog.close();
+
+			try {
+				if (email != null && email.trim().length() > 0 && !preScan)
+					sendImportLog( logFile, email, energyCompany );
+			}
+			catch (Exception e) {
+				status = STATUS_ERROR;
+				if (errorMsg != null)
+					errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
+				else
+					errorMsg = "Failed to send the import log by email";
 			}
 		}
-		
+		//}
+
 	}
 	
 	private String getImportProgress() 
