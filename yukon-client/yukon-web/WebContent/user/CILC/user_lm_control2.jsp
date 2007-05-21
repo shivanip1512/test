@@ -210,14 +210,14 @@ function MM_popupMsg(msg) { //v1.0
 </script>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
-<table width="760" border="0" cellspacing="0" cellpadding="0">
+<table width="810" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
+      <table width="810" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="150" height="102" background="../../WebConfig/yukon/MomWide.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
-            <table width="609" cellspacing="0"  cellpadding="0" border="0">
+            <table width="100%" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
@@ -239,7 +239,7 @@ function MM_popupMsg(msg) { //v1.0
   </tr>
   <tr> 
     <td> 
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
+      <table width="810" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
           <td width="101" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
@@ -252,7 +252,7 @@ function MM_popupMsg(msg) { //v1.0
             <%@ include file="include/nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-          <td width="600" valign="top" bgcolor="#FFFFFF"> 
+          <td width="100%" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <p><br>
                 <span class="TitleHeader">AUTO CONTROL</span><br>

@@ -38,7 +38,7 @@ MM_reloadPage(true);
         <tr> 
           <td width="150" height="102" background="../../WebConfig/yukon/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="658" cellspacing="0"  cellpadding="0" border="0">
+            <table width="100%" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>

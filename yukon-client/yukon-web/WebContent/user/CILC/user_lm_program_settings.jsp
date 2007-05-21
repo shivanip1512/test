@@ -7,14 +7,14 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
-<table width="760" border="0" cellspacing="0" cellpadding="0">
+<table width="810" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
+      <table width="810" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="150" height="102" background="../../WebConfig/yukon/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="609" cellspacing="0"  cellpadding="0" border="0">
+            <table width="100%" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
@@ -35,11 +35,11 @@
   </tr>
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
+      <table width="810" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
           <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="609" bgcolor="#000000" height="1"></td>
+          <td width="658" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
