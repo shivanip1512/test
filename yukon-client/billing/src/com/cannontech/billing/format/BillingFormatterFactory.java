@@ -1,6 +1,7 @@
 package com.cannontech.billing.format;
 
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.billing.foreign.itron.client.ItronClientHandler;
 
 /**
  * Factory class to generate billing formatters
@@ -74,22 +75,15 @@ public final class BillingFormatterFactory {
 
         case FileFormatTypes.EXTENDED_TOU_INCODE:
         	return new ExtendedTOU_IncodeRecordFormatter();
-        	
-        // case FileFormatTypes.WLT_40:
-        // return new WLT_40Format();
-
-        // case FileFormatTypes.MV_90:
-        // return new MV_90Format();
-
-        // case FileFormatTypes.NCDC_HANDHELD:
-        // return new NCDC_HandheldFormat();
-
-        // case FileFormatTypes.MVRS:
-        // return new MVRSFormat();
 
         default:
-            // return null if format not found - other formats will be handled
-            // by the FileFormatFactory
+            /*  return null if format not found - other formats will be handled
+                by the FileFormatFactory:
+                    case FileFormatTypes.WLT_40:
+                    case FileFormatTypes.MV_90:
+                    case FileFormatTypes.NCDC_HANDHELD:
+                    case FileFormatTypes.MVRS:
+            */
             return null;
         }
     }

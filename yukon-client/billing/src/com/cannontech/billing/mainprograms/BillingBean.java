@@ -8,8 +8,8 @@ package com.cannontech.billing.mainprograms;
 import java.util.Date;
 
 import com.cannontech.billing.FileFormatBase;
-import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.billing.format.BillingFormatter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
@@ -76,7 +76,7 @@ public void enableTimer(boolean enable)
  */
 public void generateFile(java.io.OutputStream out) throws java.io.IOException
 {
-	setFileFormatBase( FileFormatFactory.createFileFormat(getBillingDefaults().getFormatID() ));
+	setBillingFormatter(getBillingDefaults().getFormatID());
 
 	// Gather new billing defaults and write them to the properties file.
 	//FormatID, demandDays, energyDays, collectionGrpVector, outputFile, inputFile
@@ -96,7 +96,7 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 		
 	setBillingDefaults(defaults);
 
-	if( getFileFormatBase() != null )
+	if( getBillingFormatter() != null || getFileFormatBase() != null )
 	{
 		Date timerStart = new Date();
 		CTILogger.info("Started " + FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
@@ -261,13 +261,23 @@ public void setOutputFile(String newOutputFile)
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (5/15/2002 9:39:47 AM)
+ * Returns the FileFormatBase object.  This is a legacey format object.
+ * The billingFileFormatter should be used first, and only use this object
+ * if the billingFileFormatter is null.
  * @return com.cannontech.billing.FileFormatBase
  */
 public FileFormatBase getFileFormatBase()
 {
 	return getBillingFile().getFileFormatBase();
+}
+
+/**
+ * Returns the BillingFormatter object
+ * @return com.cannontech.billing.format.BillingFormatter
+ */
+public BillingFormatter getBillingFormatter()
+{
+    return getBillingFile().getBillingFormatter();
 }
 
 private void setBillingDefaults(BillingFileDefaults newDefaults)
@@ -276,13 +286,12 @@ private void setBillingDefaults(BillingFileDefaults newDefaults)
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (5/14/2002 3:58:56 PM)
- * @param newFileFormatBase com.cannontech.billing.FileFormatBase
+ * Set 
+ * @param int formatID
  */
-private void setFileFormatBase(FileFormatBase newFileFormatBase)
+private void setBillingFormatter(int formatID)
 {
-	getBillingFile().setFileFormatBase(newFileFormatBase);
+	getBillingFile().setBillingFormatter(formatID);
 }
 /**
  * Insert the method's description here.

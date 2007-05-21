@@ -14,6 +14,7 @@ import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatter;
+import com.cannontech.billing.format.BillingFormatterFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -144,7 +145,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 				}
 			}
 			
-			billingFile.setFileFormatBase( FileFormatFactory.createFileFormat(billingFile.getBillingDefaults().getFormatID() ));
+            billingFile.setBillingFormatter(billingFile.getBillingDefaults().getFormatID());
 			billingFile.run();
 			billingFile.getBillingDefaults().writeDefaultsFile();
 		} 
@@ -242,9 +243,10 @@ public class BillingFile extends java.util.Observable implements Runnable
                 setChanged();
                 notify("Successfully created the file : " + billingDefaults.getOutputFileDir()
                         + "\n" + validReadings + " Valid Readings Reported.");
-            } catch (java.io.IOException ioe) {
+            } 
+            catch (java.io.IOException ioe) {
                 setChanged();
-                notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName());
+                notify("Unsuccessfull reading of file : " + getBillingDefaults().getOutputFileDir());
                 CTILogger.error(ioe);
             }
         }
@@ -291,8 +293,42 @@ public class BillingFile extends java.util.Observable implements Runnable
 	 */
 	public void encodeOutput(java.io.OutputStream out) throws java.io.IOException
 	{
-		if( fileFormatBase != null )
-		{
+        if( billingFormatter != null )
+        {
+            billingFormatter.setBillingFileDefaults(getBillingDefaults());
+    
+            CTILogger.info("Valid entries are for meter data where: ");
+            CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+            CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+    
+            boolean success = false;
+            
+            List<BillableDevice> deviceList = null;
+            if (!getBillingDefaults().getBillGroup().isEmpty()) {
+
+                deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
+                success = deviceList.size() > 0;
+            }
+            
+            int validReadings = 0;
+            if (success) {
+                try {
+                    validReadings = billingFormatter.writeBillingFile(deviceList, out);
+                } catch (IllegalArgumentException e) {
+                    setChanged();
+                    notify(e.getMessage());
+                }
+            } else {
+                setChanged();
+                notify("Unsuccessfull database query");
+            }
+
+            setChanged();
+            notify("Successfully created the file : " + billingDefaults.getOutputFileDir()
+                    + "\n" + validReadings + " Valid Readings Reported.");
+            
+        } 
+        else if( fileFormatBase != null ) {
 			fileFormatBase.setBillingDefaults(getBillingDefaults());
 	
 			CTILogger.info("Valid entries are for meter data where: ");
@@ -382,17 +418,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 	}
 
 	/**
-	 * Sets the fileFormatBase.
-	 * Sets the fileFormatBase.billingDefaults to this.billingDefaults.
-	 * @param fileFormatBase The fileFormatBase to set
-	 */
-	public void setFileFormatBase(FileFormatBase fileFormatBase)
-	{
-		this.fileFormatBase = fileFormatBase;
-		this.fileFormatBase.setBillingDefaults(getBillingDefaults());
-	}
-
-	/**
 	 * Sets the billingFormatter
 	 * @return
 	 */
@@ -401,11 +426,20 @@ public class BillingFile extends java.util.Observable implements Runnable
     }
 
     /**
-     * Returns the billingFormatter
-     * @param billingFormatter
+     * Sets the billingFormatter.  If the formatID is a legacy format, then 
+     * the fileFormatBase object will be set instead.
+     * Sets the billingDefaults will be populated for the format object being used.
+     * @param formatID
      */
-    public void setBillingFormatter(BillingFormatter billingFormatter) {
-        this.billingFormatter = billingFormatter;
-		this.fileFormatBase.setBillingDefaults(getBillingDefaults());
-    }    
+    public void setBillingFormatter(int formatID) {
+        this.billingFormatter = BillingFormatterFactory.createFileFormat(formatID);
+        
+        if (billingFormatter != null)
+            this.billingFormatter.setBillingFileDefaults(getBillingDefaults());
+        
+        else {  //we have an older format, use the legacy FileFormatBase object
+            this.fileFormatBase = FileFormatFactory.createFileFormat(formatID);
+            this.fileFormatBase.setBillingDefaults(getBillingDefaults());
+        }
+    }
 }

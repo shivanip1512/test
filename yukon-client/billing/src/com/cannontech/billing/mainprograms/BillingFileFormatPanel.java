@@ -9,10 +9,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import com.cannontech.billing.FileFormatBase;
-import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
-import com.cannontech.billing.format.BillingFormatterFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -79,12 +76,12 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getGenerateFileToggleButton())
 	{
         try {
-            setFileFormatBase( FileFormatFactory.createFileFormat(getBillingDefaults().getFormatID() ));
+            setBillingFormatter(getBillingDefaults().getFormatID());
         } catch (Error e) {
             // We must be using a billing formatter instead.
         }
         
-        getBillingFile().setBillingFormatter(BillingFormatterFactory.createFileFormat(getBillingDefaults().getFormatID()));
+        getBillingFile().setBillingFormatter(getBillingDefaults().getFormatID());
 		
         generateFile();
 		getBillingDefaults().writeDefaultsFile();
@@ -192,8 +189,11 @@ private void generateFile()
 		getGenerateFileToggleButton().setText("Generate File");
 
 		//Interrupt billing file generation.
-		getBillingFile().getFileFormatBase().closeDBConnection();
-		update( billingFile, "User canceled billing process" );
+        if( getBillingFile().getFileFormatBase() != null){
+            getBillingFile().getFileFormatBase().closeDBConnection();
+            update( billingFile, "User canceled billing process" );
+        } //else //TODO - How to interrupt the BillingFormatter
+
 		return;		
 	}
 
@@ -204,7 +204,7 @@ private void generateFile()
 		
 	setBillingDefaults(defaults);
 
-	if( getFileFormatBase() != null || getBillingFile().getBillingFormatter() != null)
+	if( getBillingFile().getFileFormatBase() != null || getBillingFile().getBillingFormatter() != null)
 	{
 		getBillingFile().addObserver( this );
 
@@ -527,15 +527,7 @@ private javax.swing.JLabel getEnergyStartDateLabel() {
 	}
 	return ivjEnergyStartDateLabel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/15/2002 9:39:47 AM)
- * @return com.cannontech.billing.FileFormatBase
- */
-public FileFormatBase getFileFormatBase()
-{
-	return getBillingFile().getFileFormatBase();
-}
+
 /**
  * Return the FileFormatComboBox property value.
  * @return javax.swing.JComboBox
@@ -554,7 +546,7 @@ private javax.swing.JComboBox getFileFormatComboBox() {
 
 			//set default value
 			ivjFileFormatComboBox.setSelectedItem((String)FileFormatTypes.getFormatType( getBillingDefaults().getFormatID() ));
-			setFileFormatBase(FileFormatFactory.createFileFormat( getBillingDefaults().getFormatID()));
+			setBillingFormatter(getBillingDefaults().getFormatID());
 			//enableComponents();
 			
 			ivjFileFormatComboBox.addActionListener(this);
@@ -1300,13 +1292,11 @@ private void setBillingFile(BillingFile newBillingFile)
 	billingFile = newBillingFile;
 }
 /**
- * Insert the method's description here.
- * Creation date: (5/14/2002 3:58:56 PM)
- * @param newFileFormatBase com.cannontech.billing.FileFormatBase
+ * @param int formatID 
  */
-private void setFileFormatBase(FileFormatBase newFileFormatBase)
+private void setBillingFormatter(int formatID)
 {
-	getBillingFile().setFileFormatBase(newFileFormatBase);
+	getBillingFile().setBillingFormatter(formatID);
 }
 /**
  * Insert the method's description here.

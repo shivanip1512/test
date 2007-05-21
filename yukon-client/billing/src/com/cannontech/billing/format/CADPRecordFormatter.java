@@ -13,6 +13,7 @@ import com.cannontech.billing.device.base.Channel;
 import com.cannontech.billing.device.base.ReadingType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.BillingRole;
 
 /**
@@ -104,7 +105,7 @@ public class CADPRecordFormatter extends BillingFormatterBase {
     }
 
     @Override
-    public String getBillingFileString(List<BillableDevice> deviceList) {
+    public String getBillingFileDetailsString(List<BillableDevice> deviceList) {
 
         StringBuffer billingFileString = new StringBuffer();
         int count = 0;
@@ -178,8 +179,7 @@ public class CADPRecordFormatter extends BillingFormatterBase {
      */
     public String getCoopId() {
 
-        String coopId = ClientSession.getInstance()
-                                     .getRolePropertyValue(BillingRole.COOP_ID_CADP_ONLY);
+        String coopId = DaoFactory.getRoleDao().getGlobalPropertyValue(BillingRole.COOP_ID_CADP_ONLY);
 
         if (coopId == null) {
             CTILogger.info(" Missing 'coop_id' in config.properties.");

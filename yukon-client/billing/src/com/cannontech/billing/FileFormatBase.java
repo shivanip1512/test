@@ -153,7 +153,7 @@ public abstract class FileFormatBase
 			// create an instance of the record and call the dataToString, this reads a file instead
 			// of being a preloaded vector of records from the database.
 			MVRSRecord mvrsRecord = new MVRSRecord();
-			mvrsRecord.setInputFile(getInputFileName());
+			mvrsRecord.setInputFile(getBillingDefaults().getInputFileDir());
 			returnBuffer.append(mvrsRecord.dataToString());
 			//set the record format's record count, based on the number of meter records in the file
 			setRecordCount(mvrsRecord.getNumberMeters());
@@ -162,7 +162,7 @@ public abstract class FileFormatBase
 		{
 			for(int i = 0; i < getRecordVector().size(); i++)
 			{
-				String dataString = ((BillingRecordBase)getRecordVector().get(i)).dataToString();
+				String dataString = getRecordVector().get(i).dataToString();
 				if( dataString != null)
 					returnBuffer.append(dataString);
 			}

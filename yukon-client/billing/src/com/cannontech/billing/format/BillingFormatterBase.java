@@ -2,6 +2,7 @@ package com.cannontech.billing.format;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -36,16 +37,7 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     public int writeBillingFile( List<BillableDevice> deviceList)
             throws IOException {
 
-        StringBuffer output = new StringBuffer();
-        
-        // Add header to beginning of file string
-        output.append(getBillingFileHeader());
-
-        // Add all of the device data to the file string
-        output.append(getBillingFileString(deviceList));
-
-        // Add footer to end of file string
-        output.append(getBillingFileFooter());
+        StringBuffer output = getBillingFileString(deviceList);
 
         FileWriter outputFileWriter = new FileWriter(getBillingFileDefaults().getOutputFileDir(),
                                                      getBillingFileDefaults().isAppendToFile());
@@ -63,7 +55,7 @@ public abstract class BillingFormatterBase implements BillingFormatter {
      * @param deviceList - List of devices to create billing file for
      * @return String representation of the entire billing file data
      */
-    public String getBillingFileString(List<BillableDevice> deviceList) {
+    public String getBillingFileDetailsString(List<BillableDevice> deviceList) {
 
         StringBuffer billingFileString = new StringBuffer();
         Iterator<BillableDevice> deviceListIter = deviceList.iterator();
@@ -99,6 +91,27 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         return "";
     }
 
+    /**
+     * Method to generate the entire billing file string: including
+     *  the header, details, and footer.
+     * @param deviceList - List of devices to create billing file for  
+     * @return StringBuffer billingData
+     */
+    public StringBuffer getBillingFileString(List<BillableDevice> deviceList) {
+        StringBuffer billingData = new StringBuffer();
+        
+        // Add header to beginning of file string
+        billingData.append(getBillingFileHeader());
+    
+        // Add all of the device data to the file string
+        billingData.append(getBillingFileDetailsString(deviceList));
+    
+        // Add footer to end of file string
+        billingData.append(getBillingFileFooter());
+        
+        return billingData;
+    }
+    
     /**
      * Method to add an object to a string buffer with or without a comma. Adds
      * an empty string if the object is null.
@@ -201,4 +214,10 @@ public abstract class BillingFormatterBase implements BillingFormatter {
 		this.billingFileDefaults = billingFileDefaults;
 	}
 
+    public int writeBillingFile( List<BillableDevice> deviceList, OutputStream out) throws IOException {
+        StringBuffer output = getBillingFileString(deviceList);
+        out.write(output.toString().getBytes());
+        
+        return this.readingCount;
+    }
 }

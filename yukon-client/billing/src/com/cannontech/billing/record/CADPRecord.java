@@ -3,6 +3,7 @@ package com.cannontech.billing.record;
 import java.util.Vector;
 
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.BillingRole;
 ;
 
@@ -189,7 +190,7 @@ public java.lang.String getCoopId()
 {
 	if( coopId == null)
 	{
-		coopId = ClientSession.getInstance().getRolePropertyValue( BillingRole.COOP_ID_CADP_ONLY );
+		coopId = DaoFactory.getRoleDao().getGlobalPropertyValue(BillingRole.COOP_ID_CADP_ONLY );
 		
 		if( coopId == null )
 		{
