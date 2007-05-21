@@ -25,7 +25,7 @@ function init() {
 	<table width="760" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td>
-				<%@ include file="include/HeaderBar.jsp"%>
+				<%@ include file="include/HeaderBar.jspf"%>
 			</td>
 		</tr>
 		<tr>
