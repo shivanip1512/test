@@ -10,6 +10,8 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.CommandDefinitionImpl;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -66,10 +68,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported device type
         Set<Attribute> expectedAttributes = new HashSet<Attribute>();
-        expectedAttributes.add(Attribute.USAGE);
-        expectedAttributes.add(Attribute.DEMAND);
-        expectedAttributes.add(new Attribute("totalUsage"));
-        expectedAttributes.add(new Attribute("pulse2"));
+        expectedAttributes.add(BuiltInAttribute.USAGE);
+        expectedAttributes.add(BuiltInAttribute.DEMAND);
+        expectedAttributes.add(new UserDefinedAttribute("totalUsage"));
+        expectedAttributes.add(new UserDefinedAttribute("pulse2"));
 
         Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
 
@@ -97,16 +99,16 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                1,
                                                                0,
                                                                true,
-                                                               Attribute.USAGE);
+                                                               BuiltInAttribute.USAGE);
 
-        PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, Attribute.USAGE);
+        PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
 
         assertEquals("Expected point template did not match: ", expectedTemplate, actualTemplate);
 
         // Test with invalid attribute for the device
         try {
             device.setDeviceType("invalid");
-            dao.getPointTemplateForAttribute(device, new Attribute("invalid"));
+            dao.getPointTemplateForAttribute(device, new UserDefinedAttribute("invalid"));
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -117,7 +119,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Test with unsupported device type
         try {
             device.setDeviceType("invalid");
-            dao.getPointTemplateForAttribute(device, Attribute.USAGE);
+            dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -306,7 +308,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                          1,
                                                          0,
                                                          true,
-                                                         Attribute.USAGE);
+                                                         BuiltInAttribute.USAGE);
         PointTemplateImpl point2 = new PointTemplateImpl("pulse2",
                                                          2,
                                                          4,
@@ -314,7 +316,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                          1,
                                                          0,
                                                          false,
-                                                         new Attribute("pulse2"));
+                                                         new UserDefinedAttribute("pulse2"));
 
         // Define expected command definitions
         CommandDefinitionImpl command1 = new CommandDefinitionImpl();
@@ -366,7 +368,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     true,
-                                                    Attribute.USAGE));
+                                                    BuiltInAttribute.USAGE));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplateImpl("demand1",
@@ -376,7 +378,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     0,
                                                     0,
                                                     true,
-                                                    Attribute.DEMAND));
+                                                    BuiltInAttribute.DEMAND));
 
         // Analog
         expectedTemplates.add(new PointTemplateImpl("analog1",
@@ -386,7 +388,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     true,
-                                                    new Attribute("totalUsage")));
+                                                    new UserDefinedAttribute("totalUsage")));
 
         return expectedTemplates;
 
@@ -411,7 +413,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     false,
-                                                    new Attribute("pulse2")));
+                                                    new UserDefinedAttribute("pulse2")));
 
         // Status
         expectedTemplates.add(new PointTemplateImpl("status1", 0, 1, 1.0, -1, 0, false, null));

@@ -7,7 +7,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
@@ -270,7 +270,7 @@ public class DeviceDefinitionServiceImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     false,
-                                                    new Attribute("pulse2")));
+                                                    new UserDefinedAttribute("pulse2")));
 
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToTransfer(device,
                                                                                  new DeviceDefinitionImpl(2,
@@ -314,7 +314,7 @@ public class DeviceDefinitionServiceImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     false,
-                                                    new Attribute("pulse2")));
+                                                    new UserDefinedAttribute("pulse2")));
 
         Set<PointTemplate> actualTemplates = service.getNewPointTemplatesForTransfer(device,
                                                                                      new DeviceDefinitionImpl(2,

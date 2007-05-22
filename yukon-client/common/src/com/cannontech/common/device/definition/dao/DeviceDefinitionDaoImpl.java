@@ -16,6 +16,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.CommandDefinitionImpl;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -411,7 +412,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         if (point.getAttribute() != null) {
             String attributeName = point.getAttribute().getName();
-            template.setAttribute(new Attribute(attributeName));
+            template.setAttribute(BuiltInAttribute.valueOf(attributeName));
         }
 
         template.setType(PointTypes.getType(point.getType()));

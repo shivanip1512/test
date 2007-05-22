@@ -14,7 +14,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="display1"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>pulse1</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -30,7 +30,7 @@ This file contains default device and point information for all of the devices i
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="demand"/>
+                <attribute name="DEMAND"/>
                 <name>demand1</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -78,7 +78,7 @@ This file contains default device and point information for all of the devices i
                 <unitofmeasure value="measure1"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="demand"/>
+            	<attribute name="DEMAND"/>
                 <name>analog1</name>
                 <offset value="1"/>
                 <multiplier value=".0001"/>

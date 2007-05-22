@@ -63,6 +63,7 @@
                 <table class="pointTable">
                   <tr>
                     <th>Name</th>
+                    <th>Attribute</th>
                     <th>Type</th>
                     <th>Offset</th>
                     <th>Multiplier</th>
@@ -77,11 +78,9 @@
                         <xsl:if test="@init = 'true'">
                           <xsl:text>*</xsl:text>
                         </xsl:if>
-                        <xsl:if test="attribute/@name">
-                          <xsl:text>[</xsl:text>
-                          <xsl:value-of select="attribute/@name" />
-                          <xsl:text>]</xsl:text>
-                        </xsl:if>
+                      </td>
+                      <td>
+                        <xsl:value-of select="attribute/@name" />
                       </td>
                       <td>
                         <xsl:value-of select="@type" />

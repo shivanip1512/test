@@ -19,7 +19,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="usage"/>
+            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -51,7 +51,7 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="demand"/>
+                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -76,7 +76,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />            	
+            	<attribute name="LOAD_PROFILE" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
@@ -90,7 +90,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="peakDemand"/>
+                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -388,7 +388,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -504,7 +504,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />
+            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -577,7 +577,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -693,7 +693,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />
+            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -766,7 +766,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -882,7 +882,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />
+            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -956,7 +956,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -1072,7 +1072,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />
+            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -1159,7 +1159,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -1486,7 +1486,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -1733,7 +1733,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -1747,7 +1747,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -1919,7 +1919,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -1933,7 +1933,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -1958,7 +1958,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -1971,7 +1971,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />
+            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
@@ -1990,7 +1990,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -2003,7 +2003,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="loadProfile" />
+            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
@@ -2017,7 +2017,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -2031,7 +2031,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="usage"/>
+                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>

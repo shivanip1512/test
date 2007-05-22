@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -265,7 +266,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
             boolean loadProfileExists = false;
             try {
-                attributeService.getPointForAttribute(oldDevice, Attribute.LOAD_PROFILE);
+                attributeService.getPointForAttribute(oldDevice, BuiltInAttribute.LOAD_PROFILE);
                 loadProfileExists = true;
             } catch (NotFoundException e) {
                 // Do nothing - no load profile point

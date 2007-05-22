@@ -6,6 +6,8 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.service.PointServiceImpl;
@@ -52,14 +54,14 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for existing device / attribute
         LitePoint expectedPoint = pointDao.getLitePoint(1);
-        LitePoint actualPoint = service.getPointForAttribute(device, Attribute.USAGE);
+        LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.USAGE);
 
         assertEquals("Attribute point isn't as expected", expectedPoint, actualPoint);
 
         // Test for device that doesn't exist
         try {
             device.setDeviceType("invalid");
-            service.getPointForAttribute(device, new Attribute("invalid"));
+            service.getPointForAttribute(device, new UserDefinedAttribute("invalid"));
             fail("getPointForAttribute should've thrown exception for invalid device");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -69,7 +71,7 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for attribute that doesn't exist
         try {
-            service.getPointForAttribute(device, new Attribute("invalid"));
+            service.getPointForAttribute(device, new UserDefinedAttribute("invalid"));
             fail("getPointForAttribute should've thrown exception for invalid attribute");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -86,10 +88,10 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for existing device with existing attributes
         Set<Attribute> expectedAtributes = new HashSet<Attribute>();
-        expectedAtributes.add(Attribute.USAGE);
-        expectedAtributes.add(Attribute.DEMAND);
-        expectedAtributes.add(new Attribute("totalUsage"));
-        expectedAtributes.add(new Attribute("pulse2"));
+        expectedAtributes.add(BuiltInAttribute.USAGE);
+        expectedAtributes.add(BuiltInAttribute.DEMAND);
+        expectedAtributes.add(new UserDefinedAttribute("totalUsage"));
+        expectedAtributes.add(new UserDefinedAttribute("pulse2"));
 
         Set<Attribute> actualAtributes = service.getAllExistingAtributes(device);
 

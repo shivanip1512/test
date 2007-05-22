@@ -3,27 +3,10 @@ package com.cannontech.common.device.attribute.service;
 import java.util.Set;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.AttributeSource;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LitePoint;
 
 public interface AttributeService {
-
-    /**
-     * Method to get the current value of an attribute from an attribute source
-     * @param source - Source to get the value from
-     * @param attribute - Attribute to get the value for
-     * @return - The value
-     */
-    public abstract double getCurrentValue(AttributeSource source, Attribute attribute);
-
-    /**
-     * Method to get the current state of an attribute from an attribute source
-     * @param source - Source to get the state from
-     * @param attribute - Attribute to get the state for
-     * @return - The state
-     */
-    public abstract String getCurrentStateText(AttributeSource source, Attribute attribute);
 
     /**
      * Method to get the lite point for the given device for the given attribute

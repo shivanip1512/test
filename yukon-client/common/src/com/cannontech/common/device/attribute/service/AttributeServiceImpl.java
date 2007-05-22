@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.AttributeSource;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
@@ -23,16 +22,6 @@ public class AttributeServiceImpl implements AttributeService {
 
     public void setPointService(PointService pointService) {
         this.pointService = pointService;
-    }
-
-    public double getCurrentValue(AttributeSource source, Attribute attribute) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public String getCurrentStateText(AttributeSource source, Attribute attribute) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public LitePoint getPointForAttribute(DeviceBase device, Attribute attribute) {
