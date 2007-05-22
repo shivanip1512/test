@@ -9,7 +9,6 @@
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
 <jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
 <jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
-<jsp:directive.page import="com.cannontech.servlet.filter.WrappedUniqueException"/>
 <jsp:directive.page import="org.apache.commons.lang.exception.ExceptionUtils"/>
 <jsp:directive.page import="com.cannontech.servlet.filter.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
