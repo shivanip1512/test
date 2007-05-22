@@ -6,7 +6,7 @@
     <property name="tag.date" value="${DSTAMP}" />
     <property name="tag.time" value="${TSTAMP}" />
     <property name="yukon.build.version" value="${tag.date}_${yukon.tag}_${tag.time}" />
-    <property name="build.label" value="3_4_0_cc" />
+    <property name="build.label" value="3_5_0_cc" />
     <property name="module.name" value="yukon" />
     <property name="log.dir" value="./logs" />
     <property name="dist.dir" value="./dist" />
@@ -281,7 +281,7 @@
         </copy>
 
         <!-- WebStart Component -->
-        <copy todir="${install.lib/WebStart" preserverlastmodified="true">
+        <copy todir="${install.lib}/WebStart" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/WebStartJRE" />
         </copy>
 
@@ -320,7 +320,7 @@
         </condition>
 
         <length file="${log.dir}/install-error.log" property="file.length" />
-        <echo message="file length: ${file.length}" />
+
         <echo message="${out}" />
 
         <fail message="${errormessage}">
