@@ -1,7 +1,6 @@
 package com.cannontech.billing.format;
 
 import com.cannontech.billing.FileFormatTypes;
-import com.cannontech.billing.foreign.itron.client.ItronClientHandler;
 
 /**
  * Factory class to generate billing formatters
