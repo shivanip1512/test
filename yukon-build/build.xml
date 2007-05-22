@@ -59,8 +59,7 @@
 
     <target name="checkout" depends="init_cvs">
         <echo message="checking out module yukon by tag or branch: ${yukon.tag}" />
-        <cvs dest="${basedir}" 
-             tag="${yukon.tag}"
+        <cvs tag="${yukon.tag}"
              package="${module.name}"
              reallyquiet="false"/>
     </target>
