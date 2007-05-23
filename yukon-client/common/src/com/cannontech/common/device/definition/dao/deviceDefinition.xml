@@ -2075,6 +2075,7 @@
             </point>
             
             <point type="DemandAccumulator">
+            	<attribute name="DEMAND"/>
                 <name>Pulse Input #1 - Demand</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>

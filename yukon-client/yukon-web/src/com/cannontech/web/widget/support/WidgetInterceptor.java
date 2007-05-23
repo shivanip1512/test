@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class WidgetInterceptor extends HandlerInterceptorAdapter {
@@ -31,6 +34,14 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         Map<String, String> newParams = WidgetUtils.combineParameters(reqParams, existingParams);
         request.setAttribute("widgetParameters", newParams);
         return true;
+    }
+    
+    
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
+        JSONObject object = new JSONObject(existingParams);
+        response.addHeader("X-JSON", object.toString());
     }
 
 }

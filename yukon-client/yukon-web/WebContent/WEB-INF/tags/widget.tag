@@ -35,7 +35,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 
 <cti:titledContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer">
 
-<div id="widgetContainer_${widgetParameters.widgetId}">
+<div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height}">
 <c:choose>
 <c:when test="${beanInst.lazyLoad}">
 <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">

@@ -6,11 +6,16 @@ JsWidgetObject.prototype = {
     this.shortName = shortName;
     this.parameters = parameters;
     this.container = "widgetContainer_" + this.parameters.widgetId;
+    this.linkInfo = $H();
   },
 
   render: function() {
     var url = "/spring/widget/" + this.shortName + "/render";
-    new Ajax.Updater(this.container, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true});
+    new Ajax.Updater(this.container, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+  },
+  
+  onSuccess: function(transport, json) {
+    this.parameters = json;
   },
   
   doActionRefresh: function(cmd, actionButton, waitingLabel) {
@@ -18,12 +23,25 @@ JsWidgetObject.prototype = {
     $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
     $(this.container).getElementsBySelector('input').invoke('disable');
     
-//    var restoreIndicators = function() {
-//      $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('hide');
-//      $(actionButton).getElementsByClassName('widgetAction_normal').invoke('show');
-//    };
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(this.container, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true});
+    new Ajax.Updater(this.container, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+  },
+  
+  setupLink: function(key, jsonData){
+  	this.linkInfo[key] = jsonData;
+  },
+
+  doActionLinkRefresh: function(cmd, actionSpan, waitingLabel, key) {
+    $(actionSpan).getElementsByClassName('widgetAction_waiting').invoke('show');
+    $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
+    $(this.container).getElementsBySelector('input').invoke('disable');
+    
+    newParams = $H(this.linkInfo[key]);
+    oldParams = this.getWidgetParameters();
+    oldParams.merge(newParams);
+    
+    var url = "/spring/widget/" + this.shortName + "/" + cmd;
+    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
   },
   
   getWidgetParameters: function() {

@@ -1,0 +1,34 @@
+<%@ attribute name="method" required="true" type="java.lang.String"%>
+<%@ attribute name="labelBusy" required="true" type="java.lang.String"%>
+<%@ attribute name="title" required="true" type="java.lang.String"%>
+
+<%@ attribute name="selected" required="false" type="java.lang.String"%>
+
+<%@ tag  dynamic-attributes="linkParameters" %>
+
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
+
+<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
+
+<script type="text/javascript">
+	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
+</script>
+
+<span id="${thisId}">
+	<span id="widgetActionLink">
+		<c:choose>
+			<c:when test="${selected != null && selected}">
+				<span class="widgetText"><jsp:doBody/></span>
+			</c:when>
+			<c:otherwise>
+				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}')"><jsp:doBody/></a>
+			</c:otherwise>
+		</c:choose>
+	</span>
+<span class="widgetAction_waiting" style="display:none">
+<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" >
+</span>
+</span>

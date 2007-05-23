@@ -5,7 +5,9 @@
 <cti:standardMenu/>
 
 <ct:widgetContainer>
-<ct:widget bean="${param.type}" identify="true" paramMap="${param}"/>
+<div style="height: 400px; width: 400px">
+<ct:widget height="300px" bean="${param.type}" identify="true" paramMap="${param}"/>
+</div>
 </ct:widgetContainer>
 
 </cti:standardPage>

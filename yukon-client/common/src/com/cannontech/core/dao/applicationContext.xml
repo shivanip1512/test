@@ -117,4 +117,8 @@
   <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl" >
       <property name="jdbcOps" ref="jdbcTemplate"/>
   </bean>
+
+  <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" >
+      <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
 </beans>

@@ -252,6 +252,22 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>highBill</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>chart</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>httpRemote</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -721,6 +737,16 @@
 	<servlet-mapping>
 		<servlet-name>editor</servlet-name>
 		<url-pattern>/spring/editor/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>highBill</servlet-name>
+		<url-pattern>/spring/highBill/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>chart</servlet-name>
+		<url-pattern>/spring/chart/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

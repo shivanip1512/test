@@ -265,3 +265,8 @@ table.nameValueTable td.name {
 table.nameValueTable td.value {
 	width: 60%;
 }
+
+
+#widgetActionLink a, span.widgetText {
+	font-size: .75em;
+}
