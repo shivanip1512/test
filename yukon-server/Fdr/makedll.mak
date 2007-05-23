@@ -128,7 +128,8 @@ fdrpi.dll \
 fdrxa21lm.dll \
 fdrlivedata.dll \
 fdrwabash.dll \
-fdrtristatesub.dll 
+fdrtristatesub.dll \
+fdrareva.dll
 
 
 

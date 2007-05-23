@@ -41,7 +41,8 @@ INCLPATHS+= \
 
 FDRTESTOBJS=\
 test_fdrTextImport.obj \
-test_fdrTristateSub.obj 
+test_fdrTristateSub.obj \
+test_fdrAreva.obj
 
 
 CTIFDRLIBS=\
