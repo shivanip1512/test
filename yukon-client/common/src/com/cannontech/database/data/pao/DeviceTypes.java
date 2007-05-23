@@ -190,7 +190,16 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_RTU_MODBUS = {"RTU-MODBUS", "RTUMODBUS"};
    	public static final String[] STRING_RTU_DART = {"RTU-DART", "RTUDART"};
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
-	public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
+    //general RTU - used by point picker to get status point for ANY RTU
+    public static final String[] STRING_RTU_X = {
+                                                    STRING_RTU_WELCO[0],STRING_RTU_WELCO[1], 
+                                                    STRING_RTU_DART[0],STRING_RTU_DART[1],
+                                                    STRING_RTU_MODBUS[0],STRING_RTU_MODBUS[1],
+                                                    STRING_RTU_DNP[0],STRING_RTU_DNP[1],
+                                                    STRING_RTU_ILEX[0],STRING_RTU_ILEX [1]
+                                                };
+	
+    public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
 	public static final String[] STRING_SNPP_TERMINAL = {"SNPP TERMINAL"};
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};
