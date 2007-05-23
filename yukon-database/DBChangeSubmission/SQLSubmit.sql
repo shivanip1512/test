@@ -12,4 +12,9 @@ insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo',
 insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
 select * from yukonroleproperty where rolepropertyid = -10814;
 
+/** Elliot - added target settings for oneline feeder**/
+insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'display target settings');
+go
+/***************************************/
+
 

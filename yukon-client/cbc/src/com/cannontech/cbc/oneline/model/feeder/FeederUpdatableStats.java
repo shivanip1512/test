@@ -29,6 +29,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
     public static final String LBL_DAILYOPS = "Daily Ops: ";
     private static final String LBL_WATT = "Watt";
     private static final String LBL_VOLT = "Volt";
+    private static final String LBL_TARGET = "Target: ";
+    
     private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_KVAR,
                                                                                   this);
     private UpdatableTextList pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,
@@ -39,6 +41,9 @@ public class FeederUpdatableStats extends LxAbstractView implements
                                                                this);
     private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_VOLT,
                                                                                    this);
+
+    private UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TARGET,
+                                                               this);
 
     private LxGraph graph;
     private OnelineFeeder parent;
@@ -69,6 +74,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
         propLabelMap.put(CBCOnelineSettingsRole.FDR_WATT, LBL_WATT);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_OP_CNT, LBL_DAILYOPS);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_VOLT, LBL_VOLT);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_TARGET, LBL_TARGET);
 
     }
 
@@ -83,7 +89,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
                           CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_VOLT,
                           CBCDisplay.FDR_ONELINE_VOLTS_COLUMN);
-
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_TARGET,
+                          CBCDisplay.FDR_TARGET_COLUMN);
     }
 
     private Feeder getStreamable() {
@@ -166,6 +173,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
         initPointQualCheckable();
         allStats.add(pFactor);
         allStats.add(dailyOps);
+        allStats.add(target);
 
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();

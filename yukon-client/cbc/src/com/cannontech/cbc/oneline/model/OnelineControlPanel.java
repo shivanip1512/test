@@ -39,8 +39,8 @@ public class OnelineControlPanel {
 
     private void drawRegenerateLink() {
 
-        regenerateDraw.setX(getBackButton().getX() + 70);
-        regenerateDraw.setY(getBackButton().getY());
+        regenerateDraw.setX(getBackButton().getX());
+        regenerateDraw.setY(getBackButton().getY() + 50);
         Integer id = drawing.getSub().getSubBusMsg().getCcId();
         String regenerateLink = "/capcontrol/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + getBackButton().getLinkTo();
         regenerateDraw.setLinkTo(regenerateLink);

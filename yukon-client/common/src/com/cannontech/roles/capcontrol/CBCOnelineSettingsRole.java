@@ -28,6 +28,7 @@ public interface CBCOnelineSettingsRole {
     public static final int FDR_WATT = FDR_ONELINE_PROPID_BASE - 2;
     public static final int FDR_OP_CNT = FDR_ONELINE_PROPID_BASE - 3;
     public static final int FDR_VOLT = FDR_ONELINE_PROPID_BASE - 4;
+    public static final int FDR_TARGET = FDR_ONELINE_PROPID_BASE - 5;
     
     
     
