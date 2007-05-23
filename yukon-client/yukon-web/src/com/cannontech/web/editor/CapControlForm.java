@@ -28,7 +28,6 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
-
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
@@ -36,11 +35,11 @@ import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
+import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.point.CBCPointFactory;
-import com.cannontech.common.search.criteria.CBCControlPointCriteria;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
@@ -124,7 +123,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private List unassignedFeeders = null;
 
 	// possible selection types for every wizard panel
-	private EditorDataModel wizData = null;
+	private CBCCreationModel wizData = null;
 
 	// possible editor for the CBC a CapBank belongs to
 	private ICBControllerModel cbControllerEditor = null;
@@ -1172,9 +1171,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				
 				
 				// for CBCs that have a portID with it
-				if (DeviceTypesFuncs.cbcHasPort(paoType))
-					((ICapBankController) dbObj).setCommID(((LiteYukonPAObject) getWizData())
-							.getPortID());
+				if (DeviceTypesFuncs.cbcHasPort(paoType)) {
+                    ICapBankController capBankController = (ICapBankController) dbObj;
+                    capBankController.setCommID(getWizData().getPortID());
+                }
                 
 
 				createPreItems(paoType, dbObj, facesMsg);
@@ -2148,7 +2148,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	/* (non-Javadoc)
      * @see com.cannontech.web.editor.ICapControlModel#getWizData()
      */
-	public EditorDataModel getWizData() {
+	public CBCCreationModel getWizData() {
 
 		if (wizData == null)
 			wizData = new CBCWizardModel();
