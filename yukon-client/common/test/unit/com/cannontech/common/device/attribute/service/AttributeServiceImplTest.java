@@ -11,9 +11,9 @@ import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.service.PointServiceImpl;
-import com.cannontech.common.mock.MockDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class AttributeServiceImplTest extends TestCase {
@@ -21,7 +21,7 @@ public class AttributeServiceImplTest extends TestCase {
     private AttributeServiceImpl service = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private MockPointDao pointDao = null;
-    private MockDevice device = null;
+    private LiteYukonPAObject device = null;
 
     protected void setUp() throws Exception {
 
@@ -40,10 +40,9 @@ public class AttributeServiceImplTest extends TestCase {
         pointService.setPointDao(pointDao);
         service.setPointService(pointService);
 
-        device = new MockDevice();
-        device.setDeviceType("device1");
-        device.setPAOName("Test Device");
-        device.setDeviceID(1);
+        device = new LiteYukonPAObject(1);
+        device.setType(1019);
+        device.setPaoName("Test Device");
 
     }
 
@@ -60,7 +59,7 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for device that doesn't exist
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             service.getPointForAttribute(device, new UserDefinedAttribute("invalid"));
             fail("getPointForAttribute should've thrown exception for invalid device");
         } catch (IllegalArgumentException e) {
@@ -90,8 +89,6 @@ public class AttributeServiceImplTest extends TestCase {
         Set<Attribute> expectedAtributes = new HashSet<Attribute>();
         expectedAtributes.add(BuiltInAttribute.USAGE);
         expectedAtributes.add(BuiltInAttribute.DEMAND);
-        expectedAtributes.add(new UserDefinedAttribute("totalUsage"));
-        expectedAtributes.add(new UserDefinedAttribute("pulse2"));
 
         Set<Attribute> actualAtributes = service.getAllExistingAtributes(device);
 
@@ -100,14 +97,14 @@ public class AttributeServiceImplTest extends TestCase {
         // Test for device with no attributes
         expectedAtributes = new HashSet<Attribute>();
 
-        device.setDeviceType("device3");
+        device.setType(1036);
         actualAtributes = service.getAllExistingAtributes(device);
 
         assertEquals("There shouldn't be any attributes", expectedAtributes, actualAtributes);
 
         // Test with invalid device
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             actualAtributes = service.getAllExistingAtributes(device);
         } catch (IllegalArgumentException e) {
             // expected exception

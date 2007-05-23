@@ -10,6 +10,7 @@ import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class AttributeServiceImpl implements AttributeService {
 
@@ -24,18 +25,18 @@ public class AttributeServiceImpl implements AttributeService {
         this.pointService = pointService;
     }
 
-    public LitePoint getPointForAttribute(DeviceBase device, Attribute attribute) {
+    public LitePoint getPointForAttribute(LiteYukonPAObject device, Attribute attribute) {
 
         PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateForAttribute(device,
                                                                                        attribute);
         return pointService.getPointForDevice(device, pointTemplate);
     }
 
-    public Set<Attribute> getAvailableAttributes(DeviceBase device) {
+    public Set<Attribute> getAvailableAttributes(LiteYukonPAObject device) {
         return deviceDefinitionDao.getAvailableAttributes(device);
     }
 
-    public Set<Attribute> getAllExistingAtributes(DeviceBase device) {
+    public Set<Attribute> getAllExistingAtributes(LiteYukonPAObject device) {
 
         Set<Attribute> attributes = new HashSet<Attribute>();
 

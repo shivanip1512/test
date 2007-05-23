@@ -1,24 +1,17 @@
 package com.cannontech.database.data.device;
 
-import java.util.Set;
-
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.AttributeSource;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DynamicDeviceScanData;
 import com.cannontech.database.db.device.DynamicVerification;
-import com.cannontech.spring.YukonSpringHook;
 
 
 /**
  * This type was created in VisualAge.
  */
-public abstract class DeviceBase extends com.cannontech.database.data.pao.YukonPAObject implements com.cannontech.common.editor.EditorPanel, AttributeSource
+public abstract class DeviceBase extends com.cannontech.database.data.pao.YukonPAObject implements com.cannontech.common.editor.EditorPanel
 {
 	private Device device = null;
 	protected boolean isPartialDelete;
@@ -110,6 +103,10 @@ public boolean equals(Object obj)
 	else
 		return super.equals(obj);
 	
+}
+
+public int hashCode() {
+    return getDevice().getDeviceID().hashCode();
 }
 /**
  * This method was created in VisualAge.
@@ -235,25 +232,4 @@ public void update() throws java.sql.SQLException
 	super.update();
 	getDevice().update();
 }
-
-    /**
-     * Method to get the lite point from this device for a given attribute
-     * @param attribute - Attribute to get point for
-     * @return The point for the given attribute
-     */
-    public LitePoint getPointForAttribute(Attribute attribute) {
-        AttributeService attributeService = 
-            (AttributeService) YukonSpringHook.getBean("attributeService");
-        return attributeService.getPointForAttribute(this, attribute);
-    }
-
-    /**
-     * Method to get a set of attributes available for this device
-     * @return All attributes available for this device
-     */
-    public Set<Attribute> getAvailableAttributes() {
-        AttributeService attributeService = 
-            (AttributeService) YukonSpringHook.getBean("attributeService");
-        return attributeService.getAvailableAttributes(this);
-    }
 }

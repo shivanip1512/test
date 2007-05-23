@@ -12,6 +12,8 @@ import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.notification.NotificationGroup;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
@@ -436,10 +438,13 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	/* TODO add SystemRole,YukonRoleProperty */
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
-		returnLite = new LiteYukonPAObject( 
-			((com.cannontech.database.data.pao.YukonPAObject)val).getPAObjectID().intValue(),
-			((com.cannontech.database.data.pao.YukonPAObject)val).getPAOName() );
-			
+		YukonPAObject yukonPAObject = ((com.cannontech.database.data.pao.YukonPAObject)val);
+        LiteYukonPAObject thisLite = new LiteYukonPAObject( 
+			yukonPAObject.getPAObjectID().intValue(),
+			yukonPAObject.getPAOName() );
+        int type = PAOGroups.getPAOType(yukonPAObject.getPAOCategory(), yukonPAObject.getPAOType());
+        thisLite.setType(type);
+        returnLite = thisLite;
 	}
    else if( val instanceof com.cannontech.database.db.state.YukonImage )
    {

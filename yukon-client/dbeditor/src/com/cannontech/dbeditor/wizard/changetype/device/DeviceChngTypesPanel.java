@@ -32,6 +32,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -283,7 +284,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         } else {
             LitePoint point = null;
             for (PointTemplate template : templates) {
-                point = pointService.getPointForDevice(getCurrentDevice(), template);
+                LiteYukonPAObject liteDevice = (LiteYukonPAObject) LiteFactory.createLite(getCurrentDevice());
+                point = pointService.getPointForDevice(liteDevice, template);
                 buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
             }
         }
@@ -308,7 +310,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         for (PointTemplate template : transferTemplates) {
 
-            LitePoint litePoint = attributeService.getPointForAttribute(getCurrentDevice(),
+            LiteYukonPAObject liteDevice = (LiteYukonPAObject) LiteFactory.createLite(getCurrentDevice());
+            LitePoint litePoint = attributeService.getPointForAttribute(liteDevice,
                                                                         template.getAttribute());
             PointBase point = (PointBase) LiteFactory.createDBPersistent(litePoint);
 

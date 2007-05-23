@@ -19,13 +19,13 @@ import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointReference;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplateImpl;
-import com.cannontech.common.mock.MockDevice;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
-import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 /**
@@ -34,7 +34,7 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
 public class DeviceDefinitionDaoImplTest extends TestCase {
 
     private DeviceDefinitionDao dao = null;
-    private DeviceBase device = null;
+    private LiteYukonPAObject device = null;
 
     public static DeviceDefinitionDao getTestDeviceDefinitionDao() throws Exception {
 
@@ -45,7 +45,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                         .getClassLoader()
                                                         .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
         ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
-        ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(MockPaoGroups.class.getName());
+        ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
         ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
         ((DeviceDefinitionDaoImpl) dao).setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
         ((DeviceDefinitionDaoImpl) dao).initialize();
@@ -57,8 +57,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         dao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
 
-        device = new MockDevice();
-        device.setDeviceType("device1");
+        device = new LiteYukonPAObject(10);
+        device.setType(1019);
     }
 
     /**
@@ -70,8 +70,6 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Set<Attribute> expectedAttributes = new HashSet<Attribute>();
         expectedAttributes.add(BuiltInAttribute.USAGE);
         expectedAttributes.add(BuiltInAttribute.DEMAND);
-        expectedAttributes.add(new UserDefinedAttribute("totalUsage"));
-        expectedAttributes.add(new UserDefinedAttribute("pulse2"));
 
         Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
 
@@ -79,7 +77,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with unsupported device type
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             dao.getAvailableAttributes(device);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
@@ -107,7 +105,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with invalid attribute for the device
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             dao.getPointTemplateForAttribute(device, new UserDefinedAttribute("invalid"));
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
@@ -118,7 +116,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with unsupported device type
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
@@ -150,7 +148,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with unsupported device type
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             dao.getAvailableAttributes(device);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
@@ -181,7 +179,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with unsupported device type
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             dao.getAvailableAttributes(device);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
@@ -229,10 +227,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetDeviceDefinition() {
 
         // Test with supported device type
-        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(1,
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(1019,
                                                                        "Device 1",
                                                                        "display1",
-                                                                       "constant1",
+                                                                       "MCT310",
                                                                        "change1");
         assertEquals("device1 definition is not as expected",
                      expectedDefinition,
@@ -240,7 +238,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with unsupported device type
         try {
-            device.setDeviceType("invalid");
+            device.setType(-1);
             dao.getDeviceDefinition(device);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
@@ -257,18 +255,18 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported change group
         Set<DeviceDefinition> expectedDeviceTypesList = new HashSet<DeviceDefinition>();
-        expectedDeviceTypesList.add(new DeviceDefinitionImpl(1,
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(1019,
                                                              "Device 1",
                                                              "display1",
-                                                             "constant1",
+                                                             "MCT310",
                                                              "change1"));
-        expectedDeviceTypesList.add(new DeviceDefinitionImpl(2,
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(1022,
                                                              "Device 2",
                                                              "display1",
-                                                             "constant2",
+                                                             "MCT370",
                                                              "change1"));
 
-        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(1,
+        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(1019,
                                                                    "test",
                                                                    "test",
                                                                    "test",
@@ -388,7 +386,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     true,
-                                                    new UserDefinedAttribute("totalUsage")));
+                                                    null));
 
         return expectedTemplates;
 
@@ -413,7 +411,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     0,
                                                     false,
-                                                    new UserDefinedAttribute("pulse2")));
+                                                    null));
 
         // Status
         expectedTemplates.add(new PointTemplateImpl("status1", 0, 1, 1.0, -1, 0, false, null));
@@ -448,20 +446,11 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         public int getDeviceType(String typeString) {
 
-            if ("device1".equals(typeString)) {
-                return constant1;
-            } else if ("device2".equals(typeString)) {
-                return constant2;
-            } else if ("device3".equals(typeString)) {
-                return constant3;
-            }
-
-            throw new IllegalArgumentException("Device type '" + typeString
-                    + "' is not supported for testing");
+            throw new UnsupportedOperationException();
         }
 
         public String getPAOTypeString(int type) {
-            return null;
+            return Integer.toString(type);
         }
 
     }

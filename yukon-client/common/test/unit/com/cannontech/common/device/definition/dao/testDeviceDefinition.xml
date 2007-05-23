@@ -9,7 +9,7 @@ This file contains default device and point information for all of the devices i
     
     <!-- Group 1 -->
     <device>
-        <type value="1" javaConstant="constant1" changeGroup="change1" />
+        <type value="1019" javaConstant="MCT310" changeGroup="change1" />
         <displayName value="Device 1"/>
         <displayGroup value="display1"/>
         <points>
@@ -22,7 +22,6 @@ This file contains default device and point information for all of the devices i
             </point>
 
             <point type="PulseAccumulator">
-                <attribute name="pulse2"/>
                 <name>pulse2</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
@@ -38,7 +37,6 @@ This file contains default device and point information for all of the devices i
             </point>
             
             <point init="true" type="Analog">
-                <attribute name="totalUsage"/>
                 <name>analog1</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -66,12 +64,11 @@ This file contains default device and point information for all of the devices i
         </commands>
     </device>
     <device>
-        <type value="2" javaConstant="constant2" changeGroup="change1" />
+        <type value="1022" javaConstant="MCT370" changeGroup="change1" />
         <displayName value="Device 2"/>
         <displayGroup value="display1"/>
         <points>
             <point type="PulseAccumulator">
-                <attribute name="pulse2"/>
                 <name>pulse2</name>
                 <offset value="3"/>
                 <multiplier value="0.1"/>
@@ -90,7 +87,7 @@ This file contains default device and point information for all of the devices i
     
     <!-- Group 2 -->
     <device>
-        <type value="3" javaConstant="constant3" />
+        <type value="1036" javaConstant="MCT318L" />
         <displayName value="Device 3"/>
         <displayGroup value="display2"/>
         <points>

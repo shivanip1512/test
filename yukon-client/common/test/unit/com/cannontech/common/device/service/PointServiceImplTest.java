@@ -6,16 +6,16 @@ package com.cannontech.common.device.service;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.definition.model.PointTemplateImpl;
-import com.cannontech.common.mock.MockDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PointServiceImplTest extends TestCase {
 
     private PointService service = null;
-    private MockDevice device = null;
+    private LiteYukonPAObject device = null;
 
     protected void setUp() throws Exception {
 
@@ -29,10 +29,9 @@ public class PointServiceImplTest extends TestCase {
 
         service = impl;
 
-        device = new MockDevice();
-        device.setDeviceType("device1");
-        device.setPAOName("Test Device");
-        device.setDeviceID(1);
+        device = new LiteYukonPAObject(1);
+        device.setType(1);
+        device.setPaoName("Test Device");
     }
 
     /**

@@ -32,6 +32,7 @@ import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -61,7 +62,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     public List<PointBase> createDefaultPointsForDevice(DeviceBase device) {
 
         List<PointBase> pointList = new ArrayList<PointBase>();
-        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getInitPointTemplates(device);
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getInitPointTemplates(liteDevice);
         for (PointTemplate template : pointTemplates) {
             pointList.add(pointService.createPoint(device.getPAObjectID(), template));
         }
@@ -72,7 +74,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     public List<PointBase> createAllPointsForDevice(DeviceBase device) {
 
         List<PointBase> pointList = new ArrayList<PointBase>();
-        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getAllPointTemplates(device);
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getAllPointTemplates(liteDevice);
         for (PointTemplate template : pointTemplates) {
             pointList.add(pointService.createPoint(device.getPAObjectID(), template));
         }
@@ -85,7 +88,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     }
 
     public boolean isDeviceTypeChangeable(DeviceBase device) {
-        return deviceDefinitionDao.getDeviceDefinition(device).isChangeable();
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        return deviceDefinitionDao.getDeviceDefinition(liteDevice).isChangeable();
     }
 
     public Set<DeviceDefinition> getChangeableDevices(DeviceBase device) {
@@ -96,7 +100,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
                     + " is not changeable");
         }
 
-        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(liteDevice);
 
         // Get all of the devices in the device's change group
         Set<DeviceDefinition> devices = deviceDefinitionDao.getChangeableDevices(deviceDefinition);
@@ -131,13 +136,14 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
         this.validateChange(device, newDefinition);
 
-        Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(device);
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(liteDevice);
 
         // Get rid of any point templates for which a point doesn't exist for
         // the device
         Set<PointTemplate> nonExistingPointSet = new HashSet<PointTemplate>();
         for (PointTemplate template : existingTemplates) {
-            if (!pointService.pointExistsForDevice(device, template)) {
+            if (!pointService.pointExistsForDevice(liteDevice, template)) {
                 nonExistingPointSet.add(template);
             }
         }
@@ -266,7 +272,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
             boolean loadProfileExists = false;
             try {
-                attributeService.getPointForAttribute(oldDevice, BuiltInAttribute.LOAD_PROFILE);
+                LiteYukonPAObject liteDevice = getLiteForDevice(oldDevice);
+                attributeService.getPointForAttribute(liteDevice, BuiltInAttribute.LOAD_PROFILE);
                 loadProfileExists = true;
             } catch (NotFoundException e) {
                 // Do nothing - no load profile point
@@ -326,8 +333,10 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         Set<PointTemplate> newTemplates = this.getNewPointTemplatesForTransfer(device,
                                                                                newDefinition);
 
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+
         for (PointTemplate template : transferTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(device, template);
+            LitePoint litePoint = pointService.getPointForDevice(liteDevice, template);
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 
             Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, point);
@@ -387,8 +396,10 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
         Set<PointTemplate> removeTemplates = this.getPointTemplatesToRemove(device, newDefinition);
 
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+
         for (PointTemplate template : removeTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(device, template);
+            LitePoint litePoint = pointService.getPointForDevice(liteDevice, template);
 
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
             Transaction t = Transaction.createTransaction(Transaction.DELETE, point);
@@ -405,7 +416,8 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
      */
     private void validateChange(DeviceBase device, DeviceDefinition newDefinition) {
 
-        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(liteDevice);
 
         if (deviceDefinition.getChangeGroup() == null
                 || !deviceDefinition.getChangeGroup().equals(newDefinition.getChangeGroup())) {
@@ -449,10 +461,11 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
      */
     private Set<PointTemplate> getExistingPointTemplates(DeviceBase device) {
 
-        Set<Attribute> atributes = attributeService.getAllExistingAtributes(device);
+        LiteYukonPAObject liteDevice = getLiteForDevice(device);
+        Set<Attribute> atributes = attributeService.getAllExistingAtributes(liteDevice);
         Set<PointTemplate> templates = new HashSet<PointTemplate>();
         for (Attribute attribute : atributes) {
-            templates.add(deviceDefinitionDao.getPointTemplateForAttribute(device, attribute));
+            templates.add(deviceDefinitionDao.getPointTemplateForAttribute(liteDevice, attribute));
         }
 
         return templates;
@@ -474,6 +487,10 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
         throw new NotFoundException("The set of templates does not contain a template with attribute: "
                 + attribute.getKey());
+    }
+    
+    private LiteYukonPAObject getLiteForDevice(DeviceBase deviceBase) {
+        return (LiteYukonPAObject) LiteFactory.createLite(deviceBase);
     }
 
 }

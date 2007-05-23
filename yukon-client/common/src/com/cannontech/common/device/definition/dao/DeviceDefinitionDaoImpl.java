@@ -33,9 +33,9 @@ import com.cannontech.common.device.definition.model.castor.PointRef;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
-import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -93,22 +93,22 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.unitMeasureDao = unitMeasureDao;
     }
 
-    public Set<Attribute> getAvailableAttributes(DeviceBase device) {
+    public Set<Attribute> getAvailableAttributes(LiteYukonPAObject device) {
 
-        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+        Integer deviceType = device.getType();
         if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
             Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
             return Collections.unmodifiableSet(attributeMap.keySet());
         } else {
-            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+            throw new IllegalArgumentException("Device type '" + device.getType()
                     + "' is not supported.");
         }
 
     }
 
-    public PointTemplate getPointTemplateForAttribute(DeviceBase device, Attribute attribute) {
+    public PointTemplate getPointTemplateForAttribute(LiteYukonPAObject device, Attribute attribute) {
 
-        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+        Integer deviceType = device.getType();
         if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
             Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
             if (attributeMap.containsKey(attribute)) {
@@ -118,13 +118,13 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                         + " is not supported for Device type '" + deviceType + "'");
             }
         } else {
-            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+            throw new IllegalArgumentException("Device type '" + device.getType()
                     + "' is not supported.");
         }
     }
 
-    public Set<PointTemplate> getAllPointTemplates(DeviceBase device) {
-        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+    public Set<PointTemplate> getAllPointTemplates(LiteYukonPAObject device) {
+        Integer deviceType = device.getType();
         return this.getAllPointTemplates(deviceType);
     }
 
@@ -132,8 +132,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         return this.getAllPointTemplates(deviceDefinition.getType());
     }
 
-    public Set<PointTemplate> getInitPointTemplates(DeviceBase device) {
-        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+    public Set<PointTemplate> getInitPointTemplates(LiteYukonPAObject device) {
+        Integer deviceType = device.getType();
         return this.getInitPointTemplates(deviceType);
     }
 
@@ -164,23 +164,23 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    public DeviceDefinition getDeviceDefinition(DeviceBase device) {
+    public DeviceDefinition getDeviceDefinition(LiteYukonPAObject device) {
 
-        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+        Integer deviceType = device.getType();
         if (this.deviceTypeMap.containsKey(deviceType)) {
             return this.deviceTypeMap.get(deviceType);
         } else {
-            throw new IllegalArgumentException("Device type '" + device.getPAOType()
+            throw new IllegalArgumentException("Device type '" + device.getType()
                     + "' is not supported.");
         }
 
     }
 
-    public Set<CommandDefinition> getAffected(DeviceBase device, Set<PointTemplate> pointSet) {
+    public Set<CommandDefinition> getAffected(LiteYukonPAObject device, Set<PointTemplate> pointSet) {
 
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
 
-        Integer deviceType = paoGroupsWrapper.getDeviceType(device.getPAOType());
+        Integer deviceType = device.getType();
         Set<CommandDefinition> allCommandSet = this.deviceCommandMap.get(deviceType);
 
         for (CommandDefinition command : allCommandSet) {
