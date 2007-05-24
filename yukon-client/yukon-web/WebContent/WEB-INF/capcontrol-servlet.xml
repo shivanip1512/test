@@ -15,6 +15,10 @@
 				<entry key="/cbcAjaxController">
 					<ref bean="cbcAjaxController" />
 				</entry>
+				<entry key="/onelineBookmark">
+					<ref bean="onelineBookmarkController" />
+				</entry>
+
 			</map>
 		</property>
 	</bean>
@@ -48,12 +52,16 @@
 	</bean>
 	<bean id="capBankAdditionalController"
 		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
+
 	<bean id="cbcAjaxController"
 		class="com.cannontech.web.editor.CBCAjaxMultiActionController">
 		<property name="methodNameResolver">
 			<ref bean="methodNameResolver" />
 		</property>
 	</bean>
+
+	<bean id="onelineBookmarkController"
+		class="com.cannontech.web.editor.OnelineBookmarkController" />
 	
 	<!-- Method name resolvers -->
 	<bean id="methodNameResolver"

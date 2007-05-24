@@ -546,12 +546,6 @@
 			com.cannontech.servlet.CBCReasonUpdaterServlet
 		</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>OnelineBookmarkServlet</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.OnelineBookmarkServlet
-		</servlet-class>
-	</servlet>
 	
 	<!-- End CapControl specific configs -->
 	<!-- esub specific servlets -->
@@ -872,15 +866,6 @@
 		<servlet-name>CBCServlet</servlet-name>
 		<url-pattern>/servlet/CBCServlet</url-pattern>
 	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>OnelineBookmarkServlet</servlet-name>
-		<url-pattern>
-			/capcontrol/oneline/OnelineBookmarkServlet
-		</url-pattern>
-	</servlet-mapping>
-
-
 
 	<servlet-mapping>
 		<servlet-name>OnelineCBCServlet</servlet-name>
