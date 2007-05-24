@@ -68,7 +68,7 @@
     </bean>
         
     <bean id="userGroupSelector" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="/userGroupSelector"/>
+      <property name="viewName" value="userGroupSelector"/>
     </bean>
     
 </beans>
