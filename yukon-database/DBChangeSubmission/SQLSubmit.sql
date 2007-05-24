@@ -18,3 +18,8 @@ go
 /***************************************/
 
 
+/** Jason - update devicetypecommand with new 430 names (into head AND 3.4) **/
+update devicetypecommand set devicetype='MCT-430A' where devicetype = 'MCT-430EL';
+update devicetypecommand set devicetype='MCT-430S4' where devicetype = 'MCT-430LG';
+update devicetypecommand set devicetype='MCT-430SN' where devicetype = 'MCT-430IN';
+/***************************************/
