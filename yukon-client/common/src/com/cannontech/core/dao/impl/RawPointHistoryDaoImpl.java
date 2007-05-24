@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Implementation of RawPointHistoryDao
@@ -25,7 +26,21 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate) {
 
-        String sql = "SELECT DISTINCT                                                   " + "       pointid,                                                        " + "       timestamp,                                                      " + "       value                                                           " + "   FROM                                                                " + "       rawpointhistory                                                 " + "   WHERE                                                               " + "       pointid IN (?)                                                  " + "       AND (timestamp > ? AND timestamp <= ? )                         " + "   ORDER BY                                                            " + "       pointid,                                                        " + "       timestamp";
+        String sql = "SELECT DISTINCT                                           " + 
+        "       rph.pointid,                                                    " + 
+        "       rph.timestamp,                                                  " + 
+        "       rph.value,                                                      " + 
+        "       p.pointtype                                                     " + 
+        "   FROM                                                                " + 
+        "       rawpointhistory rph,                                            " + 
+        "       point p                                                         " + 
+        "   WHERE                                                               " + 
+        "       rph.pointid IN (?)                                              " + 
+        "       AND (rph.timestamp > ? AND rph.timestamp <= ? )                 " + 
+        "       AND rph.pointid = p.pointid                                     " + 
+        "   ORDER BY                                                            " + 
+        "       rph.pointid,                                                    " + 
+        "       rph.timestamp";
 
         return jdbcTemplate.query(sql, new LiteRPHRowMapper(), pointId, startDate, stopDate);
 
@@ -38,9 +53,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
         public PointValueHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
 
+            final int pointId = rs.getInt("pointid");
             final Timestamp timestamp = rs.getTimestamp("timestamp");
             final double value = rs.getDouble("value");
 
+            final int type = PointTypes.getType(rs.getString("pointtype"));
+            
             return new PointValueHolder() {
 
                 public double getValue() {
@@ -48,7 +66,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 }
 
                 public int getType() {
-                    return 0;
+                    return type;
                 }
 
                 public Date getPointDataTimeStamp() {
@@ -56,7 +74,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 }
 
                 public int getId() {
-                    return 0;
+                    return pointId;
                 }
 
             };

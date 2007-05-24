@@ -1,5 +1,7 @@
 package com.cannontech.common.chart.service.impl;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +18,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointUnit;
 
 /**
  * Implementation of the ChartService
@@ -24,7 +27,7 @@ public class ChartServiceImpl implements ChartService {
 
     private RawPointHistoryDao rphDao = null;
     private PointDao pointDao = null;
-    private SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
 
     public void setRphDao(RawPointHistoryDao rphDao) {
         this.rphDao = rphDao;
@@ -42,6 +45,13 @@ public class ChartServiceImpl implements ChartService {
 
             // Get the point data for the time period
             List<PointValueHolder> pointData = rphDao.getPointData(pointId, startDate, stopDate);
+            
+            // Set up the formatting based on the point unit
+            LitePointUnit pointUnit = pointDao.getPointUnit(pointId);
+            NumberFormat pointValueFormat = new DecimalFormat();
+            pointValueFormat.setMaximumFractionDigits(pointUnit.getDecimalPlaces());
+            pointValueFormat.setMinimumFractionDigits(pointUnit.getDecimalPlaces());
+            pointValueFormat.setGroupingUsed(false);
 
             // Make a list of each of the data points
             List<ChartValue> chartData = new ArrayList<ChartValue>();
@@ -50,8 +60,8 @@ public class ChartServiceImpl implements ChartService {
                 ChartValue value1 = new ChartValue();
 
                 value1.setId(data.getPointDataTimeStamp().getTime());
-                value1.setValue(String.valueOf(data.getValue()));
-                value1.setDescription(format.format(data.getPointDataTimeStamp()));
+                value1.setValue(pointValueFormat.format(data.getValue()));
+                value1.setDescription(timeFormat.format(data.getPointDataTimeStamp()));
                 chartData.add(value1);
             }
 
