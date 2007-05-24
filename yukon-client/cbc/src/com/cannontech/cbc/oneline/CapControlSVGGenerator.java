@@ -194,7 +194,7 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
                              svgRoot.getFirstChild());
         svgRoot.insertBefore(createScriptElement(doc, "cgui_lib.js"),
                              svgRoot.getFirstChild());
-        svgRoot.insertBefore(createScriptElement(doc, "prototype.js"),
+        svgRoot.insertBefore(createScriptElement(doc, "prototype150.js"),
                              svgRoot.getFirstChild());
         svgRoot.insertBefore(createScriptElement(doc, "cc.js"),
                              svgRoot.getFirstChild());
