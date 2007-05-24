@@ -20,7 +20,7 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
     private String[] files = {
             "AnchorPosition.js",
             "PopupWindow.js", 
-            "prototype.js",  "scriptaculous/scriptaculous.js", "cc.js", "cccommands.js", "cconelinepopup.js"  };
+            "prototype150.js",  "scriptaculous/scriptaculous.js", "cc.js", "cccommands.js", "cconelinepopup.js"  };
 
     public OnelineHTMLGenerator() {
         super();
