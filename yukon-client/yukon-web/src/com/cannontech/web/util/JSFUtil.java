@@ -91,12 +91,15 @@ public abstract class JSFUtil {
 
     public static void resetBackingBean(String beanName) {
 
-        FacesContext.getCurrentInstance()
-                    .getApplication()
-                    .createValueBinding("#{" + beanName + "}")
-                    .setValue(FacesContext.getCurrentInstance(), null);
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        if (currentInstance != null)
+        {
+            currentInstance
+                        .getApplication()
+                        .createValueBinding("#{" + beanName + "}")
+                        .setValue(FacesContext.getCurrentInstance(), null);
+        }
     }
-
     public static LiteYukonUser getYukonUser() {
         FacesContext facesCxtInstance = FacesContext.getCurrentInstance();
         LiteYukonUser liteYukonUser = null;

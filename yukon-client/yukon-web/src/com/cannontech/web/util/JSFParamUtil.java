@@ -36,10 +36,14 @@ public class JSFParamUtil
 	{
 		if( varName == null )		
 			return null;
-		else
-			return
-				FacesContext.getCurrentInstance().getApplication().getVariableResolver().resolveVariable(
-					FacesContext.getCurrentInstance(), varName );
+        else {
+            FacesContext currentInstance = FacesContext.getCurrentInstance();
+			if (currentInstance != null)	
+                return currentInstance.getApplication().getVariableResolver().resolveVariable(
+    					FacesContext.getCurrentInstance(), varName );
+            else 
+                return null;
+        }
 	}
 	
 	/**
