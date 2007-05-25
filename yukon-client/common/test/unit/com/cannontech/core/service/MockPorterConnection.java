@@ -64,4 +64,7 @@ public class MockPorterConnection implements BasicServerConnection {
         }
     }
 
+    public boolean isValid() {
+        return true;
+    }
 }

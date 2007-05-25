@@ -16,7 +16,6 @@ public interface IServerConnection extends BasicServerConnection
 
 	int getTimeToReconnect();
 	boolean isMonitorThreadAlive(); 
-    public boolean isValid();
 
     void setAutoReconnect(boolean val);
 

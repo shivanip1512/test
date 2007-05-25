@@ -12,4 +12,5 @@ public interface BasicServerConnection {
 
     public void removeMessageListener(MessageListener l);
 
+    public boolean isValid();
 }
