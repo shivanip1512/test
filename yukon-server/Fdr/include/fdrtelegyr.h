@@ -55,7 +55,8 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       string   _appName;
       string   _apiVersion;
 
-      CtiTime      _reloadTimer;
+      CtiTime     _reloadTimer;
+      CtiTime     _reportTimer;
 
       vector< CtiTelegyrGroup >  _groupList;
 
