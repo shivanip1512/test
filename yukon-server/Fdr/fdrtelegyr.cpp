@@ -1,3 +1,18 @@
+/*==============================================================================================================================
+    AUTHOR:    Eric Schmit
+
+    PURPOSE:   Interface to the Telegyr EMS
+
+Things to note about telegyr learned the hard way...
+
+-The ems will get angry if you ask it to reload it's groups/points too often.  
+   No faster than every 5 minutes seems to work ok
+
+-The ems will tell you when he has reloaded, then you can switch your lists.  
+   If you don't wait, your points/data will get wonky looking because the point ids and data won't match up.
+
+-It appears that you may build up to 128 groups with up to 128 points in each
+==============================================================================================================================*/
 #include "yukon.h"
 
 
@@ -47,7 +62,7 @@
 #include "fdrtelegyr.h"
 
 /** local definitions **/
-#define FDR_TELEGYR_VERSION   "2.1.1"
+#define FDR_TELEGYR_VERSION   "2.1.3"
 #define PRIORITY              1         //only 1 is supported at this point
 
 /** global used to start the interface by c functions **/
@@ -85,6 +100,8 @@ CtiFDRTelegyr::CtiFDRTelegyr() : CtiFDRInterface( string( "TELEGYR" ) ) , _hiRea
    _reloadTimer = CtiTime::now();   //so we'll load right away
    _reloadTimer -= _dbReloadInterval;
 
+   _reportTimer = CtiTime::now();
+
    init();
 
    _inited = -1;
@@ -117,9 +134,7 @@ BOOL CtiFDRTelegyr::init( void )
    else
    {
       if( !readConfig() )
-      {
          retVal = FALSE;
-      }
 
       //this loads the data from the FDR table and sorts it all out into chunks we can use
       loadTranslationLists();   
@@ -142,17 +157,11 @@ bool CtiFDRTelegyr::contact( int &status )
    if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
-      dout << CtiTime::now() << " ---- In contact() " << endl;
+      dout << CtiTime::now() << " ---- Contact " << endl;
    }
 
-   //
-   //not sure if the following (in braces) belongs here, but we have built our lists
-   //and need to swap them
-   //
-   {
-      _controlCenter.deleteTelegyrGroupList();
-      _controlCenter.getTelegyrGroupList() = _groupList;
-   }
+   _controlCenter.deleteTelegyrGroupList();
+   _controlCenter.getTelegyrGroupList() = _groupList;
 
    connect( index, status );
 
@@ -160,7 +169,7 @@ bool CtiFDRTelegyr::contact( int &status )
    {
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
-         dout << CtiTime::now() << " ---- Connected to api_client " << endl;
+         dout << CtiTime::now() << " ---- Connected => api_client " << endl;
       }
 
       CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
@@ -208,7 +217,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
 
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
-      dout << CtiTime::now() << " api_connect (in connect) returned " << status << endl; 
+      dout << CtiTime::now() << " api_connect returned " << status << endl; 
    }
 
    delete [] op;
@@ -283,19 +292,19 @@ void CtiFDRTelegyr::deleteGroups( void )
 
 bool CtiFDRTelegyr::loadTranslationLists()
 {
-   bool  retCode = true;
+   bool  retCode = false;
 
    CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
 
    retCode = loadGroupLists();
 
-   if( retCode != true )
+   if( !retCode )
    {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       dout << CtiTime::now() << " Translation list load for FDRTelegyr failed " << endl;
    }
 
-   return( retCode );
+   return retCode;
 }
 
 //====================================================================================================
@@ -328,7 +337,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
    int               more;
    int               result[256];
    int               waiter      = 10;   //03/28 - so we try to connect the first time through without waiting
-   int               printCount;
    int               disconCount = 15;
    int               badMsgCount = 0;
 
@@ -362,13 +370,12 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                dout << CtiTime::now() <<" Attempting to init TelegyrAPI " << endl;
             }
 
-            status = api_init( newPath, applicationName, apiVer, PRIORITY );
-            _inited = status;
+            _inited = api_init( newPath, applicationName, apiVer, PRIORITY );
 
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() <<" TelegyrAPI init() returned code " << status << endl;
+               dout << CtiTime::now() <<" TelegyrAPI init() returned code " << _inited << endl;
                dout << CtiTime::now() <<" Waiting 30 seconds " << endl;
             }
 
@@ -585,14 +592,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                badMsgCount = noDataAction( badMsgCount );
             }
 
-            if( _reloadPending )
+            if( _reloadPending && isReloadTime() )
             {
-               if( isReloadTime() )
-               {
-                  //call delete groups, we've got a new list already
-                  deleteGroups();
-                  _reloadTimer = CtiTime::now(); 
-               }
+               //call delete groups, we've got a new list already
+               deleteGroups();
+               _reloadTimer = CtiTime::now(); 
             }
 
             if( timer >= 120 )
@@ -610,18 +614,17 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
          else  //not connected
          {
             timer = 0;
-            waiter++;                        //we want to try to reconnect every 15 secs or so 
             disconCount++;
 
             if( disconCount >= 15 )
             {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Telegyr is disconnected from api_client " << endl;
-               disconCount = 0;
-            }
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  dout << CtiTime::now() << " Telegyr is disconnected from api_client " << endl;
+               }
 
-            if( waiter >= 15 )
-            {
+               disconCount = 0;
+
                if( _inited == API_NORMAL )
                {
                   contact( status );            //NOTE:used this as it calls build&Register()
@@ -635,43 +638,15 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                   _inited = api_init( newPath, applicationName, apiVer, PRIORITY );
                }
 
-               printCount++;                    //we want to tell someone that we tried to reconnect every now and again
                waiter = 0;
 
-               if( printCount >= 10 )
-               {
-                  printCount = 0;
+               if( !isConnected() )
+                  sendLinkState( FDR_NOT_CONNECTED );
+               else //successful reconnection
+                  sendLinkState( FDR_CONNECTED );
 
-                  if( !isConnected() )
-                  {
-                     {
-                        CtiLockGuard<CtiLogger> doubt_guard( dout );
-                        dout << CtiTime::now() << " TelegyrAPI not connected" << endl;
-                     }
-
-                     if( startUp )
-                     {
-                        startUp = false;
-                     }
-
-                     sendLinkState( FDR_NOT_CONNECTED );
-                  }
-                  else //successful reconnection
-                  {
-                     if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
-                     {
-                        CtiLockGuard<CtiLogger> doubt_guard( dout );
-                        dout << CtiTime::now() << " TelegyrAPI is connected" << endl;
-                     }
-
-                     if( startUp )
-                     {
-                        startUp = false;
-                     }
-
-                     sendLinkState( FDR_CONNECTED );
-                  }
-               }
+               if( startUp )
+                  startUp = false;
             }
 
             badMsgCount = noDataAction( badMsgCount );
@@ -736,12 +711,14 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
    for( index = 0; index < totalGroups; index++ )
    {
-
       interval = false;
       cyclic = false;
       cycle_time = 0;
       channel_id = _controlCenter.getChannelID();
 
+      //FIXME: the grouptype seems like it's getting set to the groupname someplace
+      //but I don't see how.  So now we check for the word 'status' or 'analog'
+      //inside the name/type 'status501' or 'analog4' to decide what to do...weird
       string type = _controlCenter.getTelegyrGroupList()[index].getGroupType();
       std::transform(type.begin(), type.end(), type.begin(), tolower);
       //if there's an interval, we have cyclic data
@@ -801,12 +778,6 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
             //makes some space to copy our pointnames
             name_list[cnt] = new char[200];
             strcpy( name_list[cnt], _controlCenter.getTelegyrGroupList()[index].getPointList()[cnt].getTranslateName( 0 ).c_str() );
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " " << cnt << " " << name_list[cnt] << endl;
-            }
          }                                                   
 
          //do the api-registration of the group...
@@ -998,11 +969,6 @@ bool CtiFDRTelegyr::loadGroupLists( void )
 
          if( pointList->entries() >= 0 )
          {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " *** " << pointList->entries() << " points to process" << endl;
-            }
-
             // get iterator on list
             CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
 
@@ -1095,7 +1061,17 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                }
             }
 
+            //FIXME
+            //for some reason, we need to wipe the old list first
+            //because it seems that the name and type get set to the name
+            //which cause us to fail in build&reg
+            if( !_groupList.empty() )
+                _groupList.erase( _groupList.begin(), _groupList.end() );
+
             _groupList = groupList;
+
+            _controlCenter.deleteTelegyrGroupList();
+            _controlCenter.getTelegyrGroupList() = _groupList;
          }
          else
          {
@@ -1134,7 +1110,6 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
    CtiFDRPoint          *point      = NULL;
    long                 pointid;
    bool                 returnCode;
-   int                  x;
    double               value;
    double               raw;
    USHORT               quality;
@@ -1148,13 +1123,11 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
 
-      for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
+      for( int x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
       {
          if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
          {
             pointid = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointID();
-
-            _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointType();
 
             value = value * ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getMultiplier() );
             value += ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getOffset() );
@@ -1232,12 +1205,11 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
 
 bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int group_type, int index )
 {
-   CtiPointDataMsg      *pData      = NULL;
-   long                 pointid;
-   bool                 returnCode;
-   int                  x;
-   double               value;
-   USHORT               quality;
+   CtiPointDataMsg   *pData = NULL;
+   long              pointid;
+   bool              returnCode;
+   double            value;
+   USHORT            quality;
 
    if( aPoint.ind_valid == API_VALID )
    {
@@ -1246,7 +1218,7 @@ bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int grou
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
 
-      for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
+      for( int x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
       {
          if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
          {
@@ -1263,13 +1235,9 @@ bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int grou
 
       //get the quality of the point data
       if( api_check_any_quality_bit_set( aPoint.sys_dependent_info ) )
-      {
          quality = NormalQuality;
-      }
       else
-      {  
          quality = getQuality( aPoint.sys_dependent_info );
-      }
 
       pData = new CtiPointDataMsg( pointid, value, quality, StatusPointType );
 
@@ -1377,16 +1345,12 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
 
 bool CtiFDRTelegyr::processBadPoint( int groupid, int index )
 {
-   long     pointid;
-   int      x;
-   string   pointName;
-
-   for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
+   for( int x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
    {
       if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
       {
-         pointid = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointID();
-         pointName = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getTranslateName(0);
+         long pointid = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointID();
+         string pointName = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getTranslateName(0);
 
          {
             CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -1396,7 +1360,7 @@ bool CtiFDRTelegyr::processBadPoint( int groupid, int index )
       }
    }
 
-   return( true );
+   return true;
 }
 
 //=================================================================================================================================
@@ -1548,8 +1512,8 @@ string CtiFDRTelegyr::decipherReason( int transmissionReason )
       retReason = "UNKNOWN CODE";
       break;
    }
-   //break;
-   return( retReason );
+
+   return retReason;
 }
 
 //=================================================================================================================================
@@ -1683,6 +1647,8 @@ int CtiFDRTelegyr::readConfig( void )
 
 bool CtiFDRTelegyr::isReloadTime( void )
 {
+   bool retCode = false;
+
    if( ( CtiTime::now().seconds() - _reloadTimer.seconds() ) >= _dbReloadInterval )
    {
       {
@@ -1690,12 +1656,10 @@ bool CtiFDRTelegyr::isReloadTime( void )
          dout << CtiTime::now() << " ---- Time for reload" << endl;
       }
 
-      return true;
+      retCode = true;
    }
-   else
-   {
-      return false;
-   }
+
+   return retCode;
 }
 
 //=================================================================================================================================
@@ -1732,6 +1696,7 @@ double CtiFDRTelegyr::getHiReasonabilityFilter() const
 CtiFDRTelegyr & CtiFDRTelegyr::setHiReasonabilityFilter( const double myValue )
 {
    _hiReasonabilityFilter = myValue;
+
    return *this;
 }
 
@@ -1766,6 +1731,7 @@ string CtiFDRTelegyr::getPath( void )
 CtiFDRTelegyr & CtiFDRTelegyr::setPath( string inPath )
 {
    _path = inPath;
+
    return *this;
 }
 
@@ -1788,6 +1754,25 @@ void CtiFDRTelegyr::sendLinkState( int aState )
 
 bool CtiFDRTelegyr::isConnected( void )
 {
+   if( !_connected )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << CtiTime::now() << " TelegyrAPI not connected" << endl;
+   }
+   else
+   {
+      if( CtiTime::now().seconds() - _reportTimer.seconds() > 30 )
+      {
+         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << CtiTime::now() << " TelegyrAPI is connected" << endl;
+         }
+
+         _reportTimer = CtiTime::now();
+      }
+   }
+
    return _connected;
 }
 
@@ -1802,6 +1787,7 @@ CtiFDRTelegyr & CtiFDRTelegyr::setConnected( bool conn )
       dout << CtiTime::now() << " ---- Setting connected to " << conn << endl;
    }
    _connected = conn;
+
    return *this;
 }
 
@@ -1921,6 +1907,7 @@ void CtiFDRTelegyr::receivedAnalog( int arraySize, int group_num, int group_type
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << CtiTime::now() << " result " << result[index] << endl;
                }
+
                processBadPoint( group_num, index );
             }
          }
@@ -1930,6 +1917,7 @@ void CtiFDRTelegyr::receivedAnalog( int arraySize, int group_num, int group_type
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime::now() << " TelegyrAPI api_unpack_measurands() failed: " << status << endl;
       }
+
       delete [] measurands;
    }
 }
@@ -1963,6 +1951,7 @@ void CtiFDRTelegyr::receivedDigital( int arraySize, int group_num, int group_typ
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << CtiTime::now() << " result " << result[index] << endl;
                }
+
                processBadPoint( group_num, index );
             }
          }
@@ -1972,6 +1961,7 @@ void CtiFDRTelegyr::receivedDigital( int arraySize, int group_num, int group_typ
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime::now() << " TelegyrAPI api_unpack_indications() failed: " << status << endl;
       }
+
       delete [] indications;
    }
 }
@@ -2005,6 +1995,7 @@ void CtiFDRTelegyr::receivedCounter( int arraySize, int group_num, int group_typ
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << CtiTime::now() << " result " << result[index] << endl;
                }
+
                processBadPoint( group_num, index );
             }
          }
@@ -2014,6 +2005,7 @@ void CtiFDRTelegyr::receivedCounter( int arraySize, int group_num, int group_typ
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime::now() << " TelegyrAPI api_unpack_counter_values() failed: " << status << endl;
       }
+
       delete [] counters;
    }
 }
