@@ -1,9 +1,9 @@
-set endpoint=http://localhost:8080/head/soap/AdminService
+set endpoint=http://localhost:8080/soap/AdminService
 set MSP_PACKAGE=com.cannontech.multispeak.service
-set MSP_URL=http://www.multispeak.org/interface/30j/
+set MSP_URL=--timeout -1 http://www.multispeak.org/interface/30n/
 set MSP_DEPLOY_FILE=com\cannontech\multispeak\service\deploy.wsdd
-set AXIS_LIB=C:\MyEclipse\eclipse\head\third-party\
-set AXISCLASSPATH=%AXIS_LIB%\axis.jar;%AXIS_LIB%\commons-discovery.jar;%AXIS_LIB%\commons-logging.jar;%AXIS_LIB%\jaxrpc.jar;%AXIS_LIB%\saaj.jar;%AXIS_LIB%\log4j-1.2.8.jar;%AXIS_LIB%\xml-apis.jar;%AXIS_LIB%\xercesImpl.jar;%AXIS_LIB%\wsdl4j.jar;%AXIS_LIB%\mail.jar;%AXIS_LIB%\activation.jar
+set AXIS_LIB=C:\MyEclipse_5_0GA\eclipse\branch3_5\third-party\
+set AXISCLASSPATH=%AXIS_LIB%\axis.jar;%AXIS_LIB%\commons-discovery.jar;%AXIS_LIB%\commons-logging-1.1.jar;%AXIS_LIB%\jaxrpc.jar;%AXIS_LIB%\saaj.jar;%AXIS_LIB%\log4j-1.2.14.jar;C:\axis1_2\lib\xml-apis.jar;C:\axis1_2\lib\xercesImpl.jar;%AXIS_LIB%\wsdl4j.jar;%AXIS_LIB%\mail.jar;%AXIS_LIB%\activation.jar;
 
 REM Client side implementations
 java -cp %AXISCLASSPATH% org.apache.axis.wsdl.WSDL2Java %MSP_URL%27_OA_MR.asmx?WSDL -p%MSP_PACKAGE%
