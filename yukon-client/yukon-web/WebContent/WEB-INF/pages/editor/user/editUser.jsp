@@ -11,8 +11,6 @@
 	&gt; User Editor
 </cti:breadCrumbs>
 
-<cti:includeScript link="/JavaScript/json.js" />
-
 <!-- These filese are included for the paoPicker on the imported paoTable jsp -->
 <cti:includeScript link="/JavaScript/itemPicker.js" />
 <cti:includeScript link="/JavaScript/tableCreation.js" />

@@ -13,7 +13,6 @@
 <c:url var="submitUserURL" value="/picker/userlm/submitUserChanges"/>
 <c:url var="submitGroupURL" value="/picker/userlm/submitGroupChanges"/>
 
-<script type="text/javascript" src="/JavaScript/json.js"></script>
 <script language="JavaScript">
 
 	function forwardToUserEdit(selectedItem) {
