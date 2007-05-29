@@ -4267,8 +4267,5 @@
     <wsdl:port name="MR_OASoap" binding="tns:MR_OASoap">
       <soap:address location="http://www.multispeak.org/interface/30n/27_MR_OA.asmx" />
     </wsdl:port>
-    <wsdl:port name="MR_OASoap12" binding="tns:MR_OASoap12">
-      <soap12:address location="http://www.multispeak.org/interface/30n/27_MR_OA.asmx" />
-    </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -9,6 +9,7 @@ package com.cannontech.multispeak.service.impl;
 
 import java.math.BigInteger;
 import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.apache.axis.AxisFault;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.multispeak.client.Multispeak;
@@ -24,27 +26,37 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.dao.RawPointHistoryDao;
 import com.cannontech.multispeak.dao.RawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.service.ArrayOfCustomer;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
+import com.cannontech.multispeak.service.ArrayOfFormattedBlock;
 import com.cannontech.multispeak.service.ArrayOfHistoryLog;
 import com.cannontech.multispeak.service.ArrayOfMeter;
+import com.cannontech.multispeak.service.ArrayOfMeterExchange;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
 import com.cannontech.multispeak.service.ArrayOfServiceLocation;
 import com.cannontech.multispeak.service.ArrayOfString;
 import com.cannontech.multispeak.service.DomainMember;
 import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.EventCode;
-import com.cannontech.multispeak.service.MR_CBSoap_BindingImpl;
+import com.cannontech.multispeak.service.FormattedBlock;
+import com.cannontech.multispeak.service.MR_CBSoap_PortType;
 import com.cannontech.multispeak.service.Meter;
+import com.cannontech.multispeak.service.MeterGroup;
 import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.yukon.BasicServerConnection;
 
-public class MR_CBImpl extends MR_CBSoap_BindingImpl{
+public class MR_CBImpl implements MR_CBSoap_PortType{
 
+    public Multispeak multispeak;
     public MultispeakDao multispeakDao;
+    public MultispeakFuncs multispeakFuncs;
+    public RawPointHistoryDao mspRawPointHistoryDao;
+    private BasicServerConnection porterConnection;
     
     /**
      * @param multispeakDao The multispeakDao to set.
@@ -54,9 +66,29 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         this.multispeakDao = multispeakDao;
     }
 
+    public void setMultispeak(Multispeak multispeak) {
+        this.multispeak = multispeak;
+    }
+
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
+
+    public void setMspRawPointHistoryDao(RawPointHistoryDao mspRawPointHistoryDao) {
+        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
+    }
+
+    public void setPorterConnection(BasicServerConnection porterConnection) {
+        this.porterConnection = porterConnection;
+    }
+
+    private void init() {
+        multispeakFuncs.init();
+    }
+
     public ArrayOfErrorObject pingURL() throws java.rmi.RemoteException {
         init();
-        return MultispeakFuncs.pingURL(MultispeakDefines.MR_CB_STR);
+        return new ArrayOfErrorObject(new ErrorObject[0]);
     }
 
     public ArrayOfString getMethods() throws java.rmi.RemoteException {
@@ -76,16 +108,16 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
                                          "initiateDisconnectedStatus",
                                          "cancelDisconnectedStatus",
                                          "serviceLocationChangedNotification"};          
-        return MultispeakFuncs.getMethods(MultispeakDefines.MR_CB_STR , methods);
+        return multispeakFuncs.getMethods(MultispeakDefines.MR_CB_STR , methods);
     }
-
+    
     public ArrayOfString getDomainNames() throws java.rmi.RemoteException {
         init();
         String [] strings = new String[]{"Method Not Supported"};
-        MultispeakFuncs.logArrayOfString(MultispeakDefines.MR_CB_STR, "getDomainNames", strings);
+        multispeakFuncs.logArrayOfString(MultispeakDefines.MR_CB_STR, "getDomainNames", strings);
         return new ArrayOfString(strings);
     }
-
+    
     public ArrayOfDomainMember getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException {
         init();
         return new ArrayOfDomainMember(new DomainMember[0]);
@@ -93,12 +125,12 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     public ArrayOfMeter getAMRSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
         List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = MultispeakFuncs.getMultispeakDao().getAMRSupportedMeters(lastReceived, vendor.getUniqueKey());
+            meterList = multispeakDao.getAMRSupportedMeters(lastReceived, vendor.getUniqueKey());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }
@@ -108,22 +140,22 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         CTILogger.info("Returning " + arrayOfMeters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         //TODO = need to get the true number of meters remaining
         int numRemaining = (arrayOfMeters.length < MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
-        MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         return new ArrayOfMeter(arrayOfMeters);
     }
-
+    
     public ArrayOfMeter getModifiedAMRMeters(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
         return null;
     }
-
+    
     public boolean isAMRMeter(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
 
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         if( meterNo != null && meterNo.length() > 0)
         {
-            LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
+            LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
             if( lPao != null)
             {
                 CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
@@ -133,53 +165,61 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter() NOT found, returning false." );
         return false;
     }
-
+    
     public ArrayOfMeterRead getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
         throw new AxisFault("Method getReadingsByDate(startDate, endDate, lastReceived) is NOT supported.");
     }
-
+    
     public ArrayOfMeterRead getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
     //      init(); //init is already performed on the call to isAMRMeter()
         if( ! isAMRMeter(meterNo))
             throw new AxisFault( "Meter Number (" + meterNo + "): NOT Found.");
         
-        MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.METER_NUMBER, meterNo, startDate.getTime(), endDate.getTime(), null);
+        MeterRead[] meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, meterNo, startDate.getTime(), endDate.getTime(), null);
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
      
         return arrayOfMeterReads;
     }
+
 
     public MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
 //      init(); //init is already performed on the call to isAMRMeter()
         if( ! isAMRMeter(meterNo))
             throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
         
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") ) {
-        	return Multispeak.getInstance().getLatestReadingInterrogate(vendor, meterNo);
-        } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!! 
-	        LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
-	        ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNo);
-	        device.populateWithPointData(lPao.getYukonID());
-	        return device.getMeterRead();
+        	return multispeak.getLatestReadingInterrogate(vendor, meterNo);
+        } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
+            try {
+    	        LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
+    	        ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNo);
+    	        device.populateWithPointData(lPao.getYukonID());
+    	        return device.getMeterRead();
+            } catch (DynamicDataAccessException e) {
+                throw new AxisFault("Connection to dispatch is invalid");
+            }
         }
     }
-
-    public ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
+    
+    public ArrayOfFormattedBlock getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        /* TODO
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.BILL_GROUP, billingCycle, startDate.getTime(), endDate.getTime(), lastReceived);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MeterRead[] meterReads = multispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.BILL_GROUP, billingCycle, startDate.getTime(), endDate.getTime(), lastReceived);
         //TODO = need to get the true number of meters remaining
         int numRemaining = (meterReads.length < MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
-        MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
 
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
         return arrayOfMeterReads;
+        */
+        return null;
     }
-
+    
     public ArrayOfHistoryLog getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
         init();
         return null;
@@ -189,17 +229,17 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         init();
         return null;
     }
-
+    
     public ArrayOfHistoryLog getHistoryLogsByMeterNoAndEventCode(java.lang.String meterNo, EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
         init();
         return null;
     }
-
+    
     public ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
         return null;
     }
-
+    
     public ArrayOfErrorObject initiatePlannedOutage(ArrayOfString meterNos, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
         init();
         return null;
@@ -212,61 +252,61 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     public ArrayOfErrorObject initiateUsageMonitoring(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
-
+    
     public ArrayOfErrorObject cancelUsageMonitoring(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
-
+    
     public ArrayOfErrorObject initiateDisconnectedStatus(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
-
+    
     public ArrayOfErrorObject cancelDisconnectedStatus(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
 
     //Perform an actual read of the meter and return a CB_MR readingChangedNotification message for each meterNo
-    public ArrayOfErrorObject initiateMeterReadByMeterNumber(ArrayOfString meterNos) throws java.rmi.RemoteException {
+    public ArrayOfErrorObject initiateMeterReadByMeterNumber(ArrayOfString meterNos, String responseURL) throws java.rmi.RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         String url = (vendor != null ? vendor.getUrl() : "(none)");
         if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
             throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
         }
-        else if ( ! Multispeak.getInstance().getPilConn().isValid() ) {
+        else if ( ! porterConnection.isValid() ) {
             throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
-        errorObjects = Multispeak.getInstance().MeterReadEvent(vendor, meterNos.getString());
+        errorObjects = multispeak.MeterReadEvent(vendor, meterNos.getString());
 
-        MultispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
+        multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return new ArrayOfErrorObject(errorObjects);
     }
-
+    
     public ArrayOfErrorObject customerChangedNotification(ArrayOfCustomer changedCustomers) throws java.rmi.RemoteException {
         init();
         return null;
     }
-
+    
     public ArrayOfErrorObject serviceLocationChangedNotification(ArrayOfServiceLocation changedServiceLocations) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().updateServiceLocation(vendor, changedServiceLocations.getServiceLocation());
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.updateServiceLocation(vendor, changedServiceLocations.getServiceLocation());
         return new ArrayOfErrorObject(errorObject);
     }
 
@@ -276,18 +316,59 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
     }
 
     public ArrayOfErrorObject meterRemoveNotification(ArrayOfMeter removedMeters) throws java.rmi.RemoteException {
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().removeMeterObject(vendor, removedMeters.getMeter());
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.removeMeterObject(vendor, removedMeters.getMeter());
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject meterAddNotification(ArrayOfMeter addedMeters) throws java.rmi.RemoteException {
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = Multispeak.getInstance().addMeterObject(vendor, addedMeters.getMeter());
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.addMeterObject(vendor, addedMeters.getMeter());
         return new ArrayOfErrorObject(errorObject);
     }
-    private void init()
-    {
-        MultispeakFuncs.init();
+
+    public ErrorObject deleteMeterGroup(String meterGroupID) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject establishMeterGroup(MeterGroup meterGroup) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject initiateGroupMeterRead(String meterGroupName, String responseURL) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject insertMeterInMeterGroup(ArrayOfString meterNumbers, String meterGroupID) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject meterExchangeNotification(ArrayOfMeterExchange meterChangeout) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject meterRetireNotification(ArrayOfMeter retiredMeters) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject removeMetersFromMeterGroup(ArrayOfString meterNumbers, String meterGroupID) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ArrayOfErrorObject scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

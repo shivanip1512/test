@@ -3,12 +3,10 @@ package com.cannontech.multispeak.service.impl;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfObjectRef;
@@ -16,41 +14,44 @@ import com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice;
 import com.cannontech.multispeak.service.ArrayOfString;
 import com.cannontech.multispeak.service.DomainMember;
 import com.cannontech.multispeak.service.ErrorObject;
-import com.cannontech.multispeak.service.OD_OASoap_BindingImpl;
-import com.cannontech.multispeak.service.ObjectRef;
+import com.cannontech.multispeak.service.OD_OASoap_PortType;
 import com.cannontech.multispeak.service.OutageDetectDeviceStatus;
 import com.cannontech.multispeak.service.OutageDetectDeviceType;
 import com.cannontech.multispeak.service.OutageDetectionDevice;
 import com.cannontech.multispeak.service.PhaseCd;
 
-public class OD_OAImpl extends OD_OASoap_BindingImpl
+public class OD_OAImpl implements OD_OASoap_PortType
 {
-    public MultispeakDao multispeakDao;
+    public Multispeak multispeak;
+    public MultispeakFuncs multispeakFuncs;
     
-    /**
-     * @param multispeakDao The multispeakDao to set.
-     */
-    public void setMultispeakDao(MultispeakDao multispeakDao)
-    {
-        this.multispeakDao = multispeakDao;
+    public void setMultispeak(Multispeak multispeak) {
+        this.multispeak = multispeak;
     }
 
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
+
+    private void init() {
+        multispeakFuncs.init();
+    }
 
     public ArrayOfErrorObject pingURL() throws java.rmi.RemoteException {
         init();
-        return MultispeakFuncs.pingURL(MultispeakDefines.OD_OA_STR);
+        return new ArrayOfErrorObject(new ErrorObject[0]);
     }
 
     public ArrayOfString getMethods() throws java.rmi.RemoteException {
         init();
         String [] methods = new String[]{"pingURL", "getMethods", "initiateOutageDetectionEventRequest"};
-        return MultispeakFuncs.getMethods(MultispeakDefines.OD_OA_STR, methods );
+        return multispeakFuncs.getMethods(MultispeakDefines.OD_OA_STR, methods );
     }
 
     public ArrayOfString getDomainNames() throws java.rmi.RemoteException {
         init();
         String [] strings = new String[]{"Method Not Supported"};
-        MultispeakFuncs.logArrayOfString(MultispeakDefines.OD_OA_STR, "getDomainNames", strings);
+        multispeakFuncs.logArrayOfString(MultispeakDefines.OD_OA_STR, "getDomainNames", strings);
         return new ArrayOfString(strings);
     }
 
@@ -84,53 +85,19 @@ public class OD_OAImpl extends OD_OASoap_BindingImpl
         return new ArrayOfOutageDetectionDevice(new OutageDetectionDevice[0]);
     }
 
-    public ArrayOfErrorObject initiateOutageDetectionEventRequest(ArrayOfString meterNos, java.util.Calendar requestDate) throws java.rmi.RemoteException {
+    public ArrayOfErrorObject initiateOutageDetectionEventRequest(ArrayOfString meterNos, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        String url = (vendor != null ? vendor.getUrl() : "(none)");
-        if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE))
-        {
-            throw new RemoteException("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
-/*          ErrorObject error = new ErrorObject();
-            error.setErrorString("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
-            error.setEventTime(new GregorianCalendar());
-            errorObjects = new ErrorObject[]{error};
-*/
-        }
-        else if ( ! Multispeak.getInstance().getPilConn().isValid() )
-        {
-            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
-/*          ErrorObject error = new ErrorObject();
-            error.setErrorString("Connection to Yukon Porter is not valid.");
-            error.setEventTime(new GregorianCalendar());
-            errorObjects = new ErrorObject[]{error};
-*/
-        }
-        else
-        {
-            errorObjects = Multispeak.getInstance().ODEvent(vendor, meterNos.getString());
-        }
-        MultispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.OD_OA_STR, "initiateOutageDetectionEventRequest", errorObjects);
+        errorObjects = multispeak.ODEvent(vendor, meterNos.getString());
+        multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.OD_OA_STR, "initiateOutageDetectionEventRequest", errorObjects);
         return new ArrayOfErrorObject(errorObjects);
     }
 
     public void modifyODDataForOutageDetectionDevice(OutageDetectionDevice oDDevice) throws java.rmi.RemoteException {
         init();
-    }
-
-    public ArrayOfErrorObject initiateODEventRequestByObject(ObjectRef objectRef, PhaseCd phaseCode, Calendar requestDate) throws RemoteException
-    {
-        init();
-        return null;
-    }
-
-    public ArrayOfErrorObject initiateODMonitoringRequestByObject(ObjectRef objectRef, PhaseCd phaseCode, int periodicity, Calendar requestDate) throws RemoteException
-    {
-        init();
-        return null;
     }
 
     public ArrayOfObjectRef displayODMonitoringRequests() throws RemoteException
@@ -144,10 +111,14 @@ public class OD_OAImpl extends OD_OASoap_BindingImpl
         init();
         return null;
     }
-    
-    private void init()
-    {
-        MultispeakFuncs.init();
+
+    public ArrayOfErrorObject initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode, Calendar requestDate, String responseURL) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
+    public ArrayOfErrorObject initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode, int periodicity, Calendar requestDate, String responseURL) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

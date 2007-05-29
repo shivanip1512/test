@@ -1,7 +1,6 @@
 package com.cannontech.multispeak.service.impl;
 
 import java.math.BigInteger;
-import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
@@ -22,15 +21,17 @@ import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeter;
 import com.cannontech.multispeak.service.ArrayOfServiceLocation;
 import com.cannontech.multispeak.service.ArrayOfString;
-import com.cannontech.multispeak.service.CD_CBSoap_BindingImpl;
+import com.cannontech.multispeak.service.CD_CBSoap_PortType;
 import com.cannontech.multispeak.service.DomainMember;
 import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.LoadActionCode;
 import com.cannontech.multispeak.service.Meter;
 
-public class CD_CBImpl extends CD_CBSoap_BindingImpl
+public class CD_CBImpl implements CD_CBSoap_PortType
 {
+    public Multispeak multispeak;
     public MultispeakDao multispeakDao;
+    public MultispeakFuncs multispeakFuncs;
     
     /**
      * @param multispeakDao The multispeakDao to set.
@@ -40,9 +41,21 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
         this.multispeakDao = multispeakDao;
     }
 
+    public void setMultispeak(Multispeak multispeak) {
+        this.multispeak = multispeak;
+    }
+
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
+
+    private void init(){
+        multispeakFuncs.init();
+    }
+    
     public ArrayOfErrorObject pingURL() throws java.rmi.RemoteException {
         init();
-        return MultispeakFuncs.pingURL(MultispeakDefines.CD_CB_STR);
+        return new ArrayOfErrorObject(new ErrorObject[0]);
     }
 
     public ArrayOfString getMethods() throws java.rmi.RemoteException {
@@ -51,13 +64,13 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
         								 "getCDSupportedMeters",
                                          "getCDMeterState",
                                          "initiateConnectDisconnect"};
-        return MultispeakFuncs.getMethods(MultispeakDefines.CD_CB_STR, methods );
+        return multispeakFuncs.getMethods(MultispeakDefines.CD_CB_STR, methods );
     }
 
     public ArrayOfString getDomainNames() throws java.rmi.RemoteException {
         init();
         String [] strings = new String[]{"Method Not Supported"};
-        MultispeakFuncs.logArrayOfString(MultispeakDefines.CD_CB_STR, "getDomainNames", strings);
+        multispeakFuncs.logArrayOfString(MultispeakDefines.CD_CB_STR, "getDomainNames", strings);
         return new ArrayOfString(strings);
     }
 
@@ -68,12 +81,12 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
     
     public ArrayOfMeter getCDSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        List meterList = null;
+        List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = MultispeakFuncs.getMultispeakDao().getCDSupportedMeters(lastReceived, vendor.getUniqueKey());
+            meterList = multispeakDao.getCDSupportedMeters(lastReceived, vendor.getUniqueKey());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }
@@ -83,7 +96,7 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
         CTILogger.info("Returning " + arrayOfMeters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         //TODO = need to get the true number of meters remaining
         int numRemaining = (arrayOfMeters.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
-        MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         return new ArrayOfMeter(arrayOfMeters);
     }
 
@@ -95,16 +108,14 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
     public LoadActionCode getCDMeterState(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = null;
+        
         try {
-            vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+            vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
         }
-        if ( ! Multispeak.getInstance().getPilConn().isValid() ) {
-            throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
-        }
 
-        LoadActionCode loadActionCode = Multispeak.getInstance().CDMeterState(vendor, meterNo);
+        LoadActionCode loadActionCode = multispeak.CDMeterState(vendor, meterNo);
         return loadActionCode;
     }
 
@@ -114,19 +125,14 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
         
         MultispeakVendor vendor = null;
         try {
-            vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+            vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
         }
         
-        if ( ! Multispeak.getInstance().getPilConn().isValid() ) {
-            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
-        }
-        else{
-            errorObjects = Multispeak.getInstance().CDEvent(vendor, cdEvents.getConnectDisconnectEvent());
-        }
+        errorObjects = multispeak.CDEvent(vendor, cdEvents.getConnectDisconnectEvent());
         
-        MultispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.CD_CB_STR, "initiateConnectDisconnect", errorObjects);
+        multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.CD_CB_STR, "initiateConnectDisconnect", errorObjects);
         return new ArrayOfErrorObject(errorObjects);
     }
 
@@ -143,8 +149,5 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
     public ArrayOfErrorObject meterChangedNotification(ArrayOfMeter changedMeters) throws java.rmi.RemoteException {
         init();
         return null;
-    }
-    private void init(){
-        MultispeakFuncs.init();
     }
 }
