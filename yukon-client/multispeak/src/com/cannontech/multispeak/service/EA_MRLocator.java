@@ -21,8 +21,53 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
         super(wsdlLoc, sName);
     }
 
+    // Use to get a proxy class for EA_MRSoap12
+    private java.lang.String EA_MRSoap12_address = "http://www.multispeak.org/interface/30n/4_EA_MR.asmx";
+
+    public java.lang.String getEA_MRSoap12Address() {
+        return EA_MRSoap12_address;
+    }
+
+    // The WSDD service name defaults to the port name.
+    private java.lang.String EA_MRSoap12WSDDServiceName = "EA_MRSoap12";
+
+    public java.lang.String getEA_MRSoap12WSDDServiceName() {
+        return EA_MRSoap12WSDDServiceName;
+    }
+
+    public void setEA_MRSoap12WSDDServiceName(java.lang.String name) {
+        EA_MRSoap12WSDDServiceName = name;
+    }
+
+    public com.cannontech.multispeak.service.EA_MRSoap_PortType getEA_MRSoap12() throws javax.xml.rpc.ServiceException {
+       java.net.URL endpoint;
+        try {
+            endpoint = new java.net.URL(EA_MRSoap12_address);
+        }
+        catch (java.net.MalformedURLException e) {
+            throw new javax.xml.rpc.ServiceException(e);
+        }
+        return getEA_MRSoap12(endpoint);
+    }
+
+    public com.cannontech.multispeak.service.EA_MRSoap_PortType getEA_MRSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+        try {
+            com.cannontech.multispeak.service.EA_MRSoap12Stub _stub = new com.cannontech.multispeak.service.EA_MRSoap12Stub(portAddress, this);
+            _stub.setPortName(getEA_MRSoap12WSDDServiceName());
+            return _stub;
+        }
+        catch (org.apache.axis.AxisFault e) {
+            return null;
+        }
+    }
+
+    public void setEA_MRSoap12EndpointAddress(java.lang.String address) {
+        EA_MRSoap12_address = address;
+    }
+
+
     // Use to get a proxy class for EA_MRSoap
-    private java.lang.String EA_MRSoap_address = "http://www.multispeak.org/interface/30j/4_EA_MR.asmx";
+    private java.lang.String EA_MRSoap_address = "http://www.multispeak.org/interface/30n/4_EA_MR.asmx";
 
     public java.lang.String getEA_MRSoapAddress() {
         return EA_MRSoap_address;
@@ -69,9 +114,16 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
      * For the given interface, get the stub implementation.
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
+     * This service has multiple ports for a given interface;
+     * the proxy implementation returned may be indeterminate.
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
+            if (com.cannontech.multispeak.service.EA_MRSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
+                com.cannontech.multispeak.service.EA_MRSoap12Stub _stub = new com.cannontech.multispeak.service.EA_MRSoap12Stub(new java.net.URL(EA_MRSoap12_address), this);
+                _stub.setPortName(getEA_MRSoap12WSDDServiceName());
+                return _stub;
+            }
             if (com.cannontech.multispeak.service.EA_MRSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 com.cannontech.multispeak.service.EA_MRSoap_BindingStub _stub = new com.cannontech.multispeak.service.EA_MRSoap_BindingStub(new java.net.URL(EA_MRSoap_address), this);
                 _stub.setPortName(getEA_MRSoapWSDDServiceName());
@@ -94,7 +146,10 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
             return getPort(serviceEndpointInterface);
         }
         java.lang.String inputPortName = portName.getLocalPart();
-        if ("EA_MRSoap".equals(inputPortName)) {
+        if ("EA_MRSoap12".equals(inputPortName)) {
+            return getEA_MRSoap12();
+        }
+        else if ("EA_MRSoap".equals(inputPortName)) {
             return getEA_MRSoap();
         }
         else  {
@@ -113,6 +168,7 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
+            ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "EA_MRSoap12"));
             ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "EA_MRSoap"));
         }
         return ports.iterator();
@@ -122,6 +178,9 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
     * Set the endpoint address for the specified port name.
     */
     public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
+        if ("EA_MRSoap12".equals(portName)) {
+            setEA_MRSoap12EndpointAddress(address);
+        }
         if ("EA_MRSoap".equals(portName)) {
             setEA_MRSoapEndpointAddress(address);
         }

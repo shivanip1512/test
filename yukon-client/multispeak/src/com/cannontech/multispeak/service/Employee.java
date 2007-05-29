@@ -9,7 +9,7 @@ package com.cannontech.multispeak.service;
 
 public class Employee  extends com.cannontech.multispeak.service.MspObject  implements java.io.Serializable {
     private java.lang.String employeeName;
-    private java.lang.String contactInfo;
+    private com.cannontech.multispeak.service.ContactInfo contactInfo;
     private java.lang.Boolean isEmployee;
     private java.lang.String skillType;
 
@@ -18,7 +18,7 @@ public class Employee  extends com.cannontech.multispeak.service.MspObject  impl
 
     public Employee(
            java.lang.String employeeName,
-           java.lang.String contactInfo,
+           com.cannontech.multispeak.service.ContactInfo contactInfo,
            java.lang.Boolean isEmployee,
            java.lang.String skillType) {
            this.employeeName = employeeName;
@@ -53,7 +53,7 @@ public class Employee  extends com.cannontech.multispeak.service.MspObject  impl
      * 
      * @return contactInfo
      */
-    public java.lang.String getContactInfo() {
+    public com.cannontech.multispeak.service.ContactInfo getContactInfo() {
         return contactInfo;
     }
 
@@ -63,7 +63,7 @@ public class Employee  extends com.cannontech.multispeak.service.MspObject  impl
      * 
      * @param contactInfo
      */
-    public void setContactInfo(java.lang.String contactInfo) {
+    public void setContactInfo(com.cannontech.multispeak.service.ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
     }
 
@@ -174,7 +174,7 @@ public class Employee  extends com.cannontech.multispeak.service.MspObject  impl
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("contactInfo");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

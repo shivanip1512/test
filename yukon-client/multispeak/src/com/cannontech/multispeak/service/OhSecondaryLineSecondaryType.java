@@ -64,7 +64,7 @@ public class OhSecondaryLineSecondaryType implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(OhSecondaryLineSecondaryType.class);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ohSecondaryLineSecondaryType"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">ohSecondaryLine>secondaryType"));
     }
     /**
      * Return type metadata object

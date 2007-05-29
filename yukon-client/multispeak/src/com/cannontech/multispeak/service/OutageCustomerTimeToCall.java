@@ -105,7 +105,7 @@ public class OutageCustomerTimeToCall  implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(OutageCustomerTimeToCall.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomerTimeToCall"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">outageCustomer>timeToCall"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("startTime");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startTime"));

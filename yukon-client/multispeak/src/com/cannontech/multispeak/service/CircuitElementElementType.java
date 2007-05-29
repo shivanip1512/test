@@ -84,7 +84,7 @@ public class CircuitElementElementType implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(CircuitElementElementType.class);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "circuitElementElementType"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">circuitElement>elementType"));
     }
     /**
      * Return type metadata object

@@ -95,7 +95,7 @@ public class OD_OA_Test {
 		ArrayOfString meterNums = new ArrayOfString();
 		meterNums.setString(meters);
 		
-		ArrayOfErrorObject objects = port.initiateOutageDetectionEventRequest(meterNums, new GregorianCalendar());
+		ArrayOfErrorObject objects = port.initiateOutageDetectionEventRequest(meterNums, new GregorianCalendar(), null);
 		print_ArrayOfErrorObjects(objects);
 
 	}

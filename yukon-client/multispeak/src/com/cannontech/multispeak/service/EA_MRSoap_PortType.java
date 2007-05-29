@@ -42,6 +42,13 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
     public com.cannontech.multispeak.service.ArrayOfDomainMember getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException;
 
     /**
+     * MR publishes new meter readings to the EA by sending a formattedBlock
+     * object.  EA returns information about failed transactions in an array
+     * of errorObjects.(Recommended)
+     */
+    public com.cannontech.multispeak.service.ArrayOfErrorObject formattedBlockNotification(com.cannontech.multispeak.service.FormattedBlock changedMeterReads) throws java.rmi.RemoteException;
+
+    /**
      * Returns all substation names.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfString getSubstationNames() throws java.rmi.RemoteException;
@@ -118,4 +125,23 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
      * as the given meter number. (Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfMeterConnectivity getSiblingMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException;
+
+    /**
+     * This method returns the minimum set of connectivity data necessary
+     * for AMR systems to group meters on portions of the power system. 
+     * This method will not return a complete set of connectivity data; it
+     * returns only circuit elements downline of a specific substation, overcurrentDeviceBank,
+     * transformer, or serviceLoaction.  Device tree connectivity will not
+     * include objects unnecessary to group meters, such as line sections.
+     * The MR requests devices downline of a specific object by passing the
+     * name and noun type for that object.  For instance, if the MR wishes
+     * to receive the minimal device tree downline of a specific substation,
+     * named the West substation, it would send name = West and noun = substation.
+     * EA would return the minimal device tree downline of the West substation
+     * in the form of an array of circuit elements.  The MR can find the
+     * instances of the objects of interest using the GetDomainMembers method
+     * passing one of the parameters: substation, overcurrentDeviceBank,
+     * transformerBank, or serviceLocation. (Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfCircuitElement getDeviceTreeConnectivity(java.lang.String name, java.lang.String noun) throws java.rmi.RemoteException;
 }

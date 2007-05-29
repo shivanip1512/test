@@ -21,6 +21,7 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
     private java.lang.String billCity;
     private java.lang.String billState;
     private java.lang.String billZip;
+    private com.cannontech.multispeak.service.ContactInfo contactInfo;
 
     public Customer() {
     }
@@ -38,7 +39,8 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
            java.lang.String billAddr2,
            java.lang.String billCity,
            java.lang.String billState,
-           java.lang.String billZip) {
+           java.lang.String billZip,
+           com.cannontech.multispeak.service.ContactInfo contactInfo) {
            this.lastName = lastName;
            this.firstName = firstName;
            this.mName = mName;
@@ -52,6 +54,7 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
            this.billCity = billCity;
            this.billState = billState;
            this.billZip = billZip;
+           this.contactInfo = contactInfo;
     }
 
 
@@ -314,6 +317,26 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
         this.billZip = billZip;
     }
 
+
+    /**
+     * Gets the contactInfo value for this Customer.
+     * 
+     * @return contactInfo
+     */
+    public com.cannontech.multispeak.service.ContactInfo getContactInfo() {
+        return contactInfo;
+    }
+
+
+    /**
+     * Sets the contactInfo value for this Customer.
+     * 
+     * @param contactInfo
+     */
+    public void setContactInfo(com.cannontech.multispeak.service.ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Customer)) return false;
@@ -364,7 +387,10 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
               this.billState.equals(other.getBillState()))) &&
             ((this.billZip==null && other.getBillZip()==null) || 
              (this.billZip!=null &&
-              this.billZip.equals(other.getBillZip())));
+              this.billZip.equals(other.getBillZip()))) &&
+            ((this.contactInfo==null && other.getContactInfo()==null) || 
+             (this.contactInfo!=null &&
+              this.contactInfo.equals(other.getContactInfo())));
         __equalsCalc = null;
         return _equals;
     }
@@ -414,6 +440,9 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
         }
         if (getBillZip() != null) {
             _hashCode += getBillZip().hashCode();
+        }
+        if (getContactInfo() != null) {
+            _hashCode += getContactInfo().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -513,6 +542,13 @@ public class Customer  extends com.cannontech.multispeak.service.MspObject  impl
         elemField.setFieldName("billZip");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billZip"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("contactInfo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

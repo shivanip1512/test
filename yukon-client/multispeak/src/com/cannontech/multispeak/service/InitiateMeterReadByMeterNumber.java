@@ -9,13 +9,16 @@ package com.cannontech.multispeak.service;
 
 public class InitiateMeterReadByMeterNumber  implements java.io.Serializable {
     private com.cannontech.multispeak.service.ArrayOfString meterNos;
+    private java.lang.String responseURL;
 
     public InitiateMeterReadByMeterNumber() {
     }
 
     public InitiateMeterReadByMeterNumber(
-           com.cannontech.multispeak.service.ArrayOfString meterNos) {
+           com.cannontech.multispeak.service.ArrayOfString meterNos,
+           java.lang.String responseURL) {
            this.meterNos = meterNos;
+           this.responseURL = responseURL;
     }
 
 
@@ -38,6 +41,26 @@ public class InitiateMeterReadByMeterNumber  implements java.io.Serializable {
         this.meterNos = meterNos;
     }
 
+
+    /**
+     * Gets the responseURL value for this InitiateMeterReadByMeterNumber.
+     * 
+     * @return responseURL
+     */
+    public java.lang.String getResponseURL() {
+        return responseURL;
+    }
+
+
+    /**
+     * Sets the responseURL value for this InitiateMeterReadByMeterNumber.
+     * 
+     * @param responseURL
+     */
+    public void setResponseURL(java.lang.String responseURL) {
+        this.responseURL = responseURL;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof InitiateMeterReadByMeterNumber)) return false;
@@ -52,7 +75,10 @@ public class InitiateMeterReadByMeterNumber  implements java.io.Serializable {
         _equals = true && 
             ((this.meterNos==null && other.getMeterNos()==null) || 
              (this.meterNos!=null &&
-              this.meterNos.equals(other.getMeterNos())));
+              this.meterNos.equals(other.getMeterNos()))) &&
+            ((this.responseURL==null && other.getResponseURL()==null) || 
+             (this.responseURL!=null &&
+              this.responseURL.equals(other.getResponseURL())));
         __equalsCalc = null;
         return _equals;
     }
@@ -66,6 +92,9 @@ public class InitiateMeterReadByMeterNumber  implements java.io.Serializable {
         int _hashCode = 1;
         if (getMeterNos() != null) {
             _hashCode += getMeterNos().hashCode();
+        }
+        if (getResponseURL() != null) {
+            _hashCode += getResponseURL().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -81,6 +110,13 @@ public class InitiateMeterReadByMeterNumber  implements java.io.Serializable {
         elemField.setFieldName("meterNos");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNos"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("responseURL");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

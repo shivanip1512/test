@@ -126,6 +126,7 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         addBindings0();
         addBindings1();
         addBindings2();
+        addBindings3();
     }
 
     private void addBindings0() {
@@ -142,6 +143,62 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">adjustmentItem>balanceType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.AdjustmentItemBalanceType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">anchor>status");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.AnchorStatus.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">chargeableDevice>actionFlag");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ChargeableDeviceActionFlag.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">circuitElement>elementType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.CircuitElementElementType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">contactInfo>eMailList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ContactInfoEMailList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">contactInfo>phoneList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ContactInfoPhoneList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">eMailAddress>eMailType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.EMailAddressEMailType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">extensionsItem>extType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ExtensionsItemExtType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetActiveOutages");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.GetActiveOutages.class;
@@ -226,6 +283,76 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">guy>guyAgainst");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.GuyGuyAgainst.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">guy>guyType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.GuyGuyType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">guy>status");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.GuyStatus.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">linkedTransformer>unitList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.LinkedTransformerUnitList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">meterRead>readingValues");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MeterReadReadingValues.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">meterRead>TOUReadings");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MeterReadTOUReadings.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">ohSecondaryLine>secondaryType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.OhSecondaryLineSecondaryType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">outageCustomer>timeToCall");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.OutageCustomerTimeToCall.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">payableItemList>allowableTransactionTypes");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PayableItemListAllowableTransactionTypes.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">phoneNumber>phoneType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PhoneNumberPhoneType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">PingURL");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.PingURL.class;
@@ -239,6 +366,20 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">readingValue>readingValueType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ReadingValueReadingValueType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">ugSecondaryLine>uGSecType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.UgSecondaryLineUGSecType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
 
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AbstractGeometryType");
             cachedSerQNames.add(qName);
@@ -268,6 +409,20 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "adjustmentItem");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.AdjustmentItem.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "adjustmentItemList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.AdjustmentItemList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "affectedMeter");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.AffectedMeter.class;
@@ -295,6 +450,20 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerClasses.add(cls);
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "anchor");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.Anchor.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "anchorList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.AnchorList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfAllocatedLoad");
             cachedSerQNames.add(qName);
@@ -597,9 +766,37 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billedUsage");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.BilledUsage.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingAccountLoad");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.BillingAccountLoad.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingData");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.BillingData.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingDetail");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.BillingDetail.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "BoxType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.BoxType.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -646,6 +843,21 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+    }
+    private void addBindings1() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "capacitor");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.Capacitor.class;
@@ -681,19 +893,40 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "chargeableDevice");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ChargeableDevice.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "chargeableDeviceList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ChargeableDeviceList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "chargeItem");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ChargeItem.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "chargeItemList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ChargeItemList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "circuitElement");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.CircuitElement.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "circuitElementElementType");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.CircuitElementElementType.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(enumsf);
-            cachedDeserFactories.add(enumdf);
 
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coincidentalValue");
             cachedSerQNames.add(qName);
@@ -750,6 +983,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerClasses.add(cls);
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ContactInfo.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlEventType");
             cachedSerQNames.add(qName);
@@ -842,21 +1082,6 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings1() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "deviceStatus");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.DeviceStatus.class;
@@ -898,6 +1123,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerClasses.add(cls);
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eMailAddress");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.EMailAddress.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "employee");
             cachedSerQNames.add(qName);
@@ -976,6 +1208,20 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "fixedCharge");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.FixedCharge.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "fixedChargeCodeList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.FixedChargeCodeList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "flowDemand");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.FlowDemand.class;
@@ -1032,6 +1278,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "genericPolygonFeature");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.GenericPolygonFeature.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "gpsLocation");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.GpsLocation.class;
@@ -1046,9 +1299,30 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "guy");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.Guy.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "historyLog");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.HistoryLog.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "innerBoundaryIs");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.InnerBoundaryIs.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "instrumentTransformers");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.InstrumentTransformers.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1102,6 +1376,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "LinearRingType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.LinearRingType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "LineStringType");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.LineStringType.class;
@@ -1112,13 +1393,6 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "linkedTransformer");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.LinkedTransformer.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "linkedTransformerUnitList");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.LinkedTransformerUnitList.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1270,9 +1544,52 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterBase");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MeterBase.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterConnectivity");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.MeterConnectivity.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+    }
+    private void addBindings2() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterExchange");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MeterExchange.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroup");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MeterGroup.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MeterList.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1287,20 +1604,6 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterReading");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.MeterReading.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterReadReadingValues");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.MeterReadReadingValues.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterReadTOUReadings");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.MeterReadTOUReadings.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1417,6 +1720,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspPolygonObject");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.MspPolygonObject.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspResultsBase");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.MspResultsBase.class;
@@ -1501,23 +1811,9 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ohSecondaryLineSecondaryType");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.OhSecondaryLineSecondaryType.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(enumsf);
-            cachedDeserFactories.add(enumdf);
-
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomer");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.OutageCustomer.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomerTimeToCall");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.OutageCustomerTimeToCall.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1557,21 +1853,6 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings2() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageEventStatus");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.OutageEventStatus.class;
@@ -1600,9 +1881,37 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outerBoundaryIs");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.OuterBoundaryIs.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "overcurrentDeviceBank");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.OvercurrentDeviceBank.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "parcel");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.Parcel.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "payableItem");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PayableItem.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "payableItemList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PayableItemList.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1627,6 +1936,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerClasses.add(cls);
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phoneNumber");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PhoneNumber.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "physicalObjectList");
             cachedSerQNames.add(qName);
@@ -1698,6 +2014,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "PolygonType");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PolygonType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "position");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.Position.class;
@@ -1736,6 +2059,48 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "powerSystemDevice");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.PowerSystemDevice.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ppmBalanceAdjustment");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PpmBalanceAdjustment.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ppmLocation");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PpmLocation.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ppmMeterExchange");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PpmMeterExchange.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ppmTransaction");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PpmTransaction.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premise");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.Premise.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premiseList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.PremiseList.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -1838,6 +2203,20 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "resolvedLevel");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ResolvedLevel.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseCode");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ResponseCode.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "resultsType");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.ResultsType.class;
@@ -1894,6 +2273,21 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings3() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionalizer");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.Sectionalizer.class;
@@ -1908,6 +2302,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocationList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.ServiceLocationList.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "shortCircuitAnalysisResult");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.ShortCircuitAnalysisResult.class;
@@ -1918,6 +2319,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "source");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.Source.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "spanGuy");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.SpanGuy.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -2013,6 +2421,13 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "tender");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.Tender.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "testInstance");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.TestInstance.class;
@@ -2097,13 +2512,6 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ugSecondaryLineUGSecType");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.service.UgSecondaryLineUGSecType.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(enumsf);
-            cachedDeserFactories.add(enumdf);
-
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "unitActn");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.UnitActn.class;
@@ -2142,6 +2550,20 @@ public class OA_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "usageInstance");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.service.UsageInstance.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "usageItem");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.UsageItem.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "usageItemList");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.service.UsageItemList.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);

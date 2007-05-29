@@ -13,4 +13,9 @@ public interface CD_CB extends javax.xml.rpc.Service {
     public com.cannontech.multispeak.service.CD_CBSoap_PortType getCD_CBSoap() throws javax.xml.rpc.ServiceException;
 
     public com.cannontech.multispeak.service.CD_CBSoap_PortType getCD_CBSoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+    public java.lang.String getCD_CBSoap12Address();
+
+    public com.cannontech.multispeak.service.CD_CBSoap_PortType getCD_CBSoap12() throws javax.xml.rpc.ServiceException;
+
+    public com.cannontech.multispeak.service.CD_CBSoap_PortType getCD_CBSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

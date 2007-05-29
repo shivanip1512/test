@@ -268,7 +268,7 @@ public class CircuitElement  extends com.cannontech.multispeak.service.MspObject
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("elementType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "elementType"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "circuitElementElementType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">circuitElement>elementType"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

@@ -2,35 +2,54 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+  <bean id="mr_cbImpl" class="com.cannontech.multispeak.service.impl.MR_CBImpl">
+  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+    <property name="multispeakDao" ref="multispeakDao"/>
+  	<property name="multispeak" ref="multispeak"/>
+  	<property name="mspRawPointHistoryDao" ref="mspRawPointHistoryDao"/>
+  	<property name="porterConnection" ref="porterConnection"/>
+  </bean>
+  <bean id="cd_cbImpl" class="com.cannontech.multispeak.service.impl.CD_CBImpl">
+  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+    <property name="multispeakDao" ref="multispeakDao"/>
+  	<property name="multispeak" ref="multispeak"/>
+  </bean>
+  <bean id="mr_eaImpl" class="com.cannontech.multispeak.service.impl.MR_EAImpl">
+  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+    <property name="dynamicDataSource" ref="dynamicDataSource" />
+    <property name="paoDao" ref="paoDao"/>
+    <property name="pointDao" ref="pointDao"/>
+  </bean>
+  <bean id="mr_oa" class="com.cannontech.multispeak.service.impl.MR_OAImpl">
+  </bean>
+    <bean id="od_oaImpl" class="com.cannontech.multispeak.service.impl.OD_OAImpl">
+  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+  	<property name="multispeak" ref="multispeak"/>
+  </bean>
 
-  <bean id="mrCb" class="com.cannontech.multispeak.service.impl.MR_CBImpl">
-    <property name="multispeakDao" ref="multispeakDao"/>
+  <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs">
+    <property name="multispeakDao" ref="multispeakDao"></property>
+    <property name="paoDao" ref="paoDao"/>
+    <property name="deviceDao" ref="deviceDao"/>
+    <property name="roleDao" ref="roleDao"/>
   </bean>
-    <bean id="cdCb" class="com.cannontech.multispeak.service.impl.CD_CBImpl">
+  
+  <bean id="multispeak" class="com.cannontech.multispeak.client.Multispeak" init-method="initialize">
+  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+  	<property name="porterConnection" ref="porterConnection"/>
     <property name="multispeakDao" ref="multispeakDao"/>
+    <property name="dbPersistentDao" ref="dbPersistentDao"/>
+    <property name="paoDao" ref="paoDao"/>
+    <property name="deviceDao" ref="deviceDao"/>
   </bean>
-    <bean id="mrEa" class="com.cannontech.multispeak.service.impl.MR_EAImpl">
-    <property name="multispeakDao" ref="multispeakDao"/>
-  </bean>
-    <bean id="mrOa" class="com.cannontech.multispeak.service.impl.MR_OAImpl">
-    <property name="multispeakDao" ref="multispeakDao"/>
-  </bean>
-    <bean id="odOa" class="com.cannontech.multispeak.service.impl.OD_OAImpl">
-    <property name="multispeakDao" ref="multispeakDao"/>
-  </bean>
+   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
     <property name="jdbcOps" ref="jdbcTemplate"/> 
     <property name="transactionTemplate" ref="transactionTemplate"/> 
-    <property name="databaseCache" ref="databaseCache"/>   
     <property name="nextValueHelper" ref="nextValueHelper"/>  
   </bean>
   
-    <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.RawPointHistoryDaoImpl">
-    <property name="jdbcOps" ref="jdbcTemplate"/> 
-    <property name="transactionTemplate" ref="transactionTemplate"/> 
-    <property name="databaseCache" ref="databaseCache"/>   
-    <property name="nextValueHelper" ref="nextValueHelper"/>  
+  <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.RawPointHistoryDaoImpl">
   </bean>
-  
-</beans>
+ </beans>

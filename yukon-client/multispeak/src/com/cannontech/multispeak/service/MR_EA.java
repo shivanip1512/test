@@ -13,4 +13,9 @@ public interface MR_EA extends javax.xml.rpc.Service {
     public com.cannontech.multispeak.service.MR_EASoap_PortType getMR_EASoap() throws javax.xml.rpc.ServiceException;
 
     public com.cannontech.multispeak.service.MR_EASoap_PortType getMR_EASoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+    public java.lang.String getMR_EASoap12Address();
+
+    public com.cannontech.multispeak.service.MR_EASoap_PortType getMR_EASoap12() throws javax.xml.rpc.ServiceException;
+
+    public com.cannontech.multispeak.service.MR_EASoap_PortType getMR_EASoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

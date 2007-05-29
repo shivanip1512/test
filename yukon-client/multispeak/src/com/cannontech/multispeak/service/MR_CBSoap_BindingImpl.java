@@ -13,293 +13,150 @@ import java.util.Calendar;
 import com.cannontech.multispeak.service.impl.MR_CBImpl;
 import com.cannontech.spring.YukonSpringHook;
 
-public class MR_CBSoap_BindingImpl implements MR_CBSoap_PortType{
+public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.service.MR_CBSoap_PortType{
+    private MR_CBSoap_PortType mr_cbImpl = (MR_CBImpl)YukonSpringHook.getBean("mr_cbImpl");
 
-    public MR_CBSoap_PortType mrCb;
-    
-    /**
-     * @param mrCb The mrCb to set.
-     */
-    public void setMrCb(MR_CBSoap_PortType mrCb)
-    {
-        this.mrCb = mrCb;
+    public ArrayOfErrorObject cancelDisconnectedStatus(ArrayOfString meterNos) throws RemoteException {
+        return mr_cbImpl.cancelDisconnectedStatus(meterNos);
     }
 
-    /**
-     * @return Returns the mrCb.
-     */
-    private MR_CBSoap_PortType getMrCb()
-    {
-        if (mrCb == null)
-            return (MR_CBImpl)YukonSpringHook.getBean("mrCb");
-        return mrCb;
+    public ArrayOfErrorObject cancelPlannedOutage(ArrayOfString meterNos) throws RemoteException {
+        return mr_cbImpl.cancelPlannedOutage(meterNos);
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#cancelDisconnectedStatus(com.cannontech.multispeak.ArrayOfString)
-     */
-    public ArrayOfErrorObject cancelDisconnectedStatus(ArrayOfString meterNos) throws RemoteException
-    {
-        return getMrCb().cancelDisconnectedStatus(meterNos);
+    public ArrayOfErrorObject cancelUsageMonitoring(ArrayOfString meterNos) throws RemoteException {
+        return mr_cbImpl.cancelUsageMonitoring(meterNos);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#cancelPlannedOutage(com.cannontech.multispeak.ArrayOfString)
-     */
-    public ArrayOfErrorObject cancelPlannedOutage(ArrayOfString meterNos) throws RemoteException
-    {
-        return getMrCb().cancelPlannedOutage(meterNos);
+    public ArrayOfErrorObject customerChangedNotification(ArrayOfCustomer changedCustomers) throws RemoteException {
+        return mr_cbImpl.customerChangedNotification(changedCustomers);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#cancelUsageMonitoring(com.cannontech.multispeak.ArrayOfString)
-     */
-    public ArrayOfErrorObject cancelUsageMonitoring(ArrayOfString meterNos) throws RemoteException
-    {
-        return getMrCb().cancelUsageMonitoring(meterNos);
+    public ErrorObject deleteMeterGroup(String meterGroupID) throws RemoteException {
+        return mr_cbImpl.deleteMeterGroup(meterGroupID);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#customerChangedNotification(com.cannontech.multispeak.ArrayOfCustomer)
-     */
-    public ArrayOfErrorObject customerChangedNotification(ArrayOfCustomer changedCustomers) throws RemoteException
-    {
-        return getMrCb().customerChangedNotification(changedCustomers);
+    public ArrayOfErrorObject establishMeterGroup(MeterGroup meterGroup) throws RemoteException {
+        return mr_cbImpl.establishMeterGroup(meterGroup);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getAMRSupportedMeters(java.lang.String)
-     */
-    public ArrayOfMeter getAMRSupportedMeters(String lastReceived) throws RemoteException
-    {
-        return getMrCb().getAMRSupportedMeters(lastReceived);
+    public ArrayOfMeter getAMRSupportedMeters(String lastReceived) throws RemoteException {
+        return mr_cbImpl.getAMRSupportedMeters(lastReceived);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getDomainMembers(java.lang.String)
-     */
-    public ArrayOfDomainMember getDomainMembers(String domainName) throws RemoteException
-    {
-        return getMrCb().getDomainMembers(domainName);
+    public ArrayOfDomainMember getDomainMembers(String domainName) throws RemoteException {
+        return mr_cbImpl.getDomainMembers(domainName);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getDomainNames()
-     */
-    public ArrayOfString getDomainNames() throws RemoteException
-    {
-        return getMrCb().getDomainNames();
+    public ArrayOfString getDomainNames() throws RemoteException {
+        return mr_cbImpl.getDomainNames();
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getHistoryLogByMeterNo(java.lang.String, java.util.Calendar, java.util.Calendar)
-     */
-    public ArrayOfHistoryLog getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate) throws RemoteException
-    {
-        return getMrCb().getHistoryLogByMeterNo(meterNo, startDate, endDate);
+    public ArrayOfHistoryLog getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate) throws RemoteException {
+        return mr_cbImpl.getHistoryLogByMeterNo(meterNo, startDate, endDate);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getHistoryLogsByDate(java.util.Calendar, java.util.Calendar, java.lang.String)
-     */
-    public ArrayOfHistoryLog getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException
-    {
-        return getMrCb().getHistoryLogsByDate(startDate, endDate, lastReceived);
+    public ArrayOfHistoryLog getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException {
+        return mr_cbImpl.getHistoryLogsByDate(startDate, endDate, lastReceived);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getHistoryLogsByDateAndEventCode(com.cannontech.multispeak.EventCode, java.util.Calendar, java.util.Calendar, java.lang.String)
-     */
-    public ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException
-    {
-        return getMrCb().getHistoryLogsByDateAndEventCode(eventCode, startDate, endDate, lastReceived);
+    public ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException {
+        return mr_cbImpl.getHistoryLogsByDateAndEventCode(eventCode, startDate, endDate, lastReceived);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getHistoryLogsByMeterNoAndEventCode(java.lang.String, com.cannontech.multispeak.EventCode, java.util.Calendar, java.util.Calendar)
-     */
-    public ArrayOfHistoryLog getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate, Calendar endDate) throws RemoteException
-    {
-        return getMrCb().getHistoryLogsByMeterNoAndEventCode(meterNo, eventCode, startDate, endDate);
+    public ArrayOfHistoryLog getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate, Calendar endDate) throws RemoteException {
+        return mr_cbImpl.getHistoryLogsByMeterNoAndEventCode(meterNo, eventCode, startDate, endDate);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getLatestReadingByMeterNo(java.lang.String)
-     */
-    public MeterRead getLatestReadingByMeterNo(String meterNo) throws RemoteException
-    {
-        return getMrCb().getLatestReadingByMeterNo(meterNo);
+    public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID) throws RemoteException {
+        return mr_cbImpl.getLatestMeterReadingsByMeterGroup(meterGroupID);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getMethods()
-     */
-    public ArrayOfString getMethods() throws RemoteException
-    {
-        return getMrCb().getMethods();
+    public MeterRead getLatestReadingByMeterNo(String meterNo) throws RemoteException {
+        return mr_cbImpl.getLatestReadingByMeterNo(meterNo);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getModifiedAMRMeters(java.lang.String, java.lang.String)
-     */
-    public ArrayOfMeter getModifiedAMRMeters(String previousSessionID, String lastReceived) throws RemoteException
-    {
-        return getMrCb().getModifiedAMRMeters(previousSessionID, lastReceived);
+    public ArrayOfString getMethods() throws RemoteException {
+        return mr_cbImpl.getMethods();
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getReadingsByBillingCycle(java.lang.String, java.util.Calendar, java.util.Calendar, java.lang.String)
-     */
-    public ArrayOfMeterRead getReadingsByBillingCycle(String billingCycle, Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException
-    {
-        return getMrCb().getReadingsByBillingCycle(billingCycle, startDate, endDate, lastReceived);
+    public ArrayOfMeter getModifiedAMRMeters(String previousSessionID, String lastReceived) throws RemoteException {
+        return mr_cbImpl.getModifiedAMRMeters(previousSessionID, lastReceived);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getReadingsByDate(java.util.Calendar, java.util.Calendar, java.lang.String)
-     */
-    public ArrayOfMeterRead getReadingsByDate(Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException
-    {
-        return getMrCb().getReadingsByDate(startDate, endDate, lastReceived);
+    public ArrayOfFormattedBlock getReadingsByBillingCycle(String billingCycle, Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, String lastReceived) throws RemoteException {
+        return mr_cbImpl.getReadingsByBillingCycle(billingCycle, billingDate, kWhLookBack, kWLookBack, kWLookForward, lastReceived);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#getReadingsByMeterNo(java.lang.String, java.util.Calendar, java.util.Calendar)
-     */
-    public ArrayOfMeterRead getReadingsByMeterNo(String meterNo, Calendar startDate, Calendar endDate) throws RemoteException
-    {
-        return getMrCb().getReadingsByMeterNo(meterNo, startDate, endDate);
+    public ArrayOfMeterRead getReadingsByDate(Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException {
+        return mr_cbImpl.getReadingsByDate(startDate, endDate, lastReceived);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#initiateDisconnectedStatus(com.cannontech.multispeak.ArrayOfString)
-     */
-    public ArrayOfErrorObject initiateDisconnectedStatus(ArrayOfString meterNos) throws RemoteException
-    {
-        return getMrCb().initiateDisconnectedStatus(meterNos);
+    public ArrayOfMeterRead getReadingsByMeterNo(String meterNo, Calendar startDate, Calendar endDate) throws RemoteException {
+        return mr_cbImpl.getReadingsByMeterNo(meterNo, startDate, endDate);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#initiateMeterReadByMeterNumber(com.cannontech.multispeak.ArrayOfString)
-     */
-    public ArrayOfErrorObject initiateMeterReadByMeterNumber(ArrayOfString meterNos) throws RemoteException
-    {
-        return getMrCb().initiateMeterReadByMeterNumber(meterNos);
+    public ArrayOfErrorObject initiateDisconnectedStatus(ArrayOfString meterNos) throws RemoteException {
+        return mr_cbImpl.initiateDisconnectedStatus(meterNos);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#initiatePlannedOutage(com.cannontech.multispeak.ArrayOfString, java.util.Calendar, java.util.Calendar)
-     */
-    public ArrayOfErrorObject initiatePlannedOutage(ArrayOfString meterNos, Calendar startDate, Calendar endDate) throws RemoteException
-    {
-        return getMrCb().initiatePlannedOutage(meterNos, startDate, endDate);
+    public ArrayOfErrorObject initiateGroupMeterRead(String meterGroupName, String responseURL) throws RemoteException {
+        return mr_cbImpl.initiateGroupMeterRead(meterGroupName, responseURL);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#initiateUsageMonitoring(com.cannontech.multispeak.ArrayOfString)
-     */
-    public ArrayOfErrorObject initiateUsageMonitoring(ArrayOfString meterNos) throws RemoteException
-    {
-        return getMrCb().initiateUsageMonitoring(meterNos);
+    public ArrayOfErrorObject initiateMeterReadByMeterNumber(ArrayOfString meterNos, String responseURL) throws RemoteException {
+        return mr_cbImpl.initiateMeterReadByMeterNumber(meterNos, responseURL);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#isAMRMeter(java.lang.String)
-     */
-    public boolean isAMRMeter(String meterNo) throws RemoteException
-    {
-        return getMrCb().isAMRMeter(meterNo);
+    public ArrayOfErrorObject initiatePlannedOutage(ArrayOfString meterNos, Calendar startDate, Calendar endDate) throws RemoteException {
+        return mr_cbImpl.initiatePlannedOutage(meterNos, startDate, endDate);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#meterAddNotification(com.cannontech.multispeak.ArrayOfMeter)
-     */
-    public ArrayOfErrorObject meterAddNotification(ArrayOfMeter addedMeters) throws RemoteException
-    {
-        return getMrCb().meterAddNotification(addedMeters);
+    public ArrayOfErrorObject initiateUsageMonitoring(ArrayOfString meterNos) throws RemoteException {
+        return mr_cbImpl.initiateUsageMonitoring(meterNos);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#meterChangedNotification(com.cannontech.multispeak.ArrayOfMeter)
-     */
-    public ArrayOfErrorObject meterChangedNotification(ArrayOfMeter changedMeters) throws RemoteException
-    {
-        return getMrCb().meterChangedNotification(changedMeters);
+    public ArrayOfErrorObject insertMeterInMeterGroup(ArrayOfString meterNumbers, String meterGroupID) throws RemoteException {
+        return mr_cbImpl.insertMeterInMeterGroup(meterNumbers, meterGroupID);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#meterRemoveNotification(com.cannontech.multispeak.ArrayOfMeter)
-     */
-    public ArrayOfErrorObject meterRemoveNotification(ArrayOfMeter removedMeters) throws RemoteException
-    {
-        return getMrCb().meterRemoveNotification(removedMeters);
+    public boolean isAMRMeter(String meterNo) throws RemoteException {
+        return mr_cbImpl.isAMRMeter(meterNo);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#pingURL()
-     */
-    public ArrayOfErrorObject pingURL() throws RemoteException
-    {
-        return getMrCb().pingURL();
+    public ArrayOfErrorObject meterAddNotification(ArrayOfMeter addedMeters) throws RemoteException {
+        return mr_cbImpl.meterAddNotification(addedMeters);
     }
 
+    public ArrayOfErrorObject meterChangedNotification(ArrayOfMeter changedMeters) throws RemoteException {
+        return mr_cbImpl.meterChangedNotification(changedMeters);
+    }
 
+    public ArrayOfErrorObject meterExchangeNotification(ArrayOfMeterExchange meterChangeout) throws RemoteException {
+        return mr_cbImpl.meterExchangeNotification(meterChangeout);
+    }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.MR_CBSoap_BindingImpl#serviceLocationChangedNotification(com.cannontech.multispeak.ArrayOfServiceLocation)
-     */
-    public ArrayOfErrorObject serviceLocationChangedNotification(ArrayOfServiceLocation changedServiceLocations) throws RemoteException
-    {
-        return getMrCb().serviceLocationChangedNotification(changedServiceLocations);
+    public ArrayOfErrorObject meterRemoveNotification(ArrayOfMeter removedMeters) throws RemoteException {
+        return mr_cbImpl.meterRemoveNotification(removedMeters);
+    }
+
+    public ArrayOfErrorObject meterRetireNotification(ArrayOfMeter retiredMeters) throws RemoteException {
+        return mr_cbImpl.meterRetireNotification(retiredMeters);
+    }
+
+    public ArrayOfErrorObject pingURL() throws RemoteException {
+        return mr_cbImpl.pingURL();
+    }
+
+    public ArrayOfErrorObject removeMetersFromMeterGroup(ArrayOfString meterNumbers, String meterGroupID) throws RemoteException {
+        return mr_cbImpl.removeMetersFromMeterGroup(meterNumbers, meterGroupID);
+    }
+
+    public ArrayOfErrorObject scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL) throws RemoteException {
+        return mr_cbImpl.scheduleGroupMeterRead(meterGroupName, timeToRead, responseURL);
+    }
+
+    public ArrayOfErrorObject serviceLocationChangedNotification(ArrayOfServiceLocation changedServiceLocations) throws RemoteException {
+        return mr_cbImpl.serviceLocationChangedNotification(changedServiceLocations);
     }
 }

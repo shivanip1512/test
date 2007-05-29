@@ -12,7 +12,10 @@ public class ReadingValue  implements java.io.Serializable {
     private com.cannontech.multispeak.service.ExtensionsList extensionsList;
     private java.lang.String units;
     private java.lang.String value;
+    private java.lang.String readingType;
+    private com.cannontech.multispeak.service.ReadingValueReadingValueType readingValueType;
     private java.lang.String name;
+    private java.util.Calendar dateTime;
 
     public ReadingValue() {
     }
@@ -22,12 +25,18 @@ public class ReadingValue  implements java.io.Serializable {
            com.cannontech.multispeak.service.ExtensionsList extensionsList,
            java.lang.String units,
            java.lang.String value,
-           java.lang.String name) {
+           java.lang.String readingType,
+           com.cannontech.multispeak.service.ReadingValueReadingValueType readingValueType,
+           java.lang.String name,
+           java.util.Calendar dateTime) {
            this.extensions = extensions;
            this.extensionsList = extensionsList;
            this.units = units;
            this.value = value;
+           this.readingType = readingType;
+           this.readingValueType = readingValueType;
            this.name = name;
+           this.dateTime = dateTime;
     }
 
 
@@ -112,6 +121,46 @@ public class ReadingValue  implements java.io.Serializable {
 
 
     /**
+     * Gets the readingType value for this ReadingValue.
+     * 
+     * @return readingType
+     */
+    public java.lang.String getReadingType() {
+        return readingType;
+    }
+
+
+    /**
+     * Sets the readingType value for this ReadingValue.
+     * 
+     * @param readingType
+     */
+    public void setReadingType(java.lang.String readingType) {
+        this.readingType = readingType;
+    }
+
+
+    /**
+     * Gets the readingValueType value for this ReadingValue.
+     * 
+     * @return readingValueType
+     */
+    public com.cannontech.multispeak.service.ReadingValueReadingValueType getReadingValueType() {
+        return readingValueType;
+    }
+
+
+    /**
+     * Sets the readingValueType value for this ReadingValue.
+     * 
+     * @param readingValueType
+     */
+    public void setReadingValueType(com.cannontech.multispeak.service.ReadingValueReadingValueType readingValueType) {
+        this.readingValueType = readingValueType;
+    }
+
+
+    /**
      * Gets the name value for this ReadingValue.
      * 
      * @return name
@@ -128,6 +177,26 @@ public class ReadingValue  implements java.io.Serializable {
      */
     public void setName(java.lang.String name) {
         this.name = name;
+    }
+
+
+    /**
+     * Gets the dateTime value for this ReadingValue.
+     * 
+     * @return dateTime
+     */
+    public java.util.Calendar getDateTime() {
+        return dateTime;
+    }
+
+
+    /**
+     * Sets the dateTime value for this ReadingValue.
+     * 
+     * @param dateTime
+     */
+    public void setDateTime(java.util.Calendar dateTime) {
+        this.dateTime = dateTime;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -154,9 +223,18 @@ public class ReadingValue  implements java.io.Serializable {
             ((this.value==null && other.getValue()==null) || 
              (this.value!=null &&
               this.value.equals(other.getValue()))) &&
+            ((this.readingType==null && other.getReadingType()==null) || 
+             (this.readingType!=null &&
+              this.readingType.equals(other.getReadingType()))) &&
+            ((this.readingValueType==null && other.getReadingValueType()==null) || 
+             (this.readingValueType!=null &&
+              this.readingValueType.equals(other.getReadingValueType()))) &&
             ((this.name==null && other.getName()==null) || 
              (this.name!=null &&
-              this.name.equals(other.getName())));
+              this.name.equals(other.getName()))) &&
+            ((this.dateTime==null && other.getDateTime()==null) || 
+             (this.dateTime!=null &&
+              this.dateTime.equals(other.getDateTime())));
         __equalsCalc = null;
         return _equals;
     }
@@ -180,8 +258,17 @@ public class ReadingValue  implements java.io.Serializable {
         if (getValue() != null) {
             _hashCode += getValue().hashCode();
         }
+        if (getReadingType() != null) {
+            _hashCode += getReadingType().hashCode();
+        }
+        if (getReadingValueType() != null) {
+            _hashCode += getReadingValueType().hashCode();
+        }
         if (getName() != null) {
             _hashCode += getName().hashCode();
+        }
+        if (getDateTime() != null) {
+            _hashCode += getDateTime().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -222,9 +309,30 @@ public class ReadingValue  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("readingType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("readingValueType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingValueType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">readingValue>readingValueType"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("name");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "name"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("dateTime");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "dateTime"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

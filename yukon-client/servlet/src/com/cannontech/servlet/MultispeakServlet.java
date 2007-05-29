@@ -27,6 +27,7 @@ import com.cannontech.multispeak.client.MultispeakBean;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfString;
@@ -46,6 +47,7 @@ import com.cannontech.multispeak.service.ServiceLocation;
 import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -79,6 +81,9 @@ public class MultispeakServlet extends HttpServlet
         if (redirect == null)
             redirect = req.getContextPath() + req.getRequestURL();
 
+        MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
+        MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
+                
         MultispeakBean mspBean = (MultispeakBean)session.getAttribute("multispeakBean");
         if( mspBean == null) {
             session.setAttribute("multispeakBean", new MultispeakBean());
@@ -88,7 +93,7 @@ public class MultispeakServlet extends HttpServlet
         if( action.equalsIgnoreCase("CB_MR")) {
             String command = req.getParameter("command");
             MultispeakVendor mspVendor;
-            mspVendor = MultispeakFuncs.getMultispeakDao().getMultispeakVendor(mspBean.getPrimaryCIS());
+            mspVendor = multispeakDao.getMultispeakVendor(mspBean.getPrimaryCIS());
 
             String deviceIDStr = req.getParameter("deviceID");
             Integer deviceID = null; 
@@ -97,9 +102,9 @@ public class MultispeakServlet extends HttpServlet
                 MspObject object = handleCB_MR(command, deviceID.intValue(), mspVendor, session);
                 if( object != null) {
                     if( object instanceof Customer)
-                    	session.setAttribute("CustomerDetail", MultispeakFuncs.customerToString((Customer)object).replaceAll("/r/n", "<BR>"));
+                    	session.setAttribute("CustomerDetail", multispeakFuncs.customerToString((Customer)object).replaceAll("/r/n", "<BR>"));
                     else if( object instanceof ServiceLocation)
-                    	session.setAttribute("ServLocDetail", MultispeakFuncs.serviceLocationToString((ServiceLocation)object).replaceAll("/r/n", "<BR>"));
+                    	session.setAttribute("ServLocDetail", multispeakFuncs.serviceLocationToString((ServiceLocation)object).replaceAll("/r/n", "<BR>"));
                 }
             }
             return redirect;
@@ -156,7 +161,7 @@ public class MultispeakServlet extends HttpServlet
         }
         
         if( action.equalsIgnoreCase("Save")) {
-            MultispeakFuncs.getMultispeakDao().updateMultispeakVendor(mspVendor);
+            multispeakDao.updateMultispeakVendor(mspVendor);
             if ( mspPrimaryCIS != mspBean.getPrimaryCIS() || mspPaoNameAlias != mspBean.getPaoNameAlias()){
     			try
     			{
@@ -219,7 +224,7 @@ public class MultispeakServlet extends HttpServlet
                 return "/msp_setup_new.jsp";
             }
         }catch(NotFoundException nfe) {*/
-            MultispeakFuncs.getMultispeakDao().addMultispeakVendor(mspVendor);
+        ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).addMultispeakVendor(mspVendor);
             return mspVendor.getVendorID().intValue();
         /*}
         return "/msp_setup.jsp";*/
@@ -235,7 +240,7 @@ public class MultispeakServlet extends HttpServlet
         if( companyName.equalsIgnoreCase("cannon"))
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* The default interface '" + companyName + "' cannot be deleted.");
         else
-            MultispeakFuncs.getMultispeakDao().deleteMultispeakVendor(mspVendor.getVendorID().intValue());
+            ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).deleteMultispeakVendor(mspVendor.getVendorID().intValue());
     }
 
     private MspObject handleCB_MR(String command, int deviceID, MultispeakVendor mspVendor, HttpSession session) {

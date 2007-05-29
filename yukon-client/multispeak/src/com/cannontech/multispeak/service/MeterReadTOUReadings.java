@@ -92,7 +92,7 @@ public class MeterReadTOUReadings  implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(MeterReadTOUReadings.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterReadTOUReadings"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">meterRead>TOUReadings"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("TOUReading");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "TOUReading"));

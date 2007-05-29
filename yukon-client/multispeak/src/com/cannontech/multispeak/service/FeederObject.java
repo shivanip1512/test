@@ -12,7 +12,7 @@ public class FeederObject  extends com.cannontech.multispeak.service.MspObject  
     private java.lang.String feederName;
     private java.lang.String feederNo;
     private java.lang.String facilityID;
-    private java.lang.String eaLoc;
+    private com.cannontech.multispeak.service.EaLoc eaLoc;
     private java.lang.String feederColor;
     private java.lang.String bus;
 
@@ -24,7 +24,7 @@ public class FeederObject  extends com.cannontech.multispeak.service.MspObject  
            java.lang.String feederName,
            java.lang.String feederNo,
            java.lang.String facilityID,
-           java.lang.String eaLoc,
+           com.cannontech.multispeak.service.EaLoc eaLoc,
            java.lang.String feederColor,
            java.lang.String bus) {
            this.substationName = substationName;
@@ -122,7 +122,7 @@ public class FeederObject  extends com.cannontech.multispeak.service.MspObject  
      * 
      * @return eaLoc
      */
-    public java.lang.String getEaLoc() {
+    public com.cannontech.multispeak.service.EaLoc getEaLoc() {
         return eaLoc;
     }
 
@@ -132,7 +132,7 @@ public class FeederObject  extends com.cannontech.multispeak.service.MspObject  
      * 
      * @param eaLoc
      */
-    public void setEaLoc(java.lang.String eaLoc) {
+    public void setEaLoc(com.cannontech.multispeak.service.EaLoc eaLoc) {
         this.eaLoc = eaLoc;
     }
 
@@ -282,7 +282,7 @@ public class FeederObject  extends com.cannontech.multispeak.service.MspObject  
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("eaLoc");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eaLoc"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eaLoc"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

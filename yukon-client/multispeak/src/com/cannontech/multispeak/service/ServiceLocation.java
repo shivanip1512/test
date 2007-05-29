@@ -42,6 +42,8 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
     private com.cannontech.multispeak.service.Network network;
     private java.lang.String SIC;
     private java.lang.Boolean isCogenerationSite;
+    private java.lang.String woNumber;
+    private java.lang.String soNumber;
 
     public ServiceLocation() {
     }
@@ -80,7 +82,9 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
            java.util.Calendar disconnectDate,
            com.cannontech.multispeak.service.Network network,
            java.lang.String SIC,
-           java.lang.Boolean isCogenerationSite) {
+           java.lang.Boolean isCogenerationSite,
+           java.lang.String woNumber,
+           java.lang.String soNumber) {
            this.custID = custID;
            this.accountNumber = accountNumber;
            this.facilityName = facilityName;
@@ -115,6 +119,8 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
            this.network = network;
            this.SIC = SIC;
            this.isCogenerationSite = isCogenerationSite;
+           this.woNumber = woNumber;
+           this.soNumber = soNumber;
     }
 
 
@@ -797,6 +803,46 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
         this.isCogenerationSite = isCogenerationSite;
     }
 
+
+    /**
+     * Gets the woNumber value for this ServiceLocation.
+     * 
+     * @return woNumber
+     */
+    public java.lang.String getWoNumber() {
+        return woNumber;
+    }
+
+
+    /**
+     * Sets the woNumber value for this ServiceLocation.
+     * 
+     * @param woNumber
+     */
+    public void setWoNumber(java.lang.String woNumber) {
+        this.woNumber = woNumber;
+    }
+
+
+    /**
+     * Gets the soNumber value for this ServiceLocation.
+     * 
+     * @return soNumber
+     */
+    public java.lang.String getSoNumber() {
+        return soNumber;
+    }
+
+
+    /**
+     * Sets the soNumber value for this ServiceLocation.
+     * 
+     * @param soNumber
+     */
+    public void setSoNumber(java.lang.String soNumber) {
+        this.soNumber = soNumber;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ServiceLocation)) return false;
@@ -910,7 +956,13 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
               this.SIC.equals(other.getSIC()))) &&
             ((this.isCogenerationSite==null && other.getIsCogenerationSite()==null) || 
              (this.isCogenerationSite!=null &&
-              this.isCogenerationSite.equals(other.getIsCogenerationSite())));
+              this.isCogenerationSite.equals(other.getIsCogenerationSite()))) &&
+            ((this.woNumber==null && other.getWoNumber()==null) || 
+             (this.woNumber!=null &&
+              this.woNumber.equals(other.getWoNumber()))) &&
+            ((this.soNumber==null && other.getSoNumber()==null) || 
+             (this.soNumber!=null &&
+              this.soNumber.equals(other.getSoNumber())));
         __equalsCalc = null;
         return _equals;
     }
@@ -1023,6 +1075,12 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
         }
         if (getIsCogenerationSite() != null) {
             _hashCode += getIsCogenerationSite().hashCode();
+        }
+        if (getWoNumber() != null) {
+            _hashCode += getWoNumber().hashCode();
+        }
+        if (getSoNumber() != null) {
+            _hashCode += getSoNumber().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -1269,6 +1327,20 @@ public class ServiceLocation  extends com.cannontech.multispeak.service.MspElect
         elemField.setFieldName("isCogenerationSite");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "isCogenerationSite"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("woNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "woNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("soNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "soNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

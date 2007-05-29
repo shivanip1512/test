@@ -47,8 +47,8 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * blocks.  lastReceived should carry an empty string the first time
      * in a session that this method is invoked.  When multiple calls to
      * this method are required to obtain all of the data, the lastReceived
-     * should carry the objectID of the last data instance received in subsequent
-     * calls.(Recommended)
+     * should carry in subsequent calls the objectID of the data instance
+     * noted by the server as being the lastSent.(Recommended)
      */
     public com.cannontech.multispeak.service.ArrayOfMeter getAMRSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -61,8 +61,8 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * blocks.  lastReceived should carry an empty string the first time
      * in a session that this method is invoked.  When multiple calls to
      * this method are required to obtain all of the data, the lastReceived
-     * should carry the objectID of the last data instance received in subsequent
-     * calls.(Optional)
+     * should carry in subsequent calls the objectID of the data instance
+     * noted by the server as being the lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfMeter getModifiedAMRMeters(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -72,8 +72,8 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * can be returned in manageable blocks.  lastReceived should carry an
      * empty string the first time in a session that this method is invoked.
      * When multiple calls to this method are required to obtain all of the
-     * data, the lastReceived should carry the objectID of the last data
-     * instance received in subsequent calls. (Recommended)
+     * data, the lastReceived should carry in subsequent calls the objectID
+     * of the data instance noted by the server as being the lastSent. (Recommended)
      */
     public com.cannontech.multispeak.service.ArrayOfMeterRead getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -89,8 +89,9 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * sets of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Recommended)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Recommended)
      */
     public com.cannontech.multispeak.service.ArrayOfMeterRead getLatestReadings(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -106,8 +107,8 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * blocks.  lastReceived should carry an empty string the first time
      * in a session that this method is invoked.  When multiple calls to
      * this method are required to obtain all of the data, the lastReceived
-     * should carry the objectID of the last data instance received in subsequent
-     * calls. (Optional)
+     * should carry in subsequent calls the objectID of the data instance
+     * noted by the server as being the lastSent. (Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfMeterRead getReadingsByUOMAndDate(java.lang.String uomData, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -122,8 +123,9 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Optional)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfHistoryLog getHistoryLogsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -140,7 +142,63 @@ public interface MR_EASoap_PortType extends java.rmi.Remote {
      * lastReceived should carry an empty string the first time in a session
      * that this method is invoked.  When multiple calls to this method are
      * required to obtain all of the data, the lastReceived should carry
-     * the objectID of the last data instance received in subsequent calls.(Optional)
+     * in subsequent calls the objectID of the data instance noted by the
+     * server as being the lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(com.cannontech.multispeak.service.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
+     * Returns the most recent reading data for a given meterNo and
+     * reading type.(Recommended)
+     */
+    public com.cannontech.multispeak.service.FormattedBlock getLatestReadingByMeterNoAndType(java.lang.String meterNo, java.lang.String readingType) throws java.rmi.RemoteException;
+
+    /**
+     * Returns the most recent reading data for a given reading type.The
+     * calling parameter lastReceived is included so that large sets of data
+     * can be returned in manageable blocks.  lastReceived should carry an
+     * empty string the first time in a session that this method is invoked.
+     * When multiple calls to this method are required to obtain all of the
+     * data, the lastReceived should carry in subsequent calls the objectID
+     * of the data instance noted by the server as being the lastSent.(Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getLatestReadingByType(java.lang.String readingType, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
+     * Returns readings all meters given the date range and reading
+     * type desired.  The calling parameter lastReceived is included so that
+     * large sets of data can be returned in manageable blocks.  lastReceived
+     * should carry an empty string the first time in a session that this
+     * method is invoked.  When multiple calls to this method are required
+     * to obtain all of the data, the lastReceived should carry in subsequent
+     * calls the objectID of the data instance noted by the server as being
+     * the lastSent.(Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByDateAndType(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String readingType, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
+     * Returns all reading types supported by the AMR system.(Recommended)
+     */
+    public com.cannontech.multispeak.service.ArrayOfString getSupportedReadingTypes() throws java.rmi.RemoteException;
+
+    /**
+     * Returns readings for a given meter for a specific date range
+     * and reading type desired.  The calling parameter lastReceived is included
+     * so that large sets of data can be returned in manageable blocks. 
+     * lastReceived should carry an empty string the first time in a session
+     * that this method is invoked.  When multiple calls to this method are
+     * required to obtain all of the data, the lastReceived should carry
+     * in subsequent calls the objectID of the data instance noted by the
+     * server as being the lastSent.(Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByMeterNoAndType(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String readingType, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
+     * Request MR to perform a meter reading for specific meter numbers
+     * and reading type. MR returns information about failed transactions
+     * using an array of errorObjects.  The MR subsequently returns the data
+     * collected by publishing formattedBlocks to the EA at the URL specified
+     * in the responseURL parameter.(Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateMeterReadByMeterNoAndType(com.cannontech.multispeak.service.ArrayOfString meterNos, java.lang.String responseURL, java.lang.String readingType) throws java.rmi.RemoteException;
 }

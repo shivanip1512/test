@@ -10,7 +10,7 @@ package com.cannontech.multispeak.service;
 public class ExtensionsItem  implements java.io.Serializable {
     private java.lang.String extName;
     private java.lang.String extValue;
-    private java.lang.String extType;
+    private com.cannontech.multispeak.service.ExtensionsItemExtType extType;
 
     public ExtensionsItem() {
     }
@@ -18,7 +18,7 @@ public class ExtensionsItem  implements java.io.Serializable {
     public ExtensionsItem(
            java.lang.String extName,
            java.lang.String extValue,
-           java.lang.String extType) {
+           com.cannontech.multispeak.service.ExtensionsItemExtType extType) {
            this.extName = extName;
            this.extValue = extValue;
            this.extType = extType;
@@ -70,7 +70,7 @@ public class ExtensionsItem  implements java.io.Serializable {
      * 
      * @return extType
      */
-    public java.lang.String getExtType() {
+    public com.cannontech.multispeak.service.ExtensionsItemExtType getExtType() {
         return extType;
     }
 
@@ -80,7 +80,7 @@ public class ExtensionsItem  implements java.io.Serializable {
      * 
      * @param extType
      */
-    public void setExtType(java.lang.String extType) {
+    public void setExtType(com.cannontech.multispeak.service.ExtensionsItemExtType extType) {
         this.extType = extType;
     }
 
@@ -152,7 +152,7 @@ public class ExtensionsItem  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("extType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "extType"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">extensionsItem>extType"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

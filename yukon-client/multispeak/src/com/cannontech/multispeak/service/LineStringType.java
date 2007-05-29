@@ -8,14 +8,37 @@
 package com.cannontech.multispeak.service;
 
 public class LineStringType  extends com.cannontech.multispeak.service.AbstractGeometryType  implements java.io.Serializable {
-    private com.cannontech.multispeak.service.CoordType[] coord;
+    private com.cannontech.multispeak.service.CoordinatesType coordinates;
+    private com.cannontech.multispeak.service.CoordType coord;
 
     public LineStringType() {
     }
 
     public LineStringType(
-           com.cannontech.multispeak.service.CoordType[] coord) {
+           com.cannontech.multispeak.service.CoordinatesType coordinates,
+           com.cannontech.multispeak.service.CoordType coord) {
+           this.coordinates = coordinates;
            this.coord = coord;
+    }
+
+
+    /**
+     * Gets the coordinates value for this LineStringType.
+     * 
+     * @return coordinates
+     */
+    public com.cannontech.multispeak.service.CoordinatesType getCoordinates() {
+        return coordinates;
+    }
+
+
+    /**
+     * Sets the coordinates value for this LineStringType.
+     * 
+     * @param coordinates
+     */
+    public void setCoordinates(com.cannontech.multispeak.service.CoordinatesType coordinates) {
+        this.coordinates = coordinates;
     }
 
 
@@ -24,7 +47,7 @@ public class LineStringType  extends com.cannontech.multispeak.service.AbstractG
      * 
      * @return coord
      */
-    public com.cannontech.multispeak.service.CoordType[] getCoord() {
+    public com.cannontech.multispeak.service.CoordType getCoord() {
         return coord;
     }
 
@@ -34,16 +57,8 @@ public class LineStringType  extends com.cannontech.multispeak.service.AbstractG
      * 
      * @param coord
      */
-    public void setCoord(com.cannontech.multispeak.service.CoordType[] coord) {
+    public void setCoord(com.cannontech.multispeak.service.CoordType coord) {
         this.coord = coord;
-    }
-
-    public com.cannontech.multispeak.service.CoordType getCoord(int i) {
-        return this.coord[i];
-    }
-
-    public void setCoord(int i, com.cannontech.multispeak.service.CoordType _value) {
-        this.coord[i] = _value;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -58,9 +73,12 @@ public class LineStringType  extends com.cannontech.multispeak.service.AbstractG
         __equalsCalc = obj;
         boolean _equals;
         _equals = super.equals(obj) && 
+            ((this.coordinates==null && other.getCoordinates()==null) || 
+             (this.coordinates!=null &&
+              this.coordinates.equals(other.getCoordinates()))) &&
             ((this.coord==null && other.getCoord()==null) || 
              (this.coord!=null &&
-              java.util.Arrays.equals(this.coord, other.getCoord())));
+              this.coord.equals(other.getCoord())));
         __equalsCalc = null;
         return _equals;
     }
@@ -72,16 +90,11 @@ public class LineStringType  extends com.cannontech.multispeak.service.AbstractG
         }
         __hashCodeCalc = true;
         int _hashCode = super.hashCode();
+        if (getCoordinates() != null) {
+            _hashCode += getCoordinates().hashCode();
+        }
         if (getCoord() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getCoord());
-                 i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getCoord(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
-                    _hashCode += obj.hashCode();
-                }
-            }
+            _hashCode += getCoord().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -94,12 +107,18 @@ public class LineStringType  extends com.cannontech.multispeak.service.AbstractG
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "LineStringType"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("coordinates");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coordinates"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CoordinatesType"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("coord");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coord"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CoordType"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
-        elemField.setMaxOccursUnbounded(true);
         typeDesc.addFieldDesc(elemField);
     }
 

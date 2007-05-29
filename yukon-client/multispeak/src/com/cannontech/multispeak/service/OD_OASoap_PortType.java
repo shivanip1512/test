@@ -89,34 +89,37 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
     /**
      * OA requests OD to update the status of an outageDetectionDevice.
      * OD responds by publishing a revised outageDetectionEvent (using the
-     * ODEventNotification method on OA-OD).  OD returns information about
-     * failed transactions using an array of errorObjects.(Optional)
+     * ODEventNotification method on OA-OD) to the URL specified in the responseURL
+     * parameter.  OD returns information about failed transactions using
+     * an array of errorObjects.(Optional)
      */
-    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateOutageDetectionEventRequest(com.cannontech.multispeak.service.ArrayOfString meterNos, java.util.Calendar requestDate) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateOutageDetectionEventRequest(com.cannontech.multispeak.service.ArrayOfString meterNos, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException;
 
     /**
      * OA requests OD to return only outage detection events that
      * are known to be of type Outage or Inferred on service locations downline
-     * from a circuit element supplied using the calling parameter objectRef
-     * and containing the phasing supplied in the calling parameter phaseCode.
-     * OD responds by publishing a revised outageDetectionEvent (using the
-     * ODEventNotification method on OA-OD).  OD returns information about
-     * failed transactions using an array of errorObjects.(Optional)
+     * from a circuit element supplied using the calling parameters objectName
+     * and nounType and containing the phasing supplied in the calling parameter
+     * phaseCode. OD responds by publishing a revised outageDetectionEvent
+     * (using the ODEventNotification method on OA-OD)to the URL specified
+     * in the responseURL parameter.  OD returns information about failed
+     * transactions using an array of errorObjects.(Optional)
      */
-    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateODEventRequestByObject(com.cannontech.multispeak.service.ObjectRef objectRef, com.cannontech.multispeak.service.PhaseCd phaseCode, java.util.Calendar requestDate) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateODEventRequestByObject(java.lang.String objectName, java.lang.String nounType, com.cannontech.multispeak.service.PhaseCd phaseCode, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException;
 
     /**
      * OA requests OD to return only outage detection events that
      * are known to be of type Outage or Inferred on service locations downline
-     * from a circuit element supplied using the calling parameter objectRef.
-     * OD creates a monitoring event for the circuit element suppiled in
-     * objectRef.  Monitoring shall be performed at the time interval given
+     * from a circuit element supplied using the calling parameters objectName
+     * and nounType. OD creates a monitoring event for the specified circuit
+     * element.  Monitoring shall be performed at the time interval given
      * in the periodicity parameter (expressed in minutes).  OD responds
      * by publishing a revised outageDetectionEvent (using the ODEventNotification
-     * method on OA-OD).  OD returns information about failed transactions
-     * using an array of errorObjects.(Optional)
+     * method on OA-OD)to the URL specified in the responseURL parameter.
+     * OD returns information about failed transactions using an array of
+     * errorObjects.(Optional)
      */
-    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateODMonitoringRequestByObject(com.cannontech.multispeak.service.ObjectRef objectRef, com.cannontech.multispeak.service.PhaseCd phaseCode, int periodicity, java.util.Calendar requestDate) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateODMonitoringRequestByObject(java.lang.String objectName, java.lang.String nounType, com.cannontech.multispeak.service.PhaseCd phaseCode, int periodicity, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException;
 
     /**
      * OA requests OD to return a list of circuit elements (in the

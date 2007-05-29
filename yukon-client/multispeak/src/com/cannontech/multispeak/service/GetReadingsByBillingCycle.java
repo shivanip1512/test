@@ -9,8 +9,10 @@ package com.cannontech.multispeak.service;
 
 public class GetReadingsByBillingCycle  implements java.io.Serializable {
     private java.lang.String billingCycle;
-    private java.util.Calendar startDate;
-    private java.util.Calendar endDate;
+    private java.util.Calendar billingDate;
+    private int kWhLookBack;
+    private int kWLookBack;
+    private int kWLookForward;
     private java.lang.String lastReceived;
 
     public GetReadingsByBillingCycle() {
@@ -18,12 +20,16 @@ public class GetReadingsByBillingCycle  implements java.io.Serializable {
 
     public GetReadingsByBillingCycle(
            java.lang.String billingCycle,
-           java.util.Calendar startDate,
-           java.util.Calendar endDate,
+           java.util.Calendar billingDate,
+           int kWhLookBack,
+           int kWLookBack,
+           int kWLookForward,
            java.lang.String lastReceived) {
            this.billingCycle = billingCycle;
-           this.startDate = startDate;
-           this.endDate = endDate;
+           this.billingDate = billingDate;
+           this.kWhLookBack = kWhLookBack;
+           this.kWLookBack = kWLookBack;
+           this.kWLookForward = kWLookForward;
            this.lastReceived = lastReceived;
     }
 
@@ -49,42 +55,82 @@ public class GetReadingsByBillingCycle  implements java.io.Serializable {
 
 
     /**
-     * Gets the startDate value for this GetReadingsByBillingCycle.
+     * Gets the billingDate value for this GetReadingsByBillingCycle.
      * 
-     * @return startDate
+     * @return billingDate
      */
-    public java.util.Calendar getStartDate() {
-        return startDate;
+    public java.util.Calendar getBillingDate() {
+        return billingDate;
     }
 
 
     /**
-     * Sets the startDate value for this GetReadingsByBillingCycle.
+     * Sets the billingDate value for this GetReadingsByBillingCycle.
      * 
-     * @param startDate
+     * @param billingDate
      */
-    public void setStartDate(java.util.Calendar startDate) {
-        this.startDate = startDate;
+    public void setBillingDate(java.util.Calendar billingDate) {
+        this.billingDate = billingDate;
     }
 
 
     /**
-     * Gets the endDate value for this GetReadingsByBillingCycle.
+     * Gets the kWhLookBack value for this GetReadingsByBillingCycle.
      * 
-     * @return endDate
+     * @return kWhLookBack
      */
-    public java.util.Calendar getEndDate() {
-        return endDate;
+    public int getKWhLookBack() {
+        return kWhLookBack;
     }
 
 
     /**
-     * Sets the endDate value for this GetReadingsByBillingCycle.
+     * Sets the kWhLookBack value for this GetReadingsByBillingCycle.
      * 
-     * @param endDate
+     * @param kWhLookBack
      */
-    public void setEndDate(java.util.Calendar endDate) {
-        this.endDate = endDate;
+    public void setKWhLookBack(int kWhLookBack) {
+        this.kWhLookBack = kWhLookBack;
+    }
+
+
+    /**
+     * Gets the kWLookBack value for this GetReadingsByBillingCycle.
+     * 
+     * @return kWLookBack
+     */
+    public int getKWLookBack() {
+        return kWLookBack;
+    }
+
+
+    /**
+     * Sets the kWLookBack value for this GetReadingsByBillingCycle.
+     * 
+     * @param kWLookBack
+     */
+    public void setKWLookBack(int kWLookBack) {
+        this.kWLookBack = kWLookBack;
+    }
+
+
+    /**
+     * Gets the kWLookForward value for this GetReadingsByBillingCycle.
+     * 
+     * @return kWLookForward
+     */
+    public int getKWLookForward() {
+        return kWLookForward;
+    }
+
+
+    /**
+     * Sets the kWLookForward value for this GetReadingsByBillingCycle.
+     * 
+     * @param kWLookForward
+     */
+    public void setKWLookForward(int kWLookForward) {
+        this.kWLookForward = kWLookForward;
     }
 
 
@@ -122,12 +168,12 @@ public class GetReadingsByBillingCycle  implements java.io.Serializable {
             ((this.billingCycle==null && other.getBillingCycle()==null) || 
              (this.billingCycle!=null &&
               this.billingCycle.equals(other.getBillingCycle()))) &&
-            ((this.startDate==null && other.getStartDate()==null) || 
-             (this.startDate!=null &&
-              this.startDate.equals(other.getStartDate()))) &&
-            ((this.endDate==null && other.getEndDate()==null) || 
-             (this.endDate!=null &&
-              this.endDate.equals(other.getEndDate()))) &&
+            ((this.billingDate==null && other.getBillingDate()==null) || 
+             (this.billingDate!=null &&
+              this.billingDate.equals(other.getBillingDate()))) &&
+            this.kWhLookBack == other.getKWhLookBack() &&
+            this.kWLookBack == other.getKWLookBack() &&
+            this.kWLookForward == other.getKWLookForward() &&
             ((this.lastReceived==null && other.getLastReceived()==null) || 
              (this.lastReceived!=null &&
               this.lastReceived.equals(other.getLastReceived())));
@@ -145,12 +191,12 @@ public class GetReadingsByBillingCycle  implements java.io.Serializable {
         if (getBillingCycle() != null) {
             _hashCode += getBillingCycle().hashCode();
         }
-        if (getStartDate() != null) {
-            _hashCode += getStartDate().hashCode();
+        if (getBillingDate() != null) {
+            _hashCode += getBillingDate().hashCode();
         }
-        if (getEndDate() != null) {
-            _hashCode += getEndDate().hashCode();
-        }
+        _hashCode += getKWhLookBack();
+        _hashCode += getKWLookBack();
+        _hashCode += getKWLookForward();
         if (getLastReceived() != null) {
             _hashCode += getLastReceived().hashCode();
         }
@@ -172,15 +218,27 @@ public class GetReadingsByBillingCycle  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("startDate");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"));
+        elemField.setFieldName("billingDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingDate"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("endDate");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setFieldName("KWhLookBack");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "kWhLookBack"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("KWLookBack");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "kWLookBack"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("KWLookForward");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "kWLookForward"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();

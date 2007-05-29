@@ -3,9 +3,9 @@ package com.cannontech.multispeak.data;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dao.impl.PointDaoImpl;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.impl.DynamicDataSourceImpl;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.service.MeterRead;
@@ -18,7 +18,7 @@ public abstract class MeterReadBase implements ReadableDevice{
 
     private MeterRead meterRead;
     private boolean populated = false;
-    
+
     /* (non-Javadoc)
      * @see com.cannontech.multispeak.data.ReadableDevice#getMeterRead()
      */
@@ -35,7 +35,7 @@ public abstract class MeterReadBase implements ReadableDevice{
         getMeterRead().setMeterNo(meterNumber);
         getMeterRead().setObjectID(meterNumber);
         getMeterRead().setDeviceID(meterNumber);
-        getMeterRead().setUtility(MultispeakDefines.AMR_TYPE);
+        getMeterRead().setUtility(MultispeakDefines.AMR_VENDOR);
     }
     
     /* (non-Javadoc)
@@ -63,9 +63,10 @@ public abstract class MeterReadBase implements ReadableDevice{
      * @see com.cannontech.multispeak.data.ReadableDevice#populateWithPointData(int)
      */
     public void populateWithPointData(int deviceID) {
-        List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+        List<LitePoint> litePoints = ((PointDaoImpl)YukonSpringHook.getBean("pointDao")).getLitePointsByPaObjectId(deviceID);
+        DynamicDataSourceImpl dds = (DynamicDataSourceImpl)YukonSpringHook.getBean("dynamicDataSource");
+        
         for (LitePoint litePoint : litePoints) {
-            DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
             PointValueHolder pointData = dds.getPointValue(litePoint.getPointID());
             if( pointData != null)
                 populate(litePoint.getPointType(), litePoint.getPointOffset(), litePoint.getUofmID(), pointData.getPointDataTimeStamp(), pointData.getValue());

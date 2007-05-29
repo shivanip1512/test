@@ -13,6 +13,8 @@ public class Network  implements java.io.Serializable {
     private java.lang.String franchiseDist;
     private java.lang.String schoolDist;
     private java.lang.String district;
+    private java.lang.String county;
+    private java.lang.String cityCode;
     private java.lang.String substationCode;
     private java.lang.String feeder;
     private com.cannontech.multispeak.service.PhaseCd phaseCd;
@@ -21,7 +23,11 @@ public class Network  implements java.io.Serializable {
     private java.lang.String section;
     private java.lang.String township;
     private java.lang.String range;
+    private java.lang.String subdivision;
+    private java.lang.String block;
+    private java.lang.String lot;
     private com.cannontech.multispeak.service.LinkedTransformer linkedTransformer;
+    private java.lang.String linemanServiceArea;
 
     public Network() {
     }
@@ -32,6 +38,8 @@ public class Network  implements java.io.Serializable {
            java.lang.String franchiseDist,
            java.lang.String schoolDist,
            java.lang.String district,
+           java.lang.String county,
+           java.lang.String cityCode,
            java.lang.String substationCode,
            java.lang.String feeder,
            com.cannontech.multispeak.service.PhaseCd phaseCd,
@@ -40,12 +48,18 @@ public class Network  implements java.io.Serializable {
            java.lang.String section,
            java.lang.String township,
            java.lang.String range,
-           com.cannontech.multispeak.service.LinkedTransformer linkedTransformer) {
+           java.lang.String subdivision,
+           java.lang.String block,
+           java.lang.String lot,
+           com.cannontech.multispeak.service.LinkedTransformer linkedTransformer,
+           java.lang.String linemanServiceArea) {
            this.boardDist = boardDist;
            this.taxDist = taxDist;
            this.franchiseDist = franchiseDist;
            this.schoolDist = schoolDist;
            this.district = district;
+           this.county = county;
+           this.cityCode = cityCode;
            this.substationCode = substationCode;
            this.feeder = feeder;
            this.phaseCd = phaseCd;
@@ -54,7 +68,11 @@ public class Network  implements java.io.Serializable {
            this.section = section;
            this.township = township;
            this.range = range;
+           this.subdivision = subdivision;
+           this.block = block;
+           this.lot = lot;
            this.linkedTransformer = linkedTransformer;
+           this.linemanServiceArea = linemanServiceArea;
     }
 
 
@@ -155,6 +173,46 @@ public class Network  implements java.io.Serializable {
      */
     public void setDistrict(java.lang.String district) {
         this.district = district;
+    }
+
+
+    /**
+     * Gets the county value for this Network.
+     * 
+     * @return county
+     */
+    public java.lang.String getCounty() {
+        return county;
+    }
+
+
+    /**
+     * Sets the county value for this Network.
+     * 
+     * @param county
+     */
+    public void setCounty(java.lang.String county) {
+        this.county = county;
+    }
+
+
+    /**
+     * Gets the cityCode value for this Network.
+     * 
+     * @return cityCode
+     */
+    public java.lang.String getCityCode() {
+        return cityCode;
+    }
+
+
+    /**
+     * Sets the cityCode value for this Network.
+     * 
+     * @param cityCode
+     */
+    public void setCityCode(java.lang.String cityCode) {
+        this.cityCode = cityCode;
     }
 
 
@@ -319,6 +377,66 @@ public class Network  implements java.io.Serializable {
 
 
     /**
+     * Gets the subdivision value for this Network.
+     * 
+     * @return subdivision
+     */
+    public java.lang.String getSubdivision() {
+        return subdivision;
+    }
+
+
+    /**
+     * Sets the subdivision value for this Network.
+     * 
+     * @param subdivision
+     */
+    public void setSubdivision(java.lang.String subdivision) {
+        this.subdivision = subdivision;
+    }
+
+
+    /**
+     * Gets the block value for this Network.
+     * 
+     * @return block
+     */
+    public java.lang.String getBlock() {
+        return block;
+    }
+
+
+    /**
+     * Sets the block value for this Network.
+     * 
+     * @param block
+     */
+    public void setBlock(java.lang.String block) {
+        this.block = block;
+    }
+
+
+    /**
+     * Gets the lot value for this Network.
+     * 
+     * @return lot
+     */
+    public java.lang.String getLot() {
+        return lot;
+    }
+
+
+    /**
+     * Sets the lot value for this Network.
+     * 
+     * @param lot
+     */
+    public void setLot(java.lang.String lot) {
+        this.lot = lot;
+    }
+
+
+    /**
      * Gets the linkedTransformer value for this Network.
      * 
      * @return linkedTransformer
@@ -335,6 +453,26 @@ public class Network  implements java.io.Serializable {
      */
     public void setLinkedTransformer(com.cannontech.multispeak.service.LinkedTransformer linkedTransformer) {
         this.linkedTransformer = linkedTransformer;
+    }
+
+
+    /**
+     * Gets the linemanServiceArea value for this Network.
+     * 
+     * @return linemanServiceArea
+     */
+    public java.lang.String getLinemanServiceArea() {
+        return linemanServiceArea;
+    }
+
+
+    /**
+     * Sets the linemanServiceArea value for this Network.
+     * 
+     * @param linemanServiceArea
+     */
+    public void setLinemanServiceArea(java.lang.String linemanServiceArea) {
+        this.linemanServiceArea = linemanServiceArea;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -364,6 +502,12 @@ public class Network  implements java.io.Serializable {
             ((this.district==null && other.getDistrict()==null) || 
              (this.district!=null &&
               this.district.equals(other.getDistrict()))) &&
+            ((this.county==null && other.getCounty()==null) || 
+             (this.county!=null &&
+              this.county.equals(other.getCounty()))) &&
+            ((this.cityCode==null && other.getCityCode()==null) || 
+             (this.cityCode!=null &&
+              this.cityCode.equals(other.getCityCode()))) &&
             ((this.substationCode==null && other.getSubstationCode()==null) || 
              (this.substationCode!=null &&
               this.substationCode.equals(other.getSubstationCode()))) &&
@@ -388,9 +532,21 @@ public class Network  implements java.io.Serializable {
             ((this.range==null && other.getRange()==null) || 
              (this.range!=null &&
               this.range.equals(other.getRange()))) &&
+            ((this.subdivision==null && other.getSubdivision()==null) || 
+             (this.subdivision!=null &&
+              this.subdivision.equals(other.getSubdivision()))) &&
+            ((this.block==null && other.getBlock()==null) || 
+             (this.block!=null &&
+              this.block.equals(other.getBlock()))) &&
+            ((this.lot==null && other.getLot()==null) || 
+             (this.lot!=null &&
+              this.lot.equals(other.getLot()))) &&
             ((this.linkedTransformer==null && other.getLinkedTransformer()==null) || 
              (this.linkedTransformer!=null &&
-              this.linkedTransformer.equals(other.getLinkedTransformer())));
+              this.linkedTransformer.equals(other.getLinkedTransformer()))) &&
+            ((this.linemanServiceArea==null && other.getLinemanServiceArea()==null) || 
+             (this.linemanServiceArea!=null &&
+              this.linemanServiceArea.equals(other.getLinemanServiceArea())));
         __equalsCalc = null;
         return _equals;
     }
@@ -417,6 +573,12 @@ public class Network  implements java.io.Serializable {
         if (getDistrict() != null) {
             _hashCode += getDistrict().hashCode();
         }
+        if (getCounty() != null) {
+            _hashCode += getCounty().hashCode();
+        }
+        if (getCityCode() != null) {
+            _hashCode += getCityCode().hashCode();
+        }
         if (getSubstationCode() != null) {
             _hashCode += getSubstationCode().hashCode();
         }
@@ -441,8 +603,20 @@ public class Network  implements java.io.Serializable {
         if (getRange() != null) {
             _hashCode += getRange().hashCode();
         }
+        if (getSubdivision() != null) {
+            _hashCode += getSubdivision().hashCode();
+        }
+        if (getBlock() != null) {
+            _hashCode += getBlock().hashCode();
+        }
+        if (getLot() != null) {
+            _hashCode += getLot().hashCode();
+        }
         if (getLinkedTransformer() != null) {
             _hashCode += getLinkedTransformer().hashCode();
+        }
+        if (getLinemanServiceArea() != null) {
+            _hashCode += getLinemanServiceArea().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -485,6 +659,20 @@ public class Network  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("district");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "district"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("county");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "county"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("cityCode");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cityCode"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
@@ -546,9 +734,37 @@ public class Network  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("subdivision");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "subdivision"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("block");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "block"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("lot");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lot"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("linkedTransformer");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "linkedTransformer"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "linkedTransformer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("linemanServiceArea");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "linemanServiceArea"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

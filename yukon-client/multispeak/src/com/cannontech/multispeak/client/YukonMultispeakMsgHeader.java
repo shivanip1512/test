@@ -20,7 +20,7 @@ import com.cannontech.multispeak.service.MultiSpeakMsgHeader;
  */
 public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
 
-	/**
+    /**
 	 * 
 	 */
 	public YukonMultispeakMsgHeader() {
@@ -62,34 +62,21 @@ public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
 	 * @param sessionID
 	 * @param previousSessionID
 	 * @param objectsRemaining
+     * @param lastSent
 	 */
-	public YukonMultispeakMsgHeader(
-		String version,
-		String userID,
-		String pwd,
-		String appName,
-		String appVersion,
-		String company,
-		MessageHeaderCSUnits CSUnits,
-		String coordinateSystem,
-		String datum,
-		String sessionID,
-		String previousSessionID,
-		BigInteger objectsRemaining) {
-		super(
-			version,
-			userID,
-			pwd,
-			appName,
-			appVersion,
-			company,
-			CSUnits,
-			coordinateSystem,
-			datum,
-			sessionID,
-			previousSessionID,
-			objectsRemaining);
-		// TODO Auto-generated constructor stub
-	}
-
+    public YukonMultispeakMsgHeader(String version, String userID, String pwd, String appName, String appVersion, String company, MessageHeaderCSUnits CSUnits, String coordinateSystem, String datum, String sessionID, String previousSessionID, BigInteger objectsRemaining, String lastSent) {
+        super(version,
+              userID,
+              pwd,
+              appName,
+              appVersion,
+              company,
+              CSUnits,
+              coordinateSystem,
+              datum,
+              sessionID,
+              previousSessionID,
+              objectsRemaining,
+              lastSent);
+    }
 }

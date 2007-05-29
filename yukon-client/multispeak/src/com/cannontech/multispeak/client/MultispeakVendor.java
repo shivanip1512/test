@@ -13,7 +13,9 @@ import java.util.Map;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.db.MultispeakInterface;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -23,7 +25,7 @@ import com.cannontech.multispeak.db.MultispeakInterface;
  */
 public class MultispeakVendor
 {
-    public static final String CANNON_MSP_COMPANYNAME = "Cannon ";
+    public static final String CANNON_MSP_COMPANYNAME = "Cannon";
     
     private Integer vendorID = null;
     private String companyName = CtiUtilities.STRING_NONE;
@@ -111,7 +113,7 @@ public class MultispeakVendor
     {
         if( mspInterfaces == null)
             
-            mspInterfaces = MultispeakFuncs.getMultispeakDao().getMultispeakInterfaces(getVendorID().intValue());
+            mspInterfaces = ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).getMultispeakInterfaces(getVendorID().intValue());
         return mspInterfaces;
     }
 
@@ -274,7 +276,7 @@ public class MultispeakVendor
     }
     
     public String getEndpointURL(String service) {
-		MultispeakInterface mspInterface = (MultispeakInterface)getMspInterfaceMap().get(service);
+		MultispeakInterface mspInterface = getMspInterfaceMap().get(service);
 		String endpointURL = "";
 		if( mspInterface != null)
 			endpointURL = getUrl() + mspInterface.getMspEndpoint();

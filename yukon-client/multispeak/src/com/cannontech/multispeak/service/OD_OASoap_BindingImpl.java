@@ -7,151 +7,64 @@
 
 package com.cannontech.multispeak.service;
 
-import java.rmi.RemoteException;
-import java.util.Calendar;
-
-import com.cannontech.multispeak.service.impl.OD_OAImpl;
-import com.cannontech.spring.YukonSpringHook;
-
-public class OD_OASoap_BindingImpl implements OD_OASoap_PortType{
-
-    private OD_OASoap_PortType odOa = null;
-
-    /**
-     * @param odOa The odOa to set.
-     */
-    public void setOdOa(OD_OASoap_PortType odOa)
-    {
-        this.odOa = odOa;
+public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.service.OD_OASoap_PortType{
+    public com.cannontech.multispeak.service.ArrayOfErrorObject pingURL() throws java.rmi.RemoteException {
+        return null;
     }
 
-    /**
-     * @return Returns the cdCb.
-     */
-    private OD_OASoap_PortType getOdOa()
-    {
-        if (odOa == null)
-            return (OD_OAImpl)YukonSpringHook.getBean("odOa");
-        return odOa;
-    }
-    
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#cancelODMonitoringRequestByObject(com.cannontech.multispeak.service.ArrayOfObjectRef, java.util.Calendar)
-     */
-    public ArrayOfErrorObject cancelODMonitoringRequestByObject(ArrayOfObjectRef objectRef, Calendar requestDate) throws RemoteException
-    {
-        return getOdOa().cancelODMonitoringRequestByObject(objectRef, requestDate);
+    public com.cannontech.multispeak.service.ArrayOfString getMethods() throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#displayODMonitoringRequests()
-     */
-    public ArrayOfObjectRef displayODMonitoringRequests() throws RemoteException
-    {
-        return getOdOa().displayODMonitoringRequests();
+    public com.cannontech.multispeak.service.ArrayOfString getDomainNames() throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getAllOutageDetectionDevices(java.lang.String)
-     */
-    public ArrayOfOutageDetectionDevice getAllOutageDetectionDevices(String lastReceived) throws RemoteException
-    {
-        return getOdOa().getAllOutageDetectionDevices(lastReceived);
+    public com.cannontech.multispeak.service.ArrayOfDomainMember getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getDomainMembers(java.lang.String)
-     */
-    public ArrayOfDomainMember getDomainMembers(String domainName) throws RemoteException
-    {
-        return getOdOa().getDomainMembers(domainName);
+    public com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice getAllOutageDetectionDevices(java.lang.String lastReceived) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getDomainNames()
-     */
-    public ArrayOfString getDomainNames() throws RemoteException
-    {
-        return getOdOa().getDomainNames();
+    public com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice getOutageDetectionDevicesByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getMethods()
-     */
-    public ArrayOfString getMethods() throws RemoteException
-    {
-        return getOdOa().getMethods();
+    public com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice getOutageDetectionDevicesByStatus(com.cannontech.multispeak.service.OutageDetectDeviceStatus oDDStatus, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getOutageDetectionDevicesByMeterNo(java.lang.String)
-     */
-    public ArrayOfOutageDetectionDevice getOutageDetectionDevicesByMeterNo(String meterNo) throws RemoteException
-    {
-        return getOdOa().getOutageDetectionDevicesByMeterNo(meterNo);
+    public com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice getOutageDetectionDevicesByType(com.cannontech.multispeak.service.OutageDetectDeviceType oDDType, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getOutageDetectionDevicesByStatus(com.cannontech.multispeak.service.OutageDetectDeviceStatus, java.lang.String)
-     */
-    public ArrayOfOutageDetectionDevice getOutageDetectionDevicesByStatus(OutageDetectDeviceStatus oDDStatus, String lastReceived) throws RemoteException
-    {
-        return getOdOa().getOutageDetectionDevicesByStatus(oDDStatus, lastReceived);
+    public com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice getOutagedODDevices() throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getOutageDetectionDevicesByType(com.cannontech.multispeak.service.OutageDetectDeviceType, java.lang.String)
-     */
-    public ArrayOfOutageDetectionDevice getOutageDetectionDevicesByType(OutageDetectDeviceType oDDType, String lastReceived) throws RemoteException
-    {
-        return getOdOa().getOutageDetectionDevicesByType(oDDType, lastReceived);
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateOutageDetectionEventRequest(com.cannontech.multispeak.service.ArrayOfString meterNos, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#getOutagedODDevices()
-     */
-    public ArrayOfOutageDetectionDevice getOutagedODDevices() throws RemoteException
-    {
-        return getOdOa().getOutagedODDevices();
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateODEventRequestByObject(java.lang.String objectName, java.lang.String nounType, com.cannontech.multispeak.service.PhaseCd phaseCode, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#initiateODEventRequestByObject(com.cannontech.multispeak.service.ObjectRef, com.cannontech.multispeak.service.PhaseCd, java.util.Calendar)
-     */
-    public ArrayOfErrorObject initiateODEventRequestByObject(ObjectRef objectRef, PhaseCd phaseCode, Calendar requestDate) throws RemoteException
-    {
-        return getOdOa().initiateODEventRequestByObject(objectRef, phaseCode, requestDate);
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateODMonitoringRequestByObject(java.lang.String objectName, java.lang.String nounType, com.cannontech.multispeak.service.PhaseCd phaseCode, int periodicity, java.util.Calendar requestDate, java.lang.String responseURL) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#initiateODMonitoringRequestByObject(com.cannontech.multispeak.service.ObjectRef, com.cannontech.multispeak.service.PhaseCd, int, java.util.Calendar)
-     */
-    public ArrayOfErrorObject initiateODMonitoringRequestByObject(ObjectRef objectRef, PhaseCd phaseCode, int periodicity, Calendar requestDate) throws RemoteException
-    {
-        return getOdOa().initiateODMonitoringRequestByObject(objectRef, phaseCode, periodicity, requestDate);
+    public com.cannontech.multispeak.service.ArrayOfObjectRef displayODMonitoringRequests() throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#initiateOutageDetectionEventRequest(com.cannontech.multispeak.service.ArrayOfString, java.util.Calendar)
-     */
-    public ArrayOfErrorObject initiateOutageDetectionEventRequest(ArrayOfString meterNos, Calendar requestDate) throws RemoteException
-    {
-        return getOdOa().initiateOutageDetectionEventRequest(meterNos, requestDate);
+    public com.cannontech.multispeak.service.ArrayOfErrorObject cancelODMonitoringRequestByObject(com.cannontech.multispeak.service.ArrayOfObjectRef objectRef, java.util.Calendar requestDate) throws java.rmi.RemoteException {
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#modifyODDataForOutageDetectionDevice(com.cannontech.multispeak.service.OutageDetectionDevice)
-     */
-    public void modifyODDataForOutageDetectionDevice(OutageDetectionDevice oDDevice) throws RemoteException
-    {
-        getOdOa().modifyODDataForOutageDetectionDevice(oDDevice);
+    public void modifyODDataForOutageDetectionDevice(com.cannontech.multispeak.service.OutageDetectionDevice oDDevice) throws java.rmi.RemoteException {
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.multispeak.service.impl.OD_OAImpl#pingURL()
-     */
-    public ArrayOfErrorObject pingURL() throws RemoteException
-    {
-        return getOdOa().pingURL();
-    }
 }

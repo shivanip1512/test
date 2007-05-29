@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.transaction.support.TransactionTemplate;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -22,20 +19,14 @@ import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.UnitMeasure;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.RawPointHistoryDao;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.service.MeterRead;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class RawPointHistoryDaoImpl implements RawPointHistoryDao
 {
-    private JdbcOperations jdbcOps;
-    private TransactionTemplate transactionTemplate;
-    private IDatabaseCache databaseCache;
-    private NextValueHelper nextValueHelper;
     /**
      * Returns a MeterRead[] with kW and kWh readings for MeterNo, > startDate and <= endDate 
      * @param meterNo
@@ -97,7 +88,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                 int lastPaoID = -1;
                 int paobjectID = 0;
                 Date prevDateTime = new Date();
-                List meterReadList = new ArrayList();
+                List<MeterRead> meterReadList = new ArrayList<MeterRead>();
                 
                 ReadableDevice device = null;
                 while( rset.next())
@@ -165,33 +156,5 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
             }
         }
         return meterReadArray;
-    }
-    /**
-     * @param databaseCache The databaseCache to set.
-     */
-    public void setDatabaseCache(IDatabaseCache databaseCache)
-    {
-        this.databaseCache = databaseCache;
-    }
-    /**
-     * @param jdbcOps The jdbcOps to set.
-     */
-    public void setJdbcOps(JdbcOperations jdbcOps)
-    {
-        this.jdbcOps = jdbcOps;
-    }
-    /**
-     * @param nextValueHelper The nextValueHelper to set.
-     */
-    public void setNextValueHelper(NextValueHelper nextValueHelper)
-    {
-        this.nextValueHelper = nextValueHelper;
-    }
-    /**
-     * @param transactionTemplate The transactionTemplate to set.
-     */
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate)
-    {
-        this.transactionTemplate = transactionTemplate;
     }
 }

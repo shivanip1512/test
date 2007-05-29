@@ -7,9 +7,7 @@
 package com.cannontech.multispeak.emulator;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -17,15 +15,15 @@ import org.apache.axis.client.Service;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfMeter;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
 import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.MR_CBSoap_BindingStub;
 import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.MeterRead;
-import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -38,7 +36,7 @@ public class MR_CB_Test {
 	public static void main(String [] args)
 	{
 		try {
-			String endpointURL = "http://localhost:8080/head/soap/MR_CBSoap";
+			String endpointURL = "http://localhost:8080/soap/MR_CBSoap";
 //			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
 		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
 			
@@ -48,11 +46,11 @@ public class MR_CB_Test {
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 3;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo
+			int todo = 0;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo
 			
 			if (todo==0)
 			{
-			    MeterRead mr = instance.getLatestReadingByMeterNo("101015610");	//1068048 whe, 1010156108 sn_head/amr_demo
+			    MeterRead mr = instance.getLatestReadingByMeterNo("10620108");	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( mr != null)
 				{
 				    CTILogger.info("MeterRead received: " + ( mr.getReadingDate() != null?mr.getReadingDate().getTime():null) + " : " +mr.getPosKWh());
@@ -65,7 +63,7 @@ public class MR_CB_Test {
 			}
 			else if( todo == 1)
 			{
-                List<Meter>meters = MultispeakFuncs.getMultispeakDao().getAMRSupportedMeters("0", "meternumber");
+                List<Meter>meters = ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).getAMRSupportedMeters("0", "meternumber");
                 System.out.println(meters.size());
 /*				ArrayOfMeter meters = new ArrayOfMeter();
 				meters = instance.getAMRSupportedMeters("10224712");//new String ("MCT - Annandale Broadcast"));

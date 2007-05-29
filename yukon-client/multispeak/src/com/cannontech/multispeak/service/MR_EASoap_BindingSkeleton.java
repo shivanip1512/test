@@ -225,6 +225,88 @@ public class MR_EASoap_BindingSkeleton implements com.cannontech.multispeak.serv
             _myOperations.put("getHistoryLogsByDateAndEventCode", new java.util.ArrayList());
         }
         ((java.util.List)_myOperations.get("getHistoryLogsByDateAndEventCode")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingType"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getLatestReadingByMeterNoAndType", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetLatestReadingByMeterNoAndTypeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "formattedBlock"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetLatestReadingByMeterNoAndType"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetLatestReadingByMeterNoAndType");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getLatestReadingByMeterNoAndType") == null) {
+            _myOperations.put("getLatestReadingByMeterNoAndType", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getLatestReadingByMeterNoAndType")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingType"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getLatestReadingByType", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetLatestReadingByTypeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfFormattedBlock"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetLatestReadingByType"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetLatestReadingByType");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getLatestReadingByType") == null) {
+            _myOperations.put("getLatestReadingByType", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getLatestReadingByType")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingType"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getReadingsByDateAndType", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByDateAndTypeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfFormattedBlock"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByDateAndType"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetReadingsByDateAndType");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getReadingsByDateAndType") == null) {
+            _myOperations.put("getReadingsByDateAndType", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getReadingsByDateAndType")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getSupportedReadingTypes", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetSupportedReadingTypesResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetSupportedReadingTypes"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetSupportedReadingTypes");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getSupportedReadingTypes") == null) {
+            _myOperations.put("getSupportedReadingTypes", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getSupportedReadingTypes")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingType"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getReadingsByMeterNoAndType", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByMeterNoAndTypeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfFormattedBlock"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByMeterNoAndType"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetReadingsByMeterNoAndType");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getReadingsByMeterNoAndType") == null) {
+            _myOperations.put("getReadingsByMeterNoAndType", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getReadingsByMeterNoAndType")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNos"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"), com.cannontech.multispeak.service.ArrayOfString.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "readingType"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("initiateMeterReadByMeterNoAndType", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateMeterReadByMeterNoAndTypeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateMeterReadByMeterNoAndType"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/InitiateMeterReadByMeterNoAndType");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("initiateMeterReadByMeterNoAndType") == null) {
+            _myOperations.put("initiateMeterReadByMeterNoAndType", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("initiateMeterReadByMeterNoAndType")).add(_oper);
     }
 
     public MR_EASoap_BindingSkeleton() {
@@ -321,6 +403,42 @@ public class MR_EASoap_BindingSkeleton implements com.cannontech.multispeak.serv
     public com.cannontech.multispeak.service.ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(com.cannontech.multispeak.service.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException
     {
         com.cannontech.multispeak.service.ArrayOfHistoryLog ret = impl.getHistoryLogsByDateAndEventCode(eventCode, startDate, endDate, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.FormattedBlock getLatestReadingByMeterNoAndType(java.lang.String meterNo, java.lang.String readingType) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.FormattedBlock ret = impl.getLatestReadingByMeterNoAndType(meterNo, readingType);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getLatestReadingByType(java.lang.String readingType, java.lang.String lastReceived) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfFormattedBlock ret = impl.getLatestReadingByType(readingType, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByDateAndType(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String readingType, java.lang.String lastReceived) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfFormattedBlock ret = impl.getReadingsByDateAndType(startDate, endDate, readingType, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfString getSupportedReadingTypes() throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfString ret = impl.getSupportedReadingTypes();
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByMeterNoAndType(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String readingType, java.lang.String lastReceived) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfFormattedBlock ret = impl.getReadingsByMeterNoAndType(meterNo, startDate, endDate, readingType, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateMeterReadByMeterNoAndType(com.cannontech.multispeak.service.ArrayOfString meterNos, java.lang.String responseURL, java.lang.String readingType) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.initiateMeterReadByMeterNoAndType(meterNos, responseURL, readingType);
         return ret;
     }
 

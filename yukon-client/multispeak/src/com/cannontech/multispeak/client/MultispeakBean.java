@@ -3,17 +3,33 @@ package com.cannontech.multispeak.client;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.impl.RoleDaoImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
+import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.roles.yukon.MultispeakRole;
+import com.cannontech.spring.YukonSpringHook;
 
 public class MultispeakBean
 {
+    private MultispeakDao multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
+    private RoleDao roleDao = (RoleDaoImpl)YukonSpringHook.getBean("roleDao");
+    
     private int selectedVendorID = 1;
     private MultispeakVendor selectedMspVendor;
     private LiteYukonUser yukonUser;
     private List<MultispeakVendor> mspVendorList;
+
+//    public void setMultispeakDao(MultispeakDao multispeakDao) {
+//        this.multispeakDao = multispeakDao;
+//    }
     
+//    public void setRoleDao(RoleDao roleDao) {
+//        this.roleDao = roleDao;
+//    }
+
     public LiteYukonUser getYukonUser() {
         return yukonUser;
     }
@@ -24,7 +40,7 @@ public class MultispeakBean
 
     public List<MultispeakVendor> getMspVendorList()
     {
-        mspVendorList = MultispeakFuncs.getMultispeakDao().getMultispeakVendors();
+        mspVendorList = multispeakDao.getMultispeakVendors();
         return mspVendorList;
     }
 
@@ -52,7 +68,7 @@ public class MultispeakBean
      */
     public int getPrimaryCIS()
     {
-        return Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue();
+        return Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue();
     }
 
     /**
@@ -60,7 +76,7 @@ public class MultispeakBean
      */
     public int getPaoNameAlias()
     {
-        return Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS)).intValue();
+        return Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS)).intValue();
     }
 
     /**
@@ -68,9 +84,8 @@ public class MultispeakBean
      */
     public MultispeakVendor getSelectedMspVendor()
     {
-        if (selectedMspVendor == null)
-        {
-            selectedMspVendor = MultispeakFuncs.getMultispeakDao().getMultispeakVendor(getSelectedVendorID());
+        if (selectedMspVendor == null) {
+            selectedMspVendor = multispeakDao.getMultispeakVendor(getSelectedVendorID());
         }
         return selectedMspVendor;
     }
@@ -88,7 +103,7 @@ public class MultispeakBean
         return MultispeakDefines.getMSP_INTERFACE_ARRAY();
     }
     
-    public Map getSelectedInterfacesMap()
+    public Map<String, MultispeakInterface> getSelectedInterfacesMap()
     {
         return getSelectedMspVendor().getMspInterfaceMap();
     }

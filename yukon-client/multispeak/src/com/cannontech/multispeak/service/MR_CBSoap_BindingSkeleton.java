@@ -154,12 +154,14 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
         ((java.util.List)_myOperations.get("getLatestReadingByMeterNo")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingCycle"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
-            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
-            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "kWhLookBack"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "kWLookBack"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "kWLookForward"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false), 
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
         };
         _oper = new org.apache.axis.description.OperationDesc("getReadingsByBillingCycle", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByBillingCycleResult"));
-        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterRead"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfFormattedBlock"));
         _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByBillingCycle"));
         _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetReadingsByBillingCycle");
         _myOperationsList.add(_oper);
@@ -225,6 +227,18 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
             _myOperations.put("getHistoryLogsByDateAndEventCode", new java.util.ArrayList());
         }
         ((java.util.List)_myOperations.get("getHistoryLogsByDateAndEventCode")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroupID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getLatestMeterReadingsByMeterGroup", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetLatestMeterReadingsByMeterGroupResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "formattedBlock"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetLatestMeterReadingsByMeterGroup"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetLatestMeterReadingsByMeterGroup");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getLatestMeterReadingsByMeterGroup") == null) {
+            _myOperations.put("getLatestMeterReadingsByMeterGroup", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getLatestMeterReadingsByMeterGroup")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNos"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"), com.cannontech.multispeak.service.ArrayOfString.class, false, false), 
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
@@ -301,6 +315,7 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
         ((java.util.List)_myOperations.get("cancelDisconnectedStatus")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNos"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"), com.cannontech.multispeak.service.ArrayOfString.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
         };
         _oper = new org.apache.axis.description.OperationDesc("initiateMeterReadByMeterNumber", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateMeterReadByMeterNumberResult"));
         _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
@@ -311,6 +326,83 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
             _myOperations.put("initiateMeterReadByMeterNumber", new java.util.ArrayList());
         }
         ((java.util.List)_myOperations.get("initiateMeterReadByMeterNumber")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroup"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroup"), com.cannontech.multispeak.service.MeterGroup.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("establishMeterGroup", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "EstablishMeterGroupResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "EstablishMeterGroup"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/EstablishMeterGroup");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("establishMeterGroup") == null) {
+            _myOperations.put("establishMeterGroup", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("establishMeterGroup")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroupID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("deleteMeterGroup", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DeleteMeterGroupResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DeleteMeterGroup"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/DeleteMeterGroup");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("deleteMeterGroup") == null) {
+            _myOperations.put("deleteMeterGroup", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("deleteMeterGroup")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNumbers"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"), com.cannontech.multispeak.service.ArrayOfString.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroupID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("insertMeterInMeterGroup", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InsertMeterInMeterGroupResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InsertMeterInMeterGroup"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/InsertMeterInMeterGroup");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("insertMeterInMeterGroup") == null) {
+            _myOperations.put("insertMeterInMeterGroup", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("insertMeterInMeterGroup")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNumbers"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"), com.cannontech.multispeak.service.ArrayOfString.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroupID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("removeMetersFromMeterGroup", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "RemoveMetersFromMeterGroupResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "RemoveMetersFromMeterGroup"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/RemoveMetersFromMeterGroup");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("removeMetersFromMeterGroup") == null) {
+            _myOperations.put("removeMetersFromMeterGroup", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("removeMetersFromMeterGroup")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroupName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("initiateGroupMeterRead", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateGroupMeterReadResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateGroupMeterRead"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/InitiateGroupMeterRead");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("initiateGroupMeterRead") == null) {
+            _myOperations.put("initiateGroupMeterRead", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("initiateGroupMeterRead")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterGroupName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "timeToRead"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("scheduleGroupMeterRead", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ScheduleGroupMeterReadResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ScheduleGroupMeterRead"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/ScheduleGroupMeterRead");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("scheduleGroupMeterRead") == null) {
+            _myOperations.put("scheduleGroupMeterRead", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("scheduleGroupMeterRead")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "changedCustomers"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCustomer"), com.cannontech.multispeak.service.ArrayOfCustomer.class, false, false), 
         };
@@ -360,6 +452,18 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
         }
         ((java.util.List)_myOperations.get("meterRemoveNotification")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "retiredMeters"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeter"), com.cannontech.multispeak.service.ArrayOfMeter.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("meterRetireNotification", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MeterRetireNotificationResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MeterRetireNotification"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/MeterRetireNotification");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("meterRetireNotification") == null) {
+            _myOperations.put("meterRetireNotification", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("meterRetireNotification")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "addedMeters"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeter"), com.cannontech.multispeak.service.ArrayOfMeter.class, false, false), 
         };
         _oper = new org.apache.axis.description.OperationDesc("meterAddNotification", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MeterAddNotificationResult"));
@@ -371,6 +475,18 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
             _myOperations.put("meterAddNotification", new java.util.ArrayList());
         }
         ((java.util.List)_myOperations.get("meterAddNotification")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterChangeout"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterExchange"), com.cannontech.multispeak.service.ArrayOfMeterExchange.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("meterExchangeNotification", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MeterExchangeNotificationResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MeterExchangeNotification"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/MeterExchangeNotification");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("meterExchangeNotification") == null) {
+            _myOperations.put("meterExchangeNotification", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("meterExchangeNotification")).add(_oper);
     }
 
     public MR_CBSoap_BindingSkeleton() {
@@ -440,9 +556,9 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
         return ret;
     }
 
-    public com.cannontech.multispeak.service.ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) throws java.rmi.RemoteException
     {
-        com.cannontech.multispeak.service.ArrayOfMeterRead ret = impl.getReadingsByBillingCycle(billingCycle, startDate, endDate, lastReceived);
+        com.cannontech.multispeak.service.ArrayOfFormattedBlock ret = impl.getReadingsByBillingCycle(billingCycle, billingDate, kWhLookBack, kWLookBack, kWLookForward, lastReceived);
         return ret;
     }
 
@@ -467,6 +583,12 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
     public com.cannontech.multispeak.service.ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(com.cannontech.multispeak.service.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException
     {
         com.cannontech.multispeak.service.ArrayOfHistoryLog ret = impl.getHistoryLogsByDateAndEventCode(eventCode, startDate, endDate, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.FormattedBlock getLatestMeterReadingsByMeterGroup(java.lang.String meterGroupID) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.FormattedBlock ret = impl.getLatestMeterReadingsByMeterGroup(meterGroupID);
         return ret;
     }
 
@@ -506,9 +628,45 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
         return ret;
     }
 
-    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateMeterReadByMeterNumber(com.cannontech.multispeak.service.ArrayOfString meterNos) throws java.rmi.RemoteException
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateMeterReadByMeterNumber(com.cannontech.multispeak.service.ArrayOfString meterNos, java.lang.String responseURL) throws java.rmi.RemoteException
     {
-        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.initiateMeterReadByMeterNumber(meterNos);
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.initiateMeterReadByMeterNumber(meterNos, responseURL);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject establishMeterGroup(com.cannontech.multispeak.service.MeterGroup meterGroup) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.establishMeterGroup(meterGroup);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ErrorObject deleteMeterGroup(java.lang.String meterGroupID) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ErrorObject ret = impl.deleteMeterGroup(meterGroupID);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject insertMeterInMeterGroup(com.cannontech.multispeak.service.ArrayOfString meterNumbers, java.lang.String meterGroupID) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.insertMeterInMeterGroup(meterNumbers, meterGroupID);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject removeMetersFromMeterGroup(com.cannontech.multispeak.service.ArrayOfString meterNumbers, java.lang.String meterGroupID) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.removeMetersFromMeterGroup(meterNumbers, meterGroupID);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject initiateGroupMeterRead(java.lang.String meterGroupName, java.lang.String responseURL) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.initiateGroupMeterRead(meterGroupName, responseURL);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject scheduleGroupMeterRead(java.lang.String meterGroupName, java.util.Calendar timeToRead, java.lang.String responseURL) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.scheduleGroupMeterRead(meterGroupName, timeToRead, responseURL);
         return ret;
     }
 
@@ -536,9 +694,21 @@ public class MR_CBSoap_BindingSkeleton implements com.cannontech.multispeak.serv
         return ret;
     }
 
+    public com.cannontech.multispeak.service.ArrayOfErrorObject meterRetireNotification(com.cannontech.multispeak.service.ArrayOfMeter retiredMeters) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.meterRetireNotification(retiredMeters);
+        return ret;
+    }
+
     public com.cannontech.multispeak.service.ArrayOfErrorObject meterAddNotification(com.cannontech.multispeak.service.ArrayOfMeter addedMeters) throws java.rmi.RemoteException
     {
         com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.meterAddNotification(addedMeters);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.service.ArrayOfErrorObject meterExchangeNotification(com.cannontech.multispeak.service.ArrayOfMeterExchange meterChangeout) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.service.ArrayOfErrorObject ret = impl.meterExchangeNotification(meterChangeout);
         return ret;
     }
 

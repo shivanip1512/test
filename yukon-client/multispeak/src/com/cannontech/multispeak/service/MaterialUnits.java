@@ -28,6 +28,8 @@ public class MaterialUnits implements java.io.Serializable {
     public static final java.lang.String _Each = "Each";
     public static final java.lang.String _Hour = "Hour";
     public static final java.lang.String _Other = "Other";
+    public static final java.lang.String _Unknown = "Unknown";
+    public static final java.lang.String _DoNotChange = "DoNotChange";
     public static final MaterialUnits Feet = new MaterialUnits(_Feet);
     public static final MaterialUnits Meters = new MaterialUnits(_Meters);
     public static final MaterialUnits Inches = new MaterialUnits(_Inches);
@@ -39,6 +41,8 @@ public class MaterialUnits implements java.io.Serializable {
     public static final MaterialUnits Each = new MaterialUnits(_Each);
     public static final MaterialUnits Hour = new MaterialUnits(_Hour);
     public static final MaterialUnits Other = new MaterialUnits(_Other);
+    public static final MaterialUnits Unknown = new MaterialUnits(_Unknown);
+    public static final MaterialUnits DoNotChange = new MaterialUnits(_DoNotChange);
     public java.lang.String getValue() { return _value_;}
     public static MaterialUnits fromValue(java.lang.String value)
           throws java.lang.IllegalArgumentException {

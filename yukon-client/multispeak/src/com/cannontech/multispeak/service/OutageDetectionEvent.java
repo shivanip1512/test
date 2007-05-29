@@ -18,6 +18,8 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
     private com.cannontech.multispeak.service.OutageCustomer outageCustomer;
     private com.cannontech.multispeak.service.PriorityType priority;
     private java.math.BigInteger percentConfident;
+    private java.lang.String problemCode;
+    private com.cannontech.multispeak.service.ResolvedLevel resolvedLevel;
 
     public OutageDetectionEvent() {
     }
@@ -32,7 +34,9 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
            com.cannontech.multispeak.service.MessageList messageList,
            com.cannontech.multispeak.service.OutageCustomer outageCustomer,
            com.cannontech.multispeak.service.PriorityType priority,
-           java.math.BigInteger percentConfident) {
+           java.math.BigInteger percentConfident,
+           java.lang.String problemCode,
+           com.cannontech.multispeak.service.ResolvedLevel resolvedLevel) {
            this.phaseCd = phaseCd;
            this.eventTime = eventTime;
            this.outageEventType = outageEventType;
@@ -43,6 +47,8 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
            this.outageCustomer = outageCustomer;
            this.priority = priority;
            this.percentConfident = percentConfident;
+           this.problemCode = problemCode;
+           this.resolvedLevel = resolvedLevel;
     }
 
 
@@ -245,6 +251,46 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
         this.percentConfident = percentConfident;
     }
 
+
+    /**
+     * Gets the problemCode value for this OutageDetectionEvent.
+     * 
+     * @return problemCode
+     */
+    public java.lang.String getProblemCode() {
+        return problemCode;
+    }
+
+
+    /**
+     * Sets the problemCode value for this OutageDetectionEvent.
+     * 
+     * @param problemCode
+     */
+    public void setProblemCode(java.lang.String problemCode) {
+        this.problemCode = problemCode;
+    }
+
+
+    /**
+     * Gets the resolvedLevel value for this OutageDetectionEvent.
+     * 
+     * @return resolvedLevel
+     */
+    public com.cannontech.multispeak.service.ResolvedLevel getResolvedLevel() {
+        return resolvedLevel;
+    }
+
+
+    /**
+     * Sets the resolvedLevel value for this OutageDetectionEvent.
+     * 
+     * @param resolvedLevel
+     */
+    public void setResolvedLevel(com.cannontech.multispeak.service.ResolvedLevel resolvedLevel) {
+        this.resolvedLevel = resolvedLevel;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof OutageDetectionEvent)) return false;
@@ -286,7 +332,13 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
               this.priority.equals(other.getPriority()))) &&
             ((this.percentConfident==null && other.getPercentConfident()==null) || 
              (this.percentConfident!=null &&
-              this.percentConfident.equals(other.getPercentConfident())));
+              this.percentConfident.equals(other.getPercentConfident()))) &&
+            ((this.problemCode==null && other.getProblemCode()==null) || 
+             (this.problemCode!=null &&
+              this.problemCode.equals(other.getProblemCode()))) &&
+            ((this.resolvedLevel==null && other.getResolvedLevel()==null) || 
+             (this.resolvedLevel!=null &&
+              this.resolvedLevel.equals(other.getResolvedLevel())));
         __equalsCalc = null;
         return _equals;
     }
@@ -327,6 +379,12 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
         }
         if (getPercentConfident() != null) {
             _hashCode += getPercentConfident().hashCode();
+        }
+        if (getProblemCode() != null) {
+            _hashCode += getProblemCode().hashCode();
+        }
+        if (getResolvedLevel() != null) {
+            _hashCode += getResolvedLevel().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -405,6 +463,20 @@ public class OutageDetectionEvent  extends com.cannontech.multispeak.service.Msp
         elemField.setFieldName("percentConfident");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "percentConfident"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("problemCode");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "problemCode"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("resolvedLevel");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "resolvedLevel"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "resolvedLevel"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

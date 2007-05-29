@@ -22,7 +22,7 @@ public class OA_ODLocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for OA_ODSoap
-    private java.lang.String OA_ODSoap_address = "http://www.multispeak.org/interface/30j/5_OA_OD.asmx";
+    private java.lang.String OA_ODSoap_address = "http://www.multispeak.org/interface/30n/5_OA_OD.asmx";
 
     public java.lang.String getOA_ODSoapAddress() {
         return OA_ODSoap_address;
@@ -65,16 +65,68 @@ public class OA_ODLocator extends org.apache.axis.client.Service implements com.
         OA_ODSoap_address = address;
     }
 
+
+    // Use to get a proxy class for OA_ODSoap12
+    private java.lang.String OA_ODSoap12_address = "http://www.multispeak.org/interface/30n/5_OA_OD.asmx";
+
+    public java.lang.String getOA_ODSoap12Address() {
+        return OA_ODSoap12_address;
+    }
+
+    // The WSDD service name defaults to the port name.
+    private java.lang.String OA_ODSoap12WSDDServiceName = "OA_ODSoap12";
+
+    public java.lang.String getOA_ODSoap12WSDDServiceName() {
+        return OA_ODSoap12WSDDServiceName;
+    }
+
+    public void setOA_ODSoap12WSDDServiceName(java.lang.String name) {
+        OA_ODSoap12WSDDServiceName = name;
+    }
+
+    public com.cannontech.multispeak.service.OA_ODSoap_PortType getOA_ODSoap12() throws javax.xml.rpc.ServiceException {
+       java.net.URL endpoint;
+        try {
+            endpoint = new java.net.URL(OA_ODSoap12_address);
+        }
+        catch (java.net.MalformedURLException e) {
+            throw new javax.xml.rpc.ServiceException(e);
+        }
+        return getOA_ODSoap12(endpoint);
+    }
+
+    public com.cannontech.multispeak.service.OA_ODSoap_PortType getOA_ODSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+        try {
+            com.cannontech.multispeak.service.OA_ODSoap12Stub _stub = new com.cannontech.multispeak.service.OA_ODSoap12Stub(portAddress, this);
+            _stub.setPortName(getOA_ODSoap12WSDDServiceName());
+            return _stub;
+        }
+        catch (org.apache.axis.AxisFault e) {
+            return null;
+        }
+    }
+
+    public void setOA_ODSoap12EndpointAddress(java.lang.String address) {
+        OA_ODSoap12_address = address;
+    }
+
     /**
      * For the given interface, get the stub implementation.
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
+     * This service has multiple ports for a given interface;
+     * the proxy implementation returned may be indeterminate.
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (com.cannontech.multispeak.service.OA_ODSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 com.cannontech.multispeak.service.OA_ODSoap_BindingStub _stub = new com.cannontech.multispeak.service.OA_ODSoap_BindingStub(new java.net.URL(OA_ODSoap_address), this);
                 _stub.setPortName(getOA_ODSoapWSDDServiceName());
+                return _stub;
+            }
+            if (com.cannontech.multispeak.service.OA_ODSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
+                com.cannontech.multispeak.service.OA_ODSoap12Stub _stub = new com.cannontech.multispeak.service.OA_ODSoap12Stub(new java.net.URL(OA_ODSoap12_address), this);
+                _stub.setPortName(getOA_ODSoap12WSDDServiceName());
                 return _stub;
             }
         }
@@ -97,6 +149,9 @@ public class OA_ODLocator extends org.apache.axis.client.Service implements com.
         if ("OA_ODSoap".equals(inputPortName)) {
             return getOA_ODSoap();
         }
+        else if ("OA_ODSoap12".equals(inputPortName)) {
+            return getOA_ODSoap12();
+        }
         else  {
             java.rmi.Remote _stub = getPort(serviceEndpointInterface);
             ((org.apache.axis.client.Stub) _stub).setPortName(portName);
@@ -114,6 +169,7 @@ public class OA_ODLocator extends org.apache.axis.client.Service implements com.
         if (ports == null) {
             ports = new java.util.HashSet();
             ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "OA_ODSoap"));
+            ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "OA_ODSoap12"));
         }
         return ports.iterator();
     }
@@ -124,6 +180,9 @@ public class OA_ODLocator extends org.apache.axis.client.Service implements com.
     public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
         if ("OA_ODSoap".equals(portName)) {
             setOA_ODSoapEndpointAddress(address);
+        }
+        if ("OA_ODSoap12".equals(portName)) {
+            setOA_ODSoap12EndpointAddress(address);
         }
         else { // Unknown Port Name
             throw new javax.xml.rpc.ServiceException(" Cannot set Endpoint Address for Unknown Port" + portName);

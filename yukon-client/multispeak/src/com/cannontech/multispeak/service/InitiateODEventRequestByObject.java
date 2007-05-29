@@ -8,40 +8,66 @@
 package com.cannontech.multispeak.service;
 
 public class InitiateODEventRequestByObject  implements java.io.Serializable {
-    private com.cannontech.multispeak.service.ObjectRef objectRef;
+    private java.lang.String objectName;
+    private java.lang.String nounType;
     private com.cannontech.multispeak.service.PhaseCd phaseCode;
     private java.util.Calendar requestDate;
+    private java.lang.String responseURL;
 
     public InitiateODEventRequestByObject() {
     }
 
     public InitiateODEventRequestByObject(
-           com.cannontech.multispeak.service.ObjectRef objectRef,
+           java.lang.String objectName,
+           java.lang.String nounType,
            com.cannontech.multispeak.service.PhaseCd phaseCode,
-           java.util.Calendar requestDate) {
-           this.objectRef = objectRef;
+           java.util.Calendar requestDate,
+           java.lang.String responseURL) {
+           this.objectName = objectName;
+           this.nounType = nounType;
            this.phaseCode = phaseCode;
            this.requestDate = requestDate;
+           this.responseURL = responseURL;
     }
 
 
     /**
-     * Gets the objectRef value for this InitiateODEventRequestByObject.
+     * Gets the objectName value for this InitiateODEventRequestByObject.
      * 
-     * @return objectRef
+     * @return objectName
      */
-    public com.cannontech.multispeak.service.ObjectRef getObjectRef() {
-        return objectRef;
+    public java.lang.String getObjectName() {
+        return objectName;
     }
 
 
     /**
-     * Sets the objectRef value for this InitiateODEventRequestByObject.
+     * Sets the objectName value for this InitiateODEventRequestByObject.
      * 
-     * @param objectRef
+     * @param objectName
      */
-    public void setObjectRef(com.cannontech.multispeak.service.ObjectRef objectRef) {
-        this.objectRef = objectRef;
+    public void setObjectName(java.lang.String objectName) {
+        this.objectName = objectName;
+    }
+
+
+    /**
+     * Gets the nounType value for this InitiateODEventRequestByObject.
+     * 
+     * @return nounType
+     */
+    public java.lang.String getNounType() {
+        return nounType;
+    }
+
+
+    /**
+     * Sets the nounType value for this InitiateODEventRequestByObject.
+     * 
+     * @param nounType
+     */
+    public void setNounType(java.lang.String nounType) {
+        this.nounType = nounType;
     }
 
 
@@ -84,6 +110,26 @@ public class InitiateODEventRequestByObject  implements java.io.Serializable {
         this.requestDate = requestDate;
     }
 
+
+    /**
+     * Gets the responseURL value for this InitiateODEventRequestByObject.
+     * 
+     * @return responseURL
+     */
+    public java.lang.String getResponseURL() {
+        return responseURL;
+    }
+
+
+    /**
+     * Sets the responseURL value for this InitiateODEventRequestByObject.
+     * 
+     * @param responseURL
+     */
+    public void setResponseURL(java.lang.String responseURL) {
+        this.responseURL = responseURL;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof InitiateODEventRequestByObject)) return false;
@@ -96,15 +142,21 @@ public class InitiateODEventRequestByObject  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            ((this.objectRef==null && other.getObjectRef()==null) || 
-             (this.objectRef!=null &&
-              this.objectRef.equals(other.getObjectRef()))) &&
+            ((this.objectName==null && other.getObjectName()==null) || 
+             (this.objectName!=null &&
+              this.objectName.equals(other.getObjectName()))) &&
+            ((this.nounType==null && other.getNounType()==null) || 
+             (this.nounType!=null &&
+              this.nounType.equals(other.getNounType()))) &&
             ((this.phaseCode==null && other.getPhaseCode()==null) || 
              (this.phaseCode!=null &&
               this.phaseCode.equals(other.getPhaseCode()))) &&
             ((this.requestDate==null && other.getRequestDate()==null) || 
              (this.requestDate!=null &&
-              this.requestDate.equals(other.getRequestDate())));
+              this.requestDate.equals(other.getRequestDate()))) &&
+            ((this.responseURL==null && other.getResponseURL()==null) || 
+             (this.responseURL!=null &&
+              this.responseURL.equals(other.getResponseURL())));
         __equalsCalc = null;
         return _equals;
     }
@@ -116,14 +168,20 @@ public class InitiateODEventRequestByObject  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getObjectRef() != null) {
-            _hashCode += getObjectRef().hashCode();
+        if (getObjectName() != null) {
+            _hashCode += getObjectName().hashCode();
+        }
+        if (getNounType() != null) {
+            _hashCode += getNounType().hashCode();
         }
         if (getPhaseCode() != null) {
             _hashCode += getPhaseCode().hashCode();
         }
         if (getRequestDate() != null) {
             _hashCode += getRequestDate().hashCode();
+        }
+        if (getResponseURL() != null) {
+            _hashCode += getResponseURL().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -136,9 +194,16 @@ public class InitiateODEventRequestByObject  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateODEventRequestByObject"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("objectRef");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"));
+        elemField.setFieldName("objectName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("nounType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "nounType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -152,6 +217,13 @@ public class InitiateODEventRequestByObject  implements java.io.Serializable {
         elemField.setFieldName("requestDate");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("responseURL");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

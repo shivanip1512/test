@@ -62,7 +62,7 @@ public class UgSecondaryLineUGSecType implements java.io.Serializable {
         new org.apache.axis.description.TypeDesc(UgSecondaryLineUGSecType.class);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ugSecondaryLineUGSecType"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">ugSecondaryLine>uGSecType"));
     }
     /**
      * Return type metadata object

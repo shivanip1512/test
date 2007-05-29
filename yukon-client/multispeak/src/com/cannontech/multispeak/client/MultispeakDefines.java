@@ -14,7 +14,7 @@ public class MultispeakDefines
 {
     public static final int MAX_RETURN_RECORDS = 10000;
     
-	public static final String AMR_TYPE = "Cannon";
+	public static final String AMR_VENDOR = "Cannon";
     public static final String MSP_VENDOR = "MSP_VENDOR";
     public static final String MSP_RESULT_MSG = "MSP_RESULT_MSG";
     public static final String MSP_ERROR_MSG = "MSP_ERROR_MSG";

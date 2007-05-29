@@ -10,15 +10,18 @@ package com.cannontech.multispeak.service;
 public class InitiateOutageDetectionEventRequest  implements java.io.Serializable {
     private com.cannontech.multispeak.service.ArrayOfString meterNos;
     private java.util.Calendar requestDate;
+    private java.lang.String responseURL;
 
     public InitiateOutageDetectionEventRequest() {
     }
 
     public InitiateOutageDetectionEventRequest(
            com.cannontech.multispeak.service.ArrayOfString meterNos,
-           java.util.Calendar requestDate) {
+           java.util.Calendar requestDate,
+           java.lang.String responseURL) {
            this.meterNos = meterNos;
            this.requestDate = requestDate;
+           this.responseURL = responseURL;
     }
 
 
@@ -61,6 +64,26 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
         this.requestDate = requestDate;
     }
 
+
+    /**
+     * Gets the responseURL value for this InitiateOutageDetectionEventRequest.
+     * 
+     * @return responseURL
+     */
+    public java.lang.String getResponseURL() {
+        return responseURL;
+    }
+
+
+    /**
+     * Sets the responseURL value for this InitiateOutageDetectionEventRequest.
+     * 
+     * @param responseURL
+     */
+    public void setResponseURL(java.lang.String responseURL) {
+        this.responseURL = responseURL;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof InitiateOutageDetectionEventRequest)) return false;
@@ -78,7 +101,10 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
               this.meterNos.equals(other.getMeterNos()))) &&
             ((this.requestDate==null && other.getRequestDate()==null) || 
              (this.requestDate!=null &&
-              this.requestDate.equals(other.getRequestDate())));
+              this.requestDate.equals(other.getRequestDate()))) &&
+            ((this.responseURL==null && other.getResponseURL()==null) || 
+             (this.responseURL!=null &&
+              this.responseURL.equals(other.getResponseURL())));
         __equalsCalc = null;
         return _equals;
     }
@@ -95,6 +121,9 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
         }
         if (getRequestDate() != null) {
             _hashCode += getRequestDate().hashCode();
+        }
+        if (getResponseURL() != null) {
+            _hashCode += getResponseURL().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -117,6 +146,13 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
         elemField.setFieldName("requestDate");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("responseURL");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseURL"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

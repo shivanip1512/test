@@ -8,66 +8,26 @@
 package com.cannontech.multispeak.service;
 
 public class Registers  implements java.io.Serializable {
-    private com.cannontech.multispeak.service.CumDemand cumDemand;
-    private com.cannontech.multispeak.service.CoincidentalValue coincidentalValue;
     private com.cannontech.multispeak.service.FlowDemand demand;
+    private com.cannontech.multispeak.service.CumDemand cumDemand;
     private com.cannontech.multispeak.service.Summation summation;
+    private com.cannontech.multispeak.service.CoincidentalValue coincidentalValue;
     private org.apache.axis.types.UnsignedInt tier;  // attribute
 
     public Registers() {
     }
 
     public Registers(
-           com.cannontech.multispeak.service.CumDemand cumDemand,
-           com.cannontech.multispeak.service.CoincidentalValue coincidentalValue,
            com.cannontech.multispeak.service.FlowDemand demand,
+           com.cannontech.multispeak.service.CumDemand cumDemand,
            com.cannontech.multispeak.service.Summation summation,
+           com.cannontech.multispeak.service.CoincidentalValue coincidentalValue,
            org.apache.axis.types.UnsignedInt tier) {
-           this.cumDemand = cumDemand;
-           this.coincidentalValue = coincidentalValue;
            this.demand = demand;
+           this.cumDemand = cumDemand;
            this.summation = summation;
+           this.coincidentalValue = coincidentalValue;
            this.tier = tier;
-    }
-
-
-    /**
-     * Gets the cumDemand value for this Registers.
-     * 
-     * @return cumDemand
-     */
-    public com.cannontech.multispeak.service.CumDemand getCumDemand() {
-        return cumDemand;
-    }
-
-
-    /**
-     * Sets the cumDemand value for this Registers.
-     * 
-     * @param cumDemand
-     */
-    public void setCumDemand(com.cannontech.multispeak.service.CumDemand cumDemand) {
-        this.cumDemand = cumDemand;
-    }
-
-
-    /**
-     * Gets the coincidentalValue value for this Registers.
-     * 
-     * @return coincidentalValue
-     */
-    public com.cannontech.multispeak.service.CoincidentalValue getCoincidentalValue() {
-        return coincidentalValue;
-    }
-
-
-    /**
-     * Sets the coincidentalValue value for this Registers.
-     * 
-     * @param coincidentalValue
-     */
-    public void setCoincidentalValue(com.cannontech.multispeak.service.CoincidentalValue coincidentalValue) {
-        this.coincidentalValue = coincidentalValue;
     }
 
 
@@ -92,6 +52,26 @@ public class Registers  implements java.io.Serializable {
 
 
     /**
+     * Gets the cumDemand value for this Registers.
+     * 
+     * @return cumDemand
+     */
+    public com.cannontech.multispeak.service.CumDemand getCumDemand() {
+        return cumDemand;
+    }
+
+
+    /**
+     * Sets the cumDemand value for this Registers.
+     * 
+     * @param cumDemand
+     */
+    public void setCumDemand(com.cannontech.multispeak.service.CumDemand cumDemand) {
+        this.cumDemand = cumDemand;
+    }
+
+
+    /**
      * Gets the summation value for this Registers.
      * 
      * @return summation
@@ -108,6 +88,26 @@ public class Registers  implements java.io.Serializable {
      */
     public void setSummation(com.cannontech.multispeak.service.Summation summation) {
         this.summation = summation;
+    }
+
+
+    /**
+     * Gets the coincidentalValue value for this Registers.
+     * 
+     * @return coincidentalValue
+     */
+    public com.cannontech.multispeak.service.CoincidentalValue getCoincidentalValue() {
+        return coincidentalValue;
+    }
+
+
+    /**
+     * Sets the coincidentalValue value for this Registers.
+     * 
+     * @param coincidentalValue
+     */
+    public void setCoincidentalValue(com.cannontech.multispeak.service.CoincidentalValue coincidentalValue) {
+        this.coincidentalValue = coincidentalValue;
     }
 
 
@@ -142,18 +142,18 @@ public class Registers  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            ((this.cumDemand==null && other.getCumDemand()==null) || 
-             (this.cumDemand!=null &&
-              this.cumDemand.equals(other.getCumDemand()))) &&
-            ((this.coincidentalValue==null && other.getCoincidentalValue()==null) || 
-             (this.coincidentalValue!=null &&
-              this.coincidentalValue.equals(other.getCoincidentalValue()))) &&
             ((this.demand==null && other.getDemand()==null) || 
              (this.demand!=null &&
               this.demand.equals(other.getDemand()))) &&
+            ((this.cumDemand==null && other.getCumDemand()==null) || 
+             (this.cumDemand!=null &&
+              this.cumDemand.equals(other.getCumDemand()))) &&
             ((this.summation==null && other.getSummation()==null) || 
              (this.summation!=null &&
               this.summation.equals(other.getSummation()))) &&
+            ((this.coincidentalValue==null && other.getCoincidentalValue()==null) || 
+             (this.coincidentalValue!=null &&
+              this.coincidentalValue.equals(other.getCoincidentalValue()))) &&
             ((this.tier==null && other.getTier()==null) || 
              (this.tier!=null &&
               this.tier.equals(other.getTier())));
@@ -168,17 +168,17 @@ public class Registers  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getCumDemand() != null) {
-            _hashCode += getCumDemand().hashCode();
-        }
-        if (getCoincidentalValue() != null) {
-            _hashCode += getCoincidentalValue().hashCode();
-        }
         if (getDemand() != null) {
             _hashCode += getDemand().hashCode();
         }
+        if (getCumDemand() != null) {
+            _hashCode += getCumDemand().hashCode();
+        }
         if (getSummation() != null) {
             _hashCode += getSummation().hashCode();
+        }
+        if (getCoincidentalValue() != null) {
+            _hashCode += getCoincidentalValue().hashCode();
         }
         if (getTier() != null) {
             _hashCode += getTier().hashCode();
@@ -199,20 +199,6 @@ public class Registers  implements java.io.Serializable {
         attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "unsignedInt"));
         typeDesc.addFieldDesc(attrField);
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("cumDemand");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cumDemand"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cumDemand"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("coincidentalValue");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coincidentalValue"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coincidentalValue"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("demand");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "demand"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "flowDemand"));
@@ -220,9 +206,23 @@ public class Registers  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("cumDemand");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cumDemand"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cumDemand"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("summation");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "summation"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "summation"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("coincidentalValue");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coincidentalValue"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "coincidentalValue"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

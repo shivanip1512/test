@@ -8,57 +8,8 @@
 package com.cannontech.multispeak.service;
 
 public abstract class AbstractGeometryType  implements java.io.Serializable {
-    private org.apache.axis.types.Id gid;  // attribute
-    private org.apache.axis.types.URI srsName;  // attribute
 
     public AbstractGeometryType() {
-    }
-
-    public AbstractGeometryType(
-           org.apache.axis.types.Id gid,
-           org.apache.axis.types.URI srsName) {
-           this.gid = gid;
-           this.srsName = srsName;
-    }
-
-
-    /**
-     * Gets the gid value for this AbstractGeometryType.
-     * 
-     * @return gid
-     */
-    public org.apache.axis.types.Id getGid() {
-        return gid;
-    }
-
-
-    /**
-     * Sets the gid value for this AbstractGeometryType.
-     * 
-     * @param gid
-     */
-    public void setGid(org.apache.axis.types.Id gid) {
-        this.gid = gid;
-    }
-
-
-    /**
-     * Gets the srsName value for this AbstractGeometryType.
-     * 
-     * @return srsName
-     */
-    public org.apache.axis.types.URI getSrsName() {
-        return srsName;
-    }
-
-
-    /**
-     * Sets the srsName value for this AbstractGeometryType.
-     * 
-     * @param srsName
-     */
-    public void setSrsName(org.apache.axis.types.URI srsName) {
-        this.srsName = srsName;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -72,13 +23,7 @@ public abstract class AbstractGeometryType  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.gid==null && other.getGid()==null) || 
-             (this.gid!=null &&
-              this.gid.equals(other.getGid()))) &&
-            ((this.srsName==null && other.getSrsName()==null) || 
-             (this.srsName!=null &&
-              this.srsName.equals(other.getSrsName())));
+        _equals = true;
         __equalsCalc = null;
         return _equals;
     }
@@ -90,12 +35,6 @@ public abstract class AbstractGeometryType  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getGid() != null) {
-            _hashCode += getGid().hashCode();
-        }
-        if (getSrsName() != null) {
-            _hashCode += getSrsName().hashCode();
-        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -106,16 +45,6 @@ public abstract class AbstractGeometryType  implements java.io.Serializable {
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AbstractGeometryType"));
-        org.apache.axis.description.AttributeDesc attrField = new org.apache.axis.description.AttributeDesc();
-        attrField.setFieldName("gid");
-        attrField.setXmlName(new javax.xml.namespace.QName("", "gid"));
-        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "ID"));
-        typeDesc.addFieldDesc(attrField);
-        attrField = new org.apache.axis.description.AttributeDesc();
-        attrField.setFieldName("srsName");
-        attrField.setXmlName(new javax.xml.namespace.QName("", "srsName"));
-        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "anyURI"));
-        typeDesc.addFieldDesc(attrField);
     }
 
     /**

@@ -8,13 +8,13 @@
 package com.cannontech.multispeak.service;
 
 public class GetReadingsByBillingCycleResponse  implements java.io.Serializable {
-    private com.cannontech.multispeak.service.ArrayOfMeterRead getReadingsByBillingCycleResult;
+    private com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByBillingCycleResult;
 
     public GetReadingsByBillingCycleResponse() {
     }
 
     public GetReadingsByBillingCycleResponse(
-           com.cannontech.multispeak.service.ArrayOfMeterRead getReadingsByBillingCycleResult) {
+           com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByBillingCycleResult) {
            this.getReadingsByBillingCycleResult = getReadingsByBillingCycleResult;
     }
 
@@ -24,7 +24,7 @@ public class GetReadingsByBillingCycleResponse  implements java.io.Serializable 
      * 
      * @return getReadingsByBillingCycleResult
      */
-    public com.cannontech.multispeak.service.ArrayOfMeterRead getGetReadingsByBillingCycleResult() {
+    public com.cannontech.multispeak.service.ArrayOfFormattedBlock getGetReadingsByBillingCycleResult() {
         return getReadingsByBillingCycleResult;
     }
 
@@ -34,7 +34,7 @@ public class GetReadingsByBillingCycleResponse  implements java.io.Serializable 
      * 
      * @param getReadingsByBillingCycleResult
      */
-    public void setGetReadingsByBillingCycleResult(com.cannontech.multispeak.service.ArrayOfMeterRead getReadingsByBillingCycleResult) {
+    public void setGetReadingsByBillingCycleResult(com.cannontech.multispeak.service.ArrayOfFormattedBlock getReadingsByBillingCycleResult) {
         this.getReadingsByBillingCycleResult = getReadingsByBillingCycleResult;
     }
 
@@ -80,7 +80,7 @@ public class GetReadingsByBillingCycleResponse  implements java.io.Serializable 
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("getReadingsByBillingCycleResult");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetReadingsByBillingCycleResult"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterRead"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfFormattedBlock"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

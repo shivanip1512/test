@@ -13,4 +13,9 @@ public interface OA_OD extends javax.xml.rpc.Service {
     public com.cannontech.multispeak.service.OA_ODSoap_PortType getOA_ODSoap() throws javax.xml.rpc.ServiceException;
 
     public com.cannontech.multispeak.service.OA_ODSoap_PortType getOA_ODSoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+    public java.lang.String getOA_ODSoap12Address();
+
+    public com.cannontech.multispeak.service.OA_ODSoap_PortType getOA_ODSoap12() throws javax.xml.rpc.ServiceException;
+
+    public com.cannontech.multispeak.service.OA_ODSoap_PortType getOA_ODSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

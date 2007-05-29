@@ -9,7 +9,7 @@ package com.cannontech.multispeak.service;
 
 public class Crew  extends com.cannontech.multispeak.service.MspObject  implements java.io.Serializable {
     private java.lang.String foreman;
-    private java.lang.String contactInfo;
+    private com.cannontech.multispeak.service.ContactInfo contactInfo;
     private java.lang.Boolean isForeign;
     private java.lang.String baseLocation;
     private java.lang.String crewType;
@@ -22,7 +22,7 @@ public class Crew  extends com.cannontech.multispeak.service.MspObject  implemen
 
     public Crew(
            java.lang.String foreman,
-           java.lang.String contactInfo,
+           com.cannontech.multispeak.service.ContactInfo contactInfo,
            java.lang.Boolean isForeign,
            java.lang.String baseLocation,
            java.lang.String crewType,
@@ -65,7 +65,7 @@ public class Crew  extends com.cannontech.multispeak.service.MspObject  implemen
      * 
      * @return contactInfo
      */
-    public java.lang.String getContactInfo() {
+    public com.cannontech.multispeak.service.ContactInfo getContactInfo() {
         return contactInfo;
     }
 
@@ -75,7 +75,7 @@ public class Crew  extends com.cannontech.multispeak.service.MspObject  implemen
      * 
      * @param contactInfo
      */
-    public void setContactInfo(java.lang.String contactInfo) {
+    public void setContactInfo(com.cannontech.multispeak.service.ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
     }
 
@@ -290,7 +290,7 @@ public class Crew  extends com.cannontech.multispeak.service.MspObject  implemen
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("contactInfo");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "contactInfo"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

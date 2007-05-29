@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
+import org.apache.axis.message.MessageElement;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,12 +25,13 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
+import com.cannontech.multispeak.service.Extensions;
 import com.cannontech.multispeak.service.Meter;
-import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.multispeak.service.Nameplate;
+import com.cannontech.multispeak.service.UtilityInfo;
 
 public final class MultispeakDaoImpl implements MultispeakDao
 {
@@ -60,7 +64,6 @@ public final class MultispeakDaoImpl implements MultispeakDao
     
     private JdbcOperations jdbcOps;
     private TransactionTemplate transactionTemplate;
-    private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
 
     /**
@@ -84,6 +87,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
         
         if( mspInterfaces == null || mspInterfaces.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(1, 0);
+            
         } else if( mspInterfaces.size() > 1) {  //match on app name if possible
             //Find a matching AppName
             for (int i = 0; i < mspInterfaces.size(); i++){
@@ -305,10 +309,6 @@ public final class MultispeakDaoImpl implements MultispeakDao
         return mspInterface;
     }
 
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
     }
@@ -341,7 +341,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                          " WHERE DMG.DEVICEID = PAO.PAOBJECTID" + 
                          " AND PAO.PAOBJECTID = DCS.DEVICEID " +
                          " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
-            List mspMeters = new ArrayList<Meter>();
+            List<Meter> mspMeters = new ArrayList<Meter>();
             ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspMeterRowMapper);
             jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
             return mspMeters;
@@ -350,7 +350,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
         }
     }
 
-    public List getCDSupportedMeters(String lastReceived, String key) {
+    public List<Meter> getCDSupportedMeters(String lastReceived, String key) {
         try {
             String uniqueKey = "METERNUMBER";
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
@@ -373,7 +373,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                              					  " AND DISCONNECTADDRESS IS NOT NULL) ) " +
                          " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
           
-            List mspMeters = new ArrayList();
+            List<Meter> mspMeters = new ArrayList<Meter>();
             ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
             jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
             return mspMeters;
@@ -407,7 +407,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                        		 					" AND DISCONNECTADDRESS IS NOT NULL) ) " +
                        " AND " + uniqueKey + " = ?";
 
-          List cdMeters = jdbcOps.query(sql, new Object[] { objectID}, mspCDMeterRowMapper);
+          List<Meter> cdMeters = jdbcOps.query(sql, new Object[] { objectID}, mspCDMeterRowMapper);
           return !cdMeters.isEmpty();
       } catch (IncorrectResultSizeDataAccessException e) {
     	  //No results simply mean that the meterNumber is not a CD supported meter 
@@ -425,7 +425,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
         String address = rset.getString(5).trim();
         String paoType = rset.getString(6).trim();
 
-        Meter mspMeter = MultispeakFuncs.createMeter(objectID, paoType, collectionGroup, billingGroup, address);
+        Meter mspMeter = createMeter(objectID, paoType, collectionGroup, billingGroup, address);
         return mspMeter;
     }
     
@@ -444,7 +444,102 @@ public final class MultispeakDaoImpl implements MultispeakDao
             discAddress == null)
             return null;
         
-        Meter mspMeter = MultispeakFuncs.createMeter(objectID, paoType, collectionGroup, billingGroup, address);
+        Meter mspMeter = createMeter(objectID, paoType, collectionGroup, billingGroup, address);
         return mspMeter;
     }
+    
+    /**
+     * Creates a new (MSP) Meter object.
+     * @param objectID The Multispeak objectID.
+     * @param address The meter's transponderID (Physical Address)
+     * @return
+     */
+    public static Meter createMeter(String objectID, String paoType, String collectionGroup, String billingGroup, String address)
+    {
+        Meter meter = new Meter();
+        meter.setObjectID(objectID);
+//      MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
+        MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
+        Extensions ext = new Extensions();
+        ext.set_any(new MessageElement[]{element2});
+        meter.setExtensions(ext);
+        meter.setMeterNo(objectID);
+//        meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
+        meter.setMeterType(paoType);  //Meter type/model.
+//        meter.setManufacturer();    //Meter manufacturer.
+//        meter.setSealNumberList(null);  //Seal Number List
+        meter.setAMRDeviceType(paoType);
+        meter.setAMRVendor(MultispeakDefines.AMR_VENDOR);
+        meter.setNameplate(getNameplate(objectID, address));
+//        meter.setSealNumberList(null);  //List of seals applied to this meter.
+//        meter.setUtilityInfo(null);     //This information relates the meter to the account with which it is associated
+        
+        //MSPDevice
+//        meter.setDeviceClass(null); //A high-level description of this type of object (e.g., "kWh meter", "demand meter", etc.).
+//        meter.setFacilityID(null);  //A utility-defined string designation for this device.
+//        meter.setInServiceDate(null);   //The date and time that a device was placed into active service.
+//        meter.setOutServiceDate(null);  //The date and time that a device was removed from active service.
+        
+        //MSPObject
+//        meter.setUtility(null);
+//        meter.setComments(null);
+//        meter.setErrorString(null);
+//        meter.setReplaceID(null);
+        
+        return meter;
+    }
+
+    /**
+     * Creates a new (MSP) Nameplate object
+     * @param objectID The multispeak objectID
+     * @param address The meter's transponderID (Physical Address)
+     * @return
+     */
+    public static Nameplate getNameplate(String objectID, String address)
+    {
+        Nameplate nameplate = new Nameplate();
+        /*nameplate.setKh();
+        nameplate.setKr();
+        nameplate.setFrequency();
+        nameplate.setNumberOfElements();
+        nameplate.setBaseType();
+        nameplate.setAccuracyClass();
+        nameplate.setElementsVoltage();
+        nameplate.setSupplyVoltage();
+        nameplate.setMaxAmperage();
+        nameplate.setTestAmperage();
+        nameplate.setRegRatio();
+        nameplate.setPhases();
+        nameplate.setWires();
+        nameplate.setDials();
+        nameplate.setForm();
+        nameplate.setMultiplier();
+        nameplate.setDemandMult();
+        nameplate.setTransformerRatio();*/
+        nameplate.setTransponderID(address);
+        return nameplate;
+    }
+    
+    /**
+     * Creates a new (MSP) UtilityInfo object
+     * @param objectID The Multispeak objectID
+     * @return
+     */
+    public static UtilityInfo getUtilityInfo(String objectID)
+    {
+        UtilityInfo utilityInfo = new UtilityInfo();
+        /*utilityInfo.setAccountNumber();
+        utilityInfo.setBus();
+        utilityInfo.setCustID();
+        utilityInfo.setDistrict();
+        utilityInfo.setEaLoc();
+        utilityInfo.setFeeder();
+        utilityInfo.setOwner();
+        utilityInfo.setPhaseCd();
+        utilityInfo.setServLoc();
+        utilityInfo.setSubstationCode();
+        utilityInfo.setSubstationName();
+        utilityInfo.setTransformerBankID();*/
+        return utilityInfo;
+    }    
 }

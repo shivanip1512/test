@@ -17,9 +17,17 @@ public class CallType implements java.io.Serializable {
         _table_.put(_value_,this);
     }
 
+    public static final java.lang.String _Call = "Call";
+    public static final java.lang.String _CustomerServiceRep = "CustomerServiceRep";
+    public static final java.lang.String _InboundTelephoneDevice = "InboundTelephoneDevice";
+    public static final java.lang.String _Other = "Other";
     public static final java.lang.String _manual = "manual";
     public static final java.lang.String _IVR = "IVR";
     public static final java.lang.String _sensor = "sensor";
+    public static final CallType Call = new CallType(_Call);
+    public static final CallType CustomerServiceRep = new CallType(_CustomerServiceRep);
+    public static final CallType InboundTelephoneDevice = new CallType(_InboundTelephoneDevice);
+    public static final CallType Other = new CallType(_Other);
     public static final CallType manual = new CallType(_manual);
     public static final CallType IVR = new CallType(_IVR);
     public static final CallType sensor = new CallType(_sensor);

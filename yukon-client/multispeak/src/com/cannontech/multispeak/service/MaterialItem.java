@@ -13,10 +13,11 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
     private java.lang.String item;
     private java.lang.Float avgCost;
     private java.lang.Float newCost;
-    private java.lang.Long laborFactor;
+    private java.lang.Float laborFactor;
     private java.lang.String materialType;
     private com.cannontech.multispeak.service.MaterialUnits materialUnits;
     private com.cannontech.multispeak.service.ArrayOfWarehouseLocation warehouseLocationList;
+    private java.util.Calendar effectiveDate;
 
     public MaterialItem() {
     }
@@ -27,10 +28,11 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
            java.lang.String item,
            java.lang.Float avgCost,
            java.lang.Float newCost,
-           java.lang.Long laborFactor,
+           java.lang.Float laborFactor,
            java.lang.String materialType,
            com.cannontech.multispeak.service.MaterialUnits materialUnits,
-           com.cannontech.multispeak.service.ArrayOfWarehouseLocation warehouseLocationList) {
+           com.cannontech.multispeak.service.ArrayOfWarehouseLocation warehouseLocationList,
+           java.util.Calendar effectiveDate) {
            this.stockNumber = stockNumber;
            this.stockDescr = stockDescr;
            this.item = item;
@@ -40,6 +42,7 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
            this.materialType = materialType;
            this.materialUnits = materialUnits;
            this.warehouseLocationList = warehouseLocationList;
+           this.effectiveDate = effectiveDate;
     }
 
 
@@ -148,7 +151,7 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
      * 
      * @return laborFactor
      */
-    public java.lang.Long getLaborFactor() {
+    public java.lang.Float getLaborFactor() {
         return laborFactor;
     }
 
@@ -158,7 +161,7 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
      * 
      * @param laborFactor
      */
-    public void setLaborFactor(java.lang.Long laborFactor) {
+    public void setLaborFactor(java.lang.Float laborFactor) {
         this.laborFactor = laborFactor;
     }
 
@@ -222,6 +225,26 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
         this.warehouseLocationList = warehouseLocationList;
     }
 
+
+    /**
+     * Gets the effectiveDate value for this MaterialItem.
+     * 
+     * @return effectiveDate
+     */
+    public java.util.Calendar getEffectiveDate() {
+        return effectiveDate;
+    }
+
+
+    /**
+     * Sets the effectiveDate value for this MaterialItem.
+     * 
+     * @param effectiveDate
+     */
+    public void setEffectiveDate(java.util.Calendar effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MaterialItem)) return false;
@@ -260,7 +283,10 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
               this.materialUnits.equals(other.getMaterialUnits()))) &&
             ((this.warehouseLocationList==null && other.getWarehouseLocationList()==null) || 
              (this.warehouseLocationList!=null &&
-              this.warehouseLocationList.equals(other.getWarehouseLocationList())));
+              this.warehouseLocationList.equals(other.getWarehouseLocationList()))) &&
+            ((this.effectiveDate==null && other.getEffectiveDate()==null) || 
+             (this.effectiveDate!=null &&
+              this.effectiveDate.equals(other.getEffectiveDate())));
         __equalsCalc = null;
         return _equals;
     }
@@ -298,6 +324,9 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
         }
         if (getWarehouseLocationList() != null) {
             _hashCode += getWarehouseLocationList().hashCode();
+        }
+        if (getEffectiveDate() != null) {
+            _hashCode += getEffectiveDate().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -347,7 +376,7 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("laborFactor");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "laborFactor"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -369,6 +398,13 @@ public class MaterialItem  extends com.cannontech.multispeak.service.MspObject  
         elemField.setFieldName("warehouseLocationList");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "warehouseLocationList"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfWarehouseLocation"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("effectiveDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "effectiveDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

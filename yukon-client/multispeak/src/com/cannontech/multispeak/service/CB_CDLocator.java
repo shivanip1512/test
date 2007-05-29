@@ -21,8 +21,53 @@ public class CB_CDLocator extends org.apache.axis.client.Service implements com.
         super(wsdlLoc, sName);
     }
 
+    // Use to get a proxy class for CB_CDSoap12
+    private java.lang.String CB_CDSoap12_address = "http://www.multispeak.org/interface/30n/2B_CB_CD.asmx";
+
+    public java.lang.String getCB_CDSoap12Address() {
+        return CB_CDSoap12_address;
+    }
+
+    // The WSDD service name defaults to the port name.
+    private java.lang.String CB_CDSoap12WSDDServiceName = "CB_CDSoap12";
+
+    public java.lang.String getCB_CDSoap12WSDDServiceName() {
+        return CB_CDSoap12WSDDServiceName;
+    }
+
+    public void setCB_CDSoap12WSDDServiceName(java.lang.String name) {
+        CB_CDSoap12WSDDServiceName = name;
+    }
+
+    public com.cannontech.multispeak.service.CB_CDSoap_PortType getCB_CDSoap12() throws javax.xml.rpc.ServiceException {
+       java.net.URL endpoint;
+        try {
+            endpoint = new java.net.URL(CB_CDSoap12_address);
+        }
+        catch (java.net.MalformedURLException e) {
+            throw new javax.xml.rpc.ServiceException(e);
+        }
+        return getCB_CDSoap12(endpoint);
+    }
+
+    public com.cannontech.multispeak.service.CB_CDSoap_PortType getCB_CDSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+        try {
+            com.cannontech.multispeak.service.CB_CDSoap12Stub _stub = new com.cannontech.multispeak.service.CB_CDSoap12Stub(portAddress, this);
+            _stub.setPortName(getCB_CDSoap12WSDDServiceName());
+            return _stub;
+        }
+        catch (org.apache.axis.AxisFault e) {
+            return null;
+        }
+    }
+
+    public void setCB_CDSoap12EndpointAddress(java.lang.String address) {
+        CB_CDSoap12_address = address;
+    }
+
+
     // Use to get a proxy class for CB_CDSoap
-    private java.lang.String CB_CDSoap_address = "http://www.multispeak.org/interface/30j/2B_CB_CD.asmx";
+    private java.lang.String CB_CDSoap_address = "http://www.multispeak.org/interface/30n/2B_CB_CD.asmx";
 
     public java.lang.String getCB_CDSoapAddress() {
         return CB_CDSoap_address;
@@ -69,9 +114,16 @@ public class CB_CDLocator extends org.apache.axis.client.Service implements com.
      * For the given interface, get the stub implementation.
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
+     * This service has multiple ports for a given interface;
+     * the proxy implementation returned may be indeterminate.
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
+            if (com.cannontech.multispeak.service.CB_CDSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
+                com.cannontech.multispeak.service.CB_CDSoap12Stub _stub = new com.cannontech.multispeak.service.CB_CDSoap12Stub(new java.net.URL(CB_CDSoap12_address), this);
+                _stub.setPortName(getCB_CDSoap12WSDDServiceName());
+                return _stub;
+            }
             if (com.cannontech.multispeak.service.CB_CDSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 com.cannontech.multispeak.service.CB_CDSoap_BindingStub _stub = new com.cannontech.multispeak.service.CB_CDSoap_BindingStub(new java.net.URL(CB_CDSoap_address), this);
                 _stub.setPortName(getCB_CDSoapWSDDServiceName());
@@ -94,7 +146,10 @@ public class CB_CDLocator extends org.apache.axis.client.Service implements com.
             return getPort(serviceEndpointInterface);
         }
         java.lang.String inputPortName = portName.getLocalPart();
-        if ("CB_CDSoap".equals(inputPortName)) {
+        if ("CB_CDSoap12".equals(inputPortName)) {
+            return getCB_CDSoap12();
+        }
+        else if ("CB_CDSoap".equals(inputPortName)) {
             return getCB_CDSoap();
         }
         else  {
@@ -113,6 +168,7 @@ public class CB_CDLocator extends org.apache.axis.client.Service implements com.
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
+            ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CB_CDSoap12"));
             ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CB_CDSoap"));
         }
         return ports.iterator();
@@ -122,6 +178,9 @@ public class CB_CDLocator extends org.apache.axis.client.Service implements com.
     * Set the endpoint address for the specified port name.
     */
     public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
+        if ("CB_CDSoap12".equals(portName)) {
+            setCB_CDSoap12EndpointAddress(address);
+        }
         if ("CB_CDSoap".equals(portName)) {
             setCB_CDSoapEndpointAddress(address);
         }

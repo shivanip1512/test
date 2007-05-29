@@ -47,8 +47,8 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * can be returned in manageable blocks.  lastReceived should carry an
      * empty string the first time in a session that this method is invoked.
      * When multiple calls to this method are required to obtain all of the
-     * data, the lastReceived should carry the objectID of the last data
-     * instance received in subsequent calls.(Recommended)
+     * data, the lastReceived should carry in subsequent calls the objectID
+     * of the data instance noted by the server as being the lastSent.(Recommended)
      */
     public com.cannontech.multispeak.service.ArrayOfCustomer getAllCustomers(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -61,8 +61,8 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * be returned in manageable blocks.  lastReceived should carry an empty
      * string the first time in a session that this method is invoked.  When
      * multiple calls to this method are required to obtain all of the data,
-     * the lastReceived should carry the objectID of the last data instance
-     * received in subsequent calls.(Optional)
+     * the lastReceived should carry in subsequent calls the objectID of
+     * the data instance noted by the server as being the lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfCustomer getModifiedCustomers(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -75,8 +75,9 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Optional)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfServiceLocation getModifiedServiceLocations(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -108,8 +109,9 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * large sets of data can be returned in manageable blocks.  lastReceived
      * should carry an empty string the first time in a session that this
      * method is invoked.  When multiple calls to this method are required
-     * to obtain all of the data, the lastReceived should carry the objectID
-     * of the last data instance received in subsequent calls.(Recommended)
+     * to obtain all of the data, the lastReceived should carry in subsequent
+     * calls the objectID of the data instance noted by the server as being
+     * the lastSent.(Recommended)
      */
     public com.cannontech.multispeak.service.ArrayOfServiceLocation getAllServiceLocations(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -119,8 +121,9 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * sets of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Optional)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfServiceLocation getServiceLocationByServiceStatus(java.lang.String servStatus, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -159,8 +162,9 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Optional)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfServiceLocation getServiceLocationByPhaseCode(com.cannontech.multispeak.service.PhaseCd phaseCode, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -170,8 +174,9 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * sets of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Optional)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfServiceLocation getServiceLocationByLoadGroup(java.lang.String loadGroup, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -181,8 +186,9 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * sets of data can be returned in manageable blocks.  lastReceived should
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
-     * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Optional)
+     * all of the data, the lastReceived should carry in subsequent calls
+     * the objectID of the data instance noted by the server as being the
+     * lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfServiceLocation getServiceLocationByServiceType(java.lang.String serviceType, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -198,8 +204,8 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * be returned in manageable blocks.  lastReceived should carry an empty
      * string the first time in a session that this method is invoked.  When
      * multiple calls to this method are required to obtain all of the data,
-     * the lastReceived should carry the objectID of the last data instance
-     * received in subsequent calls.(Recommended)
+     * the lastReceived should carry in subsequent calls the objectID of
+     * the data instance noted by the server as being the lastSent.(Recommended)
      */
     public com.cannontech.multispeak.service.ArrayOfMeter getAllMeters(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -212,8 +218,8 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * blocks.  lastReceived should carry an empty string the first time
      * in a session that this method is invoked.  When multiple calls to
      * this method are required to obtain all of the data, the lastReceived
-     * should carry the objectID of the last data instance received in subsequent
-     * calls.(Optional)
+     * should carry in subsequent calls the objectID of the data instance
+     * noted by the server as being the lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfMeter getModifiedMeters(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -248,10 +254,28 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * be returned in manageable blocks.  lastReceived should carry an empty
      * string the first time in a session that this method is invoked.  When
      * multiple calls to this method are required to obtain all of the data,
-     * the lastReceived should carry the objectID of the last data instance
-     * received in subsequent calls.(Optional)
+     * the lastReceived should carry in subsequent calls the objectID of
+     * the data instance noted by the server as being the lastSent.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfMeter getMeterByAMRType(java.lang.String aMRType, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
+     * The MR requests from the CB a list of names of meter reading
+     * groups.  The CB returns an array of strings including the names of
+     * the supported meterGroups.  The MR can then request the members of
+     * a specific group using the GetMeterGroupMembers method. (Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfString getMeterGroupNames() throws java.rmi.RemoteException;
+
+    /**
+     * The MR requests from the CB the members of a specific meter
+     * reading group, identified by the meterGroupName parameter.  This method
+     * is used, along with the GetMeterGroupNames method to enable the MR
+     * to get information about which meters are included in a specific meter
+     * reading group.  The CB returns an array of meterIDs in response to
+     * this method call. (Optional)
+     */
+    public com.cannontech.multispeak.service.ArrayOfString getMeterGroupMembers(java.lang.String meterGroupName) throws java.rmi.RemoteException;
 
     /**
      * Allow MR to Modify CB data for a specific customer object.
@@ -285,4 +309,17 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * in an array of errorObjects.(Optional)
      */
     public com.cannontech.multispeak.service.ArrayOfErrorObject historyLogChangedNotification(com.cannontech.multispeak.service.ArrayOfHistoryLog changedHistoryLogs) throws java.rmi.RemoteException;
+
+    /**
+     * MR publishes new meter readings to the CB by sending a formattedBlock
+     * object.  CB returns information about failed transactions in an array
+     * of errorObjects.(Recommended)
+     */
+    public com.cannontech.multispeak.service.ArrayOfErrorObject formattedBlockNotification(com.cannontech.multispeak.service.FormattedBlock changedMeterReads) throws java.rmi.RemoteException;
+
+    /**
+     * MR notifies CB that meter(s) have been installed. CB returns
+     * information about failed transactions using an array of errorObjects.(Recommended)
+     */
+    public com.cannontech.multispeak.service.ArrayOfErrorObject meterInstalledNotification(com.cannontech.multispeak.service.ArrayOfMeter addedMeters) throws java.rmi.RemoteException;
 }

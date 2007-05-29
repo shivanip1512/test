@@ -22,7 +22,7 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for CB_MRSoap
-    private java.lang.String CB_MRSoap_address = "http://www.multispeak.org/interface/30j/2A_CB_MR.asmx";
+    private java.lang.String CB_MRSoap_address = "http://www.multispeak.org/interface/30n/2A_CB_MR.asmx";
 
     public java.lang.String getCB_MRSoapAddress() {
         return CB_MRSoap_address;
@@ -65,16 +65,68 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
         CB_MRSoap_address = address;
     }
 
+
+    // Use to get a proxy class for CB_MRSoap12
+    private java.lang.String CB_MRSoap12_address = "http://www.multispeak.org/interface/30n/2A_CB_MR.asmx";
+
+    public java.lang.String getCB_MRSoap12Address() {
+        return CB_MRSoap12_address;
+    }
+
+    // The WSDD service name defaults to the port name.
+    private java.lang.String CB_MRSoap12WSDDServiceName = "CB_MRSoap12";
+
+    public java.lang.String getCB_MRSoap12WSDDServiceName() {
+        return CB_MRSoap12WSDDServiceName;
+    }
+
+    public void setCB_MRSoap12WSDDServiceName(java.lang.String name) {
+        CB_MRSoap12WSDDServiceName = name;
+    }
+
+    public com.cannontech.multispeak.service.CB_MRSoap_PortType getCB_MRSoap12() throws javax.xml.rpc.ServiceException {
+       java.net.URL endpoint;
+        try {
+            endpoint = new java.net.URL(CB_MRSoap12_address);
+        }
+        catch (java.net.MalformedURLException e) {
+            throw new javax.xml.rpc.ServiceException(e);
+        }
+        return getCB_MRSoap12(endpoint);
+    }
+
+    public com.cannontech.multispeak.service.CB_MRSoap_PortType getCB_MRSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+        try {
+            com.cannontech.multispeak.service.CB_MRSoap12Stub _stub = new com.cannontech.multispeak.service.CB_MRSoap12Stub(portAddress, this);
+            _stub.setPortName(getCB_MRSoap12WSDDServiceName());
+            return _stub;
+        }
+        catch (org.apache.axis.AxisFault e) {
+            return null;
+        }
+    }
+
+    public void setCB_MRSoap12EndpointAddress(java.lang.String address) {
+        CB_MRSoap12_address = address;
+    }
+
     /**
      * For the given interface, get the stub implementation.
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
+     * This service has multiple ports for a given interface;
+     * the proxy implementation returned may be indeterminate.
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (com.cannontech.multispeak.service.CB_MRSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 com.cannontech.multispeak.service.CB_MRSoap_BindingStub _stub = new com.cannontech.multispeak.service.CB_MRSoap_BindingStub(new java.net.URL(CB_MRSoap_address), this);
                 _stub.setPortName(getCB_MRSoapWSDDServiceName());
+                return _stub;
+            }
+            if (com.cannontech.multispeak.service.CB_MRSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
+                com.cannontech.multispeak.service.CB_MRSoap12Stub _stub = new com.cannontech.multispeak.service.CB_MRSoap12Stub(new java.net.URL(CB_MRSoap12_address), this);
+                _stub.setPortName(getCB_MRSoap12WSDDServiceName());
                 return _stub;
             }
         }
@@ -97,6 +149,9 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
         if ("CB_MRSoap".equals(inputPortName)) {
             return getCB_MRSoap();
         }
+        else if ("CB_MRSoap12".equals(inputPortName)) {
+            return getCB_MRSoap12();
+        }
         else  {
             java.rmi.Remote _stub = getPort(serviceEndpointInterface);
             ((org.apache.axis.client.Stub) _stub).setPortName(portName);
@@ -114,6 +169,7 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
         if (ports == null) {
             ports = new java.util.HashSet();
             ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CB_MRSoap"));
+            ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CB_MRSoap12"));
         }
         return ports.iterator();
     }
@@ -124,6 +180,9 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
     public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
         if ("CB_MRSoap".equals(portName)) {
             setCB_MRSoapEndpointAddress(address);
+        }
+        if ("CB_MRSoap12".equals(portName)) {
+            setCB_MRSoap12EndpointAddress(address);
         }
         else { // Unknown Port Name
             throw new javax.xml.rpc.ServiceException(" Cannot set Endpoint Address for Unknown Port" + portName);

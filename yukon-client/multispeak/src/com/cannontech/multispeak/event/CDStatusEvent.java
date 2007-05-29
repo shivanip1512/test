@@ -8,7 +8,6 @@ package com.cannontech.multispeak.event;
 
 
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.service.LoadActionCode;
 
 /**
  * @author stacey
@@ -34,4 +33,9 @@ public class CDStatusEvent extends CDEvent{
 	public CDStatusEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
 		this(mspVendor_, pilMessageID_, 1);
 	}
+
+    public void eventNotification() {
+        //Do nothing, no notification is sent out.
+        //Need to override the super eventNotification though.
+    }
 }

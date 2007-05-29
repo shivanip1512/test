@@ -20,6 +20,7 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
     private java.lang.String sessionID;  // attribute
     private java.lang.String previousSessionID;  // attribute
     private java.math.BigInteger objectsRemaining;  // attribute
+    private java.lang.String lastSent;  // attribute
 
     public MultiSpeakMsgHeader() {
     }
@@ -36,7 +37,8 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
            java.lang.String datum,
            java.lang.String sessionID,
            java.lang.String previousSessionID,
-           java.math.BigInteger objectsRemaining) {
+           java.math.BigInteger objectsRemaining,
+           java.lang.String lastSent) {
            this.version = version;
            this.userID = userID;
            this.pwd = pwd;
@@ -49,6 +51,7 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
            this.sessionID = sessionID;
            this.previousSessionID = previousSessionID;
            this.objectsRemaining = objectsRemaining;
+           this.lastSent = lastSent;
     }
 
 
@@ -291,6 +294,26 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
         this.objectsRemaining = objectsRemaining;
     }
 
+
+    /**
+     * Gets the lastSent value for this MultiSpeakMsgHeader.
+     * 
+     * @return lastSent
+     */
+    public java.lang.String getLastSent() {
+        return lastSent;
+    }
+
+
+    /**
+     * Sets the lastSent value for this MultiSpeakMsgHeader.
+     * 
+     * @param lastSent
+     */
+    public void setLastSent(java.lang.String lastSent) {
+        this.lastSent = lastSent;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MultiSpeakMsgHeader)) return false;
@@ -338,7 +361,10 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
               this.previousSessionID.equals(other.getPreviousSessionID()))) &&
             ((this.objectsRemaining==null && other.getObjectsRemaining()==null) || 
              (this.objectsRemaining!=null &&
-              this.objectsRemaining.equals(other.getObjectsRemaining())));
+              this.objectsRemaining.equals(other.getObjectsRemaining()))) &&
+            ((this.lastSent==null && other.getLastSent()==null) || 
+             (this.lastSent!=null &&
+              this.lastSent.equals(other.getLastSent())));
         __equalsCalc = null;
         return _equals;
     }
@@ -385,6 +411,9 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
         }
         if (getObjectsRemaining() != null) {
             _hashCode += getObjectsRemaining().hashCode();
+        }
+        if (getLastSent() != null) {
+            _hashCode += getLastSent().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -455,6 +484,11 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
         attrField.setFieldName("objectsRemaining");
         attrField.setXmlName(new javax.xml.namespace.QName("", "ObjectsRemaining"));
         attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        typeDesc.addFieldDesc(attrField);
+        attrField = new org.apache.axis.description.AttributeDesc();
+        attrField.setFieldName("lastSent");
+        attrField.setXmlName(new javax.xml.namespace.QName("", "LastSent"));
+        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(attrField);
     }
 

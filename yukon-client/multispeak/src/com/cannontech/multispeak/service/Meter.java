@@ -14,6 +14,8 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
     private java.lang.String manufacturer;
     private com.cannontech.multispeak.service.ArrayOfString1 sealNumberList;
     private java.lang.String AMRType;
+    private java.lang.String AMRDeviceType;
+    private java.lang.String AMRVendor;
     private com.cannontech.multispeak.service.Nameplate nameplate;
     private com.cannontech.multispeak.service.UtilityInfo utilityInfo;
 
@@ -27,6 +29,8 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
            java.lang.String manufacturer,
            com.cannontech.multispeak.service.ArrayOfString1 sealNumberList,
            java.lang.String AMRType,
+           java.lang.String AMRDeviceType,
+           java.lang.String AMRVendor,
            com.cannontech.multispeak.service.Nameplate nameplate,
            com.cannontech.multispeak.service.UtilityInfo utilityInfo) {
            this.meterNo = meterNo;
@@ -35,6 +39,8 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
            this.manufacturer = manufacturer;
            this.sealNumberList = sealNumberList;
            this.AMRType = AMRType;
+           this.AMRDeviceType = AMRDeviceType;
+           this.AMRVendor = AMRVendor;
            this.nameplate = nameplate;
            this.utilityInfo = utilityInfo;
     }
@@ -161,6 +167,46 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
 
 
     /**
+     * Gets the AMRDeviceType value for this Meter.
+     * 
+     * @return AMRDeviceType
+     */
+    public java.lang.String getAMRDeviceType() {
+        return AMRDeviceType;
+    }
+
+
+    /**
+     * Sets the AMRDeviceType value for this Meter.
+     * 
+     * @param AMRDeviceType
+     */
+    public void setAMRDeviceType(java.lang.String AMRDeviceType) {
+        this.AMRDeviceType = AMRDeviceType;
+    }
+
+
+    /**
+     * Gets the AMRVendor value for this Meter.
+     * 
+     * @return AMRVendor
+     */
+    public java.lang.String getAMRVendor() {
+        return AMRVendor;
+    }
+
+
+    /**
+     * Sets the AMRVendor value for this Meter.
+     * 
+     * @param AMRVendor
+     */
+    public void setAMRVendor(java.lang.String AMRVendor) {
+        this.AMRVendor = AMRVendor;
+    }
+
+
+    /**
      * Gets the nameplate value for this Meter.
      * 
      * @return nameplate
@@ -229,6 +275,12 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
             ((this.AMRType==null && other.getAMRType()==null) || 
              (this.AMRType!=null &&
               this.AMRType.equals(other.getAMRType()))) &&
+            ((this.AMRDeviceType==null && other.getAMRDeviceType()==null) || 
+             (this.AMRDeviceType!=null &&
+              this.AMRDeviceType.equals(other.getAMRDeviceType()))) &&
+            ((this.AMRVendor==null && other.getAMRVendor()==null) || 
+             (this.AMRVendor!=null &&
+              this.AMRVendor.equals(other.getAMRVendor()))) &&
             ((this.nameplate==null && other.getNameplate()==null) || 
              (this.nameplate!=null &&
               this.nameplate.equals(other.getNameplate()))) &&
@@ -263,6 +315,12 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
         }
         if (getAMRType() != null) {
             _hashCode += getAMRType().hashCode();
+        }
+        if (getAMRDeviceType() != null) {
+            _hashCode += getAMRDeviceType().hashCode();
+        }
+        if (getAMRVendor() != null) {
+            _hashCode += getAMRVendor().hashCode();
         }
         if (getNameplate() != null) {
             _hashCode += getNameplate().hashCode();
@@ -318,6 +376,20 @@ public class Meter  extends com.cannontech.multispeak.service.MspDevice  impleme
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("AMRType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AMRType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("AMRDeviceType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AMRDeviceType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("AMRVendor");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AMRVendor"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

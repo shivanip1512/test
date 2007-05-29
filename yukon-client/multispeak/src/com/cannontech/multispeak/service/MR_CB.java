@@ -13,4 +13,9 @@ public interface MR_CB extends javax.xml.rpc.Service {
     public com.cannontech.multispeak.service.MR_CBSoap_PortType getMR_CBSoap() throws javax.xml.rpc.ServiceException;
 
     public com.cannontech.multispeak.service.MR_CBSoap_PortType getMR_CBSoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+    public java.lang.String getMR_CBSoap12Address();
+
+    public com.cannontech.multispeak.service.MR_CBSoap_PortType getMR_CBSoap12() throws javax.xml.rpc.ServiceException;
+
+    public com.cannontech.multispeak.service.MR_CBSoap_PortType getMR_CBSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

@@ -29,6 +29,8 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
     private com.cannontech.multispeak.service.UgPrimaryLine[] ugPrimaryLine;
     private com.cannontech.multispeak.service.UgSecondaryLine[] ugSecondaryLine;
     private com.cannontech.multispeak.service.SecondaryJunctionBox[] secondaryJunctionBox;
+    private com.cannontech.multispeak.service.Parcel[] parcel;
+    private com.cannontech.multispeak.service.Premise[] premise;
 
     public SpatialFeatureGroup() {
     }
@@ -54,7 +56,9 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
            com.cannontech.multispeak.service.OhSecondaryLine[] ohSecondaryLine,
            com.cannontech.multispeak.service.UgPrimaryLine[] ugPrimaryLine,
            com.cannontech.multispeak.service.UgSecondaryLine[] ugSecondaryLine,
-           com.cannontech.multispeak.service.SecondaryJunctionBox[] secondaryJunctionBox) {
+           com.cannontech.multispeak.service.SecondaryJunctionBox[] secondaryJunctionBox,
+           com.cannontech.multispeak.service.Parcel[] parcel,
+           com.cannontech.multispeak.service.Premise[] premise) {
            this.capacitorBank = capacitorBank;
            this.loadManagementDevice = loadManagementDevice;
            this.measurementDevice = measurementDevice;
@@ -76,6 +80,8 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
            this.ugPrimaryLine = ugPrimaryLine;
            this.ugSecondaryLine = ugSecondaryLine;
            this.secondaryJunctionBox = secondaryJunctionBox;
+           this.parcel = parcel;
+           this.premise = premise;
     }
 
 
@@ -666,6 +672,62 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
         this.secondaryJunctionBox[i] = _value;
     }
 
+
+    /**
+     * Gets the parcel value for this SpatialFeatureGroup.
+     * 
+     * @return parcel
+     */
+    public com.cannontech.multispeak.service.Parcel[] getParcel() {
+        return parcel;
+    }
+
+
+    /**
+     * Sets the parcel value for this SpatialFeatureGroup.
+     * 
+     * @param parcel
+     */
+    public void setParcel(com.cannontech.multispeak.service.Parcel[] parcel) {
+        this.parcel = parcel;
+    }
+
+    public com.cannontech.multispeak.service.Parcel getParcel(int i) {
+        return this.parcel[i];
+    }
+
+    public void setParcel(int i, com.cannontech.multispeak.service.Parcel _value) {
+        this.parcel[i] = _value;
+    }
+
+
+    /**
+     * Gets the premise value for this SpatialFeatureGroup.
+     * 
+     * @return premise
+     */
+    public com.cannontech.multispeak.service.Premise[] getPremise() {
+        return premise;
+    }
+
+
+    /**
+     * Sets the premise value for this SpatialFeatureGroup.
+     * 
+     * @param premise
+     */
+    public void setPremise(com.cannontech.multispeak.service.Premise[] premise) {
+        this.premise = premise;
+    }
+
+    public com.cannontech.multispeak.service.Premise getPremise(int i) {
+        return this.premise[i];
+    }
+
+    public void setPremise(int i, com.cannontech.multispeak.service.Premise _value) {
+        this.premise[i] = _value;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SpatialFeatureGroup)) return false;
@@ -740,7 +802,13 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
               java.util.Arrays.equals(this.ugSecondaryLine, other.getUgSecondaryLine()))) &&
             ((this.secondaryJunctionBox==null && other.getSecondaryJunctionBox()==null) || 
              (this.secondaryJunctionBox!=null &&
-              java.util.Arrays.equals(this.secondaryJunctionBox, other.getSecondaryJunctionBox())));
+              java.util.Arrays.equals(this.secondaryJunctionBox, other.getSecondaryJunctionBox()))) &&
+            ((this.parcel==null && other.getParcel()==null) || 
+             (this.parcel!=null &&
+              java.util.Arrays.equals(this.parcel, other.getParcel()))) &&
+            ((this.premise==null && other.getPremise()==null) || 
+             (this.premise!=null &&
+              java.util.Arrays.equals(this.premise, other.getPremise())));
         __equalsCalc = null;
         return _equals;
     }
@@ -983,6 +1051,28 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
                 }
             }
         }
+        if (getParcel() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getParcel());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getParcel(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getPremise() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getPremise());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getPremise(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -1157,6 +1247,22 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.service.MspP
         elemField.setFieldName("secondaryJunctionBox");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "secondaryJunctionBox"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "secondaryJunctionBox"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("parcel");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "parcel"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "parcel"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("premise");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premise"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premise"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setMaxOccursUnbounded(true);

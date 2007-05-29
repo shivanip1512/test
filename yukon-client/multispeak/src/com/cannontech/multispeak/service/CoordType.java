@@ -11,6 +11,7 @@ public class CoordType  implements java.io.Serializable {
     private java.math.BigDecimal x;
     private java.math.BigDecimal y;
     private java.math.BigDecimal z;
+    private java.lang.Float bulge;
 
     public CoordType() {
     }
@@ -18,10 +19,12 @@ public class CoordType  implements java.io.Serializable {
     public CoordType(
            java.math.BigDecimal x,
            java.math.BigDecimal y,
-           java.math.BigDecimal z) {
+           java.math.BigDecimal z,
+           java.lang.Float bulge) {
            this.x = x;
            this.y = y;
            this.z = z;
+           this.bulge = bulge;
     }
 
 
@@ -84,6 +87,26 @@ public class CoordType  implements java.io.Serializable {
         this.z = z;
     }
 
+
+    /**
+     * Gets the bulge value for this CoordType.
+     * 
+     * @return bulge
+     */
+    public java.lang.Float getBulge() {
+        return bulge;
+    }
+
+
+    /**
+     * Sets the bulge value for this CoordType.
+     * 
+     * @param bulge
+     */
+    public void setBulge(java.lang.Float bulge) {
+        this.bulge = bulge;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof CoordType)) return false;
@@ -104,7 +127,10 @@ public class CoordType  implements java.io.Serializable {
               this.y.equals(other.getY()))) &&
             ((this.z==null && other.getZ()==null) || 
              (this.z!=null &&
-              this.z.equals(other.getZ())));
+              this.z.equals(other.getZ()))) &&
+            ((this.bulge==null && other.getBulge()==null) || 
+             (this.bulge!=null &&
+              this.bulge.equals(other.getBulge())));
         __equalsCalc = null;
         return _equals;
     }
@@ -124,6 +150,9 @@ public class CoordType  implements java.io.Serializable {
         }
         if (getZ() != null) {
             _hashCode += getZ().hashCode();
+        }
+        if (getBulge() != null) {
+            _hashCode += getBulge().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -152,6 +181,13 @@ public class CoordType  implements java.io.Serializable {
         elemField.setFieldName("z");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "Z"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "decimal"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("bulge");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "Bulge"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
