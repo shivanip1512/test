@@ -23,3 +23,6 @@ update devicetypecommand set devicetype='MCT-430A' where devicetype = 'MCT-430EL
 update devicetypecommand set devicetype='MCT-430S4' where devicetype = 'MCT-430LG';
 update devicetypecommand set devicetype='MCT-430SN' where devicetype = 'MCT-430IN';
 /***************************************/
+
+/*Missing role property, originally added for Xcel.  Should have been in 3.3 scripts*/
+insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Addtl Order Number','Customizable label for the additional order number field.');
