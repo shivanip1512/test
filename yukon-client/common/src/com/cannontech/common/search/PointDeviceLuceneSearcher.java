@@ -47,7 +47,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
                     String deviceId = document.get("deviceid");
                     Query aQuery = new TermQuery(new Term("deviceid", deviceId));
                     aQuery = compileAndCombine(aQuery, criteria);
-                    return doSearch(query, sort, start, count);
+                    return doSearch(aQuery, sort, start, count);
                 }
             });
         } catch (IOException e) {

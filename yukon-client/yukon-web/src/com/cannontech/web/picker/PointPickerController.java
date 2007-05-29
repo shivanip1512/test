@@ -7,13 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.search.YukonObjectCriteria;
 import com.cannontech.common.search.PointDeviceSearcher;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPoint;
+import com.cannontech.common.search.YukonObjectCriteria;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointPickerController extends YukonObjectPickerController {
@@ -25,7 +25,7 @@ public class PointPickerController extends YukonObjectPickerController {
     
     public ModelAndView sameDevice(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView("json");
-        int currentPointId = RequestUtils.getIntParameter(request, "currentPointId", PointTypes.INVALID_POINT);
+        int currentPointId = ServletRequestUtils.getIntParameter(request, "currentPointId", PointTypes.INVALID_POINT);
         YukonObjectCriteria criteria = getCriteria(request);
         int start = getStartParameter(request);
         int count = getCountParameter(request);
@@ -36,21 +36,9 @@ public class PointPickerController extends YukonObjectPickerController {
         return mav;
     }
 
-    public ModelAndView showAll(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("json");
-        int start = getStartParameter(request);
-        int count = getCountParameter(request);
-        YukonObjectCriteria criteria = getCriteria(request);
-        SearchResult<UltraLightPoint> hits = pointDeviceSearcher.allPoints(criteria, start, count);
-        processHitList(mav, hits);
-        mav.addObject("showAll", true);
-        
-        return mav;
-    }
-    
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         ModelAndView mav = new ModelAndView("json");
-        String queryString = RequestUtils.getStringParameter(request, "ss", "");
+        String queryString = ServletRequestUtils.getStringParameter(request, "ss", "");
         int start = getStartParameter(request);
         int count = getCountParameter(request);
         YukonObjectCriteria criteria = getCriteria(request);
