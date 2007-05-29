@@ -440,7 +440,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                     unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
                 } catch (DataAccessException e) {
                     throw new NotFoundException("Unit of measure does not exist: "
-                            + unitOfMeasureName + ". Check the deviceDefinition.xml file ");
+                            + unitOfMeasureName + ". Check the deviceDefinition.xml file ", e);
                 }
                 unitOfMeasure = unitMeasure.getUomID();
             }
@@ -457,7 +457,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                 stateGroup = stateDao.getLiteStateGroup(stateGroupName);
             } catch (NotFoundException e) {
                 throw new NotFoundException("State group does not exist: " + stateGroupName
-                        + ". Check the deviceDefinition.xml file ");
+                        + ". Check the deviceDefinition.xml file ", e);
             }
             stateGroupId = stateGroup.getStateGroupID();
         }
