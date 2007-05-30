@@ -8,9 +8,11 @@
     CapControlForm capControlForm =
     (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
   String itemid = JSFParamUtil.getJSFReqParam("itemid");
+  String type = JSFParamUtil.getJSFReqParam("type");
   
-  if (itemid != null) {
-    capControlForm.initItem(Integer.parseInt(itemid), DBEditorTypes.EDITOR_CAPCONTROL);
+  
+  if (itemid != null && type!= null) {
+    capControlForm.initItem(Integer.parseInt(itemid), Integer.parseInt(type));
     capControlForm.setCBControllerEditor(null);
     capControlForm.getCBControllerEditor(); 
     }

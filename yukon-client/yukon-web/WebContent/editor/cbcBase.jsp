@@ -114,7 +114,11 @@ addLockButtonForButtonGroup("foot_buttons");
                         <jsp:include page="/WEB-INF/pages/cbc/cbcFeederSetup.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tabStrategy" label="Control Strategy" rendered="#{capControlForm.visibleTabs['CBCArea'] ||capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="tabStrategy" label="Control Strategy" 
+                    rendered="#{capControlForm.visibleTabs['CBCArea'] ||
+                    capControlForm.visibleTabs['CBCSubstation'] || 
+                    capControlForm.visibleTabs['CBCStrategy'] ||
+                    capControlForm.visibleTabs['CBCFeeder']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcStrategyEditor.jsp"/>
                     </x:panelTab>
                     

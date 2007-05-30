@@ -44,7 +44,8 @@
 </script>
 
 </f:verbatim>
-<f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] ||capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
+<f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] 
+||capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder'] || capControlForm.visibleTabs['CBCStrategy']}" >
 
     <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
 		<f:verbatim><br/></f:verbatim>

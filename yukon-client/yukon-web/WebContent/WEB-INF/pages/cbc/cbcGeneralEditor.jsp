@@ -57,6 +57,12 @@
 			<x:outputLabel for="disableSched" value="Disable" title="Do not allow this schedule to run in the future" />
 		</h:panelGroup>
 
+		<h:panelGroup id="cbcStrat" rendered="#{capControlForm.visibleTabs['CBCStrategy']}" >		
+			<x:outputLabel for="stratName" value="Name: " title="System wide label for this object" />
+			<x:inputText id="stratName" value="#{capControlForm.PAOBase.strategyName}" styleClass="char32Label"
+						required="true" maxlength="64" />
+			<f:verbatim><br/></f:verbatim>
+		</h:panelGroup>
 
 	    </x:div>
 		<f:verbatim><br/></f:verbatim>

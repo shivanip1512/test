@@ -7,8 +7,10 @@
 <%
   CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
   String itemid = JSFParamUtil.getJSFReqParam("itemid");
-  if (itemid != null)
-    capControlForm.initItem(Integer.parseInt(itemid), DBEditorTypes.EDITOR_CAPCONTROL);
+  String type = JSFParamUtil.getJSFReqParam("type");
+  
+  if (itemid != null && type != null)
+    capControlForm.initItem(Integer.parseInt(itemid), Integer.parseInt(type));
 %>
 
 <f:subview id="cbcCapBankInfo" rendered="#{capControlForm.visibleTabs['CBAddInfo']}" >

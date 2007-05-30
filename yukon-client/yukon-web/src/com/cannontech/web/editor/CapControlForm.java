@@ -40,6 +40,7 @@ import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.point.CBCPointFactory;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
@@ -81,6 +82,7 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
@@ -174,9 +176,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     private EditorDataModel currentStratModel = null;
 
-    
-    
-	/**
+
+
+
+
+    /**
 	 * default constructor
 	 */
 	public CapControlForm() {
@@ -282,6 +286,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         else if (getDbPersistent() instanceof CapControlArea)
             stratID = ((CapControlArea) getDbPersistent())
                     .getCapControlArea().getStrategyID().intValue();
+        else if (getDbPersistent() instanceof CapControlStrategy)
+        {
+            stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID();
+        }
 
 		return stratID;
 	}
@@ -611,7 +619,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			dbObj = new PAOSchedule();
 			((PAOSchedule) dbObj).setScheduleID(new Integer(id));
 			break;
-
+            
+        case DBEditorTypes.EDITOR_STRATEGY:
+            dbObj = new CapControlStrategy();
+            ((CapControlStrategy)dbObj).setStrategyID(new Integer(id));
+            break;
 		// case DBEditorTypes.EDITOR_POINT:
 		// dbObj = PointFactory.createPoint(
 		// PointFuncs.getLitePoint(id).getPointType() );
@@ -669,11 +681,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 					.intValue();
 			initPanels(DBEditorTypes.PAO_SCHEDULE);
 		}
+        else if (getDbPersistent() instanceof CapControlStrategy)
+        {
+            itemID = ((CapControlStrategy)getDbPersistent()).getStrategyID().intValue();
+            initPanels(DBEditorTypes.EDITOR_STRATEGY);
+        }
 		//restore the value of the dual bus from DB
 		resetDualBusEnabled();
-        editingCBCStrategy = false;
-		resetCurrentStratModel();
-        initEditorPanels();
+        if (!(getDbPersistent() instanceof CapControlStrategy))
+        {
+            editingCBCStrategy = false;
+		    resetCurrentStratModel();
+        }
+            initEditorPanels();
 	}
 
 
@@ -776,6 +796,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
 		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
+        getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
 
 		//here you go ... this is the new era. we decide to create an area
         //We can't call area an area because area already exists in our code.
@@ -846,6 +867,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			getVisibleTabs().put("GeneralSchedule", Boolean.TRUE);
 			getVisibleTabs().put("CBCSchedule", Boolean.TRUE);
 			break;
+        case DBEditorTypes.EDITOR_STRATEGY:
+            setEditorTitle("Strategy");
+            getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
+            getVisibleTabs().put("CBCStrategy", Boolean.TRUE);
+            break;
 
 		// -------- todo ----------
 		case PointTypes.ANALOG_POINT:
@@ -919,14 +945,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         Connection connection = null;
 		try {
 			// update the CBCStrategy object if we are editing it
-			if (isEditingCBCStrategy()) {
+			if (isEditingCBCStrategy() && (! (getDbPersistent() instanceof CapControlStrategy))) {
                 CapControlStrategy currentStrategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
                 updateDBObject(currentStrategy, facesMsg);
                 
 				// clear out the memory of any list of Strategies
 				resetCurrentStratModel();
                 resetStrategies();
-				setEditingCBCStrategy(false);
+                setEditingCBCStrategy(false);
 			}
 
 			// update the CBC object if we are editing it
@@ -989,7 +1015,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 connection = CBCDBUtil.getConnection();
                 getDbPersistent().setDbConnection(connection);
             }
-            updateDBObject(getDbPersistent(), facesMsg);
+            DBPersistent dbPers = getDbPersistent();
+            if (getDbPersistent() instanceof CapControlStrategy)
+            {
+                dbPers = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
+                setEditingCBCStrategy(false);
+            }
+            updateDBObject(dbPers, facesMsg);
+
             
 		} catch (TransactionException te) {
             String errorString = te.getMessage();
@@ -1003,6 +1036,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         
 
 	}
+
+
+
 
 
 
@@ -1412,7 +1448,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			setEditingCBCStrategy(false);
 
 			int stratID = CtiUtilities.NONE_ZERO_ID;
-			if (getDbPersistent() instanceof CapControlFeeder) {
+            if (getDbPersistent() instanceof CapControlStrategy)
+            {
+                stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID().intValue();
+            }
+            else if (getDbPersistent() instanceof CapControlFeeder) {
 				stratID = ((CapControlFeeder) getDbPersistent())
 						.getCapControlFeeder().getStrategyID().intValue();
 				((CapControlFeeder) getDbPersistent()).getCapControlFeeder()
@@ -2996,4 +3036,40 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public void setDataModel(EditorDataModel dataModel) {
         this.dataModel = dataModel;
     }
+    
+    public List<CapControlStrategy> getAllCBCStrats() {
+        CapControlStrategy[] allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
+        List<CapControlStrategy> allStratList = new ArrayList<CapControlStrategy>();
+        for (int i = 0; i < allCBCStrategies.length; i++) {
+            CapControlStrategy strategy = allCBCStrategies[i];
+            if (strategy.getStrategyID().intValue() > 0)
+            {
+                allStratList.add(strategy);
+            }
+        }
+        return allStratList;
+    }
+    
+    public void editCBCStrat( ActionEvent ev ) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map paramMap = context.getExternalContext().getRequestParameterMap();
+        int elemID = Integer.parseInt( (String)paramMap.get("stratID") );
+        try {
+            String location = "/editor/cbcBase.jsf?type=5&itemid="+elemID;
+            context.getExternalContext().redirect(location);
+        } catch (IOException e) {
+            CTILogger.error(e);
+        }            
+        FacesContext.getCurrentInstance().responseComplete();            
+    }
+    public void deleteStrat( ActionEvent ev ) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map paramMap = context.getExternalContext().getRequestParameterMap();
+        int elemID = Integer.parseInt( (String)paramMap.get("stratID") );
+        initItem(elemID, DBEditorTypes.EDITOR_STRATEGY);
+        deleteStrategy();
+    }
+    
+    
+    
 }
