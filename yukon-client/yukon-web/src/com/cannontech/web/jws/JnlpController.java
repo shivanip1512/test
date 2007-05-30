@@ -1,17 +1,10 @@
 package com.cannontech.web.jws;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -93,7 +86,12 @@ public class JnlpController extends AbstractController {
         String yukonBase = CtiUtilities.getYukonBase();
         File clientDir = new File(yukonBase, "client/bin");
         
-        Collection<String> allJars = CtiUtilities.getAllJars(clientDir, appMainClassJar);
+        Collection<String> allJars;
+        try {
+            allJars = CtiUtilities.getAllJars(clientDir, appMainClassJar);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to list JARs. Check that " + appMainClassJar + " exists in " + clientDir + ".", e);
+        }
         
         for (String jarFile : allJars) {
             if (excludedJars.contains(jarFile)) {
