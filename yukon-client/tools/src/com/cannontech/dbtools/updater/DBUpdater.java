@@ -111,7 +111,7 @@ public class DBUpdater extends MessageFrameAdaptor
 
 	public String getDefaultValue()
 	{
-		return CtiUtilities.USER_DIR;
+		return CtiUtilities.CURRENT_DIR;
 	}
 
 	public static void initApp( String[] args )

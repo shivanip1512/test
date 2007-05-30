@@ -62,7 +62,8 @@ public final class CtiUtilities
 	
 	public static final String COPYRIGHT = "Copyright (C)1999-2007 Cannon Technologies";
 	
-	public static final String USER_DIR = System.getProperty("user.dir") + System.getProperty("file.separator");
+	public static final String USER_DIR = System.getProperty("user.home") + System.getProperty("file.separator");
+	public static final String CURRENT_DIR = System.getProperty("user.dir") + System.getProperty("file.separator");
 	
 	public static final String STRING_NONE = "(none)";
 	public static final String STRING_DEFAULT = "Default";
@@ -533,17 +534,12 @@ public final static String getCanonicalFile(String directory)
  */
 public final static String getCommandsDirPath()
 {
-     return USER_DIR + "../commands/";
+     return CURRENT_DIR + "../commands/";
 }
 
 
-/**
- * This method will return the java.awt.Frame associated with a component
- * If no parent frame is found null will be returned
- */
 public final static String getConfigDirPath()
 {
-	//return USER_DIR + "../config/";
 	return USER_DIR + "/";
 }
 
@@ -593,7 +589,7 @@ public static final javax.swing.JDesktopPane getDesktopPane(java.awt.Component c
  */
 public final static String getExportDirPath()
 {
-	return USER_DIR + "../export/";
+	return getYukonBase() + "/Client/export/";
 }
 
 

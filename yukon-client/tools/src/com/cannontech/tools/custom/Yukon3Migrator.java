@@ -310,7 +310,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 
 	public String getDefaultValue()
 	{
-		return CtiUtilities.USER_DIR;
+		return CtiUtilities.CURRENT_DIR;
 	}
 
 	public void run()

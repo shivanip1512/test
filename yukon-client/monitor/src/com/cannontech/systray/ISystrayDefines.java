@@ -21,10 +21,10 @@ public interface ISystrayDefines
 
 
 	//command line execs for apps
-	public static final String EXEC_TDC = "cmd /C java -jar " + CtiUtilities.USER_DIR + "tdc.jar";
-	public static final String EXEC_DBEDITOR = "cmd /C java -jar " + CtiUtilities.USER_DIR + "dbeditor.jar";
-	public static final String EXEC_COMMANDER = "cmd /C java -jar " + CtiUtilities.USER_DIR + "yc.jar";
-	public static final String EXEC_TRENDING = "cmd /C java -jar " + CtiUtilities.USER_DIR + "graph.jar";
+	public static final String EXEC_TDC = "cmd /C java -jar " + CtiUtilities.CURRENT_DIR + "tdc.jar";
+	public static final String EXEC_DBEDITOR = "cmd /C java -jar " + CtiUtilities.CURRENT_DIR + "dbeditor.jar";
+	public static final String EXEC_COMMANDER = "cmd /C java -jar " + CtiUtilities.CURRENT_DIR + "yc.jar";
+	public static final String EXEC_TRENDING = "cmd /C java -jar " + CtiUtilities.CURRENT_DIR + "graph.jar";
 
 /*
 	//used for testing

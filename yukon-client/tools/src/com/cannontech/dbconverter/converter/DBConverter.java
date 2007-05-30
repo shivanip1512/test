@@ -175,7 +175,7 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 
 public String getDefaultValue()
 {
-	return CtiUtilities.USER_DIR;
+	return CtiUtilities.CURRENT_DIR;
 }
 
 /**
