@@ -147,17 +147,9 @@ public class ScheduledMeterReadModel extends ReportModelBase
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.SCHEDULE,
 				ReportFilter.METER,
-				ReportFilter.DEVICE,
-				ReportFilter.COLLECTIONGROUP, 
-				ReportFilter.ALTERNATEGROUP, 
-				ReportFilter.BILLINGGROUP
-				} 
+				ReportFilter.DEVICE
+			} 
 		);
-	}
-	@Override
-	public String getDateRangeString() {
-		//Use current date 
-		return getDateFormat().format(new java.util.Date());
 	}
 	
 	/**
@@ -229,13 +221,13 @@ public class ScheduledMeterReadModel extends ReportModelBase
 											" AND DMG.DEVICEID = DCS.DEVICEID " + 
 											" AND PAO.PAOBJECTID = DR.DEVICEID " +
 											" AND DR.ROUTEID = ROUTE.PAOBJECTID " +
-											" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID "); 
-//											" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+											" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID " + 
+											" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 		
-//		Use paoIDs in query if they exist	TODO - Change schedule to not piggyback off of the paoIDs field		
+//		Use paoIDs in query if they exist
 		if( getFilterModelType().equals(ReportFilter.SCHEDULE)) {
 			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-				sql.append(" AND DRJL.DeviceReadJobLogID IN (" + getPaoIDs()[0]);
+				sql.append(" AND DRJL.ScheduleID IN (" + getPaoIDs()[0]);
 				for (int i = 1; i < getPaoIDs().length; i++)
 					sql.append(", " + getPaoIDs()[i]);
 				sql.append(") ");
@@ -303,9 +295,9 @@ public class ScheduledMeterReadModel extends ReportModelBase
 			}
 			else {
 				pstmt = conn.prepareStatement(sql.toString());
-//				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-//				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-//				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
+				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
 				rset = pstmt.executeQuery();
 				
 				while( rset.next()) {
@@ -449,7 +441,7 @@ public class ScheduledMeterReadModel extends ReportModelBase
 				new ColumnProperties(0, 1, 100, null),
 				new ColumnProperties(390, 1, 90, "MM/dd/yy HH:mm:ss"),
 				new ColumnProperties(540, 1, 90, "MM/dd/yy HH:mm:ss"),
-				new ColumnProperties(50, 1, 350, null),
+				new ColumnProperties(20, 1, 350, null),
 				new ColumnProperties(390, 1, 90, null),	//not printed!!!
 				new ColumnProperties(390, 1, 90, "MM/dd/yy HH:mm:ss"),
 				new ColumnProperties(540, 1, 90, "MM/dd/yy HH:mm:ss"),
@@ -661,16 +653,6 @@ public class ScheduledMeterReadModel extends ReportModelBase
 			else
 				setGroupBy(GroupBy.GROUP_BY_SCHEDULE_REQUESTS);	//default
 		}
-	}
-	
-	@Override
-	public boolean useStartDate() {
-		return false;
-	}
-	
-	@Override
-	public boolean useStopDate() {
-		return false;
 	}
 	
 	public HashMap getTotals()

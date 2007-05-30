@@ -44,7 +44,7 @@ import com.cannontech.util.ServletUtil;
 public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
 {
 	public enum ReportFilter{ NONE(""),
-			METER("Meter"),
+			METER("Meter Number"),
 			DEVICE("Device"),
 			COLLECTIONGROUP("Collection Group"),
 			ALTERNATEGROUP("Alternate Group"),
@@ -58,7 +58,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			CAPCONTROLSUBBUS("Substation Bus"),
 			CAPCONTROLFEEDER("Cap Feeder"),
 			CAPBANK("Cap Bank"),
-			SCHEDULE("Schedule"),
+            SCHEDULE("Schedule (Script)"),
             AREA("Area");
 
 		private String filterTitle;

@@ -194,7 +194,7 @@ public class ReportBean
         if(reportController == null) {
             return false;
         }else {
-            return !reportController.getFilterObjectsMap().isEmpty();
+            return !getFilterObjectsMap().isEmpty();
         }
     }
     

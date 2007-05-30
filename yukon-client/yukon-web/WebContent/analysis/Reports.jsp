@@ -1,5 +1,6 @@
-
-<jsp:directive.page import="com.cannontech.amr.deviceread.model.DeviceReadJobLog"/><html>
+<html>
+<%@ page import="com.cannontech.amr.deviceread.model.DeviceReadJobLog" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="com.cannontech.analysis.*" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
@@ -297,7 +298,10 @@ function enableDates(value)
             filterModelValues[i].selectedIndex = -1;
           }
         
-        <%for (ReportFilter filter : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+        <%
+        //Create a local instance of the map.
+        Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
+        for (ReportFilter filter : filterObjectsMap.keySet()) {%>
 				document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
         <% }  %>
         }
@@ -309,7 +313,7 @@ function enableDates(value)
             	<td class='main' style='padding-left:5; padding-top:5'>
 					<div id='DivFilterModelType' style='display:true'>
 						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
-							<%for (ReportFilter filter : REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+							<%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
                     			<option value='<%=filter.ordinal()%>'>  <%=filter.getFilterTitle() %></option>
         					<% } %>
                 		</select>
@@ -320,7 +324,7 @@ function enableDates(value)
           	<tr>
             	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
         			<% int isFirst = 0; %>
-        			<%for(ReportFilter filter: REPORT_BEAN.getFilterObjectsMap().keySet()) {%>
+        			<%for(ReportFilter filter: filterObjectsMap.keySet()) {%>
             			<%if( filter.equals(ReportFilter.METER ) ){%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>
@@ -332,7 +336,7 @@ function enableDates(value)
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<select name='filterValues' size='10' multiple style='width:350px;'>
-                			<%List objects = REPORT_BEAN.getFilterObjectsMap().get(filter);%>
+                			<%List objects = filterObjectsMap.get(filter);%>
                 			<%if (objects != null) {
                     			for (Object object : objects) {
                         			if( object instanceof String) {%>
