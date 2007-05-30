@@ -1,5 +1,7 @@
 package com.cannontech.yukon.cbc;
 
+import java.util.Arrays;
+
 import com.cannontech.database.data.point.PointUnits;
 
 /**
@@ -630,15 +632,14 @@ public class SubBus extends StreamableCapObject implements
         return switchOverStatus;
     }
 
-    public Integer getCurrentPtQuality(int pointType) {
-        if (pointType == PointUnits.UOMID_KVAR)
-            return getCurrentVarLoadPointID();
-        else if (pointType == PointUnits.UOMID_KW)
-            return getCurrentwattpointquality();
-        else if (pointType == PointUnits.UOMID_KVOLTS)
-            return getCurrentvoltpointquality();
-        return null;
-    }
+    public Integer getCurrentPtQuality(int pointType) {        
+        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(pointType))
+        return getCurrentVarPtQuality();
+    if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(pointType))
+        return getCurrentwattpointquality();
+    if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(pointType))
+        return getCurrentvoltpointquality();
+    return null;}
 
     public Integer getCurrentvoltpointquality() {
         return currentvoltpointquality;

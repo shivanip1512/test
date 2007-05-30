@@ -44,7 +44,7 @@ public class PointQualCheckUpdatTextList extends UpdatableTextList implements
     }
 
     public boolean conditionToAddOnItTrue() {
-        return CBCUtils.checkSignalQuality(getPointCheckable(), getType());
+        return CBCUtils.signalQualityNormal(getPointCheckable(), getType());
     }
 
 

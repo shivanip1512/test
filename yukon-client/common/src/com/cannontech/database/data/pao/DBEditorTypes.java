@@ -25,6 +25,7 @@ public interface DBEditorTypes {
 	public final static int EDITOR_CAPCONTROL = 2;
 	public final static int EDITOR_SCHEDULE = 3;
 	public final static int LIST_SCHEDULE = 4;
+    public final static int EDITOR_STRATEGY = 5;
 
 
 	//delete types

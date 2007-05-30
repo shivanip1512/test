@@ -8,6 +8,7 @@ import java.util.Map;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 
 public interface ICapControlModel {
 
@@ -170,5 +171,8 @@ public interface ICapControlModel {
     public abstract EditorDataModel getDataModel();
 
     public abstract void setDataModel(EditorDataModel dataModel);
+    
+    public List<CapControlStrategy> getAllCBCStrats();
+     
 
 }

@@ -440,18 +440,20 @@ public final class CBCUtils {
        return DaoFactory.getPaoDao().getYukonPAOName(areaID);
     }
 
-    public static boolean checkSignalQuality(PointQualityCheckable checkable, Integer type) {
-        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(type))
-            return (isPointQualNormal(checkable, type)) ? true : false;
+    public static boolean signalQualityNormal(PointQualityCheckable checkable, Integer type) {
+        boolean pointQualNormal = isPointQualNormal(checkable, type);
+
+        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(type)) 
+            return (pointQualNormal);
         if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(type))
-            return (isPointQualNormal(checkable, type)) ? true : false;
+            return pointQualNormal;
         if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(type))
-            return (isPointQualNormal(checkable, type)) ? true : false;
+            return pointQualNormal;
         return false;
     }
 
     public static boolean isPointQualNormal(PointQualityCheckable checkable, Integer type) {
-        return checkable.getCurrentPtQuality(type.intValue()) > PointQualityCheckable.PointQuality.NormalQuality.value();
+        return checkable.getCurrentPtQuality(type.intValue()) == PointQualityCheckable.PointQuality.NormalQuality.value();
     }
 
     public static boolean isController(int id) {

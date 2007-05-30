@@ -125,6 +125,9 @@
           <option name="Schedules">
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
+          <option name="Strategies">
+            <script>post('/editor/cbcStrategyList.jsf')</script>
+          </option>
           <option name="One-Line">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
             <script>showOneLine()</script>

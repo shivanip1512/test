@@ -12,6 +12,7 @@ import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 
 public class MockCapControlForm implements ICapControlModel {
 
@@ -376,6 +377,10 @@ public class MockCapControlForm implements ICapControlModel {
     public void update() throws SQLException {
         throw new UnsupportedOperationException();
 
+    }
+
+    public List<CapControlStrategy> getAllCBCStrats() {
+        throw new UnsupportedOperationException();
     }
 
 /*    public void varPtTeeClick(ActionEvent ae) {

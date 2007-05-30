@@ -295,7 +295,7 @@ public class CBCDisplay {
             }
 
             //add an asterisk if the quality was low
-            if (CBCUtils.checkSignalQuality(subBus, PointUnits.UOMID_KVAR))
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
@@ -331,7 +331,7 @@ public class CBCDisplay {
                                                          decPlaces);
             }
 
-            if (CBCUtils.checkSignalQuality(subBus, PointUnits.UOMID_KW))
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
@@ -344,7 +344,7 @@ public class CBCDisplay {
                                                                 .doubleValue(),
                                                           decPlaces);
             }
-            if (CBCUtils.checkSignalQuality(subBus, PointUnits.UOMID_KVOLTS))
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
@@ -544,7 +544,7 @@ public class CBCDisplay {
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue()
                                                                .doubleValue(),
                                                          decPlaces);
-            if (CBCUtils.checkSignalQuality(feeder, PointUnits.UOMID_KVAR))
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
@@ -571,7 +571,7 @@ public class CBCDisplay {
                                                          decPlaces);
             }
             
-            if (CBCUtils.checkSignalQuality(feeder, PointUnits.UOMID_KW))
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
@@ -585,7 +585,7 @@ public class CBCDisplay {
                                                                 .doubleValue(),
                                                           decPlaces);
             }
-            if (CBCUtils.checkSignalQuality(feeder, PointUnits.UOMID_KVOLTS))
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }

@@ -1,5 +1,7 @@
 package com.cannontech.yukon.cbc;
 
+import java.util.Arrays;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
@@ -595,11 +597,11 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 		maxOperationDisableFlag = boolean1;
 	}
     public Integer getCurrentPtQuality(int pointType) {
-        if (pointType == PointUnits.UOMID_KVAR)
-            return getCurrentVarLoadPointID();
-        else if (pointType == PointUnits.UOMID_KW)
+        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(pointType))
+            return getCurrentVarPtQuality();
+        if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(pointType))
             return getCurrentwattpointquality();
-        else if (pointType == PointUnits.UOMID_KVOLTS)
+        if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(pointType))
             return getCurrentvoltpointquality();
         return null;
     }
