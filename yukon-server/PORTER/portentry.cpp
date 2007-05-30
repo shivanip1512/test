@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2007/03/14 19:33:00 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2007/05/30 14:32:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -897,6 +897,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
     return status;
 }
 
+
 /*----------------------------------------------------------------------------*
  * This function verifies that the emetcon message is properly framed to be sent
  * under the current operating conditions.
@@ -909,8 +910,9 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
     if(OutMessage->EventCode & BWORD)
     {
-        //  do not allow queing if NoQueing is set, or on broadcast commands and timesyncs
+        //  do not allow queing if NoQueing is set, if the port is forced nonqueued, or on broadcast commands and timesyncs
         if( NoQueing
+            || gNonQueuedPorts.find(OutMessage->Port) != gNonQueuedPorts.end()
             || (OutMessage->Remote == CCUGLOBAL)
             || (OutMessage->EventCode & TSYNC) )
         {
@@ -1061,9 +1063,9 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
         case TYPE_CCU711:
             {
                 CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)pDev->getTrxInfo();
-    
+
                 pInfo->PortQueueEnts++;
-    
+
                 if(SendOutMessage->EventCode & RCONT)
                 {
                     pInfo->PortQueueConts++;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/06/26 15:47:46 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/05/30 14:32:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,7 +80,8 @@ IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
 IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
 IM_EX_CTIBASE short         gSimulatePorts = 0;
-IM_EX_CTIBASE set<long>     gSimulatedPortList;
+IM_EX_CTIBASE set<long>     gSimulatedPorts;
+IM_EX_CTIBASE set<long>     gNonQueuedPorts;
 IM_EX_CTIBASE set<long>     gScanForceDevices;
 
 /*
@@ -393,7 +394,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         string id_str;
         long      id;
 
-        gSimulatedPortList.clear();
+        gSimulatedPorts.clear();
 
         while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
         {
@@ -409,12 +410,12 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             }
             else if( id = atol(id_str.c_str()) )
             {
-                gSimulatedPortList.insert(id);
+                gSimulatedPorts.insert(id);
             }
         }
 
         //  if they don't say to include anything, include them all by default
-        if( gSimulatePorts == 1 && gSimulatedPortList.size() == 0 )
+        if( gSimulatePorts == 1 && gSimulatedPorts.size() == 0 )
         {
             gSimulatePorts = -1;
         }
@@ -425,12 +426,12 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
         if( gSimulatePorts )
         {
-            if( gSimulatePorts > 0 )    cout << CtiTime() << " Simulated portids (" << gSimulatedPortList.size() << "): " << endl;
-            else                        cout << CtiTime() << " Excluded portids (" << gSimulatedPortList.size() << "): " << endl;
+            if( gSimulatePorts > 0 )    cout << CtiTime() << " Simulated portids (" << gSimulatedPorts.size() << "): " << endl;
+            else                        cout << CtiTime() << " Excluded portids (" << gSimulatedPorts.size() << "): " << endl;
 
-            for( set<long>::const_iterator itr = gSimulatedPortList.begin(); itr != gSimulatedPortList.end(); itr++ )
+            for( set<long>::const_iterator itr = gSimulatedPorts.begin(); itr != gSimulatedPorts.end(); itr++ )
             {
-                if( itr != gSimulatedPortList.begin() )
+                if( itr != gSimulatedPorts.begin() )
                 {
                     cout << ", ";
                 }
@@ -439,6 +440,26 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             }
 
             cout << endl;
+        }
+    }
+
+    if( !(str = gConfigParms.getValueAsString("YUKON_FORCE_PORTS_NONQUEUED")).empty() )
+    {
+        boost::char_separator<char> sep(",");
+        Boost_char_tokenizer tok(str, sep);
+        Boost_char_tokenizer::iterator tok_iter = tok.begin();
+
+        string id_str;
+        long   id;
+
+        gNonQueuedPorts.clear();
+
+        while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
+        {
+            if( id = atol(id_str.c_str()) )
+            {
+                gNonQueuedPorts.insert(id);
+            }
         }
     }
 
