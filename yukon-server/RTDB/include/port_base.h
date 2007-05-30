@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2007/02/22 17:46:43 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2007/05/30 14:36:23 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,9 +92,7 @@ public:
     INT logBytes(BYTE *Message, ULONG Length) const;
     void fileTraces(list< CtiMessage* > &traceList) const;
 
-
     CtiLogger& getPortLog() { return _portLog; }
-
 
     /* virtuals to make the world all fat and happy */
     virtual bool      isViable() const;
@@ -236,6 +234,9 @@ public:
     CtiTime getLastOMComplete() const;
     void setLastOMComplete(CtiTime &atime = CtiTime());
 
+    void setPortShareBlock(CtiTime &atime);
+    bool isPortShareBlocked(void) const;
+
     ULONG getQueueSlot() const;
     CtiPort& setQueueSlot(const ULONG slot = 0);
 
@@ -311,11 +312,14 @@ private:
     bool                        _communicating;         // Port is being used for communicating
     prohibitions                _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
     exclusions                  _excluded;
-    CtiTime                      _lastReport;    // Last comm fail report happened here.
+    CtiTime                      _lastReport;       // Last comm fail report happened here.
     bool                        _minMaxIdle;
 
     CtiTime                      _lastOMRead;
     CtiTime                      _lastOMComplete;
+
+    CtiTime                      _lastWrite;        //  used to determine if we should block the port share...
+                                                    //  initialized to CtiTime::now() on startup
 
     list< LONG >                _devicesQueued;
     set< LONG >                 _devicesPreloaded;

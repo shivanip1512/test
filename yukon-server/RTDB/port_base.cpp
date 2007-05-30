@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2007/05/30 14:36:23 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.69  2007/05/30 14:36:23  mfisher
+* YUK-3793
+* added port share blocking (cparm PORT_SHARE_BLOCKING_DURATION) to prevent anyone from using the port share when we're in control of the port
+*
 * Revision 1.68  2007/02/22 17:46:41  jotteson
 * Bug Id: 814, 651
 * Completed integration of MACS with new system messages. QueueWrites were changed to be sure they put the proper ID into the queues. New messaging used, new device interface used.
@@ -391,7 +395,21 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     {
         if(OutMessage && OutMessage->MessageFlags & MessageFlag_PortSharing)        // This OM has been tagged as a sharing OM.
         {
-            status = writeShareQueue(Request, DataSize, Data, Priority, &QueEntries);
+           int blockTime = gConfigParms.getValueAsInt("PORT_SHARE_BLOCKING_DURATION", 0);
+
+            if( !blockTime || ((_lastWrite + blockTime) < CtiTime::now()) )
+            {
+                status = writeShareQueue(Request, DataSize, Data, Priority, &QueEntries);
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - port \"" << getName() << "\" has blocked an incoming OM from its port share (_lastWrite = " << _lastWrite << ", blockTime = " << blockTime << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                status = QUEUE_WRITE;
+            }
         }
         else if(_portQueue != NULL)
         {
@@ -399,6 +417,8 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
             {
                 SetEvent( _postEvent );                 // Just in case someone is sleeping at the wheel
             }
+
+            _lastWrite = CtiTime::now();
 
             status = WriteQueue( _portQueue, Request, DataSize, Data, Priority, &QueEntries);
 
@@ -699,20 +719,20 @@ bool CtiPort::isSimulated() const
         set<long>::iterator itr;
         _simulated = -1;  //  default to NOT simulated
 
-        if( !gSimulatedPortList.empty() )
+        if( !gSimulatedPorts.empty() )
         {
-            itr = gSimulatedPortList.find(getPortID());
+            itr = gSimulatedPorts.find(getPortID());
         }
         else
         {
-            itr = gSimulatedPortList.end();
+            itr = gSimulatedPorts.end();
         }
 
-        if( (gSimulatePorts > 0) && (itr != gSimulatedPortList.end()) )  //  must be included
+        if( (gSimulatePorts > 0) && (itr != gSimulatedPorts.end()) )  //  must be included
         {
             _simulated = 1;
         }
-        else if( (gSimulatePorts < 0) && (itr == gSimulatedPortList.end()) )  //  must be excluded
+        else if( (gSimulatePorts < 0) && (itr == gSimulatedPorts.end()) )  //  must be excluded
         {
             _simulated = 1;
         }
@@ -1770,7 +1790,7 @@ int CtiPort::getWorkCount(long requestID)
                 workCount++;
             }
             workCount += queueCount();
-    
+
             _criticalSection.acquire();
             for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
             {
