@@ -429,6 +429,10 @@ BOOL CtiCCCapBank::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
 }
+BOOL CtiCCCapBank::getMaxDailyOpsHitFlag() const
+{
+    return _maxDailyOpsHitFlag;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -956,6 +960,22 @@ CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setMaxDailyOpsHitFlag
+    
+    Sets the maxDailyOpsHitFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(BOOL flag)
+{
+
+    if (_maxDailyOpsHitFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _maxDailyOpsHitFlag = flag;
+
+    return *this;
+}
 
 
 CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
@@ -1585,6 +1605,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _retryOpenFailedFlag = right._retryOpenFailedFlag;
         _retryCloseFailedFlag = right._retryCloseFailedFlag;           
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
+        _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
 
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
@@ -1670,6 +1691,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setRetryOpenFailedFlag(FALSE);
     setRetryCloseFailedFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
+    setMaxDailyOpsHitFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
 
@@ -1713,6 +1735,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _retryOpenFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
     _retryCloseFailedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
     _ovUvDisabledFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
+    _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["twowaycbcstate"] >> _reportedCBCState;
@@ -1801,13 +1824,15 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[3] = (_retryOpenFailedFlag?'Y':'N');
             addFlags[4] = (_retryCloseFailedFlag?'Y':'N');
             addFlags[5] = (_ovUvDisabledFlag?'Y':'N');
+            addFlags[6] = (_maxDailyOpsHitFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
             _additionalFlags.append(char2string(*(addFlags+3)));
             _additionalFlags.append(char2string(*(addFlags+4))); 
             _additionalFlags.append(char2string(*(addFlags+5))); 
-            _additionalFlags.append("NNNNNNNNNNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+6))); 
+            _additionalFlags.append("NNNNNNNNNNNNN");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 

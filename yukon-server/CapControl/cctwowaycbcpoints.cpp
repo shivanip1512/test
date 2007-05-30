@@ -84,7 +84,11 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _deltaVoltageId = 0; 
     _deltaVoltage = 0;   
     _analogInput1Id = 0; 
-    _analogInput1 = 0;   
+    _analogInput1 = 0; 
+    _rssiId = 0;
+    _rssi = 0;
+    _ignoredReasonId = 0;
+    _ignoredReason = 0;
     _temperatureId = 0;  
     _temperature = 0;
 
@@ -1356,20 +1360,20 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
 
             updater.where(dynamicCCTwoWayTable["deviceid"] == _paoid);
 
-            updater << dynamicCCTwoWayTable["recloseblocked"].assign( _reCloseBlocked )
-            << dynamicCCTwoWayTable["controlmode"].assign( _controlMode) 
-            << dynamicCCTwoWayTable["autovoltcontrol"].assign( _autoVoltControl )
+            updater << dynamicCCTwoWayTable["recloseblocked"].assign( _reCloseBlocked?"Y":"N")
+            << dynamicCCTwoWayTable["controlmode"].assign( _controlMode?"Y":"N") 
+            << dynamicCCTwoWayTable["autovoltcontrol"].assign( _autoVoltControl?"Y":"N" )
             << dynamicCCTwoWayTable["lastcontrol"].assign( lastControl )
             << dynamicCCTwoWayTable["condition"].assign( condition )
-            << dynamicCCTwoWayTable["opfailedneutralcurrent"].assign( _opFailedNeutralCurrent )
-            << dynamicCCTwoWayTable["neutralcurrentfault"].assign(_neutralCurrentFault)
-            << dynamicCCTwoWayTable["badrelay"].assign(_badRelay)
-            << dynamicCCTwoWayTable["dailymaxops"].assign(_dailyMaxOps)
-            << dynamicCCTwoWayTable["voltagedeltaabnormal"].assign(_voltageDeltaAbnormal)
-            << dynamicCCTwoWayTable["tempalarm"].assign( _tempAlarm )
-            << dynamicCCTwoWayTable["dstactive"].assign(_DSTActive)
-            << dynamicCCTwoWayTable["neutrallockout"].assign( _neutralLockout )
-            << dynamicCCTwoWayTable["ignoredindicator"].assign( _ignoredIndicator )
+            << dynamicCCTwoWayTable["opfailedneutralcurrent"].assign( _opFailedNeutralCurrent?"Y":"N" )
+            << dynamicCCTwoWayTable["neutralcurrentfault"].assign(_neutralCurrentFault?"Y":"N")
+            << dynamicCCTwoWayTable["badrelay"].assign(_badRelay?"Y":"N")
+            << dynamicCCTwoWayTable["dailymaxops"].assign(_dailyMaxOps?"Y":"N")
+            << dynamicCCTwoWayTable["voltagedeltaabnormal"].assign(_voltageDeltaAbnormal?"Y":"N")
+            << dynamicCCTwoWayTable["tempalarm"].assign( _tempAlarm?"Y":"N" )
+            << dynamicCCTwoWayTable["dstactive"].assign(_DSTActive?"Y":"N")
+            << dynamicCCTwoWayTable["neutrallockout"].assign( _neutralLockout?"Y":"N" )
+            << dynamicCCTwoWayTable["ignoredindicator"].assign( _ignoredIndicator?"Y":"N" )
             << dynamicCCTwoWayTable["voltage"].assign( _voltage )
             << dynamicCCTwoWayTable["highvoltage"].assign( _highVoltage )
             << dynamicCCTwoWayTable["lowvoltage"].assign( _lowVoltage )
@@ -1432,20 +1436,20 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
 
 
             inserter << _paoid  
-                     << _reCloseBlocked 
-                     << _controlMode
-                     << _autoVoltControl 
+                     << (_reCloseBlocked?"Y":"N") 
+                     << (_controlMode?"Y":"N")
+                     << (_autoVoltControl?"Y":"N") 
                      << lastControl
                      << condition
-                     << _opFailedNeutralCurrent
-                     << _neutralCurrentFault
-                     << _badRelay
-                     << _dailyMaxOps
-                     << _voltageDeltaAbnormal
-                     << _tempAlarm
-                     << _DSTActive
-                     << _neutralLockout
-                     << _ignoredIndicator
+                     << (_opFailedNeutralCurrent?"Y":"N")
+                     << (_neutralCurrentFault?"Y":"N")
+                     << (_badRelay?"Y":"N")
+                     << (_dailyMaxOps?"Y":"N")
+                     << (_voltageDeltaAbnormal?"Y":"N")
+                     << (_tempAlarm?"Y":"N")
+                     << (_DSTActive?"Y":"N")
+                     << (_neutralLockout?"Y":"N")
+                     << (_ignoredIndicator?"Y":"N")
                      << _voltage
                      << _highVoltage
                      << _lowVoltage
@@ -2200,22 +2204,47 @@ void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
 {
     INT lastControl;  
     INT condition = 0;
+    string tempBoolString;
 
-    rdr["deviceid"] >> _paoid;
-    rdr["recloseblocked"] >> _reCloseBlocked;
-    rdr["controlmode"] >> _controlMode;
-    rdr["autovoltcontrol"] >> _autoVoltControl;
+    //rdr["deviceid"] >> _paoid;
+    rdr["recloseblocked"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setReCloseBlocked(tempBoolString=="y"?TRUE:FALSE);
+    rdr["controlmode"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setControlMode(tempBoolString=="y"?TRUE:FALSE);
+    rdr["autovoltcontrol"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setAutoVoltControl(tempBoolString=="y"?TRUE:FALSE);
     rdr["lastcontrol"] >> lastControl;
     rdr["condition"] >> condition;
-    rdr["opfailedneutralcurrent"] >> _opFailedNeutralCurrent;
-    rdr["neutralcurrentfault"] >> _neutralCurrentFault;
-    rdr["badrelay"] >> _badRelay;
-    rdr["dailymaxops"] >> _dailyMaxOps;
-    rdr["voltagedeltaabnormal"] >> _voltageDeltaAbnormal;
-    rdr["tempalarm"] >> _tempAlarm;
-    rdr["dstactive"] >> _DSTActive;
-    rdr["neutrallockout"] >> _neutralLockout;
-    rdr["ignoredindicator"] >> _ignoredIndicator;
+    rdr["opfailedneutralcurrent"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setOpFailedNeutralCurrent(tempBoolString=="y"?TRUE:FALSE);
+    rdr["neutralcurrentfault"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setNeutralCurrentFault(tempBoolString=="y"?TRUE:FALSE);
+    rdr["badrelay"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setBadRelay(tempBoolString=="y"?TRUE:FALSE);
+    rdr["dailymaxops"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setDailyMaxOps(tempBoolString=="y"?TRUE:FALSE);
+    rdr["voltagedeltaabnormal"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setVoltageDeltaAbnormal(tempBoolString=="y"?TRUE:FALSE);
+    rdr["tempalarm"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setTempAlarm(tempBoolString=="y"?TRUE:FALSE);
+    rdr["dstactive"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setDSTActive(tempBoolString=="y"?TRUE:FALSE);
+    rdr["neutrallockout"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setNeutralLockout(tempBoolString=="y"?TRUE:FALSE);
+    rdr["ignoredindicator"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setIgnoredIndicator(tempBoolString=="y"?TRUE:FALSE);
     rdr["voltage"] >> _voltage;
     rdr["highvoltage"] >> _highVoltage;
     rdr["lowvoltage"] >> _lowVoltage;
@@ -2234,8 +2263,9 @@ void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
     rdr["lastovuvdatetime"] >> _lastOvUvDateTime; //toAdd
     rdr["neutralcurrentsensor"] >> _neutralCurrentSensor;
     rdr["neutralcurrentalarmsetpoint"] >> _neutralCurrentAlarmSetPoint;
-
-
+    rdr["ipaddress"]  >> _udpIpAddress;
+    rdr["udpport"] >>  _udpPortNumber;
+    
     _lastControlLocal = lastControl & 0x01;         
     _lastControlRemote = lastControl & 0x02;
     _lastControlOvUv = lastControl & 0x04;          
@@ -2324,6 +2354,11 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _deltaVoltage = right._deltaVoltage;
         _analogInput1Id = right._analogInput1Id;
         _analogInput1 = right._analogInput1;
+        _rssiId = right._rssiId;
+        _rssi = right._rssi;
+        _ignoredReasonId = right._ignoredReasonId;
+        _ignoredReason = right._ignoredReason;
+
         _temperatureId = right._temperatureId;
         _temperature = right._temperature;
 

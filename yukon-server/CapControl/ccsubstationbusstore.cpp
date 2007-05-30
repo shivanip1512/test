@@ -2483,7 +2483,8 @@ void CtiCCSubstationBusStore::resetDailyOperations()
               
         }
         currentSubstationBus->setCurrentDailyOperations(0);
-
+        currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
+        currentSubstationBus->setBusUpdatedFlag(TRUE);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
         for(int j=0;j<ccFeeders.size();j++)
@@ -2499,6 +2500,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
             }*/
             currentFeeder->setCurrentDailyOperations(0);
+            currentFeeder->setMaxDailyOpsHitFlag(FALSE);
 
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
@@ -2518,6 +2520,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
                 }*/
                 currentCapBank->setCurrentDailyOperations(0);
+                currentCapBank->setMaxDailyOpsHitFlag(FALSE);
             }
             //**********************************************************************
             //The operation count on a cap bank is actually a total not a daily, doh
@@ -4683,7 +4686,9 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                              << dynamicCCTwoWayTable["ovuvtracktime"]
                              << dynamicCCTwoWayTable["lastovuvdatetime"]
                              << dynamicCCTwoWayTable["neutralcurrentsensor"]
-                             << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"];
+                             << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"]
+                             << dynamicCCTwoWayTable["ipaddress"]
+                             << dynamicCCTwoWayTable["udpport"];
 
 
                     selector.from(dynamicCCTwoWayTable);
@@ -4722,7 +4727,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         if ( currentCCCapBank != NULL )
                         {
                             if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702")) 
-                            {
+                            {    
+                                ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setPAOId(currentCbcId);
                                 ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setDynamicData(rdr);
                             }
                         }

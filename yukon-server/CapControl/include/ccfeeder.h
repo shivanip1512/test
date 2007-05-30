@@ -160,6 +160,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getOperationSentWaitFlag() const;
     BOOL getPostOperationMonitorPointScanFlag() const;
     BOOL getWaitForReCloseDelayFlag() const;
+    BOOL getMaxDailyOpsHitFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
@@ -256,6 +257,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setOperationSentWaitFlag( BOOL flag);
     CtiCCFeeder& setPostOperationMonitorPointScanFlag( BOOL flag);
     CtiCCFeeder& setWaitForReCloseDelayFlag(BOOL flag);
+    CtiCCFeeder& setMaxDailyOpsHitFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setTargetVarValue(DOUBLE value);
@@ -275,7 +277,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
-    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
+    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, 
+                                                   BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits,
+                                                   BOOL dailyMaxOpsHitFlag);
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
     BOOL isControlPoint(LONG pointid);
@@ -433,6 +437,7 @@ private:
     BOOL _postOperationMonitorPointScanFlag;
     BOOL _porterRetFailFlag;
     BOOL _waitForReCloseDelayFlag;
+    BOOL _maxDailyOpsHitFlag;
 
     LONG   _eventSeq;
 

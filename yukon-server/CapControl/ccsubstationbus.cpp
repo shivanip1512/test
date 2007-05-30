@@ -39,6 +39,8 @@ extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _ALLOW_PARALLEL_TRUING;
 extern BOOL _LOG_MAPID_INFO;
+extern BOOL _END_DAY_ON_TRIP;
+
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 
@@ -933,6 +935,10 @@ BOOL CtiCCSubstationBus::getWaitForReCloseDelayFlag() const
 BOOL CtiCCSubstationBus::getWaitToFinishRegularControlFlag() const
 {
     return _waitToFinishRegularControlFlag;
+}
+BOOL CtiCCSubstationBus::getMaxDailyOpsHitFlag() const
+{
+    return _maxDailyOpsHitFlag;
 }
 
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
@@ -2253,6 +2259,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
     if( getMaxDailyOperation() > 0 &&
         _currentdailyoperations == getMaxDailyOperation() )//only send once
     {
+        setMaxDailyOpsHitFlag(TRUE);
+
         string text = string("Substation Bus Exceeded Max Daily Operations");
         string additional = string("Substation Bus: ");
         additional += getPAOName();
@@ -2269,7 +2277,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         setSolution(text);
 
         //we should disable bus if the flag says so
-        if( getMaxOperationDisableFlag() )
+       /* if( getMaxOperationDisableFlag() )
         {
             setDisableFlag(TRUE);
             setBusUpdatedFlag(TRUE);
@@ -2289,6 +2297,78 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
             
             keepGoing = FALSE;
+        }*/
+    }
+    if( getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
+    {
+        if ( !_END_DAY_ON_TRIP ) 
+        {
+            setDisableFlag(TRUE);
+            setBusUpdatedFlag(TRUE);
+            setSolution("  Sub Disabled. Automatic Control Inhibited.");
+            //store->UpdateSubstation(currentSubstationBus);
+            string text = string("Substation Bus Disabled");
+            string additional = string("Bus: ");
+            additional += getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";            
+            }
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+            
+            keepGoing = FALSE;
+        }
+        else
+        {
+            bool closeFoundFlag = false;
+            for(LONG i=0;i<_ccfeeders.size();i++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                if (!currentFeeder->getDisableFlag()) 
+                {
+                    for (LONG j=0; j<currentFeeder->getCCCapBanks().size(); j++) 
+                    {
+                        CtiCCCapBank* currentCap = (CtiCCCapBank*)currentFeeder->getCCCapBanks()[j];
+                        if (currentCap->getControlStatus() == CtiCCCapBank::Close ||
+                            currentCap->getControlStatus() == CtiCCCapBank::CloseQuestionable ) 
+                        {
+                            keepGoing = TRUE;
+                            closeFoundFlag = true;
+                            break;
+                        }                          
+                    }
+                    if (closeFoundFlag) 
+                    {
+                        break;
+                    }
+                }
+            }
+            if (!closeFoundFlag) 
+            {   
+                setDisableFlag(TRUE);
+                setBusUpdatedFlag(TRUE);
+                setSolution("  Sub Disabled. Automatic Control Inhibited.");
+                //store->UpdateSubstation(currentSubstationBus);
+                string text = string("Substation Bus Disabled");
+                string additional = string("Bus: ");
+                additional += getPAOName();
+                if (_LOG_MAPID_INFO) 
+                {
+                    additional += " MapID: ";
+                    additional += getMapLocationId();
+                    additional += " (";
+                    additional += getPAODescription();
+                    additional += ")";            
+                }
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+
+                keepGoing = FALSE;
+            }
+            
         }
     }
 
@@ -2322,7 +2402,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                          currentFeeder->getNewPointDataReceivedFlag() ||
                          currentFeeder->getControlInterval() != 0) )
                     {
-                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
+                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getControlUnits(), getMaxDailyOpsHitFlag()) )
                         {
                             setLastOperationTime(currentDateTime);
                             setRecentlyControlledFlag(TRUE);
@@ -2351,7 +2431,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                     if (getIVCount() > 0) 
                         setIVControl(getIVControlTot() / getIVCount());
                     if (getIWCount() > 0)
-                        setIWControl(getIWControlTot() / getIVCount());
+                        setIWControl(getIWControlTot() / getIWCount());
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
@@ -2570,7 +2650,8 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
             !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) )
         {
-            if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
+            if( !getMaxDailyOpsHitFlag() &&  //end day on a trip.
+                ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
                 lagLevel <  getIVControl() ) ||
                 ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) &&
                 lagLevel >  getIVControl() ) )
@@ -2757,7 +2838,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
-            if( getKVARSolution() < 0 )
+            if( getKVARSolution() < 0 && !getMaxDailyOpsHitFlag() ) //end day on a trip.
             {
                 //if( _CC_DEBUG )
                 {
@@ -2991,7 +3072,8 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
         if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
             !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
         {
-            if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
+            if( !getMaxDailyOpsHitFlag() &&  //end day on a trip.
+                ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
                 lagLevel <  getIVControl() ) ||
                 ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) &&
                 lagLevel >  getIVControl() ) )
@@ -3181,7 +3263,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
         else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
-            if( getKVARSolution() < 0 )
+            if( getKVARSolution() < 0 && !getMaxDailyOpsHitFlag() )  //end day on a trip.
             {
                 //if( _CC_DEBUG )
                 {
@@ -3469,7 +3551,8 @@ void CtiCCSubstationBus::updateIntegrationVPoint(const CtiTime &currentDateTime)
     {
         if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
             controlVvalue = getCurrentVoltLoadPointValue();
-        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::KVARControlUnits)) 
+        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::KVARControlUnits)||
+                 !stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits)) 
             controlVvalue = getCurrentVarLoadPointValue();
         else
         {
@@ -3494,14 +3577,18 @@ void CtiCCSubstationBus::updateIntegrationVPoint(const CtiTime &currentDateTime)
             else
             {
                 setIVControlTot( controlVvalue );
-                setIVControlTot( 1 );
+                setIVCount( 1 );
             }
         }
         else
         {
             setIVControlTot( controlVvalue );
-            setIVControlTot( 1 );
+            setIVCount( 1 );
         }
+    }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;    
     }
 }
 
@@ -3538,6 +3625,11 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
             setIWCount( 1 );
         }
     }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
+    }
+
 }
 
 /*---------------------------------------------------------------------------
@@ -4779,6 +4871,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::setWaitToFinishRegularControlFlag(BOOL f
     _waitToFinishRegularControlFlag = flag;
     return *this;
 }
+CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOpsHitFlag(BOOL flag)
+{
+    if (_maxDailyOpsHitFlag != flag) 
+    {
+        _dirty = TRUE;
+    }
+    _maxDailyOpsHitFlag = flag;
+    return *this;
+}
+
 
  
 
@@ -5613,11 +5715,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[7] = (_reEnableBusFlag?'Y':'N');
             addFlags[8] = (_waitForReCloseDelayFlag?'Y':'N');
             addFlags[9] = (_waitToFinishRegularControlFlag?'Y':'N');
+            addFlags[10] = (_maxDailyOpsHitFlag?'Y':'N');
 			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ 
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
                                          char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
-                                         char2string(*(addFlags+9)));
-            _additionalFlags.append("NNNNNNNNNN");
+                                         char2string(*(addFlags+9)) +char2string(*(addFlags+10)));
+            _additionalFlags.append("NNNNNNNNN");
 
             updater.clear();
 
@@ -7979,6 +8082,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _reEnableBusFlag = right._reEnableBusFlag;                     
         _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
         _waitToFinishRegularControlFlag = right._waitToFinishRegularControlFlag;
+        _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
 
         _altDualSubId = right._altDualSubId;
         _switchOverPointId = right._switchOverPointId;
@@ -8135,6 +8239,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setReEnableBusFlag(FALSE);
     setWaitForReCloseDelayFlag(FALSE);
     setWaitToFinishRegularControlFlag(FALSE);
+    setMaxDailyOpsHitFlag(FALSE);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
@@ -8271,6 +8376,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _reEnableBusFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
         _waitForReCloseDelayFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
         _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
+        _maxDailyOpsHitFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;

@@ -3187,12 +3187,15 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     else
                     {
                         currentCapBank->setTotalOperations(0);
-                        currentCapBank->setCurrentDailyOperations(0);
                     }
+                    currentCapBank->setCurrentDailyOperations(0);
+                    currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                 }
                 currentFeeder->setCurrentDailyOperations(0);
+                currentFeeder->setMaxDailyOpsHitFlag(FALSE);
             }
             currentSubstationBus->setCurrentDailyOperations(0);
+            currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             found = TRUE;
         }
@@ -3223,11 +3226,13 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         else
                         {
                             currentCapBank->setTotalOperations(0);
-                            currentCapBank->setCurrentDailyOperations(0);
                         }
+                        currentCapBank->setCurrentDailyOperations(0);
+                        currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                     }
 
                     currentFeeder->setCurrentDailyOperations(0);
+                    currentFeeder->setMaxDailyOpsHitFlag(FALSE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     found = TRUE;
                 }
@@ -3252,8 +3257,9 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                             else
                             {
                                 currentCapBank->setTotalOperations(0);
-                                currentCapBank->setCurrentDailyOperations(0);
                             }
+                            currentCapBank->setCurrentDailyOperations(0);
+                            currentCapBank->setMaxDailyOpsHitFlag(FALSE);
 
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             found = TRUE;

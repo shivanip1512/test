@@ -1742,6 +1742,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 if( currentCapBank->getMaxDailyOps() > 0 &&
                     currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() )//only send once
                 {
+                    currentCapBank->setMaxDailyOpsHitFlag(TRUE);
                     string text = string("CapBank Exceeded Max Daily Operations");
                     string additional = string("CapBank: ");
                     additional += getPAOName();
@@ -1772,8 +1773,9 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                             additional += ")";
                         }
                         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-                    }
+                    }  
                 }
+                
 
                 if( !currentCapBank->getDisableFlag() )
                     returnCapBank = currentCapBank;
@@ -1845,10 +1847,11 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                             additional += ")";
                         }
                         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-                    }
+                    } 
                 }
-
-                if( !currentCapBank->getDisableFlag())
+                
+                if( !currentCapBank->getDisableFlag() ||
+                    (currentCapBank->getDisableFlag() && currentCapBank->getMaxDailyOpsHitFlag() && _END_DAY_ON_TRIP))
                     returnCapBank = currentCapBank;
                 break;
             }
@@ -2295,39 +2298,53 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
     {
         if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
             controlVvalue = getCurrentVoltLoadPointValue();
-        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::KVARControlUnits)) 
+        else if (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::KVARControlUnits)||
+                 !stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits)) 
             controlVvalue = getCurrentVarLoadPointValue();
         else
         {
             //integration not implemented.
             controlVvalue = 0;
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " **DEBUG** integration not implemented for this controlUnit method " << endl;
+            }
         }
 
         if (getControlInterval() > 0) 
         {
             if (nextCheckTime - getIntegratePeriod() <= currentDateTime) 
             {
-                
-                if (getIVCount() == 0) 
+                if (nextCheckTime > currentDateTime) 
                 {
-                    setIVControlTot( controlVvalue );
-                }
-                else
-                    setIVControlTot( getIVControlTot() + controlVvalue );
+                
+                
+                    if (getIVCount() == 0) 
+                    {
+                        setIVControlTot( controlVvalue );
+                    }
+                    else
+                        setIVControlTot( getIVControlTot() + controlVvalue );
 
-                setIVCount( getIVCount() + 1 );
+                    setIVCount( getIVCount() + 1 );
+                }
+
             }
             else
             {
                 setIVControlTot( controlVvalue );
-                setIVControlTot( 1 );
+                setIVCount( 1 );
             }
         }
         else
         {
             setIVControlTot( controlVvalue );
-            setIVControlTot( 1 );
+            setIVCount( 1 );
         }
+    }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;
     }
 }
 
@@ -2364,6 +2381,10 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
             setIWCount( 1 );
         }
     }
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
+    }
 }
 
 
@@ -2372,7 +2393,7 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
 
 
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits)
+BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits, BOOL dailyMaxOpsHitFlag)
 {
     BOOL returnBoolean = FALSE;
 
@@ -2402,7 +2423,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         if (getIVCount() > 0) 
             setIVControl(getIVControlTot() / getIVCount());
         if (getIWCount() > 0)
-            setIWControl(getIWControlTot() / getIVCount());
+            setIWControl(getIWControlTot() / getIWCount());
 
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2448,7 +2469,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         
                 try
                 {   
-                    if( ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
+                    if( !dailyMaxOpsHitFlag && 
+                        !getMaxDailyOpsHitFlag() &&
+                        ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
                           lagLevel < getIVControl() ) ||
                         ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) &&
                           lagLevel > getIVControl() ) )
@@ -2563,7 +2586,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         else if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                  !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
-            if( getKVARSolution() < 0 )
+            if( getKVARSolution() < 0 &&
+                !dailyMaxOpsHitFlag && 
+                !getMaxDailyOpsHitFlag() )
             {
                 //if( _CC_DEBUG )
                 {
@@ -3955,6 +3980,15 @@ CtiCCFeeder& CtiCCFeeder::setWaitForReCloseDelayFlag(BOOL flag)
     return *this;
 }
 
+CtiCCFeeder& CtiCCFeeder::setMaxDailyOpsHitFlag(BOOL flag)
+{
+    if (_maxDailyOpsHitFlag != flag)
+        _dirty = TRUE;
+    _maxDailyOpsHitFlag = flag;
+
+    return *this;
+}
+
 CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankId(LONG capBankId)
 {
     if( _currentVerificationCapBankId != capBankId )
@@ -4130,6 +4164,11 @@ BOOL CtiCCFeeder::getWaitForReCloseDelayFlag() const
 {
     return _waitForReCloseDelayFlag;
 }
+BOOL CtiCCFeeder::getMaxDailyOpsHitFlag() const
+{
+    return _maxDailyOpsHitFlag;
+}
+
 
 LONG CtiCCFeeder::getCurrentVerificationCapBankId() const
 {
@@ -4943,6 +4982,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[5] = (_postOperationMonitorPointScanFlag?'Y':'N');
             addFlags[6] = (_waitForReCloseDelayFlag?'Y':'N');
             addFlags[7] = (_peakTimeFlag?'Y':'N');
+            addFlags[8] = (_maxDailyOpsHitFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -4951,7 +4991,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             _additionalFlags.append(char2string(*(addFlags+5)));
             _additionalFlags.append(char2string(*(addFlags+6))); 
             _additionalFlags.append(char2string(*(addFlags+7)));
-            _additionalFlags.append("NNNNNNNNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+8)));
+            _additionalFlags.append("NNNNNNNNNNN");
 
             updater.clear();
 
@@ -5297,6 +5338,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _operationSentWaitFlag = right._operationSentWaitFlag;
         _postOperationMonitorPointScanFlag = right._postOperationMonitorPointScanFlag;
         _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
+        _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
 
         _targetvarvalue = right._targetvarvalue;
         _solution = right._solution;
@@ -5433,6 +5475,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setOperationSentWaitFlag(FALSE);
     setPostOperationMonitorPointScanFlag(FALSE);
     setWaitForReCloseDelayFlag(FALSE);
+    setMaxDailyOpsHitFlag(FALSE);
     setPeakTimeFlag(FALSE);
     setEventSequence(0);
     setCurrentVerificationCapBankId(-1);
@@ -5543,6 +5586,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     _postOperationMonitorPointScanFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
     _waitForReCloseDelayFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
     _peakTimeFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
+    _maxDailyOpsHitFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
@@ -5600,6 +5644,9 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
     if( getMaxDailyOperation() > 0 &&
         _currentdailyoperations == getMaxDailyOperation() )//only send once
     {
+
+        setMaxDailyOpsHitFlag(TRUE);
+
         string text = ("Feeder Exceeded Max Daily Operations");
         string additional = ("Feeder: ");
         additional += getPAOName();
@@ -5614,7 +5661,7 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
         //we should disable feeder if the flag says so
-        if( getMaxOperationDisableFlag() )
+       /* if( getMaxOperationDisableFlag() )
         {
             setDisableFlag(TRUE);
        //     setBusUpdatedFlag(TRUE);
@@ -5633,9 +5680,68 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
 
             //keepGoing = FALSE;
             // feeder disable flag is already set, so it will return false.
-        }
+        } */
         retVal = TRUE;
     }
+
+    if( getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
+    {
+        if ( !_END_DAY_ON_TRIP ) 
+        {
+            setDisableFlag(TRUE);
+            string text = string("Feeder Disabled");
+            string additional = string("Feeder: ");
+            additional += getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";
+            }
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+
+            retVal = FALSE;
+        }
+        else
+        {
+            bool closeFoundFlag = false;
+            for (LONG j=0; j<getCCCapBanks().size(); j++) 
+            {
+                CtiCCCapBank* currentCap = (CtiCCCapBank*)getCCCapBanks()[j];
+                if (currentCap->getControlStatus() == CtiCCCapBank::Close ||
+                    currentCap->getControlStatus() == CtiCCCapBank::CloseQuestionable ) 
+                {
+                    retVal = TRUE;
+                    closeFoundFlag = true;
+                    break;
+                }                          
+            }
+            
+
+            if (!closeFoundFlag) 
+            {   
+                setDisableFlag(TRUE);
+                string text = string("Feeder Disabled");
+                string additional = string("Feeder: ");
+                additional += getPAOName();
+                if (_LOG_MAPID_INFO) 
+                {
+                    additional += " MapID: ";
+                    additional += getMapLocationId();
+                    additional += " (";
+                    additional += getPAODescription();
+                    additional += ")";
+                }
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+
+                retVal = FALSE;
+            }
+
+        }
+    }
+
     return retVal;
 }
 

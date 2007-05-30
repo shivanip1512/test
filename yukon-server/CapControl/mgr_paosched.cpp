@@ -185,7 +185,7 @@ void CtiPAOScheduleManager::mainLoop()
         {
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-                currentTime.now();
+                currentTime= CtiTime();
                 mySchedules.clear();
 
                 try
@@ -324,7 +324,8 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                         if (_initialCapControlStartUp) 
                         {
                             _initialCapControlStartUp = FALSE;
-                            (*iter)->setLastRunTime((*iter)->getNextRunTime());
+                            //(*iter)->setLastRunTime((*iter)->getNextRunTime());
+                            (*iter)->setLastRunTime(currentTime);
                             CtiTime tempNextTime = CtiTime((*iter)->getNextRunTime().seconds() + (*iter)->getIntervalRate());
                             if (tempNextTime < currentTime) 
                             {
@@ -497,10 +498,11 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
 {
     CtiTime currentTime = CtiTime();
         
-    schedule->setLastRunTime(schedule->getNextRunTime());
+    //schedule->setLastRunTime(schedule->getNextRunTime());
+    schedule->setLastRunTime(currentTime);
     if (schedule->getIntervalRate() <= 0)
     {                                   
-        schedule->setNextRunTime( CtiTime(currentTime.seconds() + 0) );
+        schedule->setNextRunTime( currentTime );
     }
     else
     {
