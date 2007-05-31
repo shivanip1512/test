@@ -42,7 +42,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 		new LiteYukonPAObject( 
 				CtiUtilities.NONE_ZERO_ID, CtiUtilities.STRING_NONE, 
 				PAOGroups.CAT_DEVICE, DeviceTypes.MCT370,
-				DeviceClasses.CARRIER, CtiUtilities.STRING_NONE );
+				DeviceClasses.CARRIER, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE );
 
 	/**
 	 * Constructor

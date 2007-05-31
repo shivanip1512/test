@@ -46,7 +46,7 @@ public class YukonPAOLoader implements Runnable
         
 		String sqlString = 
 				"SELECT y.PAObjectID, y.Category, y.PAOName, " +
-				"y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS, dr.routeid " +
+				"y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " +
 				"FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
 				"on y.paobjectid = d.deviceid " +
 				"left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID " +		
@@ -73,6 +73,7 @@ public class YukonPAOLoader implements Runnable
         String paoType = rset.getString(4).trim();
         String paoClass = rset.getString(5).trim();
         String paoDescription = rset.getString(6).trim();
+        String paoDisableFlag = rset.getString(7).trim();
                
         LiteYukonPAObject pao = new LiteYukonPAObject(
                     paoID, 
@@ -80,19 +81,20 @@ public class YukonPAOLoader implements Runnable
                     PAOGroups.getCategory(paoCategory),
                     PAOGroups.getPAOType(paoCategory, paoType),
                     PAOGroups.getPAOClass(paoCategory, paoClass),
-                    paoDescription );
+                    paoDescription,
+                    paoDisableFlag);
 
-        int portId = rset.getInt(7);
+        int portId = rset.getInt(8);
         if(!rset.wasNull()) {
             pao.setPortID(portId);
         }
         
-        int address = rset.getInt(8);
+        int address = rset.getInt(9);
         if(!rset.wasNull()) {
             pao.setAddress(address);
         }
 
-        int routeId = rset.getInt(9);
+        int routeId = rset.getInt(10);
         if(!rset.wasNull()) {
             pao.setRouteID(routeId);
         }

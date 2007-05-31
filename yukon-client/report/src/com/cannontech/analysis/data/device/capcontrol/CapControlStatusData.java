@@ -22,6 +22,8 @@ public class CapControlStatusData
 	private Integer controlStatus = null;
 	private Date changeDateTime = null;
 	private Integer controlOrder = null;
+    private String operationalState = null;
+    private String disableFlag = null;
 	private String pointName = null;
 	private String eventText = null;
 	private Integer eventType = null;	//CCEventLog
@@ -41,13 +43,15 @@ public class CapControlStatusData
 	 * @param changeDateTime
 	 * @param controlOrder
 	 */
-	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, Integer controlStatus, Date changeDateTime, Integer controlOrder) {
+	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, Integer controlStatus, Date changeDateTime, String operationalState, String disableFlag, Integer controlOrder) {
 		super();
 		this.capBankPaoID = capBankPaoID;
 		this.subBusPaoID = subBusPaoID;
 		this.feederPaoID = feederPaoID;
 		this.controlStatus = controlStatus;
 		this.changeDateTime = changeDateTime;
+        this.operationalState = operationalState;
+        this.disableFlag = disableFlag;
 		this.controlOrder = controlOrder;
 	}
 	
@@ -92,6 +96,17 @@ public class CapControlStatusData
 	{
 		return subBusPaoID;
 	}
+    
+    public String getOperationalState()
+    {
+        return operationalState;
+    }
+    
+    public String getDisableFlag()
+    {
+        return disableFlag;
+    }
+    
 	/**
 	 * @return
 	 */

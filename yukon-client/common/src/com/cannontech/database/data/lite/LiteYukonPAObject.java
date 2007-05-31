@@ -22,7 +22,8 @@ public class LiteYukonPAObject extends LiteBase
 		PAOGroups.INVALID,
 		PAOGroups.INVALID,
 		PAOGroups.INVALID,
-		CtiUtilities.STRING_NONE
+		CtiUtilities.STRING_NONE,
+        CtiUtilities.STRING_NONE
 	);
 	
 	// a place holder for a LiteYukonPAObject, mostly used in option lists
@@ -34,7 +35,8 @@ public class LiteYukonPAObject extends LiteBase
 		PAOGroups.INVALID,
 		PAOGroups.INVALID,
 		PAOGroups.INVALID,
-		CtiUtilities.STRING_NONE
+		CtiUtilities.STRING_NONE,
+        CtiUtilities.STRING_NONE
 	);
 
 	//private int yukonID = com.cannontech.database.data.pao.PAOGroups.INVALID;
@@ -43,7 +45,7 @@ public class LiteYukonPAObject extends LiteBase
 	private int type = PAOGroups.INVALID;
 	private int paoClass = PAOGroups.INVALID;
 	private String paoDescription = null;
-	
+	private String disableFlag = null;
 	//portID is only for devices that belong to a port
 	private int portID = PAOGroups.INVALID;
 
@@ -78,7 +80,7 @@ public LiteYukonPAObject( int paoID, String name_ )
 /**
  * LiteDevice
  */
-public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass, String desc ) 
+public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass, String desc, String flag ) 
 {
 	this( paoID, name );
 
@@ -86,6 +88,7 @@ public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, 
 	setType( paoType );
 	setPaoClass( pClass );
 	setPaoDescription( desc );
+    setDisableFlag( flag );
 }
 /**
  * Insert the method's description here.
@@ -160,6 +163,11 @@ public int getType() {
 public int getYukonID() {
 	return getLiteID();
 }
+
+public String getDisableFlag() {
+    return disableFlag;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 4:21:01 PM)
@@ -171,7 +179,7 @@ public void retrieve(String dbalias)
 	try
 	{
 		SqlStatement stat = new SqlStatement(
-				"select Category, PAOName, Type, PAOClass, Description "
+				"select Category, PAOName, Type, PAOClass, Description, DisableFlag "
 					+ "from YukonPAObject where PAObjectID = "
 					+ getLiteID(), dbalias);
 
@@ -188,6 +196,7 @@ public void retrieve(String dbalias)
 		setType(PAOGroups.getPAOType(category, objs[2].toString()));
 		setPaoClass(PAOGroups.getPAOClass(category, objs[3].toString()));
 		setPaoDescription(objs[4].toString());
+        setDisableFlag(objs[5].toString());
 	}
 	catch (Exception e)
 	{
@@ -322,6 +331,10 @@ public String toString()
 	public void setPaoDescription(String paoDescription) {
 		this.paoDescription = paoDescription;
 	}
+    
+    public void setDisableFlag( String flag_ ) {
+        this.disableFlag = flag_;
+    }
 
 	/**
 	 * @return

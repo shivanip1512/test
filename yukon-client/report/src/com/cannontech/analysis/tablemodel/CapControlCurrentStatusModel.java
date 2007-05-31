@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
@@ -32,6 +32,8 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	public final static int CAP_BANK_NAME_COLUMN = 2;
 	public final static int CONTROL_STATUS_COLUMN = 3;	
 	public final static int LAST_STATUS_CHANGE_TIME_COLUMN = 4;
+    public final static int OPERTATIONAL_STATE_COLUMN = 5;
+    public final static int DISABLE_FLAG_COLUMN = 6;
 	
 	/** String values for column representation */
 	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
@@ -39,6 +41,17 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	public final static String FEEDER_NAME_STRING = "Cap Feeder";
 	public final static String CONTROL_STATUS_STRING = "Status";
 	public final static String LAST_STATUS_CHANGE_TIME_STRING  = "Status Changed Date/Time";
+    public final static String OPERATIONAL_STATE_STRING = "Operational State";
+    public final static String DISABLE_FLAG_STRING = "Disabled";
+    
+    public static final String[] ORDER_TYPE_STRINGS =
+    {
+        "Order by Substation",
+        "Order by Disabled",
+        "Order by Operation Method",
+        "Order by Status",
+        "Order by Status Changed Date/Time"
+    };  
 	
 	private int[] controlStates = null;
 	
@@ -46,6 +59,10 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	private static final String ATT_All_CAP_CONTROL_STATE = "capControlStateAll";
 	
 	private static final int ALL_CAP_CONTROL_STATES = -1;	//use some invalid number
+    
+    private String orderBy = null;
+
+    protected static final String ATT_ORDER_BY = "orderBy";
 	
 	/** A string for the title of the data */
 	private static String title = "Current Bank Status Report";
@@ -57,25 +74,43 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		    CapControlStatusData data1 = (CapControlStatusData)o1;
 		    CapControlStatusData data2 = (CapControlStatusData)o2;
 	        
-		    //Order by Sub Bus first
-		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
-		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
-			
-			if( thisValStr.equalsIgnoreCase(anotherValStr))
-			{
-//				Order by Feeder
-				thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getFeederPaoID().intValue());
-				anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getFeederPaoID().intValue());
-
-				if( thisValStr.equalsIgnoreCase(anotherValStr))
-				{
-					//Order by control Order
-					int thisVal = data1.getControlOrder().intValue();
-					int anotherVal = data2.getControlOrder().intValue();
-					return ( thisVal <anotherVal ? -1 : (thisVal ==anotherVal ? 0 : 1));
-				}
-			}
-			return (thisValStr.compareToIgnoreCase(anotherValStr));
+            if( ORDER_TYPE_STRINGS[0].equals(getOrderBy()) ) {
+    		    //Order by Sub Bus first
+    		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
+    		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
+    			
+    			if( thisValStr.equalsIgnoreCase(anotherValStr))
+    			{
+    //				Order by Feeder
+    				thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getFeederPaoID().intValue());
+    				anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getFeederPaoID().intValue());
+    
+    				if( thisValStr.equalsIgnoreCase(anotherValStr))
+    				{
+    					//Order by control Order
+    					int thisVal = data1.getControlOrder().intValue();
+    					int anotherVal = data2.getControlOrder().intValue();
+    					return ( thisVal <anotherVal ? -1 : (thisVal ==anotherVal ? 0 : 1));
+    				}
+    			}
+    			return (thisValStr.compareToIgnoreCase(anotherValStr));
+            }else if( ORDER_TYPE_STRINGS[1].equals(getOrderBy()) ) {
+                String val1 = data1.getDisableFlag();
+                String val2 = data2.getDisableFlag();
+                return (val1.compareToIgnoreCase(val2));
+            }else if ( ORDER_TYPE_STRINGS[2].equals(getOrderBy()) ) {
+                String val1 = data1.getOperationalState();
+                String val2 = data2.getOperationalState();
+                return (val1.compareToIgnoreCase(val2));
+            }else if ( ORDER_TYPE_STRINGS[3].equals(getOrderBy()) ) {
+                String val1 = DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
+                String val2 = DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
+                return (val1.compareToIgnoreCase(val2));
+            }else {
+                Date date1 = data1.getChangeDateTime();
+                Date date2 = data2.getChangeDateTime();
+                return (date1.compareTo(date2));
+            }
 		}
 		public boolean equals(Object obj){
 			return false;
@@ -99,7 +134,8 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	 * Add Integer (paobjectID) objects to data, retrieved from rset.
 	 * @param ResultSet rset
 	 */
-	public void addDataRow(ResultSet rset)
+	@SuppressWarnings("unchecked")
+    public void addDataRow(ResultSet rset)
 	{
 		try
 		{
@@ -108,11 +144,14 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			Integer feederPaoID = new Integer(rset.getInt(3));
 			Integer controlStatus = new Integer(rset.getInt(4));
 			java.sql.Timestamp lastChangedateTime = rset.getTimestamp(5);
-			Integer controlOrder = new Integer(rset.getInt(6));
+            String operationalState = rset.getString(6);
+			Integer controlOrder = new Integer(rset.getInt(7));
+            LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(capBankPaoID.intValue());
+            String disableFlag = lite.getDisableFlag();
 			
 			CapControlStatusData ccStatusData= new CapControlStatusData(
 			        capBankPaoID, subBusPaoID, feederPaoID,
-			        controlStatus, new Date(lastChangedateTime.getTime()), controlOrder);
+			        controlStatus, new Date(lastChangedateTime.getTime()), operationalState, disableFlag, controlOrder);
 			getData().add(ccStatusData);
 		}
 		catch(java.sql.SQLException e)
@@ -127,10 +166,11 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID, DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, CCFBL.CONTROLORDER " +
-				" FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL, ccsubareaassignment saa, capcontrolarea ca  " +
-				" WHERE saa.substationbusid = CCF.substationbusid and saa.areaid = ca.areaid and CCF.FEEDERID = CCFBL.FEEDERID " +
-				" AND DCC.CAPBANKID = CCFBL.DEVICEID");
+		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID, " + 
+                "DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, cb.operationalstate, CCFBL.CONTROLORDER " +
+				"FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL, ccsubareaassignment saa, capcontrolarea ca, capbank cb  " +
+				"WHERE saa.substationbusid = CCF.substationbusid and saa.areaid = ca.areaid and CCF.FEEDERID = CCFBL.FEEDERID " +
+				"AND DCC.CAPBANKID = CCFBL.DEVICEID and cb.deviceid = ccfbl.deviceid");
                 
                 if (getPaoIDs() != null && getPaoIDs().length > 0) {
                     if(getFilterModelType().equals(ReportFilter.AREA)) { //fix
@@ -161,16 +201,18 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 				            
 				    sql.append(")");
 				}
+                
+                
 		return sql;
 	}
 		
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -247,7 +289,6 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			{
 				case SUB_BUS_NAME_COLUMN:
 				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
-
 				case FEEDER_NAME_COLUMN:
 				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getFeederPaoID().intValue());
 				
@@ -259,6 +300,12 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 
 				case LAST_STATUS_CHANGE_TIME_COLUMN:
 					return ccStatData.getChangeDateTime();
+                    
+                case OPERTATIONAL_STATE_COLUMN:
+                    return ccStatData.getOperationalState();
+                    
+                case DISABLE_FLAG_COLUMN:
+                    return ccStatData.getDisableFlag();
 			}
 		}
 		return null;
@@ -276,7 +323,9 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			    FEEDER_NAME_STRING,
 			    CAP_BANK_NAME_STRING,
 			    CONTROL_STATUS_STRING,
-			    LAST_STATUS_CHANGE_TIME_STRING
+			    LAST_STATUS_CHANGE_TIME_STRING,
+                OPERATIONAL_STATE_STRING,
+                DISABLE_FLAG_STRING
 			};
 		}
 		return columnNames;
@@ -294,7 +343,9 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 				String.class,
 				String.class,
 				String.class,
-				Date.class
+				Date.class,
+                String.class,
+                String.class
 			};
 		}
 		return columnTypes;
@@ -308,11 +359,13 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(0, 1, 160, null),
-				new ColumnProperties(160, 1, 160, null),
-				new ColumnProperties(320, 1, 160, null),
-				new ColumnProperties(480, 1, 100, null),
-				new ColumnProperties(580, 1, 120, null)
+				new ColumnProperties(0, 1, 120, null),
+				new ColumnProperties(120, 1, 120, null),
+				new ColumnProperties(240, 1, 120, null),
+				new ColumnProperties(360, 1, 100, null),
+				new ColumnProperties(460, 1, 120, null),
+                new ColumnProperties(580, 1, 80, null),
+                new ColumnProperties(660, 1, 50, null)
 			};
 		}
 		return columnProperties;
@@ -337,34 +390,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	{
 		return false;
 	}
-	/**
-	 * @return
-	 */
-	/*public int getOrderBy()
-	{
-		return orderBy;
-	}
-	public void setOrderBy(int i)
-	{
-		orderBy = i;
-	}
-	public String getOrderByString(int orderBy)
-	{
-		switch (orderBy)
-		{
-			case ORDER_BY_METER_NAME:
-				return "Meter Name";
-			case ORDER_BY_METER_NUMBER:
-				return "Meter Number";
-			case ORDER_BY_COLL_GRP:
-			    return "Collection Group";
-		}
-		return "UNKNOWN";
-	}
-	public static int[] getAllOrderBys()
-	{
-		return ALL_ORDER_BYS;
-	}*/	
+	
 	@Override
 	public String getHTMLOptionsTable()
 	{
@@ -402,7 +428,20 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
-		
+        html += "    <td valign='top'>" + LINE_SEPARATOR;
+        html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td valign='top' class='TitleHeader'>Order By</td>" +LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        for( int i = 0; i < ORDER_TYPE_STRINGS.length; i++)
+        {
+            html += "        <tr>" + LINE_SEPARATOR;
+            html += "          <td><input type='radio' name='orderBy' value='" + ORDER_TYPE_STRINGS[i] + "' " + (i==0? "checked" : "") + " >" + ORDER_TYPE_STRINGS[i] + LINE_SEPARATOR;
+            html += "          </td>" + LINE_SEPARATOR;
+            html += "        </tr>" + LINE_SEPARATOR;
+        }
+        html += "      </table>" + LINE_SEPARATOR;
+        html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
@@ -430,14 +469,19 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 				else
 					setControlStates(null);
 			}
-			
-//			String param = req.getParameter(ATT_ORDER_BY);
-//			if( param != null)
-//				setOrderBy(Integer.valueOf(param).intValue());
-//			else
-//				setOrderBy(ORDER_BY_METER_NAME);			
+            param = req.getParameter(ATT_ORDER_BY);
+            setOrderBy(param);			
 		}
 	}
+    
+    public void setOrderBy( String order ) {
+        orderBy = order;
+    }
+    
+    public String getOrderBy() {
+        return orderBy;
+    }
+    
     public int[] getControlStates()
     {
         return controlStates;
