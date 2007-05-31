@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.142 $
-* DATE         :  $Date: 2007/04/25 15:54:56 $
+* REVISION     :  $Revision: 1.143 $
+* DATE         :  $Date: 2007/05/31 20:28:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3895,21 +3895,23 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         // No error occured, we must do a real decode!
         string descriptor;
 
-        int  ssp;
+        int ssp, rev;
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
         ssp  = DSt.Message[0];
         ssp |= DSt.Message[4] << 8;
 
+        rev  = (unsigned)DSt.Message[1];
+
         descriptor += getName() + " / Model information:\n";
         descriptor += "Software Specification " + CtiNumStr(ssp) + " rev ";
 
         //  convert 10 to 1.0, 24 to 2.4
-        descriptor += CtiNumStr(((double)DSt.Message[1]) / 10.0, 1);
+        descriptor += CtiNumStr(((double)rev) / 10.0, 1);
 
         //  valid/released versions are 1.0 - 24.9
-        if( DSt.Message[1] <   10 ||
-            DSt.Message[1] >= 250 )
+        if( rev <= SspecRev_BetaLo ||
+            rev >= SspecRev_BetaHi )
         {
             descriptor += " [possible development revision]";
         }
@@ -3918,7 +3920,7 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 
         //  set the dynamic info for use later
         setDynamicInfo(Keys::Key_MCT_SSpec,         (long)ssp);
-        setDynamicInfo(Keys::Key_MCT_SSpecRevision, (long)DSt.Message[1]);
+        setDynamicInfo(Keys::Key_MCT_SSpecRevision, (long)rev);
 
         descriptor += getName() + " / Physical meter configuration:\n";
         descriptor += "Base meter: ";

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/05/18 18:49:38 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/05/31 20:29:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -410,9 +410,11 @@ protected:
         MCT430A_Sspec       = 1037,
         MCT430S_Sspec       = 1046,
 
-        Sspec        = 1030,
-        SspecRevMin  =    5,  //  rev  0.5
-        SspecRevMax  =  100,  //  rev 10.0
+        Sspec          = 1030,
+        SspecRev_Min    =    5,  //  rev  0.5
+        SspecRev_Max    =  255,  //  rev 25.5
+        SspecRev_BetaLo =    9,  //  rev  0.9
+        SspecRev_BetaHi =  251,  //  rev 25.1
 
         SspecRev_IED_ZeroWriteMin    = 13,  //  rev 1.3
         SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4

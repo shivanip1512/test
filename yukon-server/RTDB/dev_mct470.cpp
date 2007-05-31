@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2007/05/17 22:24:28 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2007/05/31 20:29:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -484,7 +484,7 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
     //  we don't use the second load profile rate yet
     //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
 
-    if( retval && ((sspec == Sspec && sspec_rev >= SspecRevMin && sspec_rev <= SspecRevMax)
+    if( retval && ((sspec == Sspec && sspec_rev >= SspecRev_Min && sspec_rev <= SspecRev_Max)
                    || sspec == MCT430A_Sspec
                    || sspec == MCT430S_Sspec) )
     {
@@ -530,8 +530,8 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
     {
         //  the ideal case - the correct, non-development sspec
         if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec       &&
-             getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRevMin &&
-             getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRevMax)
+             getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Min &&
+             getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_Max)
             || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
             || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
         {
@@ -1049,8 +1049,8 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             {
                 //  check if we're the IED sspec
                 if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec       &&
-                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRevMin &&
-                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRevMax)
+                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Min &&
+                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_Max)
                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
                 {
@@ -4815,25 +4815,25 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 
         string sspec;
         string options;
-        int  ssp;
-        char rev;
+        int ssp, rev;
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
 
         ssp  = InMessage->Buffer.DSt.Message[0];
         ssp |= InMessage->Buffer.DSt.Message[4] << 8;
 
-        rev  = InMessage->Buffer.DSt.Message[1];  //  1 = A, 2 = B, etc...  > 26 is undefined
+        rev  = (unsigned)InMessage->Buffer.DSt.Message[1];
 
         //  set the dynamic info for use later
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)rev);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         ssp);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, rev);
 
         //  convert 10 to 1.0, 24 to 2.4
         sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
 
         //  valid/released versions are 1.0 - 24.9
-        if( InMessage->Buffer.DSt.Message[1] <   10 || InMessage->Buffer.DSt.Message[1] >= 250 )
+        if( rev <= SspecRev_BetaLo ||
+            rev >= SspecRev_BetaHi )
         {
             sspec += " [possible development revision]\n";
         }
