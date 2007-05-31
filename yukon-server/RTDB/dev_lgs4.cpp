@@ -2149,7 +2149,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 }
                 else
                 {
-                    // if CTIDBG_new date is empty, we're doing an inter interval power outage
+                    // if new date is empty, we're doing an inter interval power outage
                     if (getNewDate() == 0)
                     {
                         syncAppropriateTime(secondsSinceMidnight);
@@ -2307,7 +2307,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 // set previous date only if newDate doesn't exists
                 if (getOldTime() != 0)
                 {
-                    // we have a CTIDBG_new date, figure out how long the change is
+                    // we have a new date, figure out how long the change is
                     setCurrentLPDate (getPreviousLPDate());
                 }
                 else
@@ -2317,7 +2317,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     setCurrentLPDate (CtiTime(recordDate).seconds());
                 }
 
-                // CTIDBG_new day start from zero
+                // new day start from zero
                 setCurrentLPChannel (0);
                 setCurrentLPInterval (0);
             }
@@ -2390,7 +2390,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 */
                                 ULONG newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
 
-                                // plug data from current to CTIDBG_new interval
+                                // plug data from current to new interval
                                 for (int x = getCurrentLPInterval(); x < newInterval; x++)
                                 {
                                     // fill message with plug data to next interval
@@ -3667,7 +3667,7 @@ BOOL CtiDeviceLandisGyrS4::verifyAndAddPointToReturnMsg (LONG   aPointId,
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a CTIDBG_new message
+        //create a new message
         pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,

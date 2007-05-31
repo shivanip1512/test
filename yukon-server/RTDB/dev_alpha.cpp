@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/05/31 21:38:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.16  2007/05/31 21:38:44  mfisher
+      Reverted text in comments from "CTIDBG_new" back to "new"
+
       Revision 1.15  2006/02/27 23:58:29  tspar
       Phase two of RWTPtrSlist replacement.
 
@@ -995,7 +998,7 @@ BOOL CtiDeviceAlpha::verifyAndAddPointToReturnMsg (LONG   aPointId,
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a CTIDBG_new message
+        //create a new message
         pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,

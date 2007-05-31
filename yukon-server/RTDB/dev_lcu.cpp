@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/12/28 20:50:12 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2007/05/31 21:38:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1522,7 +1522,7 @@ void CtiDeviceLCU::initLCUGlobals()
     }
 }
 
-// delete and set to CTIDBG_new val.
+// delete and set to new val.
 CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
 {
     LockGuard guard(monitor());

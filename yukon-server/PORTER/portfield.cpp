@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.206 $
-* DATE         :  $Date: 2007/03/14 19:33:02 $
+* REVISION     :  $Revision: 1.207 $
+* DATE         :  $Date: 2007/05/31 21:41:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -616,7 +616,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
                 current = current.now();
                 for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++, current <= minTimeout)
                 {
-                    /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
+                    /* Check the queue 4 times per second for a new entry for this port ... */
                     if((slot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
                     {
                         break;
@@ -634,7 +634,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
             current = current.now();
             for( ; slot == 0 && i < (ULONG)(4 * stayConnectedMax); i++, current <= maxTimeout)
             {
-                /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
+                /* Check the queue 4 times per second for a new entry for this port ... */
                 if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
                 {
                     slot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID);
@@ -1235,24 +1235,24 @@ void processPreloads(CtiPortSPtr Port)
         if( dev )
         {
             CtiTablePaoExclusion paox(0, dev->getID(), 0, 0, 0, CtiTablePaoExclusion::ExFunctionCycleTime);
-    
+
             if( load_end < dev->getPreloadEndTime() )
             {
                 load_end = dev->getPreloadEndTime();
             }
-    
+
             if( load_begin > dev->getPreloadEndTime() )
             {
                 load_begin = dev->getPreloadEndTime();
             }
-    
-    
+
+
             //  we would like at least this many millis to communicate
             double preload_ideal = (dev->getPreloadBytes() * 8.0) / Port->getBaudRate();
-    
+
             preload_ideal *= gConfigParms.getValueAsDouble("PRELOAD_MULTIPLIER", 1.2);
             preload_ideal += gConfigParms.getValueAsULong("PRELOAD_PADDING", 5);
-    
+
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1261,18 +1261,18 @@ void processPreloads(CtiPortSPtr Port)
                 dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Device will fire at " << load_begin << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" Load will begin at " << (load_begin - preload_ideal) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-    
+
             if( dev->getCycleTime() )
             {
                 paox.setCycleTime(dev->getCycleTime());
                 paox.setCycleOffset((load_begin.seconds() - (long)preload_ideal) % dev->getCycleTime());
                 paox.setTransmitTime((long)preload_ideal);
                 dev->getExclusion().addExclusion(paox);
-    
+
                 dev->getExclusion().setEvaluateNextAt(load_begin.seconds() - preload_ideal);
-    
+
                 load_begin -= preload_ideal;
-    
+
                 if( load_begin < now )
                 {
                     {

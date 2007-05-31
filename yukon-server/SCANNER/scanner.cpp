@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2007/03/14 19:33:04 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2007/05/31 21:41:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -833,7 +833,7 @@ VOID ResultThread (VOID *Arg)
                     // Do some device dependent work on this Inbound message!
                     DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
-                    // Send any CTIDBG_new porter requests to porter
+                    // Send any new porter requests to porter
                     if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.size() > 0)
                     {
                         {
@@ -861,7 +861,7 @@ VOID ResultThread (VOID *Arg)
                     /* Check if we should kick other thread in the pants */
                     if(DeviceRecord->getScanRate(ScanRateGeneral) == 0)
                     {
-                        // FIX FIX FIX This needs a CTIDBG_new IPC with PORTER.. No DB connection anymore!
+                        // FIX FIX FIX This needs a new IPC with PORTER.. No DB connection anymore!
                         DeviceRecord->setNextScan(ScanRateGeneral, TimeNow.now());
                         SetEvent(hScannerSyncs[S_SCAN_EVENT]);
                     }

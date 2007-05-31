@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2007/03/09 21:44:36 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2007/05/31 21:41:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1012,7 +1012,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
                 if(!pExecReq->getSOE())     // We should attach one if one is not already set...
                 {
-                    pExecReq->setSOE( SystemLogIdGen() );  // Get us a CTIDBG_new number to deal with
+                    pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
                 delete_list(temp_outList);
                 temp_outList.clear();              // Just make sure!

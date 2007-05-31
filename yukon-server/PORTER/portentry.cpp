@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2007/05/30 14:32:56 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2007/05/31 21:41:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,13 +134,13 @@ VOID PorterConnectionThread (VOID *Arg)
     _beginthread(ConnectionThread, 0, (VOID*)&PorterToPil);
 
     /*
-     *  4/7/99 This is the server side of a CTIDBG_new Port Control Nexus
-     *  This thread rolls off CTIDBG_new instances of this connection on an as needed basis.
+     *  4/7/99 This is the server side of a new Port Control Nexus
+     *  This thread rolls off new instances of this connection on an as needed basis.
      *
      *  1. Create a listener on PORTCONTROLNEXUS for incoming connections
-     *  2. Pop off a CTIDBG_new thread to manage the returned connection.
-     *       NOTE: This deviates in implementation from DSM/2 which spwned a CTIDBG_new listener thread
-     *             sockets don't care for CTIDBG_new listener sockets.
+     *  2. Pop off a new thread to manage the returned connection.
+     *       NOTE: This deviates in implementation from DSM/2 which spwned a new listener thread
+     *             sockets don't care for new listener sockets.
      */
 
     while(!PorterQuit && PorterListenNexus.CTINexusCreate(PORTCONTROLNEXUS))

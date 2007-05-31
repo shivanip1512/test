@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/05/31 21:38:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.18  2007/05/31 21:38:44  mfisher
+      Reverted text in comments from "CTIDBG_new" back to "new"
+
       Revision 1.17  2006/03/23 15:29:16  jotteson
       Mass update of point* to smart pointers. Point manager now uses smart pointers.
 
@@ -1911,7 +1914,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
             // set pvalue
             PValue = (FLOAT) (DUPRep->Status & ALPHA_POWER_FAIL ? CLOSED : OPENED);
 
-            // add CTIDBG_new message with plugged
+            // add new message with plugged
             pData = CTIDBG_new CtiPointDataMsg(pNumericPoint->getPointID(),
                                         PValue,
                                         NonUpdatedQuality,

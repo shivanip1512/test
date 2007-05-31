@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:19:22 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/05/31 21:41:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -256,7 +256,7 @@ VOID VConfigThread (VOID *Arg)
             VSt.CommandType   =  VCONFIG;
             // VSt.Priority      = 0;
 
-            /* get the CTIDBG_new auxilary ID */
+            /* get the new auxilary ID */
             GetString (File, Buffer, sizeof (Buffer));
 
             if(sscanf (Buffer, "%hd\n", &VSt.VConfig.Data[0]) != 1)
@@ -278,7 +278,7 @@ VOID VConfigThread (VOID *Arg)
          }
 
 
-            /* Do a CTIDBG_new Section address */
+            /* Do a new Section address */
             GetString (File, Buffer, sizeof (Buffer));
 
             if(sscanf (Buffer, "%hd", &VSt.VConfig.Data[0]) != 1)
@@ -292,7 +292,7 @@ VOID VConfigThread (VOID *Arg)
             VSend (&VSt, Route, TRUE);
 
 
-            /* get the line containing the CTIDBG_new Class address(s) */
+            /* get the line containing the new Class address(s) */
             GetString (File, Buffer, sizeof (Buffer));
 
             if(Buffer[0] == '\0')
@@ -364,7 +364,7 @@ VOID VConfigThread (VOID *Arg)
                VSend (&VSt, Route, TRUE);
             }
 
-            /* get the line containing the CTIDBG_new Divison address(s) */
+            /* get the line containing the new Divison address(s) */
             GetString (File, Buffer, sizeof (Buffer));
 
             if(Buffer[0] == '\0')
@@ -469,7 +469,7 @@ VOID VConfigThread (VOID *Arg)
          {
             VSt.CommandType =  VCONFIG;
 
-            /* get the CTIDBG_new utility ID */
+            /* get the new utility ID */
             GetString (File, Buffer, sizeof (Buffer));
 
             if(sscanf (Buffer, "%hd\n", &VSt.VConfig.Data[0]) != 1)
@@ -525,7 +525,7 @@ VOID VConfigThread (VOID *Arg)
                /* Load 'er up */
                VSt.CommandType =  VCONFIG;
 
-               /* Do the CTIDBG_new auxilary ID */
+               /* Do the new auxilary ID */
                VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.UtilityID;
                memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
                VSt.VConfig.ConfigType = VCONFIG_AUXID;
@@ -533,14 +533,14 @@ VOID VConfigThread (VOID *Arg)
                       Route,
                       TRUE);
 
-               /* Do a CTIDBG_new Section address */
+               /* Do a new Section address */
                VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.Section;
                memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
                VSt.VConfig.ConfigType = VCONFIG_SECTION;
                VSend (&VSt, Route, TRUE);
 
 
-               /* Do a CTIDBG_new Class address */
+               /* Do a new Class address */
                /* Invert The Address */
                IAddress = 0;
                for(i = 0; i < 16; i++)
@@ -555,7 +555,7 @@ VOID VConfigThread (VOID *Arg)
                VSend (&VSt, Route, TRUE);
 
 
-               /* Do a CTIDBG_new Division address */
+               /* Do a new Division address */
                /* Invert The Address */
                IAddress = 0;
                for(i = 0; i < 16; i++)

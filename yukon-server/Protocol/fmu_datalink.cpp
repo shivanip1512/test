@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/fmu_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $                                                198
-* DATE         :  $Date: 2007/01/26 20:20:18 $
-*    History: 
+* REVISION     :  $Revision: 1.2 $                                                198
+* DATE         :  $Date: 2007/05/31 21:41:19 $
+*    History:
       $Log: fmu_datalink.cpp,v $
+      Revision 1.2  2007/05/31 21:41:19  mfisher
+      Reverted text in comments from "CTIDBG_new" back to "new"
+
       Revision 1.1  2007/01/26 20:20:18  jrichter
       FMU stuff for jess....
 
@@ -80,7 +83,7 @@ void CtiFMUDatalink::reinitialize( void )
    _packetBytesReceived = 0;
    //_identityByte = ANsI_RESERVED;  //0x00 default
 
-   destroyMe();                                
+   destroyMe();
 }
 
 //=========================================================================================================================================
@@ -108,7 +111,7 @@ void CtiFMUDatalink::initializeForNewPacket( void )
     _currentPos = ack;
     _previousPos = ack;
     _packetComplete = false;
-}         
+}
 
 
 
@@ -124,15 +127,15 @@ void CtiFMUDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT cmd,
    //header + reserved
    packetPtr[0] = FMU_STP;
    addr.ul = address;
-   
+
    packetPtr[1] = addr.ch[0];
    packetPtr[2] = addr.ch[1];
    packetPtr[3] = addr.ch[2];
    packetPtr[4] = addr.ch[3];
 
    //need to set bits 7 (start of msg flag) and 6 (end of msg flag)
-   packetPtr[5] = seq; 
-   
+   packetPtr[5] = seq;
+
    packetPtr[6] = cmd;
 
    //length
@@ -204,7 +207,7 @@ bool CtiFMUDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
                  if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
                  {
                     memcpy( _currentPacket, xfer.getInBuffer(), _packetBytesReceived );
-                 }                             
+                 }
 
                 decodePacketHeader( );
 
@@ -234,13 +237,13 @@ bool CtiFMUDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
 
               if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
               {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+                  CtiLockGuard< CtiLogger > doubt_guard( dout );
                   dout <<"  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
               }
               if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
               {
                  memcpy( _currentPacket+_packetBytesReceived-xfer.getInCountActual(),
-                          xfer.getInBuffer(), 
+                          xfer.getInBuffer(),
                          xfer.getInCountActual() );
                  _previousPos = _currentPos;
                  _currentPos = sendAck;
@@ -450,7 +453,7 @@ bool CtiFMUDatalink::getToggle( void )
 }
 
 //=========================================================================================================================================
-//this method simply lops off the end of the message where the crc is and compares it to a CTIDBG_new calculation that is done
+//this method simply lops off the end of the message where the crc is and compares it to a new calculation that is done
 //=========================================================================================================================================
 
 bool CtiFMUDatalink::isCRCvalid( void )

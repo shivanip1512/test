@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2007/02/22 22:07:33 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/05/31 21:41:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -434,7 +434,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
     OutMessage->EventCode    |= RIPPLE | ENCODED;
     OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
 
-    lcu->lcuControl( OutMessage );        // This will return NULL or a CTIDBG_new OUTMESS
+    lcu->lcuControl( OutMessage );        // This will return NULL or a new OUTMESS
 
     bookkeeping |= 0x00000002;
 

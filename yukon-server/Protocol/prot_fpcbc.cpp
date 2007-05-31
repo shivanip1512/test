@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/05/31 21:41:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
     BYTE  config[6];
 
 
-    primeFPStruct(aFPSt);  // Get a CTIDBG_new one in the system
+    primeFPStruct(aFPSt);  // Get a new one in the system
 
     /*
      * This should be the original with only the addressing copied into it,
@@ -109,7 +109,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
     {
         if(firstOneDone)
         {
-            advanceAndPrime(FPStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(FPStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
         }
 
         /*
@@ -155,12 +155,12 @@ INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const 
 
     if(CtlReq == CMD_FLAG_CTL_OPEN)
     {
-        primeFPStruct(aFPSt);  // Get a CTIDBG_new one in the system
+        primeFPStruct(aFPSt);  // Get a new one in the system
         capacitorControlCommand(TRUE);
     }
     else if(CtlReq == CMD_FLAG_CTL_CLOSE)
     {
-        primeFPStruct(aFPSt);  // Get a CTIDBG_new one in the system
+        primeFPStruct(aFPSt);  // Get a new one in the system
         capacitorControlCommand(FALSE);
     }
     else
@@ -224,7 +224,7 @@ FPSTRUCT CtiProtocolFisherPierceCBC::getFPStruct(INT pos) const
     return **itr;
 }
 FPSTRUCT& CtiProtocolFisherPierceCBC::getFPStruct(INT pos)
-{   
+{
     int x = 0;
     std::list<FPSTRUCT*>::iterator itr = _fst.begin();
     while( x != pos ){

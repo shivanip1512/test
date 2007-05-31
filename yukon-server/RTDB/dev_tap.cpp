@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2007/03/22 22:18:18 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2007/05/31 21:38:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -621,7 +621,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< C
                 // Rely upon the already set up machinery, and just decrement the remaining trys
                 setAttemptsRemaining( getAttemptsRemaining() - 1 );               // Repeat this operation this many times before err-abort
 
-                xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
+                xfer.setOutCount( 0 );              // Nothing new here..
 
                 xfer.setInCountExpected(1);
                 xfer.setInTimeout( TAPTIME_T3 );
@@ -955,7 +955,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage
              *  The page went out and an ESC came back..  we get 2 more bytes
              */
 
-            xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
+            xfer.setOutCount( 0 );              // Nothing new here..
 
             xfer.setInCountExpected(2);
             xfer.setInTimeout( TAPTIME_T3 );    // A nice protocol defined time..
@@ -970,7 +970,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage
              *  The page went out and an ACK, NAK, or RS came back.. we get one more byte
              */
 
-            xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
+            xfer.setOutCount( 0 );              // Nothing new here..
 
             xfer.setInCountExpected(1);
             xfer.setInTimeout( TAPTIME_T3 );    // A nice protocol defined time..
@@ -984,7 +984,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage
             /*
              *  This state keeps us pulling off values until Decode3 is satisfied, or the retries fail
              */
-            xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
+            xfer.setOutCount( 0 );              // Nothing new here..
 
             xfer.setInCountExpected(1);
             xfer.setInTimeout( TAPTIME_T3 );    // A nice protocol defined time..
@@ -1269,7 +1269,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list<
                  * Decode_1 happy.
                  */
 
-                xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
+                xfer.setOutCount( 0 );              // Nothing new here..
 
                 xfer.setInCountExpected(1);
                 xfer.setInTimeout( TAPTIME_T3 );

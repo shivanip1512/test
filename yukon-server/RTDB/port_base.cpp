@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2007/05/30 14:36:23 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2007/05/31 21:41:19 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.70  2007/05/31 21:41:19  mfisher
+* Reverted text in comments from "CTIDBG_new" back to "new"
+*
 * Revision 1.69  2007/05/30 14:36:23  mfisher
 * YUK-3793
 * added port share blocking (cparm PORT_SHARE_BLOCKING_DURATION) to prevent anyone from using the port share when we're in control of the port
@@ -924,7 +927,7 @@ INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, l
     {
         if(width + 2 > SCREEN_WIDTH)
         {
-            /* yes so goto CTIDBG_new line */
+            /* yes so goto new line */
             trace.setTrace( string( buffer ) );
             trace.setEnd(true);
             traceList.push_back(trace.replicateMessage());

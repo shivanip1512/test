@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/12/11 17:08:43 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2007/05/31 21:38:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -980,7 +980,7 @@ INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &tr
                 _completedState = _executionState;
                 _executionState = SXNT_DECODEFIELDDESC;          // We are working on this..
 
-                // This MAY be a CTIDBG_new Transfer reference!
+                // This MAY be a new Transfer reference!
                 Transfer.setOutBuffer( getTxBuffer() );      // Don't use any buffer which may have been supplied
                 Transfer.setInBuffer( getRxBuffer() );       // Don't use any buffer which may have been supplied
 
@@ -1244,7 +1244,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
 
                     if ( _lpTime >= headTime )
                     {
-                        // there is no CTIDBG_new data..
+                        // there is no new data..
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1305,7 +1305,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
 
                         if (skiprecords > 0)
                         {
-                            // Move/skip the "_tail" forward to our CTIDBG_new try..
+                            // Move/skip the "_tail" forward to our new try..
                             newtail = _tail + skiprecords;      // Add the number of records to skip to the tail record number.  Assume the rollover happens correctly on a uint32.
 
                             if (!(isRecLT(_tail, newtail) && isRecLT(newtail, _head + 1)))
@@ -1372,7 +1372,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
                         setCurrentState( CtiDeviceIED::StateScanReturnLoadProfile );
                     }
 
-                    // Next pass gets us a CTIDBG_new record!
+                    // Next pass gets us a new record!
                     _tail += recProcessed;
 
                     _executionState = SXNT_GETRECORDS;
@@ -1900,7 +1900,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
                 pRetMsg = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), resString, InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt,InMessage->Return.TrxID,InMessage->Return.UserID);
 
-                //create a CTIDBG_new data message
+                //create a new data message
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString, TAG_POINT_LOAD_PROFILE_DATA);
 
                 if (pData != NULL)

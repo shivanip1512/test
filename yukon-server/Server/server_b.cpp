@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2007/04/20 19:48:24 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/05/31 21:41:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,7 +175,7 @@ int  CtiServer::clientRegistration(CtiServer::ptr_type CM)
             dout << NowTime.now() << " Connection rejected, entry will be deleted." << endl;
         }
 
-        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
+        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
 
         {
             if(mConnectionTable.remove((long)CM.get()))
@@ -374,7 +374,7 @@ int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
                 dout << CtiTime() << " Connection " << Mgr->getClientName() << " to " << Mgr->getPeer() << " has been denied, entry will be deleted." << endl;
             }
 
-            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
+            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
 
             if(mConnectionTable.remove((long)Mgr.get()))
             {

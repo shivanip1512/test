@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2007/05/31 21:38:44 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@
 
 using std::list;
 using namespace std;
-   
+
 CtiDeviceMacro::CtiDeviceMacro( )  {  }
 
 CtiDeviceMacro::CtiDeviceMacro( const CtiDeviceMacro &aRef )
@@ -151,7 +151,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                     pBase->initTrxID( OutMessage->TrxID, parse, vgList );      // Must init the non-participants so they count too.
                 }
 
-                // It is our job to clean up after any Execute chain which does not consume the CTIDBG_new message.
+                // It is our job to clean up after any Execute chain which does not consume the new message.
                 if(pOutMessage)
                 {
                     delete pOutMessage;
@@ -320,7 +320,7 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessag
         resString = getName() + " / " + pPoint->getName();
         resString += " = " + CtiNumStr(val);
 
-        //create a CTIDBG_new data message
+        //create a new data message
         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
 
         if (pData != NULL)
@@ -364,7 +364,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  list< CtiMessage* >  &vgList)
                 val = boost::static_pointer_cast< CtiPointNumeric >(pPoint)->computeValueForUOM( (DOUBLE)cnt );
             }
 
-            //create a CTIDBG_new data message
+            //create a new data message
             string s= getName() + " / " + pPoint->getName();
             s += " = " + CtiNumStr(val);
             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), s);

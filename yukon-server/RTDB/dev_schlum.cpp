@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/05/31 21:38:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -401,7 +401,7 @@ BOOL CtiDeviceSchlumberger::verifyAndAddPointToReturnMsg (LONG          aPointId
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a CTIDBG_new message
+        //create a new message
         pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,

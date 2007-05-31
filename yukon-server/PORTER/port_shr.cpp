@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/04/04 18:17:20 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/05/31 21:41:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,7 +142,7 @@ void CtiPortShare::createNexus(string nexusName)
    CTINEXUS newNexus;
 
    /*
-    *  4/8/99 This is the server side of a CTIDBG_new Nexus
+    *  4/8/99 This is the server side of a new Nexus
     *  This thread listens only once and is shutdown as the listener.
     *
     *  The socket connection created here is then used to communicate to porter from port_shr.
@@ -167,7 +167,7 @@ void CtiPortShare::createNexus(string nexusName)
    }
 
    /*
-    *  Blocking wait on the listening nexus.  Will return a CTIDBG_new nexus for the connection
+    *  Blocking wait on the listening nexus.  Will return a new nexus for the connection
     */
    nRet = ListenNexus.CTINexusConnect(&newNexus);
 

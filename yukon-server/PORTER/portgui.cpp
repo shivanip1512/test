@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/02/21 15:27:00 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/05/31 21:41:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,13 +108,13 @@ VOID PorterGUIConnectionThread (VOID *Arg)
                  CtiLockGuard<CtiLogger> doubt_guard(dout);
                  dout << CtiTime() << " Porter GUI Connection Thread. TID:  " << rwThreadId() << endl;
              }
-         
+
              CtiThreadRegData *data;
              data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GUI Connection Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
              ThreadMonitor.tickle( data );
              lastTickleTime = lastTickleTime.now();
          }
-        
+
          NewNexus = (CTINEXUS*) CTIDBG_new CTINEXUS;
 
          if(NewNexus == NULL)
@@ -127,7 +127,7 @@ VOID PorterGUIConnectionThread (VOID *Arg)
          sprintf(NewNexus->Name, "PortControl GUI Nexus #%d", iNexus++);
 
          /*
-          *  Blocking wait on the listening nexus.  Will return a CTIDBG_new nexus for the connection
+          *  Blocking wait on the listening nexus.  Will return a new nexus for the connection
           */
          nRet = ListenNexus.CTINexusConnect(NewNexus);
 

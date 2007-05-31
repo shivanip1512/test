@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/09/26 14:21:28 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/05/31 21:38:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         setOutMessageTargetID( OutMessage->TargetID );          // This is the Device which is targeted.
         setOutMessageLMGID( OutMessage->DeviceIDofLMGroup );    // This is the LM Group which started this mess
         setOutMessageTrxID( OutMessage->TrxID );                // This is the LM Group which started this mess
-        initTrxID( OutMessage->TrxID, parse, vgList );                 // Be sure to accept, or create a CTIDBG_new TrxID.
+        initTrxID( OutMessage->TrxID, parse, vgList );                 // Be sure to accept, or create a new TrxID.
 
         OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
         OutMessage->EventCode   = RIPPLE | NORESULT;
@@ -178,7 +178,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
 }
 
 /*
- *  Used by the macro group stuff to generate a CTIDBG_new bit pattern comprised of each member RIPPLE GROUP'S
+ *  Used by the macro group stuff to generate a new bit pattern comprised of each member RIPPLE GROUP'S
  *  bit pattern.
  */
 void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
@@ -218,7 +218,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
                 val = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( (DOUBLE)count );
             }
 
-            //create a CTIDBG_new data message
+            //create a new data message
             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), string( getName() + " / " +  pPoint->getName() + CtiNumStr(val) ));
 
             if (pData != NULL)
@@ -286,7 +286,7 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, list< Cti
 
         string resString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) );
 
-        //create a CTIDBG_new data message
+        //create a new data message
         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
 
         if (pData != NULL)

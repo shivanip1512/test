@@ -2116,7 +2116,7 @@ BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (LONG   aPointId,
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a CTIDBG_new message
+        //create a new message
         pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,
