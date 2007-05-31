@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $                                                198
-* DATE         :  $Date: 2006/04/06 17:00:30 $
-*    History: 
+* REVISION     :  $Revision: 1.15 $                                                198
+* DATE         :  $Date: 2007/05/31 21:30:23 $
+*    History:
       $Log: ansi_datalink.cpp,v $
+      Revision 1.15  2007/05/31 21:30:23  mfisher
+      Reverted text in comments from "CTIDBG_new" back to "new"
+
       Revision 1.14  2006/04/06 17:00:30  jrichter
       BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
 
@@ -108,7 +111,7 @@ void CtiANSIDatalink::reinitialize( void )
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
 
-   destroyMe();                                
+   destroyMe();
 }
 
 //=========================================================================================================================================
@@ -259,7 +262,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
                  if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
                  {
                     memcpy( _currentPacket, xfer.getInBuffer(), _packetBytesReceived );
-                 }                             
+                 }
 
                 decodePacketHeader( );
 
@@ -289,13 +292,13 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
 
               if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
               {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+                  CtiLockGuard< CtiLogger > doubt_guard( dout );
                   dout <<"  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
               }
               if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
               {
                  memcpy( _currentPacket+_packetBytesReceived-xfer.getInCountActual(),
-                          xfer.getInBuffer(), 
+                          xfer.getInBuffer(),
                          xfer.getInCountActual() );
                  _previousPos = _currentPos;
                  _currentPos = sendAck;
@@ -434,7 +437,7 @@ void CtiANSIDatalink::buildNegotiate(BYTE aServiceCode, CtiXfer &xfer )
    //data[4] = 0x06;
    //data[4] = 0x04;
    if (aServiceCode != 0x60)
-   {                 
+   {
        arraySize = 5;
        data[4] = 0x06;
        //data[4] = 0x04;
@@ -453,7 +456,7 @@ void CtiANSIDatalink::buildNegotiate(BYTE aServiceCode, CtiXfer &xfer )
    flip.sh = crc( 4 + HEADER_LEN, xfer.getOutBuffer() );
    xfer.getOutBuffer()[4 + HEADER_LEN] = flip.ch[1];
    xfer.getOutBuffer()[4 + HEADER_LEN + 1] = flip.ch[0];
-   
+
    xfer.setOutCount( 4 + HEADER_LEN + sizeof( USHORT ) );
    */
    //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
@@ -532,7 +535,7 @@ void CtiANSIDatalink::buildLogOn(BYTE aServiceCode, CtiXfer &xfer )
    data[4] = 0x00;
    data[5] = 0x00;
    data[6] = 0x00;
-   */ 
+   */
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 13, 0 );
 
@@ -554,7 +557,7 @@ void CtiANSIDatalink::buildSecure(BYTE aServiceCode, CtiXfer &xfer, BYTE *passwo
 {
    BYTE        data[21];
    BYTEUSHORT  flip;
-   
+
    memset( data, NULL, 21 );
    data[0] = aServiceCode;
    memcpy( &data[1], password, 20 );
@@ -639,10 +642,10 @@ void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, short aTableID, BYTE aOp
   {
       data[3] = offset.ch[2];
       data[4] = offset.ch[1];
-      data[5] = offset.ch[0]; 
+      data[5] = offset.ch[0];
       pktSize.sh = maxPktSize;
       data[6] = pktSize.ch[1];
-      data[7] = pktSize.ch[0]; 
+      data[7] = pktSize.ch[0];
       //data[6] = 0x00;
      // data[7] = 0xa4;
 
@@ -671,7 +674,7 @@ void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, short aTableID, BYTE aOp
 void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr )
 {
     int arraySize = 5 + dataSize + 1;
-    BYTE        *data; //write 0x40 (1), tableID (2), count (2), data (dataSize), 
+    BYTE        *data; //write 0x40 (1), tableID (2), count (2), data (dataSize),
                                         //cksum (1), crc (2)
     data = new BYTE[arraySize];
     BYTEUSHORT  flip;
@@ -760,7 +763,7 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
 
 
    data[5 + dataSize] = 0;
-   for (int xx = 5; xx < dataSize + 5; xx++) 
+   for (int xx = 5; xx < dataSize + 5; xx++)
    {
        data[5 + dataSize] += data[xx];    //2's complement cksm
    }
@@ -999,7 +1002,7 @@ bool CtiANSIDatalink::getToggle( void )
 }
 
 //=========================================================================================================================================
-//this method simply lops off the end of the message where the crc is and compares it to a CTIDBG_new calculation that is done
+//this method simply lops off the end of the message where the crc is and compares it to a new calculation that is done
 //=========================================================================================================================================
 
 bool CtiANSIDatalink::isCRCvalid( void )

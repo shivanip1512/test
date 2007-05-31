@@ -338,7 +338,7 @@ void ProcessCID(CtiDirBuild &db, string &cidfile)
 
             if(gMajorRevision > 0 && dinfo._majorRevision != gMajorRevision)
             {
-               // We need to generate a CTIDBG_new buildnumber define!
+               // We need to generate a new buildnumber define!
                ::sprintf(oldnum, "%d", dinfo._majorRevision);
 
                dinfo._majorRevision = gMajorRevision;
@@ -372,7 +372,7 @@ void ProcessCID(CtiDirBuild &db, string &cidfile)
 
             if(gMinorRevision >= 0 && dinfo._minorRevision != gMinorRevision)
             {
-               // We need to generate a CTIDBG_new buildnumber define!
+               // We need to generate a new buildnumber define!
                ::sprintf(oldnum, "%d", dinfo._minorRevision);
 
                dinfo._minorRevision = gMinorRevision;
@@ -402,7 +402,7 @@ void ProcessCID(CtiDirBuild &db, string &cidfile)
 
             if(gBuildRevision >= 0 && dinfo._buildNumber != gBuildRevision)         // If specified and different.
             {
-               // We need to generate a CTIDBG_new buildnumber define!
+               // We need to generate a new buildnumber define!
                ::sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = gBuildRevision;
@@ -416,7 +416,7 @@ void ProcessCID(CtiDirBuild &db, string &cidfile)
             }
             else if(gMinorRevision >= 0 || gMajorRevision >= 0)   // Need to reset this then.
             {
-               // We need to generate a CTIDBG_new buildnumber define!
+               // We need to generate a new buildnumber define!
               ::sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = 0;
@@ -426,7 +426,7 @@ void ProcessCID(CtiDirBuild &db, string &cidfile)
             }
             else
             {
-               // We need to generate a CTIDBG_new buildnumber define!
+               // We need to generate a new buildnumber define!
                ::sprintf(oldnum, "%d", dinfo._buildNumber - 1);
                ::sprintf(newnum, "%d", dinfo._buildNumber);
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.165 $
-* DATE         :  $Date: 2007/05/09 20:47:18 $
+* REVISION     :  $Revision: 1.166 $
+* DATE         :  $Date: 2007/05/31 21:30:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -677,7 +677,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
         try
         {
             /*
-             *  This next bit blocks on a connect and creates a CTIDBG_new
+             *  This next bit blocks on a connect and creates a new
              */
 
             /*
@@ -4396,7 +4396,7 @@ int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
             dout << NowTime.now() << " Connection rejected, entry will be deleted." << endl;
         }
 
-        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the CTIDBG_new guy to blow off..
+        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the new guy to blow off..
 
         clientShutdown(CM);
     }
@@ -4452,7 +4452,7 @@ int  CtiVanGogh::clientArbitrationWinner(CtiServer::ptr_type CM)
                 dout << Now << " Dispatch will shut it down now." << endl;
             }
 
-            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the CTIDBG_new guy to blow off..
+            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the new guy to blow off..
 
             clientShutdown(Mgr);
             break;
@@ -6891,7 +6891,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
 
     if(pSigNew != NULL)
     {
-        // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
+        // Make sure that anyone who cared about the first one gets the new state of the tag!
         postMessageToClients(pSigNew);
         queueSignalToSystemLog(pSigNew);
     }
@@ -7680,7 +7680,7 @@ void CtiVanGogh::stopDispatch()
     _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
-    if(RW_THR_TIMEOUT == ConnThread_.join(30000)) 
+    if(RW_THR_TIMEOUT == ConnThread_.join(30000))
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Terminating connection thread " << __FILE__ << " at:" << __LINE__ << endl;
@@ -7688,7 +7688,7 @@ void CtiVanGogh::stopDispatch()
     }
     _pendingOpThread.join();
     if(RW_THR_TIMEOUT == _rphThread.join(30000))
-    { 
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Terminating RPH thread " << __FILE__ << " at:" << __LINE__ << endl;
         _rphThread.terminate();
