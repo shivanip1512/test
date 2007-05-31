@@ -26,3 +26,6 @@ update devicetypecommand set devicetype='MCT-430SN' where devicetype = 'MCT-430I
 
 /*Missing role property, originally added for Xcel.  Should have been in 3.3 scripts*/
 insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Addtl Order Number','Customizable label for the additional order number field.');
+
+/*Missing role property, originally added for Xcel.  Should have been in 3.3_0 update scripts*/
+insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
