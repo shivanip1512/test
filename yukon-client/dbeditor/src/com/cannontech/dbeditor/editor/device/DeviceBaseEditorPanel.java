@@ -2120,7 +2120,7 @@ public boolean isInputValid()
       
 	//verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
 	LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-	if((! PAOGroups.isDialupPort(port.getType())) && (DeviceTypesFuncs.isCCU(getDeviceType()) || DeviceTypesFuncs.isRTU(getDeviceType()) ))
+	if(port != null && (! PAOGroups.isDialupPort(port.getType())) && (DeviceTypesFuncs.isCCU(getDeviceType()) || DeviceTypesFuncs.isRTU(getDeviceType()) ))
 	{
 		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
 		return checkForDuplicateAddresses(address, port.getLiteID() );   	
