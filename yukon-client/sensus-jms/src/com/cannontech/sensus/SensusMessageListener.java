@@ -9,6 +9,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -28,8 +29,17 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
                 Object m = om.getObject();
                 if (m instanceof char[]) {
                     char[] bytes = (char[])m;
-                    int repId = om.getIntProperty("RepId");
-                    int appCode = om.getIntProperty("AppCode");
+                    String repIdObj = om.getStringProperty("RepId");
+                    if (!NumberUtils.isDigits(repIdObj)) {
+                        log.warn("Got message with non-numeric RepId: " + repIdObj);
+                        return;
+                    }
+                    String appCodeObj = om.getStringProperty("AppCode");
+                    if (!NumberUtils.isDigits(appCodeObj)) {
+                        log.warn("Got message with non-numeric AppCode: " + appCodeObj);
+                    }
+                    int repId = Integer.parseInt(repIdObj);
+                    int appCode = Integer.parseInt(appCodeObj);
                     sensusMessageHandler.processMessage(repId, appCode, bytes);
                 } else {
                     log.info("payload wasn't a char[]");

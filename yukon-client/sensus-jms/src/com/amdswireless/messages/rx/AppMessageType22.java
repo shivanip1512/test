@@ -13,14 +13,14 @@ import org.springframework.core.style.ToStringCreator;
 /**
  * @author Xuming.Chen
  * @since: 11/15/2006
- * 
+ *
  * @version: AppMessageType18.java v 1.0  11/20/2006   xumingc
  */
 
-/* 
- * This is a parser for message type 22 (App Code 34)  
+/*
+ * This is a parser for message type 22 (App Code 34)
  * The bit field looks like this:
- *  Byte	 Field
+ *  Byte         Field
  *  ------------------------------------------------
  *  0        Current Device Status
  *  1        Current Device Temperature
@@ -39,12 +39,12 @@ import org.springframework.core.style.ToStringCreator;
  *  ------------------------------------------------
  */
 
-public class AppMessageType22 extends ReadMessage implements AppMessage, Serializable 
+public class AppMessageType22 extends ReadMessage implements AppMessage, Serializable
 {
     /**
      *
      */
-    private transient static final long serialVersionUID = -2877651348462135109L;	
+    private transient static final long serialVersionUID = -2877651348462135109L;
     private transient static final int offset = 31;
 
     private boolean statusNo60HzOrUnderLineCurrent;
@@ -68,7 +68,7 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
                 return lastEvent;
             case 1:
                 return firstHistoricalEvent;
-            case 2: 
+            case 2:
                 return secondHistoricalEvent;
             case 3:
                 return thirdHistoricalEvent;
@@ -120,23 +120,23 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
     /**
      *  Default constructor for encoding.
      */
-    public AppMessageType22() {		
+    public AppMessageType22() {
         super();
         super.setAppCode(0x22);
-        super.setMessageType(0x22);	
+        super.setMessageType(0x22);
     }
 
     /**
      *  Default constructor for decoding. Extract information from Andorian message.
      *  @param msg
      */
-    public AppMessageType22( char[] msg ) {		
+    public AppMessageType22( char[] msg ) {
         super(msg);
         super.setAppCode(0x22);
         super.setMessageType(0x22);
 
         statusNo60HzOrUnderLineCurrent = (msg[0 + offset] & 0x2) == 0x2;
-        statusLatchedFault = (msg[0 + offset] & 0x4) == 0x4;
+        statusLatchedFault = (msg[0 + offset] & 0x4) == 0x4;              // If event bit is NOT set, this defines a fault.
         statusEventTransBit = (msg[0 + offset] & 0x80) == 0x80;
         byte tempByte = 0;
         tempByte |= msg[1 + offset]; // put bits in a signed type
@@ -147,38 +147,51 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
         lastTxTemperature = tempByte;
         lastTxBatteryVoltage = (float)(msg[5 + offset] & 0xff) / 64 + 2;
 
+        lastEvent.populated = false;
+        firstHistoricalEvent.populated = false;
+        secondHistoricalEvent.populated = false;
+        thirdHistoricalEvent.populated = false;
+
         // last event
         lastEvent.restoreAfterFault = (msg[6 + offset] & 0x1) == 0x1;
         lastEvent.no60HzDetectedFollowingFault = (msg[6 + offset] & 0x2) == 0x2;
         lastEvent.faultDetected = (msg[6 + offset] & 0x4) == 0x4;
         lastEvent.secondsSinceEvent = extractTime(msg, 7);
-        lastEvent.populated = lastEvent.secondsSinceEvent != 0xffffffffL;
+        if ((msg[6 + offset] & 0x05) != 0x05) {
+            lastEvent.populated = lastEvent.secondsSinceEvent != 0xffffffffL;
+        }
 
         // first historical
         firstHistoricalEvent.restoreAfterFault = (msg[11 + offset] & 0x1) == 0x1;
         firstHistoricalEvent.no60HzDetectedFollowingFault = (msg[11 + offset] & 0x2) == 0x2;
         firstHistoricalEvent.faultDetected = (msg[11 + offset] & 0x4) == 0x4;
         firstHistoricalEvent.secondsSinceEvent = extractTime(msg, 12);
-        firstHistoricalEvent.populated = firstHistoricalEvent.secondsSinceEvent != 0xffffffffL;
         firstHistoricalEvent.secondsSinceEvent += lastEvent.secondsSinceEvent;
+        if ((msg[11 + offset] & 0x05) != 0x05) {
+            firstHistoricalEvent.populated = firstHistoricalEvent.secondsSinceEvent != 0xffffffffL;
+        }
 
         // second historical
         secondHistoricalEvent.restoreAfterFault = (msg[16 + offset] & 0x1) == 0x1;
         secondHistoricalEvent.no60HzDetectedFollowingFault = (msg[16 + offset] & 0x2) == 0x2;
         secondHistoricalEvent.faultDetected = (msg[16 + offset] & 0x4) == 0x4;
         secondHistoricalEvent.secondsSinceEvent = extractTime(msg, 17);
-        secondHistoricalEvent.populated = secondHistoricalEvent.secondsSinceEvent != 0xffffffffL;
         secondHistoricalEvent.secondsSinceEvent += firstHistoricalEvent.secondsSinceEvent;
+        if ((msg[16 + offset] & 0x05) != 0x05) {
+            secondHistoricalEvent.populated = secondHistoricalEvent.secondsSinceEvent != 0xffffffffL;
+        }
 
         // third historical
         thirdHistoricalEvent.restoreAfterFault = (msg[21 + offset] & 0x1) == 0x1;
         thirdHistoricalEvent.no60HzDetectedFollowingFault = (msg[21 + offset] & 0x2) == 0x2;
         thirdHistoricalEvent.faultDetected = (msg[21 + offset] & 0x4) == 0x4;
         thirdHistoricalEvent.secondsSinceEvent = extractTime(msg, 22);
-        thirdHistoricalEvent.populated = thirdHistoricalEvent.secondsSinceEvent != 0xffffffffL;
         thirdHistoricalEvent.secondsSinceEvent += secondHistoricalEvent.secondsSinceEvent;
+        if ((msg[21 + offset] & 0x05) != 0x05) {
+            thirdHistoricalEvent.populated = thirdHistoricalEvent.secondsSinceEvent != 0xffffffffL;
+        }
     }
-    
+
     private long extractTime(char[] bytes, int start) {
         long t = 0;
         t |= (long)(bytes[start + 3 + offset] & 0xff) << 24;
@@ -254,7 +267,8 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
             .append("firstHistoricalEvent", firstHistoricalEvent)
             .append("secondHistoricalEvent", secondHistoricalEvent)
             .append("thirdHistoricalEvent", thirdHistoricalEvent);
-        return creator.toString();
+
+        return creator.toString() + getRawMessage();
     }
 
 }

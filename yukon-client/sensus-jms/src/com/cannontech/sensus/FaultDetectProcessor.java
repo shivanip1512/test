@@ -40,7 +40,7 @@ public class FaultDetectProcessor implements SensusMessageHandler {
             processMessage(message);
         }
     }
-    
+
     private void processMessage(char[] bytes) {
         DataMessage message = messageEncoder.encodeMessage(bytes);
         if (message instanceof AppMessageType5) {
@@ -53,7 +53,7 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private void processStatusMessage(AppMessageType22 message) {
         int repId = message.getRepId();
         log.debug("Processing message for repId=" + repId + ": " + message);
-        
+
         Date toi = message.getTimestampOfIntercept();
         if ((message.isStatusEventTransBit() || ignoreEventBit) && message.getLastEvent().isPopulated()) {
             boolean fault = message.getLastEvent().isFaultDetected();
@@ -62,23 +62,26 @@ public class FaultDetectProcessor implements SensusMessageHandler {
             faultGenerator.writePointDataMessage(repId, fault, eventDate);
         } else {
             log.info("Got supervisory message or event message without lastEvent populated");
+
+            // CGP: This is the best info we have on the curent fault status.
+            boolean latchedFault = message.isStatusLatchedFault();
+            faultGenerator.writePointDataMessage(repId, latchedFault, toi);
         }
-        
+
         boolean latchedFault = message.isStatusLatchedFault();
         faultLatchGenerator.writePointDataMessage(repId, latchedFault, toi);
-        
+
         boolean no60 = message.isStatusNo60HzOrUnderLineCurrent();
         no60Generator.writePointDataMessage(repId, no60, toi);
-        
+
         float lastBatteryVoltage = message.getLastTxBatteryVoltage();
         batteryVoltageGenerator.writePointDataMessage(repId, lastBatteryVoltage, toi);
-        
+
         int currentDeviceTemperature = message.getCurrentDeviceTemperature();
         deviceTemperatureGenerator.writePointDataMessage(repId, currentDeviceTemperature, toi);
-        
+
         boolean batterLow = message.isLowBattery();
         batteryLowGenerator.writePointDataMessage(repId, batterLow, toi);
-        
     }
 
     private void processBindingMessage(AppMessageType5 message) {
@@ -93,20 +96,20 @@ public class FaultDetectProcessor implements SensusMessageHandler {
             log.info("Received binding message for unconfigured device: " + repId);
             return;
         }
-        log.info("Received binding message for known serial number. iconSerialNumber=" 
+        log.info("Received binding message for known serial number. iconSerialNumber="
                  + iconSerialNumber + ", device=" + device + ", repId=" + repId);
 
         // process lat/long
         float latitude = message.getLatitude();
         float longitude = message.getLongitude();
-        
+
         if (latitude != 0 || longitude != 0) {
             latGenerator.writePointDataMessage(repId, latitude, message.getTimestampOfIntercept());
             longGenerator.writePointDataMessage(repId, longitude, message.getTimestampOfIntercept());
         }
-        
+
     }
-    
+
     public void setMessageEncoder(MessageEncoder messageEncoder) {
         this.messageEncoder = messageEncoder;
     }

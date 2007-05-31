@@ -10,6 +10,7 @@
          <value>com/cannontech/mainContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
+         <value>com/cannontech/core/authentication/authContext.xml</value>
        </list>
      </constructor-arg>
    </bean>

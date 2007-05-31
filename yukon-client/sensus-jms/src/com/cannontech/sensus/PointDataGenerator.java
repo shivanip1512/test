@@ -24,7 +24,7 @@ public class PointDataGenerator implements PointValueUpdater {
     private int offset;
     private boolean cachePoints = true;
     private boolean invertStatus = false;
-    private Map<Integer, PointHolder> repIdToPoint = new HashMap<Integer, PointHolder>();
+    private Map<Integer, PointHolder> repIdToPoint = new HashMap<Integer, PointHolder>(); // use only in synchronized in method
     
     private class PointHolder {
         LitePoint point = null;
@@ -45,7 +45,7 @@ public class PointDataGenerator implements PointValueUpdater {
         pointData.setValue(value);
 
         pointData.setTime(time);
-        log.info("Updating " + holder.point + " with value=" + value);
+        log.info("Updating point " + holder.point.getPointID() + " with value=" + value);
         dispatchConnection.write(pointData);
     }
 
@@ -57,7 +57,7 @@ public class PointDataGenerator implements PointValueUpdater {
         this.yukonDeviceLookup = yukonDeviceLookup;
     }
     
-    private PointHolder getPointForRepId(int repId) {
+    private synchronized PointHolder getPointForRepId(int repId) {
         PointHolder holder;
         if (cachePoints) {
             holder = repIdToPoint.get(new Integer(repId));
@@ -81,7 +81,7 @@ public class PointDataGenerator implements PointValueUpdater {
                      + ", offset=" + offset + ", type=" + type);
             return null;
         }
-        log.debug("Got " + point + " from dao for device=" + device + ", offset=" + offset + ", type=" + type);
+        log.debug("Got point " + point.getPointID() + " from dao for device=" + device + ", offset=" + offset + ", type=" + type);
         
         holder.point = point;
         try {

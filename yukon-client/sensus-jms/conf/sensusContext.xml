@@ -9,16 +9,19 @@
 
   <bean id="sensusJmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
     <property name="brokerURL">
-      <value>tcp://s1.139.usamr.amdswireless.com:61616</value>
+      <value>failover:tcp://s1.139.usamr.amdswireless.com:61616</value>
     </property>
   </bean>
 
-
-  <!-- Spring JMS Template -->
-  <bean id="sensusJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-    <property name="connectionFactory" ref="sensusJmsFactory"/>
+  <bean id="sensusMain" class="com.cannontech.sensus.SensusMain">
+    <property name="factory" ref="sensusJmsFactory"/>
+    <property name="destination" ref="destination"/>
+    <property name="messageListener" ref="sensusMessageListener"/>
+    <property name="messageSelector">
+      <value>RepId IS NOT NULL and AppCode IS NOT NULL</value>
+    </property>
   </bean>
-  
+
   <!-- this is the Message Driven POJO (MDP) -->
   <bean id="sensusMessageListener" class="com.cannontech.sensus.SensusMessageListener">
     <property name="sensusMessageHandler" ref="faultDetectProcessor"/>
@@ -30,14 +33,7 @@
        <value>AMDS-OBJ</value>
     </constructor-arg>
   </bean>
-  
-  <bean id="destinationXml" class="org.apache.activemq.command.ActiveMQTopic">
-    <!-- Set the Destination Name -->
-    <constructor-arg index="0">
-       <value>AMDS</value>
-    </constructor-arg>
-  </bean>
-  
+
 
 <!-- and this is the message listener container -->
   <bean id="listenerContainer" 
@@ -57,20 +53,16 @@
     <property name="deviceDao" ref="deviceDao"/>
     <property name="deviceMapping">
       <map>
-        <entry key="95" value="SensusTest1"/>
-        <entry key="80" value="SensusAccept80"/>
-        <entry key="81" value="SensusAccept81"/>
-        <entry key="82" value="SensusAccept82"/>
-        <entry key="83" value="SensusAccept83"/>
-        <entry key="84" value="SensusAccept84"/>
+        <!-- Put your device mappings here.  repId to yukon device name  -->
       </map>
     </property>
   </bean>
   
   <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor">
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
-      <property name="yukonDeviceLookup" ref="deviceLookup"/>
+      <property name="yukonDeviceLookup" ref="oneDeviceLookup"/>
       <property name="bindingKeyRegEx" value="^CPS.*"/>
+      <property name="ignoreEventBit" value="true"/>
       <property name="faultGenerator" ref="faultStatusGenerator"/>
       <property name="latGenerator" ref="latitudeGenerator"/>
       <property name="longGenerator" ref="longitudeGenerator"/>
@@ -78,8 +70,11 @@
       <property name="no60Generator" ref="no60HzUnderGenerator"/>
       <property name="deviceTemperatureGenerator" ref="deviceTemperatureGenerator"/>
       <property name="batteryLowGenerator" ref="batteryLowGenerator"/>
+      <property name="faultLatchGenerator" ref="nullPointDataGenerator"/>
   </bean>
-  
+
+  <bean id="nullPointDataGenerator" class="com.cannontech.sensus.NullPointValueUpdater"/>
+
   <bean id="abstractPointDataGenerator" class="com.cannontech.sensus.PointDataGenerator" abstract="true">
     <property name="yukonDeviceLookup" ref="deviceLookup"/>
     <property name="dispatchConnection" ref="dispatchConnection"/>
@@ -121,6 +116,10 @@
     <property name="offset" value="4"/>
     <property name="type" value="0"/>  <!-- Status -->
   </bean>
-  
+
+  <bean id="faultLatchGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="99"/>
+    <property name="type" value="0"/>  <!-- Status -->
+  </bean>
 
 </beans>
