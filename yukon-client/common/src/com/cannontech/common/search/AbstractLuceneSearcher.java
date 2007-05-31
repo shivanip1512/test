@@ -15,7 +15,6 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -46,7 +45,7 @@ public abstract class AbstractLuceneSearcher<E> {
     
     protected final SearchResult<E> doSearch(final Query query, final Sort sort, final int start, final int count) throws IOException {
         final Sort aSort = (sort == null) ? new Sort() : sort;
-        final SearchResult<E> result = doCallBackSearch(query, aSort, new HitsCallbackHandler<SearchResult<E>>() {
+        final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, aSort, new HitsCallbackHandler<SearchResult<E>>() {
             public SearchResult<E> processHits(Hits hits) throws IOException {
                 final int stop = Math.min(start + count, hits.length());
                 final List<E> list = new ArrayList<E>(count);
@@ -63,17 +62,6 @@ public abstract class AbstractLuceneSearcher<E> {
         });
 
         return result;
-    }
-    
-    protected final <R> R doCallBackSearch(final Query query, final Sort sort, final HitsCallbackHandler<R> handler) throws IOException {
-        final IndexSearcher indexSearcher = getIndexManager().getIndexSearcher();
-        final Sort aSort = (sort == null) ? new Sort() : sort;
-        try {
-            final Hits hits = indexSearcher.search(query, aSort);
-            return handler.processHits(hits);
-        } finally {
-            indexSearcher.close();
-        }
     }
 
     private Query createQuery(final String queryString, final YukonObjectCriteria criteria) 

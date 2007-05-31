@@ -40,7 +40,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         final Query query = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
 
         try {
-            return doCallBackSearch(query, sort, new HitsCallbackHandler<SearchResult<UltraLightPoint>>() {
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new HitsCallbackHandler<SearchResult<UltraLightPoint>>() {
                 public SearchResult<UltraLightPoint> processHits(Hits hits) throws IOException {
                     if (hits.length() != 1) return SearchResult.emptyResult();
                     Document document = hits.doc(0);

@@ -51,12 +51,9 @@ public interface IndexManager extends DBChangeListener {
      */
     public void rebuildIndex();
 
-    /**
-     * Method used to get an IndexSearcher for the index
-     * @return An index searcher
-     */
-    public IndexSearcher getIndexSearcher();
 
     public void shutdown();
+
+    public SearchTemplate getSearchTemplate();
 
 }

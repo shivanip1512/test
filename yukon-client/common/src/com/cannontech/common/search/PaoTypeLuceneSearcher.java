@@ -37,7 +37,7 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
         final Query query = new TermQuery(new Term("paoid", Integer.toString(currentPaoId)));
         
         try {
-            return doCallBackSearch(query, sort, new HitsCallbackHandler<SearchResult<UltraLightPao>>() {
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new HitsCallbackHandler<SearchResult<UltraLightPao>>() {
                 public SearchResult<UltraLightPao> processHits(Hits hits) throws IOException {
                     if (hits.length() != 1) return SearchResult.emptyResult();
                     Document document = hits.doc(0);

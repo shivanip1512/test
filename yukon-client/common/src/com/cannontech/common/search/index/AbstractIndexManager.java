@@ -21,9 +21,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexModifier;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.store.FSDirectory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -32,6 +37,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.search.HitsCallbackHandler;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -70,6 +76,9 @@ public abstract class AbstractIndexManager implements IndexManager {
     private Thread managerThread;
     private boolean shutdownNow = false;
 
+    // Object used to synchronize access to the index
+    private Object syncObject = new Object();
+    
     public AbstractIndexManager() {
     }
 
@@ -106,24 +115,6 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     public void setAsyncDynamicDataSource(AsyncDynamicDataSource dataSource) {
         dataSource.addDBChangeListener(this);
-    }
-
-    public IndexSearcher getIndexSearcher() {
-
-        // Make sure there are currently no issues with the index
-        this.checkForException();
-
-        // Make sure the index is not currently being built
-        if (this.isBuilding) {
-            throw new RuntimeException("The index is currently being built. Please try again later.");
-        }
-
-        try {
-            return new IndexSearcher(this.indexLocation.getAbsolutePath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     /**
@@ -257,17 +248,57 @@ public abstract class AbstractIndexManager implements IndexManager {
         } catch (IOException e) {
             CTILogger.error("Exception reading " + this.getIndexName() + " index version file", e);
         }
+        
+        // If index is locked, must have shutdown improperly last time - rebuild
+        boolean indexLocked = false;
+        try {
+            if(IndexReader.isLocked(indexLocation.getAbsolutePath())){
+                IndexReader.unlock(FSDirectory.getDirectory(indexLocation, false));
+                indexLocked = true;
+            }
+            
+        } catch (IOException e) {
+            // ignore - must be no index
+        }
+        final boolean rebuild = indexLocked;
 
         // Start the index manager thread
         managerThread = new Thread(new Runnable() {
             public void run() {
-                processBuild(false);
+                processBuild(rebuild);
                 processUpdates();
             }
         }, getIndexName() + "IndexManager");
 
         managerThread.start();
 
+    }
+    
+    public SearchTemplate getSearchTemplate(){
+        return new SearchTemplate(){
+            public <R> R doCallBackSearch(Query query, Sort sort, HitsCallbackHandler<R> handler) throws IOException {
+                
+                // Make sure there are currently no issues with the index
+                checkForException();
+
+                // Make sure the index is not currently being built
+                if (isBuilding) {
+                    throw new RuntimeException("The index is currently being built. Please try again later.");
+                }
+                
+                // Make sure we don't search while someone is updating the index
+                synchronized (syncObject) {
+                    final IndexSearcher indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
+                    final Sort aSort = (sort == null) ? new Sort() : sort;
+                    try {
+                        final Hits hits = indexSearcher.search(query, aSort);
+                        return handler.processHits(hits);
+                    } finally {
+                        indexSearcher.close();
+                    }
+                    
+                }
+            }};
     }
 
     public void shutdown() {
@@ -285,31 +316,35 @@ public abstract class AbstractIndexManager implements IndexManager {
             try {
                 IndexUpdateInfo info = this.updateQueue.take();
 
-                IndexModifier indexModifier = null;
-                try {
-                    indexModifier = new IndexModifier(this.indexLocation, this.getAnalyzer(), false);
-                    indexModifier.deleteDocuments(info.getDeleteTerm());
-
-                    List<Document> docList = info.getDocList();
-                    if (docList.size() != 0) {
-                        for (Document doc : docList) {
-                            indexModifier.addDocument(doc);
-                        }
-                    }
-
-                } catch (IOException e) {
-                    this.currentException = new RuntimeException("There was a problem updating the "
-                                                                         + this.getIndexName()
-                                                                         + " index",
-                                                                 e);
-                    CTILogger.error("", this.currentException);
-                } finally {
+                // Make sure we don't update while someone is searching or building the index
+                synchronized (syncObject) {
+                    
+                    IndexModifier indexModifier = null;
                     try {
-                        if (indexModifier != null) {
-                            indexModifier.close();
+                        indexModifier = new IndexModifier(this.indexLocation, this.getAnalyzer(), false);
+                        indexModifier.deleteDocuments(info.getDeleteTerm());
+    
+                        List<Document> docList = info.getDocList();
+                        if (docList.size() != 0) {
+                            for (Document doc : docList) {
+                                indexModifier.addDocument(doc);
+                            }
                         }
+    
                     } catch (IOException e) {
-                        // Do nothing - tried to close
+                        this.currentException = new RuntimeException("There was a problem updating the "
+                                                                             + this.getIndexName()
+                                                                             + " index",
+                                                                     e);
+                        CTILogger.error("", this.currentException);
+                    } finally {
+                        try {
+                            if (indexModifier != null) {
+                                indexModifier.close();
+                            }
+                        } catch (IOException e) {
+                            // Do nothing - tried to close
+                        }
                     }
                 }
 
@@ -357,44 +392,48 @@ public abstract class AbstractIndexManager implements IndexManager {
         // Set the dateCreated to the time the index building started
         this.dateCreated = new Date();
 
-        // Create the index
-        IndexWriter indexWriter = null;
-        try {
-            CTILogger.info("Building " + this.getIndexName() + " index.");
 
-            // Get a new index writer
-            indexWriter = new IndexWriter(indexLocation.getAbsolutePath(), getAnalyzer(), true);
-            indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
-
-            // Get the total # of records to be written into the index
-            String sql = getDocumentCountQuery();
-            recordCount = jdbcTemplate.queryForInt(sql);
-
-            sql = getDocumentQuery();
-
-            RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, count);
-            jdbcTemplate.query(sql, rch);
-            indexWriter.optimize();
-
-            // Reset the current document count and clear any exceptions
-            count.set(0);
-
-            CTILogger.info(this.getIndexName() + " index has been built.");
-            this.currentException = null;
-
-        } catch (IOException e) {
-            this.currentException = new RuntimeException(e);
-            throw this.currentException;
-        } catch (RuntimeException e) {
-            this.currentException = e;
-            throw this.currentException;
-        } finally {
+        // Make sure we don't build while someone is searching or updating the index
+        synchronized (syncObject) {
+            // Create the index
+            IndexWriter indexWriter = null;
             try {
-                if (indexWriter != null) {
-                    indexWriter.close();
-                }
+                CTILogger.info("Building " + this.getIndexName() + " index.");
+    
+                // Get a new index writer
+                indexWriter = new IndexWriter(indexLocation.getAbsolutePath(), getAnalyzer(), true);
+                indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
+    
+                // Get the total # of records to be written into the index
+                String sql = getDocumentCountQuery();
+                recordCount = jdbcTemplate.queryForInt(sql);
+    
+                sql = getDocumentQuery();
+    
+                RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, count);
+                jdbcTemplate.query(sql, rch);
+                indexWriter.optimize();
+    
+                // Reset the current document count and clear any exceptions
+                count.set(0);
+    
+                CTILogger.info(this.getIndexName() + " index has been built.");
+                this.currentException = null;
+    
             } catch (IOException e) {
-                CTILogger.error(e);
+                this.currentException = new RuntimeException(e);
+                throw this.currentException;
+            } catch (RuntimeException e) {
+                this.currentException = e;
+                throw this.currentException;
+            } finally {
+                try {
+                    if (indexWriter != null) {
+                        indexWriter.close();
+                    }
+                } catch (IOException e) {
+                    CTILogger.error(e);
+                }
             }
         }
 
