@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2006/12/26 15:49:30 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2007/05/31 20:30:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -522,7 +522,6 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 {
     INT status = NORMAL;
     ULONG i;
-    USHORT StatusData[8];
     USHORT SaveCount;
     string resultString;
 
@@ -545,7 +544,6 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
-
         // No error occured, we must do a real decode!
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -560,33 +558,42 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        extractStatusData(InMessage, getType(), StatusData);
-
         //  the only status points we really care about - comm status is handled higher up by porter
-        for( int i = 1; i <= 16; i++ )
+        for( int i = 1; i <= 8; i++ )
         {
             if( (pPoint = getDevicePointOffsetTypeEqual(i, StatusPointType)) )
             {
-                Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), StatusData);
+                Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), InMessage->Buffer.DSt.Message);
 
-                resultString = ResolveStateName(pPoint->getStateGroupID(), Value);
-
-                if( resultString != "" )
+                if( Value == INVALID )
                 {
-                    resultString = getName() + " / " + pPoint->getName() + ":" + resultString;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - status == INVALID for device \"" << getName() << "\", offset " << i << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
                 else
                 {
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
+                    resultString = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+                    if( resultString != "" )
+                    {
+                        resultString = getName() + " / " + pPoint->getName() + ":" + resultString;
+                    }
+                    else
+                    {
+                        resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
+                    }
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
+
+                    if(pData != NULL)
+                    {
+                        ReturnMsg->PointData().push_back(pData);
+                        pData = NULL;  // We just put it on the list...
+                    }
                 }
 
-                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
-
-                if(pData != NULL)
-                {
-                    ReturnMsg->PointData().push_back(pData);
-                    pData = NULL;  // We just put it on the list...
-                }
             }
         }
 
