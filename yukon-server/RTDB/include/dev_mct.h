@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2007/03/09 21:29:03 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2007/05/31 20:30:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,6 +187,7 @@ protected:
 
     enum PointOffsets
     {
+        PointOffset_Status_GeneralAlarm   =   9,
         PointOffset_Status_Powerfail      =  10,
 
         PointOffset_Accumulator_Powerfail =  20,

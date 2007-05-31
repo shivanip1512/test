@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.117 $
-* DATE         :  $Date: 2007/05/18 18:49:37 $
+* REVISION     :  $Revision: 1.118 $
+* DATE         :  $Date: 2007/05/31 20:30:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -789,23 +789,33 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 
     if( !status && InMessage->Buffer.DSt.Length )
     {
-        boost::shared_ptr<CtiPointStatus> point;
-        CtiPointDataMsg *pData;
-        CtiReturnMsg    *retMsg;
+        CtiPointStatusSPtr point_powerfail, point_generalalarm;
+        CtiReturnMsg *retMsg;
+        string pointResult;
 
-        //  eventually, this block should use the same ReturnMsg as above - actually, a LOT of the work replicated
-        //    within these decode functions could be consolidated to this function...  or maybe it could be moved to DLCBase so
-        //    the repeaters get it, too... ?  Do they have a powerfail status?
-        if( point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_Powerfail, StatusPointType )) )
+        point_powerfail    = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_Powerfail,    StatusPointType ));
+        point_generalalarm = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_GeneralAlarm, StatusPointType ));
+
+        if( point_powerfail || point_generalalarm )
         {
-            string pointResult;
-
-            pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName(point->getStateGroupID(), InMessage->Buffer.DSt.Power);
-
-            pData  = CTIDBG_new CtiPointDataMsg(point->getPointID(), InMessage->Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult);
+            //  eventually, this block should use the same ReturnMsg as above - actually, a LOT of the work replicated
+            //    within these decode functions could be consolidated to this function...  or maybe it could be moved to DLCBase so
+            //    the repeaters get it, too... ?  Do they have a powerfail status?
             retMsg = CTIDBG_new CtiReturnMsg(getID());
 
-            retMsg->PointData().push_back(pData);
+            if( point_powerfail )
+            {
+                pointResult = getName() + " / " + point_powerfail->getName() + ": " + ResolveStateName(point_powerfail->getStateGroupID(), InMessage->Buffer.DSt.Power);
+
+                retMsg->PointData().push_back(CTIDBG_new CtiPointDataMsg(point_powerfail->getPointID(), InMessage->Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult));
+            }
+
+            if( point_generalalarm )
+            {
+                pointResult = getName() + " / " + point_generalalarm->getName() + ": " + ResolveStateName(point_generalalarm->getStateGroupID(), InMessage->Buffer.DSt.Alarm);
+
+                retMsg->PointData().push_back(CTIDBG_new CtiPointDataMsg(point_generalalarm->getPointID(), InMessage->Buffer.DSt.Alarm, NormalQuality, StatusPointType, pointResult));
+            }
 
             vgList.push_back(retMsg);
         }
