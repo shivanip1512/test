@@ -1,4 +1,4 @@
-package com.cannontech.importer.progress.capcontol;
+package com.cannontech.importer.progress.capcontrol;
 
 import java.io.*;
 import java.sql.SQLException;

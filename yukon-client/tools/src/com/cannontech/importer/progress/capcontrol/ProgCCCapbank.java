@@ -1,4 +1,4 @@
-package com.cannontech.importer.progress.capcontol;
+package com.cannontech.importer.progress.capcontrol;
 
 
 public class ProgCCCapbank {

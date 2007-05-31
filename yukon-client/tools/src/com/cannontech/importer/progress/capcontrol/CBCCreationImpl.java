@@ -1,4 +1,4 @@
-package com.cannontech.importer.progress.capcontol;
+package com.cannontech.importer.progress.capcontrol;
 import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
