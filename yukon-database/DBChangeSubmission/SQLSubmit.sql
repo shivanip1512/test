@@ -29,3 +29,7 @@ insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Add
 
 /*Missing role property, originally added for Xcel.  Should have been in 3.3_0 update scripts*/
 insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
+
+/* Added entry for drop down box*/
+/* NOTE THIS BELONGS IN HEAD, 3.4 and 3.2!!! */
+insert into yukonlistentry values (138, 100, 0, 'Float From 16bit', 0);
