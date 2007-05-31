@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/12/27 05:44:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/05/31 21:17:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ protected:
         MCT310_MaxPulseCount             = 10000000,
     };
 
-    static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
+    static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PBYTE DataValueArray );
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 

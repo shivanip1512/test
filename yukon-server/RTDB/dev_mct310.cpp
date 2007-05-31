@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2006/12/27 05:44:38 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2007/05/31 21:17:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -394,7 +394,7 @@ bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 }
 
 
-DOUBLE CtiDeviceMCT310::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray)
+DOUBLE CtiDeviceMCT310::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PBYTE DataValueArray)
 {
     /* key off the point offset */
     switch(PointOffset)
