@@ -839,6 +839,34 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 }
             }
         }
+        else if( !stringCompareIgnoreCase(functionName,"Float From 16bit") )      // Stack has two 16 bit unsigned.
+        {
+            short msw = _calcpoint->pop();
+            short lsw = _calcpoint->pop();
+        
+            unsigned short umsw = abs(msw) + (msw<0 ? 32768 : 0);
+            unsigned short ulsw = abs(lsw) + (msw<0 ? 32768 : 0);
+        
+            unsigned fpu = (unsigned short)umsw;
+            fpu = (fpu << 16) + ulsw;
+        
+            float sign = ((fpu & 0x80000000) ? -1.0 : 1.0);
+            float exponent = int((fpu & 0x7fffffff) >> 23) - 127;
+            float mantissa = 1.0;
+            float nut = 1.0;
+        
+            fpu = fpu << 9;
+        
+            for(int i = 0; i < 23; i++)
+            {
+                nut = nut * 0.5;
+                mantissa = mantissa + (((fpu & 0x80000000) ? 1 : 0 ) * nut);
+                fpu = fpu << 1;
+            }
+        
+        
+            retVal = sign * pow(2,exponent) * mantissa;
+        }
         else if( !stringCompareIgnoreCase(functionName,"Binary Encode") )
         {
             double newValue = _calcpoint->pop( );
