@@ -32,7 +32,7 @@ public class MaxDailyOpsModel extends ReportModelBase {
     public final static int PREV_WEEK_6_COLUMN = 11;
     
     /** String values for column representation */
-    public final static String REGION_STRING = "Region";
+    public final static String REGION_STRING = "Area";
     public final static String SUB_NAME_STRING = "Sub Name";
     public final static String FEEDER_NAME_STRING = "Feeder";
     public final static String CBC_NAME_STRING = "CBC";

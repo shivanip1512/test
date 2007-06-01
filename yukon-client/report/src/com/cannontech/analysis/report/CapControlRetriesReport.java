@@ -9,7 +9,7 @@ import com.cannontech.analysis.tablemodel.CapControlRetriesModel;
 public class CapControlRetriesReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Region", "Region", 80),
+        new ColumnLayoutData("Area", "Region", 80),
         new ColumnLayoutData("SubBus", "SubBus", 80),
         new ColumnLayoutData("Feeder", "Feeder", 80),
         new ColumnLayoutData("CapBank", "CapBank", 80),

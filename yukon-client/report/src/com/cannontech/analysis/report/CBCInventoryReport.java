@@ -13,7 +13,7 @@ public class CBCInventoryReport extends SimpleYukonReportBase {
         new ColumnLayoutData("IP Address", "ipAddress", 60),
         new ColumnLayoutData("Slave Address", "slaveAddress", 60),
         new ColumnLayoutData("Protocol", "protocol", 60),
-        new ColumnLayoutData("Region", "region", 60),
+        new ColumnLayoutData("Area", "region", 60),
         new ColumnLayoutData("Sub Name", "subName", 60),
         new ColumnLayoutData("Feeder Name", "feederName", 60),
         new ColumnLayoutData("Bank Name", "bankName", 60),

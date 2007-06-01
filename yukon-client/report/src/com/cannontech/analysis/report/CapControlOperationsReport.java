@@ -21,7 +21,7 @@ public class CapControlOperationsReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Feeder ID", "feederId", 49),
         new ColumnLayoutData("Sub Name", "subName", 48),
         new ColumnLayoutData("SubBus ID", "subBusId", 49),
-        new ColumnLayoutData("Region", "region", 49),
+        new ColumnLayoutData("Area", "region", 49),
         new ColumnLayoutData("Bank Size", "bankSize", 49),
         new ColumnLayoutData("Protocol", "protocol", 49),
         new ColumnLayoutData("IP Address", "ipAddress", 45),

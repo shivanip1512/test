@@ -9,7 +9,7 @@ import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 public class CapControlStateComparisonReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Region", "region", 170),
+        new ColumnLayoutData("Area", "region", 170),
         new ColumnLayoutData("Sub Name", "subName", 90),
         new ColumnLayoutData("Feeder Name", "feederName", 60),
         new ColumnLayoutData("CapBank Name", "capBankName", 60),

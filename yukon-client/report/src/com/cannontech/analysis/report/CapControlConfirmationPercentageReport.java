@@ -12,7 +12,7 @@ import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
 public class CapControlConfirmationPercentageReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Region", "Region", 60),
+        new ColumnLayoutData("Area", "Region", 60),
         new ColumnLayoutData("OpCenter", "OpCenter", 60),
         new ColumnLayoutData("TA", "TA", 40),
         new ColumnLayoutData("SubName", "SubName", 60),
