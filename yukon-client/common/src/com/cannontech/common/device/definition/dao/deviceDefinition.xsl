@@ -118,11 +118,13 @@
                         <xsl:value-of select="@name" />
                       </td>
                       <td>
-                        <xsl:value-of select="cmd/@text" />
+	                    <xsl:for-each select="./cmd">
+	                      <xsl:value-of select="@text" /><br/>
+				  	    </xsl:for-each>
                       </td>
                       <td>
 	                    <xsl:for-each select="./pointRef">
-	                      <li><xsl:value-of select="@name" /></li>
+	                      <xsl:value-of select="@name"/><br/>
 				  	    </xsl:for-each>
                       </td>
                     </tr>

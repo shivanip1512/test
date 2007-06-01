@@ -44,6 +44,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -291,6 +292,7 @@
             </point>
             
             <point type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -556,6 +558,7 @@
             </point>
 
             <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -587,6 +590,7 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
+                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -605,12 +609,14 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
+                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
@@ -666,6 +672,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
@@ -703,6 +710,7 @@
             </point>
             
             <point init="true" type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -720,12 +728,12 @@
         		<pointRef name="kWh (Channel 2)"/>
         		<pointRef name="kWh (Channel 3)"/>
         	</command>
-        	<command name="Read Energy (Frozen)">
+<!--        	<command name="Read Energy (Frozen)">
         		<cmd text="getvalue kWh frozen"/>
         		<pointRef name="kWh"/>
         		<pointRef name="kWh (Channel 2)"/>
         		<pointRef name="kWh (Channel 3)"/>
-        	</command>
+        	</command> -->
 			<command name="Read kW Demand, Voltage, Blink Count">
         		<cmd text="getvalue demand"/>
         		<pointRef name="kW"/>
@@ -736,38 +744,50 @@
         	</command>
 			<command name="Read Peak">
         		<cmd text="getvalue peak"/>
-        		<pointRef name="kW"/>
+        		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
         	</command>
-			<command name="Read Peak (Frozen)">
+<!-- 			<command name="Read Peak (Frozen)">
         		<cmd text="getvalue peak frozen"/>
-        		<pointRef name="kW"/>
+        		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
-        	</command>
+        	</command> -->
 			<command name="Read Min/Max Voltage">
         		<cmd text="getvalue voltage"/>
         		<pointRef name="Max Volts"/>
         		<pointRef name="Min Volts"/>
         	</command>
-			<command name="Read Min/Max Voltage (Frozen)">
+<!-- 			<command name="Read Min/Max Voltage (Frozen)">
         		<cmd text="getvalue voltage frozen"/>
         		<pointRef name="Frozen Max Volts"/>
         		<pointRef name="Frozen Min Volts"/>
-        	</command>        	
+        	</command>        	-->
 			<command name="Read Blink Count">
         		<cmd text="getvalue powerfail"/>
         		<pointRef name="Blink Count"/>
         	</command>
 			<command name="Read Disconnect Status">
         		<cmd text="getstatus disconnect"/>
-        		<pointRef name="Max Volts"/>
-        		<pointRef name="Min Volts"/>
+        		<pointRef name="Disconnect Status"/>
         	</command>
-			<command name="Read Min/Max Voltage">
-        		<cmd text="getvalue voltage"/>
-        		<pointRef name="Max Volts"/>
-        		<pointRef name="Min Volts"/>
-        	</command>
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
 			<command name="Read TOU Rate A">
         		<cmd text="getvalue kWh rate a"/>
         		<pointRef name="Rate A kWh"/>
@@ -788,7 +808,7 @@
         		<pointRef name="Rate D kWh"/>
         		<pointRef name="Peak kW (Rate D kW)"/>
         	</command>
-			<command name="Read TOU Rate A (Frozen)">
+<!--  		<command name="Read TOU Rate A (Frozen)">
         		<cmd text="getvalue kWh rate a frozen"/>
         		<pointRef name="Rate A kWh"/>
         		<pointRef name="Peak kW (Rate A kW)"/>
@@ -807,7 +827,7 @@
         		<cmd text="getvalue kWh rate d frozen"/>
         		<pointRef name="Rate D kWh"/>
         		<pointRef name="Peak kW (Rate D kW)"/>
-        	</command>
+        	</command> -->
 			<command name="Read Profile Data Channel 1">
         		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
         		<pointRef name="kW-LP"/>
@@ -864,6 +884,7 @@
             </point>
 
             <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -914,6 +935,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
@@ -976,6 +998,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
@@ -1013,6 +1036,7 @@
             </point>
             
             <point type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -1023,6 +1047,142 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+		<commands>
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+<!--        	<command name="Read Energy (Frozen)">
+        		<cmd text="getvalue kWh frozen"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command> -->
+			<command name="Read kW Demand, Voltage, Blink Count">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kW (Channel 2)"/>
+        		<pointRef name="kW (Channel 3)"/>
+        		<pointRef name="Voltage"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Peak">
+        		<cmd text="getvalue peak"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+<!-- 			<command name="Read Peak (Frozen)">
+        		<cmd text="getvalue peak frozen"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command> -->
+			<command name="Read Min/Max Voltage">
+        		<cmd text="getvalue voltage"/>
+        		<pointRef name="Max Volts"/>
+        		<pointRef name="Min Volts"/>
+        	</command>
+<!-- 			<command name="Read Min/Max Voltage (Frozen)">
+        		<cmd text="getvalue voltage frozen"/>
+        		<pointRef name="Frozen Max Volts"/>
+        		<pointRef name="Frozen Min Volts"/>
+        	</command>        	-->
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
+        	</command>
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read TOU Rate A">
+        		<cmd text="getvalue kWh rate a"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B">
+        		<cmd text="getvalue kWh rate b"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C">
+        		<cmd text="getvalue kWh rate c"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D">
+        		<cmd text="getvalue kWh rate d"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command>
+<!--  		<command name="Read TOU Rate A (Frozen)">
+        		<cmd text="getvalue kWh rate a frozen"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B (Frozen)">
+        		<cmd text="getvalue kWh rate b frozen"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C (Frozen)">
+        		<cmd text="getvalue kWh rate c frozen"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D (Frozen)">
+        		<cmd text="getvalue kWh rate d frozen"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command> -->
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+<!-- 		<command name="Read Profile Peak Report">
+        		<cmd text="getvalue lp peak (day|hour|interval) channel N mm/dd/yyyy (days)"/>
+        	</command> -->
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
         <device>
         <type value="1095" javaConstant="MCT410FL" changeGroup="mct"/>
@@ -1049,6 +1209,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -1099,6 +1260,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
@@ -1161,6 +1323,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
@@ -1198,6 +1361,7 @@
             </point>
             
             <point type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -1208,6 +1372,142 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+		<commands>
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+<!--        	<command name="Read Energy (Frozen)">
+        		<cmd text="getvalue kWh frozen"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command> -->
+			<command name="Read kW Demand, Voltage, Blink Count">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kW (Channel 2)"/>
+        		<pointRef name="kW (Channel 3)"/>
+        		<pointRef name="Voltage"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Peak">
+        		<cmd text="getvalue peak"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+<!-- 			<command name="Read Peak (Frozen)">
+        		<cmd text="getvalue peak frozen"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command> -->
+			<command name="Read Min/Max Voltage">
+        		<cmd text="getvalue voltage"/>
+        		<pointRef name="Max Volts"/>
+        		<pointRef name="Min Volts"/>
+        	</command>
+<!-- 			<command name="Read Min/Max Voltage (Frozen)">
+        		<cmd text="getvalue voltage frozen"/>
+        		<pointRef name="Frozen Max Volts"/>
+        		<pointRef name="Frozen Min Volts"/>
+        	</command>        	-->
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
+        	</command>
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read TOU Rate A">
+        		<cmd text="getvalue kWh rate a"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B">
+        		<cmd text="getvalue kWh rate b"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C">
+        		<cmd text="getvalue kWh rate c"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D">
+        		<cmd text="getvalue kWh rate d"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command>
+<!--  		<command name="Read TOU Rate A (Frozen)">
+        		<cmd text="getvalue kWh rate a frozen"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B (Frozen)">
+        		<cmd text="getvalue kWh rate b frozen"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C (Frozen)">
+        		<cmd text="getvalue kWh rate c frozen"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D (Frozen)">
+        		<cmd text="getvalue kWh rate d frozen"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command> -->
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+<!-- 		<command name="Read Profile Peak Report">
+        		<cmd text="getvalue lp peak (day|hour|interval) channel N mm/dd/yyyy (days)"/>
+        	</command> -->
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
      </device>
 <!--
         <device>
@@ -1235,6 +1535,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -1285,6 +1586,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
@@ -1347,6 +1649,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
@@ -1384,6 +1687,7 @@
             </point>
             
             <point type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -1394,6 +1698,144 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+		<commands>
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+--><!--        	<command name="Read Energy (Frozen)">
+        		<cmd text="getvalue kWh frozen"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command> -->
+<!-- 			<command name="Read kW Demand, Voltage, Blink Count">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kW (Channel 2)"/>
+        		<pointRef name="kW (Channel 3)"/>
+        		<pointRef name="Voltage"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Peak">
+        		<cmd text="getvalue peak"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+--><!-- 			<command name="Read Peak (Frozen)">
+        		<cmd text="getvalue peak frozen"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command> -->
+<!-- 
+			<command name="Read Min/Max Voltage">
+        		<cmd text="getvalue voltage"/>
+        		<pointRef name="Max Volts"/>
+        		<pointRef name="Min Volts"/>
+        	</command>
+--><!-- 			<command name="Read Min/Max Voltage (Frozen)">
+        		<cmd text="getvalue voltage frozen"/>
+        		<pointRef name="Frozen Max Volts"/>
+        		<pointRef name="Frozen Min Volts"/>
+        	</command>        	-->
+<!-- 
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
+        	</command>
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read TOU Rate A">
+        		<cmd text="getvalue kWh rate a"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B">
+        		<cmd text="getvalue kWh rate b"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C">
+        		<cmd text="getvalue kWh rate c"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D">
+        		<cmd text="getvalue kWh rate d"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command>
+--><!--  		<command name="Read TOU Rate A (Frozen)">
+        		<cmd text="getvalue kWh rate a frozen"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B (Frozen)">
+        		<cmd text="getvalue kWh rate b frozen"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C (Frozen)">
+        		<cmd text="getvalue kWh rate c frozen"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D (Frozen)">
+        		<cmd text="getvalue kWh rate d frozen"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command> -->
+<!--  		<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+--><!-- 		<command name="Read Profile Peak Report">
+        		<cmd text="getvalue lp peak (day|hour|interval) channel N mm/dd/yyyy (days)"/>
+        	</command> -->
+<!-- 		<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
  -->
  
@@ -1404,7 +1846,7 @@
         <points>
             <point type="PulseAccumulator">
                 <attribute name="USAGE"/>
-                <name>Pulse Input #1 (Current)</name>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -1440,6 +1882,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -1448,7 +1891,7 @@
             
             <point type="DemandAccumulator">
                 <attribute name="DEMAND"/>
-                <name>Pulse Input #1 - Demand</name>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -1741,8 +2184,30 @@
                 <offset value="2000"/>
                 <stategroup value="SystemState"/>
             </point>
-            
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+
+			<command name="Read IED kWh/kW">
+        		<cmd text="getvalue ied kwht"/>
+        		<pointRef name="Total kWh"/>
+        	</command>		
+        	<command name="Read IED Last Interval Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="Last Interval kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1021" javaConstant="MCT360" changeGroup="mct"/>
@@ -1756,14 +2221,13 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            
             <point type="DemandAccumulator">
-                <name>Pulse Input #3</name>
+                <attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            
             <point type="Analog">
                 <name>Total kWh</name>
                 <offset value="1"/>
@@ -1990,24 +2454,24 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1036" javaConstant="MCT318L" changeGroup="mct"/>
         <displayName value="MCT-318L"/>
-        <displayGroup value="MCT"/>
-        <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
-                <name>kWh</name>
-                <offset value="1"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-        </points>
-    </device>
-    <device>
-        <type value="1020" javaConstant="MCT318" changeGroup="mct"/>
-        <displayName value="MCT-318"/>
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
@@ -2048,6 +2512,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2055,7 +2520,8 @@
             </point>
             
             <point type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+                <attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2073,6 +2539,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="PEAK_DEMAND"/>
                 <name>Pulse Input 1 Max demand (MNMX mode) or Pulse Input 1 off peak demand
                     (LMPK mode)</name>
                 <offset value="10"/>
@@ -2176,122 +2643,213 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
+    </device>
+    <device>
+        <type value="1020" javaConstant="MCT318" changeGroup="mct"/>
+        <displayName value="MCT-318"/>
+        <displayGroup value="MCT"/>
+        <points>
+            <point init="true" type="PulseAccumulator">
+                <attribute name="USAGE"/>
+                <name>kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Current)</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Current)</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #1 (Frozen)</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Frozen)</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Frozen)</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Power Fail Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            
+            <point type="DemandAccumulator">
+                <attribute name="DEMAND"/>
+                <name>kW</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #2 - Demand</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #3 - Demand</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <attribute name="PEAK_DEMAND"/>
+                <name>Pulse Input 1 Max demand (MNMX mode) or Pulse Input 1 off peak demand
+                    (LMPK mode)</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input 1 Min demand (MNMX mode) or Pulse Input 1 on peak demand
+                    (LMPK mode)</name>
+                <offset value="11"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input 2 Max demand (MNMX mode) or Pulse Input 2 off peak demand
+                    (LMPK mode)</name>
+                <offset value="12"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input 2 Min demand (MNMX mode) or Pulse Input 2 on peak demand
+                    (LMPK mode)</name>
+                <offset value="13"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input 3 Max demand (MNMX mode) or Pulse Input 3 off peak demand
+                    (LMPK mode)</name>
+                <offset value="14"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input 3 Min demand (MNMX mode) or Pulse Input 3 on peak demand
+                    (LMPK mode)</name>
+                <offset value="15"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            
+            <point type="Status">
+                <name>Status Input #1</name>
+                <offset value="1"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #2</name>
+                <offset value="2"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #3</name>
+                <offset value="3"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #4</name>
+                <offset value="4"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #5</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #6</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #7</name>
+                <offset value="7"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status Input #8</name>
+                <offset value="8"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Power Fail Flag</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Short Power Fail Flag</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Over Flow Flag</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1039" javaConstant="MCT310CT" changeGroup="mct"/>
         <displayName value="MCT-310CT"/>
-        <displayGroup value="MCT"/>
-        <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
-                <name>kWh</name>
-                <offset value="1"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-        </points>
-    </device>
-    <device>
-        <type value="1034" javaConstant="MCT310ID" changeGroup="mct"/>
-        <displayName value="MCT-310ID"/>
-        <displayGroup value="MCT"/>
-        <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
-                <name>kWh</name>
-                <offset value="1"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point init="true" type="PulseAccumulator">
-                <name>Blink Count</name>
-                <offset value="20"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-            </point>
-            <point init="true" type="Status">
-                <name>DISCONNECT STATUS</name>
-                <offset value="1"/>
-                <stategroup value="ThreeStateStatus"/>
-            </point>
-        </points>
-    </device>
-    <device>
-        <type value="1063" javaConstant="MCT310IDL" changeGroup="mct"/>
-        <displayName value="MCT-310IDL"/>
-        <displayGroup value="MCT"/>
-        <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
-                <name>kWh</name>
-                <offset value="1"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point init="true" type="PulseAccumulator">
-                <name>Blink Count</name>
-                <offset value="20"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-            </point>
-            <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
-                <name>kW-LP</name>
-                <offset value="101"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            <point init="true" type="Status">
-                <name>DISCONNECT STATUS</name>
-                <offset value="1"/>
-                <stategroup value="ThreeStateStatus"/>
-            </point>
-        </points>
-    </device>
-    <device>
-        <type value="1035" javaConstant="MCT310IL" changeGroup="mct"/>
-        <displayName value="MCT-310IL"/>
-        <displayGroup value="MCT"/>
-        <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
-                <name>kWh</name>
-                <offset value="1"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point init="true" type="PulseAccumulator">
-                <name>Blink Count</name>
-                <offset value="20"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-            </point>
-            <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
-                <name>kW-LP</name>
-                <offset value="101"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-            </point>
-        </points>
-    </device>
-    <device>
-        <type value="1040" javaConstant="MCT310IM" changeGroup="mct"/>
-        <displayName value="MCT-310IM"/>
-        <displayGroup value="MCT"/>
-        <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
-                <name>kWh</name>
-                <offset value="1"/>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-        </points>
-    </device>
-    <device>
-        <type value="1019" javaConstant="MCT310" changeGroup="mct"/>
-        <displayName value="MCT-310"/>
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
@@ -2332,6 +2890,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2340,7 +2899,7 @@
             
             <point type="DemandAccumulator">
             	<attribute name="DEMAND"/>
-                <name>Pulse Input #1 - Demand</name>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -2389,6 +2948,626 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
+    </device>
+    <device>
+        <type value="1034" javaConstant="MCT310ID" changeGroup="mct"/>
+        <displayName value="MCT-310ID"/>
+        <displayGroup value="MCT"/>
+        <points>
+            <point init="true" type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
+                <name>Disconnect Status</name>
+                <offset value="1"/>
+                <stategroup value="ThreeStateStatus"/>
+            </point>
+			<point init="true" type="PulseAccumulator">
+                <attribute name="USAGE"/>
+                <name>kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Current)</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Current)</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #1 (Frozen)</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Frozen)</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Frozen)</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            
+            <point type="DemandAccumulator">
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #2 - Demand</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #3 - Demand</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            
+            <point type="Status">
+                <name>Status of A relay</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status of B relay</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Power Fail Flag</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Short Power Fail Flag</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Over Flow Flag</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
+    </device>
+    <device>
+        <type value="1063" javaConstant="MCT310IDL" changeGroup="mct"/>
+        <displayName value="MCT-310IDL"/>
+        <displayGroup value="MCT"/>
+        <points>
+            <point init="true" type="PulseAccumulator">
+                <attribute name="USAGE"/>
+                <name>kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE" />
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
+                <name>Disconnect Status</name>
+                <offset value="1"/>
+                <stategroup value="ThreeStateStatus"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Current)</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Current)</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #1 (Frozen)</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Frozen)</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Frozen)</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            
+            <point type="DemandAccumulator">
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #2 - Demand</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #3 - Demand</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            
+            <point type="Status">
+                <name>Status of A relay</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status of B relay</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Power Fail Flag</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Short Power Fail Flag</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Over Flow Flag</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
+    </device>
+    <device>
+        <type value="1035" javaConstant="MCT310IL" changeGroup="mct"/>
+        <displayName value="MCT-310IL"/>
+        <displayGroup value="MCT"/>
+        <points>
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE" />
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+<point init="true" type="PulseAccumulator">
+                <attribute name="USAGE"/>
+                <name>kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Current)</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Current)</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #1 (Frozen)</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Frozen)</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Frozen)</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            
+            <point type="DemandAccumulator">
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #2 - Demand</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #3 - Demand</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            
+            <point type="Status">
+                <name>Status of A relay</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status of B relay</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Power Fail Flag</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Short Power Fail Flag</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Over Flow Flag</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
+    </device>
+    <device>
+        <type value="1040" javaConstant="MCT310IM" changeGroup="mct"/>
+        <displayName value="MCT-310IM"/>
+        <displayGroup value="MCT"/>
+        <points>
+<point init="true" type="PulseAccumulator">
+                <attribute name="USAGE"/>
+                <name>kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Current)</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Current)</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #1 (Frozen)</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Frozen)</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Frozen)</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            
+            <point type="DemandAccumulator">
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #2 - Demand</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #3 - Demand</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            
+            <point type="Status">
+                <name>Status of A relay</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status of B relay</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Power Fail Flag</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Short Power Fail Flag</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Over Flow Flag</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
+    </device>
+    <device>
+        <type value="1019" javaConstant="MCT310" changeGroup="mct"/>
+        <displayName value="MCT-310"/>
+        <displayGroup value="MCT"/>
+        <points>
+            <point init="true" type="PulseAccumulator">
+                <attribute name="USAGE"/>
+                <name>kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Current)</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Current)</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #1 (Frozen)</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #2 (Frozen)</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="PulseAccumulator">
+                <name>Pulse Input #3 (Frozen)</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            
+            <point type="DemandAccumulator">
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #2 - Demand</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Pulse Input #3 - Demand</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            
+            <point type="Status">
+                <name>Status of A relay</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Status of B relay</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Power Fail Flag</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Short Power Fail Flag</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Over Flow Flag</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1025" javaConstant="MCT250" changeGroup="mct"/>
@@ -2396,7 +3575,8 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Most Recent Register)</name>
+            	<attribute name="USAGE"/>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2414,6 +3594,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2421,7 +3602,8 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -2483,6 +3665,20 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1024" javaConstant="MCT248" changeGroup="mct"/>
@@ -2490,7 +3686,8 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Most Recent Register)</name>
+            	<attribute name="USAGE"/>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2502,6 +3699,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2509,7 +3707,8 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -2556,6 +3755,20 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1023" javaConstant="MCT240" changeGroup="mct"/>
@@ -2563,7 +3776,8 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Most Recent Register)</name>
+            	<attribute name="USAGE"/>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2575,6 +3789,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2582,7 +3797,8 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -2624,6 +3840,20 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1037" javaConstant="MCT213" changeGroup="mct"/>
@@ -2631,7 +3861,8 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Most Recent Register)</name>
+            	<attribute name="USAGE"/>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2643,6 +3874,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2650,13 +3882,15 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
+            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status (3 State: Open, Close, Transition)</name>
                 <offset value="1"/>
                 <stategroup value="SystemState"/>
@@ -2682,6 +3916,20 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1026" javaConstant="MCT210" changeGroup="mct"/>
@@ -2689,7 +3937,8 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Most Recent Register)</name>
+            	<attribute name="USAGE"/>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2701,6 +3950,7 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2708,7 +3958,8 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+            	<attribute name="DEMAND"/>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -2730,6 +3981,20 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Power Fail Count"/>
+        	</command>		
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+       	</commands>
     </device>
     <device>
         <type value="1058" javaConstant="MCTBROADCAST"/>
@@ -2742,7 +4007,7 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Most Recent Register)</name>
+                <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2785,7 +4050,7 @@
             </point>
             
             <point type="DemandAccumulator">
-                <name>Pulse Input #1 - Demand</name>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2865,6 +4130,16 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+        <commands>
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        	</command>
+        </commands>
     </device>
     <device>
         <type value="1031" javaConstant="DCT_501" changeGroup="mct"/>
@@ -2994,7 +4269,7 @@
         <displayGroup value="Signal Transmitters"/>
         <points>
             <point type="DemandAccumulator">
-                <name>Pulse Input #1</name>
+                <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
