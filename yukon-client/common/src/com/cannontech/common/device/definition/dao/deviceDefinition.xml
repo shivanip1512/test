@@ -672,25 +672,25 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Rate A kW</name>
+                <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Rate B kW</name>
+                <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Rate C kW</name>
+                <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Rate D kW</name>
+                <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -713,6 +713,130 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+		<commands>
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+        	<command name="Read Energy (Frozen)">
+        		<cmd text="getvalue kWh frozen"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+			<command name="Read kW Demand, Voltage, Blink Count">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kW (Channel 2)"/>
+        		<pointRef name="kW (Channel 3)"/>
+        		<pointRef name="Voltage"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Peak">
+        		<cmd text="getvalue peak"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Peak (Frozen)">
+        		<cmd text="getvalue peak frozen"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Min/Max Voltage">
+        		<cmd text="getvalue voltage"/>
+        		<pointRef name="Max Volts"/>
+        		<pointRef name="Min Volts"/>
+        	</command>
+			<command name="Read Min/Max Voltage (Frozen)">
+        		<cmd text="getvalue voltage frozen"/>
+        		<pointRef name="Frozen Max Volts"/>
+        		<pointRef name="Frozen Min Volts"/>
+        	</command>        	
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Max Volts"/>
+        		<pointRef name="Min Volts"/>
+        	</command>
+			<command name="Read Min/Max Voltage">
+        		<cmd text="getvalue voltage"/>
+        		<pointRef name="Max Volts"/>
+        		<pointRef name="Min Volts"/>
+        	</command>
+			<command name="Read TOU Rate A">
+        		<cmd text="getvalue kWh rate a"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B">
+        		<cmd text="getvalue kWh rate b"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C">
+        		<cmd text="getvalue kWh rate c"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D">
+        		<cmd text="getvalue kWh rate d"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command>
+			<command name="Read TOU Rate A (Frozen)">
+        		<cmd text="getvalue kWh rate a frozen"/>
+        		<pointRef name="Rate A kWh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        	</command>
+			<command name="Read TOU Rate B (Frozen)">
+        		<cmd text="getvalue kWh rate b frozen"/>
+        		<pointRef name="Rate B kWh"/>
+        		<pointRef name="Peak kW (Rate B kW)"/>
+        	</command>
+			<command name="Read TOU Rate C (Frozen)">
+        		<cmd text="getvalue kWh rate c frozen"/>
+        		<pointRef name="Rate C kWh"/>
+        		<pointRef name="Peak kW (Rate C kW)"/>
+        	</command>
+			<command name="Read TOU Rate D (Frozen)">
+        		<cmd text="getvalue kWh rate d frozen"/>
+        		<pointRef name="Rate D kWh"/>
+        		<pointRef name="Peak kW (Rate D kW)"/>
+        	</command>
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+<!-- 		<command name="Read Profile Peak Report">
+        		<cmd text="getvalue lp peak (day|hour|interval) channel N mm/dd/yyyy (days)"/>
+        	</command> -->
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
     <device>
         <type value="1081" javaConstant="MCT410CL" changeGroup="mct"/>

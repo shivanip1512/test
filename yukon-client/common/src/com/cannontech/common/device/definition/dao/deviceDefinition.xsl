@@ -101,6 +101,34 @@
                   *=Initially created by default
                 </xsl:if>
               </xsl:if>
+              
+              <h4>
+                <xsl:value-of select="./displayName/@value" /> - Commands
+              </h4>
+			  <xsl:if test="count(./commands/command) > 0">
+                <table class="pointTable">
+                  <tr>
+                    <th>Name</th>
+                    <th>Command</th>
+                    <th>PointName</th>
+                  </tr>
+                  <xsl:for-each select="./commands/command">
+                    <tr>
+                      <td>
+                        <xsl:value-of select="@name" />
+                      </td>
+                      <td>
+                        <xsl:value-of select="cmd/@text" />
+                      </td>
+                      <td>
+	                    <xsl:for-each select="./pointRef">
+	                      <li><xsl:value-of select="@name" /></li>
+				  	    </xsl:for-each>
+                      </td>
+                    </tr>
+                  </xsl:for-each>
+                </table>
+              </xsl:if>
             </div>
           </xsl:for-each>
         </xsl:for-each>
