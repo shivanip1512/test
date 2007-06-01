@@ -5,11 +5,7 @@
 
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
-<%@ page import="com.cannontech.database.data.capcontrol.CapBankController" %>
-<%@ page import="com.cannontech.database.data.capcontrol.CapBankController702x" %>
 
-<%@ page import="com.cannontech.database.db.DBPersistent" %>
-<%@ page import="com.cannontech.database.data.pao.DBEditorTypes" %>
 
 <%
   CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
@@ -22,14 +18,22 @@
 
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
 
+
 <f:verbatim>
+
+<div id="pointSelectHelp">
+	<jsp:include flush="true" page="include/pointSelectInc.jsp"/>	
+</div>
 
 <script type="text/javascript">
 formatSelectedPoint ('cbcPointDiv');
-var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria','pointName:ctlPoint;deviceName:cbcDevice','cbcPointPicker','');
-</script>
+var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria',
+				'pointName:ctlPoint;deviceName:cbcDevice','cbcPointPicker','', attachPoint, saveOldPoint);
 
+</script>
+	
 </f:verbatim>
+	
 	
     <x:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
 
@@ -132,13 +136,14 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
                 </f:verbatim>
 
                  <x:div id="cbcPointDiv" forceId="true">
-                 <x:inputHidden id="cbc_point" forceId="true" 
-                 value="#{capBankEditor.capBank.capBank.controlPointID }" valueChangeListener="#{capBankEditor.ctlPointChanged}"/>      
-                 <x:outputLabel for="cntrlPoint" value="Control Device/Point: " 
+                 <x:inputHidden id="cbc_point" forceId="true"
+                 value="#{capBankEditor.capBank.capBank.controlPointID }" valueChangeListener="#{capBankEditor.ctlPointChanged}"/>        
+                <x:outputLabel for="cntrlPoint" value="Control Device/Point: " 
                  title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" 
                  styleClass="medStaticLabel"/>
                  <x:outputText id="cbcDevice" forceId="true" 
                  value="#{capBankEditor.ctlPaoName}" /> 
+
                  <x:outputText id="ctlPoint" forceId="true" 
                  value="#{capBankEditor.ctlPointName}" /> 
                 <f:verbatim>
@@ -338,7 +343,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
 
     
     </x:panelGrid>
-        
+ 			
     <x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}"/>
 
 </f:subview>

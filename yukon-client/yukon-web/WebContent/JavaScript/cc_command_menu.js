@@ -251,7 +251,7 @@ function generateCapBankMenu (id, state, opts) {
  	disable_capbank:5,
  	reset_op_cnt:12,
     scan_2way_dev:24,
-    flip_7010: 25
+    flip_7010: 27
  	}
  var table_footer = "</table>";
  var table_body = "<table >";

@@ -4,9 +4,12 @@ PointPicker = Class.create();
 
 //must extend ItemPicker; this will not work as a standalone object
 PointPicker.prototype = Object.extend(new ItemPicker(), { 
-	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context) {
+	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context, triggerAction, pickerShown) {
 		this.baseInitialize(destItemIdFieldId, criteria, extraMapping, pickerId, context);
 		this.sameItemLink = 'Same Device';
+		this.triggerFinalAction = triggerAction;
+		this.triggerPickerShownAction = pickerShown;
+		
 	},
 	
 	//controllerMethod should match name of appropriate method in the xxPickerController java class
@@ -32,7 +35,18 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	        info = this.extraInfo[i];
 	        $(info.fieldid).innerHTML = hit[info.property];
 	    }
+		    
+		this.triggerEndAction(hit);
+	
 	},
+	
+   //over-ride onPickerShown to allow attachment of event handler
+   onPickerShown: function(transport, json) {
+	    $('itemPicker_query').focus();
+	    this.sameParentItem();
+	    this.triggerPickerShown();
+	},
+	
 	
 	//it should do what is necessary to select the specific current row and guide any pickertype-
 	//specific output to the results table generator.

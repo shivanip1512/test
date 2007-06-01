@@ -18,6 +18,9 @@
 				<entry key="/onelineBookmark">
 					<ref bean="onelineBookmarkController" />
 				</entry>
+				<entry key="/checkCapPoint">
+					<ref bean="checkCapPoint" />
+				</entry>
 
 			</map>
 		</property>
@@ -44,6 +47,17 @@
 			<value>2</value>
 		</property>
 	</bean>
+	<bean id="viewResolverInclude"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/cbc/include/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order">
+			<value>3</value>
+		</property>
+	</bean>
+
 	<!-- Controllers -->
 
 	<bean id="ccPointTimestampController"
@@ -62,6 +76,11 @@
 
 	<bean id="onelineBookmarkController"
 		class="com.cannontech.web.editor.OnelineBookmarkController" />
+
+	<bean id="checkCapPoint"
+		class="com.cannontech.web.editor.CheckCapPoint" >
+			<property name="jdbcTemplate" ref="jdbcTemplate"/>
+	</bean>
 	
 	<!-- Method name resolvers -->
 	<bean id="methodNameResolver"

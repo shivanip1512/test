@@ -37,6 +37,9 @@ ItemPicker.prototype = {
 	    //this can be a string specifying a JavaScript call for eval on the selectThisItem finale
 	    //format: "divToRefresh:divId;url:controllerString"
 	    this.triggerFinalAction = Prototype.emptyFunction;
+	
+		//trigger picker shown action
+		triggerPickerShownAction = Prototype.emptyFunction;
 	},
 	
 	initialize: function (destItemIdFieldId, criteria, extraMapping, pickerId, context) {
@@ -251,5 +254,9 @@ ItemPicker.prototype = {
 	
 	triggerEndAction: function(selectedItem) {
 		this.triggerFinalAction(selectedItem);
+	},
+	
+	triggerPickerShown: function () {
+		this.triggerPickerShownAction();
 	}
 }
