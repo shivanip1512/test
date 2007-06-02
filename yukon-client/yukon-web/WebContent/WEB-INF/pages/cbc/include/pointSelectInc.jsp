@@ -6,7 +6,7 @@ function saveOldPoint ()
 {
 	$('oldPointID').value = $(cbcPointPicker.destItemIdFieldId).value;
 	oldExtraInfo.push($('cbcDevice').innerHTML);
-  	oldExtraInfo.push($(ctlPoint).innerHTML);
+  	oldExtraInfo.push($('ctlPoint').innerHTML);
 }
 
 function attachPoint (selected) 
