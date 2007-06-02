@@ -1,6 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<cti:standardPage title="Multispeak Setup" module="multispeak">
+<cti:standardPage title="MultiSpeak Setup" module="multispeak">
 <cti:standardMenu />
 <%@ page import="com.cannontech.multispeak.client.*" %>
 
@@ -51,10 +51,10 @@ function vendorChanged(vendor)
 <br>
 <div class="mainTable">
   <h2 class="setup">Welcome to</h2>
-  <h3 class="setup">Yukon Multispeak Interface Setup</h3>
+  <h3 class="setup">Yukon MultiSpeak Interface Setup</h3>
   <h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/></h4>
 
-<cti:titledContainer title="Multispeak Interface Setup">
+<cti:titledContainer title="MultiSpeak Interface Setup">
 <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/MultispeakServlet">
 <input type="hidden" name="ACTION" value="updateMSP">
 <input type="hidden" name="REDIRECT" value='<c:out value="${pageContext.request.requestURI}"/>' >
@@ -112,7 +112,7 @@ function vendorChanged(vendor)
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Multispeak URL   EX: http://127.0.0.1:80/soap/ ');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP URL</td>
+    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the MultiSpeak URL   EX: http://127.0.0.1:80/soap/ ');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP URL</td>
     <td>
       <input type="text" name="mspURL" size="30" value="http://&lt;server&gt;:&lt;port&gt;/soap/">
     </td>

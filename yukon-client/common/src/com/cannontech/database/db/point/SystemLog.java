@@ -39,7 +39,7 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 	public static final String TYPE_USER_STRING = "Yukon User";
 	public static final String TYPE_MACS_STRING = "MACS"; 
 	public static final String TYPE_ALARM_STRING = "Alarming";
-	public static final String TYPE_MULTISPEAK_STRING = "Multispeak";
+	public static final String TYPE_MULTISPEAK_STRING = "MultiSpeak";
 	public static final String TYPE_CAP_CONTROL_STRING = "Cap Control";
 	
 	//THE TYPE id VALUE IS NOT REPRESENTATIVE OF THE INDEX OF THE ITEMS!!!

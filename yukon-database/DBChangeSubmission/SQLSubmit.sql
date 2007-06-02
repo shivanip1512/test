@@ -33,3 +33,10 @@ insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','tr
 /* Added entry for drop down box*/
 /* NOTE THIS BELONGS IN HEAD, 3.4 and 3.2!!! */
 insert into yukonlistentry values (138, 100, 0, 'Float From 16bit', 0);
+
+/*************************************/
+/*  MultiSpeak spelling changes for head and 3.4 branch --- SN 2007/06/02 */
+update point set pointname = 'MultiSpeak' where pointid = -110;
+update YukonRole set RoleName = 'MultiSpeak', RoleDescription='MultiSpeak web services interface.' where RoleID = -7;
+update YukonRoleProperty set KeyName = 'MultiSpeak Setup', Description='Controls access to configure the Multispeak Interfaces.' where RolePropertyID = -20011;
+/*************************************/
