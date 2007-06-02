@@ -214,19 +214,21 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 
 				if( rate != null)
 				{
-					String execCommand = command.substring(0, command.length() - 16).trim();
-					String cmdDatePart = command.substring(command.length() - 16);	//16 for "mm/dd/yyyy HH:mm" date length
-					Date queryDate = ServletUtil.parseDateStringLiberally(cmdDatePart);
-					if( queryDate != null)
-					{
-						GregorianCalendar cal = new GregorianCalendar();
-						cal.setTime(queryDate);
-						cal.add(Calendar.SECOND, (rate.intValue() * 6));
-						
-						SimpleDateFormat lpFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-						//Add on another command to send a second command for lp interval data.
-						command += " & " + execCommand + " " + lpFormat.format(cal.getTime()); 
-					}
+                    if( command.length() < 40) {    //If the length is greater than 40 then we have a stop time also so we should not submit 2 commands.
+    					String execCommand = command.substring(0, command.length() - 16).trim();
+    					String cmdDatePart = command.substring(command.length() - 16);	//16 for "mm/dd/yyyy HH:mm" date length
+    					Date queryDate = ServletUtil.parseDateStringLiberally(cmdDatePart);
+    					if( queryDate != null)
+    					{
+    						GregorianCalendar cal = new GregorianCalendar();
+    						cal.setTime(queryDate);
+    						cal.add(Calendar.SECOND, (rate.intValue() * 6));
+    						
+    						SimpleDateFormat lpFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+    						//Add on another command to send a second command for lp interval data.
+    						command += " & " + execCommand + " " + lpFormat.format(cal.getTime()); 
+    					}
+                    }
 				}
 			}
 			else if (command.toLowerCase().startsWith("putconfig tou"))
