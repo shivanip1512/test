@@ -10,14 +10,16 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authorization.model.UserGroupPermissionList;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -33,6 +35,7 @@ import com.cannontech.database.db.device.lm.LMGroupVersacom;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -43,7 +46,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * Window>Preferences>Java>Templates. To enable and disable the creation of type
  * comments go to Window>Preferences>Java>Code Generation.
  */
-public class CommandDeviceBean
+public class CommandDeviceBean implements DBChangeLiteListener
 {
 	private HashMap loadGroupIDToLiteLoadGroupsMap = null;
     private HashMap cbcIDToLiteCBCMap = null;
@@ -468,8 +471,9 @@ public class CommandDeviceBean
 	};
 	
 	
-	public CommandDeviceBean()
-	{
+	public CommandDeviceBean() {
+		AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+        dataSource.addDBChangeLiteListener(this);
 	}
 
 	public ArrayList getDeviceList()
@@ -1419,5 +1423,10 @@ public class CommandDeviceBean
             }
         }
         return cbcIDToLiteCBCMap;
-    }    
+    }
+
+	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase) {
+		if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )
+			setChanged(true);
+	}    
 }
