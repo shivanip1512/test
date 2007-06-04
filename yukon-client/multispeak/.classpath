@@ -15,5 +15,6 @@
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/tools"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/stars"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
