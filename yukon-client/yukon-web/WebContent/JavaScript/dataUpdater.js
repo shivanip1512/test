@@ -2,6 +2,37 @@
 
 function initiateCannonDataUpdate(url, periodSecs) {
     var lastUpdate = 0;
+    var processResponseCallback = function(transport) {
+        // looks like stuff is working, hide error div
+        $('cannonUpdaterErrorDiv').hide();
+        var content = transport.responseText;
+        var responseStruc = content.evalJSON();
+        // find all of the updatable elements
+        var updatableElements = $$('span[cannonUpdater]');
+        updatableElements.each(function(it) {
+            var id = it.readAttribute('cannonUpdater');
+            // use the cannonUpdater "id" to look up value in response
+            var newData = responseStruc.data[id];
+            if (newData && newData != it.innerHTML) {
+                // data was sent and is different than current
+                it.innerHTML = newData;
+                // make it glow
+                new Effect.Highlight(it);
+            }
+           
+        });
+        // save latest date
+        lastUpdate = responseStruc.toDate;
+        // schedule next update
+        setTimeout(doUpdate, periodSecs * 1000);
+    };
+    
+    var failureCallback = function(transport) {
+        // something bad happened, show user that updates are off
+        $('cannonUpdaterErrorDiv').show();
+        // schedule another update incase the server comes back, but slow it down a bit
+        setTimeout(doUpdate, periodSecs * 1000 * 5);
+    };
     var doUpdate = function() {
         // get all elements that have the cannonUpdater attribute on them
         var updatableElements = $$('span[cannonUpdater]');
@@ -21,37 +52,6 @@ function initiateCannonDataUpdate(url, periodSecs) {
         
         var requestJson = requestData.toJSON();
         
-        var processResponseCallback = function(transport) {
-            // looks like stuff is working, hide error div
-            $('cannonUpdaterErrorDiv').hide();
-            var content = transport.responseText;
-            var responseStruc = content.evalJSON();
-            // find all of the updatable elements
-            var updatableElements = $$('span[cannonUpdater]');
-            updatableElements.each(function(it) {
-                var id = it.readAttribute('cannonUpdater');
-                // use the cannonUpdater "id" to look up value in response
-                var newData = responseStruc.data[id];
-                if (newData && newData != it.innerHTML) {
-                    // data was sent and is different than current
-                    it.innerHTML = newData;
-                    // make it glow
-                    new Effect.Highlight(it);
-                }
-               
-            });
-            // save latest date
-            lastUpdate = responseStruc.toDate;
-            // schedule next update
-            setTimeout(doUpdate, periodSecs * 1000);
-        };
-        
-        var failureCallback = function(transport) {
-            // something bad happened, show user that updates are off
-            $('cannonUpdaterErrorDiv').show();
-            // schedule another update incase the server comes back, but slow it down a bit
-            setTimeout(doUpdate, periodSecs * 1000 * 5);
-        };
         
         new Ajax.Request(url, {
             method: 'post',
@@ -62,6 +62,8 @@ function initiateCannonDataUpdate(url, periodSecs) {
             onException: failureCallback
         });
         
+        requestData = null;
+        updatableElements = null;
     };
     setTimeout(doUpdate, periodSecs * 1000);
 }
