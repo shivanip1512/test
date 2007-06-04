@@ -33,6 +33,7 @@ public class ActivityLog extends DBPersistent {
     public static final String COLUMNS[] = { 
 		"TIMESTAMP", "USERID", "ACCOUNTID",
 		"ENERGYCOMPANYID", "CUSTOMERID", "PAOID", "ACTION", "DESCRIPTION" };
+    private static final int DESCRIPTION_LENGTH = 240;
         
 	public void add() throws SQLException {
 		if(getActivityLogID() == UNUSED_ID) {
@@ -184,6 +185,11 @@ public class ActivityLog extends DBPersistent {
 	 * @param string
 	 */
 	public void setDescription(String string) {
+        if (string.length() > DESCRIPTION_LENGTH) {
+            CTILogger.warn("Truncation description '" + string + "' to " + DESCRIPTION_LENGTH + " characters");
+            string = string.substring(0, DESCRIPTION_LENGTH - 5);
+            string += "...";
+        }
 		_description = string;
 	}
 

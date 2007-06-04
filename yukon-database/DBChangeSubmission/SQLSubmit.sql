@@ -123,3 +123,8 @@ go
 /*** Nick - Itron BillingFileFormat (into HEAD) ***/
 insert into BillingFileFormats (FormatID,FormatType) values(25,'Itron Register Readings Export')
 /*** END Nick ***/
+
+/** The following is for 3.5, it looks like some of my notification logging is too long */
+alter table ActivityLog modify Description varchar2(240);
+/* end tmack *//***************************************/
+
