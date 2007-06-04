@@ -119,3 +119,7 @@ GROUP BY op.LogID) OpConf INNER JOIN
         YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid; 
 go
 /*** END JULIE : report changes, views need to be modified to reflect accurate area.****/
+
+/*** Nick - Itron BillingFileFormat (into HEAD) ***/
+insert into BillingFileFormats (FormatID,FormatType) values(25,'Itron Register Readings Export')
+/*** END Nick ***/

@@ -51,8 +51,9 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		BillingBean localBean = (BillingBean)session.getAttribute(ServletUtil.ATT_BILLING_BEAN);
 		if(localBean == null)
 		{
+            localBean = new BillingBean();
 			CTILogger.debug("Billing Bean is Null, generate new instance in session.");
-			session.setAttribute(ServletUtil.ATT_BILLING_BEAN, new BillingBean());
+			session.setAttribute(ServletUtil.ATT_BILLING_BEAN, localBean);
 		}
 		
 		String fileFormat = req.getParameter("fileFormat");
@@ -64,43 +65,45 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		String energyDays = req.getParameter("energyDays");
 		String endDate = req.getParameter("endDate");
 		
-		if( fileFormat != null)
-			localBean.setFileFormat(Integer.parseInt(fileFormat));
-		else
-			localBean.setFileFormat(FileFormatTypes.INVALID);
-		
-		if( billGroupType != null)
-			localBean.setBillGroupType(Integer.parseInt(billGroupType));
-		else
-			localBean.setBillGroupType(DeviceMeterGroup.COLLECTION_GROUP);
-		
-		if( billGroup != null)
-			localBean.setBillGroup(billGroup);
-		else
-			localBean.setBillGroup("");
+        final int fileFormatValue = (fileFormat != null) ?
+                Integer.parseInt(fileFormat) : FileFormatTypes.INVALID;
+                
+        final int billGroupTypeValue = (billGroupType != null) ?
+                Integer.parseInt(billGroupType) : DeviceMeterGroup.COLLECTION_GROUP;
+                
+        final String billGroupValue = (billGroup != null) ?
+                billGroup : "";
+
+        final int demandDaysValue = (demandDays != null) ?
+                Integer.parseInt(demandDays) : 30;
+        
+        final int energyDaysValue = (energyDays != null) ?
+                Integer.parseInt(energyDays) : 7;
+               
+        localBean.setFileFormat(fileFormatValue);
+        localBean.setBillGroupType(billGroupTypeValue);
+        localBean.setBillGroup(billGroupValue);
 		localBean.setAppendToFile(appendToFile != null);
 		localBean.setRemoveMult(removeMultiplier != null);
-	
-		if( demandDays != null)
-			localBean.setDemandDaysPrev(Integer.parseInt(demandDays));
-		else
-			localBean.setDemandDaysPrev(30);
-		
-		if( energyDays != null)
-			localBean.setEnergyDaysPrev(Integer.parseInt(energyDays));
-		else 
-			localBean.setEnergyDaysPrev(7);
-		    
+		localBean.setDemandDaysPrev(demandDaysValue);
+		localBean.setEnergyDaysPrev(energyDaysValue);
+        
 		if( endDate != null)
 			localBean.setEndDateStr(endDate);
 		else
 			localBean.setEndDate(ServletUtil.getToday());
 		
 		SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyyMMdd");
-		String fileName = "billing";		
-		fileName += fileNameFormat.format(localBean.getEndDate());
-		fileName += ".txt";
-		resp.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+        final StringBuilder fileName = new StringBuilder("billing");
+        fileName.append(fileNameFormat.format(localBean.getEndDate()));
+        
+        if (fileFormatValue == FileFormatTypes.ITRON) {
+            fileName.append(".xml");
+        } else {
+            fileName.append(".txt");
+        }
+
+		resp.addHeader("Content-Disposition", "attachment;filename=" + fileName.toString());
 		
 		if( req.getParameter("generate") != null)
 		{		    

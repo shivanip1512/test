@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://itron.com/webservices/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://itron.com/webservices/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://itron.com/webservices/">
+      <s:element name="Export">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="xmlInputDocument" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ExportResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ExportResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Import">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="xmlInputDocument" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ImportResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ImportResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ExportSoapIn">
+    <wsdl:part name="parameters" element="tns:Export" />
+  </wsdl:message>
+  <wsdl:message name="ExportSoapOut">
+    <wsdl:part name="parameters" element="tns:ExportResponse" />
+  </wsdl:message>
+  <wsdl:message name="ImportSoapIn">
+    <wsdl:part name="parameters" element="tns:Import" />
+  </wsdl:message>
+  <wsdl:message name="ImportSoapOut">
+    <wsdl:part name="parameters" element="tns:ImportResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ReadingManagerSoap">
+    <wsdl:operation name="Export">
+      <wsdl:input message="tns:ExportSoapIn" />
+      <wsdl:output message="tns:ExportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Import">
+      <wsdl:input message="tns:ImportSoapIn" />
+      <wsdl:output message="tns:ImportSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ReadingManagerSoap" type="tns:ReadingManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="Export">
+      <soap:operation soapAction="http://itron.com/webservices/Export" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Import">
+      <soap:operation soapAction="http://itron.com/webservices/Import" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ReadingManager">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Readings XML API</documentation>
+    <wsdl:port name="ReadingManagerSoap" binding="tns:ReadingManagerSoap">
+      <soap:address location="http://localhost/ieewebservices/webservices/ReadingManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

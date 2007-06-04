@@ -43,6 +43,7 @@ public final class FileFormatTypes {
 	public static final int EXTENDED_TOU = 22;
     public static final int BIG_RIVERS_ELEC_COOP = 23;
   	public static final int EXTENDED_TOU_INCODE = 24;
+    public static final int ITRON = 25;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -67,6 +68,7 @@ public final class FileFormatTypes {
 	public static final String EXTENDED_TOU_STRING = "EXTENDED_TOU";
     public static final String BIG_RIVERS_STRING = "Big Rivers Elec Coop";
 	public static final String EXTENDED_TOU_INCODE_STRING = "INCODE (Extended TOU)";
+    public static final String ITRON_STRING = "Itron Register Readings Export";
 	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;
@@ -208,7 +210,8 @@ public static synchronized boolean retrieveFileFormats()
                 		ATS,
                         IVUE_BI_T65,
                         SIMPLE_TOU,
-                        EXTENDED_TOU
+                        EXTENDED_TOU,
+                        ITRON
                 };
             }
         }
@@ -238,7 +241,8 @@ public static synchronized boolean retrieveFileFormats()
 	            		ATS_STRING,
                         IVUE_BI_T65_STRING,
                         SIMPLE_TOU_STRING,
-                        EXTENDED_TOU_STRING
+                        EXTENDED_TOU_STRING,
+                        ITRON_STRING
 	            };
 	        }
 	    }

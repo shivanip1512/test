@@ -1,6 +1,7 @@
 package com.cannontech.billing.format;
 
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Factory class to generate billing formatters
@@ -75,6 +76,9 @@ public final class BillingFormatterFactory {
         case FileFormatTypes.EXTENDED_TOU_INCODE:
         	return new ExtendedTOU_IncodeRecordFormatter();
 
+        case FileFormatTypes.ITRON:
+            return YukonSpringHook.getBean("itronClientHandler", BillingFormatter.class);
+            
         default:
             /*  return null if format not found - other formats will be handled
                 by the FileFormatFactory:
