@@ -76,7 +76,7 @@ public final class BillingFormatterFactory {
         case FileFormatTypes.EXTENDED_TOU_INCODE:
         	return new ExtendedTOU_IncodeRecordFormatter();
 
-        case FileFormatTypes.ITRON:
+        case FileFormatTypes.ITRON_REGISTER_READINGS_EXPORT:
             return YukonSpringHook.getBean("itronClientHandler", BillingFormatter.class);
             
         default:
