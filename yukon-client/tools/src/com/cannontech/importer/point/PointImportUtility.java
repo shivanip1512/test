@@ -28,9 +28,12 @@ public class PointImportUtility
 
 	private static String analogPointFileName;
 	private static String statusPointFileName;
-	public static final int STATUS_PT_TOKEN_COUNT = 16;
+    private static String accumulatorPointFileName;
+    
+    public static final int STATUS_PT_TOKEN_COUNT = 16;
 	public static final int ANALOG_PT_TOKEN_COUNT = 23;
-
+    public static final int ACCUMULATOR_PT_TOKEN_COUNT = 22;
+    
 	public static boolean processAnalogPoints(String fileLocation) 
 	{
 		CTILogger.info("Starting analog point file process...");
@@ -454,7 +457,407 @@ public class PointImportUtility
 	
 		return success;
 	}
+    
+    public static boolean processAccumulatorPoints(String fileLocation) 
+    {
+        CTILogger.info("Starting analog point file process...");
+            
+        java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ACCUMULATOR_PT_TOKEN_COUNT);
 
+        if( lines == null )
+            return true; //continue the process
+
+
+        //create an object to hold all of our DBPersistent objects
+        com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+
+        // if this is not set to false it will create its own PointIDs
+        multi.setCreateNewPAOIDs( false );
+    
+        int addCount = 0;
+            
+        for( int i = 0; i < lines.size(); i++ )
+        {
+            int tokenCounter = 0;
+
+            CTILogger.info("ACCUMULATOR_PT line: " + lines.get(i).toString());
+            
+            java.util.StringTokenizer tokenizer = new java.util.StringTokenizer(lines.get(i).toString(), ",");
+            
+            if( tokenizer.countTokens() < ACCUMULATOR_PT_TOKEN_COUNT )
+            {
+                CTILogger.info("** Accumulator point line #" + i + " has less than " + ACCUMULATOR_PT_TOKEN_COUNT + " tokens, EXITING.");
+                return false;
+            }
+            /*
+             * PointName,PointType,DeviceName,PointOffset,UOM_Text,Multiplier,DataOffset,DecimalPlaces,DeadBand,HiLimit1,
+             * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,NonUpdate,
+             * RateOfChange,LimitSet1,LimitSet2,HighReasonablility,LowReasonability
+             */
+            Integer pointID = DaoFactory.getPointDao().getNextPointId();
+            
+            String pointName = tokenizer.nextElement().toString();
+            if(emptyField(pointName))
+            {
+                missingRequiredAccumulatorField(i, tokenCounter);
+                return false;
+            }
+            
+            String pointType = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(pointType))
+            {
+                missingRequiredAccumulatorField(i, tokenCounter);
+                return false;
+            }
+
+            com.cannontech.database.data.point.ScalarPoint accumulatorPoint = null;
+            
+            //if pointType
+            if (pointType.equals(new String("PulseAccumulator")))
+            {
+                accumulatorPoint = new com.cannontech.database.data.point.AccumulatorPoint();
+            
+                // default state group ID
+                accumulatorPoint.getPoint().setStateGroupID( new Integer(-1) );
+            }else{
+                return false; // not an expected format
+            }
+            
+            accumulatorPoint.getPoint().setPointID(pointID);
+            accumulatorPoint.setPointID(pointID);
+            accumulatorPoint.getPoint().setPointType( pointType );
+            accumulatorPoint.getPoint().setPointName( pointName );
+
+            String deviceName = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(deviceName))
+            {
+                missingRequiredAccumulatorField(i, tokenCounter);
+                return false;
+            }
+            
+            Integer deviceID = findDeviceID(deviceName);
+            accumulatorPoint.getPoint().setPaoID( deviceID );
+
+            //Character wastedToken = new Character(tokenizer.nextElement().toString().charAt(0));
+            //analogPoint.getPoint().setPseudoFlag(new Character(tokenizer.nextElement().toString().charAt(0)));
+            String temp = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(temp))
+            {
+                missingRequiredAccumulatorField(i, tokenCounter);
+                return false;
+            }
+            accumulatorPoint.getPoint().setPointOffset(new Integer( Integer.parseInt(temp)));    
+            
+            // set Point Units
+            accumulatorPoint.getPointUnit().setDecimalPlaces(new Integer(2));
+            String comparer = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(comparer))
+            {
+                comparer = "kW";
+            }
+
+            comparer = comparer.toUpperCase();
+            if( comparer.compareTo( "KW" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 0 ) );
+            else if( comparer.compareTo( "KWH" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 1 ) );
+            else if( comparer.compareTo( "KVA" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 2) );
+            else if( comparer.compareTo( "KVAR" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 3 ) );
+            else if( comparer.compareTo( "KVAH" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer (4) );
+            else if( comparer.compareTo( "KVARH" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 5 ) );
+            else if( comparer.compareTo( "KVOLTS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 6 ) );
+            else if( comparer.compareTo( "KQ" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 7 ) );
+            else if( comparer.compareTo( "AMPS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 8 ) );
+            else if( comparer.compareTo( "COUNTS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 9 ) );
+            else if( comparer.compareTo( "DEGREES" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 10 ) );
+            else if( comparer.compareTo( "DOLLARS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 11 ) );
+            else if( comparer.compareTo( "$" ) == 0 || comparer.compareTo( "DOLLAR CHAR" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 12 ) );
+            else if( comparer.compareTo( "FEET" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 13 ) );
+            else if( comparer.compareTo( "GALLONS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 14 ) );
+            else if( comparer.compareTo( "GAL/PM"  ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 15 ) );
+            else if( comparer.compareTo( "GAS-CFT" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 16 ) );
+            else if( comparer.compareTo( "HOURS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 17 ) );
+            else if( comparer.compareTo( "LEVEL") == 0 || comparer.compareTo( "LEVELS") == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 18 ) );
+            else if( comparer.compareTo( "MINUTES") == 0 || comparer.compareTo( "MIN") == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 19 ) );
+            else if( comparer.compareTo( "MW" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 20 ) );
+            else if( comparer.compareTo( "MWH" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 21 ) );
+            else if( comparer.compareTo( "MVA" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 22 ) );
+            else if( comparer.compareTo( "MVAR" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 23 ) );
+            else if( comparer.compareTo( "MVAH" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 24 ) );   
+            else if( comparer.compareTo( "MVARH" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 25 ) );
+            else if( comparer.compareTo( "OPS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 26 ) );
+            else if( comparer.compareTo( "PF" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 27 ) );
+            else if( comparer.compareTo( "PERCENT" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 28 ) );
+            else if( comparer.compareTo( "%" ) == 0 || comparer.compareTo( "PERCENT CHAR" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 29 ) );
+            else if( comparer.compareTo( "PSI") == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 30 ) );
+            else if( comparer.compareTo( "SECONDS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 31 ) );
+            else if( comparer.compareTo( "F" ) == 0 || comparer.compareTo( "TEMP-F" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 32 ) );
+            else if( comparer.compareTo( "C" ) == 0 || comparer.compareTo( "TEMP-C" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 33 ) );
+            else if( comparer.compareTo( "VARS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 34 ) );
+            else if( comparer.compareTo( "VOLTS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 35 ) );
+            else if( comparer.compareTo( "VOLTAMPS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 36 ) );
+            else if( comparer.compareTo( "VA" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 37 ) );
+            else if( comparer.compareTo( "WATR-CFT" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 38 ) );
+            else if( comparer.compareTo( "WATTS" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 39 ) );
+            else if( comparer.compareTo( "HERTZ" ) == 0 || comparer.compareTo( "HZ" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 40 ) );
+            else if( comparer.compareTo( "VOLTS FROM V2H" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 41 ) );
+            else if( comparer.compareTo( "AMPS FROM V2H" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 42 ) );
+            else if( comparer.compareTo( "LTC TAP POSITION" ) == 0 || comparer.compareTo( "TAP" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 43 ) );
+            else if( comparer.compareTo( "MILES" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 44 ) );
+            else if( comparer.compareTo( "MS" ) == 0 || comparer.compareTo("MILLISECONDS") == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 45 ) );
+            else if( comparer.compareTo( "LTC TAP POSITION" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 45 ) );
+            else if( comparer.compareTo( "PARTS PER MILLION" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 46 ) );
+            else if( comparer.compareTo( "MILES PER HOUR" ) == 0 || comparer.compareTo( "MPH" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 47 ) );
+            else if( comparer.compareTo( "INCHES" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 48 ) );
+            else if( comparer.compareTo( "KILOMETERS PER HOUR" ) == 0 || comparer.compareTo( "KPH" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 49 ) );
+            else if( comparer.compareTo( "MILIBARS" ) == 0 || comparer.compareTo( "MILLIBARS" ) == 0)
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 50 ) );
+            else if( comparer.compareTo( "INCHES" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 51 ) );
+            else if( comparer.compareTo( "METERS PER SECOND" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 52 ) );
+            else if( comparer.compareTo( "UNDEFINED" ) == 0 )
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 54 ) );
+            else 
+                accumulatorPoint.getPointUnit().setUomID( new Integer( 0 ) );
+            
+            // set default settings for BASE point
+            accumulatorPoint.getPoint().setLogicalGroup(new String("Default"));
+            accumulatorPoint.getPoint().setServiceFlag(new Character('N'));
+            accumulatorPoint.getPoint().setAlarmInhibit(new Character('N'));
+
+            // set default settings for point ALARMING
+            accumulatorPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+            accumulatorPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
+            accumulatorPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
+            accumulatorPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
+
+
+            // analog points have these values
+            String tokenHolder = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder))
+            {
+                ((com.cannontech.database.data.point.AccumulatorPoint)accumulatorPoint).getPointAccumulator().setMultiplier(new Double(1));
+            }
+            
+            ((com.cannontech.database.data.point.AccumulatorPoint)accumulatorPoint).getPointAccumulator().setMultiplier(new Double(tokenHolder));
+            
+            tokenHolder = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder))
+            {
+                ((com.cannontech.database.data.point.AccumulatorPoint)accumulatorPoint).getPointAccumulator().setDataOffset(new Double(0));
+            }
+            ((com.cannontech.database.data.point.AccumulatorPoint)accumulatorPoint).getPointAccumulator().setDataOffset(new Double(tokenHolder));
+            
+            //this is a little out of place...one last pointunit field that needs to be grabbed
+            String decimalPlaces = tokenizer.nextElement().toString();
+            if(emptyField(decimalPlaces))
+            {
+                decimalPlaces = "2";
+            }
+            accumulatorPoint.getPointUnit().setDecimalPlaces(new Integer(decimalPlaces));
+                      
+            // make a vector for the repeaters
+            HashMap limitMap = new HashMap();
+                
+            int limitCount = 0;
+            com.cannontech.database.db.point.PointLimit myPointLimit = null;
+
+            // set RPT stuff
+            for(int count = 0; count < 2; count++)
+            {
+                Double myHighLimit, myLowLimit;
+                Integer myDuration;
+                
+                tokenHolder = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(tokenHolder))
+                {
+                    tokenHolder = "0";
+                }
+                myHighLimit = new Double( tokenHolder );
+                
+                tokenHolder = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(tokenHolder))
+                {
+                    tokenHolder = "0";
+                }
+                myLowLimit = new Double( tokenHolder );
+                
+                tokenHolder = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(tokenHolder))
+                {
+                    tokenHolder = "0";
+                }
+                myDuration = new Integer(tokenHolder);
+
+                if(myHighLimit.intValue() != 0 && myLowLimit.intValue() != 0)
+                {
+                    ++limitCount;
+                    myPointLimit = new com.cannontech.database.db.point.PointLimit();
+        
+                    myPointLimit.setPointID(accumulatorPoint.getPoint().getPointID());
+                    myPointLimit.setLowLimit(myLowLimit);
+                    myPointLimit.setHighLimit(myHighLimit);
+                    myPointLimit.setLimitDuration(myDuration) ;
+                    myPointLimit.setLimitNumber( new Integer(limitCount) );
+    
+                    limitMap.put( myPointLimit.getLimitNumber(), myPointLimit );
+
+                    myPointLimit = null;
+                }
+            }
+            if (limitCount > 0)
+            {
+                // stuff the repeaters into the CCU Route
+                accumulatorPoint.setPointLimitsMap( limitMap );
+            }
+        
+            //archiving settings
+            String tokenHolder2 = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder2))
+            {
+                tokenHolder2 = "None";
+            }
+            accumulatorPoint.getPoint().setArchiveType(tokenHolder2);
+            
+            tokenHolder2 = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder2) || tokenHolder2.compareTo("0") == 0)
+            {
+                tokenHolder2 = "0 second";
+            }
+            accumulatorPoint.getPoint().setArchiveInterval( getArchiveIntervalSeconds(tokenHolder2) );
+            
+            //alarm categories
+            //grab all the alarm chars
+            String alarmCategory = new String();
+            String alarmStates = new String();
+            int inputCounter = 0;
+                
+            IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+            synchronized( cache )   
+            {
+                java.util.List liteAlarms = cache.getAllAlarmCategories();
+                
+                int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
+                
+                while(tokenizer.hasMoreTokens())
+                {
+                    inputCounter++;
+                    
+                    alarmCategory = tokenizer.nextElement().toString();
+                    tokenCounter++;
+                    if(emptyField(alarmCategory))
+                    {
+                        alarmCategory = "(none)";
+                    }
+                    if(alarmCategory.compareTo("none") == 0)
+                        alarmCategory = "(none)";
+                                        
+                    for( int j = 0; j < liteAlarms.size(); j++ )
+                    {
+                        if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+                        {
+                            alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+                            break;
+                        }
+                    }
+                    
+                    //get the char value to put into the alarm state string for the database
+                    char generate = (char)alarmCategoryID;
+                    alarmStates += generate;
+                                    
+                }   
+                    
+                //fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+                alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
+                //System.out.println(alarmStates);
+                accumulatorPoint.getPointAlarming().setAlarmStates(alarmStates);
+                accumulatorPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
+                accumulatorPoint.getPointAlarming().setNotifyOnAcknowledge("N"); 
+                accumulatorPoint.getPointAlarming().setPointID(pointID);
+            
+            
+            multi.getDBPersistentVector().add( accumulatorPoint );
+            ++addCount;
+            System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
+            }
+        }
+        boolean success = writeToSQLDatabase(multi);
+
+        if( success )
+        {
+            
+            CTILogger.info(" analog point file was processed and inserted successfully");
+            
+            CTILogger.info(" " + addCount + " analog points were added to the database");
+        }
+        else
+            CTILogger.info(" analog points could NOT be added to the database");
+        
+    
+        return success;
+    }
+    
 	public static boolean processStatusPoints(String fileLocation)
 	{
 		CTILogger.info("Starting status point file process...");
@@ -905,7 +1308,40 @@ public class PointImportUtility
 			javax.swing.JOptionPane.WARNING_MESSAGE );
 	
 	}
-	
+    
+    private static void missingRequiredAccumulatorField(int lineNumber, int fieldNumber)
+    {
+        String analogFields[] = new String[ANALOG_PT_TOKEN_COUNT];
+            analogFields[0] = "PointName";
+            analogFields[1] = "PointType";
+            analogFields[2] = "DeviceName";
+            analogFields[3] = "PointOffset";
+            analogFields[4] = "UOM_Text";
+            analogFields[5] = "Multiplier";
+            analogFields[6] = "DataOffset";
+            analogFields[8] = "HiLimit1";
+            analogFields[9] = "LowLimit1";
+            analogFields[10] = "Duration1";
+            analogFields[11] = "Limit2";
+            analogFields[12] = "HiLimit2";
+            analogFields[13] = "LowLimit2";
+            analogFields[14] = "Duration2";
+            analogFields[15] = "Archivetype";
+            analogFields[16] = "ArchInterval";
+            analogFields[17] = "NonUpdate";
+            analogFields[18] = "RateOfChange";
+            analogFields[19] = "LimitSet1";
+            analogFields[20] = "LimitSet2";
+            analogFields[21] = "HighReasonablility";
+            analogFields[22] = "LowReasonability";
+        
+        javax.swing.JOptionPane.showMessageDialog(
+        PointImportWarningBox.getWarningFrame(), 
+            "You are missing a required field on line number " + lineNumber + "\n The missing field is " + analogFields[fieldNumber]    ,"Item Not Found",
+            javax.swing.JOptionPane.WARNING_MESSAGE );
+    
+    }
+    
 	private static void missingRequiredStatusField(int lineNumber, int fieldNumber)
 	{
 		String statusFields[] = new String[STATUS_PT_TOKEN_COUNT];

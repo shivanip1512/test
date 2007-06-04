@@ -10,6 +10,9 @@ public class PointImportUtilityPanel {
 	private javax.swing.JButton ivjAnalogImportJButton = null;
 	private javax.swing.JTextField ivjAnalogJTextField = null;
 	private javax.swing.JLabel ivjAnalogLabel = null;
+    private javax.swing.JButton ivjAcuumulatorImportJButton = null;
+    private javax.swing.JTextField ivjAcuumulatorJTextField = null;
+    private javax.swing.JLabel ivjAcuumulatorLabel = null;    
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JFrame ivjJFrame1 = null;
 	private javax.swing.JPanel ivjJFrameContentPane = null;
@@ -19,15 +22,20 @@ public class PointImportUtilityPanel {
 	private javax.swing.JLabel ivjStatusLabel = null;
 	private boolean analogSuccess;
 	private boolean statusSuccess;
+    private boolean accumulatorSuccess;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == PointImportUtilityPanel.this.getAnalogJTextField()) 
 				connEtoC1(e);
+            if (e.getSource() == PointImportUtilityPanel.this.getAccumulatorJTextField()) 
+                connEtoC5(e);
 			if (e.getSource() == PointImportUtilityPanel.this.getStatusJTextField()) 
 				connEtoC2(e);
 			if (e.getSource() == PointImportUtilityPanel.this.getAnalogImportJButton()) 
 				connEtoC3(e);
+            if (e.getSource() == PointImportUtilityPanel.this.getAccumulatorImportJButton()) 
+                connEtoC6(e);
 			if (e.getSource() == PointImportUtilityPanel.this.getStatusImportJButton()) 
 				connEtoC4(e);
 		};
@@ -73,6 +81,7 @@ public void analogImportJButton_ActionPerformed(java.awt.event.ActionEvent actio
 public void AnalogjTextField_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	return;
 }
+
 /**
  * connEtoC1:  (AnalogJTextField.action.actionPerformed(java.awt.event.ActionEvent) --> PointImportUtilityPanel.AnalogjTextField_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -90,6 +99,24 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 		// user code end
 		handleException(ivjExc);
 	}
+}
+/**
+ * connEtoC1:  (AccumulatorJTextField.action.actionPerformed(java.awt.event.ActionEvent) --> PointImportUtilityPanel.AnalogjTextField_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC5(java.awt.event.ActionEvent arg1) {
+    try {
+        // user code begin {1}
+        // user code end
+        this.AccumulatorjTextField_ActionPerformed(arg1);
+        // user code begin {2}
+        // user code end
+    } catch (java.lang.Throwable ivjExc) {
+        // user code begin {3}
+        // user code end
+        handleException(ivjExc);
+    }
 }
 /**
  * connEtoC2:  (StatusJTextField.action.actionPerformed(java.awt.event.ActionEvent) --> PointImportUtilityPanel.StatusjTextField_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -127,6 +154,22 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC6(java.awt.event.ActionEvent arg1) {
+    try {
+        // user code begin {1}
+        // user code end
+        this.AccumulatorImportJButton_ActionPerformed(arg1);
+        // user code begin {2}
+        // user code end
+    } catch (java.lang.Throwable ivjExc) {
+        // user code begin {3}
+        // user code end
+        handleException(ivjExc);
+    }
+}
+
 /**
  * connEtoC4:  (StatusImportJButton.action.actionPerformed(java.awt.event.ActionEvent) --> PointImportUtilityPanel.statusImportJButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -167,6 +210,28 @@ private javax.swing.JButton getAnalogImportJButton() {
 	return ivjAnalogImportJButton;
 }
 /**
+ * Return the AccumulatorImportJButton property value.
+ * @return javax.swing.JButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getAccumulatorImportJButton() {
+    if (ivjAcuumulatorImportJButton == null) {
+        try {
+            ivjAcuumulatorImportJButton = new javax.swing.JButton();
+            ivjAcuumulatorImportJButton.setName("AccumulatorImportJButton");
+            ivjAcuumulatorImportJButton.setText("ACCUMULATOR IMPORT");
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjAcuumulatorImportJButton;
+}
+
+/**
  * Return the AnalogJTextField property value.
  * @return javax.swing.JTextField
  */
@@ -186,6 +251,27 @@ private javax.swing.JTextField getAnalogJTextField() {
 	}
 	return ivjAnalogJTextField;
 }
+
+/**
+ * Return the AnalogJTextField property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getAccumulatorJTextField() {
+    if (ivjAcuumulatorJTextField == null) {
+        try {
+            ivjAcuumulatorJTextField = new javax.swing.JTextField();
+            ivjAcuumulatorJTextField.setName("AccumulatorJTextField");
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjAcuumulatorJTextField;
+}
 /**
  * Return the AnalogLabel property value.
  * @return javax.swing.JLabel
@@ -196,7 +282,7 @@ private javax.swing.JLabel getAnalogLabel() {
 		try {
 			ivjAnalogLabel = new javax.swing.JLabel();
 			ivjAnalogLabel.setName("AnalogLabel");
-			ivjAnalogLabel.setText("Analog points file (please put in complete path)");
+			ivjAnalogLabel.setText("Analog points file (complete path)");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -206,6 +292,28 @@ private javax.swing.JLabel getAnalogLabel() {
 		}
 	}
 	return ivjAnalogLabel;
+}
+
+/**
+ * Return the AnalogLabel property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getAccumulatorLabel() {
+    if (ivjAcuumulatorLabel == null) {
+        try {
+            ivjAcuumulatorLabel = new javax.swing.JLabel();
+            ivjAcuumulatorLabel.setName("AccumulatorLabel");
+            ivjAcuumulatorLabel.setText("Accumulator points file (complete path)");
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjAcuumulatorLabel;
 }
 /**
  * 
@@ -308,40 +416,62 @@ private javax.swing.JPanel getPointImportPanel() {
 			constraintsAnalogJTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsAnalogJTextField.weightx = 1.0;
 			constraintsAnalogJTextField.ipadx = 264;
-			constraintsAnalogJTextField.insets = new java.awt.Insets(4, 27, 28, 33);
+			constraintsAnalogJTextField.insets = new java.awt.Insets(4, 27, 10, 33);
 			getPointImportPanel().add(getAnalogJTextField(), constraintsAnalogJTextField);
 
+            java.awt.GridBagConstraints constraintsAccumulatorJTextField = new java.awt.GridBagConstraints();
+            constraintsAccumulatorJTextField.gridx = 1; constraintsAccumulatorJTextField.gridy = 4;
+            constraintsAccumulatorJTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsAccumulatorJTextField.weightx = 1.0;
+            constraintsAccumulatorJTextField.ipadx = 264;
+            constraintsAccumulatorJTextField.insets = new java.awt.Insets(4, 27, 10, 33);
+            getPointImportPanel().add(getAccumulatorJTextField(), constraintsAccumulatorJTextField);            
+            
 			java.awt.GridBagConstraints constraintsStatusJTextField = new java.awt.GridBagConstraints();
-			constraintsStatusJTextField.gridx = 1; constraintsStatusJTextField.gridy = 4;
+			constraintsStatusJTextField.gridx = 1; constraintsStatusJTextField.gridy = 6;
 			constraintsStatusJTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsStatusJTextField.weightx = 1.0;
 			constraintsStatusJTextField.ipadx = 264;
-			constraintsStatusJTextField.insets = new java.awt.Insets(3, 27, 72, 33);
+			constraintsStatusJTextField.insets = new java.awt.Insets(4, 27, 30, 33);//3 27 72 33
 			getPointImportPanel().add(getStatusJTextField(), constraintsStatusJTextField);
 
 			java.awt.GridBagConstraints constraintsAnalogLabel = new java.awt.GridBagConstraints();
 			constraintsAnalogLabel.gridx = 1; constraintsAnalogLabel.gridy = 1;
 			constraintsAnalogLabel.ipadx = 25;
-			constraintsAnalogLabel.insets = new java.awt.Insets(34, 27, 4, 12);
+			//constraintsAnalogLabel.insets = new java.awt.Insets(34, 27, 4, 12);
 			getPointImportPanel().add(getAnalogLabel(), constraintsAnalogLabel);
-			java.awt.GridBagConstraints constraintsStatusLabel = new java.awt.GridBagConstraints();
-			constraintsStatusLabel.gridx = 1; constraintsStatusLabel.gridy = 3;
-			constraintsStatusLabel.ipadx = 27;
-			constraintsStatusLabel.insets = new java.awt.Insets(19, 27, 3, 12);
-			getPointImportPanel().add(getStatusLabel(), constraintsStatusLabel);
 
+            java.awt.GridBagConstraints constraintsAccumulatorLabel = new java.awt.GridBagConstraints();
+            constraintsAccumulatorLabel.gridx = 1; constraintsAccumulatorLabel.gridy = 3;
+            constraintsAccumulatorLabel.ipadx = 25;
+            //constraintsAccumulatorLabel.insets = new java.awt.Insets(19, 27, 3, 12);
+            getPointImportPanel().add(getAccumulatorLabel(), constraintsAccumulatorLabel);            
+            
+            java.awt.GridBagConstraints constraintsStatusLabel = new java.awt.GridBagConstraints();
+			constraintsStatusLabel.gridx = 1; constraintsStatusLabel.gridy = 5;
+			constraintsStatusLabel.ipadx = 27;
+			//constraintsStatusLabel.insets = new java.awt.Insets(19, 27, 2, 12);//19
+			getPointImportPanel().add(getStatusLabel(), constraintsStatusLabel); 
+            
 			java.awt.GridBagConstraints constraintsAnalogImportJButton = new java.awt.GridBagConstraints();
 			constraintsAnalogImportJButton.gridx = 2; constraintsAnalogImportJButton.gridy = 2;
 			constraintsAnalogImportJButton.ipadx = 53;
 			constraintsAnalogImportJButton.ipady = 4;
-			constraintsAnalogImportJButton.insets = new java.awt.Insets(4, 13, 19, 44);
+			constraintsAnalogImportJButton.insets = new java.awt.Insets(4, 13, 10, 85);
 			getPointImportPanel().add(getAnalogImportJButton(), constraintsAnalogImportJButton);
 
+            java.awt.GridBagConstraints constraintsAccumulatorImportJButton = new java.awt.GridBagConstraints();
+            constraintsAccumulatorImportJButton.gridx = 2; constraintsAccumulatorImportJButton.gridy = 4;
+            constraintsAccumulatorImportJButton.ipadx = 53;
+            constraintsAccumulatorImportJButton.ipady = 4;
+            constraintsAccumulatorImportJButton.insets = new java.awt.Insets(4, 13, 10, 44);
+            getPointImportPanel().add(getAccumulatorImportJButton(), constraintsAccumulatorImportJButton);            
+            
 			java.awt.GridBagConstraints constraintsStatusImportJButton = new java.awt.GridBagConstraints();
-			constraintsStatusImportJButton.gridx = 2; constraintsStatusImportJButton.gridy = 4;
+			constraintsStatusImportJButton.gridx = 2; constraintsStatusImportJButton.gridy = 6;
 			constraintsStatusImportJButton.ipadx = 55;
 			constraintsStatusImportJButton.ipady = 4;
-			constraintsStatusImportJButton.insets = new java.awt.Insets(3, 13, 63, 44);
+			constraintsStatusImportJButton.insets = new java.awt.Insets(3, 13, 30, 85);
 			getPointImportPanel().add(getStatusImportJButton(), constraintsStatusImportJButton);
 			// user code begin {1}
 			// user code end
@@ -404,7 +534,7 @@ private javax.swing.JLabel getStatusLabel() {
 		try {
 			ivjStatusLabel = new javax.swing.JLabel();
 			ivjStatusLabel.setName("StatusLabel");
-			ivjStatusLabel.setText("Status points file (please put in complete path)");
+			ivjStatusLabel.setText("Status points file (complete path)");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -434,9 +564,11 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	// user code end
 	getAnalogJTextField().addActionListener(ivjEventHandler);
+    getAccumulatorJTextField().addActionListener(ivjEventHandler);
 	getStatusJTextField().addActionListener(ivjEventHandler);
 	getAnalogImportJButton().addActionListener(ivjEventHandler);
-	getStatusImportJButton().addActionListener(ivjEventHandler);
+    getAccumulatorImportJButton().addActionListener(ivjEventHandler);
+    getStatusImportJButton().addActionListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -505,4 +637,39 @@ public void statusImportJButton_ActionPerformed(java.awt.event.ActionEvent actio
 public void StatusjTextField_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	return;
 }
+/**
+ * Comment
+ */
+public void AccumulatorImportJButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+    String fileName = getAccumulatorJTextField().getText();
+    accumulatorSuccess = com.cannontech.importer.point.PointImportUtility.processAccumulatorPoints(fileName);
+    if(accumulatorSuccess)
+    {
+        javax.swing.JOptionPane.showMessageDialog(
+                        this.getJFrame1(), 
+                        "Accumulator point file was processed and inserted successfully. \n" +
+                        "All analog points were added to the database" , "Import Successful",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE );
+        System.exit(0);
+    }
+    else
+    {
+        javax.swing.JOptionPane.showMessageDialog(
+                    this.getJFrame1(), 
+                    "Accumulator point import could not be completed successfully. \n" 
+                    + "Please verify that you are not trying to import duplicates." , "Import FAILED",
+                    javax.swing.JOptionPane.WARNING_MESSAGE );
+            
+            
+    }
+        
+    return;
+}
+/**
+ * Comment
+ */
+public void AccumulatorjTextField_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+    return;
+}
+
 }
