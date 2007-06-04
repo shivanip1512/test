@@ -34,6 +34,9 @@ yukon-client/esub/build
 yukon-client/export/.cvsignore
 yukon-client/export/bin
 yukon-client/export/build
+yukon-client/foreign/.cvsignore
+yukon-client/foreign/bin
+yukon-client/foreign/build
 yukon-client/loadcontrol/.cvsignore
 yukon-client/loadcontrol/bin
 yukon-client/loadcontrol/build
