@@ -7,7 +7,8 @@ import com.cannontech.message.macs.message.Schedule;
 
 public class LMDeviceCriteria extends YukonObjectCriteriaHelper {
     private static final String[] TYPES =  {PAOGroups.STRING_LM_CONTROL_AREA[0], PAOGroups.STRING_LM_SCENARIO[0],
-                                            Schedule.SIMPLE_TYPE, Schedule.SCRIPT_TYPE};
+                                            Schedule.SIMPLE_TYPE, Schedule.SCRIPT_TYPE, PAOGroups.STRING_LM_DIRECT_PROGRAM[0],
+                                            PAOGroups.STRING_EXPRESSCOMM_GROUP[0], PAOGroups.STRING_VERSACOM_GROUP[0]};
 
     public LMDeviceCriteria() {
         super();
