@@ -598,7 +598,7 @@ alter table ccurtprogram add IdentifierPrefix varchar2(32);
 update ccurtprogram set IdentifierPrefix = 'PROG-';
 alter table ccurtprogram modify IdentifierPrefix varchar2(32) not null;
 
-alter table dcitemtype rename column maxlength to MaxValue;
+alter table dcitemtype rename column maxlengh to MaxValue;
 alter table dcitemtype rename column minlength to MinValue;
 
 insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
