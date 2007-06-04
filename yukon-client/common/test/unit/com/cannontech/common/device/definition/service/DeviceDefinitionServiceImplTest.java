@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
@@ -37,7 +40,8 @@ public class DeviceDefinitionServiceImplTest {
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private AttributeServiceImpl attributeService = null;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         service = new DeviceDefinitionServiceImpl();
         deviceDefinitionDao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
@@ -70,6 +74,7 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test createDefaultPointsForDevice()
      */
+    @Test
     public void testCreateDefaultPointsForDevice() {
 
         // Test with supported device
@@ -98,6 +103,7 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test isDeviceTypeChangeable()
      */
+    @Test
     public void testIsDeviceTypeChangeable() {
 
         // Test with changeable device
@@ -123,6 +129,7 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test getChangeableDevices()
      */
+    @Test
     public void testGetChangeableDevices() {
 
         // Test with changeable device
@@ -164,6 +171,7 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test createAllPointsForDevice()
      */
+    @Test
     public void testCreateAllPointsForDevice() {
 
         // Test with supported device
@@ -194,6 +202,7 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test getPointTemplatesToAdd()
      */
+    @Test
     public void testGetPointTemplatesToAdd() {
 
         // Test add points from type 'device2' to type 'device1'
