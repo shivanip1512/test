@@ -847,12 +847,12 @@ public class PointImportUtility
         if( success )
         {
             
-            CTILogger.info(" analog point file was processed and inserted successfully");
+            CTILogger.info(" accumulator point file was processed and inserted successfully");
             
-            CTILogger.info(" " + addCount + " analog points were added to the database");
+            CTILogger.info(" " + addCount + " accumulator points were added to the database");
         }
         else
-            CTILogger.info(" analog points could NOT be added to the database");
+            CTILogger.info(" accumulator points could NOT be added to the database");
         
     
         return success;
@@ -1311,33 +1311,33 @@ public class PointImportUtility
     
     private static void missingRequiredAccumulatorField(int lineNumber, int fieldNumber)
     {
-        String analogFields[] = new String[ANALOG_PT_TOKEN_COUNT];
-            analogFields[0] = "PointName";
-            analogFields[1] = "PointType";
-            analogFields[2] = "DeviceName";
-            analogFields[3] = "PointOffset";
-            analogFields[4] = "UOM_Text";
-            analogFields[5] = "Multiplier";
-            analogFields[6] = "DataOffset";
-            analogFields[8] = "HiLimit1";
-            analogFields[9] = "LowLimit1";
-            analogFields[10] = "Duration1";
-            analogFields[11] = "Limit2";
-            analogFields[12] = "HiLimit2";
-            analogFields[13] = "LowLimit2";
-            analogFields[14] = "Duration2";
-            analogFields[15] = "Archivetype";
-            analogFields[16] = "ArchInterval";
-            analogFields[17] = "NonUpdate";
-            analogFields[18] = "RateOfChange";
-            analogFields[19] = "LimitSet1";
-            analogFields[20] = "LimitSet2";
-            analogFields[21] = "HighReasonablility";
-            analogFields[22] = "LowReasonability";
+        String accumulatorFields[] = new String[ACCUMULATOR_PT_TOKEN_COUNT];
+            accumulatorFields[0] = "PointName";
+            accumulatorFields[1] = "PointType";
+            accumulatorFields[2] = "DeviceName";
+            accumulatorFields[3] = "PointOffset";
+            accumulatorFields[4] = "UOM_Text";
+            accumulatorFields[5] = "Multiplier";
+            accumulatorFields[6] = "DataOffset";
+            accumulatorFields[8] = "HiLimit1";
+            accumulatorFields[9] = "LowLimit1";
+            accumulatorFields[10] = "Duration1";
+            accumulatorFields[11] = "Limit2";
+            accumulatorFields[12] = "HiLimit2";
+            accumulatorFields[13] = "LowLimit2";
+            accumulatorFields[14] = "Duration2";
+            accumulatorFields[15] = "Archivetype";
+            accumulatorFields[16] = "ArchInterval";
+            accumulatorFields[17] = "NonUpdate";
+            accumulatorFields[18] = "RateOfChange";
+            accumulatorFields[19] = "LimitSet1";
+            accumulatorFields[20] = "LimitSet2";
+            accumulatorFields[21] = "HighReasonablility";
+            accumulatorFields[22] = "LowReasonability";
         
         javax.swing.JOptionPane.showMessageDialog(
         PointImportWarningBox.getWarningFrame(), 
-            "You are missing a required field on line number " + lineNumber + "\n The missing field is " + analogFields[fieldNumber]    ,"Item Not Found",
+            "You are missing a required field on line number " + lineNumber + "\n The missing field is " + accumulatorFields[fieldNumber]    ,"Item Not Found",
             javax.swing.JOptionPane.WARNING_MESSAGE );
     
     }
