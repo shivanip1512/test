@@ -1,11 +1,11 @@
 package com.cannontech.common.device.definition.service;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
@@ -29,7 +29,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 /**
  * Test class for DeviceDefinitionService
  */
-public class DeviceDefinitionServiceImplTest extends TestCase {
+public class DeviceDefinitionServiceImplTest {
 
     private DeviceDefinitionServiceImpl service = null;
     private PointServiceImpl pointService = null;
