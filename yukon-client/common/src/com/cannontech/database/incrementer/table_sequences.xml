@@ -5,6 +5,7 @@
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general" >
+      	<table name="Substation" identitycolumn="SubstationID"/>
         <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
         <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
         <table name="CCurtGroup" identitycolumn="CCurtGroupId"/>

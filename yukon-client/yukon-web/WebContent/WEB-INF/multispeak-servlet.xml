@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="simpleUrlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/substation">substationController</prop>
+				<prop key="/route">routeController</prop>
+				<prop key="/mappings">mappings</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="mappings"
+		class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="mappings.jsp" />
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix"
+			value="/WEB-INF/pages/multispeak/setup/routemapping/" />
+	</bean>
+
+	<bean id="substationController"
+		class="com.cannontech.web.multispeak.SubstationActionController">
+		<property name="substationDao">
+			<ref bean="substationDao" />
+		</property>
+		<property name="substationToRouteMappingDao">
+			<ref bean="substationToRouteMappingDao" />
+		</property>
+		<property name="methodNameResolver">
+			<ref bean="methodNameResolver" />
+		</property>
+	</bean>
+
+	<bean id="routeController"
+		class="com.cannontech.web.multispeak.RouteActionController">
+		<property name="substationToRouteMappingDao">
+			<ref bean="substationToRouteMappingDao" />
+		</property>
+		<property name="methodNameResolver">
+			<ref bean="methodNameResolver" />
+		</property>
+	</bean>
+
+	<bean id="methodNameResolver"
+		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="methodParamNames">
+			<list>
+				<value>view</value>
+				<value>add</value>
+				<value>remove</value>
+				<value>update</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

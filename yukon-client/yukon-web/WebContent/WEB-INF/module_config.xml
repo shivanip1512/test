@@ -270,8 +270,18 @@
   <module name="multispeak">
     <skin name="standard"/>
     <css file="setupStyle.css"/>
+    
+    <toplinks>
+   	  <option id="setup" name="Setup">
+    	<sublinks>
+    	  <option id="mappings" name="Substation To Route Mappings">
+    		<link>/spring/multispeak/setup/routemapping/mappings</link>
+    	  </option>
+    	</sublinks>
+      </option>
+    </toplinks>
   </module>
-      
+        
    <module name="blank">
     <skin name="standard"/>
   </module>
