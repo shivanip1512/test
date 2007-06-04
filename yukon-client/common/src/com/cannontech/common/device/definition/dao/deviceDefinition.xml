@@ -2455,10 +2455,6 @@
             </point>
         </points>
         <commands>
-			<command name="Read Blink Count">
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Blink Count"/>
-        	</command>		
         	<command name="Read Energy">
         		<cmd text="getvalue kWh"/>
         		<pointRef name="kWh"/>

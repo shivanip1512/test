@@ -362,7 +362,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         if (device.getCommands() != null) {
             Command[] commands = device.getCommands().getCommand();
             for (Command command : commands) {
-                CommandDefinition definition = this.createCommandDefinition(command,
+                CommandDefinition definition = this.createCommandDefinition(device.getDisplayName().getValue(), 
+                                                                            command,
                                                                             pointNameTemplateMap);
                 commandSet.add(definition);
             }
@@ -372,11 +373,12 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     /**
      * Helper method to convert a castor command to a command definition
+     * @param deviceName - Name of device for commands
      * @param command - Command to convert
      * @param pointNameTemplateMap
      * @return The command definition representing the castor command
      */
-    private CommandDefinition createCommandDefinition(Command command,
+    private CommandDefinition createCommandDefinition(String deviceName, Command command,
             Map<String, PointTemplate> pointNameTemplateMap) {
 
         CommandDefinition definition = new CommandDefinitionImpl();
@@ -391,7 +393,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         PointRef[] pointRefs = command.getPointRef();
         for (PointRef pointRef : pointRefs) {
             if (!pointNameTemplateMap.containsKey(pointRef.getName())) {
-                throw new RuntimeException("Point name: " + pointRef.getName() + " not found.  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file.");
+                throw new RuntimeException("Point name: " + pointRef.getName() + " not found for device: " + deviceName + ".  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file.");
             }
             PointReference pointReference = new PointReference();
             pointReference.setPointName(pointRef.getName());
