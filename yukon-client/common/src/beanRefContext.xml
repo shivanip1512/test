@@ -22,6 +22,7 @@
          <value>com/cannontech/common/chart/chartContext.xml</value>
          <value>com/cannontech/core/authentication/authContext.xml</value>
          <value>com/cannontech/amr/amrContext.xml</value>
+         <value>com/cannontech/foreign/itron/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
