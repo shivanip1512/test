@@ -93,7 +93,7 @@ public class MultispeakServlet extends HttpServlet
         if( action.equalsIgnoreCase("CB_MR")) {
             String command = req.getParameter("command");
             MultispeakVendor mspVendor;
-            mspVendor = multispeakDao.getMultispeakVendor(mspBean.getPrimaryCIS());
+            mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
 
             String deviceIDStr = req.getParameter("deviceID");
             Integer deviceID = null; 
@@ -128,10 +128,10 @@ public class MultispeakServlet extends HttpServlet
 //        load action parameters from req
         String mspService = req.getParameter("actionService");
         String mspEndpoint = req.getParameter("actionEndpoint");
-        int mspPrimaryCIS = mspBean.getPrimaryCIS();
+        int mspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
         if (req.getParameter("mspPrimaryCIS") != null)
         	mspPrimaryCIS = Integer.valueOf(req.getParameter("mspPrimaryCIS")).intValue();
-        int mspPaoNameAlias = mspBean.getPaoNameAlias();
+        int mspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
         if (req.getParameter("mspPaoNameAlias") != null)
         	mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
         
@@ -162,7 +162,8 @@ public class MultispeakServlet extends HttpServlet
         
         if( action.equalsIgnoreCase("Save")) {
             multispeakDao.updateMultispeakVendor(mspVendor);
-            if ( mspPrimaryCIS != mspBean.getPrimaryCIS() || mspPaoNameAlias != mspBean.getPaoNameAlias()){
+            if ( mspPrimaryCIS != multispeakFuncs.getPrimaryCIS() || 
+                 mspPaoNameAlias != multispeakFuncs.getPaoNameAlias()){
     			try
     			{
     				boolean breakTime = false;

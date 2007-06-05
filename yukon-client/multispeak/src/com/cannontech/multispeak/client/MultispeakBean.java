@@ -64,22 +64,6 @@ public class MultispeakBean
     }
 
     /**
-     * @return Returns the primaryCIS vendorID.
-     */
-    public int getPrimaryCIS()
-    {
-        return Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID)).intValue();
-    }
-
-    /**
-     * @return Returns the PaoName Alias enum.
-     */
-    public int getPaoNameAlias()
-    {
-        return Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS)).intValue();
-    }
-
-    /**
      * @return Returns the selectedMspVendor.
      */
     public MultispeakVendor getSelectedMspVendor()

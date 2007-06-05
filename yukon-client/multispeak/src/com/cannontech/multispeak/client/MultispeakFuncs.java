@@ -331,4 +331,14 @@ public class MultispeakFuncs
         String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS);
         return Integer.valueOf(value).intValue();
     }
+    
+    /**
+     * @return Returns the primaryCIS vendorID.
+     */
+    public int getPrimaryCIS()
+    {
+        String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID);
+        return Integer.valueOf(value).intValue();
+    }
+
 }
