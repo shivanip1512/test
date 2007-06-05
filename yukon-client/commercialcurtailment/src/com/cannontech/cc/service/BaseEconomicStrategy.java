@@ -24,7 +24,6 @@ import com.cannontech.cc.dao.EconomicEventParticipantSelectionDao;
 import com.cannontech.cc.dao.EconomicEventParticipantSelectionWindowDao;
 import com.cannontech.cc.dao.EconomicEventPricingDao;
 import com.cannontech.cc.dao.EconomicEventPricingWindowDao;
-import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
@@ -48,7 +47,6 @@ import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeSource;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
@@ -64,9 +62,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private EconomicEventParticipantSelectionDao eventParticipantSelectionDao;
     private EconomicEventParticipantSelectionWindowDao eventParticipantSelectionWindowDao;
     private TransactionTemplate transactionTemplate;
-    private SimplePointAccessDao pointAccess;
     private EconomicService economicService;
-    private ProgramDao programDao;
     private PointDao pointDao;
     private TimeSource timeSource;
     
@@ -789,10 +785,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         this.eventParticipantSelectionWindowDao = eventParticipantSelectionWindowDao;
     }
 
-    public void setPointAccess(SimplePointAccessDao pointAccess) {
-        this.pointAccess = pointAccess;
-    }
-
     public EconomicService getEconomicService() {
         return economicService;
     }
@@ -811,10 +803,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         this.pointDao = pointDao;
     }
 
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-    
     @Required
     public void setTimeSource(TimeSource timeSource) {
         this.timeSource = timeSource;

@@ -14,7 +14,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.cc.dao.CurtailmentEventDao;
 import com.cannontech.cc.dao.CurtailmentEventNotifDao;
 import com.cannontech.cc.dao.CurtailmentEventParticipantDao;
-import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventParticipant;
@@ -35,7 +34,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     private CurtailmentEventDao curtailmentEventDao;
     private CurtailmentEventNotifDao curtailmentEventNotifDao;
     private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
-    private ProgramDao programDao;
     private TransactionTemplate transactionTemplate;
     
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
@@ -303,7 +301,4 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         this.curtailmentEventParticipantDao = curtailmentEventParticipantDao;
     }
     
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
 }

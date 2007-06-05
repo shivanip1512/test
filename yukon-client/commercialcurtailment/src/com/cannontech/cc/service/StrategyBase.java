@@ -26,7 +26,6 @@ import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramParameterKey;
-import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
@@ -40,7 +39,7 @@ import com.cannontech.support.CustomerPointTypeHelper;
 import com.cannontech.yukon.INotifConnection;
 
 public abstract class StrategyBase implements CICurtailmentStrategy {
-    private SimplePointAccessDao pointAccess;
+    protected SimplePointAccessDao pointAccess;
     private CustomerPointTypeHelper pointTypeHelper;
     private ProgramService programService;
     private GroupService groupService;
@@ -179,39 +178,43 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
         return parameters;
     }
 
-    public void setParameters(Set<ProgramParameterKey> parameters) {
+    @Required
+    final public void setParameters(Set<ProgramParameterKey> parameters) {
         this.parameters = parameters;
     }
 
-    public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
+    @Required
+    final public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
         this.programParameterDao = programParameterDao;
     }
 
-    public INotifConnection getNotificationProxy() {
+    @Required
+    final public INotifConnection getNotificationProxy() {
         return notificationProxy;
     }
 
-    public void setNotificationProxy(INotifConnection notificationProxy) {
+    @Required
+    final public void setNotificationProxy(INotifConnection notificationProxy) {
         this.notificationProxy = notificationProxy;
     }
     
     @Required
-    public void setPointAccess(SimplePointAccessDao pointAccess) {
+    final public void setPointAccess(SimplePointAccessDao pointAccess) {
         this.pointAccess = pointAccess;
     }
     
     @Required
-    public void setProgramDao(ProgramDao programDao) {
+    final public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
     }
     
     @Required
-    public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
+    final public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
         this.pointTypeHelper = pointTypeHelper;
     }
 
     @Required
-    public void setLoadPoint(CICustomerPointType loadPoint) {
+    final public void setLoadPoint(CICustomerPointType loadPoint) {
         this.loadPoint = loadPoint;
     }
 
