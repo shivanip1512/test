@@ -102,7 +102,7 @@ public class OnelineDisplayManager {
         //handle any extra elements
         if (temp instanceof ExtraUpdatableTextElement) {
             ExtraUpdatableTextElement extraElement = (ExtraUpdatableTextElement) temp;
-            if (extraElement.conditionToAddOnItTrue())
+            if (extraElement.conditionToAddIsTrue())
             {
                 LxAbstractText t = createExtraElement(stream,
                                    (ExtraUpdatableTextElement) temp,

@@ -62,7 +62,7 @@ public class OnelineCap implements OnelineObject {
         double nameOffset = nameX + nameWidth;
         int twenty = 20;
         
-        double initialCapXPos = nameOffset + (twenty * 3);
+        double initialCapXPos = nameOffset + (twenty * 4);
         double xImgYPos = f.getFeederLn().getY();
         double imgXPos = initialCapXPos + (OnelineUtil.PXLS_PER_CAPBANK * currentCapIdx);
         LxGraph graph = drawing.getDrawing().getLxGraph();

@@ -43,8 +43,8 @@ public class PointQualCheckUpdatTextList extends UpdatableTextList implements
         return null;
     }
 
-    public boolean conditionToAddOnItTrue() {
-        return CBCUtils.signalQualityNormal(getPointCheckable(), getType());
+    public boolean conditionToAddIsTrue() { //add the (*) to the display if the quality is NOT normal
+        return !CBCUtils.signalQualityNormal(getPointCheckable(), getType());
     }
 
 

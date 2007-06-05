@@ -9,9 +9,9 @@
         formatSelectedPoint ('subWattDiv');
         formatSelectedPoint ('subVoltDiv');
         
-        var subVarPointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:subVarPoint;deviceName:subVarDevice','subVarPointPicker','');
-		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','');
-		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','');        
+        var subVarPointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:subVarPoint;deviceName:subVarDevice','subVarPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);        
     </script>
 </f:verbatim>
 
