@@ -3,24 +3,14 @@
 
 <beans>
 
-	<bean id="substationDaoTarget"
-		class="com.cannontech.multispeak.dao.impl.SubstationDaoImpl">
-		<property name="simpleJdbcTemplate">
-			<ref bean="simpleJdbcTemplate" />
-		</property>
-		<property name="nextValueHelper">
-			<ref bean="nextValueHelper" />
-		</property>
+	<bean id="substationDaoTarget" class="com.cannontech.multispeak.dao.impl.SubstationDaoImpl">
+		<property name="simpleJdbcTemplate"><ref bean="simpleJdbcTemplate" /></property>
+		<property name="nextValueHelper"><ref bean="nextValueHelper" /></property>
 	</bean>
 
-	<bean id="substationDao"
-		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="target">
-			<ref bean="substationDaoTarget" />
-		</property>
-		<property name="transactionManager">
-			<ref bean="transactionManager" />
-		</property>
+	<bean id="substationDao" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="target"><ref bean="substationDaoTarget" /></property>
+		<property name="transactionManager"><ref bean="transactionManager" /></property>
 		<property name="transactionAttributes">
 			<props>
 				<prop key="add">PROPAGATION_REQUIRED</prop>
@@ -104,4 +94,10 @@
   
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.RawPointHistoryDaoImpl">
   </bean>
-</beans>
+
+  <bean id="mspCustomerInfoDao" class="com.cannontech.multispeak.dao.impl.MspCustomerInfoDaoImpl">
+  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+    <property name="multispeakDao" ref="multispeakDao"/>
+  </bean>
+  
+ </beans>
