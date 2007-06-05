@@ -925,6 +925,7 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 		case ION_8300:
 		case TRANSDATA_MARKV:
 		case DAVISWEATHER:
+		case SENTINEL:
 		
 			return true;
 		
