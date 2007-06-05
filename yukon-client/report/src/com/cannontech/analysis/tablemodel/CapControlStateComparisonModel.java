@@ -94,7 +94,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp3.description as region, yp3.paoName as subName, yp2.paoName as feederName, yp1.paoName as capBankName, ");
+        StringBuffer sql = new StringBuffer ("select ca.paoname as region, yp3.paoName as subName, yp2.paoName as feederName, yp1.paoName as capBankName, ");
         sql.append("yp.paoName as cbcName, s.text as capBankStatus, s1.text as cbcStatus,  ");
         sql.append("dcb.laststatuschangetime as capBankChangeTime, dcb.twowaycbcstatetime as cbcChangeTime ");
         sql.append("from  (select * from yukonpaobject where type like 'CBC 702%') as yp ");
@@ -108,7 +108,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
         sql.append("left outer join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sf.substationbusid ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         

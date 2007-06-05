@@ -102,7 +102,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     {
         StringBuffer sql = new StringBuffer ("select yp3.paoName as cbcName, yp.paoName as bankName, el.datetime as opTime, el.text as operation, ");
         sql.append("el2.datetime as confTime, el2.text as confStatus, yp1.paoName as feederName, yp1.paobjectId as feederId,  yp2.paoName as subName, ");
-        sql.append("yp2.paobjectid as subBusId, yp2.description as region, cb.bankSize as bankSize, cb.controllertype as protocol, p.value as ipAddress, ");
+        sql.append("yp2.paobjectid as subBusId, ca.paoname as region, cb.bankSize as bankSize, cb.controllertype as protocol, p.value as ipAddress, ");
         sql.append("cbc.serialnumber as serialNum, da.slaveAddress as slaveAddress "); 
         sql.append("from ( select op.logid as oid,  min(aaa.confid) as cid  from (select logid, pointid from cceventlog where datetime > ? and datetime < ? and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
         sql.append("left join (select el.logid as opid, min(el2.logid) as confid from cceventlog el ");
@@ -127,7 +127,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = yp2.paobjectid ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("join yukonpaobject ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         

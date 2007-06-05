@@ -58,7 +58,7 @@ public class MaxDailyOpsModel extends ReportModelBase {
         		ReportFilter.CAPCONTROLSUBBUS,
         		ReportFilter.CAPBANK,
         		ReportFilter.CAPCONTROLFEEDER,
-                ReportFilter.AREA}
+        		ReportFilter.AREA}
             );
     }
     
@@ -68,58 +68,51 @@ public class MaxDailyOpsModel extends ReportModelBase {
      */
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp3.description as Region, "
-        + "yp3.paoname as SubName, "
-        + "yp2.paoname as FeederName, "
-        + "yp.paoname as cbcName, "
-        + "yp1.paoname as capName, "
-        + "slTemp.currentWeekCount, " 
-        + "slTemp1.prevWeek1Count, "
-        + "slTemp2.prevWeek2Count, "
-        + "slTemp3.prevWeek3Count, "
-        + "slTemp4.prevWeek4Count, "
-        + "slTemp5.prevWeek5Count, "
-        + "slTemp6.prevWeek6Count ");
-        
-        sql.append( "from (select pointid, count(*) as currentWeekCount " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and datetime > ?) group by pointid) as slTemp " 
-        + "left outer join (select pointid, count(*) as prevWeek1Count " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and " 
-            + "datetime > ?) group by pointid) as slTemp1 on slTemp1.pointid = slTemp.pointid " 
-        + "left outer join (select pointid, count(*) as prevWeek2Count " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and " 
-            + "datetime > ?) group by pointid) as slTemp2 on slTemp2.pointid = slTemp.pointid " 
-        + "left outer join (select pointid, count(*) as prevWeek3Count " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and " 
-            + "datetime > ?) group by pointid) as slTemp3 on slTemp3.pointid = slTemp.pointid " 
-        + "left outer join (select pointid, count(*) as prevWeek4Count " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and " 
-            + "datetime > ?) group by pointid) as slTemp4 on slTemp4.pointid = slTemp.pointid " 
-        + "left outer join (select pointid, count(*) as prevWeek5Count " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and " 
-            + "datetime > ?) group by pointid) as slTemp5 on slTemp5.pointid = slTemp.pointid " 
-        + "left outer join (select pointid, count(*) as prevWeek6Count " 
-            + "from systemlog where description like '%CapBank Exceeded Max%' " 
-            + "and (datetime <= ? and " 
-            + "datetime > ?) group by pointid) as slTemp6 on slTemp6.pointid = slTemp.pointid " 
-        
-        + "join point p on p.pointid = slTemp.pointid "
-        + "join capbank cb on cb.deviceid = p.paobjectid "
-        + "join yukonpaobject yp1 on yp1.paobjectid = cb.deviceid "
-        + "join yukonpaobject yp on yp.paobjectid = cb.controldeviceid "
-        + "left outer join ccfeederbanklist fb on fb.deviceid = cb.deviceid "
-        + "join yukonpaobject yp2 on yp2.paobjectid = fb.feederid "
-        + "left outer join ccfeedersubassignment fs on fs.feederid = fb.feederid "
-        + "join yukonpaobject yp3 on yp3.paobjectid = fs.substationbusid "
-        + "left outer join ccsubareaassignment saa on saa.substationbusid = fs.substationbusid "
-        + "left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid "
-        );
+        StringBuffer sql = new StringBuffer ("select ca.paoname as Region, ");
+        sql.append( "yp3.paoname as SubName, yp2.paoname as FeederName, yp.paoname as cbcName, yp1.paoname as capName, ");
+        sql.append( "slTemp.currentWeekCount, slTemp1.prevWeek1Count, slTemp2.prevWeek2Count, slTemp3.prevWeek3Count, slTemp4.prevWeek4Count, ");
+        sql.append( "slTemp5.prevWeek5Count, slTemp6.prevWeek6Count ");
+        sql.append( "from capbank cb ");
+        sql.append( "join point p on p.paobjectid = cb.deviceid and p.pointname = 'operation' " );
+        sql.append( "left outer join (select pointid, count(*) as currentWeekCount " );
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' " );
+        sql.append( "and (datetime <= ? and datetime > ?) group by pointid) as slTemp on slTemp.pointid = p.pointid ");
+        sql.append( "left outer join (select pointid, count(*) as prevWeek1Count ");
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
+        sql.append( "and (datetime <= ? and ");
+        sql.append( "datetime > ?) group by pointid) as slTemp1 on slTemp1.pointid = p.pointid ");
+        sql.append( "left outer join (select pointid, count(*) as prevWeek2Count ");
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
+        sql.append( "and (datetime <= ? and ");
+        sql.append( "datetime > ?) group by pointid) as slTemp2 on slTemp2.pointid = p.pointid ");
+        sql.append( "left outer join (select pointid, count(*) as prevWeek3Count ");
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
+        sql.append( "and (datetime <= ? and ");
+        sql.append( "datetime > ?) group by pointid) as slTemp3 on slTemp3.pointid = p.pointid ");
+        sql.append( "left outer join (select pointid, count(*) as prevWeek4Count ");
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
+        sql.append( "and (datetime <= ? and ");
+        sql.append( "datetime > ?) group by pointid) as slTemp4 on slTemp4.pointid = p.pointid ");
+        sql.append( "left outer join (select pointid, count(*) as prevWeek5Count ");
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
+        sql.append( "and (datetime <= ? and ");
+        sql.append( "datetime > ?) group by pointid) as slTemp5 on slTemp5.pointid = p.pointid ");
+        sql.append( "left outer join (select pointid, count(*) as prevWeek6Count ");
+        sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
+        sql.append( "and (datetime <= ? and ");
+        sql.append( "datetime > ?) group by pointid) as slTemp6 on slTemp6.pointid = p.pointid ");
+        sql.append( "join yukonpaobject yp1 on yp1.paobjectid = cb.deviceid ");
+        sql.append( "join yukonpaobject yp on yp.paobjectid = cb.controldeviceid ");
+        sql.append( "left outer join ccfeederbanklist fb on fb.deviceid = cb.deviceid ");
+        sql.append( "join yukonpaobject yp2 on yp2.paobjectid = fb.feederid ");
+        sql.append( "left outer join ccfeedersubassignment fs on fs.feederid = fb.feederid ");
+        sql.append( "join yukonpaobject yp3 on yp3.paobjectid = fs.substationbusid ");
+        sql.append( "left outer join ccsubareaassignment sa on sa.substationbusid = fs.substationbusid ");
+        sql.append( "join yukonpaobject ca on ca.paobjectid = sa.areaid ");
+        sql.append( "and (slTemp6.prevWeek6Count > 0 or slTemp5.prevWeek5Count > 0 or "); 
+        sql.append( "slTemp4.prevWeek4Count > 0 or slTemp3.prevWeek3Count > 0 or ");
+        sql.append( "slTemp2.prevWeek2Count > 0 or slTemp1.prevWeek1Count > 0 or ");
+        sql.append( "slTemp.currentWeekCount > 0 ) ");
         
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
             if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) {
@@ -147,14 +140,15 @@ public class MaxDailyOpsModel extends ReportModelBase {
             }
             
             if(getFilterModelType().equals(ReportFilter.AREA)) {
-                sql.append( "where ca.paobjectid in ('" + getPaoIDs()[0]);
-                for (int i = 1; i < getPaoIDs().length; i++) {
-                    sql.append("', '" + getPaoIDs()[i]);
-                }
-                sql.append("') ");
+         	 	sql.append( "and ca.paobjectid in ('" + getPaoIDs()[0]);
+         	 	for (int i = 1; i < getPaoIDs().length; i++) {
+         	 	    sql.append("', '" + getPaoIDs()[i]);
+         	 	}
+         	 	sql.append("') ");
             }
+                      
+            
         }
-        
         sql.append(";");
         return sql;
     }
