@@ -2,6 +2,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <cti:standardPage title="Lucene Index Manager" module="blank">
 <cti:standardMenu/>
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    &gt; Index Management
+</cti:breadCrumbs>
+
     <cti:includeScript link="/JavaScript/indexManager.js" />
 
     <h2>
