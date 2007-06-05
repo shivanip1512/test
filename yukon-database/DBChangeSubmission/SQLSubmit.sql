@@ -121,7 +121,7 @@ go
 /*** END JULIE : report changes, views need to be modified to reflect accurate area.****/
 
 /*** Nick - Itron BillingFileFormat (into HEAD) ***/
-insert into BillingFileFormats (FormatID,FormatType) values(25,'Itron Register Readings Export')
+insert into BillingFileFormats (FormatID,FormatType) values(-25,'Itron Register Readings Export')
 /*** END Nick ***/
 
 /** The following is for 3.5, it looks like some of my notification logging is too long */
