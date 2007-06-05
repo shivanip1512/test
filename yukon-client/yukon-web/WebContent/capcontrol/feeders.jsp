@@ -50,6 +50,30 @@
    function onGreyBoxClose () {
    	window.parent.location.replace('feeders.jsp');
    }
+   
+//returned when a cap bank menu is triggered to appear
+function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color)
+{
+	hiLiteTRow (rowID, color);
+	return overlib (html, STICKY,
+			WIDTH,width, 
+			HEIGHT, height, 
+			OFFSETX, offsetx,
+			OFFSETY, offsety,
+			MOUSEOFF,
+			FULLHTML, 
+			ABOVE);
+}
+//returned when a cap bank menu is triggered to disappear
+function hidePopupHiLite (rowID, color)
+{
+	nd();
+	hiLiteTRow (rowID, color);
+}
+
+   function hiLiteTRow (id, color) {
+   	$(id).style.backgroundColor = color;
+   }
  </script>
 <%
 String css = "tableCell";
@@ -72,7 +96,7 @@ String css = "tableCell";
 <%
 if( subBus != null ) {
 %>
-				<tr class="altTableCell">
+				<tr class="altTableCell" id="tr_sub_<%=subBus.getCcId()%>">
 					<td id="anc_<%=subBus.getCcId()%>"><input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>"/>
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%> 
 					<% if( subBus.getVerificationFlag().booleanValue() ) { %>
@@ -86,7 +110,7 @@ if( subBus != null ) {
 								
 					</td>
 					
-					<td>
+					<td >
 					<% if( hasControl ) { %>
 						<!--Create  popup menu html-->
 						<input id="cmd_sub_<%=subBus.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />				
@@ -309,8 +333,9 @@ for( int i = 0; i < capBanks.length; i++ )
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	int deviceID = capBank.getControlDeviceID().intValue();
     LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+    String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
 %>
-				<tr class="<%=css%>">
+				<tr class="<%=css%>" id="tr_cap_<%=capBank.getCcId()%>">
 										
 
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" /></td>
@@ -333,11 +358,11 @@ for( int i = 0; i < capBanks.length; i++ )
                         <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%= CBCUtils.is701xDevice(obj) %>"/>
                         
                         <a href="javascript:void(0);"
-						    <%= popupEvent %>="return overlib(
-								$F('cmd_cap_<%=capBank.getCcId()%>_field'),
-								STICKY, WIDTH,155, HEIGHT,110, OFFSETX,-15,OFFSETY,-15,
-								MOUSEOFF, FULLHTML, ABOVE);"
-						    onmouseout = <%=nd %> >	
+						    <%= popupEvent %>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_field'),
+						    									155,110,15,15,
+						    									'tr_cap_<%=capBank.getCcId()%>',
+						    									'yellow'); "
+						    onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor %>');" >	
 							
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
 						</a>
@@ -373,13 +398,11 @@ for( int i = 0; i < capBanks.length; i++ )
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
 							style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 							href="javascript:void(0);"
-						    <%= popupEvent %>	= "return overlib(
-								$F('cmd_cap_<%=capBank.getCcId()%>_system'),
-								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
-								MOUSEOFF, FULLHTML, ABOVE);"
-						    
-						    onmouseout = <%=nd %> >	
-							
+						    <%= popupEvent %>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_system'),
+    									155,200,15,15,
+    									'tr_cap_<%=capBank.getCcId()%>',
+    									'yellow'); "
+						    onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor %>');" >		
 					<% } else { %>
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;" >
 					<% } %>
