@@ -107,6 +107,12 @@
     <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
   </bean>
   
+  <bean id="isocSupersedeDirect" class="com.cannontech.cc.service.IsocSupersedeDirectStrategy" 
+        parent="genericDirect"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
   
   <bean id="genericEconomic" class="com.cannontech.cc.service.BaseEconomicStrategy" autowire="byType"
         abstract="true" parent="commercialCurtailmentStrategyBase">
