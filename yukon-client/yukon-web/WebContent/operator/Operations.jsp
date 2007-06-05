@@ -119,6 +119,9 @@
 	        	<a href="../bulk/importer.jsp">Bulk Importer</a>
 	        </tags:sectionLink>
         </cti:checkProperty>
+		<tags:sectionLink>
+        	<a href="<c:url value="/spring/csr/search"/>">Csr Device Selection</a>
+        </tags:sectionLink>
 	</tags:operationSection>
 
 </cti:checkRole>

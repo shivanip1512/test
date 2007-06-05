@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+            	/*=CsrController
+            </value>
+        </property>
+    </bean>    
+    
+    <bean id="jsonViewResolver"
+      class="com.cannontech.web.util.JsonViewResolver">
+    </bean>
+    
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/amr/csr/"/>
+    </bean>
+    
+	<bean id="CsrController" class="com.cannontech.web.amr.csr.CsrController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver">
+           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+		<property name="paoDao" ref="paoDao"/>
+		<property name="csrService" ref="csrService" />
+    </bean>
+    
+</beans>

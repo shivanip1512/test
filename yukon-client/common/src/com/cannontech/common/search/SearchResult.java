@@ -4,11 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class SearchResult<T> {
-    private int hitCount; //total count (possibly estimate) of results available
-    private int startIndex;  //inclusive, 0-based
-    private int endIndex;  //exclusive, 0-based
+    private int hitCount;           //total count (possibly estimate) of results available
+    private int startIndex;         //inclusive, 0-based
+    private int endIndex;           //exclusive, 0-based
     private List<T> resultList;
     private int previousStartIndex;
+    
+    private int count = 0;          // number of results per page
+    private int lastStartIndex = 0; // index of last page of results
+    private int numberOfPages = 0;  // total number of result pages 
     
     public static <T> SearchResult<T> emptyResult() {
         List<T> empty = Collections.emptyList();
@@ -32,6 +36,9 @@ public class SearchResult<T> {
         startIndex = start;
         endIndex = Math.min(startIndex + count,hitCount);
         previousStartIndex = Math.max(0, startIndex - count);
+        this.count = count;
+        this.lastStartIndex = (hitCount / count) * count;
+        this.numberOfPages = hitCount / count;
     }
 
     public boolean isNextNeeded() {
@@ -105,5 +112,16 @@ public class SearchResult<T> {
         return previousStartIndex;
     }
 
+    public int getCount(){
+        return count;
+    }
+    
+    public int getLastStartIndex(){
+        return lastStartIndex;
+    }
+    
+    public int getNumberOfPages(){
+        return numberOfPages;
+    }
 
 }

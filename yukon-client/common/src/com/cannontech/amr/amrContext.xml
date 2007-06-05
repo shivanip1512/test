@@ -14,6 +14,14 @@
 	  		</value>
 	  	</property>
 	</bean>
+	
+	<bean id="csrService" class="com.cannontech.amr.csr.service.impl.CsrServiceImpl">
+		<property name="csrSearchDao" ref="csrSearchDao" />
+	</bean>
+	
+	<bean id="csrSearchDao" class="com.cannontech.amr.csr.dao.impl.CsrSearchDaoImpl">
+		<property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+	</bean>
     
 </beans>
 
