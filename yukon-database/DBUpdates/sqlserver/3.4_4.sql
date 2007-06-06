@@ -1,26 +1,32 @@
 /******************************************/
-/**** Oracle DBupdates   		       ****/
+/**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-/*3.4 changes that may have been missed*/
-/* @error ignore-begin */
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'display target settings');
+go
 
 update devicetypecommand set devicetype='MCT-430A' where devicetype = 'MCT-430EL';
 update devicetypecommand set devicetype='MCT-430S4' where devicetype = 'MCT-430LG';
 update devicetypecommand set devicetype='MCT-430SN' where devicetype = 'MCT-430IN';
+go
 
+/* @error ignore-begin */
 insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Addtl Order Number','Customizable label for the additional order number field.');
 insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
+go
+/* @error ignore-end */
 
 insert into yukonlistentry values (138, 100, 0, 'Float From 16bit', 0);
 
 update point set pointname = 'MultiSpeak' where pointid = -110;
 update YukonRole set RoleName = 'MultiSpeak', RoleDescription='MultiSpeak web services interface.' where RoleID = -7;
 update YukonRoleProperty set KeyName = 'MultiSpeak Setup', Description='Controls access to configure the Multispeak Interfaces.' where RolePropertyID = -20011;
+go
 
 drop view ccinventory_view;
-create or replace view CCINVENTORY_VIEW as
+go
+
+create view CCINVENTORY_VIEW as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS Bankname, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
                       fb.ControlOrder AS Sequence, dcb.ControlStatus, cb.SwitchManufacture AS SWMfgr, cb.TypeOfSwitch AS SWType, 
@@ -43,9 +49,12 @@ FROM CAPBANK cb INNER JOIN
                       PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
                       capbankadditional capa on capa.deviceid = cb.deviceid;
+go
 
 drop view ccoperations_view;
-create or replace view CCOPERATIONS_VIEW as
+go
+
+create view CCOPERATIONS_VIEW as
 SELECT 
 	yp3.PAOName AS cbcName, yp.PAOName AS bankname, el.DateTime AS opTime, el.Text AS operation, 
 	el2.DateTime AS confTime, el2.Text AS confStatus, yp1.PAOName AS feederName, yp1.PAObjectID AS feederId, 
@@ -88,16 +97,8 @@ GROUP BY op.LogID) OpConf INNER JOIN
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
         ccsubareaassignment as csa on csa.substationbusid = el.SubID left outer join 
         YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid; 
-/* @error ignore-end */
+go
 
-insert into FDRInterface values (25, 'TRISTATESUB', 'Receive', 'f' );
-insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
-
-insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
-
-insert into BillingFileFormats values(-25,'Itron Register Readings Export');
-
-alter table ActivityLog modify Description varchar2(240);
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
