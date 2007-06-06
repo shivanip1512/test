@@ -11,9 +11,8 @@ update devicetypecommand set devicetype='MCT-430SN' where devicetype = 'MCT-430I
 /* @error ignore-begin */
 insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Addtl Order Number','Customizable label for the additional order number field.');
 insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
-/* @error ignore-end */
-
 insert into yukonlistentry values (138, 100, 0, 'Float From 16bit', 0);
+/* @error ignore-end */
 
 update point set pointname = 'MultiSpeak' where pointid = -110;
 update YukonRole set RoleName = 'MultiSpeak', RoleDescription='MultiSpeak web services interface.' where RoleID = -7;
