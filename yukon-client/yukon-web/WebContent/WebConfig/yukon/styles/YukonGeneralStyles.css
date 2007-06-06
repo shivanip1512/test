@@ -29,6 +29,19 @@ div.simplePopup h2 {
   font-size: 1.4em
 }
 
+div.widgetInternalSectionHeader {
+	font-size: .75em;
+	font-weight: bold;
+	padding-top: 5px; 
+	padding-bottom: 5px; 
+	margin-left: 5px;
+}
+
+div.widgetInternalSection {
+	font-size: .75em;
+	margin-left: 20px;
+}
+
 table.resultsTable {
 	width: 95%;	
   	border: 1px solid #ccc;
