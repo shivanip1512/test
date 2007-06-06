@@ -20,14 +20,16 @@
 	List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
 	if( litePoints != null) {
 		for(LitePoint p : litePoints) {
-			if( p.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND) {
-				kwLP = p;
-				channel_1Str = kwLP.getPointName();
-				channel_1ID = kwLP.getPointID();
-			} else if( p.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ) {
-				voltageLP = p;
-				channel_4Str = voltageLP.getPointName();
-				channel_4ID = voltageLP.getPointID();
+			if (p.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+				if( p.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND) {
+					kwLP = p;
+					channel_1Str = kwLP.getPointName();
+					channel_1ID = kwLP.getPointID();
+				} else if( p.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ) {
+					voltageLP = p;
+					channel_4Str = voltageLP.getPointName();
+					channel_4ID = voltageLP.getPointID();
+				}
 			}
 		}
 	}
@@ -202,40 +204,7 @@
 <%	
 		}
 %>
-					<tr> 
-						<td class="columnHeader">&nbsp;</td>
-					</tr>
-					<tr> 
-					    <td class="columnHeader">Profile Peak Report - <%= channel_4Str %></td>
-					</tr>
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);
-	if( pointData != null){
-		boolean bg = true;
-		String tempStr = pointData.getStr();
-		int beginIndex = 0;
-		int endIndex = tempStr.indexOf("\n");
-		while( endIndex > 0) {
-%>
-				  	<tr <%=(bg?"class='altRow'":"")%>> 
-				    	<td class="mainLeft"> <%=tempStr.substring(beginIndex, endIndex)%> 
-<%
-			tempStr = tempStr.substring(endIndex+1);
-			endIndex = tempStr.indexOf("\n");
-			bg = !bg;
-%>
-				    	</td>
-				  	</tr>
-<%
-			}
-		} else {
-%>
- 					<tr> 
-				    	<td class="mainLeft">---</td>
-				  	</tr>
-<%
-		}
-%>
+					
   				</table>
   			</jsp:body>
   		</cti:titledContainer>
