@@ -6,9 +6,9 @@
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
 			<props>
-				<prop key="/substation">substationController</prop>
-				<prop key="/route">routeController</prop>
-				<prop key="/mappings">mappings</prop>
+				<prop key="/setup/routemapping/substation">substationController</prop>
+				<prop key="/setup/routemapping/route">routeController</prop>
+				<prop key="/setup/routemapping/mappings">mappings</prop>
 			</props>
 		</property>
 	</bean>

@@ -765,7 +765,7 @@
 
 	<servlet-mapping>
 		<servlet-name>multispeak</servlet-name>
-		<url-pattern>/spring/multispeak/setup/routemapping/*</url-pattern>
+		<url-pattern>/spring/multispeak/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

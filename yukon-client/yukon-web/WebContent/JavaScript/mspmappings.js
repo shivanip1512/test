@@ -2,7 +2,7 @@
 function SubstationToRouteMappings_SelectListener(url) {
     var x = $("subSelectList").selectedIndex;
     var substationId = $("subSelectList").options[x].value;
-    new Ajax.Updater($("route_element"), url, {method:"post", parameters:{substationid:substationId, view:""}});
+    new Ajax.Updater($("route_element"), url, {"method": "post", "parameters": {"substationid": substationId, "view": ""}});
 }
 function SubstationToRouteMappings_addRoute() {
     var substationIndex = $("subSelectList").selectedIndex;
@@ -30,7 +30,7 @@ function SubstationToRouteMappings_updateRoutes(url) {
     var array = $("routeIdSelectList").options;
     var array2 = $A(array).pluck("value");
     var jsonObject = array2.toJSON();
-    new Ajax.Request(url, {method:"post", parameters:{array:jsonObject, substationid:substationId, update:""}});
+    new Ajax.Request(url, {"method": "post", "parameters": {"array": jsonObject, "substationid": substationId, "update": ""}});
 }
 function SubstationToRouteMappings_move(direction) {
     var routeIndex = $("routeIdSelectList").selectedIndex;

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Route;
-import com.cannontech.multispeak.db.impl.RouteImpl;
+import com.cannontech.multispeak.db.Route;
 
 public class RouteActionController extends  MultiActionController {
     private SubstationToRouteMappingDao strmDao;
@@ -70,7 +70,7 @@ public class RouteActionController extends  MultiActionController {
         final JSONArray array = JSONArray.fromString(jsonString);
         final List<Route> routeList = new ArrayList<Route>(array.length());
         for (int x = 0; x < array.length(); x++) {
-            routeList.add(new RouteImpl(Integer.parseInt(array.getString(x)), null, (x + 1)));
+            routeList.add(new Route(Integer.parseInt(array.getString(x)), null, (x + 1)));
         }
 
         strmDao.update(substationId, routeList);

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.multispeak.dao.SubstationDao;
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Substation;
-import com.cannontech.multispeak.db.impl.SubstationImpl;
+import com.cannontech.multispeak.db.Substation;
 
 public class SubstationActionController extends  MultiActionController {
     private SubstationDao substationDao;
@@ -36,7 +36,7 @@ public class SubstationActionController extends  MultiActionController {
             return mav;
         }
 
-        final Substation substation = new SubstationImpl();
+        final Substation substation = new Substation();
         substation.setName(name);
         substation.setRouteId(0);
 
@@ -59,7 +59,7 @@ public class SubstationActionController extends  MultiActionController {
             return mav;
         }
 
-        final Substation substation = new SubstationImpl();
+        final Substation substation = new Substation();
         substation.setId(id);
 
         strmDao.removeAllBySubstationId(id);

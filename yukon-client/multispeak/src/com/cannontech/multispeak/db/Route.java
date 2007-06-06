@@ -1,17 +1,65 @@
 package com.cannontech.multispeak.db;
 
-public interface Route {
+import com.cannontech.multispeak.db.Route;
+
+public class Route {
+    private int id;
+    private String name;
+    private int order;
     
-    public void setId(int id);
+    public Route() { }
     
-    public int getId();
+    public Route(final int id, final String name, final int order) {
+        this.id = id;
+        this.name = name;
+        this.order = order;
+    }
     
-    public void setName(String name);
+    public void setId(final int id) {
+        this.id = id;
+    }
     
-    public String getName();
+    public int getId() {
+        return id;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
     
-    public void setOrder(int order);
+    public String getName() {
+        return name;
+    }
+
+    public void setOrder(final int order) {
+        this.order = order;
+    }
     
-    public int getOrder();
+    public int getOrder() {
+        return order;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Route)) return false;
+        Route obj = (Route) o;
+        return ((this.id == obj.id) &&
+                (this.name.equals(obj.name)) &&
+                (this.order == obj.order));
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = result * 37 + id;
+        result = result * 37 + name.length();
+        result = result * 37 + order;
+        return result;
+    }
     
 }

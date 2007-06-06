@@ -6,11 +6,13 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Route;
-import com.cannontech.multispeak.db.impl.RouteImpl;
+import com.cannontech.multispeak.db.Route;
 
 public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMappingDao {
     private static final SqlStatementBuilder insertSql;
@@ -58,26 +60,31 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         selectAvailableSql.append("(SELECT DISTINCT RouteID FROM SubstationToRouteMapping WHERE SubstationID = ?)");
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(final int substationId, final int routeId, final int ordering) {
         int result = template.update(insertSql.toString(), substationId, routeId, ordering);
         return (result == 1);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final int substationId, final int routeId) {
         int result = template.update(deleteSql.toString(), substationId, routeId);
         return (result == 1);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean removeAllBySubstationId(final int substationId) {
         int result = template.update(deleteBySubIdSql.toString(), new Object[]{substationId});
         return (result >= 0);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean removeAllByRouteId(final int routeId) {
         int result = template.update(deleteByRouteIdSql.toString(), routeId);
         return (result >= 0);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(final int substationId, final List<Route> routeList) {
         removeAllBySubstationId(substationId);
 
@@ -88,26 +95,29 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         return true;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getRoutesBySubstationId(final int substationId) {
         return template.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Route>() {
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new RouteImpl(rs.getInt("PAObjectID"), rs.getString("PAOName"), rs.getInt("Ordering"));
+                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), rs.getInt("Ordering"));
             };
         }, substationId);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAvailableRoutesBySubstationId(final int substationId) {
         return template.query(selectAvailableSql.toString(), new ParameterizedRowMapper<Route>() {
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new RouteImpl(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1);
+                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1);
             }    
         }, substationId);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAll() {
         return template.query(selectAllSql.toString(), new ParameterizedRowMapper<Route>() {
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new RouteImpl(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1);
+                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1);
             }    
         });
     }
