@@ -60,4 +60,6 @@
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip" kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/billing"/>
 </classpath>
