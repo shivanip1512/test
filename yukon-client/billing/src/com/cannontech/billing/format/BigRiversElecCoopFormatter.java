@@ -47,8 +47,10 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
                                              6,
                                              "0",
                                              false);
-        String value = format(device.getCalculatedValue(BillableField.totalConsumption),
-                              DECIMAL_FORMAT7V0);
+
+        //Need to truncate the decimals from the reading, instead of round.
+        Double r = Math.floor(device.getCalculatedValue(BillableField.totalConsumption));
+        String value = format(r, DECIMAL_FORMAT7V0);
         if (value == null) {
             return "";
         }
