@@ -851,3 +851,10 @@ return retStr;
 String.prototype.removeLeadTrailSpace = function () {
     return new String ( removeSpaceFromBeginning ( removeSpaceFromEnd (this) ) );
 }
+
+function results (param) {
+	prevLocation = window.location;
+	redirect  = 'results.jsp?returnURL='+prevLocation;
+	redirect += '&'+param;
+	post(redirect);
+}

@@ -111,16 +111,16 @@
       <option id="view" name="View">
         <sublinks>
          <option name="Orphaned Substations">
-            <link>results.jsp?cbc_lastSearch=__cti_oSubs__</link>
+            <script>results('cbc_lastSearch=__cti_oSubs__')</script>
           </option>
           <option name="Orphaned Feeders">
-            <link>results.jsp?cbc_lastSearch=__cti_oFeeders__</link>
+            <script>results('cbc_lastSearch=__cti_oFeeders__')</script>
           </option>
           <option name="Orphaned CapBanks">
-            <link>results.jsp?cbc_lastSearch=__cti_oBanks__</link>
+            <script>results('cbc_lastSearch=__cti_oBanks__')</script>
           </option>
           <option name="Orphaned CBCs">
-            <link>results.jsp?cbc_lastSearch=__cti_oCBCs__</link>
+            <script>results('cbc_lastSearch=__cti_oCBCs__')</script>
           </option>
           <option name="Schedules">
             <script>post('/editor/paoSchedListBase.jsf')</script>

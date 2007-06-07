@@ -17,6 +17,7 @@
 <%
 	// String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, CBCSessionInfo.STR_LAST_SEARCH, null);
+	String returnURL = request.getParameter("returnURL");
 	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
 	psp.setLinkedToEditors(true);
 	if( srchCriteria == null )
@@ -104,6 +105,10 @@ for( int i = 0; i < items.length; i++ )
 
             </table>
         </div>
+<br/>        
+<input type="button" value="Back" onclick="post('<%=returnURL %>')">
+<form>
+</form>
 </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable','headerTable');    }, false);
