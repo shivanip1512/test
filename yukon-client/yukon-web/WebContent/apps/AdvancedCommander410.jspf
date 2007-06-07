@@ -67,7 +67,7 @@
 			
 			cmd += "getvalue lp peak " + document.getElementById('rateID').value;
 			cmd += " channel " + chnl;
-			cmd += " " + [d.getMonth()+1,d.getDate(),d.getYear()].join('/');
+			cmd += " " + [d.getMonth()+1,d.getDate(),d.getFullYear()].join('/');
 			cmd += " " + document.getElementById('numDaysID').value;
 			document.commandForm.lpDate.value=document.getElementById('PRcal').value;
 		}
