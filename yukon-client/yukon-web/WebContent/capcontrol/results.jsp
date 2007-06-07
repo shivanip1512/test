@@ -107,8 +107,6 @@ for( int i = 0; i < items.length; i++ )
         </div>
 <br/>        
 <input type="button" value="Back" onclick="post('<%=returnURL %>')">
-<form>
-</form>
 </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable','headerTable');    }, false);

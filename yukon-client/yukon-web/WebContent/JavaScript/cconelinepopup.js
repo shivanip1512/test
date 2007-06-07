@@ -15,6 +15,7 @@ var ALL_POPUP_TYPES = {
 	cbcPointTimestamp: "CapPtTmstmp"
 };
 
+var clkCountQueue = $H();
 
 
 
@@ -172,8 +173,8 @@ function createFeederTagMenu(feederID) {
 	
 	str+='				<input type="checkbox" name="'  ;
 	str+= 			disableFeeder.createName() + '"';
-	str+=' 			onclick="addCommand(this); '; 
-	str+= ' 				addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
+	str+=' 			onclick="addClickCount (' + feederID+ '); '; 
+	str+= ' 				addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 			str+= ' checked ';
 	str+='> <font color="white">Disable<\/font><\/><\/br>';
@@ -232,7 +233,8 @@ function createSubTagMenu() {
 	str+='				<input type="hidden" id="executeQueue_' + paoId + '" val=""/>';
 	str+='				<input type="checkbox"  name = "'; 
 	str+= 				disableSub.createName() + '" ';
-	str+=' 				onclick="addCommand(this); '; 
+	str+=' 				onclick=" addClickCount(' + paoId + '); '; 
+	str+=' 				addCommand(this); '; 
 	str+= ' 				 	 addCommand(\'' + disSubTag.createName() +'\'); setReason(\'' + disSubTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 		str+= ' checked ';
@@ -331,8 +333,8 @@ function createCapTagMenu (paoID) {
 	//***********DIS/EN CAP***********//
 	str+='					<input name="';
 	str+=					disableCap.createName();
-	str+='" type="checkbox" onclick="addCommand(this); '; 
-	str+=' addCommand(\'' + disCapTag.createName() +'\'); setReason(\'' + disCapTag.createName() + '\', \'' + disableCapReason + '\', this)"';
+	str+='" type="checkbox" onclick="addClickCount(' +paoID + ',1 ); '; 
+	str+=' addCommand (this); addCommand(\'' + disCapTag.createName() +'\'); setReason(\'' + disCapTag.createName() + '\', \'' + disableCapReason + '\', this)"';
 	if (isDis == "true")
 	str+=					' checked ';
 	str+='> <font color="white">Disable<\/font><\/><\/br>';
@@ -340,8 +342,8 @@ function createCapTagMenu (paoID) {
 	//***********OV/UV***********//
 	str+='					<input name="';
 	str+=					disCapOVUV.createName();
-	str+='" type="checkbox" onclick="addCommand(this); '; 
-	str+=' addCommand(\'' + disCapOVUVTag.createName() +'\'); setReason(\'' + disCapOVUVTag.createName() + '\', \'' + disableCapOVUVReason + '\', this)"';
+	str+='" type="checkbox" onclick="addClickCount(' +paoID + ',2 ); ';
+	str+=' addCommand(this); addCommand(\'' + disCapOVUVTag.createName() +'\'); setReason(\'' + disCapOVUVTag.createName() + '\', \'' + disableCapOVUVReason + '\', this)"';
 	if (isOVUVDis == "true")
 	str+=					' checked ';
 	str+='> <font color="white">Disable OVUV<\/font><\/><\/br>';
@@ -349,7 +351,7 @@ function createCapTagMenu (paoID) {
 	//***********STANDALONE****************//
 	str+='					<input   name="';
 	str+=					aloneCap.createName();
-	str+='" type="checkbox" onclick="addCommand(this); setReason(this, \'' + aloneReason + '\')"';
+	str+='" type="checkbox" onclick="addClickCount(' +paoID + ',3 );addCommand(this); setReason(this, \'' + aloneReason + '\')"';
 	if (isStandalone == "true")
 			str+=					' checked';
 	str+='> <font color="white">Standalone<\/font><\/><\/br>';
@@ -537,9 +539,6 @@ function submit(obj) {
 }
 
 
-
-
-
 function reset(select, dontCloseCurrentPopup) {
 	buttons = document.getElementsByTagName("input");
 	options = document.getElementsByTagName("select");
@@ -556,6 +555,7 @@ function reset(select, dontCloseCurrentPopup) {
 	if (closeCurrentPopup) {
 		closeCurrentPopupWindow();
 	}
+	clkCountQueue = $H();
 }
 function submitWithConfirm(obj) {
 	var cmdStr; 
@@ -751,4 +751,27 @@ function PopupWindow_showPopup (anchorname) {
 		
 	
 }
+
+
+function addClickCount (paoID, itemName) 
+{
+	var key="";
+	if (itemName)
+		key = paoID + "_" + itemName;
+	else
+		key = paoID;	
+
+	if (clkCountQueue[key])
+	{
+		alert('double click detected!');
+		$('executeQueue_' + paoID).value="";
+		clkCountQueue = $H();
+		closePopupWindow();
+	}
+	else 
+	{
+		clkCountQueue[key]= 1;
+	}
+}
+
 

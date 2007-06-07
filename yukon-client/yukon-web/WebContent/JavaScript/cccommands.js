@@ -18,6 +18,7 @@ var ALL_TAG_CMDS = {standalone:"Stand Alone", switched:"Switched",
 					capOVUVEnabled:"capOVUVEnabled", capOVUVDisabled:"capOVUVDisabled"
 					};
 					
+
 function executeCommand(string) {
 	args = string.split("_");
 	//say(string);
