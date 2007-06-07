@@ -198,7 +198,7 @@
         <copy todir="${install.lib}/Common Directories/Config/Example" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
         <!-- Common Dlls Component -->
-        <copy todir="${install.lib}/Common Dlls/Bin" preservelastmodified="true">
+        <copy todir="${install.lib}/Common Dlls/bin" preservelastmodified="true">
             <fileset dir="${server.bin}" includes="*.dll" excludes="*fdr*.dll,interp.dll,tcl81d.dll" casesensitive="false" />
             <fileset dir="${module.name}/yukon-install/resources/common_dlls" />
         </copy>
@@ -248,7 +248,10 @@
             <fileset dir="${server.bin}" includes="ctish.exe,interp.dll,macs.exe,tcl81d.dll" />
         </copy>
 
-        <copy todir="${install.lib}/MACS Server/MACScripts" file="${server.bin}/init.tcl" preservelastmodified="true"/>
+        <copy todir="${install.lib}/MACS Server/MACSscripts" file="${server.bin}/init.tcl" preservelastmodified="true"/>
+        <mkdir dir="${install.lib}/MACS Server/MACSftp"/>
+        <mkdir dir="${install.lib}/MACS Server/Export"/>
+        <mkdir dir="${install.lib}/MACS Server/Import"/>
 
         <!-- Message Dispatcher Component -->
         <copy todir="${install.lib}/Message Dispatcher/bin" file="${server.bin}/dispatch.exe" preservelastmodified="true"/>
@@ -280,7 +283,7 @@
         </copy>
 
         <!-- WebStart Component -->
-        <copy todir="${install.lib}/WebStart" preservelastmodified="true">
+        <copy todir="${install.lib}/WebStartJRE" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/WebStartJRE" />
         </copy>
 
