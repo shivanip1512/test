@@ -115,21 +115,19 @@
             <%@ include file="include/Nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-<%
-			if( lp )
-			{%>
-				<%@ include file="../../apps/AdvancedCommander410.jspf"%>
-			<%}
-			else if (isMCT4XX && !manual)
-			{
-				%>
-				<%@ include file="../../apps/Commander410.jspf"%>
-			<%}
-			else
-			{%>
-	 			<%@ include file="../../apps/Commander.jspf"%>
-			<%}%>
-			
+          <td bgcolor="#FFFFFF">
+				<c:choose>
+					<c:when test="${lp}">
+						<%@ include file="../../apps/AdvancedCommander410.jspf"%>
+					</c:when>
+					<c:when test="${isMCT4XX && !manual}">
+						<%@ include file="../../apps/Commander410.jspf"%>
+					</c:when>
+					<c:otherwise>
+						<%@ include file="../../apps/Commander.jspf"%>
+					</c:otherwise>
+				</c:choose>
+		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
