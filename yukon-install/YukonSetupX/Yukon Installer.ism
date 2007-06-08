@@ -130,6 +130,7 @@
 		<row><td>Tomcat</td><td>{1916AD56-3897-4C43-B9FB-855DDF10DD54}</td><td>WEB</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Trending</td><td>{80517A6D-166D-4D3F-AD25-9574C367F38F}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>WebStart</td><td>{30A26494-ED84-43A4-BC4F-5435AB698447}</td><td>STATIC</td><td>0</td><td/><td/><td>51713</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Yukon Base</td><td>{DA879689-81AA-4F2E-8524-32F3B6851C83}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Yukon Commander</td><td>{2AEBAB6E-C8E8-49DB-BCDA-2BC6A9A5675A}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Yukon Web Deployment</td><td>{16FEC28B-89F4-40C5-96D1-C2B9916AFA77}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
@@ -305,6 +306,7 @@
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>##ID_STRING15##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACSService</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Porter</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Porter</td></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Message Dispatcher</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Dispatcher</td></row>
+		<row><td>{A5AF36E6-AB0E-492F-985C-84E5FF94E776}</td><td/><td>##ID_STRING21##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Base</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>##ID_STRING12##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>CalcService</td></row>
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Database Editor</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Database Editor</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Commander</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
@@ -361,6 +363,7 @@
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>Common Dlls</td></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>Initial Server Config</td></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>Message Dispatcher</td></row>
+		<row><td>{A5AF36E6-AB0E-492F-985C-84E5FF94E776}</td><td>Yukon Base</td></row>
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>Common Bin</td></row>
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>Database Editor</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>Common Bin</td></row>
@@ -443,6 +446,7 @@
 		<row><td>Tomcat</td><td>0</td><td/><td>_ACE6A785_AC16_421A_B47E_17326DAEFEFB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Trending</td><td>0</td><td/><td>_50D94099_1A69_4897_A090_198AF9997FDF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>WebStart</td><td/><td/><td>_5F0E457D_7E3C_437D_BC66_C4C0D3E0EE48_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Yukon Base</td><td/><td/><td>_34C65780_8D18_48D3_9D44_A2DEDAA5FF2A_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Yukon Commander</td><td>0</td><td/><td>_A03A7FEB_6DF3_44C0_BB54_F687122C9235_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Yukon Web Deployment</td><td/><td/><td>_74CD4651_0ABD_495A_A921_E6CA555AD264_FILTER</td><td/><td/><td/><td/></row>
 	</table>
@@ -495,32 +499,14 @@
 		<col def="S0">IncludeFiles</col>
 		<col def="S0">ExcludeFiles</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>Alarm Monitor</td><td>&lt;PATH_TO_ALARM_MONITOR_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Calculation Server</td><td>&lt;PATH_TO_CALCULATION_SERVER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Cap Control</td><td>&lt;PATH_TO_CAP_CONTROL_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Common Bin</td><td>&lt;PATH_TO_COMMON_BIN_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Common Directories</td><td>&lt;PATH_TO_COMMON_DIRECTORIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Common Dlls</td><td>&lt;PATH_TO_COMMON_DLLS_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Config Properties</td><td>&lt;PATH_TO_CONFIG_PROPERTIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Database Editor</td><td>&lt;PATH_TO_DATABASE_EDITOR_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>ESub Editor</td><td>&lt;PATH_TO_ESUB_EDITOR_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Foreign Data Router</td><td>&lt;PATH_TO_DATA_ROUTER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Help</td><td>&lt;PATH_TO_HELP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Initial Server Config</td><td>&lt;PATH_TO_INITIAL_SERV_CONF_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>JRE 1.5</td><td>&lt;PATH_TO_JRE15_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Java Service Manager</td><td>&lt;PATH_TO_JAVA_SERVICE_MAN_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Load Management</td><td>&lt;PATH_TO_LOAD_MAN_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>MACS Server</td><td>&lt;PATH_TO_MACS_SERVER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Message Dispatcher</td><td>&lt;PATH_TO_MESS_DISPATCHER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Notification</td><td>&lt;PATH_TO_NOTIFICATION_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Port Control</td><td>&lt;PATH_TO_PORT_CONTROL_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Scanner</td><td>&lt;PATH_TO_SCANNER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Tabular Data Console</td><td>&lt;PATH_TO_TAB_DATA_CON_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Test Applications</td><td>&lt;PATH_TO_TEST_APP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Trending</td><td>&lt;PATH_TO_TRENDING_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>WebStart</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Yukon Commander</td><td>&lt;PATH_TO_YUKON_COMMANDER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Yukon Base</td><td>&lt;PATH_TO_YUKON_BASE&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Yukon Web Deployment</td><td>&lt;PATH_TO_YUKON_WEB_DEP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 	</table>
 
@@ -559,6 +545,7 @@
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
+		<row><td>{A5AF36E6-AB0E-492F-985C-84E5FF94E776}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>6</td><td/><td/><td/></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk12:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>YukonCommander_Installing</td><td>YukonCommander_Installed</td><td>YukonCommander_UnInstalling</td><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
@@ -755,6 +742,7 @@
 		<row><td>PATH_TO_TRENDING_FILES</td><td>yukon\yukon-install\build\Trending</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>yukon\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKONINSTALLJRE_FILES</td><td>Z:\install\YukonInstallJRE</td><td/><td>2</td></row>
+		<row><td>PATH_TO_YUKON_BASE</td><td>yukon\yukon-install\build\Yukon Base</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKON_COMMANDER_FILES</td><td>yukon\yukon-install\build\Yukon Commander</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKON_WEB_DEP_FILES</td><td>yukon\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
 		<row><td>PROGRAMFILES</td><td>&lt;ProgramFilesFolder&gt;</td><td/><td>2</td></row>
@@ -1228,6 +1216,7 @@
 		<row><td>Cannon Custom Install</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>Cannon Custom Install</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td></row>
 		<row><td>Cannon Custom Install</td><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td></row>
+		<row><td>Cannon Custom Install</td><td>{A5AF36E6-AB0E-492F-985C-84E5FF94E776}</td></row>
 		<row><td>Cannon Custom Install</td><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td></row>
 		<row><td>Cannon Custom Install</td><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td></row>
 		<row><td>Cannon Custom Install</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td></row>
@@ -1423,6 +1412,7 @@
 		<row><td>ID_STRING19</td><td>1033</td><td>Notification Server</td><td>0</td><td/><td>1654297233</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Client Service Manager</td><td>0</td><td/><td>857287090</td></row>
 		<row><td>ID_STRING20</td><td>1033</td><td/><td>0</td><td/><td>1645962926</td></row>
+		<row><td>ID_STRING21</td><td>1033</td><td>Yukon Base</td><td>0</td><td/><td>1125862957</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>All Yukon server and client applications</td><td>0</td><td/><td>1620663024</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Only the client applications are installed</td><td>0</td><td/><td>1620673328</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>1754871247</td></row>

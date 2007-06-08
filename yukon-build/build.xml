@@ -11,9 +11,7 @@
     <property name="log.dir" value="./logs" />
     <property name="dist.dir" value="./dist" />
     <property name="temp.dir" value="./temp" />
-    <property name="client.lib" value="${module.name}/yukon-client/lib" />
-    <property name="install.lib" value="${module.name}/yukon-install/build" />
-    <property name="server.bin" value="${module.name}/yukon-server/bin" />
+
 
     <target name="targets">
         <echo message="The following targets are available" />
@@ -174,133 +172,91 @@
     <target name="build-installTarget">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />
-
-        <!-- Alarm Monitor Component -->
-        <copy todir="${install.lib}/Alarm Monitor/bin" preservelastmodified="true">
-            <fileset file="${client.lib}/monitor.jar" />
+		
+        <property name="client.bag" value="${module.name}/yukon-client/lib" />
+        <property name="install.bag" value="${module.name}/yukon-install/build" />
+        <property name="server.bag" value="${module.name}/yukon-server/bin" />
+        
+        <!-- Yukon Base Component -->
+        <delete dir="${install.bag}"/>
+        <mkdir dir="${install.bag}/Yukon Base"/>
+        
+        <!-- Yukon Base Component (Client) -->
+        <property name="client.dir" value="${install.bag}/Yukon Base/Client"/>
+        <property name="client.bin" value="${client.dir}/bin"/>
+        <mkdir dir="${client.dir}"/>
+       	<mkdir dir="${client.dir}/Export"/>
+       	<mkdir dir="${client.dir}/Log"/>
+        
+        <copy todir="${client.bin}" preservelastmodified="true">
+            <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
             <fileset file="${module.name}/yukon-client/monitor/resource/YukonNoAlarm.ico" />
+            <fileset file="${module.name}/yukon-client/monitor/resource/AlarmMonitor.ico" />
+            <fileset file="${module.name}/yukon-client/trending/resource/GraphIcon.ico"/>
+            <fileset file="${module.name}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
+            <fileset file="${module.name}/yukon-client/tdc/resource/tdcIcon.ico"/>
+            <fileset file="${module.name}/yukon-client/commander/resource/CommanderIcon.ico"/>
         </copy>
-
-        <!-- Calculation Server Component -->
-        <copy todir="${install.lib}/Calculation Server/bin" file="${server.bin}/calc_logic.exe" preservelastmodified="true"/>
-
-        <!-- Cap Control Component -->
-        <copy todir="${install.lib}/Cap Control/bin" file="${server.bin}/capcontrol.exe" preservelastmodified="true"/>
-
-        <!-- Common Bin Component -->
-        <copy todir="${install.lib}/Common Bin/bin" preservelastmodified="true">
-            <fileset dir="${client.lib}" excludes="*.conf,*.txt,*.xml,*.properties,*.debug,images/**,commands/**,monitor.jar,dbeditor.jar,esub-editor.jar,commercialcurtailment.jar,graph.jar,tdc.jar,yc.jar,yukon.war" casesensitive="false">
-
-            </fileset>
-        </copy>
-
-        <!-- Common Directories Component -->
-        <copy todir="${install.lib}/Common Directories/Config/Example" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
-
-        <!-- Common Dlls Component -->
-        <copy todir="${install.lib}/Common Dlls/bin" preservelastmodified="true">
-            <fileset dir="${server.bin}" includes="*.dll" excludes="*fdr*.dll,interp.dll,tcl81d.dll" casesensitive="false" />
+       	    
+        <!-- Yukon Base Component (Server) -->      
+        <property name="server.dir" value="${install.bag}/Yukon Base/Server"/>
+        <property name="server.bin" value="${server.dir}/bin"/>
+        <mkdir dir="${server.dir}"/>
+		
+        <copy todir="${server.bin}" preservelastmodified="true">
+			<fileset dir="${server.bag}" excludes="unittests/**"/>
             <fileset dir="${module.name}/yukon-install/resources/common_dlls" />
-        </copy>
+		</copy>
+        
+        <copy todir="${server.dir}/MACSscripts" file="${server.bag}/init.tcl" preservelastmodified="true"/>
+        <mkdir dir="${server.dir}/MACSftp"/>
+        <mkdir dir="${server.dir}/Export"/>
+        <mkdir dir="${server.dir}/Import"/>
+        <mkdir dir="${server.dir}/Log"/>
+        
+        <!-- Initial Server Config Component -->
+        <copy todir="${install.bag}/Initial Server Config/Config" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
         <!-- Config Properties Component -->
-        <copy todir="${install.lib}/Config Properties" preservelastmodified="true">
+        <copy todir="${install.bag}/Config Properties" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/resources" includes="*Logging.xml," casesensitive="false">
             </fileset>
         </copy>
-
-        <!-- Database Editor Component -->
-        <copy todir="${install.lib}/Database Editor/bin" file="${client.lib}/dbeditor.jar" preservelastmodified="true"/>
-
-        <!-- ESub Editor Component -->
-        <copy todir="${install.lib}/ESub Editor" preservelastmodified="true">
-            <fileset file="${client.lib}/esub-editor.jar" />
-            <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.gif" />
-            <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.ico" />
-        </copy>
-
-        <!-- Foreign Data Router Component -->
-        <copy todir="${install.lib}/Foreign Data Router/bin" preservelastmodified="true">
-            <fileset dir="${server.bin}" includes="*fdr*" />
-        </copy>
-
+        
+        <!-- Common Directories Component -->
+        <copy todir="${install.bag}/Common Directories/Config/Example" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
+        
         <!-- Help Component -->
-        <copy todir="${install.lib}/Help" preservelastmodified="true">
+        <copy todir="${install.bag}/Help" preservelastmodified="true">
             <fileset file="${module.name}/yukon-help/tdc/out/Tabular_Data_Console_Help.chm" />
             <fileset file="${module.name}/yukon-help/commander/out/Yukon_Commander_Help.chm" />
             <fileset file="${module.name}/yukon-help/dbeditor/out/Yukon_Database_Editor_Help.chm" />
             <fileset file="${module.name}/yukon-help/trending/out/Yukon_Trending_Help.chm" />
         </copy>
 
-        <!-- Initial Server Config Component -->
-        <copy todir="${install.lib}/Initial Server Config/Config" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
-
         <!-- JRE 1.5 Component -->
-        <copy todir="${install.lib}/JRE 1.5" preservelastmodified="true">
+        <copy todir="${install.bag}/JRE 1.5" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/JRE" />
         </copy>
 
-        <!-- Load Management Component -->
-        <copy todir="${install.lib}/Load Management/bin" file="${server.bin}/loadmanagement.exe" preservelastmodified="true"/>
-
-        <!-- MACS Server Component -->
-        <copy todir="${install.lib}/MACS Server/bin" preservelastmodified="true">
-            <fileset dir="${server.bin}" includes="ctish.exe,interp.dll,macs.exe,tcl81d.dll" />
-        </copy>
-
-        <copy todir="${install.lib}/MACS Server/MACSscripts" file="${server.bin}/init.tcl" preservelastmodified="true"/>
-        <mkdir dir="${install.lib}/MACS Server/MACSftp"/>
-        <mkdir dir="${install.lib}/MACS Server/Export"/>
-        <mkdir dir="${install.lib}/MACS Server/Import"/>
-
-        <!-- Message Dispatcher Component -->
-        <copy todir="${install.lib}/Message Dispatcher/bin" file="${server.bin}/dispatch.exe" preservelastmodified="true"/>
-
-        <!-- Notification Component -->
-        <copy todir="${install.lib}/Notification" preservelastmodified="true">
-            <fileset dir="${client.lib}" includes="commercialcurtailment.jar,notifserver.conf" />
-        </copy>
-
-        <!-- Port Control Component -->
-        <copy todir="${install.lib}/Port Control/bin" file="${server.bin}/porter.exe" preservelastmodified="true"/>
-
-        <!-- Scanner Component -->
-        <copy todir="${install.lib}/Scanner/bin" file="${server.bin}/scanner.exe" preservelastmodified="true"/>
-
-        <!-- Tabular Data Console Component -->
-        <copy todir="${install.lib}/Tabular Data Console/bin" preservelastmodified="true">
-            <fileset dir="${client.lib}" includes="graph.jar,tdc.jar" />
-        </copy>
-
-        <!-- Test Application Component -->
-        <copy todir="${install.lib}/Test Applications/bin" preservelastmodified="true">
-            <fileset dir="${server.bin}" includes="*test.exe,poker.exe" />
-        </copy>
-
         <!-- Tomcat Component -->
-        <copy todir="${install.lib}/Tomcat" preservelastmodified="true">
+        <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/Tomcat5" />
         </copy>
 
         <!-- WebStart Component -->
-        <copy todir="${install.lib}/WebStartJRE" preservelastmodified="true">
+        <copy todir="${install.bag}/WebStartJRE" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/WebStartJRE" />
         </copy>
 
-        <!-- Yukon Commander Component -->
-        <copy todir="${install.lib}/Yukon Commander/bin" file="${client.lib}/yc.jar" preservelastmodified="true"/>
-
         <!-- Yukon Web Deployment Component -->
-        <copy todir="${install.lib}/Yukon Web Deployment/bin" preservelastmodified="true">
+        <copy todir="${install.bag}/Yukon Web Deployment/bin" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll" />
-            <fileset file="${client.lib}/yukon.war" />
+            <fileset file="${client.bag}/yukon.war" />
         </copy>
-
-        <copy todir="${install.lib}/Yukon Web Deployment/bin/client" file="${module.name}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
-
-        <copy todir="${install.lib}/Yukon Web Deployment/lib" file="${module.name}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
-
-        <copy todir="${install.lib}/Yukon Web Deployment/lib/i386" file="${module.name}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/bin/client" file="${module.name}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${module.name}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${module.name}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
 
         <!-- This will be pointing to the install engine in yukon-install module -->
         <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
