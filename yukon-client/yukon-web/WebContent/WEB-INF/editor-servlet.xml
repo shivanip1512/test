@@ -20,7 +20,6 @@
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/editor/"/>
-        <property name="suffix" value=".jsp"/>
     </bean>
     
     <bean id="UserEditorController" class="com.cannontech.web.editor.user.UserEditorController" >
@@ -68,7 +67,7 @@
     </bean>
         
     <bean id="userGroupSelector" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="userGroupSelector"/>
+      <property name="viewName" value="userGroupSelector.jsp"/>
     </bean>
     
 </beans>

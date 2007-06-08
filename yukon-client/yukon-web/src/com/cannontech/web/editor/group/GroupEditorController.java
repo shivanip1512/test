@@ -29,7 +29,7 @@ public class GroupEditorController extends UserGroupEditorControllerBase<LiteYuk
     public ModelAndView editGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
-        ModelAndView mav = new ModelAndView("/group/editGroup");
+        ModelAndView mav = new ModelAndView("group/editGroup.jsp");
 
         LiteYukonGroup group = getAffected(request);
         mav.addObject("group", group);

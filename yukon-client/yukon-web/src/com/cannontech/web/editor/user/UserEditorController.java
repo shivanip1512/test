@@ -29,7 +29,7 @@ public class UserEditorController extends UserGroupEditorControllerBase<LiteYuko
     public ModelAndView editUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
-        ModelAndView mav = new ModelAndView("/user/editUser");
+        ModelAndView mav = new ModelAndView("user/editUser.jsp");
 
         LiteYukonUser user = getAffected(request);
         mav.addObject("user", user);

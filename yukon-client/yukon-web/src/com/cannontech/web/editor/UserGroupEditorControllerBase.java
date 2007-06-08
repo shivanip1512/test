@@ -140,7 +140,7 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
      * @return Populated paoTable MAV
      */
     protected ModelAndView getPaoTableMav(List<Integer> idList) {
-        ModelAndView mav = new ModelAndView("/paoTable");
+        ModelAndView mav = new ModelAndView("paoTable.jsp");
 
         List<LiteYukonPAObject> paoList = new ArrayList<LiteYukonPAObject>();
         StringBuffer idBuffer = new StringBuffer();
