@@ -75,14 +75,6 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getGenerateFileToggleButton())
 	{
-        try {
-            setBillingFormatter(getBillingDefaults().getFormatID());
-        } catch (Error e) {
-            // We must be using a billing formatter instead.
-        }
-        
-        getBillingFile().setBillingFormatter(getBillingDefaults().getFormatID());
-		
         generateFile();
 		getBillingDefaults().writeDefaultsFile();
 		repaint();
@@ -203,6 +195,11 @@ private void generateFile()
 		return;
 		
 	setBillingDefaults(defaults);
+    try {
+        setBillingFormatter(getBillingDefaults().getFormatID());
+    } catch (Error e) {
+        // We must be using a billing formatter instead.
+    }
 
 	if( getBillingFile().getFileFormatBase() != null || getBillingFile().getBillingFormatter() != null)
 	{

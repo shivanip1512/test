@@ -32,18 +32,8 @@ public class BillingFile extends java.util.Observable implements Runnable
     /**
 	 * BillingFile constructor comment.
 	 */
-	public BillingFile()
-	{
+	public BillingFile() {
 		super();
-		initialize();
-	}
-
-	/**
-	 * Method initialize.
-	 */
-	public void initialize()
-	{
-		billingDefaults = new BillingFileDefaults();	
 	}
 
 	/**
@@ -216,18 +206,15 @@ public class BillingFile extends java.util.Observable implements Runnable
                     + getBillingDefaults().getEnergyStartDate() + " AND <= "
                     + getBillingDefaults().getEndDate());
 
-            boolean success = false;
             List<BillableDevice> deviceList = null;
 
             if (!getBillingDefaults().getBillGroup().isEmpty()) {
 
                 deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
-
-                success = deviceList.size() > 0;
             }
             try {
                 int validReadings = 0;
-                if (success) {
+                if (deviceList != null) {
                     try {
                         validReadings = billingFormatter.writeBillingFile(deviceList);
                     } catch (IllegalArgumentException e) {
@@ -241,7 +228,7 @@ public class BillingFile extends java.util.Observable implements Runnable
                 }
 
                 setChanged();
-                notify("Successfully created the file : " + billingDefaults.getOutputFileDir()
+                notify("Successfully created the file : " + getBillingDefaults().getOutputFileDir()
                         + "\n" + validReadings + " Valid Readings Reported.");
             } 
             catch (java.io.IOException ioe) {
@@ -307,6 +294,8 @@ public class BillingFile extends java.util.Observable implements Runnable
             if (!getBillingDefaults().getBillGroup().isEmpty()) {
 
                 deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
+
+                //a 0 sized deviceList can still be a success.
                 success = deviceList.size() > 0;
             }
             
@@ -324,7 +313,7 @@ public class BillingFile extends java.util.Observable implements Runnable
             }
 
             setChanged();
-            notify("Successfully created the file : " + billingDefaults.getOutputFileDir()
+            notify("Successfully created the file : " + getBillingDefaults().getOutputFileDir()
                     + "\n" + validReadings + " Valid Readings Reported.");
             
         } 

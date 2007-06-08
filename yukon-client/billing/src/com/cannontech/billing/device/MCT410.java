@@ -38,6 +38,14 @@ public class MCT410 extends BillingDeviceBase {
             case 1: // KWh
                 addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
                 break;
+                
+            case 2: // KWh (Channel 2)
+                addData(Channel.TWO, readingType, BillableField.totalConsumption, data);
+                break;
+                
+            case 3: // KWh (Channel 3)
+                addData(Channel.THREE, readingType, BillableField.totalConsumption, data);
+                break;
 
             case 101: // Rate A KWh
                 addData(Channel.ONE, readingType, BillableField.rateAConsumption, data);

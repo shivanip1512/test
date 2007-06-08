@@ -44,7 +44,7 @@ public class BillingDao {
 
         long timer = System.currentTimeMillis();
 
-        List<BillableDevice> deviceList = new ArrayList<BillableDevice>();
+        List<BillableDevice> deviceList = null;
 
         String sql = "SELECT                                                            "
                 + "     dmg.meternumber,                                                "
@@ -116,6 +116,7 @@ public class BillingDao {
 
                 rset = stmt.executeQuery();
 
+                deviceList = new ArrayList<BillableDevice>();
                 Map<String, String> accountNumberMap = null;
                 if( defaults.getFormatID() == FileFormatTypes.CADP ||
                		defaults.getFormatID() == FileFormatTypes.CADPXL2 ) {
