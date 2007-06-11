@@ -63,7 +63,8 @@
   </bean>
   <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>    
-    <property name="paoDao" ref="paoDao"/>    
+    <property name="paoDao" ref="paoDao"/>   
+    <property name="jdbcOps" ref="simpleJdbcTemplate"/>
   </bean>
   <bean id="lmDirectCustomerListDao" class="com.cannontech.core.dao.impl.LMDirectCustomerListDaoImpl" >
     <property name="jdbcOperations" ref="jdbcTemplate"/> 

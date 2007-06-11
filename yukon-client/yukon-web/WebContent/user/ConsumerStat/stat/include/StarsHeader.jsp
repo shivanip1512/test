@@ -1,4 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<jsp:useBean id="starsLMPermissionBean" class="com.cannontech.stars.web.bean.StarsLMPermissionBean" scope="page"/>
 
 <%@ page import="java.util.*" %>
 <%@ page import="javax.xml.soap.SOAPMessage" %>
@@ -172,3 +174,10 @@
 		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 	}
 %>
+
+<%pageContext.setAttribute("liteEC",liteEC);%>
+<c:set target="${starsLMPermissionBean}" property="energyCompany" value="${liteEC}" />
+<%pageContext.setAttribute("currentUser", lYukonUser);%>
+<c:set target="${starsLMPermissionBean}" property="currentUser" value="${currentUser}" />
+<%pageContext.setAttribute("starsLMPrograms", programs);%>
+<c:set target="${starsLMPermissionBean}" property="starsLMPrograms" value="${starsLMPrograms}" />

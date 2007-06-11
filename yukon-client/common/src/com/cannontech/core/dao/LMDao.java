@@ -1,5 +1,6 @@
 package com.cannontech.core.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.database.data.lite.LiteLMProgScenario;
@@ -15,5 +16,7 @@ public interface LMDao {
     public LiteLMProgScenario[] getLMScenarioProgs(int scenarioID);
     
     public Set<LiteYukonPAObject> getAllLMDirectPrograms();
+    
+    public List<Integer> getProgramsForControlArea(int areaID);
 
 }

@@ -64,8 +64,8 @@ function setRedirect(form) {
                   </td>
                 </tr>
 <%
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = programs.getStarsLMProgram(i);
+	for (int i = 0; i < starsLMPermissionBean.getStarsLMPrograms().getStarsLMProgramCount(); i++) {
+		StarsLMProgram program = starsLMPermissionBean.getStarsLMPrograms().getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
 		
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
