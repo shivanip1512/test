@@ -46,6 +46,10 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
         this.identityPath = identityPath;
     }
     
+    public String getIdentityPath() {
+        return identityPath;
+    }
+    
     public boolean isLazyLoad() {
         return lazyLoad;
     }
