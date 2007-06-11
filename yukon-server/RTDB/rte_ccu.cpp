@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/10/18 19:18:25 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/06/11 16:46:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -767,7 +767,12 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
 
     if(xcom.entries() > 0 && !status)
     {
-        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName() + " \n" + byteString;
+        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName();
+
+        if( stringCompareIgnoreCase(gConfigParms.getValueAsString("HIDE_PROTOCOL"), "true") != 0 )
+        {
+            resultString += " \n" + byteString;
+        }
     }
     else
     {
