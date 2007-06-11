@@ -153,6 +153,12 @@
         <property name="registrationService" ref="pointDataUpdateRegistrationService"/>
     </bean>
 
+    <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="meterDao" ref="meterDao"/>
+    </bean>
+
     <bean id="trendWidget"
     	class="com.cannontech.web.widget.TrendWidget">
     	<property name="title" value="Trend"/>
