@@ -1,22 +1,22 @@
-package com.cannontech.web.taglib;
+package com.cannontech.web.amr.taglib;
 
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.spring.YukonSpringHook;
+import org.springframework.beans.factory.annotation.Configurable;
 
-public class DeviceNameTag extends SimpleTagSupport {
-    private DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
-    private PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.web.taglib.YukonTagSupport;
+
+@Configurable("deviceNameTagPrototype")
+public class DeviceNameTag extends YukonTagSupport {
+    private MeterDao meterDao;
     private int deviceId = 0;
     private boolean deviceIdSet = false;
-    private LiteYukonPAObject device = null;
+    private Meter device = null;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -29,12 +29,12 @@ public class DeviceNameTag extends SimpleTagSupport {
         }
         
         if (deviceIdSet) {
-            device = paoDao.getLiteYukonPAO(deviceId);
+            device = meterDao.getForId(deviceId);
         } else {
-            deviceId = device.getLiteID();
+            deviceId = device.getDeviceId();
         }
         
-        String formattedName = deviceDao.getFormattedDeviceName(device);
+        String formattedName = meterDao.getFormattedDeviceName(device);
         
         JspWriter out = getJspContext().getOut();
         out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
@@ -49,11 +49,15 @@ public class DeviceNameTag extends SimpleTagSupport {
         deviceIdSet = true;
         this.deviceId = deviceId;
     }
-    public LiteYukonPAObject getPointValue() {
+    public Meter getDevice() {
         return device;
     }
-    public void setPointValue(LiteYukonPAObject device) {
+    public void setDevice(Meter device) {
         this.device = device;
+    }
+    
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
     }
 
 }

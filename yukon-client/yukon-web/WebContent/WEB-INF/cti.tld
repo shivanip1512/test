@@ -485,7 +485,7 @@
   
   <tag>
     <name>deviceName</name>
-    <tag-class>com.cannontech.web.taglib.DeviceNameTag</tag-class>
+    <tag-class>com.cannontech.web.amr.taglib.DeviceNameTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <name>deviceId</name>
