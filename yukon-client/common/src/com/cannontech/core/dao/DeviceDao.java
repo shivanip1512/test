@@ -19,8 +19,6 @@ public interface DeviceDao {
 
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID);
     
-    public String getFormattedDeviceName(LiteYukonPAObject device);
-
     /**
      * This returns a LiteYukonPaobject for the meterNumber.
      * WARNING: This is a "BEST GUESS" (or the first one in the deviceMeterNumber cache) as
