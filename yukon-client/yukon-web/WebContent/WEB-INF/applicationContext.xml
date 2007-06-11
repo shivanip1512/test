@@ -172,5 +172,12 @@
         <property name="attributeService" ref="attributeService" />
         <property name="unitMeasureDao" ref="unitMeasureDao" />
     </bean>
+
+    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.util.AttributeResolverTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="paoDao" ref="paoDao"/>
+        <property name="attributeService" ref="attributeService"/>
+    </bean>
     
 </beans>

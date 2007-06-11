@@ -484,6 +484,27 @@
   </tag>
   
   <tag>
+    <name>attributeResolver</name>
+    <tag-class>com.cannontech.web.util.AttributeResolverTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>deviceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>attribute</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>deviceName</name>
     <tag-class>com.cannontech.web.amr.taglib.DeviceNameTag</tag-class>
     <body-content>empty</body-content>
