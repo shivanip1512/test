@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface PointFormattingService {
     
     static public enum Format {
-        FULL("{default} {status||{unit}} {time|dd/MM/yyyy HH:mm:ss z}"),
+        FULL("{default} {status||{unit}} {time|MM/dd/yyyy HH:mm:ss z}"),
         SHORT("{default} {status||{unit}}");
         
         private final String format;
