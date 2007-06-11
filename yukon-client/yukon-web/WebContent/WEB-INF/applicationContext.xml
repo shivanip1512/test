@@ -83,6 +83,25 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
+    <bean id="miniTdcWidget"
+    	class="com.cannontech.web.widget.MiniTdcWidget">
+    	<property name="title" value="Mini TDC"/>
+        <property name="identityPath" value="miniTdcWidget/identity.jsp" />
+        <property name="inputs">
+           <set>
+                <bean class="com.cannontech.web.widget.support.SimpleWidgetInput">
+                    <property name="name" value="displayNumber"/>
+                    <property name="description" value="the number of a TDC display"/>
+                    <property name="required" value="true"/>
+                </bean>
+           </set>
+        </property>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="pointDao" ref="pointDao"/>
+        <property name="deviceDao" ref="deviceDao"/>
+        <property name="paoDao" ref="paoDao"/>
+    </bean>
+    
     <!-- Update Service -->
         
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
