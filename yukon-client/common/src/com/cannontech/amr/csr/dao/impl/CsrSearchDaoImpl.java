@@ -39,14 +39,16 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         String sqlCount = "SELECT                                               " + 
         "       count(*)                                                        " + 
         "   FROM                                                                " + 
-        "       yukonpaobject ypo                                               " + 
-        "       LEFT JOIN devicecarriersettings dcs                             " + 
+        "       device                                                          " +
+        "       JOIN yukonpaobject ypo                                          " + 
+        "           ON device.deviceid = ypo.paobjectid                         " + 
+        "       JOIN devicecarriersettings dcs                             " + 
         "           ON dcs.deviceid = ypo.paobjectid                            " + 
-        "       LEFT JOIN devicemetergroup dmg                                  " + 
+        "       JOIN devicemetergroup dmg                                  " + 
         "           ON dmg.deviceid = ypo.paobjectid                            " + 
-        "       LEFT JOIN deviceroutes dr                                       " + 
+        "       JOIN deviceroutes dr                                       " + 
         "           on ypo.paobjectid = dr.deviceid                             " +
-        "       LEFT JOIN yukonpaobject rypo                                         " +
+        "       JOIN yukonpaobject rypo                                         " +
         "           on dr.routeid = rypo.paobjectid                             " +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "");
 
@@ -65,15 +67,15 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         "       rypo.paoname as route                                           " + 
         "   FROM                                                                " + 
         "       device                                                          " +
-        "       JOIN yukonpaobject ypo                                     " + 
+        "       JOIN yukonpaobject ypo                                          " + 
         "           ON device.deviceid = ypo.paobjectid                         " + 
-        "       LEFT JOIN devicecarriersettings dcs                             " + 
+        "       JOIN devicecarriersettings dcs                             " + 
         "           ON dcs.deviceid = ypo.paobjectid                            " + 
-        "       LEFT JOIN devicemetergroup dmg                                  " + 
+        "       JOIN devicemetergroup dmg                                  " + 
         "           ON dmg.deviceid = ypo.paobjectid                            " + 
-        "       LEFT JOIN deviceroutes dr                                       " + 
+        "       JOIN deviceroutes dr                                       " + 
         "           on ypo.paobjectid = dr.deviceid                             " +
-        "       LEFT JOIN yukonpaobject rypo                                         " +
+        "       JOIN yukonpaobject rypo                                         " +
         "           on dr.routeid = rypo.paobjectid                             " +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "") +
         "   ORDER BY                                                            " +
