@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2007/04/19 15:49:26 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2007/06/12 23:03:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -674,9 +674,17 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
     incrementMessageCount();
     return status;
 }
+INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod)
+{
+    INT status = NoError;
+    _message.push_back( mtBacklightIllumination );
+    _message.push_back( numCycles );
+    _message.push_back( dutyCycle );
+    _message.push_back( cycPeriod );
 
-
-
+    incrementMessageCount();
+    return status;
+}
 
 
 INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE data)
@@ -1188,6 +1196,14 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     {
         status = capControl( ccControl, ccControlSwap );
     }
+    else if (parse.isKeyValid("xcbacklight")) 
+    {
+       backlightIlluminationMsg( parse.getiValue("xcbacklightcycle", 0),
+                                 parse.getiValue("xcbacklightduty", 0),
+                                 parse.getiValue("xcbacklightperiod", 0));
+
+
+    }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1343,26 +1359,63 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                                 delay);
         }
     }
+    else if (parse.isKeyValid("xcextier")) 
+    {
+        status = extendedTierCommand(parse.getiValue("xcextierlevel", -1),
+                            parse.getiValue("xcextierrate", -1),
+                            parse.getiValue("xcextiercmd", -1),
+                            parse.getiValue("xcextierdisp", -1),
+                            parse.getiValue("xctiertimeout", -1),
+                            parse.getiValue("xctierdelay", -1));                                                          
+
+    }
     else if(parse.isKeyValid("xcutilusage"))
     {
         status = updateUtilityUsage( parse );
     }
-    else if(parse.isKeyValid("xccontractor"))
+    else if(parse.isKeyValid("xcconfig"))
     {
-        //bool enable = parse.getiValue("xcmode", 0) ? true : false;
+        BYTE config =  (parse.getiValue("xcthermoconfig", 0) & 0xFF);
+        status = configuration( cfgThermostatConfig, 
+                                1,  //length of data
+                                (BYTE*)config );
+    }
+    else if (parse.isKeyValid("xcdisplay") )
+    {
+        if (parse.isKeyValid("xcdisplaymessage")) 
+        {
+            BYTE data[17];
+            data[0] = parse.getiValue("xcdisplaymessageid") & 0x0F;
+            string displayStr = parse.getsValue("xcdisplaymessage");
+            data[1] = (BYTE)&displayStr;
+            int length = displayStr.size() + 1;
+            if (length > 17) 
+                length = 17;
 
-        status = disableContractorMode( parse.getiValue("xcmode", 0) );
+            status = configuration( cfgDisplayMessages, 
+                                    length,  //length of data
+                                    data );
+        }
+        else
+        {
+            BYTE config = (parse.getiValue("xclcddisplay", 0) & 0xFF);
+            status = configuration( cfgDisplayMessages, 
+                                    1,  //length of data
+                                    (BYTE*)config );
+        }
+
     }
     else if (parse.isKeyValid("xcutilinfo"))
     {
         status = updateUtilityInformation(parse.getiValue("xcutilchan", 0),
                                           parse.getsValue("xcparametername"),
-                                          parse.getsValue("xcparameterunit"),
                                           parse.getsValue("xccurrency"),
+                                          (bool)parse.getiValue("xcchargedollars"),
                                           parse.getiValue("xcpresentusage", -1),
                                           parse.getiValue("xcpastusage", -1),
                                           parse.getiValue("xcpresentcharge", -1),
-                                          parse.getiValue("xcpastcharge", -1) );
+                                          parse.getiValue("xcpastcharge", -1), 
+                                          parse.getiValue("xcdeleteid", -1) );
 
     }
 
@@ -1413,15 +1466,13 @@ INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
         string chan("xcchan_" + CtiNumStr(chanIndex));
         string chanValue("xcchanvalue_" + CtiNumStr(chanIndex));
 
-        USHORT chanNum = parse.getiValue(chan, 0);
-        ULONG chanVal = parse.getdValue(chanValue, 0);
+        BYTE chanNum = parse.getiValue(chan, 0);
+        USHORT chanVal = parse.getdValue(chanValue, 0);
 
-        _message.push_back(HIBYTE(chanNum));
         _message.push_back(LOBYTE(chanNum));
 
-        _message.push_back( LOBYTE(HIWORD(chanVal)) );
-        _message.push_back( HIBYTE(LOWORD(chanVal)) );
-        _message.push_back( LOBYTE(LOWORD(chanVal)) );
+        _message.push_back( HIBYTE(chanVal) );
+        _message.push_back( LOBYTE(chanVal) );
 
     }
     incrementMessageCount();
@@ -1429,99 +1480,99 @@ INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
     return status;
 }
 
-INT CtiProtocolExpresscom::disableContractorMode(bool enableFlag)
-{
-    INT status = NoError;
 
-    _message.push_back( mtDisableContractorMode );
-    _message.push_back( enableFlag );
-
-    incrementMessageCount();
-
-    return status;
-}
-
-INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, CtiString name, string unit, string currency, SHORT presentusage,
-                                                     SHORT pastusage, SHORT presentcharge, SHORT pastcharge)
+INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, string name, string currency, BOOL chargedollars, SHORT presentusage,
+                                                     SHORT pastusage, SHORT presentcharge, SHORT pastcharge, SHORT deleteid)
 {
     INT status = NoError;
     BYTE config = 0x00;
     BYTE utilFlags = 0x00;
 
-    _message.push_back( mtUtilityInformation );
+    _message.push_back( mtConfiguration );
+    _message.push_back( cfgUtilityInformation );
     _message.push_back( chan );
 
     size_t configpos = _message.size();
     _message.push_back(config);
-    size_t utilflagpos = _message.size();
-    _message.push_back(utilFlags);
 
-    if(!name.empty())
+    if (deleteid > 0) 
+    {
+        config |= 0x08;
+        _message.push_back(deleteid);
+
+    }
+    else if(!name.empty())
     {
         config |= 0x02;
-
-        for (int i = 0; i < 16; i++) //limit of 16 bytes.
+        _message.push_back(name.length());
+        for (int i = 0; i < 20; i++) //limit of 20 bytes.
         {
             if (i < name.length())
                 _message.push_back(name.data()[i] );
             else
-                _message.push_back( 0x00 );
+                i = 20;
         }
     }
-    if(!unit.empty())
+    else if(!currency.empty())
     {
         config |= 0x04;
-        for (int i = 0; i < 16; i++) //limit of 16 bytes.
-        {
-            if (i < unit.length())
-                _message.push_back(unit.data()[i] );
-            else
-                _message.push_back( 0x00 );
-        }
-    }
-    if(!currency.empty())
-    {
-        config |= 0x08;
-        for (int i = 0; i < 16; i++) //limit of 16 bytes.
+        _message.push_back(currency.length());
+        for (int i = 0; i < 10; i++) //limit of 10 bytes.
         {
             if (i < currency.length())
                 _message.push_back(currency.data()[i] );
             else
-                _message.push_back( 0x00 );
+                i = 10;
         }
     }
+    else
+    {
+        size_t utilflagpos = _message.size();
+        _message.push_back(utilFlags);
+        
 
-    if (presentusage > 0)
-    {
-        config |= 0x01;
-        utilFlags |= 0x01;
-        _message.push_back(HIBYTE(presentusage));
-        _message.push_back(LOBYTE(presentusage));
-    }
-    if (pastusage > 0)
-    {
-        config |= 0x01;
-        utilFlags |= 0x02;
-        _message.push_back(HIBYTE(pastusage));
-        _message.push_back(LOBYTE(pastusage));
-    }
-    if (presentcharge > 0)
-    {
-        config |= 0x01;
-        utilFlags |= 0x04;
-        _message.push_back(HIBYTE(presentcharge));
-        _message.push_back(LOBYTE(presentcharge));
-    }
-    if (pastcharge > 0)
-    {
-        config |= 0x01;
-        utilFlags |= 0x08;
-        _message.push_back(HIBYTE(pastcharge));
-        _message.push_back(LOBYTE(pastcharge));
+        //need to know currency
+        if (presentusage > 0)
+        {
+            config |= 0x01;
+            utilFlags |= 0x01;
+            _message.push_back(HIBYTE(presentusage));
+            _message.push_back(LOBYTE(presentusage));
+        }
+        if (pastusage > 0)
+        {
+            config |= 0x01;
+            utilFlags |= 0x02;
+            _message.push_back(HIBYTE(pastusage));
+            _message.push_back(LOBYTE(pastusage));
+        }
+        if (presentcharge > 0)
+        {
+            config |= 0x01;
+            utilFlags |= 0x04;
+            if (chargedollars) 
+                utilFlags |= 0x10;
+            else
+                utilFlags |= 0x20;
+            _message.push_back(HIBYTE(presentcharge));
+            _message.push_back(LOBYTE(presentcharge));
+        }
+        if (pastcharge > 0)
+        {
+            config |= 0x01;
+            utilFlags |= 0x08;
+            if (chargedollars) 
+                utilFlags |= 0x10;
+            else
+                utilFlags |= 0x20;
+            _message.push_back(HIBYTE(pastcharge));
+            _message.push_back(LOBYTE(pastcharge));
+        }
+        _message[utilflagpos] = utilFlags;
     }
 
     _message[configpos] = config;
-    _message[utilflagpos] = utilFlags;
+
 
     incrementMessageCount();
 
@@ -1880,6 +1931,52 @@ INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool tem
 
     return status;
 }
+
+INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay)
+{
+
+    INT status = NoError;
+    BYTE flags;
+    _message.push_back( mtExtendedTierMsg );
+
+    flags = 0x00;
+    size_t flagpos = _message.size();
+
+    _message.push_back(flags);
+    _message.push_back(level);
+
+    if(rate > 0)
+    {
+        flags |= 0x80;         // Temp setpoint included.
+        _message.push_back(rate);
+    }
+    if(cmd > 0)
+    {
+        flags |= 0x40;         // Temp setpoint included.
+        _message.push_back(cmd);
+    }
+    if(display > 0)
+    {
+        flags |= 0x20;         // Temp setpoint included.
+        _message.push_back(display);
+    }
+    if(timeout > 0)
+    {
+        flags |= 0x10;         // Temp setpoint included.
+        _message.push_back(timeout);
+    }       
+    if(delay > 0)
+    {
+        flags |= 0x08;         // Temp setpoint included.
+        _message.push_back(delay);
+    }
+
+    _message[flagpos] = flags;
+    incrementMessageCount();
+
+    return status;
+}
+
 
 
 INT CtiProtocolExpresscom::priority(BYTE priority)

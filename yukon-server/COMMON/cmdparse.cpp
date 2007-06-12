@@ -4376,6 +4376,25 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             _cmd["bytes_to_follow"] = CtiParseValue(0);
         }
     }
+    if(!(token = CmdStr.match(" backlight ")).empty())
+    {
+        _cmd["xcbacklight"] = CtiParseValue(TRUE);
+        if(!(temp = CmdStr.match(" cycles " + str_num)).empty())
+        {
+            iValue = atoi(valStr.c_str());
+            _cmd["xcbacklightcycle"] = CtiParseValue( iValue );
+        }
+        if(!(temp = CmdStr.match(" duty " + str_num)).empty())
+        {
+            iValue = atoi(valStr.c_str());
+            _cmd["xcbacklightduty"] = CtiParseValue( iValue );
+        }
+        if(!(temp = CmdStr.match(" bperiod " + str_num)).empty())
+        {
+            iValue = atoi(valStr.c_str());
+            _cmd["xcbacklightperiod"] = CtiParseValue( iValue );
+        }
+    }
 }
 
 
@@ -4820,17 +4839,87 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         _cmd["xcutilusage"] = TRUE;
         doParsePutConfigUtilityUsage(CmdStr);
     }
-    else if(!(token = CmdStr.match(" contractor[ =]+((ena(ble)?)|(dis(able)?))")).empty())
+    else if (CmdStr.contains("thermo config")) 
     {
-        _cmd["xccontractor"] = TRUE;
-        if (token.contains("ena"))
+        _cmd["xcconfig"] = TRUE;
+        if(!(token = CmdStr.match("thermo config " + str_num)).empty())
         {
-            _cmd["xcmode"] = CtiParseValue( TRUE );
+            str = token.match(re_num);
+            int config = atoi(str.c_str()) & 0xFF;
+
+            _cmd["xcthermoconfig"] = CtiParseValue( config );
         }
-        else
+    }
+    else if (CmdStr.contains("display")) 
+    {
+        _cmd["xcdisplay"] = TRUE;
+        if(!(token = CmdStr.match(" setup (LCD|seg(ment?))")).empty())
+        {   
+            if (token.contains("LCD"))
+                _cmd["xclcddisplay"] = TRUE;
+            else
+                _cmd["xclcddisplay"] = FALSE;
+        }
+        else if(!(token = CmdStr.match("display " + str_num + str_quoted_token)).empty())
         {
-            _cmd["xcmode"] = CtiParseValue( FALSE );
+            str = token.match(re_num);
+            int msgid = atoi(str.c_str());
+            _cmd["xcdisplaymessageid"]  = CtiParseValue(msgid );
+
+            if(!(str = token.match(str_quoted_token)).empty())
+            {
+                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+                _cmd["xcdisplaymessage"] = CtiParseValue( str );
+            }
         }
+    }
+    else if (CmdStr.contains("extended tier")) 
+    {
+        _cmd["xcextier"] = TRUE;
+        if(!(token = CmdStr.match(" tier" + str_num)).empty())
+        {  
+            str = token.match(re_num);
+            int tier = atoi(str.c_str());
+            _cmd["xcextierlevel"] = CtiParseValue(tier);
+
+            if(!(token = CmdStr.match(" rate" + str_num)).empty())
+            {  
+                str = token.match(re_num);
+                int rate = atoi(str.c_str());
+                _cmd["xcextierrate"] = CtiParseValue(rate);
+            }
+
+            if(!(token = CmdStr.match(" (cmd|command)" + str_num)).empty())
+            {  
+                str = token.match(re_num);
+                int command = atoi(str.c_str());
+                _cmd["xcextiercmd"] = CtiParseValue(command);
+            }
+            if(!(token = CmdStr.match(" display" + str_num)).empty())
+            {  
+                str = token.match(re_num);
+                int display = atoi(str.c_str());
+                _cmd["xcextierdisp"] = CtiParseValue(display);
+            }
+            if(!(temp = CmdStr.match(" timeout " + str_num)).empty())         // assume minutes input.
+            {
+                if(!(valStr = temp.match(re_num)).empty())
+                {
+                    iValue = atoi(valStr.c_str());
+                    _cmd["xctiertimeout"] = CtiParseValue( iValue );            // In minutes
+                }
+            }
+            if(!(temp = CmdStr.match(" delay " + str_num)).empty())         // assume minutes input.
+            {
+                if(!(valStr = temp.match(re_num)).empty())
+                {
+                    iValue = atoi(valStr.c_str());
+                    _cmd["xctierdelay"] = CtiParseValue( iValue );            // In minutes
+                }
+            }
+
+        }
+
     }
     else if(CmdStr.contains("utility info"))
     {
@@ -4843,8 +4932,13 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
             _cmd["xcutilchan"] = CtiParseValue( chan );
         }
-        boost::regex re_name   ("select name "        + str_quoted_token);
+        if(!(token = CmdStr.match("delete " + str_num)).empty())
+        {
+            str = token.match(re_num);
+            int deleteid = atoi(str.c_str());
 
+            _cmd["xcdeleteid"] = CtiParseValue( deleteid );
+        }
         if(!(token = CmdStr.match("name " + str_quoted_token)).empty())
         {
             if(!(str = token.match(str_quoted_token)).empty())
@@ -4853,14 +4947,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xcparametername"] = CtiParseValue( str );
             }
         }
-        if(!(token = CmdStr.match("unit "+ str_quoted_token)).empty())
-        {
-            if(!(str = token.match(str_quoted_token)).empty())
-            {
-                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-                _cmd["xcparameterunit"] = CtiParseValue( str );
-            }
-        }
+        
         if(!(token = CmdStr.match("currency " + str_quoted_token)).empty())
         {
             if(!(str = token.match(str_quoted_token)).empty())
@@ -4892,6 +4979,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 int charge = atoi(str.c_str());
 
                 _cmd["xcpresentcharge"] = CtiParseValue( charge );
+                if(!(token = CmdStr.match(" cents ")).empty())
+                    _cmd["xcchargedollars"] = CtiParseValue(FALSE);
+                else 
+                    _cmd["xcchargedollars"] = CtiParseValue(TRUE);
+
             }
             if(!(token = CmdStr.match(" past charge " + str_num)).empty())
             {
@@ -4899,9 +4991,14 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 int charge = atoi(str.c_str());
 
                 _cmd["xcpastcharge"] = CtiParseValue( charge );
+                if(!(token = CmdStr.match(" cents ")).empty())
+                    _cmd["xcchargedollars"] = CtiParseValue(FALSE);
+                else 
+                    _cmd["xcchargedollars"] = CtiParseValue(TRUE);
             }
         }
     }
+
 }
 
 void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
@@ -4923,7 +5020,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!(token = CmdStr.match(" prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*)|(rssi)|(ping))")).empty())
+    if(!(token = CmdStr.match(" prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*)|(rssi)|(ping)|(test))")).empty())
     {
         int   op = -1;
         CHAR  op_name[20];
@@ -4948,12 +5045,17 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
             op = 0x003;
             _snprintf(op_name, sizeof(op_name), "RSSI");
         }
+        else if(token.contains("test"))
+        {
+            op = 0x004;
+            _snprintf(op_name, sizeof(op_name), "TEST");
+        }
         else if(token.contains("ping"))
         {
             op = 0x080;
             _snprintf(op_name, sizeof(op_name), "PING");
         }
-
+        
         if(op != -1)
         {
             CHAR  tbuf[80];
