@@ -10,6 +10,6 @@
 initiateCannonDataUpdate("${updateUrl}", ${period});
 </script>
 
-<div id="cannonUpdaterErrorDiv" style="display: none; position: fixed; bottom: 0; right: 0; width: auto; background: red; color: white; font-weight: bold">
+<div id="cannonUpdaterErrorDiv" style="display: none; position: fixed; bottom: 0; left: 0; width: auto; background: red; color: white; font-weight: bold">
 Automatic point updates disabled
 </div>
