@@ -82,18 +82,6 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
-    <bean id="meterReadingsWidget"
-    	class="com.cannontech.web.widget.MeterReadingsWidget">
-    	<property name="title" value="Meter Readings"/>
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.deviceId"/>
-           </set>
-        </property>
-        <property name="paoDao" ref="paoDao"/>
-    </bean>
-    
     <bean id="miniTdcWidget"
     	class="com.cannontech.web.widget.MiniTdcWidget">
     	<property name="title" value="Mini TDC"/>
