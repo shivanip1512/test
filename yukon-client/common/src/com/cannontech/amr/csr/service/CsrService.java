@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.csr.model.FilterBy;
 import com.cannontech.amr.csr.model.OrderBy;
-import com.cannontech.amr.csr.model.SearchPao;
+import com.cannontech.amr.csr.model.ExtendedMeter;
 import com.cannontech.common.search.SearchResult;
 
 /**
@@ -20,7 +20,7 @@ public interface CsrService {
      * @param count - Number of paos we want from the sorted, filtered list
      * @return A sorted list of paos that match the filter criteria
      */
-    public SearchResult<SearchPao> search(List<FilterBy> filterByList, OrderBy orderBy, int start,
+    public SearchResult<ExtendedMeter> search(List<FilterBy> filterByList, OrderBy orderBy, int start,
             int count);
 
 }

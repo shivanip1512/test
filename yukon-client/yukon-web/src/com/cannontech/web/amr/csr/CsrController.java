@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.csr.model.CsrSearchField;
 import com.cannontech.amr.csr.model.FilterBy;
 import com.cannontech.amr.csr.model.OrderBy;
-import com.cannontech.amr.csr.model.SearchPao;
+import com.cannontech.amr.csr.model.ExtendedMeter;
 import com.cannontech.amr.csr.service.CsrService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.PaoDao;
@@ -88,7 +88,7 @@ public class CsrController extends MultiActionController {
         }
 
         // Perform the search
-        SearchResult<SearchPao> results = csrService.search(filterByList,
+        SearchResult<ExtendedMeter> results = csrService.search(filterByList,
                                                             orderBy,
                                                             startIndex,
                                                             count);

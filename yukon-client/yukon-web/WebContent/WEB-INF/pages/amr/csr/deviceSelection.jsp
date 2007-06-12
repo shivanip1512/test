@@ -110,18 +110,18 @@
 				</tr>
 			    
 			    <c:forEach var="device" items="${results.resultList}">
-				  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(${device.paoId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+				  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(${device.deviceId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
 				    <td>
-				    	<cti:deviceName deviceId="${device.paoId}"></cti:deviceName>&nbsp;
+				    	<cti:deviceName device="${device}"/>&nbsp;
 				    </td>
 				    <td>
 						${device.meterNumber}&nbsp;
 				    </td>
 				    <td>
-						${device.paoName}&nbsp;
+						${device.name}&nbsp;
 				    </td>
 				    <td>
-						${device.type}&nbsp;
+						${device.typeStr}&nbsp;
 				    </td>
 				    <td>
 						${device.address}&nbsp;
