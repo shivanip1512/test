@@ -86,7 +86,7 @@ public class MiniTdcWidget extends WidgetControllerBase {
     }
     
     @Required
-    final public void setDeviceDao(MeterDao deviceDao) {
+    final public void setMeterDao(MeterDao deviceDao) {
         this.meterDao = deviceDao;
     }
     
