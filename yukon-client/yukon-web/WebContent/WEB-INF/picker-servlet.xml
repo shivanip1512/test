@@ -26,7 +26,7 @@
     </bean>
     
     <bean id="testpage" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="/point/test"/>
+      <property name="viewName" value="point/test"/>
     </bean>
   
     <bean id="PointPickerController" class="com.cannontech.web.picker.PointPickerController" >
