@@ -10,11 +10,12 @@
     &gt; Device selection
 </cti:breadCrumbs>
 
+<c:url value="/spring/csr/home" var="csrHomeUrl"/>
+
 <script language="JavaScript">
 
 	function forwardToCsrHome(id) {
-		window.location = "/spring/csr/home?deviceId=" + id;
-		window.event.returnValue = false;
+		window.location = "${csrHomeUrl}?deviceId=" + id;
 	}
 
 	function clearFilter() {
