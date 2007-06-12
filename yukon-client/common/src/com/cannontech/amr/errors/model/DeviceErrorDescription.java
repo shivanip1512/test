@@ -59,6 +59,11 @@ public class DeviceErrorDescription {
 	public void setPorter(String porter) {
 		this.porter = porter;
 	}
+    
+    @Override
+    public String toString() {
+        return description + "(" + porter + " -- " + errorCode + ")";
+    }
 
 	@Override
     public int hashCode() {
