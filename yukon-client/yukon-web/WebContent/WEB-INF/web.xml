@@ -202,6 +202,10 @@
 			org.apache.myfaces.webapp.StartupServletContextListener
 		</listener-class>
 	</listener>
+    
+    <listener>
+        <listener-class>com.cannontech.servlet.TimerTaskInitializer</listener-class>
+    </listener>
 
 
 	<!-- Faces Servlet -->

@@ -1,15 +1,9 @@
 package com.cannontech.stars.web.util;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.task.DailyTimerTask;
 import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
@@ -22,7 +16,7 @@ import com.cannontech.stars.util.task.StarsTimerTask;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TimerTaskUtil implements ApplicationListener {
+public class TimerTaskUtil {
 
 	// Timer object for less frequently happened tasks
 	private ScheduledExecutor timer;
@@ -72,14 +66,6 @@ public class TimerTaskUtil implements ApplicationListener {
                 }
             }
         };
-    }
-
-    public void onApplicationEvent(ApplicationEvent event) {
-        // by starting the timer tasks this way, we can guarantee that
-        // calls to YukonSpringHook (and the DaoFactory) will succeed
-        if (event instanceof ContextRefreshedEvent) {
-            startAllTimerTasks();
-        }
     }
 
     public ScheduledExecutor getTimer() {
