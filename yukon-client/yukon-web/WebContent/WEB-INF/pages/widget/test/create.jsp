@@ -10,4 +10,6 @@
 </div>
 </ct:widgetContainer>
 
+<ct:dataUpdateEnabler period="5"/>
+
 </cti:standardPage>
