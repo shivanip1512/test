@@ -127,31 +127,7 @@ public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category
     return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
 }
 
-public String getFormattedDeviceName(LiteYukonPAObject device) {
-    // the formatting string could be from a role property
-    TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
-    String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
-    Validate.notNull(formattingStr, "Device display template role property does not exist.");
-    boolean needMeterNumber = templateProcessor.contains(formattingStr, "meterNumber");
-    Map<String, String> values = new HashMap<String, String>(6);
-    if (needMeterNumber) {
-        LiteDeviceMeterNumber liteDeviceMeterNumber = getLiteDeviceMeterNumber(device.getLiteID());
-        
-        String meterNumber;
-        if (liteDeviceMeterNumber == null) {
-            meterNumber = "n/a";
-        } else {
-            meterNumber = liteDeviceMeterNumber.getMeterNumber();
-        }
-        values.put("meterNumber", meterNumber);
-    }
-    values.put("name", device.getPaoName());
-    values.put("description", device.getPaoDescription());
-    values.put("id", Integer.toString(device.getLiteID()));
-    values.put("address", Integer.toString(device.getAddress()));
-    String result = templateProcessor.process(formattingStr, values);
-    return result;
-}
+
 
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getDevicesByPort(int)
