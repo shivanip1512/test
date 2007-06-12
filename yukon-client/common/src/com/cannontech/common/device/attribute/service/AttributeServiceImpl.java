@@ -4,11 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -54,6 +54,11 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         return attributes;
+    }
+    
+    public Attribute resolveAttributeName(String name) {
+        // some day this should also "lookup" user defined attributes
+        return BuiltInAttribute.valueOf(name);
     }
 
 }

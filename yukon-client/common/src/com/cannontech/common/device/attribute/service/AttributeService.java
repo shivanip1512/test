@@ -31,4 +31,6 @@ public interface AttributeService {
      *         called)
      */
     public abstract Set<Attribute> getAllExistingAtributes(LiteYukonPAObject device);
+    
+    public Attribute resolveAttributeName(String name);
 }
