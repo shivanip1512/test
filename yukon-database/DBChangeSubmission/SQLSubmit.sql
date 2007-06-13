@@ -52,3 +52,12 @@ insert into yukonlistentry values (141, 100, 0, 'Intervals To Value', 0)
 insert into yukonlistentry values (142, 100, 0, 'Linear Slope', 0)
 
 /********** Jess's Calc Dropdown additions no more  ************/
+
+
+/** this is really old..., but is wrong in the creation scripts and never made it into an update **/
+alter table CICUSTOMERPOINTDATA 
+   DROP constraint PK_CICUSTOMERPOINTDATA;
+alter table CICUSTOMERPOINTDATA
+   add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type);
+/** end tmack **/
+
