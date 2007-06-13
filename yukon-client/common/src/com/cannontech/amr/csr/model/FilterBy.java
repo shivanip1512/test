@@ -35,7 +35,7 @@ public class FilterBy {
     }
 
     public String toString() {
-        return field.getSearchQueryField() + " LIKE '" + filterValue + "%'";
+        return field.getSearchQueryField() + " LIKE ?";
     }
 
     /**
