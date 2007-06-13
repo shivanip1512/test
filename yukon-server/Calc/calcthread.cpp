@@ -1387,6 +1387,11 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
         return;
     }
 
+    if( !stringCompareIgnoreCase(operationType, "Get Interval Minutes") || !stringCompareIgnoreCase(operationType, "Get Point Limit") )
+    {
+        pointID = 0;
+    }
+
     //  it's okay to toss this pointer (tmpElementPtr - the newly inserted point element)
     //    around because it is copied into a (const CtiPointStoreElement *) inside the
     //    CtiCalcComponent.  the "messiness" is justified by eliminating the hash
@@ -2248,3 +2253,4 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
 
     return retVal;
 }
+
