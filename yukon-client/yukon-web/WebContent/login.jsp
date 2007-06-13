@@ -7,6 +7,7 @@
         <title>Energy Services Operations Center</title>           
 
 <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/YukonGeneralStyles.css" >
 <link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" >
 <script type="text/javascript" src="JavaScript/prototype.js" ></script>
 <script type="text/javascript" src="JavaScript/CtiMenu.js" ></script>
