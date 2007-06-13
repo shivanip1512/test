@@ -24,10 +24,10 @@ insert into devicetypecommand values(-577, -128, 'VersacomSerial', 23, 'N', -1);
 insert into devicetypecommand values(-578, -129, 'VersacomSerial', 24, 'N', -1);
 go
 
+/* @error ignore-begin */
 insert into YukonRoleProperty values(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 go
 
-/* @error ignore-begin */
 insert into YukonListEntry values (1064,1005,-1,'ExpressStat Heat Pump',1313);
 go
 
