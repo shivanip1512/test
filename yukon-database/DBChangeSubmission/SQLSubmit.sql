@@ -43,3 +43,12 @@ insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1)
 insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1)
 
 /********** END Jason - adding 3 new mct4xxx commands  ************/
+
+/********** Jess's Calc Dropdown additions  ************/
+
+insert into yukonlistentry values (139, 100, 0, 'Get Point Limit', 0)
+insert into yukonlistentry values (140, 100, 0, 'Get Interval Minutes', 0)
+insert into yukonlistentry values (141, 100, 0, 'Intervals To Value', 0)
+insert into yukonlistentry values (142, 100, 0, 'Linear Slope', 0)
+
+/********** Jess's Calc Dropdown additions no more  ************/
