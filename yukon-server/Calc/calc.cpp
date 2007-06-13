@@ -123,6 +123,22 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
         _isBaseline = true;
         _baselinePercentId = componentToAdd->getComponentPointId();
     }
+    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Regression") )
+    {
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+        CtiHashKey hashKey(componentToAdd->getComponentPointId());
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
+
+        if( componentPointPtr != rwnil)
+        {
+            componentPointPtr->setUseRegression();
+        }
+    }
+    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Intervals To Value") )
+    {
+        _regressionPtId = componentToAdd->getComponentPointId();
+    }
 }
 
 
@@ -387,6 +403,11 @@ ULONG CtiCalc::getNextInterval( ) const
 int CtiCalc::getUpdateInterval( ) const
 {
     return _updateInterval;
+}
+
+long CtiCalc::getRegressionComponentId() const
+{
+    return _regressionPtId;
 }
 
 long CtiCalc::findDemandAvgComponentPointId()

@@ -19,11 +19,12 @@ private:
     PointUpdateType      _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
-    long                 _pointId, _baselineId, _baselinePercentId;
+    long                 _pointId, _baselineId, _baselinePercentId, _regressionPtId;
     BOOL                 _valid;
     bool                 _calculateQuality;
     CtiTime              _pointCalcWindowEndTime;
     bool                 _isBaseline;
+    bool                 _reuseRegression;
 
     // text from the database
     static const CHAR * UpdateType_Periodic;
@@ -41,7 +42,8 @@ public:
 
     CtiCalc( ) :
     _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ),
-    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) ), _calculateQuality(true), _isBaseline(false)
+    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) ), _calculateQuality(true), _isBaseline(false),
+    _regressionPtId(0)
     {}
 
     CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag );
@@ -54,10 +56,11 @@ public:
     ULONG     getNextInterval() const;
     CtiCalc&  setNextInterval (int interval);
     int      getUpdateInterval( ) const;
+    long     getRegressionComponentId() const;
     int      getComponentCount();
     set<long> getComponentIDList();
     long findDemandAvgComponentPointId();
-    
+
     long getPointId( void )  
     {  
         return _pointId;
