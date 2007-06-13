@@ -21,6 +21,10 @@ import org.exolab.castor.xml.Unmarshaller;
  * 
  * @version $Revision$ $Date$
 **/
+/*
+ * NOTE: this is used to not just show enrolled programs, but all programs off of an appliance category
+ * So why the #$%& did he call it Stars"Enr"LMProgram?
+ */
 public class StarsEnrLMProgram implements java.io.Serializable {
 
 

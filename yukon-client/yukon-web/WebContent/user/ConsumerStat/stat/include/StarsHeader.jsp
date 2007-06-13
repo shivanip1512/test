@@ -179,5 +179,5 @@
 <c:set target="${starsLMPermissionBean}" property="energyCompany" value="${liteEC}" />
 <%pageContext.setAttribute("currentUser", lYukonUser);%>
 <c:set target="${starsLMPermissionBean}" property="currentUser" value="${currentUser}" />
-<%pageContext.setAttribute("starsLMPrograms", programs);%>
-<c:set target="${starsLMPermissionBean}" property="starsLMPrograms" value="${starsLMPrograms}" />
+<%pageContext.setAttribute("starsEnrolledLMPrograms", programs);%>
+<c:set target="${starsLMPermissionBean}" property="starsEnrolledLMPrograms" value="${starsEnrolledLMPrograms}" />

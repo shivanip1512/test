@@ -119,7 +119,7 @@ public final class LMDaoImpl implements LMDao {
 
     public List<Integer> getProgramsForControlArea(int areaID) {
 
-        String sql = "select lmprogramdeviceid from lmcontrolareaprogram where deviceid = ? " + " and yug.groupid = yg.groupid";
+        String sql = "select lmprogramdeviceid from lmcontrolareaprogram where deviceid = ?";
         List<Integer> programIds = jdbcOps.query(sql,
                                                  controlAreaProgramIDRowMapper,
                                                  areaID);

@@ -61,13 +61,13 @@
                                   <tr> 
                                     <td colspan="3" background="../../../WebConfig/yukon/Icons/dot.gif" height="8"></td>
                                   </tr>
-<% if (starsLMPermissionBean.getStarsLMPrograms().getStarsLMProgramCount() == 0) { %>
+<% if (starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgramCount() == 0) { %>
 								  <tr>
 								    <td colspan="3" class="TableCell">You are not enrolled in any viewable programs.</td>
 								  </tr>
 <% } else {
-	for (int i = 0; i < starsLMPermissionBean.getStarsLMPrograms().getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = starsLMPermissionBean.getStarsLMPrograms().getStarsLMProgram(i);
+	for (int i = 0; i < starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgramCount(); i++) {
+		StarsLMProgram program = starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
 		String ctrlOdds = null;
 		

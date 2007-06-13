@@ -48,7 +48,7 @@
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
-			<%@ include file="../../../include/program_enrollment.jspf" %>
+			<%@ include file="../../../include/program_enrollment_res.jspf" %>
             <p>&nbsp;</p>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
