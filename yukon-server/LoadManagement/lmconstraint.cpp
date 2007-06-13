@@ -146,7 +146,6 @@ bool CtiLMProgramConstraintChecker::checkWeekDays(ULONG proposed_start_from_1901
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " **Checkpoint** " <<  " Found 'Y' for the holiday slot in the available weekdays constraint for program: " << _lm_program.getPAOName() << "  F (force), E (exclude), N (no effect) - update the database and/or your database editor" << __FILE__ << "(" << __LINE__ << ")" << endl;
-        dout << CtiTime() << " Cowardly deciding that holidays have no effect on this program." << endl;
     }
 
     bool force_holiday = true;
