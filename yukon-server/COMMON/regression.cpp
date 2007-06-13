@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/01/16 20:29:10 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/06/13 15:28:28 $
 *
 * HISTORY      :
 * $Log: regression.cpp,v $
+* Revision 1.5  2007/06/13 15:28:28  jotteson
+* YUK-3797
+* Added more control over the number of points used in a regression, also added regression functions that return more data.
+*
 * Revision 1.4  2006/01/16 20:29:10  mfisher
 * Changed RWTime to CtiTime
 *
@@ -38,7 +42,7 @@
 #include "regression.h"
 
 CtiRegression::CtiRegression(int depth) :
-    _regDepth(depth)
+    _regDepth(depth), _minDepth(depth)
 { }
 
 CtiRegression::~CtiRegression() {}
@@ -59,6 +63,38 @@ void CtiRegression::append( const val_type &vt )
         _regData.push_back( vt );           // Atttach new elements on the back.
         _regData.pop_front();               // Remove the "oldest element" to keep the collection at _regDepth.
     }
+}
+
+void CtiRegression::appendWithoutFill( const val_type &vt )
+{
+    if( !_regData.empty() && _regData.back() == vt )
+    {
+        //Do nothing, this is the same point we already have.
+    }
+    else
+    {
+        _regData.push_back( vt );           // Atttach new elements on the back.
+    }
+
+    if( _regData.size() > _regDepth )
+    {
+        _regData.pop_front();               // Remove the "oldest element" to keep the collection at _regDepth.
+    }
+}
+
+void CtiRegression::setDepth( size_t n )
+{
+    _regDepth = n;
+}
+
+void CtiRegression::setMinDepth( size_t n )
+{
+    _minDepth = n;
+}
+
+int CtiRegression::getCurDepth( )
+{
+    return _regData.size();
 }
 
 void CtiRegression::resize( size_t n )
@@ -151,4 +187,62 @@ double CtiRegression::regression( double xprojection )
 }
 
 
+/*  This does a regression and forms a line of the form y = (slope)x + (intercept)
+ *
+ *  The function assumes all points are 1 interval apart, so time is really not used. 
+ *  Returns false if there were not enough entries to do the regression.
+ */
+bool CtiRegression::linearConstantIntervalRegression( double &slope, double &intercept )
+{
+    bool retVal = false;
+    double y = 0.0;
+    double xtemp;
 
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    double sum_xy = 0.0;
+    double sum_xx = 0.0;
+    double delta;
+    double m;                   // This is B in the book.
+    double b;                   // This is A in the book
+
+    val_type vt;
+
+    if(!_regData.empty() && _regData.size() >= _minDepth)       // The second question should not be possible.
+    {
+        for(int i = 0; i < _regData.size(); i++ )
+        {
+            vt = _regData[i];
+            xtemp = i;                         // Since we are assuming an interval of 1, this works.
+
+            if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << " " << xtemp << ", " << vt.second << endl;
+            }
+
+            sum_x += xtemp;
+            sum_y += vt.second;
+            sum_xy += xtemp * vt.second;
+            sum_xx += xtemp * xtemp;
+        }
+
+        delta = (_regData.size() * sum_xx) - (sum_x * sum_x);
+        if(delta != 0.0)
+        {
+            m = slope = ((_regData.size() * sum_xy) - (sum_x*sum_y)) / delta;
+            b = intercept = ((sum_xx * sum_y) - (sum_x * sum_xy)) / delta;
+
+            if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << endl << "Line Formula: Y =  " << m << " * X + " << b << endl;
+                dout << endl;
+            }
+            retVal = true;
+        }
+        
+    }
+
+    return retVal;
+}

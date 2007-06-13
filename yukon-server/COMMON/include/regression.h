@@ -9,10 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/11/21 16:05:26 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/06/13 15:28:29 $
 * HISTORY      :
 * $Log: regression.h,v $
+* Revision 1.3  2007/06/13 15:28:29  jotteson
+* YUK-3797
+* Added more control over the number of points used in a regression, also added regression functions that return more data.
+*
 * Revision 1.2  2005/11/21 16:05:26  cplender
 * Added object
 *
@@ -46,6 +50,7 @@ private:
 
     regress_col _regData;
     int _regDepth;
+    int _minDepth; // Only used with linear regression
 
 public:
     CtiRegression(int depth = 10);
@@ -53,7 +58,11 @@ public:
 
     void clear();
     void append( const val_type &vt );
+    void appendWithoutFill( const val_type &vt );
     void resize( size_t n );
+    void setDepth( size_t n );
+    void setMinDepth( size_t n );
+    int  getCurDepth();
 
     /*
      *  Compute the regession using the stored values with the X value passed into this function
@@ -61,6 +70,7 @@ public:
      *  returns: The y coordinate of y = mx + b.
      */
     double regression( double xprojection );
+    bool linearConstantIntervalRegression( double &slope, double &intercept );
 };
 #endif // #ifndef __REGRESSION_H__
 
