@@ -78,6 +78,12 @@ insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', '
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 go
 
+alter table CCurtCurtailmentEvent add CCurtProgramTypeID numeric;
+go
+update CCurtCurtailmentEvent set CCurtProgramTypeID = 0;
+go
+alter table CCurtCurtailmentEvent alter column CCurtProgramTypeID numeric not null;
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
