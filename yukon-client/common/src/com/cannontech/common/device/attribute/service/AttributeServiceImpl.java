@@ -3,14 +3,19 @@ package com.cannontech.common.device.attribute.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.dao.DataAccessException;
+
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointBase;
 
 public class AttributeServiceImpl implements AttributeService {
 
@@ -59,6 +64,47 @@ public class AttributeServiceImpl implements AttributeService {
     public Attribute resolveAttributeName(String name) {
         // some day this should also "lookup" user defined attributes
         return BuiltInAttribute.valueOf(name);
+    }
+
+    public boolean isAttributeSupported(LiteYukonPAObject device, Attribute attribute) {
+
+        try {
+            deviceDefinitionDao.getPointTemplateForAttribute(device, attribute);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public boolean pointExistsForAttribute(LiteYukonPAObject device, Attribute attribute) {
+
+        if (isAttributeSupported(device, attribute)) {
+            PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device,
+                                                                                      attribute);
+
+            return pointService.pointExistsForDevice(device, template);
+        }
+
+        throw new IllegalArgumentException("Device: " + device.getPaoName() + " does not support attribute: " + attribute.getKey());
+    }
+
+    public void createPointForAttribute(LiteYukonPAObject device, Attribute attribute) {
+
+        boolean pointExists = this.pointExistsForAttribute(device, attribute);
+        if (!pointExists) {
+            PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device,
+                                                                                      attribute);
+            PointBase point = pointService.createPoint(device.getYukonID(), template);
+            try {
+                Transaction t = Transaction.createTransaction(Transaction.INSERT, point);
+                t.execute();
+            } catch (TransactionException e) {
+                throw new DataAccessException("Could not create point for device: " + device.getPaoName(),
+                                              e) {
+                };
+            }
+
+        }
     }
 
 }

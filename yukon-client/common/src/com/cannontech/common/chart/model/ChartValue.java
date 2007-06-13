@@ -1,15 +1,18 @@
 package com.cannontech.common.chart.model;
 
-public class ChartValue {
+import java.text.Format;
+
+public class ChartValue<T> {
     private long id = 0;
-    private String value = null;
+    private T value = null;
     private String description = null;
-    
+
+    private Format format = null;
 
     public ChartValue() {
     }
 
-    public ChartValue(long id, String value) {
+    public ChartValue(long id, T value) {
         this.id = id;
         this.value = value;
     }
@@ -22,11 +25,11 @@ public class ChartValue {
         this.id = id;
     }
 
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
@@ -36,6 +39,18 @@ public class ChartValue {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
+    }
+    
+    public String getFormattedValue(){
+        return format.format(value);
     }
 
 }

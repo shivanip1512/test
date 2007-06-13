@@ -3,19 +3,32 @@
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<script type="text/javascript"> 
+	
+	function toggleWhatsThis(){
+		$('whatsThisText').toggle();
+	}
 
+</script>
+
+<c:if test="${selectedAttributeGraph.description != null}">
+	<div style="font-size: 10px; text-align: right;">
+		<span onmouseover="javascript:toggleWhatsThis()" onmouseout="javascript:toggleWhatsThis()">What's this?</span>
+	</div>
+	<div id="whatsThisText" class="trendPopup" style="display:none;">${selectedAttributeGraph.description}</div>
+</c:if>
 <!-- Trend -->
-<tags:trend title="${title}" pointIds="${pointIds}" startDate="${startDate}" period="${period}" unitOfMeasure="${unitOfMeasure}"></tags:trend>
+<tags:trend title="${title}" pointIds="${pointIds}" startDate="${startDate}" period="${period}" graphType="${selectedAttributeGraph.graphType}"></tags:trend>
 
 <!-- Available attribute graphs -->
-<span class="widgetText"><b>Available Graphs: </b></span>
+<b>Available Graphs: </b>
 <c:set var="notFirst" value="false" scope="page"></c:set>
-<c:forEach var="attribute" items="${allAtributes}">
+<c:forEach var="attributeGraph" items="${availableAttributeGraphs}">
 	
 	<c:if test="${notFirst}">
-		<span class="widgetText">|</span>
+		|
 	</c:if>
-	<tags:widgetLink method="render" title="${attribute.key} data" labelBusy="${attribute.key}" selected="${attributeType == attribute.key}" attributeType="${attribute.key}">${attribute.key}</tags:widgetLink>
+	<tags:widgetLink method="render" title="${attributeGraph.label} data" labelBusy="${attributeGraph.label}" selected="${selectedAttributeGraph == attributeGraph}" selectedAttributeGraph="${attributeGraph.label}">${attributeGraph.label}</tags:widgetLink>
 	
 	<c:set var="notFirst" value="true" scope="page"></c:set>
 </c:forEach>
@@ -23,15 +36,18 @@
 <br/>
 
 <!-- Time periods -->
-<span class="widgetText"><b>Available Time Periods: </b></span>
+<b>Available Time Periods: </b>
 <tags:widgetLink method="render" title="Previous 24 hour's data" labelBusy="1D" selected="${period == 'DAY'}" period="DAY">1D</tags:widgetLink>
-<span class="widgetText">|</span>
+|
 
 <tags:widgetLink method="render" title="Previous weeks's data" labelBusy="1W" selected="${period == 'WEEK'}" period="WEEK">1W</tags:widgetLink>
-<span class="widgetText">|</span>
+|
 
 <tags:widgetLink method="render" title="Previous month's data" labelBusy="1M" selected="${period == 'MONTH'}" period="MONTH">1M</tags:widgetLink>
-<span class="widgetText">|</span>
+|
+
+<tags:widgetLink method="render" title="Previous 3 month's data" labelBusy="3M" selected="${period == 'THREEMONTH'}" period="THREEMONTH">3M</tags:widgetLink>
+|
 
 <tags:widgetLink method="render" title="Previous year's data" labelBusy="1Y" selected="${period == 'YEAR'}" period="YEAR">1Y</tags:widgetLink>
 

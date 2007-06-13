@@ -7,11 +7,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ChartValue;
+import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.service.ChartService;
 
 public class ChartController extends MultiActionController {
@@ -31,30 +33,41 @@ public class ChartController extends MultiActionController {
 
         ModelAndView mav = new ModelAndView("trendData.jsp");
 
-        String pointIds = request.getParameter("pointIds");
+        // Get point ids from request
+        String pointIds = ServletRequestUtils.getRequiredStringParameter(request, "pointIds");
         String[] idStrings = pointIds.split(",");
         int[] ids = new int[idStrings.length];
         for (int i = 0; i < idStrings.length; i++) {
             ids[i] = Integer.valueOf(idStrings[i]);
         }
 
-        String period = request.getParameter("period");
-        String startDateParam = request.getParameter("startDate");
-
+        // Get period
+        String period = ServletRequestUtils.getRequiredStringParameter(request, "period");
         ChartPeriod chartPeriod = ChartPeriod.valueOf(period);
 
-        // startDateParam is really the stop date
+        // Get start date from request - startDateParam is really the stop date
+        String startDateParam = ServletRequestUtils.getRequiredStringParameter(request, "startDate");
         Date stopDate = new Date(Long.valueOf(startDateParam));
         Date startDate = chartPeriod.getStartDate(stopDate);
 
+        // Get graph type from request
+        String graphTypeString = ServletRequestUtils.getStringParameter(request,
+                                                                        "graphType",
+                                                                        GraphType.RAW_LINE.toString());
+        GraphType graphType = GraphType.valueOf(graphTypeString);
+
+        // Generate x-axis data
         List<ChartValue> xAxisData = chartService.getXAxisData(startDate,
                                                                stopDate,
                                                                chartPeriod.getChartUnit());
         mav.addObject("xAxisValues", xAxisData);
+
+        // Generate graph data
         mav.addObject("graphList", chartService.getGraphs(ids,
                                                           startDate,
                                                           stopDate,
-                                                          chartPeriod.getChartUnit()));
+                                                          chartPeriod.getChartUnit(),
+                                                          graphType));
 
         return mav;
     }
@@ -64,10 +77,16 @@ public class ChartController extends MultiActionController {
 
         ModelAndView mav = new ModelAndView("trendSettings.jsp");
 
-        String title = request.getParameter("title");
-        String unitOfMeasure = request.getParameter("unitOfMeasure");
+        // Get graph type from request
+        String graphTypeString = ServletRequestUtils.getStringParameter(request,
+                                                                        "graphType",
+                                                                        GraphType.RAW_LINE.toString());
+        GraphType graphType = GraphType.valueOf(graphTypeString);
+        mav.addObject("graphType", graphType);
+
+        // Get graph title from request
+        String title = ServletRequestUtils.getStringParameter(request, "title");
         mav.addObject("trendTitle", title);
-        mav.addObject("unitOfMeasure", unitOfMeasure);
 
         return mav;
     }

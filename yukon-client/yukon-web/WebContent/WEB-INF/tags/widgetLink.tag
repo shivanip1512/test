@@ -21,7 +21,7 @@
 	<span id="widgetActionLink">
 		<c:choose>
 			<c:when test="${selected != null && selected}">
-				<span class="widgetText"><jsp:doBody/></span>
+				<jsp:doBody/>
 			</c:when>
 			<c:otherwise>
 				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}')"><jsp:doBody/></a>

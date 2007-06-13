@@ -37,20 +37,20 @@ public class TitledContainerTag extends TagSupport {
     public int doEndTag() throws JspException {
         try {
             pageContext.getOut().print("<br class=\"makesNoSense\"></div>                " 
-                    + "           <span class=\"lbottom\">    "
+                    + "           <div class=\"lbottom\">    "
                     + "             <span class=\"l5\"></span>"
                     + "             <span class=\"l4\"></span>"
                     + "             <span class=\"l3\"></span>"
                     + "             <span class=\"l2\"></span>"
                     + "             <span class=\"l1\"></span>"
-                    + "           </span>                     "
-                    + "           <span class=\"rbottom\">    "
+                    + "           </div>                     "
+                    + "           <div class=\"rbottom\">    "
                     + "             <span class=\"r5\"></span>"
                     + "             <span class=\"r4\"></span>"
                     + "             <span class=\"r3\"></span>"
                     + "             <span class=\"r2\"></span>"
                     + "             <span class=\"r1\"></span>" 
-                    + "           </span>                     "
+                    + "           </div>                     "
                     + "           <div class=\"bottomBar\"></div>"
                     + "       </div>");
         } catch (IOException e) {

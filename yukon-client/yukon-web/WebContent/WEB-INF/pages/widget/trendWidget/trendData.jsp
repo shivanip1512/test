@@ -4,7 +4,7 @@
 <chart>
 	<xaxis>
 		<c:forEach var="xValue" items="${xAxisValues}" >
-			<value xid="${xValue.id}">${xValue.value}</value>
+			<value xid="${xValue.id}">${xValue.formattedValue}</value>
 		</c:forEach>		
 	</xaxis>
 	<graphs>
@@ -24,14 +24,14 @@
 	      		balloon_color=""						
 	      		balloon_text_color=""					
 	      		bullet="round"							
-	      		bullet_size="4"							
+	      		bullet_size="5"							
 	      		bullet_color=""							
 	      		hidden=""								
 	      		selected=""								
 			>
 			
 				<c:forEach var="dataValue" items="${graph.chartData}" >
-					<value xid="${dataValue.id}" description="${dataValue.description}">${dataValue.value}</value>
+					<value xid="${dataValue.id}" description="${dataValue.description}">${dataValue.formattedValue}</value>
 				</c:forEach>		
 				                                                            
 			</graph>

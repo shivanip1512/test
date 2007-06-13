@@ -1,12 +1,14 @@
 package com.cannontech.common.chart.model;
 
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * Enum of chart time intervals
+ * Enum of which represents the x-axis time interval between tick marks on the
+ * chart
  */
 public enum ChartInterval {
 
@@ -146,13 +148,10 @@ public enum ChartInterval {
     public abstract Date roundDownToIntervalUnit(Date date);
 
     /**
-     * Method to format a date based on the intervale
-     * @param date - Date to format
-     * @return Formatted date
+     * Method to get the date formatter for this interval
+     * @return Date formatter
      */
-    public String format(Date date) {
-
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-        return format.format(date);
+    public Format getFormat() {
+        return new SimpleDateFormat("MM/dd/yyyy");
     }
 }

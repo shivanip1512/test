@@ -168,7 +168,42 @@
         </property>
         <property name="paoDao" ref="paoDao" />
         <property name="attributeService" ref="attributeService" />
-        <property name="unitMeasureDao" ref="unitMeasureDao" />
+        <property name="supportedAttributeGraphSet">
+			<set>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="USAGE"/>
+					<property name="graphType" value="NORMALIZED_DELTA_LINE"/>
+					<property name="label" value="Normalized Usage"/>
+					<property name="description">
+						<value>
+							<![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
+							point on the graph is generated using the following formula: (reading - 
+							previousReading) / (days between readings)]]>
+						</value>
+					</property>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="DEMAND"/>
+					<property name="graphType" value="RAW_LINE"/>
+					<property name="label" value="Demand"/>
+					<property name="description">
+						<value>
+							<![CDATA[Graph of raw Demand data.]]>
+						</value>
+					</property>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="LOAD_PROFILE"/>
+					<property name="graphType" value="RAW_LINE"/>
+					<property name="label" value="Load Profile"/>
+					<property name="description">
+						<value>
+							<![CDATA[Graph of raw Load Profile data.]]>
+						</value>
+					</property>
+				</bean>
+        	</set>
+        </property>
     </bean>
 
     <bean id="attributeResolverTagPrototype" class="com.cannontech.web.util.AttributeResolverTag"

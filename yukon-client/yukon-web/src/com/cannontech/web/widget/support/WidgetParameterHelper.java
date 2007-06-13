@@ -55,17 +55,17 @@ public abstract class WidgetParameterHelper {
     private static final BooleanParser BOOLEAN_PARSER = new BooleanParser();
 
 
-    private static Object getParameter(ServletRequest request, String name) {
+    private static String getParameter(ServletRequest request, String name) {
         return getParameterMap(request).get(name);
     }
     
-    private static Map<String, ? extends Object> getParameterMap(ServletRequest request) {
+    private static Map<String, String> getParameterMap(ServletRequest request) {
         Object parameters = request.getAttribute("widgetParameters");
         if (parameters == null) {
             return Collections.emptyMap();
         }
         Validate.isTrue(parameters instanceof Map, "widget parameters aren't a map???");
-        Map<String, ? extends Object> result = (Map<String, ? extends Object>) parameters;
+        Map<String, String> result = (Map<String, String>) parameters;
         return result;
     }
     
@@ -114,8 +114,8 @@ public abstract class WidgetParameterHelper {
     public static int getRequiredIntParameter(ServletRequest request, String name)
             throws ServletRequestBindingException {
 
-        Object parameter = getParameter(request, name);
-        return INT_PARSER.parseInt(name, (String)parameter);
+        String parameter = getParameter(request, name);
+        return INT_PARSER.parseInt(name, parameter);
     }
 
     /**
@@ -162,8 +162,8 @@ public abstract class WidgetParameterHelper {
     public static long getRequiredLongParameter(ServletRequest request, String name)
             throws ServletRequestBindingException {
 
-        Object parameter = getParameter(request, name);
-        return LONG_PARSER.parseLong(name, (String)parameter);
+        String parameter = getParameter(request, name);
+        return LONG_PARSER.parseLong(name, parameter);
     }
 
     /**
@@ -210,8 +210,8 @@ public abstract class WidgetParameterHelper {
     public static float getRequiredFloatParameter(ServletRequest request, String name)
             throws ServletRequestBindingException {
 
-        Object parameter = getParameter(request, name);
-        return FLOAT_PARSER.parseFloat(name, (String)parameter);
+        String parameter = getParameter(request, name);
+        return FLOAT_PARSER.parseFloat(name, parameter);
     }
 
     /**
@@ -258,8 +258,8 @@ public abstract class WidgetParameterHelper {
     public static double getRequiredDoubleParameter(ServletRequest request, String name)
             throws ServletRequestBindingException {
 
-        Object parameter = getParameter(request, name);
-        return DOUBLE_PARSER.parseDouble(name, (String)parameter);
+        String parameter = getParameter(request, name);
+        return DOUBLE_PARSER.parseDouble(name, parameter);
     }
 
     /**
@@ -313,8 +313,8 @@ public abstract class WidgetParameterHelper {
     public static boolean getRequiredBooleanParameter(ServletRequest request, String name)
             throws ServletRequestBindingException {
 
-        Object parameter = getParameter(request, name);
-        return BOOLEAN_PARSER.parseBoolean(name, (String)parameter);
+        String parameter = getParameter(request, name);
+        return BOOLEAN_PARSER.parseBoolean(name, parameter);
     }
 
     /**
@@ -359,7 +359,7 @@ public abstract class WidgetParameterHelper {
      */
     public static String getRequiredStringParameter(ServletRequest request, String name)
             throws ServletRequestBindingException {
-        Object parameter = getParameter(request, name);
+        String parameter = getParameter(request, name);
         if (parameter == null) {
             throw new ServletRequestBindingException("Parameter " + name + " doesn't exist");
         }

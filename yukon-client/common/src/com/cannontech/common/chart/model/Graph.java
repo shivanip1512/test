@@ -1,12 +1,14 @@
 package com.cannontech.common.chart.model;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 public class Graph {
 
     private String seriesTitle = null;
     private String yAxis = "left";
-    private List<ChartValue> chartData = null;
+    private List<?> chartData = null;
+    private NumberFormat format = null;
 
     public String getSeriesTitle() {
         return seriesTitle;
@@ -24,12 +26,20 @@ public class Graph {
         yAxis = axis;
     }
 
-    public List<ChartValue> getChartData() {
+    public List<?> getChartData() {
         return chartData;
     }
 
-    public void setChartData(List<ChartValue> chartData) {
+    public void setChartData(List<?> chartData) {
         this.chartData = chartData;
+    }
+
+    public NumberFormat getFormat() {
+        return format;
+    }
+
+    public void setFormat(NumberFormat format) {
+        this.format = format;
     }
 
 }

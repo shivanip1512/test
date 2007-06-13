@@ -8,13 +8,15 @@ import net.sf.json.JSONObject;
 
 public class WidgetUtils {
     
-    public static <K,V> Map<K,V> combineParameters(Map<K,V> outer, Map<K,V> inner) {
-        Map<K,V> emptyMap = Collections.emptyMap();
-        outer = (outer != null ? outer : emptyMap);
-        inner = (inner != null ? inner : emptyMap);
-        Map<K,V> result = new HashMap<K,V>(outer);
-        for (Map.Entry<K,V> entry : inner.entrySet()) {
-            result.put(entry.getKey(), entry.getValue());
+    public static Map<String,String> combineParameters(Map<String,String> outer, Map<String,? extends Object> inner) {
+        Map<String,String> emptyMap1 = Collections.emptyMap();
+        outer = (outer != null ? outer : emptyMap1);
+        Map<String,Object> emptyMap2 = Collections.emptyMap();
+        inner = (inner != null ? inner : emptyMap2);
+        Map<String,String> result = Collections.checkedMap(new HashMap<String,String>(), String.class, String.class);
+        result.putAll(outer);
+        for (Map.Entry<String,? extends Object> entry : inner.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().toString());
         }
         return result;
     }

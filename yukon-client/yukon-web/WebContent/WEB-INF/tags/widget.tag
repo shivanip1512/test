@@ -23,7 +23,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </c:if>
 </script>
 
-<div id="widgetWrapper_${widgetParameters.widgetId}" style="padding: .5em">
+<div id="widgetWrapper_${widgetParameters.widgetId}" style="width: ${widgetParameters.width}px;">
 
 <c:if test="${widgetParameters.identify}">
 <c:import var="widgetIdentity" url="/spring/widget/${beanInst.shortName}/identity" scope="page"/>
@@ -35,7 +35,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 
 <cti:titledContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer">
 
-<div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height}">
+<div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height}; width: ${widgetParameters.width - 10}px;">
 <c:choose>
 <c:when test="${beanInst.lazyLoad}">
 <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
