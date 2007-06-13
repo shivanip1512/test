@@ -13,6 +13,7 @@
 #include "rtdb.h"
 #include "pointdefs.h"
 #include "regression.h"
+#include "tbl_pt_limit.h"
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -67,18 +68,36 @@ private:
     double _pointValue, _curHistoricValue;
     unsigned _pointQuality;
     unsigned _pointTags;
+    bool _useRegression, _isPrimed;
     CtiTime _pointTime, _calcPointWindowEndTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
     
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
     CtiTime _lastValueChangedTime;
     CtiRegression _regress;
+    CtiTablePointLimit *_ptLimitTable1, *_ptLimitTable2;
 
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
     _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0), _lastValueChangedTime(pointValue),
-    _updatesInCurrentAvg(0), _calcPointWindowEndTime(CtiTime(CtiDate(1,1,1990))), _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
+    _updatesInCurrentAvg(0), _calcPointWindowEndTime(CtiTime(CtiDate(1,1,1990))), _secondsSincePreviousPointTime(60),// one minute seems like a reasonable default
+    _ptLimitTable1(NULL), _ptLimitTable2(NULL), _useRegression(false), _isPrimed(false)
     {  };
+
+    ~CtiPointStoreElement()
+    {
+        if( _ptLimitTable1 != NULL )
+        {
+            delete _ptLimitTable1;
+            _ptLimitTable1 = NULL;
+        }
+
+        if( _ptLimitTable2 != NULL )
+        {
+            delete _ptLimitTable2;
+            _ptLimitTable2 = NULL;
+        }
+    }
 
     long    getPointNum( void )            {   return _pointNum;   };
     double  getPointValue( void )          {   return _pointValue; };
@@ -99,6 +118,10 @@ public:
     {
         return _regress.regression(x);
     }
+    bool linearRegression( double &slope, double &intercept )
+    {
+        return _regress.linearConstantIntervalRegression(slope, intercept);
+    }
 
     void setUpdatesInCurrentAvg( long newCount )   {   _updatesInCurrentAvg = newCount;   };
     long getUpdatesInCurrentAvg( void )            {   return _updatesInCurrentAvg; };
@@ -106,6 +129,10 @@ public:
     double getHistoricValue()                      {   return _curHistoricValue;          };
     void setUOMID(long uomid)                      {   _uomID = uomid;                   };
     long getUOMID(void)                            {   return _uomID;                     };
+    void setUseRegression(void)                    {   _useRegression = true;             };
+    int  getRegressCurrentDepth()                  {   return _regress.getCurDepth();     };
+
+    CtiTablePointLimit *getLimit(long limit)       {   return limit == 1 ? _ptLimitTable1 : _ptLimitTable2;   };
 
     const CtiTime& getPointCalcWindowEndTime( void )                  {   return _calcPointWindowEndTime;    };
     void          setPointCalcWindowEndTime( const CtiTime& endTime ) {   _calcPointWindowEndTime = endTime;  };
@@ -119,6 +146,50 @@ public:
         _dependents.remove( newDependent );
 
         return _dependents.entries();
+    }
+
+    void readLimits( RWDBReader &rdr )
+    {
+        int limitnum;
+        rdr["limitnumber"] >> limitnum;
+
+        if( limitnum == 1 )
+        {
+            if( _ptLimitTable1 == NULL )
+            {
+                _ptLimitTable1 = CTIDBG_new CtiTablePointLimit();
+            }
+            _ptLimitTable1->DecodeDatabaseReader(rdr);
+        }
+        else if( limitnum == 2 )
+        {
+            if( _ptLimitTable2 == NULL )
+            {
+                _ptLimitTable2 = CTIDBG_new CtiTablePointLimit();
+            }
+            _ptLimitTable2->DecodeDatabaseReader(rdr);
+        }
+    }
+
+    void addRegressionVal( const CtiTime &time, double value )
+    {
+        _regress.appendWithoutFill(make_pair(time.seconds(), value));
+        _isPrimed = true;
+    }
+
+    void setRegressionDepth( int size )
+    {
+        _regress.setDepth(size);
+    }
+
+    void setRegressionMinDepth( int size )
+    {
+        _regress.setMinDepth(size);
+    }
+
+    bool isPrimed()
+    {
+        return _isPrimed;
     }
 
 protected:
@@ -139,7 +210,10 @@ protected:
         _pointTags = newTags;
         _numUpdates++;
 
-        _regress.append(make_pair(_pointTime.seconds(), _pointValue));
+        if( _useRegression )
+        {
+            _regress.append(make_pair(_pointTime.seconds(), _pointValue));
+        }
     };
 
     void firstPointValue( double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags )
@@ -151,7 +225,10 @@ protected:
 
         _lastValueChangedTime = _pointTime;
 
-        _regress.append(make_pair(_pointTime.seconds(), _pointValue));
+        if( _useRegression )
+        {
+            _regress.append(make_pair(_pointTime.seconds(), _pointValue));
+        }
     };
 
     void setPointTags( unsigned newTags )
