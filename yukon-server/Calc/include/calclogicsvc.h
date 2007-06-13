@@ -37,6 +37,8 @@ protected:
     void pauseInputThread();
     void resumeInputThread();
     void loadConfigParameters( );
+    bool pointNeedsReload( long pointID );
+    void reloadPointAttributes(long pointID);
     void updateCalcData();
     static void mainComplain( void *la );
     static void outComplain( void *la );

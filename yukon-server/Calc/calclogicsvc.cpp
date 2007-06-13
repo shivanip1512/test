@@ -923,6 +923,15 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                                 dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
                             }
                         }
+                        else if( ((CtiDBChangeMsg*)message)->getTypeOfChange() == ChangeTypeUpdate && pointNeedsReload(((CtiDBChangeMsg*)message)->getId()) )
+                        {
+                            // Do something!!
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " DBChange recieved for point which has special values. Reloading single point: "<< ((CtiDBChangeMsg*)message)->getId() << endl;
+                            }
+                            reloadPointAttributes(((CtiDBChangeMsg*)message)->getId());
+                        }
                         else
                         {
                             if( ((CtiDBChangeMsg*)message)->getId() == 0 )
@@ -1233,6 +1242,12 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         << unitTable["UOMID"];
 
         unitselector.from( unitTable );
+        unitselector.from( calcBaseTable );
+        unitselector.from( componentTable );
+
+        unitselector.where( unitTable["POINTID"] == componentTable["COMPONENTPOINTID"] || unitTable["POINTID"] == calcBaseTable["POINTID"] );
+
+        unitselector.distinct();
 
         //cout << componentselector.asString() << endl;
 
@@ -1252,6 +1267,58 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             if( calcPointPtr != rwnil )
             {
                 calcPointPtr->setUOMID(uomid);
+            }
+            if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "UOM for calc Id " << pointid <<
+                " UOMID " << uomid << endl;
+            }
+        }
+
+        RWDBTable    limitTable     = db.table("POINTLIMITS");
+        RWDBSelector limitSelector  = db.selector();
+
+        limitSelector << limitTable["POINTID"]
+        << limitTable["limitnumber"]
+        << limitTable["highlimit"]
+        << limitTable["lowlimit"]
+        << limitTable["limitduration"];
+
+        limitSelector.from( limitTable );
+        limitSelector.from( componentTable );
+        limitSelector.from( calcBaseTable );
+
+        limitSelector.where( limitTable["POINTID"] == componentTable["COMPONENTPOINTID"] || limitTable["POINTID"] == calcBaseTable["POINTID"] );
+        limitSelector.distinct();
+
+        RWDBReader  limitReader = limitSelector.reader( conn );
+
+        while( limitReader() )
+        {
+            limitReader["POINTID"] >> pointid;
+
+            CtiHashKey pointHashKey(pointid);
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
+            if( calcPointPtr != rwnil )
+            {
+                calcPointPtr->readLimits(limitReader);
+            }
+
+            if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
+            {
+                long limitNum, hlim, llim, limitdur;
+                rdr["limitnumber"] >> limitNum;
+                rdr["highlimit"] >> hlim;
+                rdr["lowlimit"] >> llim; 
+                rdr["limitduration"] >> limitdur;
+
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Limits for calc Id " << pointid <<
+                " LNUM " << limitNum <<
+                ", HLIM " << hlim <<
+                ", LLIM " << llim <<
+                ", LDUR " << limitdur << endl;
             }
         }
 
@@ -1600,6 +1667,116 @@ void CtiCalcLogicService::_registerForPoints()
     }
 
     return;
+}
+
+
+bool CtiCalcLogicService::pointNeedsReload(long pointID)
+{
+    bool retVal = false;
+    CtiPointStore* pointStore = CtiPointStore::getInstance();
+    CtiHashKey pointHashKey(pointID);
+    CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
+
+    if( calcPointPtr != rwnil )
+    {
+        if( calcPointPtr->getLimit(1) != NULL || calcPointPtr->getLimit(2) != NULL )
+        {
+            retVal = true;
+        }
+    }
+
+    return retVal;
+}
+
+
+void CtiCalcLogicService::reloadPointAttributes(long pointID)
+{
+    try
+    {
+        //  connect to the database
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection( );
+        RWDBDatabase db     = conn.database();
+
+        long uomid, pointid;
+        //Read from PointUnit Table, insert into pointStore
+        RWDBTable    unitTable     = db.table("POINTUNIT");
+        RWDBSelector unitselector  = db.selector();
+
+        unitselector << unitTable["POINTID"]
+        << unitTable["UOMID"];
+
+        unitselector.from( unitTable );
+
+        unitselector.where( unitTable["POINTID"] == pointID );
+
+        RWDBReader  unitRdr = unitselector.reader( conn );
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        //  iterate through the components
+        while( unitRdr() )
+        {
+            //  read 'em in, and append to the class
+            unitRdr["POINTID"] >> pointid;
+            unitRdr["UOMID"] >> uomid;
+
+            CtiHashKey pointHashKey(pointid);
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
+            if( calcPointPtr != rwnil )
+            {
+                if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Updating UOMID for point id " << pointid << endl;
+                }
+                calcPointPtr->setUOMID(uomid);
+            }
+        }
+
+        RWDBTable    limitTable     = db.table("POINTLIMITS");
+        RWDBSelector limitSelector  = db.selector();
+
+        limitSelector << limitTable["POINTID"]
+        << limitTable["limitnumber"]
+        << limitTable["highlimit"]
+        << limitTable["lowlimit"]
+        << limitTable["limitduration"];
+
+        limitSelector.from( limitTable );
+
+        limitSelector.where( limitTable["POINTID"] == pointID );
+
+        RWDBReader  limitReader = limitSelector.reader( conn );
+
+        while( limitReader() )
+        {
+            limitReader["POINTID"] >> pointid;
+
+            CtiHashKey pointHashKey(pointid);
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
+            if( calcPointPtr != rwnil )
+            {
+                if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Updating limits for point id " << pointid << endl;
+                }
+                calcPointPtr->readLimits(limitReader);
+            }
+        }
+
+    }
+    catch( RWxmsg &msg )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Exception while reading calc points from database: " << msg.why( ) << endl;
+        exit( -1 );
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 
