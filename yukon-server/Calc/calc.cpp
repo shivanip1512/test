@@ -135,7 +135,8 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
             componentPointPtr->setUseRegression();
         }
     }
-    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Intervals To Value") )
+    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Intervals To Value") ||
+             !strcmp(componentToAdd->getFunctionName().c_str(), "Linear Slope") )
     {
         _regressionPtId = componentToAdd->getComponentPointId();
     }
