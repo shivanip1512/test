@@ -178,6 +178,10 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastU
             }
             return TRUE;
         }
+        else if( !stringCompareIgnoreCase(_functionName,"Get Interval Minutes") || !stringCompareIgnoreCase(_functionName,"Get Point Limit") )
+        {
+            return TRUE;
+        }
         else if( (calcsUpdateType == periodicPlusUpdate) )
         {
             if( componentPointPtr->getPointTime() >= calcsLastUpdateTime)
@@ -880,6 +884,168 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 retVal = parentPointPtr->getPointValue();
             }
         }
+        else if( !stringCompareIgnoreCase(functionName,"Get Interval Minutes") )
+        {
+            retVal = 0;
+            if( _calcpoint != NULL )
+            {
+                retVal = _calcpoint->getUpdateInterval();
+            }
+
+            retVal = retVal/60; //Convert to minutes
+        }
+        else if( !stringCompareIgnoreCase(functionName,"Get Point Limit") )
+        {
+            _calcpoint->pop(); //throwaway value
+            int limitFunc = _calcpoint->pop( );
+            retVal = 0;
+
+            if( _componentPointId > 0 )
+            {
+                CtiPointStore* pointStore = CtiPointStore::getInstance();
+                CtiHashKey hashKey(_componentPointId);
+                CtiPointStoreElement* componentPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+
+                // Find the limit table we want
+                CtiTablePointLimit *limitPtr = NULL;
+                if( limitFunc == HighLimit1 || limitFunc == LowLimit1 )
+                {
+                     limitPtr = componentPtr->getLimit(1);
+                }
+                else if( limitFunc == HighLimit2 || limitFunc == LowLimit2 )
+                {
+                     limitPtr = componentPtr->getLimit(2);
+                }
+
+                //Get the correct limit out of the limit table
+                if( limitPtr != NULL && (limitFunc == HighLimit2 || limitFunc == HighLimit1) )
+                {
+                    retVal = limitPtr->getHighLimit();
+                }
+                else if( limitPtr != NULL && (limitFunc == LowLimit2 || limitFunc == LowLimit1) )
+                {
+                    retVal = limitPtr->getLowLimit();
+                }
+                int interval = 0;
+            }
+        }
+        else if( !stringCompareIgnoreCase(functionName,"Intervals To Value") )      // Stack has Depth,Minutes,Value
+        {
+            // This function calculates a regression and estimates the number of intervals until a limit is reached.
+
+            double value  = _calcpoint->pop();  // This should be the point's most recent value.  It is not used by the regression computation.
+            double limit  = _calcpoint->pop();  // The limit value we are trying to reach
+            int    mindepth  = _calcpoint->pop();  // This is the storage depth of our regression.
+            int    depth  = _calcpoint->pop();  // This is the storage depth of our regression.
+            int    isMax  = _calcpoint->pop();  // is the value a max value (or a min)?
+            int    needsHistory  = _calcpoint->pop();  // Are we supposed to look at historical values?
+
+            retVal = 999;
+            if(_componentPointId > 0)
+            {
+                CtiPointStore* pointStore = CtiPointStore::getInstance();
+                
+                CtiHashKey calcHashKey(_calcpoint->getPointId());
+                CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcHashKey]);
+
+                if(calcPointPtr != NULL)
+                {
+                    CtiHashKey componentHashKey(_componentPointId);
+                    CtiTime pointTime;
+                    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
+                    if( _calcpoint->getUpdateType() != periodic && componentPointPtr != NULL )
+                    {
+                        pointTime = componentPointPtr->getPointTime();
+                    }
+
+                    calcPointPtr->setRegressionMinDepth(mindepth);
+                    calcPointPtr->setRegressionDepth(depth);
+
+                    if( needsHistory && !calcPointPtr->isPrimed() )
+                    {
+                        primeHistoricalRegression(_calcpoint, pointTime, depth);
+                    }
+
+                    double slope, intercept, xAtLimit, yNow;
+                    calcPointPtr->addRegressionVal( pointTime, value );
+                    if( calcPointPtr->linearRegression(slope, intercept) )
+                    {
+                        depth = calcPointPtr->getRegressCurrentDepth();
+                        //x= (y-b)/m
+                        xAtLimit = (limit-intercept)/slope;
+                        yNow = (depth-1)*slope + intercept; //Y at this very moment according to the regression
+
+                        if( isMax > 0 ) //We are looking for a max limit
+                        {
+                            if( yNow >= limit )
+                            {
+                                retVal = 0;
+                            }
+                            else if( xAtLimit > (depth-1) && slope > 0 )
+                            {
+                                retVal = xAtLimit - (depth-1);
+                            }
+                        }
+                        else //We are looking for a min limit
+                        {
+                            if( yNow <= limit )
+                            {
+                                retVal = 0;
+                            }
+                            else if( xAtLimit > (depth-1) && slope < 0 )
+                            {
+                                retVal = xAtLimit - (depth-1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if( !stringCompareIgnoreCase(functionName,"Linear Slope") )      // Stack has Depth,Minutes,Value
+        {
+            // This function calculates a regression and estimates the number of intervals until a limit is reached.
+
+            double value  = _calcpoint->pop();  // This should be the point's most recent value.  It is not used by the regression computation.
+            int    mindepth  = _calcpoint->pop();  // This is the storage depth of our regression.
+            int    depth  = _calcpoint->pop();  // This is the storage depth of our regression.
+            int    needsHistory  = _calcpoint->pop();  // Are we supposed to look at historical values?
+
+            retVal = 0;
+            if(_componentPointId > 0)
+            {
+                CtiPointStore* pointStore = CtiPointStore::getInstance();
+                
+                CtiHashKey calcHashKey(_calcpoint->getPointId());
+                CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcHashKey]);
+
+                if(calcPointPtr != NULL)
+                {
+                    CtiHashKey componentHashKey(_componentPointId);
+                    CtiTime pointTime;
+                    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
+
+                    calcPointPtr->setRegressionMinDepth(mindepth);
+                    calcPointPtr->setRegressionDepth(depth);
+
+                    if( _calcpoint->getUpdateType() != periodic && componentPointPtr != NULL )
+                    {
+                        pointTime = componentPointPtr->getPointTime();
+                    }
+
+                    if( needsHistory && !calcPointPtr->isPrimed() )
+                    {
+                        primeHistoricalRegression(_calcpoint, pointTime,  depth);
+                    }
+
+                    double slope, intercept, xAtLimit, yNow;
+                    calcPointPtr->addRegressionVal( pointTime, value );
+                    if( calcPointPtr->linearRegression(slope, intercept) )
+                    {
+                        retVal = slope;
+                    }
+                }
+            }
+        }
         else
         {
             // We do not have a function.
@@ -915,4 +1081,88 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
     return retVal;
 }
 
+void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &pointTime, int number)
+{
+    if( calcPoint != NULL )
+    {
+        typedef pair<long, double> PointValuePair;
+        typedef map<CtiTime, PointValuePair> DynamicTableSinglePointData;
+        typedef map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
 
+        DynamicTableSinglePointData dataMap;
+        long regressionPt = calcPoint->getRegressionComponentId();
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiHashKey pointHashKey(calcPoint->getPointId());
+        CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
+
+        if( calcPointPtr != NULL && regressionPt != 0 )
+        {
+            try
+            {
+                //  connect to the database
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection( );
+    
+                RWDBDatabase db             = conn.database();
+                RWDBTable    table     = db.table("RAWPOINTHISTORY");
+                RWDBSelector selector  = db.selector();
+    
+                selector << table["POINTID"]
+                << table["TIMESTAMP"]
+                << table["VALUE"];
+    
+                selector.from( table );
+    
+                selector.where( selector["POINTID"] == regressionPt );
+                selector.orderByDescending( selector["TIMESTAMP"] );
+    
+                RWDBReader  rdr = selector.reader( conn );
+    
+                int i = 0;
+                long pointid;
+                double value;
+                CtiTime timeStamp;
+                //  iterate through the components
+                while( rdr() && i < number )
+                {
+                    //  read 'em in, and append to the data structure
+                    rdr["POINTID"] >> pointid;
+                    rdr["TIMESTAMP"] >> timeStamp;
+                    rdr["VALUE"] >> value;
+    
+                    PointValuePair insertPair(pointid, value);
+                    if( timeStamp != pointTime )
+                    {
+                        dataMap.insert(DynamicTableSinglePointData::value_type(timeStamp, insertPair));
+                        i++;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - TIMESTAMP ERROR: " << timeStamp.asString() << " = " << pointTime.asString() << endl;
+                    }
+                }
+    
+                DynamicTableSinglePointDataIter iter;
+                
+                for( iter = dataMap.begin(); iter != dataMap.end(); iter++ )
+                {
+                    calcPointPtr->addRegressionVal(iter->first,  iter->second.second); 
+                }
+    
+            }
+            catch( RWxmsg &msg )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
+                exit( -1 );
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+        }
+    }
+}

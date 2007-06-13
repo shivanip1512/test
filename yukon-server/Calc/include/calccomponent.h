@@ -19,7 +19,7 @@ private:
         constant,
         function
     }                    _componentType;
-    long                 _pointId;
+    long                 _pointId; // DO NOT USE!!!! Never Initialized!!!!
     enum opType
     {
         addition,
@@ -33,6 +33,13 @@ private:
         leq,
         modulo
     }                    _operationType;
+    enum limittype
+    {
+        HighLimit1 = 1,
+        HighLimit2,
+        LowLimit1,
+        LowLimit2
+    };
     double               _constantValue;
     string               _functionName;
     CtiCalc              *_calcpoint;
@@ -42,6 +49,7 @@ private:
     double               _curHistoricValue;
 
     double               _doFunction( string &, bool &validCalc );
+    void                 primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &pointTime, int number);
 
 protected:
     long                 _componentPointId;
