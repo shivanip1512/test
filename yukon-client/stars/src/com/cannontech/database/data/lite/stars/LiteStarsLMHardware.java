@@ -4,6 +4,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.stars.hardware.LMConfigurationBase;
 
 /**
@@ -33,10 +34,12 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	
 	public LiteStarsLMHardware() {
 		super();
+        setLiteType( LiteTypes.STARS_LMHARDWARE );
 	}
 	
 	public LiteStarsLMHardware(int invID) {
 		super(invID);
+        setLiteType( LiteTypes.STARS_LMHARDWARE );
 	}
 
 	/**

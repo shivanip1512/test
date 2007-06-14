@@ -29,6 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.stars.hardware.InventoryBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -830,6 +831,16 @@ public class StarsLiteFactory {
 			case LiteTypes.STARS_SUBSTATION:
 				db = new com.cannontech.database.db.stars.Substation();
 				setSubstation( (com.cannontech.database.db.stars.Substation) db, (LiteSubstation) lite );
+            default:
+                /*Need to handle Yukon meters which are JUST LiteInventoryBase and don't have a specific liteType
+                 * Shouldn't truly make this the default, though, in case something else comes through here, so we'll still check
+                 */
+                YukonListEntry listEntry = DaoFactory.getYukonListDao().getYukonListEntry(((LiteInventoryBase)lite).getCategoryID());
+                if(lite instanceof LiteInventoryBase && listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT) {
+                    db = new InventoryBase(((LiteInventoryBase)lite).getInventoryID());
+                    ((InventoryBase)db).setAccountID(((LiteInventoryBase)lite).getAccountID());
+                }
+                break;
 		}
 		
 		return db;

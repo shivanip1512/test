@@ -45,13 +45,11 @@ public class LiteInventoryBase extends LiteBase {
 	
 	public LiteInventoryBase() {
 		super();
-		setLiteType( LiteTypes.STARS_LMHARDWARE );
 	}
 	
 	public LiteInventoryBase(int invID) {
 		super();
 		setInventoryID( invID );
-		setLiteType( LiteTypes.STARS_LMHARDWARE );
 	}
 	
 	public int getInventoryID() {

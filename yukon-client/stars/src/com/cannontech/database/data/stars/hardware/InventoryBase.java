@@ -30,6 +30,11 @@ public class InventoryBase extends DBPersistent {
         super();
     }
 
+    public InventoryBase(Integer newID) {
+        super();
+        getInventoryBase().setInventoryID(newID);
+    }
+    
     public void setInventoryID(Integer newID) {
         getInventoryBase().setInventoryID(newID);
     }
