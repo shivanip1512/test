@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -41,6 +43,27 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     private PointService pointService;
     private PaoGroupsWrapper paoGroupsWrapper;
     private SimpleDeviceDefinitionService simpleDeviceDefinitionService;
+    
+    @Required
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+    
+    @Required
+    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
+        this.paoGroupsWrapper = paoGroupsWrapper;
+    }
+    
+    @Required
+    public void setPointService(PointService pointService) {
+        this.pointService = pointService;
+    }
+    
+    @Required
+    public void setSimpleDeviceDefinitionService(
+            SimpleDeviceDefinitionService simpleDeviceDefinitionService) {
+        this.simpleDeviceDefinitionService = simpleDeviceDefinitionService;
+    }
 
     public List<PointBase> createAllPointsForDevice(DeviceBase device) {
         return simpleDeviceDefinitionService.createAllPointsForDevice(getYukonDeviceForDevice(device));
