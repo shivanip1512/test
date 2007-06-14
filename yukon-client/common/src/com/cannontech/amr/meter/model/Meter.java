@@ -1,15 +1,18 @@
 package com.cannontech.amr.meter.model;
 
+import org.springframework.core.style.ToStringCreator;
 
-public class Meter {
-    private int deviceId;
+import com.cannontech.common.device.YukonDevice;
+
+
+public class Meter extends YukonDevice {
     private String name;
-    private int type;
     private String typeStr;
     
     private boolean disabled;
     
     private String route;
+    private int routeId;
     private String address;
     
     private String meterNumber;
@@ -23,14 +26,6 @@ public class Meter {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
     }
 
     /**
@@ -50,14 +45,6 @@ public class Meter {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public void setDisabled(boolean disabled) {
@@ -85,6 +72,23 @@ public class Meter {
     
     public void setRoute(String route) {
         this.route = route;
+    }
+    
+    public int getRouteId() {
+        return routeId;
+    }
+    
+    public void setRouteId(int routeId) {
+        this.routeId = routeId;
+    }
+    
+    @Override
+    public String toString() {
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("name", getName());
+        tsc.append("deviceId", getDeviceId());
+        tsc.append("type", getTypeStr());
+        return tsc.toString();
     }
 
 }
