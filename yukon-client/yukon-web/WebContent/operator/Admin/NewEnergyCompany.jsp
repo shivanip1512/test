@@ -1,5 +1,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@ page import="com.cannontech.roles.yukon.SystemRole" %>
 <%
 	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
 		response.sendRedirect("../Operations.jsp");
@@ -99,6 +101,9 @@ function addCustomerGroup(form) {
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
+        	<%if (! CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ))) {
+        		errorMsg = "STARS appears to not have been activated for this database.  Please refer to your setup manual to activate this functionality."; 
+        		}%>
           <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
@@ -108,6 +113,7 @@ function addCustomerGroup(form) {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
 			
+			<%if (CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ))) {%>
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return validate(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
@@ -318,6 +324,7 @@ function addCustomerGroup(form) {
                 </tr>
               </table>
             </form>
+            <%}%>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
