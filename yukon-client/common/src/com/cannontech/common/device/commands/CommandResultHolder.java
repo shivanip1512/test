@@ -11,6 +11,8 @@ public interface CommandResultHolder {
 
     public List<PointValueHolder> getValues();
     
+    public List<String> getResultStrings();
+    
     public boolean isErrorsExist();
 
 }

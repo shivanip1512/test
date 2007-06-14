@@ -59,6 +59,8 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
                         DeviceErrorDescription description = deviceErrorTranslatorDao.translateErrorCode(status);
                         callback.receivedError(description);
                     } else {
+                        String resultString = retMessage.getResultString();
+                        callback.receivedResultString(resultString);
                         Vector resultVector = retMessage.getVector();
                         for (Object aResult : resultVector) {
                             if (aResult instanceof PointData) {
