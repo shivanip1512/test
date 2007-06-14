@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<script type="text/javascript" src="/JavaScript/simpleCookies.js"></script>
 <script type="text/javascript" src="/JavaScript/javaWebStartLauncher.js"></script>
 
 <tags:operationSection sectionName="Client Launcher" sectionImageName="ClientLauncherLogo">
