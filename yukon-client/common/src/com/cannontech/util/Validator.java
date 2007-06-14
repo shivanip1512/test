@@ -1,5 +1,8 @@
 package com.cannontech.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Attempts to validate different types of data.
  *
@@ -112,107 +115,34 @@ public class Validator
 
 	public static boolean isEmailAddress(String ea)
 	{
-		if (isNull(ea))
-		{
-			return false;
-		}
 
-		int eaLength = ea.length();
-
-		if (eaLength < 6)
-		{
-			// j@j.c
-			return false;
-		}
-
-		ea = ea.toLowerCase();
-
-		int at = ea.indexOf('@');
-
-		if ((at > 24) || (at == -1) || (at == 0) || ((at <= eaLength) && (at > eaLength - 5)))
-		{
-
-			// 123456789012345678901234@joe.com
-			// joe.com
-			// @joe.com
-			// joe@joe
-			// joe@jo
-			// joe@j
-
-			return false;
-		}
-
-		int dot = ea.lastIndexOf('.');
-		if ((dot == -1) || (dot < at) || (dot > eaLength - 3))
-		{
-
-			// joe@joecom
-			// joe.@joecom
-			// joe@joe.c
-
-			return false;
-		}
-
-		if (ea.indexOf("..") != -1)
-		{
-
-			// joe@joe..com
-
-			return false;
-		}
-
-		char[] name = ea.substring(0, at).toCharArray();
-		for (int i = 0; i < name.length; i++)
-		{
-			if ((!isChar(name[i])) && (!isDigit(name[i])) && (name[i] != '.') && (name[i] != '-') && (name[i] != '_'))
-			{
-
-				return false;
-			}
-		}
-
-		if ((name[0] == '.') || (name[name.length - 1] == '.') || (name[0] == '-') || (name[name.length - 1] == '-') || (name[0] == '_'))
-		{
-			// .joe.@joe.com
-			// -joe-@joe.com
-			// _joe_@joe.com
-
-			return false;
-		}
-
-		char[] host = ea.substring(at + 1, ea.length()).toCharArray();
-
-		for (int i = 0; i < host.length; i++)
-		{
-			if ((!isChar(host[i])) && (!isDigit(host[i])) && (host[i] != '.') && (host[i] != '-'))
-			{
-				return false;
-			}
-		}
-
-		if ((host[0] == '.') || (host[host.length - 1] == '.') || (host[0] == '-') || (host[host.length - 1] == '-'))
-		{
-			// joe@.joe.com.
-			// joe@-joe.com-
-
-			return false;
-		}
-
-		// postmaster@joe.com
-
-		if (ea.startsWith("postmaster@"))
-		{
-			return false;
-		}
-
-		// root@.com
-
-		if (ea.startsWith("root@"))
-		{
-			return false;
-		}
-
-		return true;
+        if (ea.startsWith("postmaster@"))
+        {
+            return false;
+        }
+        if (ea.startsWith("root@"))
+        {
+            return false;
+        }
+        if( ea.startsWith(".") )
+        {
+            return false;
+        }
+        int at = ea.indexOf('@');
+        if( at == 0 || at == -1 ){
+            return false;
+        }
+        if( ea.charAt(at-1) == '.' )
+        {
+            return false;
+        }
+        
+        String  regex = "\\b[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,4}\\b";
+        String in = ea;
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(in);
+        
+        return m.matches();
 	}
 
 	public static boolean isName(String name)
