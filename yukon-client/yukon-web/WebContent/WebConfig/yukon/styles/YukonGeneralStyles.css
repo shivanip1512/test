@@ -1,460 +1,230 @@
 th {  
-
 	text-align: left;
-
 	font-size: 11px; 
-
 }
-
-
 
 td {  
-
 	font-size: 11px; 
-
 }
-
-
 
 .pickerLink a {
-
 	color: #FC6;
-
 }
-
-
 
 div.simplePopup {
-
   padding: 3px;
-
   position: absolute;
-
   border: 3px solid #888;
-
   width: auto;
-
   height: 50%;
-
   background-color: #eee;
-
   left: 25%;
-
   right: 25%;
-
   top: 30%
-
 }
-
-
 
 div.simplePopup h2 {
-
   margin: 0;
-
   padding: 0;
-
   font-size: 1.4em
-
 }
-
-
 
 /* Data results table styles */
-
 table.resultsTable {
-
 	width: 95%;	
-
   	border: 1px solid #ccc;
-
 	border-collapse: collapse;
-
 }
-
-
 
 table.resultsTable th {
-
 	background: #E5E5E5;
-
 	padding: .3em .5em;
-
   	border: 1px solid #ccc;
-
 	color: 	#06C;
-
-	font-size: 16px;
-
+	font-size: 14px;
 }
-
-
 
 table.resultsTable td {
-
   padding: .4em .5em;
-
   border: 1px solid #ccc;
-
 }
-
-
 
 table.resultsTable th a {
-
 	text-decoration: none !important;
-
 }
-
-
 
 table.resultsTable tr:hover td, table.resultsTable tr.hover {
-
 	background-color: yellow;
-
 	cursor: pointer;
-
 }
-
-
 
 table.resultsTable th a:active, span.navLink a:active {color: #06C}
-
 table.resultsTable th a:visited, span.navLink a:visited {color: #06C}
-
 table.resultsTable th a:link, span.navLink a:link {color: #06C}
-
 table.resultsTable th a:hover, span.navLink a:hover {color: #06C}
 
-
-
 /* Name value pair styles */
-
 table.nameValueTable {
-
 	border: none;
-
 	border-collapse: collapse; 
-
 	width: 100%;
-
 }
-
-
 
 table.nameValueTable td.name {
-
 	width: 40%;
-
 	font-weight: bold;
-
 }
-
-
 
 table.nameValueTable td.value {
-
 	width: 60%;
-
 }
-
-
 
 tr.altRow {
-
 	background-color: #f6f6f6;
-
 }
-
-
 
 /* Titled Container styles */
-
 div.titledContainer{ 
-
 	width: 100%;
-
 	position: relative;
-
 }
-
 div.titledContainer .content {
-
 	padding: 4px;
-
 	border-left: 1px solid #0066CC;
-
 	border-right: 1px solid #0066CC;
-
 }
-
-
 
 div.titledContainer .title table {
-
 	margin: 0;
-
 	padding: 0;
-
 	border: 0;
-
 	border-collapse: collapse;
-
 }
-
-
 
 div.titledContainer .title {
-
 	padding: 0px 9px 6px 9px;
-
 	background: #0066CC;
-
 	font-weight: bold;
-
     font-size: 12px;
-
     color: white;
-
 }
-
-
 
 div.titledContainer .lbottom {
-
 	display: block;
-
 	position: absolute;
-
 	left: 0;
-
 	width: 6px;
-
 }
-
-
 
 div.titledContainer .rbottom {
-
 	position: absolute;
-
 	right: 0;
-
 	width: 6px;
-
 }
-
 	
-
 div.titledContainer .top span, div.titledContainer .lbottom span, 
-
 div.titledContainer .rbottom span {
-
 	display: block;
-
 	height: 1px;
-
     overflow: hidden; 
-
     background: #0066CC;
-
 }
-
-
 
 div.titledContainer .content .makesNoSense {
-
 	padding: 0;
-
 	margin: 0;
-
 	height: 0;
-
 	font-size: 0em;
-
 }
-
-
 
 div.titledContainer .t1{margin: 0 5px}
-
 div.titledContainer .t2{margin: 0 3px}
-
 div.titledContainer .t3{margin: 0 2px}
-
 div.titledContainer .t4{margin: 0 1px;height: 1px;}
-
 div.titledContainer .t5{margin: 0 1px;height: 1px;}
-
 div.titledContainer .t6{margin: 0 0px;height: 1px;}
 
-
-
 div.titledContainer .lbottom span.l1{margin: 0 1px 0 3px; width: 2px; height: 1px;}
-
 div.titledContainer .l2{margin: 0 3px 0 2px; width: 1px;}
-
 div.titledContainer .l3{margin: 0 4px 0 1px; width: 1px;}
-
 div.titledContainer .l4{margin: 0 4px 0 1px; width: 1px;}
-
 div.titledContainer .l5{margin: 0 5px 0 0px; width: 1px;}
 
-
-
 div.titledContainer .r1{margin: 0 3px 0 1px; width: 2px; height: 2px}
-
 div.titledContainer .r2{margin: 0 2px 0 3px; width: 1px;}
-
 div.titledContainer .r3{margin: 0 1px 0 4px; width: 1px;}
-
 div.titledContainer .r4{margin: 0 1px 0 4px; width: 1px;}
-
 div.titledContainer .r5{margin: 0 0px 0 5px; width: 1px;}
 
-
-
 div.titledContainer .bottomBar{
-
 	position: relative;
-
 	margin-bottom: 5px;
-
 	top: 5px;
-
 	left: 5px;
-
 	right: 5px;
-
 	margin-right: 10px;
-
 	padding: 0;
-
 	height: 1px;
-
     overflow: hidden; 
-
     background: #0066CC;
-
 }
-
-
 
 div.styledContainer .title, div.styledContainer .rop span, div.styledContainer .lbottom span, 
-
 div.styledContainer .rbottom span {
-
 	background-color: #06C !important;
-
 	color: #fff !important;
-
 }
-
-
 
 div.styledContainer .content
-
 {
-
 	border-color: #06C !important;
-
 }
-
-
 
 /* Widget styles */
 
-
-
 .widgetText {
-
 	font-size: .75em;
-
 }
-
-
 
 .widgetColumns {
-
 	width: 900px;
-
 }
-
-
 
 .widgetColumns .left {
-
 	float: left; 
-
 	width: 425px; 
-
 }
-
-
 
 .widgetColumns .right {
-
 	float: right; 
-
 	width: 425px; 
-
 }
-
-
 
 .widgetColumns .left div.section, .widgetColumns .right div.section {
-
 }
-
-
 
 .widgetColumns div.titledContainer {
-
 	margin-bottom: 16px;
-
 	font-size: .75em;
-
 }
-
-
 
 div.widgetInternalSectionHeader {
-
 	font-weight: bold;
-
 	padding-top: 5px; 
-
 	padding-bottom: 5px; 
-
 	margin-left: 5px;
-
 }
-
-
 
 div.widgetInternalSection {
-
 	margin-left: 20px;
-
 }
-
-
 
 div.trendPopup {
-
 	position: absolute;
-
 	top: 50px; 
-
 	right: 0px; 
-
 	margin: 15px;
-
 	padding: 5px;
-
 	background-color: #FFF68F;
-
 	border: 1px solid black;
-
 }
-
