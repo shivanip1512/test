@@ -36,12 +36,15 @@ import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
+import com.cannontech.dbeditor.editor.regenerate.RouteRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceRoutePanel
 	extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjRouteLabel = null;
 	private javax.swing.JComboBox ivjRouteComboBox = null;
+    private java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 	/**
 	 * Constructor
 	 */
@@ -153,24 +156,20 @@ public class DeviceRoutePanel
         Object value = null;
         if (val instanceof SmartMultiDBPersistent) {
             value = ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
-        } else if (val instanceof MultiDBPersistent
-                && MultiDBPersistent.getFirstObjectOfType(RepeaterBase.class,
-                                                          (MultiDBPersistent) val) != null) {
+        } else if (val instanceof MultiDBPersistent && MultiDBPersistent.getFirstObjectOfType(RepeaterBase.class, (MultiDBPersistent) val) != null) {
 
-            value = MultiDBPersistent.getFirstObjectOfType(RepeaterBase.class,
-                                                           (MultiDBPersistent) val);
+            value = MultiDBPersistent.getFirstObjectOfType(RepeaterBase.class, (MultiDBPersistent) val);
             
         } else {
             value = val;
         }
 
-        ((CarrierBase) value).getDeviceRoutes()
-                             .setRouteID(new Integer(((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+        ((CarrierBase) value).getDeviceRoutes().setRouteID(new Integer(((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+        
         DBPersistent chosenRoute = LiteFactory.createDBPersistent((LiteBase) getRouteComboBox().getSelectedItem());
 
         try {
-            chosenRoute = Transaction.createTransaction(Transaction.RETRIEVE, chosenRoute)
-                                     .execute();
+            chosenRoute = Transaction.createTransaction(Transaction.RETRIEVE, chosenRoute).execute();
 
         } catch (TransactionException t) {
             CTILogger.error(t.getMessage(), t);
@@ -194,8 +193,7 @@ public class DeviceRoutePanel
                                                                                  .getDeviceID(),
                                                              new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
 
-            newPoint.getPoint()
-                    .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+            newPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
 
             ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
 
@@ -236,8 +234,7 @@ public class DeviceRoutePanel
                 }
 
             }
-            // create new route to be added - copy from the chosen route and add
-            // new repeater to it
+            // create new route to be added - copy from the chosen route and add new repeater to it
             // A route is automatically added to each transmitter
             if (chosenRoute instanceof CCURoute) {
                 RouteBase route = RouteFactory.createRoute(RouteTypes.STRING_CCU);
@@ -247,17 +244,14 @@ public class DeviceRoutePanel
                 // set default values for route tables possibly using same
                 // values in chosen route
                 route.setDeviceID(((RouteBase) chosenRoute).getDeviceID());
-                ((CCURoute) route).getCarrierRoute()
-                                  .setBusNumber(((CCURoute) chosenRoute).getCarrierRoute()
-                                                                        .getBusNumber());
+                ((CCURoute) route).getCarrierRoute().setBusNumber(((CCURoute) chosenRoute).getCarrierRoute().getBusNumber());
                 ((CCURoute) route).setRepeaterVector(((CCURoute) chosenRoute).getRepeaterVector());
 
                 // add the new repeater to this route
                 RepeaterRoute rr = new RepeaterRoute(route.getRouteID(),
                                                      ((DeviceBase) value).getPAObjectID(),
                                                      new Integer(7),
-                                                     new Integer(((CCURoute) chosenRoute).getRepeaterVector()
-                                                                                         .size() + 1));
+                                                     new Integer(((CCURoute) chosenRoute).getRepeaterVector().size() + 1));
 
                 if (((CCURoute) route).getRepeaterVector().size() >= 7)
                     ((CCURoute) route).setRepeaterVector(new Vector());
@@ -265,12 +259,72 @@ public class DeviceRoutePanel
                 ((CCURoute) route).getRepeaterVector().addElement(rr);
 
                 route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
-                Vector regRoute = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(),
-                                                                   false,
-                                                                   route,
-                                                                   false);
-                newVal.getDBPersistentVector().add(regRoute.firstElement());
+//                Vector regRoute = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(),
+//                                                                   false,
+//                                                                   (CCURoute) route,
+//                                                                   false);
+//                newVal.getDBPersistentVector().add(regRoute.firstElement());
+                
+                Vector changingRoutes = new Vector(1);
+                RegenerateRoute routeBoss = new RegenerateRoute();
+                RouteRole role = routeBoss.assignRouteLocation((CCURoute)route,0);
+                if( role.getDuplicates().isEmpty() ) {
+                    ((CCURoute)route).getCarrierRoute().setCcuFixBits(new Integer(role.getFixedBit()));
+                    ((CCURoute)route).getCarrierRoute().setCcuVariableBits(new Integer(role.getVarbit()));
+                    
+                    int rptVarBit = role.getVarbit();
 
+                    for (int j = 0; j < ((CCURoute) route).getRepeaterVector().size(); j++) {
+                        RepeaterRoute rpt = ((RepeaterRoute) ((CCURoute) route).getRepeaterVector().get(j));
+                        if (rptVarBit + 1 <= 7) rptVarBit++;
+                        if (j+1 == ((CCURoute) route).getRepeaterVector().size()) rptVarBit = 7;  // Last repeater's variable bit is always lucky 7.
+                        rpt.setVariableBits(new Integer(rptVarBit));
+                    }
+                    
+                }else {  // All route combinations have been used,  suggest a suitable role combonation to reuse.
+                    
+                    RoleConflictDialog frame = new RoleConflictDialog(owner, role, (CCURoute)route);
+                    frame.setLocationRelativeTo(this);
+                    String choice = frame.getValue();
+                    boolean finished = false;
+                    int startingSpot = role.getFixedBit();
+                    while(!finished) {
+                        
+                        if(choice == "Yes") {
+                            finished = true;
+                             ((CCURoute) route).getCarrierRoute().setCcuFixBits(new Integer(frame.getRole().getFixedBit()));
+                             ((CCURoute) route).getCarrierRoute().setCcuVariableBits(new Integer(frame.getRole().getVarbit()));
+                 
+                             int rptVarBit = frame.getRole().getVarbit();
+                 
+                             for (int j = 0; j < ((CCURoute) route).getRepeaterVector().size(); j++) {
+                                 RepeaterRoute rpt = ((RepeaterRoute) ((CCURoute) route).getRepeaterVector().get(j));
+                                 if (rptVarBit + 1 <= 7) {
+                                     rptVarBit++;
+                                 }
+                                 if (j + 1 == ((CCURoute) route).getRepeaterVector().size()) {
+                                     rptVarBit = 7; // Last repeater's variable bit is always lucky 7.
+                                 }
+                                 rpt.setVariableBits(new Integer(rptVarBit));
+                             }
+                        }else if(choice == "No") {
+                            startingSpot = startingSpot+1;
+                            if(startingSpot >= 32) {
+                                finished = true;
+                            }else {
+                                RouteRole nextRole = routeBoss.assignRouteLocation((CCURoute)route,startingSpot);
+                                startingSpot = nextRole.getFixedBit();
+                                frame.setNewRole(nextRole);
+                                choice = frame.getValue();
+                            }
+                        }else {
+                            finished = true;
+                            return null;
+                        }
+                    }
+                    
+                }
+                newVal.getDBPersistentVector().add(route);
                 return newVal;
             }
         }

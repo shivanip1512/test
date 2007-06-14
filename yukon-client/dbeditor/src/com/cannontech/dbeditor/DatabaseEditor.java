@@ -1878,7 +1878,7 @@ private JMenuBar getMenuBar(int whichDatabase) {
 	}
 
 	this.menuBar.add( item );
-	this.menuBar.add( toolsMenu );
+//	this.menuBar.add( toolsMenu );
 	this.menuBar.add( helpMenu );
 	
 	return menuBar;

@@ -1,9 +1,15 @@
 package com.cannontech.dbeditor.wizard.route;
 
 import java.awt.Dimension;
+import java.awt.Frame;
+import java.util.Vector;
 
+import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
+import com.cannontech.dbeditor.editor.regenerate.RouteRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -11,9 +17,11 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class RepeaterSelectPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
    private javax.swing.JLabel ivjRepeaterLabel = null;
+   private java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
    private com.cannontech.common.gui.util.AddRemovePanel ivjRepeatersAddRemovePanel = null;
    private int rightListItemIndex = getRepeatersAddRemovePanel().rightListGetSelectedIndex();
    private boolean rightListDragging = false;
+   
 public RepeaterSelectPanel() {
    super();
    initialize();
@@ -236,10 +244,65 @@ public Object getValue(Object val)
       
       repeaterVector.addElement( rRoute );   
    }
+   RegenerateRoute routeBoss = new RegenerateRoute();
+   RouteRole role = routeBoss.assignRouteLocation((CCURoute)val,0);
+   if( role.getDuplicates().isEmpty() ) {
+       ((CCURoute)val).getCarrierRoute().setCcuFixBits(new Integer(role.getFixedBit()));
+       ((CCURoute)val).getCarrierRoute().setCcuVariableBits(new Integer(role.getVarbit()));
+       
+       int rptVarBit = role.getVarbit();
 
-   java.util.Vector v = new java.util.Vector();
-   v = RegenerateRoute.getAllCarrierRoutes();
-   RegenerateRoute.resetRptSettings(v,false,(DBPersistent)val, false);
+       for (int j = 0; j < repeaterVector.size(); j++) {
+           RepeaterRoute rpt = ((RepeaterRoute) repeaterVector.get(j));
+           if (rptVarBit + 1 <= 7) rptVarBit++;
+           if (j+1 == repeaterVector.size()) rptVarBit = 7;  // Last repeater's variable bit is always lucky 7.
+           rpt.setVariableBits(new Integer(rptVarBit));
+       }
+       
+   }else {  // All route combinations have been used,  suggest a suitable role combonation to reuse.
+       
+       RoleConflictDialog frame = new RoleConflictDialog(owner, role, (CCURoute)val);
+       frame.setLocationRelativeTo(this);
+       String choice = frame.getValue();
+       boolean finished = false;
+       int startingSpot = role.getFixedBit();
+       while(!finished) {
+           
+           if(choice == "Yes") {
+               finished = true;
+                ((CCURoute) val).getCarrierRoute().setCcuFixBits(new Integer(frame.getRole().getFixedBit()));
+                ((CCURoute) val).getCarrierRoute().setCcuVariableBits(new Integer(frame.getRole().getVarbit()));
+    
+                int rptVarBit = frame.getRole().getVarbit();
+    
+                for (int j = 0; j < repeaterVector.size(); j++) {
+                    RepeaterRoute rpt = ((RepeaterRoute) repeaterVector.get(j));
+                    if (rptVarBit + 1 <= 7) {
+                        rptVarBit++;
+                    }
+                    if (j + 1 == repeaterVector.size()) {
+                        rptVarBit = 7; // Last repeater's variable bit is always lucky 7.
+                    }
+                    rpt.setVariableBits(new Integer(rptVarBit));
+                }
+           }else if(choice == "No") {
+               startingSpot = startingSpot+1;
+               if(startingSpot >= 32) {
+                   finished = true;
+               }else {
+                   RouteRole nextRole = routeBoss.assignRouteLocation((CCURoute)val,startingSpot);
+                   startingSpot = nextRole.getFixedBit();
+                   frame.setNewRole(nextRole);
+                   choice = frame.getValue();
+               }
+           }else {
+               finished = true;
+//               wizard.getWizardButtonPanel().getCancelButton().doClick();
+               return null;
+           }
+       }
+       
+   }
    
    return val;
 }

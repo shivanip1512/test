@@ -5,15 +5,28 @@ package com.cannontech.dbeditor.editor.regenerate;
  *
  * A undefined generated comment
  */
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import org.springframework.jdbc.support.JdbcUtils;
+
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.CarrierRoute;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.database.db.route.Route;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 public class RegenerateRoute
 {
@@ -21,23 +34,33 @@ public class RegenerateRoute
         public static final int SMALL_VALID_FIXED = 0;
         public static final int LARGE_VALID_VARIABLE = 7;
         public static final int SMALL_VALID_VARIABLE = 0;
+        
+        private Vector currentMatriciesVector = new Vector(5);
+        
         /**
          * Constructor for RegenerateRoute.
          */
         public RegenerateRoute()
         {
                 super();
+                initialize();
         }
+        
+        private void initialize() {
+            buildMatrices();
+        }
+        
         /**
         * This method returns a vector of carrier routes that have repeaters associated with them
         * Uses the cache to retrieve all of the routes
         * Creation date: (5/28/2002 10:26:44 AM)
         */
-        public static final java.util.Vector getAllCarrierRoutes()
+        @SuppressWarnings("unchecked")
+        public static final Vector getAllCarrierRoutes()
         {
                 Vector realRoutes = new Vector();
                 List routes;
-                IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+                IDatabaseCache cache = DefaultDatabaseCache.getInstance();
                 synchronized (cache)
                 {
                         routes = cache.getAllRoutes();
@@ -47,19 +70,19 @@ public class RegenerateRoute
                         {
                                 for (int i = 0; i < routes.size(); i++)
                                 {
-                                        rt = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) routes.get(i));
+                                        rt = LiteFactory.createDBPersistent((LiteBase) routes.get(i));
                                         if (rt instanceof CCURoute)
                                         {
-                                                rt = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, rt).execute();
+                                                rt = Transaction.createTransaction(Transaction.RETRIEVE, rt).execute();
                                                 if (((CCURoute) rt).getRepeaterVector().size() > 0)
                                                         realRoutes.add(rt);
                                         }
                                 }
                                 return realRoutes; //returns routes that have repeaters
                         }
-                        catch (com.cannontech.database.TransactionException t)
+                        catch (TransactionException t)
                         {
-                                com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
+                                CTILogger.error( t.getMessage(), t );
                                 return null;
                         }
                 }
@@ -127,14 +150,19 @@ public class RegenerateRoute
      * This method recalculates the fixed and variable bits for carrier routes.
      * If 'all' is true it recalculates for all of the routes.
      * If 'newRoute' is not null, then it recalculates just for that new route that is passed in.
-     * If 'existingRoute is true, it recalculates only for the existing route.  This is used when editing
+     * If 'existingRoute' is true, it recalculates only for the existing route.  This is used when editing
      * an existing route.  The algorithm attempts to use the existing fixed bit.
+     * @param routes java.util.Vector
+     * @param all java.lang.boolean
+     * @param routeToBeEdited DBPersistent
+     * @param existingRoute java.lang.boolean
      * Creation date: (5/28/2002 12:57:11 PM)
      */
-    public static final Vector resetRptSettings(java.util.Vector routes, boolean all, DBPersistent newRoute, boolean existingRoute)
+    @SuppressWarnings({ "unchecked", "unchecked" })
+    public static final Vector resetRptSettings(java.util.Vector routes, boolean all, CCURoute routeToBeEdited, boolean existingRoute)
     {
-
-        // Indexed by CCUFixedBit, VariableBit.  Set to 0 if no routes have a claim.
+        //      Initialize usedBitMatrix (of size 32 by 8) to all -1's.
+        //      Indexed by CCUFixedBit, VariableBit.  Set to -1 if no routes have a claim.
         int[][] usedBitMatrix = new int[LARGE_VALID_FIXED + 1][LARGE_VALID_VARIABLE];
         for (int i=0; i <= LARGE_VALID_FIXED; i++) {
             for (int j=0; j < LARGE_VALID_VARIABLE; j++) {
@@ -142,7 +170,7 @@ public class RegenerateRoute
             }
         }
 
-        DBPersistent rt;
+        CCURoute rt;
         Integer PaobjectId;
         Integer CcuFixedBits;
         Integer CcuVariableBits;
@@ -150,53 +178,57 @@ public class RegenerateRoute
         String userLock;
         Vector changingRoutes = new Vector();  // Vector of routes that are to be modified.
 
-        //setting up matrix to know which fixed bits have already been used
+        // Setup usedBitMatrix to know which fixed bits have already been used by placing the paoID of the route at the index
+        // Only routes that not changing are going in this matrix, ie: routes that are locked, routes that are not locked but also not set to be reset
+        // and "all" was not specified,  If "all" was specified, locked routes will still be put in this usedBitMatrix.
         for (int i = 0; i < routes.size(); i++)
         {
-            rt = (DBPersistent) routes.get(i);
-
-            if (newRoute == null || !existingRoute || (existingRoute && ((RouteBase) rt).getPAObjectID().intValue() != ((RouteBase) newRoute).getRouteID().intValue())) {
+            rt = (CCURoute) routes.get(i);
+            boolean currentIsntRouteToBeEdited = (existingRoute && rt.getPAObjectID().intValue() !=  routeToBeEdited.getRouteID().intValue());
+            
+            
+            if (routeToBeEdited == null || !existingRoute || currentIsntRouteToBeEdited) {
                 // Each route takes one or more slots in the matrix.  The CcuFixBits define the first offset, CcuVariableBits defines the first
                 // slot in the matrix consumed by this route.  If there is only one repeater that is it, if more then more slots are used.
 
-                CcuFixedBits = ((CCURoute) rt).getCarrierRoute().getCcuFixBits();               // The fixed bit value for this route.
-                CcuVariableBits = ((CCURoute) rt).getCarrierRoute().getCcuVariableBits();       // The first variable bit used by this route is stored here
-                reset = ((CCURoute) rt).getCarrierRoute().getResetRptSettings();                // Did the user request a reset on this route?
-                userLock = ((CCURoute) rt).getCarrierRoute().getUserLocked();                   // Did the user forbid a reset on this route?
-                PaobjectId = ((CCURoute) rt).getPAObjectID();
+                CcuFixedBits = rt.getCarrierRoute().getCcuFixBits();               // The fixed bit value for this route.
+                CcuVariableBits = rt.getCarrierRoute().getCcuVariableBits();       // The first variable bit used by this route is stored here
+                reset = rt.getCarrierRoute().getResetRptSettings();                // Did the user request a reset on this route?
+                userLock = rt.getCarrierRoute().getUserLocked();                   // Did the user forbid a reset on this route?
+                PaobjectId = rt.getPAObjectID();
 
 
                 // if locked, or (if not locked and not reset and not all).
                 if (userLock.equals("Y") || (userLock.equals("N") && reset.equals("N") && !all)) {
                     // Mark each slot in the matrix as belonging to this route.
 
-                    // First mark the CCU Variable bits
+                    // First mark the CCU Variable bit
                     usedBitMatrix[CcuFixedBits.intValue()][CcuVariableBits.intValue()] = PaobjectId.intValue();
 
                     // Now mark out the repeater variable bits.  The last repeater is always a 7 and does not mark the matrix.
-                    Vector rptVector = ((CCURoute) rt).getRepeaterVector();
+                    Vector rptVector = rt.getRepeaterVector();
                     for (int j=0; j < rptVector.size()-1; j++ ) {
                         com.cannontech.database.db.route.RepeaterRoute rpt = ((com.cannontech.database.db.route.RepeaterRoute) rptVector.get(j));
                         usedBitMatrix[CcuFixedBits.intValue()][rpt.getVariableBits().intValue()] = PaobjectId.intValue();
                     }
                 } else {
 
-                    if (newRoute == null)  // This must be the "all" case down here...  Add the route to the list if it is not locked and set for reset, or all is set.
+                    if (routeToBeEdited == null)  // This must be the "all" case down here...  Add the route to the list if it is not locked and set for reset, or all is set.
                         changingRoutes.add(rt);
                 }
-
             }
         }
 
         //if we are only setting a new route or adjusting an existing route it will be the only route changed.
-        if (newRoute != null)
-                changingRoutes.add(newRoute);
-
+        if (routeToBeEdited != null) {
+                changingRoutes.add(routeToBeEdited);
+        }
+        
+        //*****************************************************************************************************************
         // matrix is marked for all routes which are NOT moving.  The changingRoutes vector contains all the routes that are expected to move.
-        // An enhancement could be made here if the changing routes were ordered by the number of repeaters.  Best fit probably has the largest
-        // repeater count being inserted first... A later improvement?
+        //*****************************************************************************************************************
 
-        CCURoute ccu;
+        CCURoute ccuRoute;
         int newCcuFixedBit = SMALL_VALID_FIXED;         // This is the first available fixed-bit slot that will fit my needs (if fail 31)
         int newCcuVariableBits = SMALL_VALID_VARIABLE;  // This if the first available var-bit offset that will fit my needs (if fail 7)
         int newRptVariableBits;                         // Used only for clarity.
@@ -213,8 +245,8 @@ public class RegenerateRoute
 
         for (int k = 0; k < changingRoutes.size(); k++) {
 
-            ccu = ((CCURoute) changingRoutes.get(k));
-            repeatVector = ccu.getRepeaterVector();
+            ccuRoute = ((CCURoute) changingRoutes.get(k));
+            repeatVector = ccuRoute.getRepeaterVector();
             int numRpts = repeatVector.size();
             int row = LARGE_VALID_FIXED;
             newCcuVariableBits = LARGE_VALID_VARIABLE;
@@ -223,10 +255,10 @@ public class RegenerateRoute
             int offset;     // Start of the open slot.
             int run;        // Length of the open slot.
 
-            if ( ccu.getCarrierRoute().getUserLocked().equals("Y") ) {      // This route would prefer to stay where it is.
+            if ( ccuRoute.getCarrierRoute().getUserLocked().equals("Y") ) {      // This route would prefer to stay where it is.
                 boolean itfits = true;
-                int fixbit = ccu.getCarrierRoute().getCcuFixBits().intValue();
-                int varbit = ccu.getCarrierRoute().getCcuVariableBits().intValue();
+                int fixbit = ccuRoute.getCarrierRoute().getCcuFixBits().intValue();
+                int varbit = ccuRoute.getCarrierRoute().getCcuVariableBits().intValue();
 
                 if (usedBitMatrix[fixbit][varbit] != -1) {
                     itfits = false;
@@ -282,8 +314,8 @@ public class RegenerateRoute
             // return newCcuFixedBit, newCcuVariableBits.
             // #####################################
 
-            ccu.getCarrierRoute().setCcuFixBits(new Integer(newCcuFixedBit));
-            ccu.getCarrierRoute().setCcuVariableBits(new Integer(newCcuVariableBits));
+            ccuRoute.getCarrierRoute().setCcuFixBits(new Integer(newCcuFixedBit));
+            ccuRoute.getCarrierRoute().setCcuVariableBits(new Integer(newCcuVariableBits));
             if (newCcuFixedBit != LARGE_VALID_FIXED) {
                 newRptVariableBits = newCcuVariableBits;
 
@@ -298,43 +330,280 @@ public class RegenerateRoute
                 for (int q = newCcuVariableBits; q < newCcuVariableBits + repeatVector.size(); q++) {
                     if (newCcuFixedBit < LARGE_VALID_FIXED && q < LARGE_VALID_VARIABLE) {
                         int nextAvailableID = 0;
-                        if(ccu.getPAObjectID() == null)
+                        if(ccuRoute.getPAObjectID() == null)
                         {
                             nextAvailableID = DaoFactory.getPaoDao().getNextPaoId();
-                            ccu.setRouteID(new Integer(nextAvailableID));
+                            ccuRoute.setRouteID(new Integer(nextAvailableID));
                         }
-                        usedBitMatrix[newCcuFixedBit][q] = ccu.getPAObjectID().intValue();
+                        usedBitMatrix[newCcuFixedBit][q] = ccuRoute.getPAObjectID().intValue();
                     }
                 }
 
             }
 
-            ccu.getCarrierRoute().setResetRptSettings("N");
+            ccuRoute.getCarrierRoute().setResetRptSettings("N");
         }
 
         return changingRoutes; //returns the routes whose settings have changed
     }
 
-        /**
-         * Insert the method's description here.
-         * Creation date: (6/3/2002 1:47:36 PM)
-         * @param routes java.util.Vector
-         */
-        public final static void updateRouteRoles(Vector routes)
-        {
-                try
-                {
-                        for (int i = 0; i < routes.size(); i++)
-                        {
-            routes.set( i,
-                                com.cannontech.database.Transaction.createTransaction(
-                  com.cannontech.database.Transaction.UPDATE,
-                  ((DBPersistent) routes.get(i)) ).execute() );
-                        }
+    /**
+     * Insert the method's description here.
+     * Creation date: (6/3/2002 1:47:36 PM)
+     * @param routes java.util.Vector
+     */
+    @SuppressWarnings("unchecked")
+    public final static void updateRouteRoles(Vector routes){
+            try{
+                    for (int i = 0; i < routes.size(); i++){
+                        routes.set( i, Transaction.createTransaction(Transaction.UPDATE, ((DBPersistent) routes.get(i)) ).execute() );
+                    }
+            }
+            catch (TransactionException t){
+                    CTILogger.error( t.getMessage(), t );
+            }
+    }
+    
+    //*******************************************************************
+    //*                              New and improved methods start here.                                    *
+    //*******************************************************************
+    
+    /**
+     * This method takes a vector of routes that will be changing, and returns a Vector of 31 by 7 matracies that hold
+     * values (routeId's) at the index of all roles used by routes that will not change. ie: Routes that are user locked or 
+     * not in the list of routes to be changed.
+     * @param changingRoutes java.util.Vector
+     * @author ASolberg
+     */
+    @SuppressWarnings("unchecked")
+    public Vector getCurrentRouteMatrixVector( Vector changingRoutes ) {
+        
+        if(changingRoutes != null) {
+            Enumeration enummers = changingRoutes.elements();
+            
+            while(enummers.hasMoreElements()) {
+                CCURoute route = (CCURoute)enummers.nextElement();
+                String userLocked = route.getCarrierRoute().getUserLocked();
+                if(userLocked.equalsIgnoreCase("N")) {
+                    int maskedFixedBit = route.getCarrierRoute().getCcuFixBits().intValue();
+                    int variableBit = route.getCarrierRoute().getCcuVariableBits().intValue(); 
+                    int matrixNumber = maskedFixedBit / 32;
+                    int realFixedBit = maskedFixedBit % 32;
+                    int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
+                    matrix[realFixedBit][variableBit] = -1;
+                    Vector rptVector = route.getRepeaterVector();
+                    for (int i=0; i < rptVector.size()-1; i++ ) {
+                        RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
+                        int rptVariableBits = rpt.getVariableBits().intValue();
+                        matrix[realFixedBit][rptVariableBits] = -1;
+                    }
                 }
-                catch (com.cannontech.database.TransactionException t)
-                {
-                        com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-                }
+            }
         }
+        
+        return currentMatriciesVector;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void removeChanginRoutes(Vector changingRoutes) {
+        if(changingRoutes != null) {
+            Enumeration enummers = changingRoutes.elements();
+            
+            while(enummers.hasMoreElements()) {
+                CCURoute route = (CCURoute)enummers.nextElement();
+                String userLocked = route.getCarrierRoute().getUserLocked();
+                int maskedFixedBit = route.getCarrierRoute().getCcuFixBits().intValue();
+                int variableBit = route.getCarrierRoute().getCcuVariableBits().intValue(); 
+                int matrixNumber = maskedFixedBit / 32;
+                int realFixedBit = maskedFixedBit % 32;
+                int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
+                matrix[realFixedBit][variableBit] = -1;
+                Vector rptVector = route.getRepeaterVector();
+                for (int i=0; i < rptVector.size()-1; i++ ) {
+                    RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
+                    int rptVariableBits = rpt.getVariableBits().intValue();
+                    if(rptVariableBits < 7) {
+                        matrix[realFixedBit][rptVariableBits] = -1;
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * This method builds multiple matricies of all the route roles used by all routes and returns them in a vector.
+     * @param changingRoutes java.util.Vector
+     * @author ASolberg
+     */
+    @SuppressWarnings("unchecked")
+    private Vector buildMatrices() {
+        
+        for(int k = 0; k < 5; k++ ) {
+            
+            //Initialize usedBitMatrix (of size 32 by 8) to all -1's.
+            int[][] usedBitMatrix = new int[LARGE_VALID_FIXED + 1][LARGE_VALID_VARIABLE];
+            for (int i=0; i <= LARGE_VALID_FIXED; i++) {
+                for (int j=0; j < LARGE_VALID_VARIABLE; j++) {
+                    usedBitMatrix[i][j] = -1;
+                }
+            }
+            currentMatriciesVector.add(k, usedBitMatrix);
+        }
+        
+        Vector carrierRoute = getAllCarrierRoutes();
+        Enumeration routeEnum = carrierRoute.elements();
+        
+        while(routeEnum.hasMoreElements()) {
+            CCURoute route = (CCURoute)routeEnum.nextElement();
+            int maskedFixedBit = route.getCarrierRoute().getCcuFixBits().intValue();
+            int variableBit = route.getCarrierRoute().getCcuVariableBits().intValue(); 
+            int matrixNumber = maskedFixedBit / 32;
+            int realFixedBit = maskedFixedBit % 32;
+            int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
+            matrix[realFixedBit][variableBit] = route.getRouteID();
+            
+            Vector rptVector = route.getRepeaterVector();
+            for (int i=0; i < rptVector.size()-1; i++ ) {
+                RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
+                int rptVariableBits = rpt.getVariableBits().intValue();
+                matrix[realFixedBit][rptVariableBits] = route.getRouteID();
+            }
+        }
+        
+        return currentMatriciesVector;
+    }
+    
+    /**
+     * This method finds the first slot big enough to fit the specified route starting in the first matrix and returns a 
+     * RouteRole object that holds the fixbit and variable bit starting location that was found to fit and also a vector
+     * of all the paoId's of ccu's that were also using the same fixed/variable bit combos being suggested.
+     * @param route com.cannontech.database.db.route.Route
+     * @author ASolberg
+     */
+    @SuppressWarnings("unchecked")
+    public RouteRole assignRouteLocation( CCURoute route, int startingPoint ) {
+        
+        RouteRole routeRole = new RouteRole();
+        Vector duplicates = new Vector();
+        
+        // find suitable slot
+        Vector rptVector = route.getRepeaterVector();
+        int size = rptVector.size();
+        boolean success = false;
+        int successFixedBit = -1;
+        int runStartPoint = -1;
+        for(int i = startingPoint; i <= 155; i++) {
+            int run = 0;
+            int matrixNumber = i / 32;
+            int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
+            for(int j = 0; j < 7; j++) {
+                if(matrix[i % 32][j] == -1 ) {
+                    run++;
+                    if(run == size) {
+                        success = true;
+                        successFixedBit = i;
+                        runStartPoint = j - size + 1;
+                        break;
+                    }
+                }
+            }
+            if(success) {
+                routeRole.setFixedBit(successFixedBit);
+                routeRole.setVarbit(runStartPoint);
+                break;
+            }
+        }
+        // look for other ccu's that may use these bits combos
+        if(success) {
+            for(int i = 0; i < currentMatriciesVector.size(); i++) {
+                int[][] matrix = (int[][])currentMatriciesVector.get(i);
+                for(int j = runStartPoint; j < (runStartPoint + size); j++) {
+                    if(matrix[successFixedBit % 32][j] > -1) {
+                        LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(matrix[successFixedBit % 32][j]);
+                        DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
+                        java.sql.Connection conn = null;
+                        try {
+                            conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+                            heavyRoute.setDbConnection(conn);
+                            heavyRoute.retrieve();
+                        } catch (SQLException e) {
+                            CTILogger.error(e);
+                        }
+                        finally {
+                            JdbcUtils.closeConnection(conn);
+                        }
+                        int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
+                        String ccuName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);
+                        duplicates.add(ccuName);
+                    }
+                }
+            }
+        }
+        routeRole.setDuplicates(duplicates);
+        return routeRole;
+    }
+    
+    public Vector findConflicts(int me, int fixed_, int variable_, int[] rptVariables_) {
+        Vector conflicts = new Vector();
+        Vector ids = new Vector();
+        int maskedFixed = fixed_ % 32;
+        for(int i = 0; i < 5; i++) {
+            int[][] matrix = (int[][])currentMatriciesVector.get(i);
+            Integer id = new Integer(matrix[maskedFixed][variable_]);
+            if (id > -1 && (!ids.contains(id)) && id != me) {
+                ids.add(id);
+            }
+            for(int j = 0; j > rptVariables_.length; i++) {
+                Integer rptId = new Integer(matrix[maskedFixed][rptVariables_[j]]);
+                if (rptId > -1 && (!ids.contains(id)) && id != me) {
+                    ids.add(rptId);
+                }
+            }
+        }
+        
+        for(int i = 0; i < ids.size(); i++) {
+            LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)ids.get(i)).intValue());
+            DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
+            java.sql.Connection conn = null;
+            try {
+                conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+                heavyRoute.setDbConnection(conn);
+                heavyRoute.retrieve();
+            } catch (SQLException e) {
+                CTILogger.error(e);
+            }
+            finally {
+                JdbcUtils.closeConnection(conn);
+            }
+            int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
+            String ccuName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);
+            conflicts.add(ccuName);
+        }
+        
+        return conflicts;
+    }
+    
+    public int findFixedBit(int maskedFixed, Vector variables) {
+        int unMaskedFixed = -1;
+        int run = 0;
+        boolean success = false;
+        for (int i = 0; i < 5; i++) {
+            int[][] matrix = (int[][]) currentMatriciesVector.get(i);
+            for(int j = 0; j < variables.size(); j++) {
+                if(matrix[maskedFixed][((Integer)variables.get(j)).intValue()] == -1) {
+                    run++;
+                    if(run >= variables.size()) {
+                        success = true;
+                        break;
+                    }
+                }
+            }
+            if(success) {
+                unMaskedFixed = (i * 32) + maskedFixed;
+                break;
+            }
+        }
+        
+        return unMaskedFixed;
+    }
 }
