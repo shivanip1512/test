@@ -5,17 +5,18 @@ package com.cannontech.common.device.service;
  */
 import junit.framework.TestCase;
 
-import com.cannontech.common.device.definition.model.PointTemplateImpl;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PointServiceImplTest extends TestCase {
 
     private PointService service = null;
-    private LiteYukonPAObject device = null;
+    private YukonDevice device = null;
 
     protected void setUp() throws Exception {
 
@@ -29,9 +30,7 @@ public class PointServiceImplTest extends TestCase {
 
         service = impl;
 
-        device = new LiteYukonPAObject(1);
-        device.setType(1);
-        device.setPaoName("Test Device");
+        device = new YukonDevice(1,1);
     }
 
     /**
@@ -42,13 +41,13 @@ public class PointServiceImplTest extends TestCase {
         // Test for point that exists for the device
         LitePoint expectedPoint = new LitePoint(1, "analog1", 1, 1, 1, 0, 0, 1);
 
-        PointTemplateImpl testTemplate = new PointTemplateImpl("test", 1, 0, 0.0, 0, 0, false, null);
+        DevicePointIdentifier testTemplate = new PointTemplate(1, 0);
         LitePoint actualPoint = service.getPointForDevice(device, testTemplate);
 
         this.compareLitePoints("Existing point for device:", expectedPoint, actualPoint);
 
         // Test for point that doesn't exist for the device
-        testTemplate.setType(4);
+        testTemplate = new PointTemplate(4, 0);
         try {
             service.getPointForDevice(device, testTemplate);
         } catch (NotFoundException e) {
@@ -64,11 +63,11 @@ public class PointServiceImplTest extends TestCase {
     public void testPointExistsForDevice() {
 
         // Test for point that exists for the device
-        PointTemplateImpl testTemplate = new PointTemplateImpl("test", 1, 0, 0.0, 0, 0, false, null);
+        DevicePointIdentifier testTemplate = new PointTemplate(1, 0);
         assertTrue("The point should exist", service.pointExistsForDevice(device, testTemplate));
 
         // Test for point that doesn't exist for the device
-        testTemplate.setType(4);
+        testTemplate = new PointTemplate(4, 0);
         assertTrue("The point should not exist",
                    !service.pointExistsForDevice(device, testTemplate));
     }

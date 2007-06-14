@@ -9,22 +9,20 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
-import com.cannontech.common.device.definition.model.CommandDefinitionImpl;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
-import com.cannontech.common.device.definition.model.PointReference;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
@@ -34,7 +32,7 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
 public class DeviceDefinitionDaoImplTest extends TestCase {
 
     private DeviceDefinitionDao dao = null;
-    private LiteYukonPAObject device = null;
+    private YukonDevice device = null;
 
     public static DeviceDefinitionDao getTestDeviceDefinitionDao() throws Exception {
 
@@ -57,7 +55,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         dao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
 
-        device = new LiteYukonPAObject(10);
+        device = new YukonDevice(10, 1019);
         device.setType(1019);
     }
 
@@ -90,7 +88,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetPointTemplateForAttribute() {
 
         // Test with supported device type
-        PointTemplate expectedTemplate = new PointTemplateImpl("pulse1",
+        PointTemplate expectedTemplate = new PointTemplate("pulse1",
                                                                2,
                                                                2,
                                                                1.0,
@@ -294,48 +292,34 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      */
     public void testGetAffected() {
 
-        Set<PointTemplate> points = new HashSet<PointTemplate>();
+        Set<DevicePointIdentifier> points = new HashSet<DevicePointIdentifier>();
         Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
 
         // Define expected points
-        PointTemplateImpl point0 = new PointTemplateImpl("status1", 0, 0, 0.0, 0, 0, false, null);
-        PointTemplateImpl point1 = new PointTemplateImpl("pulse1",
-                                                         2,
-                                                         2,
-                                                         1.0,
-                                                         1,
-                                                         0,
-                                                         true,
-                                                         BuiltInAttribute.USAGE);
-        PointTemplateImpl point2 = new PointTemplateImpl("pulse2",
-                                                         2,
-                                                         4,
-                                                         1.0,
-                                                         1,
-                                                         0,
-                                                         false,
-                                                         new UserDefinedAttribute("pulse2"));
+        DevicePointIdentifier status1 = new DevicePointIdentifier(0, 0);
+        DevicePointIdentifier pulse1 = new DevicePointIdentifier(2, 2);
+        DevicePointIdentifier pulse2 = new DevicePointIdentifier(2, 4);
 
         // Define expected command definitions
-        CommandDefinitionImpl command1 = new CommandDefinitionImpl();
+        CommandDefinition command1 = new CommandDefinition();
         command1.addCommandString("do command1");
-        command1.addAffectedPoint(new PointReference("pulse1"));
+        command1.addAffectedPoint(pulse1);
 
-        CommandDefinitionImpl command2 = new CommandDefinitionImpl();
+        CommandDefinition command2 = new CommandDefinition();
         command2.addCommandString("do command2");
         command2.addCommandString("continue command2");
-        command2.addAffectedPoint(new PointReference("pulse1"));
-        command2.addAffectedPoint(new PointReference("pulse2"));
+        command2.addAffectedPoint(pulse1);
+        command2.addAffectedPoint(pulse2);
 
         
         // Test with no expected commands
-        points.add(point0);
+        points.add(status1);
         Set<CommandDefinition> actualCommands = dao.getAffected(device, points);
         assertEquals("Expected no commands", expectedCommandSet, actualCommands);
 
         // Test with one expected command
         points.clear();
-        points.add(point2);
+        points.add(pulse2);
         expectedCommandSet.add(command2);
 
         actualCommands = dao.getAffected(device, points);
@@ -343,7 +327,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with two expected commands
         points.clear();
-        points.add(point1);
+        points.add(pulse1);
         expectedCommandSet.add(command1);
 
         actualCommands = dao.getAffected(device, points);
@@ -359,7 +343,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
 
         // Pulse Accumulators
-        expectedTemplates.add(new PointTemplateImpl("pulse1",
+        expectedTemplates.add(new PointTemplate("pulse1",
                                                     2,
                                                     2,
                                                     1.0,
@@ -369,7 +353,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     BuiltInAttribute.USAGE));
 
         // Demand Accumulators
-        expectedTemplates.add(new PointTemplateImpl("demand1",
+        expectedTemplates.add(new PointTemplate("demand1",
                                                     3,
                                                     1,
                                                     1.0,
@@ -379,7 +363,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     BuiltInAttribute.DEMAND));
 
         // Analog
-        expectedTemplates.add(new PointTemplateImpl("analog1",
+        expectedTemplates.add(new PointTemplate("analog1",
                                                     1,
                                                     1,
                                                     1.0,
@@ -404,7 +388,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Add the rest of the templates
 
         // Pulse Accumulator
-        expectedTemplates.add(new PointTemplateImpl("pulse2",
+        expectedTemplates.add(new PointTemplate("pulse2",
                                                     2,
                                                     4,
                                                     1.0,
@@ -414,7 +398,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     null));
 
         // Status
-        expectedTemplates.add(new PointTemplateImpl("status1", 0, 1, 1.0, -1, 0, false, null));
+        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0, false, null));
 
         return expectedTemplates;
     }

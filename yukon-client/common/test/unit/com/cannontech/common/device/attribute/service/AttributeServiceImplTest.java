@@ -5,6 +5,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
@@ -13,7 +14,6 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class AttributeServiceImplTest extends TestCase {
@@ -21,7 +21,7 @@ public class AttributeServiceImplTest extends TestCase {
     private AttributeServiceImpl service = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private MockPointDao pointDao = null;
-    private LiteYukonPAObject device = null;
+    private YukonDevice device = null;
 
     protected void setUp() throws Exception {
 
@@ -40,9 +40,8 @@ public class AttributeServiceImplTest extends TestCase {
         pointService.setPointDao(pointDao);
         service.setPointService(pointService);
 
-        device = new LiteYukonPAObject(1);
+        device = new YukonDevice(1, 1019);
         device.setType(1019);
-        device.setPaoName("Test Device");
 
     }
 

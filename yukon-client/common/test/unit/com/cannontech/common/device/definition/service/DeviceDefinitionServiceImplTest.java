@@ -1,6 +1,8 @@
 package com.cannontech.common.device.definition.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,6 +12,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
@@ -17,15 +20,9 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.common.device.service.PointServiceImpl;
-import com.cannontech.common.mock.MockDevice;
 import com.cannontech.common.mock.MockPointDao;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -34,16 +31,16 @@ import com.cannontech.database.incrementer.NextValueHelper;
  */
 public class DeviceDefinitionServiceImplTest {
 
-    private DeviceDefinitionServiceImpl service = null;
+    private SimpleDeviceDefinitionServiceImpl service = null;
     private PointServiceImpl pointService = null;
-    private DeviceBase device = null;
+    private YukonDevice device = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private AttributeServiceImpl attributeService = null;
 
     @Before
     public void setUp() throws Exception {
 
-        service = new DeviceDefinitionServiceImpl();
+        service = new SimpleDeviceDefinitionServiceImpl();
         deviceDefinitionDao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
         service.setDeviceDefinitionDao(deviceDefinitionDao);
 
@@ -63,11 +60,7 @@ public class DeviceDefinitionServiceImplTest {
         attributeService.setPointService(pointService);
         service.setAttributeService(attributeService);
 
-        device = new MockDevice();
-        device.setDeviceType("MCT-310");
-        device.setPAOName("Test Device");
-        device.setDeviceID(1);
-        device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
+        device = new YukonDevice(1, DeviceTypes.MCT310);
 
     }
 
@@ -89,7 +82,7 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with unsupported device
         try {
-            device.setDeviceType("invalid");
+            device.setType(9999999);
             actualPoints = service.createDefaultPointsForDevice(device);
             fail("createDefaultPointsForDevice should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -110,12 +103,12 @@ public class DeviceDefinitionServiceImplTest {
         assertTrue("device1 is changeable", service.isDeviceTypeChangeable(device));
 
         // Test with device that is not changeable
-        device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT318L));
+        device.setType(DeviceTypes.MCT318L);
         assertTrue("device3 is not changeable", !service.isDeviceTypeChangeable(device));
 
         // Test with unsupported device
         try {
-            device.setDeviceType("invalid");
+            device.setType(999999);
             service.isDeviceTypeChangeable(device);
             fail("isDeviceTypeChangeable should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -134,11 +127,8 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with changeable device
         Set<DeviceDefinition> expectedDevices = new HashSet<DeviceDefinition>();
-        MockDevice device2 = new MockDevice();
-        device2.setDeviceID(11);
-        device2.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
-        device2.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT370));
-        expectedDevices.add(deviceDefinitionDao.getDeviceDefinition(getLiteForDevice(device2)));
+        YukonDevice device2 = new YukonDevice(11, DeviceTypes.MCT370);
+        expectedDevices.add(deviceDefinitionDao.getDeviceDefinition(device2));
 
         Set<DeviceDefinition> actualDevices = service.getChangeableDevices(device);
 
@@ -146,7 +136,7 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with device that is not changeable
         try {
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT318L));
+            device.setType(DeviceTypes.MCT318L);
             service.getChangeableDevices(device);
             fail("getChangeableDevices should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -157,7 +147,7 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with unsupported device
         try {
-            device.setDeviceType("invalid");
+            device.setType(999999);
             service.getChangeableDevices(device);
             fail("getChangeableDevices should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -188,7 +178,7 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with unsupported device
         try {
-            device.setDeviceType("invalid");
+            device.setType(999999);
             actualPoints = service.createAllPointsForDevice(device);
             fail("createAllPointsForDevice should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -206,7 +196,7 @@ public class DeviceDefinitionServiceImplTest {
     public void testGetPointTemplatesToAdd() {
 
         // Test add points from type 'device2' to type 'device1'
-        device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT370));
+        device.setType(DeviceTypes.MCT370);
         Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
 
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
@@ -223,10 +213,10 @@ public class DeviceDefinitionServiceImplTest {
         // Test add points from type 'device1' to type 'device3' (is an invalid
         // change)
         try {
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT318L));
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(getLiteForDevice(device));
+            device.setType(DeviceTypes.MCT318L);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
 
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT310));
+            device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToAdd(device, deviceDefinition);
             fail("getPointTemplatesToAdd should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -239,6 +229,7 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test getPointTemplatesToRemove()
      */
+    @Test
     public void testGetPointTemplatesToRemove() {
 
         // Test remove points from type 'device1' to type 'device2'
@@ -258,10 +249,10 @@ public class DeviceDefinitionServiceImplTest {
         // Test remove points from type 'device1' to type 'device3' (is an
         // invalid change)
         try {
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT318L));
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(getLiteForDevice(device));
+            device.setType(DeviceTypes.MCT318L);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
 
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT310));
+            device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToRemove(device, deviceDefinition);
             fail("getPointTemplatesToRemove should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -275,11 +266,12 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test getPointTemplatesToTransfer()
      */
+    @Test
     public void testGetPointTemplatesToTransfer() {
 
         // Test remove points from type 'device1' to type 'device2'
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
-        expectedTemplates.add(new PointTemplateImpl("pulse2",
+        expectedTemplates.add(new PointTemplate("pulse2",
                                                     2,
                                                     4,
                                                     1.0,
@@ -302,10 +294,10 @@ public class DeviceDefinitionServiceImplTest {
         // Test transfer points from type 'device1' to type 'device3' (is an
         // invalid change)
         try {
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT318L));
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(getLiteForDevice(device));
+            device.setType(DeviceTypes.MCT318L);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
 
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT310));
+            device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToTransfer(device, deviceDefinition);
             fail("getPointTemplatesToTransfer should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -319,11 +311,12 @@ public class DeviceDefinitionServiceImplTest {
     /**
      * Test getNewPointTemplatesForTransfer()
      */
+    @Test
     public void testGetNewPointTemplatesForTransfer() {
 
         // Test remove points from type 'device1' to type 'device2'
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
-        expectedTemplates.add(new PointTemplateImpl("pulse2",
+        expectedTemplates.add(new PointTemplate("pulse2",
                                                     2,
                                                     3,
                                                     0.1,
@@ -346,10 +339,10 @@ public class DeviceDefinitionServiceImplTest {
         // Test transfer points from type 'device1' to type 'device3' (is an
         // invalid change)
         try {
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT318L));
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(getLiteForDevice(device));
+            device.setType(DeviceTypes.MCT318L);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
 
-            device.setDeviceType(PAOGroups.getPAOTypeString(DeviceTypes.MCT310));
+            device.setType(DeviceTypes.MCT310);
             service.getNewPointTemplatesForTransfer(device, deviceDefinition);
             fail("getPointTemplatesToTransfer should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -359,9 +352,4 @@ public class DeviceDefinitionServiceImplTest {
         }
 
     }
-    
-    private LiteYukonPAObject getLiteForDevice(DeviceBase deviceBase) {
-        return (LiteYukonPAObject) LiteFactory.createLite(deviceBase);
-    }
-
 }
