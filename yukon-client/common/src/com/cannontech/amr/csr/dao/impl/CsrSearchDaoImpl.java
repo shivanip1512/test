@@ -36,20 +36,20 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         List<ExtendedMeter> resultList = null;
         
         // Get total number of records for search
-        String sqlCount = "SELECT " + 
-        "       count(*) " + 
-        "   FROM " + 
-        "       device " +
-        "       JOIN yukonpaobject ypo " + 
-        "           ON device.deviceid = ypo.paobjectid " + 
-        "       JOIN devicecarriersettings dcs " + 
-        "           ON dcs.deviceid = ypo.paobjectid " + 
-        "       JOIN devicemetergroup dmg " + 
-        "           ON dmg.deviceid = ypo.paobjectid " + 
-        "       JOIN deviceroutes dr " + 
-        "           on ypo.paobjectid = dr.deviceid " +
-        "       JOIN yukonpaobject rypo " +
-        "           on dr.routeid = rypo.paobjectid " +
+        String sqlCount = "SELECT                                               " + 
+        "       count(*)                                                        " + 
+        "   FROM                                                                " + 
+        "       device                                                          " +
+        "       JOIN yukonpaobject ypo                                          " + 
+        "           ON device.deviceid = ypo.paobjectid                         " + 
+        "       JOIN devicecarriersettings dcs                                  " + 
+        "           ON dcs.deviceid = ypo.paobjectid                            " + 
+        "       JOIN devicemetergroup dmg                                       " + 
+        "           ON dmg.deviceid = ypo.paobjectid                            " + 
+        "       JOIN deviceroutes dr                                            " + 
+        "           on ypo.paobjectid = dr.deviceid                             " +
+        "       JOIN yukonpaobject rypo                                         " +
+        "           on dr.routeid = rypo.paobjectid                             " +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "");
 
         // Add the filter by values to a list to be used in the prepared statement
@@ -63,28 +63,29 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         totalCount = jdbcTemplate.getJdbcOperations().queryForInt(sqlCount, filterList.toArray());
 
         // Get all of the devices that match the search criteria
-        String sql = "SELECT " + 
-        "       ypo.paobjectid, " + 
-        "       ypo.paoname, " + 
-        "       ypo.type, " + 
-        "       ypo.disableFlag, " + 
-        "       dcs.address, " + 
-        "       dmg.meternumber, " + 
-        "       dmg.collectiongroup, " + 
-        "       dmg.billinggroup, " + 
-        "       rypo.paoname as route " + 
-        "   FROM " + 
-        "       device " +
-        "       JOIN yukonpaobject ypo " + 
-        "           ON device.deviceid = ypo.paobjectid " + 
-        "       JOIN devicecarriersettings dcs " + 
-        "           ON dcs.deviceid = ypo.paobjectid " + 
-        "       JOIN devicemetergroup dmg " + 
-        "           ON dmg.deviceid = ypo.paobjectid " + 
-        "       JOIN deviceroutes dr " + 
-        "           on ypo.paobjectid = dr.deviceid " +
-        "       JOIN yukonpaobject rypo " +
-        "           on dr.routeid = rypo.paobjectid " +
+        String sql = "SELECT                                                    " + 
+        "       ypo.paobjectid,                                                 " + 
+        "       ypo.paoname,                                                    " + 
+        "       ypo.type,                                                       " + 
+        "       ypo.disableFlag,                                                " + 
+        "       dcs.address,                                                    " + 
+        "       dmg.meternumber,                                                " + 
+        "       dmg.collectiongroup,                                            " + 
+        "       dmg.billinggroup,                                               " + 
+        "       dr.routeId,                                                     " + 
+        "       rypo.paoname as route                                           " + 
+        "   FROM                                                                " + 
+        "       device                                                          " +
+        "       JOIN yukonpaobject ypo                                          " + 
+        "           ON device.deviceid = ypo.paobjectid                         " + 
+        "       JOIN devicecarriersettings dcs                                  " + 
+        "           ON dcs.deviceid = ypo.paobjectid                            " + 
+        "       JOIN devicemetergroup dmg                                       " + 
+        "           ON dmg.deviceid = ypo.paobjectid                            " + 
+        "       JOIN deviceroutes dr                                            " + 
+        "           on ypo.paobjectid = dr.deviceid                             " +
+        "       JOIN yukonpaobject rypo                                         " +
+        "           on dr.routeid = rypo.paobjectid                             " +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "") +
         "   ORDER BY                                                            " +
         orderBy.toString();
