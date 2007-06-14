@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
+	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

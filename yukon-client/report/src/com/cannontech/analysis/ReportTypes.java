@@ -42,6 +42,7 @@ import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
 import com.cannontech.analysis.tablemodel.ProgramDetailModel;
+import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteDBModel;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
@@ -93,7 +94,7 @@ public class ReportTypes
 	
 	public static final int STARS_LM_SUMMARY_DATA = 18;
 	public static final int STARS_LM_DETAIL_DATA = 19;
-	public static final int STARS_AMR_SUMMARY_DATA = 20;	//TODO
+	public static final int STARS_AMR_SUMMARY_DATA = 20;
 	public static final int STARS_AMR_DETAIL_DATA = 21;
 
 	/** Cap Bank Reports */
@@ -127,6 +128,7 @@ public class ReportTypes
     public static final int CAP_CONTROL_SCHEDULE_DETAIL= 42;
     
     public static final int SCHEDULED_METER_READ_DATA = 43;
+    public static final int REPEATER_ROLE_COLLISION = 44;
     
 	private static Class[] typeToClassMap =
 	{
@@ -181,7 +183,8 @@ public class ReportTypes
         CapBankOperationsPerformanceController.class,
         CapControlScheduleDetailController.class,
         
-        ScheduledMeterReadModel.class
+        ScheduledMeterReadModel.class,
+        RepeaterRoleCollisionModel.class
 	};
 		
 	/** String names for report types */
@@ -242,6 +245,7 @@ public class ReportTypes
     public static final String CAP_CONTROL_SCHEDULE_DETAIL_STRING= "CapControl Schedule Detail";
     
     public static final String SCHEDULED_METER_READ_STRING = "Scheduled Meter Reads";
+    public static final String REPEATER_ROLE_COLLISION_STRING = "Repeater Role Collision Report";
 
     public static final String CAPBANK_DATA_DESCRIPTION = "Detailed report of the capbanks, including information on its location, size, cbc, feeder and substation bus.";
     public static final String CAP_CONTROL_NEW_ACTIVITY_DESCRIPTION = "Detailed report of capbank activity, including manual and automated controls, operation outcomes, and capcontrol database changes.'";
@@ -312,7 +316,8 @@ public class ReportTypes
         CAP_BANK_OPERATIONS_PERFORMANCE_STRING,
         CAP_CONTROL_SCHEDULE_DETAIL_STRING,
         
-        SCHEDULED_METER_READ_STRING
+        SCHEDULED_METER_READ_STRING,
+        REPEATER_ROLE_COLLISION_STRING
 	};
 
     /** Report Description to enum mapping */
@@ -334,6 +339,7 @@ public class ReportTypes
         CAP_CONTROL_RETRIES_DESCRIPTION,
         CAP_BANK_OPERATIONS_PERFORMANCE_DESCRIPTION,
         CAP_CONTROL_SCHEDULE_DETAIL_DESCRIPTION,
+        "",
         ""
     };    
 
@@ -377,8 +383,14 @@ public class ReportTypes
 	};
 
 	private static int[] adminGroupReportTypes = new int[]{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA};
-	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, SCHEDULED_METER_READ_DATA, METER_OUTAGE_DATA, 
-						POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
+	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, 
+        SCHEDULED_METER_READ_DATA, 
+        METER_OUTAGE_DATA, 
+		POWER_FAIL_DATA, 
+        DISCONNECT_METER_DATA, 
+        LP_SETUP_DATA, 
+        LP_SUMMARY_DATA,
+        REPEATER_ROLE_COLLISION};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
 	private static int[] capControlGroupReportTypes = new int[]{

@@ -44,6 +44,7 @@ import com.cannontech.analysis.report.PointDataIntervalReport;
 import com.cannontech.analysis.report.PointDataSummaryReport;
 import com.cannontech.analysis.report.PowerFailReport;
 import com.cannontech.analysis.report.ProgramDetailReport;
+import com.cannontech.analysis.report.RepeaterRoleCollisionReport;
 import com.cannontech.analysis.report.RouteDBReport;
 import com.cannontech.analysis.report.RouteMacroReport;
 import com.cannontech.analysis.report.ScheduledMeterReadReport;
@@ -79,6 +80,7 @@ import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
 import com.cannontech.analysis.tablemodel.ProgramDetailModel;
+import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteDBModel;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
@@ -179,6 +181,8 @@ public class ReportFuncs
             returnVal = new MaxDailyOpsReport();
         else if( model instanceof ScheduledMeterReadModel)
             returnVal = new ScheduledMeterReadReport();
+        else if( model instanceof RepeaterRoleCollisionModel)
+            returnVal = new RepeaterRoleCollisionReport();
         else
             return null;
 

@@ -543,6 +543,24 @@ public class RegenerateRoute
         return routeRole;
     }
     
+    public Vector findDuplicatesForBits(int fixed, int variable) {
+        
+        Vector dups = new Vector();
+        
+        for(int i = 0; i < 5; i++) {
+            int[][] matrix = (int[][])currentMatriciesVector.get(i);
+            Integer id = new Integer(matrix[fixed][variable]);
+            if (id.intValue() > -1 ) {
+                dups.add(id);
+            }
+        }
+        if(dups.size() > 1) {
+            return dups;
+        }else {
+            return null;
+        }
+    }
+    
     public Vector findConflicts(int me, int fixed_, int variable_, int[] rptVariables_) {
         Vector conflicts = new Vector();
         Vector ids = new Vector();
