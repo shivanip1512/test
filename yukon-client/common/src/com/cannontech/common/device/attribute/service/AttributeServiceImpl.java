@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
@@ -14,7 +15,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 
 public class AttributeServiceImpl implements AttributeService {
@@ -30,18 +30,18 @@ public class AttributeServiceImpl implements AttributeService {
         this.pointService = pointService;
     }
 
-    public LitePoint getPointForAttribute(LiteYukonPAObject device, Attribute attribute) {
+    public LitePoint getPointForAttribute(YukonDevice device, Attribute attribute) {
 
         PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateForAttribute(device,
                                                                                        attribute);
         return pointService.getPointForDevice(device, pointTemplate);
     }
 
-    public Set<Attribute> getAvailableAttributes(LiteYukonPAObject device) {
+    public Set<Attribute> getAvailableAttributes(YukonDevice device) {
         return deviceDefinitionDao.getAvailableAttributes(device);
     }
 
-    public Set<Attribute> getAllExistingAtributes(LiteYukonPAObject device) {
+    public Set<Attribute> getAllExistingAtributes(YukonDevice device) {
 
         Set<Attribute> attributes = new HashSet<Attribute>();
 
@@ -66,7 +66,7 @@ public class AttributeServiceImpl implements AttributeService {
         return BuiltInAttribute.valueOf(name);
     }
 
-    public boolean isAttributeSupported(LiteYukonPAObject device, Attribute attribute) {
+    public boolean isAttributeSupported(YukonDevice device, Attribute attribute) {
 
         try {
             deviceDefinitionDao.getPointTemplateForAttribute(device, attribute);
@@ -76,7 +76,7 @@ public class AttributeServiceImpl implements AttributeService {
         }
     }
 
-    public boolean pointExistsForAttribute(LiteYukonPAObject device, Attribute attribute) {
+    public boolean pointExistsForAttribute(YukonDevice device, Attribute attribute) {
 
         if (isAttributeSupported(device, attribute)) {
             PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device,
@@ -85,21 +85,21 @@ public class AttributeServiceImpl implements AttributeService {
             return pointService.pointExistsForDevice(device, template);
         }
 
-        throw new IllegalArgumentException("Device: " + device.getPaoName() + " does not support attribute: " + attribute.getKey());
+        throw new IllegalArgumentException("Device: " + device + " does not support attribute: " + attribute.getKey());
     }
 
-    public void createPointForAttribute(LiteYukonPAObject device, Attribute attribute) {
+    public void createPointForAttribute(YukonDevice device, Attribute attribute) {
 
         boolean pointExists = this.pointExistsForAttribute(device, attribute);
         if (!pointExists) {
             PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device,
                                                                                       attribute);
-            PointBase point = pointService.createPoint(device.getYukonID(), template);
+            PointBase point = pointService.createPoint(device.getDeviceId(), template);
             try {
                 Transaction t = Transaction.createTransaction(Transaction.INSERT, point);
                 t.execute();
             } catch (TransactionException e) {
-                throw new DataAccessException("Could not create point for device: " + device.getPaoName(),
+                throw new DataAccessException("Could not create point for device: " + device,
                                               e) {
                 };
             }

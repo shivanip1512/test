@@ -1,22 +1,66 @@
 package com.cannontech.common.device.definition.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public interface CommandDefinition {
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
-    public abstract List<PointReference> getAffectedPointList();
+public class CommandDefinition {
 
-    public abstract List<String> getCommandStringList();
+    List<String> commandStringList = new ArrayList<String>();
+    Set<DevicePointIdentifier> affectedPointList = new HashSet<DevicePointIdentifier>();
 
-    public abstract void addCommandString(String commandString);
+    public Set<DevicePointIdentifier> getAffectedPointList() {
+        return affectedPointList;
+    }
 
-    public abstract void addAffectedPoint(PointReference pointReference);
+    public void setAffectedPointList(Set<DevicePointIdentifier> affectedPointList) {
+        this.affectedPointList = affectedPointList;
+    }
 
-    /**
-     * Method used to determine whether this command affects the given point
-     * @param pointTemplate - Point in question
-     * @return True if point is affected by this command
-     */
-    public abstract boolean affectsPoint(PointTemplate pointTemplate);
+    public List<String> getCommandStringList() {
+        return commandStringList;
+    }
+
+    public void setCommandStringList(List<String> commandStringList) {
+        this.commandStringList = commandStringList;
+    }
+
+    public void addCommandString(String commandString) {
+        this.commandStringList.add(commandString);
+    }
+
+    public void addAffectedPoint(DevicePointIdentifier pointReference) {
+        this.affectedPointList.add(pointReference);
+    }
+
+    public boolean affectsPoint(DevicePointIdentifier pointTemplate) {
+        boolean affected = this.affectedPointList.contains(pointTemplate);
+        return affected;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof CommandDefinition == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        CommandDefinition commandDefinition = (CommandDefinition) obj;
+        return new EqualsBuilder().append(commandStringList,
+                                          commandDefinition.getCommandStringList())
+                                  .append(affectedPointList,
+                                          commandDefinition.getAffectedPointList())
+                                  .isEquals();
+    }
+
+    public int hashCode() {
+        return new HashCodeBuilder(89, 99).append(commandStringList)
+                                          .append(affectedPointList)
+                                          .toHashCode();
+    }
 
 }

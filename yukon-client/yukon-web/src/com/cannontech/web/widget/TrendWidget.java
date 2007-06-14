@@ -15,11 +15,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.chart.model.AttributeGraphType;
 import com.cannontech.common.chart.model.ChartPeriod;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -28,12 +28,12 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
  */
 public class TrendWidget extends WidgetControllerBase {
 
-    private PaoDao paoDao = null;
+    private DeviceDao deviceDao = null;
     private AttributeService attributeService = null;
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
 
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
+    public void setDeviceDao(DeviceDao paoDao) {
+        this.deviceDao = paoDao;
     }
 
     public void setAttributeService(AttributeService attributeService) {
@@ -54,7 +54,7 @@ public class TrendWidget extends WidgetControllerBase {
 
         // Get lite pao
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        YukonDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Get the selected attribute
         String selectedAttributeLabel = WidgetParameterHelper.getStringParameter(request,

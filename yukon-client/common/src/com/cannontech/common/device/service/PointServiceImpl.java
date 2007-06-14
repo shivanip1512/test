@@ -1,10 +1,11 @@
 package com.cannontech.common.device.service;
 
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -90,16 +91,16 @@ public class PointServiceImpl implements PointService {
                                 template.getStateGroupId());
     }
 
-    public LitePoint getPointForDevice(LiteYukonPAObject device, PointTemplate template) {
+    public LitePoint getPointForDevice(YukonDevice device, DevicePointIdentifier template) {
 
-        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getLiteID(),
+        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getDeviceId(),
                                                                      template.getOffset(),
                                                                      template.getType());
 
         return pointDao.getLitePoint(pointId);
     }
 
-    public boolean pointExistsForDevice(LiteYukonPAObject device, PointTemplate template) {
+    public boolean pointExistsForDevice(YukonDevice device, DevicePointIdentifier template) {
 
         try {
             LitePoint point = this.getPointForDevice(device, template);

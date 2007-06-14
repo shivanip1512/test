@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Data access object for device definition information
@@ -21,7 +22,7 @@ public interface DeviceDefinitionDao {
      * @return An immutable set of attributes for the device
      * @throws IllegalArgumentException - If the device is not supported
      */
-    public abstract Set<Attribute> getAvailableAttributes(LiteYukonPAObject device);
+    public abstract Set<Attribute> getAvailableAttributes(YukonDevice meter);
 
     /**
      * Method to get the point template for a given device and attribute
@@ -29,7 +30,7 @@ public interface DeviceDefinitionDao {
      * @param attribute - Attribute to get point template for
      * @return
      */
-    public abstract PointTemplate getPointTemplateForAttribute(LiteYukonPAObject device,
+    public abstract PointTemplate getPointTemplateForAttribute(YukonDevice device,
             Attribute attribute);
 
     /**
@@ -38,7 +39,7 @@ public interface DeviceDefinitionDao {
      * @return A set of all point templates for the device (returns a new copy
      *         each time the method is called)
      */
-    public abstract Set<PointTemplate> getAllPointTemplates(LiteYukonPAObject device);
+    public abstract Set<PointTemplate> getAllPointTemplates(YukonDevice device);
 
     /**
      * Method to get all of the point templates for a given device definition
@@ -55,7 +56,7 @@ public interface DeviceDefinitionDao {
      * @return A set of all point templates for the device that should be
      *         initialized (returns a new copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getInitPointTemplates(LiteYukonPAObject device);
+    public abstract Set<PointTemplate> getInitPointTemplates(YukonDevice device);
 
     /**
      * Method to get all of the point templates for a given device definition
@@ -79,7 +80,7 @@ public interface DeviceDefinitionDao {
      * @param device - Device to get definition for
      * @return The device's device definition
      */
-    public abstract DeviceDefinition getDeviceDefinition(LiteYukonPAObject device);
+    public abstract DeviceDefinition getDeviceDefinition(YukonDevice device);
 
     /**
      * Method to get a set of device types that the given device can change into
@@ -96,6 +97,6 @@ public interface DeviceDefinitionDao {
      * @param pointSet - Set of points to get affecting commands for
      * @return The set of commands affecting one or more of the points
      */
-    public Set<CommandDefinition> getAffected(LiteYukonPAObject device, Set<PointTemplate> pointSet);
+    public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
 
 }

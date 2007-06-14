@@ -1,8 +1,9 @@
 package com.cannontech.common.device.service;
 
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 
 /**
@@ -38,7 +39,7 @@ public interface PointService {
      * @param template - Template of point to get
      * @return - Existing point
      */
-    public abstract LitePoint getPointForDevice(LiteYukonPAObject device, PointTemplate template);
+    public abstract LitePoint getPointForDevice(YukonDevice device, DevicePointIdentifier template);
 
     /**
      * Method to determine if a point exists for the given device
@@ -46,6 +47,6 @@ public interface PointService {
      * @param template - Template of point to determine existance
      * @return True if point exists for the device
      */
-    public abstract boolean pointExistsForDevice(LiteYukonPAObject device, PointTemplate template);
+    public abstract boolean pointExistsForDevice(YukonDevice device, DevicePointIdentifier template);
 
 }

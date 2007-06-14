@@ -15,15 +15,14 @@ import java.util.Set;
 import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
-import com.cannontech.common.device.definition.model.CommandDefinitionImpl;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
-import com.cannontech.common.device.definition.model.PointReference;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.definition.model.PointTemplateImpl;
 import com.cannontech.common.device.definition.model.castor.Cmd;
 import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
@@ -35,7 +34,6 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -93,22 +91,22 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.unitMeasureDao = unitMeasureDao;
     }
 
-    public Set<Attribute> getAvailableAttributes(LiteYukonPAObject device) {
+    public Set<Attribute> getAvailableAttributes(YukonDevice device) {
 
-        Integer deviceType = device.getType();
+        int deviceType = device.getType();
         if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
             Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
             return Collections.unmodifiableSet(attributeMap.keySet());
         } else {
-            throw new IllegalArgumentException("Device type '" + device.getType()
+            throw new IllegalArgumentException("Device type '" + deviceType
                     + "' is not supported.");
         }
 
     }
 
-    public PointTemplate getPointTemplateForAttribute(LiteYukonPAObject device, Attribute attribute) {
+    public PointTemplate getPointTemplateForAttribute(YukonDevice device, Attribute attribute) {
 
-        Integer deviceType = device.getType();
+        int deviceType = device.getType();
         if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
             Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
             if (attributeMap.containsKey(attribute)) {
@@ -118,13 +116,13 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                         + " is not supported for Device type '" + deviceType + "'");
             }
         } else {
-            throw new IllegalArgumentException("Device type '" + device.getType()
+            throw new IllegalArgumentException("Device type '" + deviceType
                     + "' is not supported.");
         }
     }
 
-    public Set<PointTemplate> getAllPointTemplates(LiteYukonPAObject device) {
-        Integer deviceType = device.getType();
+    public Set<PointTemplate> getAllPointTemplates(YukonDevice device) {
+        int deviceType = device.getType();
         return this.getAllPointTemplates(deviceType);
     }
 
@@ -132,8 +130,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         return this.getAllPointTemplates(deviceDefinition.getType());
     }
 
-    public Set<PointTemplate> getInitPointTemplates(LiteYukonPAObject device) {
-        Integer deviceType = device.getType();
+    public Set<PointTemplate> getInitPointTemplates(YukonDevice device) {
+        int deviceType = device.getType();
         return this.getInitPointTemplates(deviceType);
     }
 
@@ -164,9 +162,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    public DeviceDefinition getDeviceDefinition(LiteYukonPAObject device) {
+    public DeviceDefinition getDeviceDefinition(YukonDevice device) {
 
-        Integer deviceType = device.getType();
+        int deviceType = device.getType();
         if (this.deviceTypeMap.containsKey(deviceType)) {
             return this.deviceTypeMap.get(deviceType);
         } else {
@@ -176,15 +174,15 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     }
 
-    public Set<CommandDefinition> getAffected(LiteYukonPAObject device, Set<PointTemplate> pointSet) {
+    public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet) {
 
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
 
-        Integer deviceType = device.getType();
+        int deviceType = device.getType();
         Set<CommandDefinition> allCommandSet = this.deviceCommandMap.get(deviceType);
 
         for (CommandDefinition command : allCommandSet) {
-            for (PointTemplate point : pointSet) {
+            for (DevicePointIdentifier point : pointSet) {
                 if (command.affectsPoint(point)) {
                     commandSet.add(command);
                     break;
@@ -281,7 +279,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     }
 
     /**
-     * Helper method to add the device and it's point templates to the
+     * Helper method to add the device and its point templates to the
      * appropriate maps
      * @param device - Device to add
      */
@@ -381,7 +379,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private CommandDefinition createCommandDefinition(String deviceName, Command command,
             Map<String, PointTemplate> pointNameTemplateMap) {
 
-        CommandDefinition definition = new CommandDefinitionImpl();
+        CommandDefinition definition = new CommandDefinition();
 
         // Add command text
         Cmd[] cmds = command.getCmd();
@@ -395,9 +393,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             if (!pointNameTemplateMap.containsKey(pointRef.getName())) {
                 throw new RuntimeException("Point name: " + pointRef.getName() + " not found for device: " + deviceName + ".  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file.");
             }
-            PointReference pointReference = new PointReference();
-            pointReference.setPointName(pointRef.getName());
-            definition.addAffectedPoint(pointReference);
+            PointTemplate template = pointNameTemplateMap.get(pointRef.getName());
+            DevicePointIdentifier dpi = new DevicePointIdentifier(template.getType(), template.getOffset());
+            definition.addAffectedPoint(dpi);
         }
 
         return definition;
@@ -410,16 +408,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
      */
     private PointTemplate createPointTemplate(Point point) {
 
-        PointTemplateImpl template = new PointTemplateImpl();
+        PointTemplate template = new PointTemplate(PointTypes.getType(point.getType()), point.getOffset().getValue());
 
         if (point.getAttribute() != null) {
             String attributeName = point.getAttribute().getName();
             template.setAttribute(BuiltInAttribute.valueOf(attributeName));
         }
 
-        template.setType(PointTypes.getType(point.getType()));
         template.setName(point.getName());
-        template.setOffset(point.getOffset().getValue());
         template.setShouldInitialize(point.getInit());
 
         double multiplier = 1.0;

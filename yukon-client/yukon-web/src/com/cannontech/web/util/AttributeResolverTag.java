@@ -7,17 +7,17 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("attributeResolverTagPrototype")
 public class AttributeResolverTag extends YukonTagSupport {
     private AttributeService attributeService;
-    private PaoDao paoDao;
+    private DeviceDao deviceDao;
     
     // inputs
     private String attribute;
@@ -28,16 +28,14 @@ public class AttributeResolverTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         Attribute attr = attributeService.resolveAttributeName(attribute);
 
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(deviceId);
+        YukonDevice device = deviceDao.getYukonDevice(deviceId);
         
-        LitePoint pointForAttribute = attributeService.getPointForAttribute(liteYukonPAO, attr);
+        LitePoint pointForAttribute = attributeService.getPointForAttribute(device, attr);
         
         int pointId = pointForAttribute.getPointID();
         
         getJspContext().setAttribute(var, pointId);
     }
-    
-    
     
     @Required
     public void setAttributeService(AttributeService attributeService) {
@@ -45,8 +43,8 @@ public class AttributeResolverTag extends YukonTagSupport {
     }
     
     @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
+    public void setDeviceDao(DeviceDao paoDao) {
+        this.deviceDao = paoDao;
     }
     
     public void setVar(String var) {

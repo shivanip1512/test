@@ -166,7 +166,7 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="paoDao" ref="paoDao" />
+        <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService" />
         <property name="supportedAttributeGraphSet">
 			<set>
@@ -209,7 +209,7 @@
     <bean id="attributeResolverTagPrototype" class="com.cannontech.web.util.AttributeResolverTag"
         abstract="false" singleton="true" lazy-init="default" autowire="default"
         dependency-check="default">
-        <property name="paoDao" ref="paoDao"/>
+        <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService"/>
     </bean>
     

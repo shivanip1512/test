@@ -21,6 +21,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
@@ -34,6 +35,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -284,8 +286,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         } else {
             LitePoint point = null;
             for (PointTemplate template : templates) {
-                LiteYukonPAObject liteDevice = (LiteYukonPAObject) LiteFactory.createLite(getCurrentDevice());
-                point = pointService.getPointForDevice(liteDevice, template);
+                point = pointService.getPointForDevice(getYukonDeviceForDevice(getCurrentDevice()), template);
                 buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
             }
         }
@@ -293,6 +294,15 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         return buffer.toString();
 
+    }
+    
+    private YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
+        YukonDevice device = new YukonDevice();
+        device.setDeviceId(oldDevice.getPAObjectID());
+        String typeStr = oldDevice.getPAOType();
+        int deviceType = PAOGroups.getDeviceType(typeStr);
+        device.setType(deviceType);
+        return device;
     }
 
     /**
@@ -310,8 +320,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         for (PointTemplate template : transferTemplates) {
 
-            LiteYukonPAObject liteDevice = (LiteYukonPAObject) LiteFactory.createLite(getCurrentDevice());
-            LitePoint litePoint = attributeService.getPointForAttribute(liteDevice,
+            LitePoint litePoint = attributeService.getPointForAttribute(getYukonDeviceForDevice(getCurrentDevice()),
                                                                         template.getAttribute());
             PointBase point = (PointBase) LiteFactory.createDBPersistent(litePoint);
 

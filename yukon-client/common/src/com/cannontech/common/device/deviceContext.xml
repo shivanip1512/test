@@ -6,15 +6,18 @@
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
     </bean>
+    
     <bean id="devicePointService" class="com.cannontech.common.device.service.PointServiceImpl" singleton="true">
         <property name="pointDao" ref="pointDao" />
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
-    <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" singleton="true">
+    
+    <bean id="deviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" singleton="true">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
         <property name="attributeService" ref="attributeService" />
     </bean>
+    
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" singleton="true" init-method="initialize">
         <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
         <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
@@ -22,5 +25,11 @@
         <property name="unitMeasureDao" ref="unitMeasureDao" />
         <property name="stateDao" ref="stateDao" />
     </bean>
+    
 	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" singleton="true" />
+    
+	<bean id="commandRequestExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestExecutorImpl">
+        <property name="porterConnection" ref="porterConnection" />
+        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
+    </bean>
 </beans>
