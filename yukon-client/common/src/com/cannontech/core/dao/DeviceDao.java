@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -16,6 +17,9 @@ public interface DeviceDao {
      * @deprecated replaced by DaoFactory.getPaoDao().getLiteYukonPAO( deviceID )
      */
     public LiteYukonPAObject getLiteDevice(final int deviceID);
+
+    public YukonDevice getYukonDevice(int paoId);
+    public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject);
 
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID);
     

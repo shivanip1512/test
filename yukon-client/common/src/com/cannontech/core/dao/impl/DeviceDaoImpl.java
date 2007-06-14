@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.core.dao.DeviceDao;
@@ -40,6 +41,15 @@ public DeviceDaoImpl() {
  */
 public LiteYukonPAObject getLiteDevice(final int deviceID) {
 	return paoDao.getLiteYukonPAO( deviceID );
+}
+
+public YukonDevice getYukonDevice(int paoId) {
+    return getYukonDevice(paoDao.getLiteYukonPAO(paoId));
+}
+
+public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
+    YukonDevice device = new YukonDevice(yukonPAObject.getYukonID(),yukonPAObject.getType());
+    return device;
 }
 
 /* (non-Javadoc)
