@@ -22,6 +22,7 @@ This file contains default device and point information for all of the devices i
             </point>
 
             <point type="PulseAccumulator">
+                <attribute name="LOAD_PROFILE"/>
                 <name>pulse2</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
@@ -69,6 +70,7 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="display1"/>
         <points>
             <point type="PulseAccumulator">
+                <attribute name="LOAD_PROFILE"/>
                 <name>pulse2</name>
                 <offset value="3"/>
                 <multiplier value="0.1"/>

@@ -68,6 +68,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         Set<Attribute> expectedAttributes = new HashSet<Attribute>();
         expectedAttributes.add(BuiltInAttribute.USAGE);
         expectedAttributes.add(BuiltInAttribute.DEMAND);
+        expectedAttributes.add(BuiltInAttribute.LOAD_PROFILE);
 
         Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
 

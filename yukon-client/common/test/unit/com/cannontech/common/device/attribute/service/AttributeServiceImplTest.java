@@ -88,6 +88,7 @@ public class AttributeServiceImplTest extends TestCase {
         Set<Attribute> expectedAtributes = new HashSet<Attribute>();
         expectedAtributes.add(BuiltInAttribute.USAGE);
         expectedAtributes.add(BuiltInAttribute.DEMAND);
+        expectedAtributes.add(BuiltInAttribute.LOAD_PROFILE);
 
         Set<Attribute> actualAtributes = service.getAllExistingAtributes(device);
 
