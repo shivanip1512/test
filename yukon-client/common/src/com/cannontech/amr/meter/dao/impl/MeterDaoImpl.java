@@ -23,10 +23,10 @@ public class MeterDaoImpl implements MeterDao {
         "select YukonPaObject.*, DeviceMeterGroup.*, DeviceCarrierSettings.*, DeviceRoutes.*, yporoute.paoName as route "
         + "from YukonPaObject "
         + "join Device on YukonPaObject.paObjectId = Device.deviceId "
-        + "left join DeviceMeterGroup on Device.deviceId = DeviceMeterGroup.deviceId "
-        + "left join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId "
-        + "left join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId "
-        + "left join YukonPaObject yporoute on DeviceRoutes.routeId = yporoute.paObjectId "
+        + " join DeviceMeterGroup on Device.deviceId = DeviceMeterGroup.deviceId "
+        + " join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId "
+        + " join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId "
+        + " join YukonPaObject yporoute on DeviceRoutes.routeId = yporoute.paObjectId "
         + "where YukonPaObject.paObjectId = ?";
 
     public void delete(Meter object) {

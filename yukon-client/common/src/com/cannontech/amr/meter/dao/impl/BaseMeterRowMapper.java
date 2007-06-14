@@ -3,8 +3,6 @@ package com.cannontech.amr.meter.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -27,14 +25,16 @@ public class BaseMeterRowMapper {
         int deviceType = paoGroupsWrapper.getDeviceType(type);
         meter.setType(deviceType);
         String meterNumber = rs.getString("meterNumber");
-        meter.setMeterNumber(StringUtils.defaultString(meterNumber));
+        meter.setMeterNumber(meterNumber);
         String disabledStr = rs.getString("disableFlag");
         boolean disabled = CtiUtilities.isTrue(disabledStr);
         meter.setDisabled(disabled);
         String route = rs.getString("route");
-        meter.setRoute(StringUtils.defaultString(route));
+        meter.setRoute(route);
+        int routeId = rs.getInt("routeId");
+        meter.setRouteId(routeId);
         String address = rs.getString("address");
-        meter.setAddress(StringUtils.defaultString(address));
+        meter.setAddress(address);
     }
 
 }
