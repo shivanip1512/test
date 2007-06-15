@@ -28,6 +28,7 @@
 	  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
 	  	<property name="meterRowMapper" ref="meterRowMapper"/>
 	  	<property name="roleDao" ref="roleDao"/>
+	    <property name="jdbcOps" ref="jdbcTemplate"/>
 	</bean>
     
     <bean id="meterRowMapper" class="com.cannontech.amr.meter.dao.impl.MeterRowMapper">
