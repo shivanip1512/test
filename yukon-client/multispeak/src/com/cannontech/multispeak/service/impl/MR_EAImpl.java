@@ -10,17 +10,11 @@ import java.util.Set;
 
 import org.apache.axis.AxisFault;
 
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.YukonFormattedBlock;
-import com.cannontech.multispeak.block.data.load.LoadBlock;
-import com.cannontech.multispeak.block.data.outage.OutageBlock;
-import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
-import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
-import com.cannontech.multispeak.block.impl.YukonFormattedBlockImpl;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -45,11 +39,8 @@ import com.cannontech.yukon.BasicServerConnection;
 public class MR_EAImpl implements MR_EASoap_PortType
 {
     public MultispeakFuncs multispeakFuncs;
-    public MeterDao meterDao;
     public MspMeterReadDao mspMeterReadDao;
     public MR_CBSoap_PortType mr_cb;
-    public YukonFormattedBlock<LoadBlock> loadFormattedBlock;
-    public YukonFormattedBlock<OutageBlock> outageFormattedBlock;
     public Map<String, YukonFormattedBlock> readingTypesMap;
     private BasicServerConnection porterConnection;
     public Multispeak multispeak;
@@ -58,10 +49,6 @@ public class MR_EAImpl implements MR_EASoap_PortType
         this.multispeakFuncs = multispeakFuncs;
     }
 
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
     public void setMspMeterReadDao(MspMeterReadDao mspMeterReadDao) {
         this.mspMeterReadDao = mspMeterReadDao;
     }
@@ -69,17 +56,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     public void setMr_cb(MR_CBSoap_PortType mr_cb) {
         this.mr_cb = mr_cb;
     }
-
-    public void setLoadFormattedBlock(
-            YukonFormattedBlock<LoadBlock> loadFormattedBlock) {
-        this.loadFormattedBlock = loadFormattedBlock;
-    }
     
-    public void setOutageFormattedBlock(
-            YukonFormattedBlock<OutageBlock> outageFormattedBlock) {
-        this.outageFormattedBlock = outageFormattedBlock;
-    }
-
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
     }

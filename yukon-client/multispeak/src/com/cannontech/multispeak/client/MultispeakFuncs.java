@@ -173,22 +173,6 @@ public class MultispeakFuncs
 		}
 		loadResponseHeader();
 	}
-//	/**
-//	 * A common declaration of the pingURL method for all services to use.
-//	 * @param interfaceName
-//	 * @return
-//	 */
-//	public static ArrayOfErrorObject pingURL(String interfaceName)
-//	{
-//		if (Multispeak.getInstance() != null)
-//			return new ArrayOfErrorObject(new ErrorObject[0]);
-//		ErrorObject err = new ErrorObject();
-//		err.setErrorString("Yukon Multispeak WebService '" + interfaceName + "' is not running.");
-//		err.setEventTime(new GregorianCalendar());
-//		ErrorObject[] errorObject = new ErrorObject[]{err};
-//		MultispeakFuncs.logArrayOfErrorObjects(interfaceName, "pingURL", errorObject);
-//		return new ArrayOfErrorObject(errorObject);
-//	}
 	
 	/**
 	 * A common declaration of the getMethods method for all services to use.

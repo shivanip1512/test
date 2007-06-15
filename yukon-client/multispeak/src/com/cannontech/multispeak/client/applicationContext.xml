@@ -27,11 +27,8 @@
   </bean>
   <bean id="mr_ea" class="com.cannontech.multispeak.service.impl.MR_EAImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="meterDao" ref="meterDao"/>
     <property name="mspMeterReadDao" ref="mspMeterReadDao"/>
     <property name="mr_cb" ref="mr_cb"/>
-    <property name="loadFormattedBlock" ref="loadFormattedBlock"/>
-    <property name="outageFormattedBlock" ref="outageFormattedBlock"/>
     <property name="readingTypesMap">
         <map>
           <entry key="Load" value-ref="loadFormattedBlock"/>
@@ -92,8 +89,6 @@
 
   <bean id="yukonFormattedBlock" class="com.cannontech.multispeak.block.impl.YukonFormattedBlockImpl" abstract="true">
       <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
-      <property name="attributeService" ref="attributeService"/>
-      <property name="paoDao" ref="paoDao"/>
   </bean>
   <bean id="loadFormattedBlock" class="com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl" 
 	  	dependency-check="objects" parent="yukonFormattedBlock">

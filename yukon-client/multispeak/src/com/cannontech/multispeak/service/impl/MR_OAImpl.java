@@ -2,13 +2,11 @@ package com.cannontech.multispeak.service.impl;
 
 import java.rmi.RemoteException;
 
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.ArrayOfCustomersAffectedByOutage;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeterConnectivity;
 import com.cannontech.multispeak.service.ArrayOfString;
-import com.cannontech.multispeak.service.MR_OASoap_BindingImpl;
 import com.cannontech.multispeak.service.MR_OASoap_PortType;
 public class MR_OAImpl implements MR_OASoap_PortType
 {
