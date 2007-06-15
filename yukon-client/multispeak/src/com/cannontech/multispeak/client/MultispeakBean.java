@@ -15,20 +15,12 @@ import com.cannontech.spring.YukonSpringHook;
 public class MultispeakBean
 {
     private MultispeakDao multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
-    private RoleDao roleDao = (RoleDaoImpl)YukonSpringHook.getBean("roleDao");
+    private MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
     
     private int selectedVendorID = 1;
     private MultispeakVendor selectedMspVendor;
     private LiteYukonUser yukonUser;
     private List<MultispeakVendor> mspVendorList;
-
-//    public void setMultispeakDao(MultispeakDao multispeakDao) {
-//        this.multispeakDao = multispeakDao;
-//    }
-    
-//    public void setRoleDao(RoleDao roleDao) {
-//        this.roleDao = roleDao;
-//    }
 
     public LiteYukonUser getYukonUser() {
         return yukonUser;
@@ -91,4 +83,12 @@ public class MultispeakBean
     {
         return getSelectedMspVendor().getMspInterfaceMap();
     }
+
+   public int getPrimaryCIS() {
+       return multispeakFuncs.getPrimaryCIS();
+   }
+
+   public int getPaoNameAlias() {
+       return multispeakFuncs.getPaoNameAlias();
+   }
 }
