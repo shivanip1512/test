@@ -13,29 +13,29 @@ import com.cannontech.multispeak.service.impl.MR_OAImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class MR_OASoap_BindingImpl implements com.cannontech.multispeak.service.MR_OASoap_PortType{
-    private MR_OASoap_PortType mr_oaImpl = (MR_OAImpl)YukonSpringHook.getBean("mr_oaImpl");
+    private MR_OASoap_PortType mr_oa = (MR_OAImpl)YukonSpringHook.getBean("mr_oa");
 
     public ArrayOfErrorObject customersAffectedByOutageNotification(ArrayOfCustomersAffectedByOutage newOutages) throws RemoteException {
-        return mr_oaImpl.customersAffectedByOutageNotification(newOutages);
+        return mr_oa.customersAffectedByOutageNotification(newOutages);
     }
 
     public ArrayOfDomainMember getDomainMembers(String domainName) throws RemoteException {
-        return mr_oaImpl.getDomainMembers(domainName);
+        return mr_oa.getDomainMembers(domainName);
     }
 
     public ArrayOfString getDomainNames() throws RemoteException {
-        return mr_oaImpl.getDomainNames();
+        return mr_oa.getDomainNames();
     }
 
     public ArrayOfString getMethods() throws RemoteException {
-        return mr_oaImpl.getMethods();
+        return mr_oa.getMethods();
     }
 
     public ArrayOfErrorObject meterConnectivityNotification(ArrayOfMeterConnectivity newConnectivity) throws RemoteException {
-        return mr_oaImpl.meterConnectivityNotification(newConnectivity);
+        return mr_oa.meterConnectivityNotification(newConnectivity);
     }
 
     public ArrayOfErrorObject pingURL() throws RemoteException {
-        return mr_oaImpl.pingURL();
+        return mr_oa.pingURL();
     }
 }
