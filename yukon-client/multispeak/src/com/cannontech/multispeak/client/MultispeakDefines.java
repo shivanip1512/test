@@ -14,6 +14,7 @@ public class MultispeakDefines
 {
     public static final int MAX_RETURN_RECORDS = 10000;
     public static final long REQUEST_MESSAGE_TIMEOUT = 120000;
+    public static final long MAX_INITIATE_REQUEST_OBJECTS = 15;
     
 	public static final String AMR_VENDOR = "Cannon";
     public static final String MSP_VENDOR = "MSP_VENDOR";
