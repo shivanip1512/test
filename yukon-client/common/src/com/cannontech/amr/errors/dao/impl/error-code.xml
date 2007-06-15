@@ -482,7 +482,16 @@
        </ul>
   </troubleshooting>
   </error>
-
+  
+<error code="85">
+	<category>Yukon System</category> 
+	<porter>Operation Attempted on Inhibited Device</porter>
+    <description>The targeted device is disabled or inhibited in the Yukon System.</description>
+        <troubleshooting>
+        This is a Yukon system message, the device is flagged as disabled in the Device Setup.  
+  </troubleshooting>
+  </error>
+  
 <error code="87">
 	<category>Bulk Communications</category> 
 	<porter>Error Dialing Up Remote</porter>
