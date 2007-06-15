@@ -7,6 +7,8 @@
 package com.cannontech.multispeak.client;
 
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +41,9 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.YukonFormattedBlock;
-import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
-import com.cannontech.multispeak.block.impl.YukonFormattedBlockImpl;
+import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
@@ -338,11 +338,11 @@ public class Multispeak implements MessageListener {
      * @param meterNumbers
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public synchronized ErrorObject[] BlockMeterReadEvent(MultispeakVendor vendor, String[] meterNumbers, YukonFormattedBlock<Block> block)
+    public synchronized ErrorObject[] BlockMeterReadEvent(MultispeakVendor vendor, String[] meterNumbers, YukonFormattedBlock block)
     {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-        CTILogger.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
+        CTILogger.info("Received " + meterNumbers.length + " Meter(s) for BlockMeterReading from " + vendor.getCompanyName());
         
         for (String meterNumber : meterNumbers) {
             com.cannontech.amr.meter.model.Meter meter =
@@ -355,14 +355,19 @@ public class Multispeak implements MessageListener {
             }
             else {
                 
-                long id = generateMessageID();      
-                BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block);
-//                MeterReadEvent event = new MeterReadEvent(vendor, id, meter);
-                getEventsMap().put(new Long(id), event);
+                long id = generateMessageID();
                 
+                BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block);
+                
+                getEventsMap().put(new Long(id), event);
                 String commandStr = "getvalue kwh update";
-                if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
-                    commandStr = "getvalue peak update"; // getvalue peak returns the peak kW and the total kWh
+                if (block instanceof LoadFormattedBlockImpl){
+                    SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                    commandStr = "getvalue lp channel 1 " + format.format(new Date());
+                }
+                else if ( block instanceof OutageFormattedBlockImpl) {
+                    commandStr = "getvalue demand update";
+                }
 
                 writePilRequest(meter, commandStr, id, 13);
 
