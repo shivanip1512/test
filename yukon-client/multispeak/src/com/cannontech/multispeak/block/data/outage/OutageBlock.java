@@ -54,6 +54,10 @@ public class OutageBlock implements Block{
     }
 
     public void populate(Meter meter, PointValueHolder pointValue) {
+        
+        //TODO - Probably shouldn't set this everytime...need to find a better way.
+        meterNumber = meter.getMeterNumber();
+        
         AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
         try {
             LitePoint litePoint = 
