@@ -9,6 +9,7 @@ package com.cannontech.multispeak.client;
 import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.soap.SOAPException;
 
@@ -20,6 +21,8 @@ import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -46,6 +49,7 @@ public class MultispeakFuncs
     public PaoDao paoDao;
     public DeviceDao deviceDao;
     public RoleDao roleDao;
+    public MeterDao meterDao;
 
     /**
      * @param multispeakDao The multispeakDao to set.
@@ -66,6 +70,10 @@ public class MultispeakFuncs
         this.roleDao = roleDao;
     }
 
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+    
     public void logArrayOfString(String intfaceName, String methodName, String[] strings)
 	{
 		if (strings != null)
@@ -128,14 +136,30 @@ public class MultispeakFuncs
         }
     }
 
-    public LiteYukonPAObject getLiteYukonPaobject(String key, String objectID)
+    public Meter getMeter(String key, String objectId)
     {
         if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-            return deviceDao.getLiteYukonPaobjectByDeviceName(objectID);
+            return meterDao.getForPaoName(objectId);
         else //if(key.toLowerCase().startsWith("meternum")) // default value
-            return deviceDao.getLiteYukonPaobjectByMeterNumber(objectID);
+            return meterDao.getForMeterNumber(objectId);
     }
     
+    /**
+     * Returns a list of Meter objects for the unique key.  Meters returned will be greater than lastReceived.
+     * @param key
+     * @param lastReceived
+     * @return
+     */
+    public List<Meter> getMeters(String key, String lastReceived) {
+        List<Meter> meters;
+        if( key.toLowerCase().startsWith("device") || 
+                key.toLowerCase().startsWith("pao"))
+            meters = meterDao.getMetersByPaoName(lastReceived, MultispeakDefines.MAX_RETURN_RECORDS);
+        
+        else //if(key.toLowerCase().startsWith("meternum"))
+            meters = meterDao.getMetersByMeterNumber(lastReceived, MultispeakDefines.MAX_RETURN_RECORDS);
+        return meters;
+    }
 	/**
 	 * This method should be called by every multispeak function!!!
 	 *
