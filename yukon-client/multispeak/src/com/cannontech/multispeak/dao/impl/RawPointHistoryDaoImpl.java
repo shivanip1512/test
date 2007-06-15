@@ -119,7 +119,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                     }
 
                     if( device == null)
-                        device = MeterReadFactory.createMeterReadObject(paoCategory, paoType, meterNumber);
+                        device = MeterReadFactory.createMeterReadObject(paoType, meterNumber);
 
                     device.populate( pointType, pointOffset, uomId, dateTime, new Double(value));
                     prevDateTime.setTime(dateTime.getTime());
