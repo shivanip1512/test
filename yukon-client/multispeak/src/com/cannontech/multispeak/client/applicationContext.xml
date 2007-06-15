@@ -13,42 +13,55 @@
 		<property name="simpleJdbcTemplate"><ref bean="simpleJdbcTemplate" /></property>
 	</bean>
 	
-  <bean id="mr_cbImpl" class="com.cannontech.multispeak.service.impl.MR_CBImpl">
+  <bean id="mr_cb" class="com.cannontech.multispeak.service.impl.MR_CBImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="multispeakDao" ref="multispeakDao"/>
+    <property name="mspMeterDao" ref="mspMeterDao"/>
   	<property name="multispeak" ref="multispeak"/>
   	<property name="mspRawPointHistoryDao" ref="mspRawPointHistoryDao"/>
   	<property name="porterConnection" ref="porterConnection"/>
   </bean>
-  <bean id="cd_cbImpl" class="com.cannontech.multispeak.service.impl.CD_CBImpl">
+  <bean id="cd_cb" class="com.cannontech.multispeak.service.impl.CD_CBImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="multispeakDao" ref="multispeakDao"/>
+    <property name="mspMeterDao" ref="mspMeterDao"/>
   	<property name="multispeak" ref="multispeak"/>
   </bean>
-  <bean id="mr_eaImpl" class="com.cannontech.multispeak.service.impl.MR_EAImpl">
+  <bean id="mr_ea" class="com.cannontech.multispeak.service.impl.MR_EAImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="dynamicDataSource" ref="dynamicDataSource" />
-    <property name="paoDao" ref="paoDao"/>
-    <property name="pointDao" ref="pointDao"/>
+    <property name="meterDao" ref="meterDao"/>
+    <property name="mspMeterReadDao" ref="mspMeterReadDao"/>
+    <property name="mr_cb" ref="mr_cb"/>
+    <property name="loadFormattedBlock" ref="loadFormattedBlock"/>
+    <property name="outageFormattedBlock" ref="outageFormattedBlock"/>
+    <property name="readingTypesMap">
+        <map>
+          <entry key="Load" value-ref="loadFormattedBlock"/>
+          <entry key="Outage" value-ref="outageFormattedBlock"/>
+	<!--      <entry key="Billing" value-ref="billingFormattedBlock"/>
+          <entry key="BillingTOU" value-ref="billingTOUFormattedBlock"/> -->
+        </map>    
+    </property>
+  	<property name="porterConnection" ref="porterConnection"/>
+  	<property name="multispeak" ref="multispeak"/>
   </bean>
   <bean id="mr_oa" class="com.cannontech.multispeak.service.impl.MR_OAImpl">
   </bean>
-    <bean id="od_oaImpl" class="com.cannontech.multispeak.service.impl.OD_OAImpl">
+    <bean id="od_oa" class="com.cannontech.multispeak.service.impl.OD_OAImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
   	<property name="multispeak" ref="multispeak"/>
   </bean>
 
   <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs">
-    <property name="multispeakDao" ref="multispeakDao"></property>
+    <property name="multispeakDao" ref="multispeakDao"/>
     <property name="paoDao" ref="paoDao"/>
     <property name="deviceDao" ref="deviceDao"/>
     <property name="roleDao" ref="roleDao"/>
+    <property name="meterDao" ref="meterDao"/>
   </bean>
   
   <bean id="multispeak" class="com.cannontech.multispeak.client.Multispeak" init-method="initialize">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
   	<property name="porterConnection" ref="porterConnection"/>
-    <property name="multispeakDao" ref="multispeakDao"/>
+    <property name="mspMeterDao" ref="mspMeterDao"/>
     <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="paoDao" ref="paoDao"/>
     <property name="deviceDao" ref="deviceDao"/>
@@ -69,4 +82,23 @@
     <property name="deviceDao" ref="deviceDao"/>
   </bean>
   
+  <bean id="mspMeterReadDao" class="com.cannontech.multispeak.dao.impl.MspMeterReadDaoImpl">
+    <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
+  </bean>
+
+  <bean id="mspMeterDao" class="com.cannontech.multispeak.dao.impl.MspMeterDaoImpl">
+    <property name="jdbcOps" ref="jdbcTemplate"/> 
+  </bean>
+
+  <bean id="yukonFormattedBlock" class="com.cannontech.multispeak.block.impl.YukonFormattedBlockImpl" abstract="true">
+      <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
+      <property name="attributeService" ref="attributeService"/>
+      <property name="paoDao" ref="paoDao"/>
+  </bean>
+  <bean id="loadFormattedBlock" class="com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl" 
+	  	dependency-check="objects" parent="yukonFormattedBlock">
+  </bean>
+  <bean id="outageFormattedBlock" class="com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl"
+    	dependency-check="objects" parent="yukonFormattedBlock">
+  </bean>  
 </beans>
