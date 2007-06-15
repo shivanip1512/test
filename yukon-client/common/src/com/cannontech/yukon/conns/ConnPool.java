@@ -205,28 +205,53 @@ public class ConnPool
      */
     public IServerConnection getDefMacsConn()
     {
-        //check our master Map of existing connections
-    	IServerConnection macsConn =
-            (IServerConnection)getAllConns().get(MACS_CONN);
-
-        if( macsConn == null )
-        {		
-        	macsConn = createMacsConn();
-
-			getAllConns().put( MACS_CONN, macsConn );
-        }
+//      check our master Map of existing connections
+        ServerMACSConnection macsConn = (ServerMACSConnection)getAllConns().get(MACS_CONN);
         
-        return macsConn;    	
+        if( macsConn == null ) {
+            
+            String host = "127.0.0.1";
+            int port = 1900;
+            
+            try {
+                host = roleDao.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
+    
+                port = Integer.parseInt( 
+                    roleDao.getGlobalPropertyValue( SystemRole.MACS_PORT ) ); 
+            }
+            catch( Exception e) {
+                CTILogger.error( e.getMessage(), e );
+            }
+    
+            macsConn = (ServerMACSConnection)createMacsConn();
+    
+            macsConn.setHost(host);
+            macsConn.setPort(port);
+        	macsConn.setAutoReconnect(true);
+		    macsConn.setTimeToReconnect(5);
+            
+            macsConn.setRegistrationMsg(macsConn.getRetrieveAllSchedulesMsg());
+            
+            try {
+                CTILogger.info("Attempting MACS connection to " + macsConn.getHost() + ":" + macsConn.getPort());
+                macsConn.connectWithoutWait();
+            }
+            catch( Exception e ) {
+                CTILogger.error( e.getMessage(), e );
+            }
+                
+            getAllConns().put( MACS_CONN, macsConn );            
+        }
+                    
+        return macsConn;
     }
 
     /**
      * Creates a new MACS connection.
      * 
      */
-    private IMACSConnection createMacsConn()
-    {       
+    private IMACSConnection createMacsConn() {       
         ServerMACSConnection macsConn = new ServerMACSConnection();
-
         return macsConn;
     }
 

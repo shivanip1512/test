@@ -1,7 +1,6 @@
 package com.cannontech.yukon.conns;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.MACSCategoryChange;
@@ -12,7 +11,6 @@ import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.Message;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -40,58 +38,10 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	};
 
 
-	public ServerMACSConnection()
-	{
+	public ServerMACSConnection() {
 		super("MACS");
-		initConnection();
 	}
 
-
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (8/7/00 4:11:33 PM)
-	 */
-	private void initConnection()
-	{
-		String host = "127.0.0.1";
-		int port = 1900;
-		String portStr = "1900";
-		String readOnly = "0";
-	
-	   try
-	   {
-			host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.MACS_MACHINE );
-	
-			try
-			{
-				port = Integer.parseInt(
-						DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.MACS_PORT ) );
-			}
-			catch (Exception e)
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			}
-	
-		}
-	   catch (java.util.MissingResourceException e)
-	   {
-		  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	   }
-	
-	   setHost(host);
-	   setPort(port);
-	   setAutoReconnect(true);
-	   setTimeToReconnect(5);
-       
-       setRegistrationMsg(getRetrieveAllSchedulesMsg());
-	   
-	   //addMessageListener( this );
-	
-       connectWithoutWait();
-	   
-	}
-	
-	
 	private void addCategory(Schedule sched) 
 	{
 		if( sched == null )
@@ -424,7 +374,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * Builds a RetrieveSchedule message that will retrieve all schedules.
      * @return a RetrieveSchedule message.
      */
-    private RetrieveSchedule getRetrieveAllSchedulesMsg() {
+    public RetrieveSchedule getRetrieveAllSchedulesMsg() {
         RetrieveSchedule newSchedules = new RetrieveSchedule();
 		newSchedules.setUserName( CtiUtilities.getUserName() );
 		newSchedules.setScheduleId( RetrieveSchedule.ALL_SCHEDULES );
