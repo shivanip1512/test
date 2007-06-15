@@ -43,7 +43,6 @@
     <bean id="attrDynamicDataSource" class="com.cannontech.common.device.attribute.service.AttributeDynamicDataSource" singleton="true">
         <property name="dynamicDataSource" ref="dynamicDataSource"/>
         <property name="attributeService" ref="attributeService"/>
-        <property name="paoDao" ref="paoDao"/>
     </bean>	
 
 </beans>
