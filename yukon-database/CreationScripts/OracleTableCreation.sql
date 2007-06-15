@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/6/2007 3:33:58 PM                          */
+/* Created on:     6/15/2007 4:00:35 PM                         */
 /*==============================================================*/
 
 
@@ -1806,7 +1806,7 @@ create table CICUSTOMERPOINTDATA  (
 /
 
 alter table CICUSTOMERPOINTDATA
-   add constraint PK_CICUSTOMERPOINTDATA primary key ("CustomerID", "PointID")
+   add constraint PK_CICUSTOMERPOINTDATA primary key ("CustomerID", "Type")
 /
 
 /*==============================================================*/
@@ -2184,6 +2184,10 @@ insert into command values(-126, 'putconfig raw 38 2', 'Install Emetcon Gold 3',
 insert into command values(-127, 'putconfig raw 39 0', 'Install Emetcon Silver 1', 'VersacomSerial');
 insert into command values(-128, 'putconfig raw 39 1', 'Install Emetcon Silver 2', 'VersacomSerial');
 insert into command values(-129, 'putconfig raw 39 2', 'Install Emetcon Silver 3', 'VersacomSerial');
+
+insert into command values(-130, 'getvalue lp channel ?''Channel #'' ?''Enter Start Date: xx/xx/xxxx'' ?''Enter End Date: xx/xx/xxxx''', 'Read LP Channel Data', 'ALL MCT-4xx Series');
+insert into command values(-131, 'getvalue lp status', 'Read LP Channel Data Status', 'ALL MCT-4xx Series');
+insert into command values(-132, 'getvalue lp cancel', 'Read LP Channel Data Cancel', 'ALL MCT-4xx Series');
 
 alter table "Command"
    add constraint PK_COMMAND primary key ("CommandID")
@@ -4097,6 +4101,39 @@ insert into devicetypecommand values (-636, -105, 'MCT-470', 26, 'Y', -1);
 insert into devicetypecommand values (-637, -109, 'MCT-470', 27, 'Y', -1);
 insert into devicetypecommand values (-638, -112, 'MCT-470', 28, 'Y', -1);
 insert into devicetypecommand values (-639, -113, 'MCT-470', 29, 'Y', -1);
+
+insert into devicetypecommand values(-640, -130, 'MCT-410 kWh Only', 21, 'N', -1);
+insert into devicetypecommand values(-641, -130, 'MCT-410CL', 27, 'N', -1);
+insert into devicetypecommand values(-642, -130, 'MCT-410FL', 27, 'N', -1);
+insert into devicetypecommand values(-643, -130, 'MCT-410GL', 27, 'N', -1);
+insert into devicetypecommand values(-644, -130, 'MCT-410IL', 27, 'N', -1);
+insert into devicetypecommand values(-645, -130, 'MCT-410iLE', 21, 'N', -1);
+insert into devicetypecommand values(-646, -130, 'MCT-430A', 23, 'N', -1);
+insert into devicetypecommand values(-647, -130, 'MCT-430S4', 23, 'N', -1);
+insert into devicetypecommand values(-648, -130, 'MCT-430SN', 23, 'N', -1);
+insert into devicetypecommand values(-649, -130, 'MCT-470', 29, 'N', -1);
+
+insert into devicetypecommand values(-650, -131, 'MCT-410 kWh Only', 22, 'N', -1);
+insert into devicetypecommand values(-651, -131, 'MCT-410CL', 28, 'N', -1);
+insert into devicetypecommand values(-652, -131, 'MCT-410FL', 28, 'N', -1);
+insert into devicetypecommand values(-653, -131, 'MCT-410GL', 28, 'N', -1);
+insert into devicetypecommand values(-654, -131, 'MCT-410IL', 28, 'N', -1);
+insert into devicetypecommand values(-655, -131, 'MCT-410iLE', 22, 'N', -1);
+insert into devicetypecommand values(-656, -131, 'MCT-430A', 24, 'N', -1);
+insert into devicetypecommand values(-657, -131, 'MCT-430S4', 24, 'N', -1);
+insert into devicetypecommand values(-658, -131, 'MCT-430SN', 24, 'N', -1);
+insert into devicetypecommand values(-659, -131, 'MCT-470', 30, 'N', -1);
+
+insert into devicetypecommand values(-660, -132, 'MCT-410 kWh Only', 23, 'N', -1);
+insert into devicetypecommand values(-661, -132, 'MCT-410CL', 29, 'N', -1);
+insert into devicetypecommand values(-662, -132, 'MCT-410FL', 29, 'N', -1);
+insert into devicetypecommand values(-663, -132, 'MCT-410GL', 29, 'N', -1);
+insert into devicetypecommand values(-664, -132, 'MCT-410IL', 29, 'N', -1);
+insert into devicetypecommand values(-665, -132, 'MCT-410iLE', 23, 'N', -1);
+insert into devicetypecommand values(-666, -132, 'MCT-430A', 25, 'N', -1);
+insert into devicetypecommand values(-667, -132, 'MCT-430S4', 25, 'N', -1);
+insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1);
+insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1);
 
 alter table "DeviceTypeCommand"
    add constraint PK_DEVICETYPECOMMAND primary key ("DeviceCommandID", "CommandGroupID")
@@ -7055,14 +7092,6 @@ insert into yukongrouprole values (-40704, -302, -108, -10811, '(none)');
 insert into yukongrouprole values (-407, -302, -300, -30000, '(none)');
 insert into yukongrouprole values (-408, -302, -300, -30001, 'true');
 
-/* Web Client Customers Curtailment role */
-insert into yukongrouprole values (-409, -302, -301, -30100, '(none)');
-insert into yukongrouprole values (-410, -302, -301, -30101, '(none)');
-
-/* Web Client Customers Energy Buyback role */
-insert into yukongrouprole values (-411, -302, -302, -30200, '(none)');
-insert into yukongrouprole values (-412, -302, -302, -30200, '(none)');
-
 /* Web Client Customers Commercial Metering role */
 insert into yukongrouprole values (-413, -302, -304, -30400, '(none)');
 insert into yukongrouprole values (-414, -302, -304, -30401, 'true');
@@ -7203,12 +7232,9 @@ insert into yukongrouprole values (-777,-301,-900,-90002,'(none)');
 insert into yukongrouprole values (-778,-301,-900,-90003,'(none)');
 insert into yukongrouprole values (-779,-301,-900,-90004,'(none)')
 
-insert into yukongrouprole values (-780,-301,-204,-20400,'(none)');
 insert into yukongrouprole values (-781,-301,-900,-90005,'(none)');
 insert into yukongrouprole values (-782,-301,-900,-90006,'(none)');
 insert into yukongrouprole values (-783,-301,-900,-90007,'(none)');
-
-insert into yukongrouprole values (-785,-301,-205,-20500,'(none)');
 
 insert into yukongrouprole values (-790,-301,-207,-20700,'(none)');
 insert into yukongrouprole values (-791,-301,-209,-20900,'(none)');
@@ -7648,6 +7674,10 @@ insert into YukonListEntry values (135, 100, 0, 'Regression', 0);
 insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
 insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
 insert into yukonlistentry values (138, 100, 0, 'Float From 16bit', 0);
+insert into yukonlistentry values (139, 100, 0, 'Get Point Limit', 0);
+insert into yukonlistentry values (140, 100, 0, 'Get Interval Minutes', 0);
+insert into yukonlistentry values (141, 100, 0, 'Intervals To Value', 0);
+insert into yukonlistentry values (142, 100, 0, 'Linear Slope', 0);
 
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
 insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
@@ -8073,6 +8103,7 @@ insert into YukonListEntry values (10431,1053,0,'Consumption Type',2911);
 
 insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 
+
 alter table "YukonListEntry"
    add constraint PK_YUKONLISTENTRY primary key ("EntryID")
 /
@@ -8153,8 +8184,6 @@ insert into YukonRole values(-109,'Reporting','Application','Access to reports g
 insert into YukonRole values(-200,'Administrator','Operator','Access to Yukon administration');
 insert into YukonRole values(-201,'Consumer Info','Operator','Operator access to consumer account information');
 insert into YukonRole values(-202,'Commercial Metering','Operator','Operator access to commerical metering');
-insert into YukonRole values(-204,'Direct Curtailment','Operator','Operator access to direct curtailment');
-insert into YukonRole values(-205,'Energy Buyback','Operator','Operator access to energy buyback');
 
 /* Operator roles */
 insert into YukonRole values(-206,'Esubstation Drawings','Operator','Operator access to esubstation drawings');
@@ -8166,12 +8195,12 @@ insert into YukonRole values (-209,'Inventory','Operator','Operator Access to ha
 
 /* operator work order management role */
 insert into YukonRole values (-210,'Work Order','Operator','Operator Access to work order management');
+
+/*ISOC*/
 insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
 
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
-insert into YukonRole values(-301,'Curtailment','CICustomer','Customer access to commercial/industrial customer direct curtailment');
-insert into YukonRole values(-302,'Energy Buyback','CICustomer','Customer access to commercial/industrial customer energy buyback');
 insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
 insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privilages.');
 insert into YukonRole values(-306,'User Control', 'CICustomer', 'Customer access to user control operations.');
@@ -8464,12 +8493,6 @@ insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows
 insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
 
-/* Operator Direct Curtailment Role Properties */
-insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
-
-/* Operator Energy Exchange Role Properties */
-insert into YukonRoleProperty values(-20500,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
-
 /* Operator Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
 insert into YukonRoleProperty values(-20601,-206,'Edit Limits','false','Controls editing of point limits');
@@ -8564,14 +8587,6 @@ insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curt
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
 insert into YukonRoleProperty values(-30001,-300,'Individual Switch','false','Controls access to customer individual switch control');
-
-/* CICustomer Curtailment Role Properties */
-insert into YukonRoleProperty values(-30100,-301,'Direct Curtailment Label','Notification','The customer specific name for direct curtailment');
-insert into YukonRoleProperty values(-30101,-301,'Direct Curtailment Provider','<curtailment provider>','This customers direct curtailment provider');
-
-/* CICustomer Energy Buyback Role Properties */
-insert into YukonRoleProperty values(-30200,-302,'Energy Buyback Label','Energy Buyback','The customer specific name for Energy Buyback');
-insert into YukonRoleProperty values(-30201,-302,'Energy Buyback Phone Number','1-800-555-5555','The phone number to call if the customer has questions');
 
 /* CICustomer Commercial Metering Role Properties */
 insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
