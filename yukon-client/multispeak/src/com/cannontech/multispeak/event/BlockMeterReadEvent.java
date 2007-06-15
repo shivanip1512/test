@@ -22,6 +22,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.EA_MRSoap_BindingStub;
+import com.cannontech.multispeak.service.FormattedBlock;
 import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -37,7 +38,7 @@ public class BlockMeterReadEvent extends MultispeakEvent {
     private Meter meter;
     private Block block;
     boolean populated = false;
-    private YukonFormattedBlock formattedBlock;
+    private YukonFormattedBlock<Block> formattedBlock;
     
     /**
      * @param mspVendor_
@@ -45,22 +46,22 @@ public class BlockMeterReadEvent extends MultispeakEvent {
      * @param returnMessages_
      */
     public BlockMeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, 
-            YukonFormattedBlock formattedBlock, int returnMessages_) {
+            YukonFormattedBlock<Block> formattedBlock, int returnMessages_) {
         super(mspVendor_, pilMessageID_, returnMessages_);
         this.meter = meter;
         this.formattedBlock = formattedBlock;
         this.block = formattedBlock.getNewBlock();
     }
-    
+
     /**
      * @param mspVendor_
      * @param pilMessageID_
      */
     public BlockMeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, 
-            YukonFormattedBlock formattedBlock) {
+            YukonFormattedBlock<Block> formattedBlock) {
         this(mspVendor_, pilMessageID_, meter, formattedBlock, 1);
     }
-    
+  
     public Meter getMeter() {
         return meter;
     }
@@ -76,11 +77,11 @@ public class BlockMeterReadEvent extends MultispeakEvent {
     public void eventNotification() {
         
         String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.EA_MR_STR);
-        CTILogger.info("Sending EA_MR_FormattedBlockNotification ("+ endpointURL+ "): Meter Number " + meter.getMeterNumber());
+        CTILogger.info("Sending EA_MR_FormattedBlockNotification ("+ endpointURL+ ")");
         
         try {            
             EA_MRSoap_BindingStub port = MultispeakPortFactory.getEA_MRPort(getMspVendor());            
-            ArrayOfErrorObject errObjects = port.formattedBlockNotification( formattedBlock.getFormattedBlock(meter) );
+            ArrayOfErrorObject errObjects = port.formattedBlockNotification( getMspFormattedBlock());
             if( errObjects != null)
                 ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
             
@@ -99,18 +100,16 @@ public class BlockMeterReadEvent extends MultispeakEvent {
         
         if( returnMsg.getStatus() != 0) {
             
-            String result = "MeterReadEvent(" + objectID + ") - Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
+            String result = "BlockMeterReadEvent(" + objectID + ") - Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
             CTILogger.info(result);
             //TODO Should we send old data if a new reading fails?
-//            setFormattedBlock(lfb.getFormattedBlock(meter));
+            block = formattedBlock.getBlock(meter);
             //TODO - how can we return some sort of errorMessage with the FormattedBlock?
-//            getDevice().getMeterRead().setErrorString(result);
         }
         else {
 
-            CTILogger.info("MeterReadEvent(" + objectID + ") - Reading Successful" );
+            CTILogger.info("BlockMeterReadEvent(" + objectID + ") - Reading Successful" );
             if(returnMsg.getVector().size() > 0 ) {
-
                 for (int i = 0; i < returnMsg.getVector().size(); i++) {
                     
                     Object o = returnMsg.getVector().elementAt(i);
@@ -137,5 +136,9 @@ public class BlockMeterReadEvent extends MultispeakEvent {
 
     public boolean isPopulated() {
         return populated; 
+    }
+    
+    private FormattedBlock getMspFormattedBlock() {
+        return formattedBlock.createFormattedBlock(block);
     }
 }

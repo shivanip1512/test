@@ -243,6 +243,10 @@ public class MR_EAImpl implements MR_EASoap_PortType
             throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
         
+        if( meterNos.getString().length >= MultispeakDefines.MAX_INITIATE_REQUEST_OBJECTS){
+            throw new AxisFault("Maximum number of MeterNos initiated exceeds limit.  Initiate request cancelled.  Limit set to " + MultispeakDefines.MAX_INITIATE_REQUEST_OBJECTS);
+        }
+        
         YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
         errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNos.getString(), formattedBlock);
 
