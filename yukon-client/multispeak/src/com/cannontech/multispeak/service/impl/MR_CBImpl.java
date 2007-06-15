@@ -19,13 +19,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.RawPointHistoryDao;
 import com.cannontech.multispeak.dao.RawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MeterReadFactory;
@@ -53,19 +52,15 @@ import com.cannontech.yukon.BasicServerConnection;
 public class MR_CBImpl implements MR_CBSoap_PortType{
 
     public Multispeak multispeak;
-    public MultispeakDao multispeakDao;
+    public MspMeterDao mspMeterDao;
     public MultispeakFuncs multispeakFuncs;
     public RawPointHistoryDao mspRawPointHistoryDao;
     private BasicServerConnection porterConnection;
     
-    /**
-     * @param multispeakDao The multispeakDao to set.
-     */
-    public void setMultispeakDao(MultispeakDao multispeakDao)
-    {
-        this.multispeakDao = multispeakDao;
+    public void setMspMeterDao(MspMeterDao mspMeterDao) {
+        this.mspMeterDao = mspMeterDao;
     }
-
+    
     public void setMultispeak(Multispeak multispeak) {
         this.multispeak = multispeak;
     }
@@ -130,7 +125,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = multispeakDao.getAMRSupportedMeters(lastReceived, vendor.getUniqueKey());
+            meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getUniqueKey());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }
@@ -153,11 +148,9 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        if( meterNo != null && meterNo.length() > 0)
-        {
-            LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
-            if( lPao != null)
-            {
+        if( meterNo != null && meterNo.length() > 0) {
+            com.cannontech.amr.meter.model.Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+            if( meter != null) {
                 CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
                 return true;
             }                   
@@ -195,9 +188,9 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         	return multispeak.getLatestReadingInterrogate(vendor, meterNo);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
-    	        LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
-    	        ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNo);
-    	        device.populateWithPointData(lPao.getYukonID());
+    	        com.cannontech.amr.meter.model.Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+    	        ReadableDevice device = MeterReadFactory.createMeterReadObject(meter);
+    	        device.populateWithPointData(meter.getDeviceId());
     	        return device.getMeterRead();
             } catch (DynamicDataAccessException e) {
                 throw new AxisFault("Connection to dispatch is invalid");
