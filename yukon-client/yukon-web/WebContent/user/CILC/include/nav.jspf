@@ -16,9 +16,7 @@ function dispStatusMsg(msgStr)
 	int IMG = 0;
 	int HTML = 1;
 	// Table of (link, page name, dir location) pairs
-	String linkPairs[][] = {{"user_ee.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, EnergyBuybackRole.ENERGY_BUYBACK_LABEL), "/user/CILC/"},
-						  {"user_curtail.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectCurtailmentRole.CURTAILMENT_LABEL), "/user/CILC/"},
-  						  {"user_direct.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectLoadcontrolRole.LOADCONTROL_LABEL), "/user/CILC/"},
+	String linkPairs[][] = {{"user_direct.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectLoadcontrolRole.LOADCONTROL_LABEL), "/user/CILC/"},
 						  {"user_lm_control.jsp", "Auto Control", "/user/CILC/"},
 						  {"user_lm_time.jsp", "Time Based", "/user/CILC/"},
 						  {"switch_commands.jsp", "Switch Command", "/user/CILC/"},
@@ -48,21 +46,6 @@ function dispStatusMsg(msgStr)
 %>
 
 <table width="150" border="0" cellspacing="0" cellpadding="6">
-  <cti:checkMultiRole roleid="<%=Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID)%>">
-  <tr> 
-    <td bgcolor="#FFFFFF">
-	<% if (liteCICustomer != null)
-	{%>
-	  <div align="left"> <span class="NavText"><%= liteCICustomer.getCompanyName() %><br>
-	  <%= liteContact.getContFirstName() + "  " + liteContact.getContLastName() %><br>
-		<br>
-	  </span><br>
-	  </div>
-	<%}%>
-    </td>
-  </tr>
-  </cti:checkMultiRole>
-
   <cti:checkRole roleid="<%=CommercialMeteringRole.ROLEID%>">
   <tr> 
     <td height="30" valign="bottom">
@@ -124,35 +107,6 @@ function dispStatusMsg(msgStr)
     </td>
   </tr>
   </cti:checkRole>
-  <cti:checkMultiRole roleid="<%=Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID)+ ',' + Integer.toString(DirectLoadcontrolRole.ROLEID)%>">
-  <tr>
-    <td height="20">
-      <div align="left"><span class="NavHeader">Buyback</span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <cti:checkRole roleid="<%=EnergyBuybackRole.ROLEID%>">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("user_ee.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("user_ee.jsp"))[HTML] %></td>
-          </tr>
-          </cti:checkRole>
-		  <cti:checkRole roleid="<%=DirectCurtailmentRole.ROLEID%>"> 
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("user_curtail.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("user_curtail.jsp"))[HTML] %></td>
-          </tr>
-          </cti:checkRole>
-          <cti:isPropertyTrue propertyid="<%= com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL %>">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("user_direct.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("user_direct.jsp"))[HTML] %></td>
-          </tr>
-          </cti:isPropertyTrue>
-
-        </table>
-      </div>
-    </td>
-  </tr>
-  </cti:checkMultiRole>
   <cti:checkRole roleid="<%=UserControlRole.ROLEID%>">
   <tr>
     <td height="20">

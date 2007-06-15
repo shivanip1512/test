@@ -132,7 +132,7 @@
 </cti:checkProperty>
 
 <!-- Load Response section -->
-<cti:checkMultiRole roles="DirectLoadcontrolRole.ROLEID,DirectCurtailmentRole.ROLEID,EnergyBuybackRole.ROLEID,OddsForControlRole.ROLEID">
+<cti:checkMultiRole roles="DirectLoadcontrolRole.ROLEID,OddsForControlRole.ROLEID,CICurtailmentRole.ROLEID">
 
 	<tags:operationSection sectionName="Load Response" sectionImageName="LoadResponseLogo">
 		<cti:isPropertyTrue property="DirectLoadcontrolRole.DIRECT_CONTROL">
@@ -140,25 +140,11 @@
             	<a href="LoadControl/oper_direct.jsp">Direct</a>
             </tags:sectionLink>
 		</cti:isPropertyTrue>
-
-		<cti:checkRole role="DirectCurtailmentRole.ROLEID"> 
-            <tags:sectionLink>
-            	<a href="LoadControl/oper_mand.jsp"><cti:getProperty property="DirectCurtailmentRole.CURTAILMENT_LABEL"/></a>
-            </tags:sectionLink>
-		</cti:checkRole>
-
-		<cti:checkRole role="EnergyBuybackRole.ROLEID"> 
-            <tags:sectionLink>
-            	<a href="LoadControl/oper_ee.jsp"><cti:getProperty property="EnergyBuybackRole.ENERGY_BUYBACK_LABEL"/></a>
-            </tags:sectionLink>
-		</cti:checkRole>
- 
 		<cti:checkRole role="CICurtailmentRole.ROLEID"> 
             <tags:sectionLink>
             	<a href="<c:url value="/cc/programSelect.jsf"/>"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a>
             </tags:sectionLink>
 		</cti:checkRole>
-
 		<cti:checkRole role="OddsForControlRole.ROLEID"> 
             <tags:sectionLink>
             	<a href="Consumer/Odds.jsp">Odds for Control</a>

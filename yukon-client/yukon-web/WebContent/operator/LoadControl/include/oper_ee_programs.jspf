@@ -26,7 +26,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
+                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Energy Buyback</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -90,7 +90,7 @@
 			  <tr> 
             	<td width="650" class="TitleHeader"valign="top"> 
              	  <p align="center"><br>
-				  <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - PROGRAMS<br>
+				  Energy Buyback - PROGRAMS<br>
                   <br>          
 				  <table width="620" border="0" cellspacing="0" cellpadding="0" align="center">
           <%

@@ -21,9 +21,7 @@ import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.application.WebGraphRole;
 import com.cannontech.roles.cicustomer.CommercialMeteringRole;
-import com.cannontech.roles.cicustomer.DirectCurtailmentRole;
 import com.cannontech.roles.cicustomer.DirectLoadcontrolRole;
-import com.cannontech.roles.cicustomer.EnergyBuybackRole;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -58,9 +56,7 @@ public class DumpRoles {
 		WebGraphRole.class,
 
 		CommercialMeteringRole.class,
-		DirectCurtailmentRole.class,
 		DirectLoadcontrolRole.class,
-		EnergyBuybackRole.class,
 		EsubDrawingsRole.class,
 		
 		ResidentialCustomerRole.class,
@@ -68,9 +64,7 @@ public class DumpRoles {
 		AdministratorRole.class,
 		com.cannontech.roles.operator.CommercialMeteringRole.class,
 		ConsumerInfoRole.class,
-		com.cannontech.roles.operator.DirectCurtailmentRole.class,
 		com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.class,
-		com.cannontech.roles.operator.EnergyBuybackRole.class,
 		com.cannontech.roles.operator.EsubDrawingsRole.class,
 		OddsForControlRole.class,
 		

@@ -130,7 +130,7 @@
                 <tr> 
                   <td width="650" class="TitleHeader"> 
                     <br>
-                    <p align="center"><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - OFFER <%= offer.getOfferID().toString() %>  - <%= revisionNumber %> DETAILS</p>
+                    <p align="center">Energy Buyback - OFFER <%= offer.getOfferID().toString() %>  - <%= revisionNumber %> DETAILS</p>
                     <% 
            java.util.Date notificationDate = ((LMEnergyExchangeOfferRevision) offerRevisions.get(revisionNumber.intValue())).getNotificationDateTime();          
                       

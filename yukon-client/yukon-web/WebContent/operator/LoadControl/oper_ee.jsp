@@ -11,7 +11,6 @@
  
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
   
-<cti:checkRole roleid="<%=EnergyBuybackRole.ROLEID%>">
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 
 <%   
@@ -708,4 +707,3 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 </body>
 </html>
 
-</cti:checkRole>

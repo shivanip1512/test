@@ -111,7 +111,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Energy Buyback</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -179,7 +179,7 @@
         <input type=hidden name="offer" value="<%= offerID %>">
         <input type=hidden name="rev" value="<%= revisionNumber %>">
         <input type=hidden name="date" value="<%= eeDateFormat.format(offer.getOfferDate()) %>">
-                    <b> <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - REVISE OFFER </b><br>
+                    <b> Energy Buyback - REVISE OFFER </b><br>
                     <br>
                   </div>
       <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">

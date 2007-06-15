@@ -144,7 +144,7 @@
                       <td>
                         <center>
                         <span class="Subtext"> <br>
-                          Per your contract with <cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_PROVIDER%>" defaultvalue="<curtailment provider>"/>, 
+                          Per your contract with your curtailment provider, 
                           a notification event is scheduled<br>
                           from <%= startDateTimeStr %> to <%= stopDateTimeStr %>.</span> 
                         <p> 

@@ -244,7 +244,7 @@ function decline_form()
 <!--                    If you would like to review the terms of your energy contract, click</span> <br>
                       <input type="submit" name="Input" value="Here">
                       <br>-->
-                      If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/></span></div>
+                      If you have questions or problems, call your program administrator.</span></div>
 <!--                  </form>-->
                   <div align="center" class="SubtitleHeader"><a href = "user_ee.jsp" class = "Link1"><br>Back</a><br><br></div>
                   </center>

@@ -117,7 +117,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Energy Buyback</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -177,7 +177,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <p class="TitleHeader"><br>
-                <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - CUSTOMER SUMMARY<br>
+                Energy Buyback - CUSTOMER SUMMARY<br>
                 <%= customer.getCompanyName() %><br>
               </p>
             </div> 

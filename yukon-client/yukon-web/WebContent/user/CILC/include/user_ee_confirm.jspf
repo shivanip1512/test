@@ -162,8 +162,7 @@
                     <input type="submit" name="" value="Here">-->
                     <br>
                   <div align="center">
-                    <span class="MainText">If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/>
-                    </span>
+                    <span class="MainText">If you have questions or problems, call your program administrator.</span>
                   </div>
 <!--                  </form>-->
                 <p class="MainText" align="center"></p>

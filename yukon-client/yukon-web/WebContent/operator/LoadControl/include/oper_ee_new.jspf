@@ -29,7 +29,7 @@ function confirm_form(f) {
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
+                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Energy Buyback</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -94,7 +94,7 @@ function confirm_form(f) {
                     <p align="center"><br>
                     <input type=hidden name="submitted" value="true">
                     <input type=hidden name="programname">
-                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - NEW OFFER</p>
+                    Energy Buyback - NEW OFFER</p>
                     <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
                         <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Program:</td>

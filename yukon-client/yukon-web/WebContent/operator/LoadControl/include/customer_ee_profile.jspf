@@ -54,7 +54,7 @@ if( customerIDStr != null )
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
+                <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Energy Buyback</td>
 				<td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
                   <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -114,7 +114,7 @@ if( customerIDStr != null )
             <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>
                 <td width="640">
-                  <p align="center" class="TitleHeader"><br><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - CUSTOMER PROFILE</p>
+                  <p align="center" class="TitleHeader"><br>Energy Buyback - CUSTOMER PROFILE</p>
                 </td>
               </tr>
               <%@include file="cust_profile.jspf"%>

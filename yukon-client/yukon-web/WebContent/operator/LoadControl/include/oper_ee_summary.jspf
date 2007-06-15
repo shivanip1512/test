@@ -19,7 +19,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Energy Buyback</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -80,10 +80,10 @@
             <tr> 
                 <td width="650" class="TitleHeader"valign="top"> 
                   <p align="center"><br>
-                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - CURRENT SUMMARY<br>
+                    Energy Buyback - CURRENT SUMMARY<br>
                     <br>
                   <p align="center">Click on an Offer ID to view the offer summary.</p>
-      <p align="center"><span class="SubtitleHeader">Today's <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday(tz)) %></span> 
+      <p align="center"><span class="SubtitleHeader">Today's Energy Buyback Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday(tz)) %></span> 
       <center>
         <table width="620" border="1" cellspacing="0" cellpadding="2">
           <tr valign="top"> 
@@ -178,7 +178,7 @@
         <br>
       </center> 
       <p align="center"><span class="SubtitleHeader">Tomorrow's 
-        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTomorrow(tz)) %></span>
+        Energy Buyback Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTomorrow(tz)) %></span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
           <td class="HeaderCell">Offer ID</td>
@@ -274,7 +274,7 @@
       </table>
       </center>
       <p align="center"><span class="SubtitleHeader">Future
-        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> Summary</span>
+        Energy Buyback Summary</span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
           <td class="HeaderCell">Offer ID</td>

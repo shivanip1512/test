@@ -1,6 +1,5 @@
 <%@ include file="include/oper_header.jspf" %> 
 
-<cti:checkRole roleid="<%=DirectCurtailmentRole.ROLEID%>">
 <%
    String tab = request.getParameter("tab");
    tab = request.getParameter("tab");
@@ -248,4 +247,3 @@
 <!-- Add menus -->   
 </body>
 </html>
-</cti:checkRole>
