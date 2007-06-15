@@ -39,9 +39,13 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.data.MeterReadFactory;
-import com.cannontech.multispeak.data.ReadableDevice;
+import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.block.YukonFormattedBlock;
+import com.cannontech.multispeak.block.data.load.LoadBlock;
+import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
+import com.cannontech.multispeak.block.impl.YukonFormattedBlockImpl;
+import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
 import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
@@ -70,7 +74,7 @@ public class Multispeak implements MessageListener {
 	
     private MultispeakFuncs multispeakFuncs;
     private BasicServerConnection porterConnection;
-    private MultispeakDao multispeakDao;
+    private MspMeterDao mspMeterDao;
     private DBPersistentDao dbPersistentDao;
     private PaoDaoImpl paoDao;
     private DeviceDaoImpl deviceDao;
@@ -90,10 +94,9 @@ public class Multispeak implements MessageListener {
         this.porterConnection = porterConnection;
     }
 
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
+    public void setMspMeterDao(MspMeterDao mspMeterDao) {
+        this.mspMeterDao = mspMeterDao;
     }
-
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
     }
@@ -151,9 +154,11 @@ public class Multispeak implements MessageListener {
 
                     MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
 
-                    boolean doneProcessing = event.messageReceived(returnMsg);
-                    if (doneProcessing)
-                        getEventsMap().remove(new Long(event.getPilMessageID()));
+                    if( event != null) {    // This message is one that Multispeak is waiting for...
+                        boolean doneProcessing = event.messageReceived(returnMsg);
+                        if (doneProcessing)
+                            getEventsMap().remove(new Long(event.getPilMessageID()));
+                    }
 				}
 			}
 		}
@@ -165,40 +170,28 @@ public class Multispeak implements MessageListener {
             throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
-        LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNumber);
+        com.cannontech.amr.meter.model.Meter meter = 
+            multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNumber);
         long id = generateMessageID();
         CDStatusEvent event = new CDStatusEvent(mspVendor, id);
         
-        if (lPao != null)
-        {
+        if (meter != null) {
             event.setMeterNumber(meterNumber);
             getEventsMap().put(new Long(id), event);
             
-            Request pilRequest = null;
             CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
 
-            String commandStr = "getstatus disconnect";
-            pilRequest = new Request(lPao.getYukonID(), commandStr, id);
-            pilRequest.setPriority(15);
-            porterConnection.write(pilRequest);
+            String commandStr = "getstatus disconnect update";
+            writePilRequest(meter, commandStr, id, 15);
             logMSPActivity("getCDMeterState",
-            				"(ID:" + lPao.getYukonID()+ ") MeterNumber (" + meterNumber + ") - " + commandStr,
+            				"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
             				mspVendor.getCompanyName());    
 
-            synchronized (event)
-            {
-                long millisTimeOut = 0; //
-                while (event.getLoadActionCode() == null && millisTimeOut < 120000)  //quit after 2 minutes
-                {
-                    try {
-                        Thread.sleep(1000);
-                        millisTimeOut += 1000;
-                    } catch (InterruptedException e) {
-                        CTILogger.error(e);
-                    }
-                }
-                if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
-                    event.setResultMessage("Reading Timed out after 2 minutes.");
+            synchronized (event) {
+                boolean timeout = !waitOnEvent(event);
+                if( timeout ) {
+                    
+                    event.setResultMessage("Reading Timed out after " + (MultispeakDefines.REQUEST_MESSAGE_TIMEOUT/1000)+ " seconds.");
                     logMSPActivity("getCDMeterState", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
                     if(event.getLoadActionCode() == null)
                         event.setLoadActionCode(LoadActionCode.Unknown);
@@ -220,47 +213,31 @@ public class Multispeak implements MessageListener {
      */
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, String meterNumber)
     {
-        LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNumber);
+        com.cannontech.amr.meter.model.Meter meter =
+            multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNumber);
     	long id = generateMessageID();      
-        MeterReadEvent event = new MeterReadEvent(mspVendor, id);
-                
-        if (lPao != null)
-        {
-            ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNumber);
-            event.setDevice(device);
-            getEventsMap().put(new Long(id), event);
-            String commandStr = "getvalue kwh update";
-            if( DeviceTypesFuncs.isMCT4XX(lPao.getType()) )
-                commandStr = "getvalue peak update";
-            
-            Request pilRequest = null;
-            CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
+        MeterReadEvent event = new MeterReadEvent(mspVendor, id, meter);
+        
+        getEventsMap().put(new Long(id), event);
+        String commandStr = "getvalue kwh update";
+        if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+            commandStr = "getvalue peak update";    // getvalue peak returns the peak kW and the total kWh
+        
+        CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
+        writePilRequest(meter, commandStr, id, 15);
+        logMSPActivity("getLatestReadingByMeterNo",
+						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
+						mspVendor.getCompanyName());
 
-//          getvalue peak returns the peak kW and the total kWh
-            pilRequest = new Request(lPao.getYukonID(), commandStr, id);
-            pilRequest.setPriority(15);
-            porterConnection.write(pilRequest);
-            logMSPActivity("getLatestReadingByMeterNo",
-    						"(ID:" + lPao.getYukonID()+ ") MeterNumber (" + meterNumber + ") - " + commandStr,
-    						mspVendor.getCompanyName());
-
-            synchronized (event)
-            {
-                long millisTimeOut = 0; //
-                while (!event.getDevice().isPopulated() && millisTimeOut < 120000)  //quit after 2 minutes
-                {
-                    try {
-                        Thread.sleep(1000);
-                        millisTimeOut += 1000;
-                    } catch (InterruptedException e) {
-                        CTILogger.error(e);
-                    }
-                }
-                if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
-                    logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meterNumber + ") - Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
-                }
+        synchronized (event) {
+            boolean timeout = !waitOnEvent(event);
+            if( timeout ) {
+                logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
+                               (MultispeakDefines.REQUEST_MESSAGE_TIMEOUT/1000) + 
+                               " seconds.  No reading collected.", mspVendor.getCompanyName());
             }
-      }
+        }
+
         return event.getDevice().getMeterRead();
     }
     
@@ -278,33 +255,28 @@ public class Multispeak implements MessageListener {
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-		Request pilRequest = null;
 		CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + vendor.getCompanyName());
 		
         for (String meterNumber : meterNumbers) {
-			LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNumber);
-			if (lPao == null)
-			{
+            
+			com.cannontech.amr.meter.model.Meter meter = 
+                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
+			if (meter == null) {
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
                                                                  "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
                                                                  "Meter");
 				errorObjects.add(err);
 			}
-			else
-			{
+			else {
 				long id = generateMessageID();		
 				ODEvent event = new ODEvent(vendor, id);
 				getEventsMap().put(new Long(id), event);
-			    
-				pilRequest = new Request(lPao.getYukonID(), "ping noqueue", id);
-				pilRequest.setPriority(13);	//just below Client applications
-				porterConnection.write(pilRequest);
+			    writePilRequest(meter, "ping noqueue", id, 13); 
 			}
-			
 		}
     		
-		if( !errorObjects.isEmpty())
-		{
+		if( !errorObjects.isEmpty()) {
+            
 			ErrorObject[] errors = new ErrorObject[errorObjects.size()];
 			errorObjects.toArray(errors);
 			return errors;
@@ -321,36 +293,81 @@ public class Multispeak implements MessageListener {
     {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-        Request pilRequest = null;
         CTILogger.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
         
         for (String meterNumber : meterNumbers) {
-            LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNumber);
-            if (lPao == null)
-            {
+            com.cannontech.amr.meter.model.Meter meter =
+                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
+            if (meter == null) {
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
                                                                  "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
                                                                  "Meter");
                 errorObjects.add(err);
             }
-            else
-            {
+            else {
+                
                 long id = generateMessageID();      
-                MeterReadEvent event = new MeterReadEvent(vendor, id);
-//                MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
-                ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNumber);
-                event.setDevice(device);
+                MeterReadEvent event = new MeterReadEvent(vendor, id, meter);
                 getEventsMap().put(new Long(id), event);
                 
-//                pilRequest = new Request(lPao.getYukonID(), "getvalue kwh update", id);
                 String commandStr = "getvalue kwh update";
-                if( DeviceTypesFuncs.isMCT4XX(lPao.getType()) )
-                    commandStr = "getvalue peak update";
-                //getvalue peak returns the peak kW and the total kWh
-                pilRequest = new Request(lPao.getYukonID(), commandStr, id);
-                pilRequest.setPriority(13); //just below Client applications
-                porterConnection.write(pilRequest);
+                if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+                    commandStr = "getvalue peak update"; // getvalue peak returns the peak kW and the total kWh
+
+                writePilRequest(meter, commandStr, id, 13);
+
+                //Second message (legacy but kept here for reminder.
+//                MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
+//                pilRequest.setCommandString("getvalue demand update");
+//                porterConnection.write(pilRequest);
+            }
+            
+        }
+        
+        if( !errorObjects.isEmpty())
+        {
+            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
+            errorObjects.toArray(errors);
+            return errors;
+        }
+        return new ErrorObject[0];
+    }
+    
+    /**
+     * Send meter read commands to pil connection for each meter in meterNumbers.
+     * @param meterNumbers
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+     */
+    public synchronized ErrorObject[] BlockMeterReadEvent(MultispeakVendor vendor, String[] meterNumbers, YukonFormattedBlock<Block> block)
+    {
+        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        
+        CTILogger.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
+        
+        for (String meterNumber : meterNumbers) {
+            com.cannontech.amr.meter.model.Meter meter =
+                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
+            if (meter == null) {
+                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
+                                                                 "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
+                                                                 "Meter");
+                errorObjects.add(err);
+            }
+            else {
                 
+                long id = generateMessageID();      
+                BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block);
+//                MeterReadEvent event = new MeterReadEvent(vendor, id, meter);
+                getEventsMap().put(new Long(id), event);
+                
+                String commandStr = "getvalue kwh update";
+                if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+                    commandStr = "getvalue peak update"; // getvalue peak returns the peak kW and the total kWh
+
+                writePilRequest(meter, commandStr, id, 13);
+
+                //Second message (legacy but kept here for reminder.
+//                MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
 //                pilRequest.setCommandString("getvalue demand update");
 //                porterConnection.write(pilRequest);
             }
@@ -378,19 +395,19 @@ public class Multispeak implements MessageListener {
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-        Request pilRequest = null;
         CTILogger.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
         
         for (int i = 0; i < cdEvents.length; i++) {
             ConnectDisconnectEvent cdEvent = cdEvents[i];
             String meterNumber = cdEvent.getObjectID();
-            LiteYukonPAObject lPao = multispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNumber);
-            if (lPao == null) {
+            com.cannontech.amr.meter.model.Meter meter =
+                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
+            if (meter == null) {
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber,
                 												 "MeterNumber (" + meterNumber + ") - Invalid Yukon MeterNumber.",
                                                                  "Meter");
                 errorObjects.add(err);
-            } else if (multispeakDao.isCDSupportedMeter(meterNumber, vendor.getUniqueKey())){
+            } else if (mspMeterDao.isCDSupportedMeter(meterNumber, vendor.getUniqueKey())){
                 long id = generateMessageID();      
                 CDEvent event = new CDEvent(vendor, id);
                 getEventsMap().put(new Long(id), event);
@@ -402,11 +419,9 @@ public class Multispeak implements MessageListener {
                 else if( loadActionCode.equalsIgnoreCase(LoadActionCode._Disconnect))
                     commandStr += "disconnect";
                 
-                pilRequest = new Request(lPao.getYukonID(), commandStr, id);
-                pilRequest.setPriority(13); //just below Client applications
-                porterConnection.write(pilRequest);
+                writePilRequest(meter, commandStr, id, 13);
                 logMSPActivity("initiateConnectDisconnect",
-        						"(ID:" + lPao.getYukonID()+ ") MeterNumber (" + meterNumber + ") - " + commandStr + " sent for ReasonCode: " + cdEvent.getReasonCode().getValue(),
+        						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr + " sent for ReasonCode: " + cdEvent.getReasonCode().getValue(),
         						vendor.getCompanyName());
             } else {
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
@@ -425,6 +440,40 @@ public class Multispeak implements MessageListener {
         return new ErrorObject[0];
     }
     
+    /*
+     * Writes a request to pil for the meter and commandStr using the id for mspVendor.
+     * CTILogger a message for the method name.
+     */
+    public void writePilRequest(com.cannontech.amr.meter.model.Meter meter, String commandStr, long id, int priority) {
+        Request pilRequest = null;
+        pilRequest = new Request(meter.getDeviceId(), commandStr, id);
+        pilRequest.setPriority(priority);
+        porterConnection.write(pilRequest);
+    }
+    
+    /**
+     * Returns true if event processes without timeing out, false if event times out.
+     * @param event
+     * @return
+     */
+    public boolean waitOnEvent(MultispeakEvent event) {
+        
+        long millisTimeOut = 0; //
+        while (!event.isPopulated() && millisTimeOut < MultispeakDefines.REQUEST_MESSAGE_TIMEOUT)  //quit after timeout
+        {
+            try {
+                Thread.sleep(1000);
+                millisTimeOut += 1000;
+            } catch (InterruptedException e) {
+                CTILogger.error(e);
+            }
+        }
+        if( millisTimeOut >= MultispeakDefines.REQUEST_MESSAGE_TIMEOUT) {// this broke the loop, more than likely, have to kill it sometime
+            return false;
+        }
+        return true;
+    }
+
 	/**
 	 * @return
 	 */
@@ -437,8 +486,10 @@ public class Multispeak implements MessageListener {
         
         for  (int i = 0; i < meterNos.length; i++){
             String meterNo = meterNos[i];
-            LiteYukonPAObject liteYukonPaobject = multispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
-            if( liteYukonPaobject != null){
+            com.cannontech.amr.meter.model.Meter meter =
+                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+            if( meter != null){
+                LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                 YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                 if (yukonPaobject instanceof MCTBase){
                     String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
@@ -477,8 +528,10 @@ public class Multispeak implements MessageListener {
         
         for  (int i = 0; i < meterNos.length; i++){
             String meterNo = meterNos[i];
-            LiteYukonPAObject liteYukonPaobject = multispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
-            if( liteYukonPaobject != null) {
+            com.cannontech.amr.meter.model.Meter meter =
+                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+            if( meter != null) {
+                LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                 YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                 if (yukonPaobject instanceof MCTBase){
                     String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
@@ -523,9 +576,11 @@ public class Multispeak implements MessageListener {
             ServiceLocation mspServiceLocation = null;
             
             //Find Meter by MeterNumber in Yukon
-            LiteYukonPAObject liteYukonPaobject = multispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
+            com.cannontech.amr.meter.model.Meter meter =
+                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
             
-            if( liteYukonPaobject != null) {    //Meter exists in Yukon
+            if( meter != null) {    //Meter exists in Yukon
+                LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                 YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                 if (yukonPaobject instanceof MCTBase){
                     DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
@@ -906,8 +961,10 @@ public class Multispeak implements MessageListener {
             Meter mspMeter = removeMeters[i];
             String meterNo = mspMeter.getMeterNo().trim();
             //Lookup meter in Yukon by msp meter number
-            LiteYukonPAObject liteYukonPaobject = multispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
-            if( liteYukonPaobject != null) {    //Meter exists
+            com.cannontech.amr.meter.model.Meter meter = 
+                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+            if( meter != null) {    //Meter exists
+                LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                 YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                 if (yukonPaobject instanceof MCTBase){
                     boolean disabled = yukonPaobject.isDisabled();

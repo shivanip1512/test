@@ -3,22 +3,29 @@ package com.cannontech.multispeak.service.impl;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.axis.AxisFault;
+
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.impl.PaoDaoImpl;
-import com.cannontech.core.dao.impl.PointDaoImpl;
-import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.block.YukonFormattedBlock;
+import com.cannontech.multispeak.block.data.load.LoadBlock;
+import com.cannontech.multispeak.block.data.outage.OutageBlock;
+import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
+import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
+import com.cannontech.multispeak.block.impl.YukonFormattedBlockImpl;
+import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.MspMeterReadDao;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfFormattedBlock;
@@ -30,36 +37,64 @@ import com.cannontech.multispeak.service.DomainMember;
 import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.EventCode;
 import com.cannontech.multispeak.service.FormattedBlock;
-import com.cannontech.multispeak.service.MR_CBSoap_BindingImpl;
+import com.cannontech.multispeak.service.MR_CBSoap_PortType;
 import com.cannontech.multispeak.service.MR_EASoap_PortType;
 import com.cannontech.multispeak.service.MeterRead;
-import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.BasicServerConnection;
 
 public class MR_EAImpl implements MR_EASoap_PortType
 {
     public MultispeakFuncs multispeakFuncs;
-    public DynamicDataSource dynamicDataSource;
-    public PaoDaoImpl paoDao;
-    public PointDaoImpl pointDao;
+    public MeterDao meterDao;
+    public MspMeterReadDao mspMeterReadDao;
+    public MR_CBSoap_PortType mr_cb;
+    public YukonFormattedBlock<LoadBlock> loadFormattedBlock;
+    public YukonFormattedBlock<OutageBlock> outageFormattedBlock;
+    public Map<String, YukonFormattedBlock> readingTypesMap;
+    private BasicServerConnection porterConnection;
+    public Multispeak multispeak;
     
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
     }
 
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+    
+    public void setMspMeterReadDao(MspMeterReadDao mspMeterReadDao) {
+        this.mspMeterReadDao = mspMeterReadDao;
+    }
+    
+    public void setMr_cb(MR_CBSoap_PortType mr_cb) {
+        this.mr_cb = mr_cb;
     }
 
-    public void setPaoDao(PaoDaoImpl paoDao) {
-        this.paoDao = paoDao;
+    public void setLoadFormattedBlock(
+            YukonFormattedBlock<LoadBlock> loadFormattedBlock) {
+        this.loadFormattedBlock = loadFormattedBlock;
+    }
+    
+    public void setOutageFormattedBlock(
+            YukonFormattedBlock<OutageBlock> outageFormattedBlock) {
+        this.outageFormattedBlock = outageFormattedBlock;
     }
 
-    public void setPointDao(PointDaoImpl pointDao) {
-        this.pointDao = pointDao;
+    public void setPorterConnection(BasicServerConnection porterConnection) {
+        this.porterConnection = porterConnection;
     }
-
+    
+    public void setMultispeak(Multispeak multispeak) {
+        this.multispeak = multispeak;
+    }
+    
     private void init() {
         multispeakFuncs.init();
+    }
+
+    public void setReadingTypesMap(
+            Map<String, YukonFormattedBlock> readingTypesMap) {
+        this.readingTypesMap = readingTypesMap;
     }
     
     public ArrayOfErrorObject pingURL() throws java.rmi.RemoteException {
@@ -92,7 +127,6 @@ public class MR_EAImpl implements MR_EASoap_PortType
      */
     public ArrayOfMeter getAMRSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
 //      init(); //init() is performed in the MR_CB method, no need to call it again.
-        MR_CBSoap_BindingImpl mr_cb = new MR_CBSoap_BindingImpl();
         return mr_cb.getAMRSupportedMeters(lastReceived);
     }
 
@@ -111,103 +145,26 @@ public class MR_EAImpl implements MR_EASoap_PortType
      */
     public ArrayOfMeterRead getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
 //      init(); //init() is performed in the MR_CB method, no need to call it again.
-        MR_CBSoap_BindingImpl mr_cb = new MR_CBSoap_BindingImpl();
         return mr_cb.getReadingsByMeterNo(meterNo, startDate, endDate);
     }
 
     public ArrayOfMeterRead getLatestReadings(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
+        Date timerStart = new Date();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
                 
-        int maxSize = 10000;    //Max number of meters we'll send
-        int startIndex = 0;
-        int endIndex = 0;   //less than this index
-                
-        MeterRead[] meterReads;
-        int indexCount = 0;
+        List<com.cannontech.amr.meter.model.Meter> meters = multispeakFuncs.getMeters(vendor.getUniqueKey(), lastReceived);
+        MeterRead[] meterReads = mspMeterReadDao.getMeterRead(meters, vendor.getUniqueKey());
+
+        int numRemaining = (meterReads.length < MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        List allMeters = cache.getAllDeviceMeterGroups();
-                
-        if( lastReceived != null && lastReceived.length() > 0)
-        {
-            for (int i = 0; i < allMeters.size(); i++)
-            {
-                LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
-                String lastValue = "";
-                if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-                    lastValue = paoDao.getYukonPAOName(ldmn.getDeviceID());
-                else //if(key.toLowerCase().startsWith("meternum"))
-                    lastValue = ldmn.getMeterNumber();
-                            
-                if( lastValue.compareTo(lastReceived) == 0)
-                {
-                    startIndex = i + 1;
-                    endIndex = (startIndex+maxSize > allMeters.size()? allMeters.size(): startIndex+maxSize);   //index is the lesser of allMeters.size or startIndex+maxSize
-                    break;
-                }
-            }
-        }
-        if( endIndex == 0)  //haven't set this value yet, so set it now.
-            endIndex = (maxSize> allMeters.size()? allMeters.size(): maxSize);  //index is the lesser of allMeters.size or 1000
-
-
-        meterReads = new MeterRead[endIndex - startIndex];                  
-
-        CTILogger.info("Returning Readings for " + meterReads.length + " of " + allMeters.size() + " Meters (" + startIndex + " through " + endIndex + ")");                
-        for (int i = startIndex; i < endIndex; i++)
-        {
-            LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
-            LiteYukonPAObject lPao = cache.getAllPAOsMap().get(new Integer(ldmn.getDeviceID()));
-            String meterID = ""; 
-            if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-                meterID = lPao.getPaoName();
-            else //if(key.toLowerCase().startsWith("meternum"))
-                meterID = ldmn.getMeterNumber();
-            
-            MeterRead mr = new MeterRead();
-            mr.setDeviceID(meterID);
-            mr.setMeterNo(meterID);
-            mr.setObjectID(meterID);
-
-            List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(lPao.getYukonID());
-            for (LitePoint lp : litePoints) {
-                if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)   //kW
-                {
-                    PointValueHolder pointData = dynamicDataSource.getPointValue(lp.getPointID());
-                    if( pointData != null)
-                    {
-                        mr.setKW(new Float(pointData.getValue()));
-                        GregorianCalendar cal = new GregorianCalendar();
-                        cal.setTime(pointData.getPointDataTimeStamp());
-                        mr.setKWDateTime(cal);
-                    }
-                }
-                else if ( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT && lp.getPointOffset() == 1)  //kWh
-                {
-                    PointValueHolder pointData = dynamicDataSource.getPointValue(lp.getPointID());
-                    if( pointData != null)
-                    {
-                        mr.setPosKWh(new BigInteger(String.valueOf(new Double(pointData.getValue()).intValue())));
-                        GregorianCalendar cal = new GregorianCalendar();
-                        cal.setTime(pointData.getPointDataTimeStamp());
-                        mr.setReadingDate(cal);
-                    }
-                }
-            }
-
-            meterReads[indexCount++] = mr;
-        }
-        if( endIndex != allMeters.size())
-            multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(allMeters.size()-endIndex)));
-                        
+        CTILogger.info("Returning " + meters.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return new ArrayOfMeterRead(meterReads);
     }
 
     public MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
 //      init(); //init() is performed in the MR_CB method, no need to call it again.
-        MR_CBSoap_BindingImpl mr_cb = new MR_CBSoap_BindingImpl();
         return mr_cb.getLatestReadingByMeterNo(meterNo);
     }
 
@@ -237,13 +194,20 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+        return readingTypesMap.get(readingType).getFormattedBlock(meter);
     }
 
     public ArrayOfFormattedBlock getLatestReadingByType(String readingType, String lastReceived) throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        List<com.cannontech.amr.meter.model.Meter> meters = multispeakFuncs.getMeters(vendor.getUniqueKey(), lastReceived);
+        
+        FormattedBlock formattedBlock = readingTypesMap.get(readingType).getFormattedBlock(meters);
+        FormattedBlock[] formattedBlockArray = new FormattedBlock[]{formattedBlock};
+        return new ArrayOfFormattedBlock(formattedBlockArray);
     }
 
     public ArrayOfFormattedBlock getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
@@ -256,13 +220,33 @@ public class MR_EAImpl implements MR_EASoap_PortType
         return null;
     }
 
+    
     public ArrayOfString getSupportedReadingTypes() throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+
+        Set<String> keys = readingTypesMap.keySet();
+        String[] types = new String[keys.size()];
+        keys.toArray(types);
+
+        return new ArrayOfString(types);
     }
 
     public ArrayOfErrorObject initiateMeterReadByMeterNoAndType(ArrayOfString meterNos, String responseURL, String readingType) throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+        init();
+        ErrorObject[] errorObjects = new ErrorObject[0];
+        
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        String url = (vendor != null ? vendor.getUrl() : "(none)");
+        if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+            throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
+        }
+        else if ( ! porterConnection.isValid() ) {
+            throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+        }
+        
+        YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
+        errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNos.getString(), formattedBlock);
+
+        multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
+        return new ArrayOfErrorObject(errorObjects);
     }
 }
