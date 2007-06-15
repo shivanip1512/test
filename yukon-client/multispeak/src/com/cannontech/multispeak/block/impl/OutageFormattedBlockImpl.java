@@ -17,7 +17,7 @@ public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlo
         OutageBlock outageBlock = getNewBlock();
         
         try {
-            outageBlock = getOutageBlock(meter);
+            outageBlock = getBlock(meter);
         } catch (IllegalArgumentException e){}
         
         FormattedBlockBase blockBase = new OutageFormattedBlock(outageBlock);
@@ -29,7 +29,7 @@ public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlo
 
         for (Meter meter : meters) {
             try {
-                OutageBlock ob = getOutageBlock(meter);
+                OutageBlock ob = getBlock(meter);
                 outageBlockList.add(ob);
             } catch (IllegalArgumentException e) {}
         }
@@ -53,7 +53,7 @@ public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlo
         return new OutageBlock();
     }
     
-    private OutageBlock getOutageBlock(Meter meter) {
+    public OutageBlock getBlock(Meter meter) {
         PointValueHolder outage = 
             attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.BLINK_COUNT);
         

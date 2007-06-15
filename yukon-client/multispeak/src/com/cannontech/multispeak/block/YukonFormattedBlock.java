@@ -16,4 +16,6 @@ public interface YukonFormattedBlock <T extends Block> {
     public FormattedBlock createFormattedBlock(List<T> block);
     
     public T getNewBlock();
+    
+    public T getBlock(Meter meter);
 }

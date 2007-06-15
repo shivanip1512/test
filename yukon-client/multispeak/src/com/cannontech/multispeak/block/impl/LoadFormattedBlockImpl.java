@@ -18,7 +18,7 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
         LoadBlock loadBlock = new LoadBlock();
         
         try {
-            loadBlock = getLoadBlock(meter);
+            loadBlock = getBlock(meter);
         } catch (IllegalArgumentException e) {}
 
         FormattedBlockBase blockBase = new LoadFormattedBlock(loadBlock);
@@ -30,7 +30,7 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
 
         for (Meter meter : meters) {
             try {
-                LoadBlock lb = getLoadBlock(meter);
+                LoadBlock lb = getBlock(meter);
                 loadBlockList.add(lb);
             } catch (IllegalArgumentException e) {}
         }
@@ -54,7 +54,7 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
         return new LoadBlock();
     }
     
-    private LoadBlock getLoadBlock(Meter meter) {
+    public LoadBlock getBlock(Meter meter) {
         PointValueHolder loadProfile =
             attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.LOAD_PROFILE);
 
