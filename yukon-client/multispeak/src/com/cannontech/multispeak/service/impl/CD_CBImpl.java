@@ -13,7 +13,7 @@ import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.service.ArrayOfConnectDisconnectEvent;
 import com.cannontech.multispeak.service.ArrayOfCustomer;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
@@ -30,17 +30,9 @@ import com.cannontech.multispeak.service.Meter;
 public class CD_CBImpl implements CD_CBSoap_PortType
 {
     public Multispeak multispeak;
-    public MultispeakDao multispeakDao;
     public MultispeakFuncs multispeakFuncs;
+    public MspMeterDao mspMeterDao;
     
-    /**
-     * @param multispeakDao The multispeakDao to set.
-     */
-    public void setMultispeakDao(MultispeakDao multispeakDao)
-    {
-        this.multispeakDao = multispeakDao;
-    }
-
     public void setMultispeak(Multispeak multispeak) {
         this.multispeak = multispeak;
     }
@@ -49,6 +41,10 @@ public class CD_CBImpl implements CD_CBSoap_PortType
         this.multispeakFuncs = multispeakFuncs;
     }
 
+    public void setMspMeterDao(MspMeterDao mspMeterDao) {
+        this.mspMeterDao = mspMeterDao;
+    }
+    
     private void init(){
         multispeakFuncs.init();
     }
@@ -86,7 +82,7 @@ public class CD_CBImpl implements CD_CBSoap_PortType
         List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = multispeakDao.getCDSupportedMeters(lastReceived, vendor.getUniqueKey());
+            meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getUniqueKey());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }
