@@ -94,7 +94,7 @@ public class ItronXmlBuilderImpl implements ItronXmlBuilder{
     
     private Element createChannelIdElement(final String meterId) {
         final Element element = new Element("ChannelID");
-        element.setAttribute("RegisterChannel", meterId + ":1");
+        element.setAttribute("RegisterChannelID", meterId + ":1");
         return element;
     }
     
