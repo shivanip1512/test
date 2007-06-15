@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.impl.PointDaoImpl;
 import com.cannontech.database.data.lite.LitePoint;
@@ -19,6 +20,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
@@ -43,17 +45,19 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param pilMessageID_
      * @param returnMessages_
      */
-    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_) {
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, int returnMessages_) {
         super(mspVendor_, pilMessageID_, returnMessages_);
+        setDevice(MeterReadFactory.createMeterReadObject(meter));
     }
     
-	/**
-	 * @param mspVendor_
-	 * @param pilMessageID_
-	 */
-	public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
-		this(mspVendor_, pilMessageID_, 1);
-	}
+    /**
+     * @param mspVendor_
+     * @param pilMessageID_
+     */
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter) {
+        this(mspVendor_, pilMessageID_, meter, 1);
+    }
+    
     /**
      * @return Returns the device.
      */
@@ -138,5 +142,9 @@ public class MeterReadEvent extends MultispeakEvent{
             }
         }
         return false;
+    }
+
+    public boolean isPopulated() {
+        return getDevice().isPopulated(); 
     }
 }

@@ -22,7 +22,9 @@ public interface MspEvent{
      * @param returnMsg
      * @return boolean
      */
-    public abstract boolean messageReceived(Return returnMsg);
+    public boolean messageReceived(Return returnMsg);
     
-    public abstract void eventNotification();
+    public void eventNotification();
+    
+    public boolean isPopulated();
 }

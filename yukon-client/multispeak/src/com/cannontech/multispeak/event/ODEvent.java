@@ -155,4 +155,9 @@ public class ODEvent extends MultispeakEvent{
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
         }
     }
+    
+    public boolean isPopulated() {
+        //Technically this object is always/never populated because it is asynchronous. 
+        return true;
+    }
 }

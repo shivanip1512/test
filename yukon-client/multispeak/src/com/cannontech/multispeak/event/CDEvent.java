@@ -163,4 +163,8 @@ public class CDEvent extends MultispeakEvent{
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
         }   
     }
+    
+    public boolean isPopulated() {
+        return (getLoadActionCode() != null); 
+    }
 }
