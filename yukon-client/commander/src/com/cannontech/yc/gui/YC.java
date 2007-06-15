@@ -92,7 +92,7 @@ public class YC extends Observable implements MessageListener
 	
 	/** Current command string to execute */
 	private String commandString = "";	//the actual string entered from the command line
-	private Vector executeCmdsVector = null;	// the parsed vector of commands from the command line.
+	private Vector<String> executeCmdsVector = null;	// the parsed vector of commands from the command line.
 	
 	/** deviceID(opt1) or serialNumber(opt2) will be used to send command to.
 	/** Selected deviceID */
@@ -213,7 +213,7 @@ public class YC extends Observable implements MessageListener
 		{
 			if ( getCommandMode() == CGP_MODE )
 			{
-				porterRequest = new Request( 0, (String)getExecuteCmdsVector().get(0), currentUserMessageID );
+				porterRequest = new Request( 0, getExecuteCmdsVector().get(0), currentUserMessageID );
 				porterRequest.setPriority(getCommandPriority());
 				getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
 				writeNewRequestToPorter( porterRequest );
@@ -249,7 +249,7 @@ public class YC extends Observable implements MessageListener
 					synchronized(YC.this)
 					{
 						Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-						Vector savedVector = (Vector)getExecuteCmdsVector().clone();
+						Vector<String> savedVector = (Vector<String>)getExecuteCmdsVector().clone();
 						
 						for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 						{
@@ -258,7 +258,7 @@ public class YC extends Observable implements MessageListener
 							//clone the vector because handleDevice() removed the command but in truth, it
 							// shouldn't be removed until all of the devices have been looped through.							
 							if( i+1 < deviceMeterGroupIds.length)
-								executeCmdsVector = (Vector)savedVector.clone();
+								executeCmdsVector = (Vector<String>)savedVector.clone();
 						}
 					}
 				}
@@ -268,7 +268,7 @@ public class YC extends Observable implements MessageListener
 					synchronized(YC.this)
 					{
 						Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-						Vector savedVector = (Vector)getExecuteCmdsVector().clone();
+						Vector<String> savedVector = (Vector<String>)getExecuteCmdsVector().clone();
 						
 						for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 						{
@@ -277,7 +277,7 @@ public class YC extends Observable implements MessageListener
 							//clone the vector because handleDevice() removed the command but in truth, it
 							// shouldn't be removed until all of the devices have been looped through.							
 							if( i+1 < deviceMeterGroupIds.length)
-								executeCmdsVector = (Vector)savedVector.clone();
+								executeCmdsVector = (Vector<String>)savedVector.clone();
 						}
 					}
 				}
@@ -324,10 +324,10 @@ public class YC extends Observable implements MessageListener
 	}
 
 	/** Vector of String commands, parsed from commandString */	
-	public Vector getExecuteCmdsVector()
+	public Vector<String> getExecuteCmdsVector()
 	{
 		if( executeCmdsVector == null)
-			executeCmdsVector = new Vector(2);
+			executeCmdsVector = new Vector<String>(2);
 		return executeCmdsVector;
 	}
 
@@ -434,7 +434,7 @@ public class YC extends Observable implements MessageListener
 		Vector commandVec = getExecuteCmdsVector();
 		for (int i = 0; i < commandVec.size(); i++)
 		{	
-			String command = (String)getExecuteCmdsVector().get(i);			
+			String command = getExecuteCmdsVector().get(i);			
 			if ( DeviceTypesFuncs.isMCT(liteYukonPao.getType()) || DeviceTypesFuncs.isRepeater(liteYukonPao.getType()))
 			{
 				if( command.indexOf("noqueue") < 0)
@@ -443,7 +443,7 @@ public class YC extends Observable implements MessageListener
 		}
 	
 		//send the first command from the vector out!
-		porterRequest = new Request( getDeviceID(), (String)getExecuteCmdsVector().get(0), currentUserMessageID );
+		porterRequest = new Request( getDeviceID(), getExecuteCmdsVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 		getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
 		
@@ -481,7 +481,7 @@ public class YC extends Observable implements MessageListener
 	{
 		for (int i = 0; i < getExecuteCmdsVector().size(); i++)
 		{
-			String command = (String)getExecuteCmdsVector().get(i);
+			String command = getExecuteCmdsVector().get(i);
 			int index = command.indexOf("serial");
 			
 			if( index < 0 )	// serial not in command string = -1
@@ -511,7 +511,7 @@ public class YC extends Observable implements MessageListener
 	
 		setLoopType( parseLoopCommand() );
 		
-		porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, (String)getExecuteCmdsVector().get(0), currentUserMessageID );
+		porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, getExecuteCmdsVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 		getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
 
@@ -559,7 +559,7 @@ public class YC extends Observable implements MessageListener
 	{
 		for (int i = 0; i < getExecuteCmdsVector().size(); i++)
 		{
-			String tempCommand = ((String)getExecuteCmdsVector().get(i)).toLowerCase();
+			String tempCommand = getExecuteCmdsVector().get(i).toLowerCase();
 			String valueSubstring = null;
 				
 			int loopIndex = tempCommand.indexOf("loop");
@@ -670,23 +670,22 @@ public class YC extends Observable implements MessageListener
 		{
 			String begString = tempCommand.substring(0, sepIndex).trim();
 			begIndex = sepIndex+1;
-			String cmd = getCommandFromLabel(begString); 
+			String cmd = getCommandFromLabel(begString) + " update"; 
 			getExecuteCmdsVector().add(cmd);
 			tempCommand = tempCommand.substring(begIndex).trim();
 			sepIndex = tempCommand.indexOf(SEPARATOR);
 		}
 		//add the final (or only) command.
-		getExecuteCmdsVector().add(getCommandFromLabel(tempCommand));
+		getExecuteCmdsVector().add(getCommandFromLabel(tempCommand) + " update");
 	}
     
     public void checkCommandAuthorization() throws PaoAuthorizationException{
         
         // Check authorization for each command 
-        for (Object commandObj : getExecuteCmdsVector()) {
+        for (String commandObj : getExecuteCmdsVector()) {
 
-            String command = (String) commandObj;
-            if(!this.isAllowCommand(command)){
-                throw new PaoAuthorizationException("Unauthorized command", command);
+            if(!this.isAllowCommand(commandObj)){
+                throw new PaoAuthorizationException("Unauthorized command", commandObj);
             }
         }
     }
