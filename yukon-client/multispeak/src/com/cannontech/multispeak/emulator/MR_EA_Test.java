@@ -8,6 +8,7 @@
 package com.cannontech.multispeak.emulator;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,10 +20,14 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeter;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
+import com.cannontech.multispeak.service.ArrayOfString;
 import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.FormattedBlock;
+import com.cannontech.multispeak.service.FormattedBlockValSyntax;
 import com.cannontech.multispeak.service.MR_EASoap_BindingStub;
 import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.service.SyntaxItem;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 
 /**
@@ -36,14 +41,16 @@ public class MR_EA_Test {
 	public static void main(String [] args)
 	{
 		try {
-			String endpointURL = "http://localhost:8080/3_2/soap/MR_EASoap";
-			endpointURL = "http://10.100.10.25:80/soap/MR_EASoap";
+			String endpointURL = "http://localhost:8080/soap/MR_EASoap";
+//			endpointURL = "http://10.100.10.25:80/soap/MR_EASoap";
 		  	MR_EASoap_BindingStub instance = new MR_EASoap_BindingStub(new URL(endpointURL), new Service());
-			
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+            YukonMultispeakMsgHeader mspHeader =  new YukonMultispeakMsgHeader();
+            mspHeader.setCompany("Milsoft");
+            
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", mspHeader);
 			instance.setHeader(header);
-			String meterNumber = "81307861";
-			int todo = 0;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=getLatestReadings
+			String meterNumber = "0320819";
+			int todo = 6;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=getLatestReadings
 			
 			if (todo==0)
 			{
@@ -115,6 +122,34 @@ public class MR_EA_Test {
 //												CTILogger.info("MeterRead Error String: " + mr.getErrorString());
 				}
 			}			
+            else if( todo == 5){
+                FormattedBlock fb = instance.getLatestReadingByMeterNoAndType(meterNumber, "Load");
+                System.out.println(fb.getSeparator());
+                    for (SyntaxItem item : fb.getValSyntax().getSyntaxItem()) {
+                        System.out.println(item.getFieldName());
+                        System.out.println(item.getPosition());
+                        if (item.getUom()!=null)
+                            System.out.println(item.getUom().getValue());
+                    }
+                    for (String item : fb.getValueList().getVal()) {
+                        System.out.println(item);
+                    }
+            }
+            
+            else if( todo == 6){
+                ArrayOfString aos = new ArrayOfString(new String[]{meterNumber});
+                ArrayOfErrorObject objects = instance.initiateMeterReadByMeterNoAndType(aos, null, "Load");
+                
+                if (objects != null && objects.getErrorObject() != null)
+                {
+                    for (int i = 0; i < objects.getErrorObject().length; i++)
+                    {
+                        ErrorObject obj = objects.getErrorObject(i);
+                        System.out.println("Ping" + i + ": " + obj.getErrorString());
+                    }
+                }
+            }
+                
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

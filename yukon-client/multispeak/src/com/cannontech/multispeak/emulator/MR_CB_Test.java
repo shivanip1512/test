@@ -16,6 +16,7 @@ import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.multispeak.dao.impl.MspMeterDaoImpl;
 import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
@@ -63,7 +64,7 @@ public class MR_CB_Test {
 			}
 			else if( todo == 1)
 			{
-                List<Meter>meters = ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).getAMRSupportedMeters("0", "meternumber");
+                List<Meter>meters = ((MspMeterDaoImpl)YukonSpringHook.getBean("mspMeterDao")).getAMRSupportedMeters("0", "meternumber");
                 System.out.println(meters.size());
 /*				ArrayOfMeter meters = new ArrayOfMeter();
 				meters = instance.getAMRSupportedMeters("10224712");//new String ("MCT - Annandale Broadcast"));
