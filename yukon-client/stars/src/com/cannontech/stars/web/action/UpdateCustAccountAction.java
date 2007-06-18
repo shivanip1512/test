@@ -151,7 +151,7 @@ public class UpdateCustAccountAction implements ActionBase {
 
 			if (homePhone != null) 
 			{
-                if( homePhone.length() < 1) {
+                if( homePhone.length() < 1 && homeIndex != -1) {
                     primContact.removeContactNotification(homeIndex);
                     if(workIndex > homeIndex)
                         workIndex--;
@@ -160,13 +160,13 @@ public class UpdateCustAccountAction implements ActionBase {
                 }
 			    else if(homeIndex != -1)
 					primContact.getContactNotification()[homeIndex].setNotification(homePhone);
-				else
+				else if(homePhone.length() > 0)
 					primContact.addContactNotification( ServletUtils.createContactNotification(homePhone, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ) );
 			} 
 			
 			if (workPhone != null)
 			{
-                if( workPhone.length() < 1) {
+                if( workPhone.length() < 1 && workIndex != -1) {
                     primContact.removeContactNotification(workIndex);
                     if(homeIndex > workIndex)
                         homeIndex--;
@@ -175,13 +175,13 @@ public class UpdateCustAccountAction implements ActionBase {
                 }
 			    else if(workIndex != -1)
 					primContact.getContactNotification()[workIndex].setNotification(workPhone);
-				else
+				else if(workPhone.length() > 0)
 					primContact.addContactNotification( ServletUtils.createContactNotification(workPhone, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE ) );
 			} 
 			
 			if (email != null) 
 			{
-                if( email.length() < 1) {
+                if( email.length() < 1 && emailIndex != -1) {
                     primContact.removeContactNotification(emailIndex);
                     if(homeIndex > emailIndex)
                         homeIndex--;
@@ -192,7 +192,7 @@ public class UpdateCustAccountAction implements ActionBase {
 					primContact.getContactNotification()[emailIndex].setNotification(email);
                     primContact.getContactNotification()[emailIndex].setDisabled(req.getParameter("NotifyControl") == null);
                 }
-				else {
+				else if(email.length() > 0) {
                     ContactNotification emailNotif = ServletUtils.createContactNotification(email, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
                     emailNotif.setDisabled( req.getParameter("NotifyControl") == null );
 					primContact.addContactNotification( emailNotif );

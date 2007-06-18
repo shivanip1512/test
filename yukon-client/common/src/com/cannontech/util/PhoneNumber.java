@@ -14,12 +14,14 @@ public class PhoneNumber
 	 */
 	public static String format(String phoneNumber)
 	{
-		if (phoneNumber == null)
-		{
+		if (phoneNumber == null) {
 			return "";
 		}
 
-		if (phoneNumber.length() > 10)
+        if(phoneNumber.startsWith("1"))
+            phoneNumber = phoneNumber.replaceFirst("1", "");
+        
+		if (phoneNumber.length() > 10 && phoneNumber.indexOf("-") < 0)
 		{
 			return "(" + phoneNumber.substring(0, 3) + ") " + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6, 10) + " x" + phoneNumber.substring(10, phoneNumber.length());
 		}
