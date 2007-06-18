@@ -23,7 +23,9 @@ public class IncludeScriptTag extends TagSupport {
             return EVAL_PAGE;
         }
         
-        throw new JspException("includeScript tag is only supported within standardPage and outputHeadContent tags");
+        // I think we should ignore this for the time being...
+        //throw new JspException("includeScript tag is only supported within standardPage and outputHeadContent tags");
+        return EVAL_PAGE;
     }
 
     public String getLink() {

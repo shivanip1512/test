@@ -23,7 +23,8 @@ public class IncludeCssTag extends TagSupport {
             return EVAL_PAGE;
         }
         
-        throw new JspException("includeScript tag is only supported within standardPage and outputHeadContent tags");
+        //throw new JspException("includeScript tag is only supported within standardPage and outputHeadContent tags");
+        return EVAL_PAGE;
     }
 
     public String getLink() {
