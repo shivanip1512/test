@@ -832,9 +832,11 @@ public class WorkOrderModel extends ReportModelBase {
 	 */
 	public String[] getColumnNames() {
 		if (columnNames == null) {
-            String addtlOrderNumberStr = ADDTL_ORDER_NO_STRING; 
+            String addtlOrderNumberStr = null; 
             if( getUserID() != null)
                 addtlOrderNumberStr = DaoFactory.getAuthDao().getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
+            if(addtlOrderNumberStr == null)
+                addtlOrderNumberStr = ADDTL_ORDER_NO_STRING;
 			columnNames = new String[] {
 				//HEADER
 				EC_NAME_STRING,
