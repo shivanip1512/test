@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -275,13 +276,16 @@ public static int differenceMinutes(Date from, Date to) {
      *   
      * @param dateStr the string to parse
      * @param mode controls how dates without times are treated
+     * @param timeZone Time zone to use to parse the date
      * @return
      * @throws ParseException if the dateStr cannot be parsed into a Java date
      */
-    public static Date flexibleDateParser(String dateStr, NO_TIME_MODE mode) throws ParseException {
+    public synchronized static Date flexibleDateParser(String dateStr, NO_TIME_MODE mode, TimeZone timeZone) 
+        throws ParseException {
         if (StringUtils.isBlank(dateStr)) return null;
         for (DateFormat format : dateTimeFormat) {
             try {
+                format.setTimeZone(timeZone);
                 Date date = format.parse(dateStr);
                 return date;
             } catch (ParseException e) {
@@ -289,6 +293,7 @@ public static int differenceMinutes(Date from, Date to) {
         }
         for (DateFormat format : dateFormat) {
             try {
+                format.setTimeZone(timeZone);
                 Date date = format.parse(dateStr);
                 if (mode == NO_TIME_MODE.END_OF_DAY) {
                     return DateUtils.addDays(date, 1);
@@ -306,8 +311,8 @@ public static int differenceMinutes(Date from, Date to) {
      * @return
      * @throws ParseException
      */
-    public static Date flexibleDateParser(String dateStr) throws ParseException {
-        return flexibleDateParser(dateStr, NO_TIME_MODE.START_OF_DAY);
+    public static Date flexibleDateParser(String dateStr, TimeZone timeZone) throws ParseException {
+        return flexibleDateParser(dateStr, NO_TIME_MODE.START_OF_DAY, timeZone);
     }
 
 

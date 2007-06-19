@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,12 +48,16 @@ public class LoadProfileController extends MultiActionController {
         ModelAndView mav = new ModelAndView("json");
         
         try {
+            
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
+            
             String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
             String startDateStr = ServletRequestUtils.getStringParameter(request, "startDate", "");
-            Date startDate = TimeUtil.flexibleDateParser(startDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY);
+            Date startDate = TimeUtil.flexibleDateParser(startDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
             String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
-            Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.END_OF_DAY);
+            Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.END_OF_DAY, timeZone);
             
             
             Validate.isTrue(startDate == null || stopDate == null || startDate.before(stopDate), 
