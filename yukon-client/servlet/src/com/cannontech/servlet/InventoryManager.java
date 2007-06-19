@@ -612,7 +612,7 @@ public class InventoryManager extends HttpServlet {
 				// Request from CreateHardware.jsp, no inventory checking
 				ServletUtils.saveRequest( req, session, new String[]
 					{"DeviceType", "SerialNo", "DeviceName", "CreateMCT", "MCTType", "PhysicalAddr", "MeterNumber", "MCTRoute",
-					"DeviceLabel", "AltTrackNo", "ReceiveDate", "RemoveDate", "Voltage", "Notes", "InstallDate", "ServiceCompany", "InstallNotes", "Route"} );
+					"DeviceLabel", "AltTrackNo", "fieldReceiveDate", "FieldRemoveDate", "Voltage", "Notes", "InstallDate", "ServiceCompany", "InstallNotes", "Route"} );
 				
 				StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 				InventoryManagerUtil.setStarsInv( createHw, req, energyCompany );

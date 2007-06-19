@@ -184,7 +184,7 @@ function validate(form) {
                                   <div align="right">Date Received:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("ReceiveDate")) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("fieldReceiveDate")) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
