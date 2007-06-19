@@ -6,6 +6,7 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/widgetObject.js"/>
+<cti:includeScript link="/JavaScript/hideReveal.js"/>
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 
 <!--  Widget: ${beanInst.shortName}  -->
