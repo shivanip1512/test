@@ -113,7 +113,8 @@
      <property name="dataSource" ref="wrappedYukonDataSource"/>
   </bean>
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
-     <property name="databaseCache" ref="databaseCache"/>      
+     <property name="databaseCache" ref="databaseCache"/>
+     <property name="energyCompanyDao" ref="energyCompanyDao" />
   </bean>
   <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl" >
       <property name="jdbcOps" ref="jdbcTemplate"/>
