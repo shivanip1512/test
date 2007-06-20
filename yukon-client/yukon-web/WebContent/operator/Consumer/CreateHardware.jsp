@@ -396,18 +396,18 @@ function confirmCancel() {
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell"> 
-                                  <div align="right">Receive Date: </div>
+                                  <div align="right">Field Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell"> 
-                                  <div align="right">Remove Date: </div>
+                                  <div align="right">Field Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -454,10 +454,10 @@ function confirmCancel() {
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell"> 
-                                  <div align="right">Date Installed: </div>
+                                  <div align="right">Field Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= (savedInstDate != null)? savedInstDate : ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldInstallDate" maxlength="30" size="24" value="<%= (savedInstDate != null)? savedInstDate : ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
