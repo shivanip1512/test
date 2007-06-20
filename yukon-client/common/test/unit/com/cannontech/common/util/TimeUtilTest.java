@@ -10,11 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
 public class TimeUtilTest {
-    
+    private static final TimeZone DEFAULT_ZONE = TimeZone.getDefault();
     DateFormat standardFormat = SimpleDateFormat.getInstance();
 
 
@@ -50,7 +51,7 @@ public class TimeUtilTest {
         
         for (DatePair pair : pairs) {
             try {
-                Date date = flexibleDateParser(pair.userInput);
+                Date date = flexibleDateParser(pair.userInput, DEFAULT_ZONE);
                 assertEquals(pair.userInput + " doesn't match expected value", pair.fullDate, date);
             } catch (ParseException e) {
                 fail("unable to parse date: " + pair.userInput);
