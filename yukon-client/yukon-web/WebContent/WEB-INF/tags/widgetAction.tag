@@ -9,6 +9,6 @@
 <span id="${thisId}">
 <input type="button" value="${label}" onclick="${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...')">
 <span class="widgetAction_waiting" style="display:none">
-<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" >
+<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 </span>
 </span>

@@ -18,7 +18,7 @@
 </script>
 
 <span id="${thisId}">
-	<span id="widgetActionLink">
+	<span class="widgetActionLink">
 		<c:choose>
 			<c:when test="${selected != null && selected}">
 				<jsp:doBody/>
@@ -29,6 +29,6 @@
 		</c:choose>
 	</span>
 <span class="widgetAction_waiting" style="display:none">
-<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" >
+<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 </span>
 </span>

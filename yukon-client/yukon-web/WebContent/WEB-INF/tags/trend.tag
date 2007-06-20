@@ -27,13 +27,11 @@
 
 </c:url>
 
-<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="100%" height="90%" id="amline" align="middle">
+<object type="application/x-shockwave-flash" data="<c:out value="${amlineSrc}"/>" width="100%" height="90%" align="middle">
 	<param name="allowScriptAccess" value="sameDomain" />
-	<param name="movie" value="${amlineSrc}" />
-	<param name="quality" value="high" />
+	<param name="movie" value="<c:out value="${amlineSrc}"/>" />
 	<param name="scale" value="noscale" />
 	<param name="salign" value="lt" />
 	<param name="bgcolor" value="#FFFFFF" />
 	<param name="wmode" value="transparent" />
-	<embed src="${amlineSrc}" wmode="transparent" quality="high" scale="noscale" salign="lt" bgcolor="#FFFFFF" width="100%" height="80%" name="amline" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
 </object>
