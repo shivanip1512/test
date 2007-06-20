@@ -128,6 +128,7 @@ public class SendOddsForControlAction implements ActionBase {
 									new com.cannontech.database.db.stars.LMProgramWebPublishing();
 							pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
 							pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
+                            pubProg.setDeviceID(liteProg.getDeviceID());
 							pubProg.setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
 							pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
 							Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();

@@ -69,11 +69,11 @@ public class SendControlOddsTask implements Runnable {
 					.append( "WHERE map.EnergyCompanyID = " )
 					.append( energyCompanyID )
 					.append( " AND map.AccountID = app.AccountID AND (" )
-					.append( "app.LMProgramID = " )
+					.append( "app.ProgramID = " )
 					.append( ((LiteLMProgramWebPublishing) progList.get(0)).getProgramID() );
 			for (int i = 1; i < progList.size(); i++) {
 				LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) progList.get(i);
-				sql.append(" OR app.LMProgramID = ").append(program.getProgramID());
+				sql.append(" OR app.ProgramID = ").append(program.getProgramID());
 			}
 			sql.append(")");
 			
