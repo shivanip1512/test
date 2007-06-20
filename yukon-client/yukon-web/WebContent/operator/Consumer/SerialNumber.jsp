@@ -163,9 +163,26 @@ function confirmCancel() {
 	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
 		location.href = "../Operations.jsp";
 }
+
+function changeDeviceType(type) {
+<% if (devTypeMCT != null) { %>
+	if (type == <%= devTypeMCT.getEntryID() %>) {
+		document.getElementById("HardwareDiv").style.display = "none";
+		document.getElementById("DeviceDiv").style.display = "";
+	}
+	else {
+		document.getElementById("DeviceDiv").style.display = "none";
+		document.getElementById("HardwareDiv").style.display = "";
+	}
+<% } %>
+}
+
+function init() {
+	changeDeviceType(document.MForm.DeviceType.value);
+}
 </script>
 </head>
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -280,8 +297,6 @@ else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cann
                       <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="100">
                         <tr> 
                           <td> 
-                            <!-- GOING TO LEAVE THIS IN FOR NOW SINCE THIS KIND OF RUSH TAKE OUT USUALLY GETS REVERSED IN THE FUTURE 
-                                WILL NEED TO PUT JAVASCRIPT METHODS BACK IF WE GO BACK TO OLD MCT METHODS
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
                                 <td align="right" width="30%">Device Type: </td>
@@ -300,7 +315,7 @@ else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cann
                                   </select>
                                 </td>
                               </tr>
-                            </table>-->
+                            </table>
 							<div id="HardwareDiv">
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
@@ -315,7 +330,7 @@ else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cann
                               </tr>
                             </table>
 							</div>
-							<div id="DeviceDiv" style="display:none">
+							<div id="DeviceDiv">
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
                                 <td align="right" width="30%">Device Name: </td>

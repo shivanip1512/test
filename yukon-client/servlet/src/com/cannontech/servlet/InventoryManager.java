@@ -532,9 +532,6 @@ public class InventoryManager extends HttpServlet {
         }
         iBean.setCheckInvenForAccount(false);
         
-        /*
-         * TODO: We will need a new way to find MCTs now that we removed the device type pulldown for Xcel
-         */
 		String devType = req.getParameter("DeviceType");
         int devTypeID = 1;
         if(devType != null) 
@@ -577,7 +574,12 @@ public class InventoryManager extends HttpServlet {
 			}
             else {
                 /*
-                 * Might as well use the filter bean to look up the serial number
+                 * TODO: We will need a new way to find MCTs now that we removed the device type pulldown for Xcel
+                 * Will using the inventory filters by serial number actually return a Yukon MCT?  Will not since
+                 * the filters assume lmhardware.
+                 * UPDATED: This section never returns hardware and I do not like this approach anyway.
+                 * Instead I am rolling back the Xcel changes and adding the device type back in so we can find Yukon
+                 * MCTs.
                  */
                 ArrayList tempList = new ArrayList();
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER), energyCompany.getName(), String.valueOf(energyCompany.getEnergyCompanyID())));
@@ -586,7 +588,7 @@ public class InventoryManager extends HttpServlet {
                 //session.setAttribute( ServletUtils.FILTER_INVEN_LIST, tempList );
                 iBean.setFilterByList(tempList);
                 iBean.setCheckInvenForAccount(true);
-                redirect = req.getContextPath() + "/operator/Consumer/SelectInv.jsp";
+                redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
                 return;
                 
             }
