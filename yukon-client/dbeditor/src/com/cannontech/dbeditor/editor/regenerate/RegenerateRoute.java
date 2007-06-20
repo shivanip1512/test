@@ -375,7 +375,6 @@ public class RegenerateRoute
      * @param changingRoutes java.util.Vector
      * @author ASolberg
      */
-    @SuppressWarnings("unchecked")
     public Vector getCurrentRouteMatrixVector( Vector changingRoutes ) {
         
         if(changingRoutes != null) {
@@ -404,7 +403,6 @@ public class RegenerateRoute
         return currentMatriciesVector;
     }
     
-    @SuppressWarnings("unchecked")
     public void removeChanginRoutes(Vector changingRoutes) {
         if(changingRoutes != null) {
             Enumeration enummers = changingRoutes.elements();
@@ -435,7 +433,6 @@ public class RegenerateRoute
      * @param changingRoutes java.util.Vector
      * @author ASolberg
      */
-    @SuppressWarnings("unchecked")
     private Vector buildMatrices() {
         
         for(int k = 0; k < 5; k++ ) {
@@ -460,17 +457,65 @@ public class RegenerateRoute
             int matrixNumber = maskedFixedBit / 32;
             int realFixedBit = maskedFixedBit % 32;
             int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
-            matrix[realFixedBit][variableBit] = route.getRouteID();
+            if(variableBit == 7){
+                System.out.println("fixed:" +maskedFixedBit);
+            }
+            matrix[realFixedBit][variableBit] = route.getRouteID().intValue();
             
             Vector rptVector = route.getRepeaterVector();
             for (int i=0; i < rptVector.size()-1; i++ ) {
                 RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
                 int rptVariableBits = rpt.getVariableBits().intValue();
-                matrix[realFixedBit][rptVariableBits] = route.getRouteID();
+                matrix[realFixedBit][rptVariableBits] = route.getRouteID().intValue();
             }
         }
         
         return currentMatriciesVector;
+    }
+    
+    private boolean checkRangeForBaddies(int fixed, int rangeStart, int rangeEnd, Vector baddies){
+        boolean ok = true;
+        for( int k = 0; k < 5; k++ ){
+          int[][]otherMatrix = (int[][])currentMatriciesVector.get(k);
+          for( int m = rangeStart; m <= rangeEnd; m++){
+              int otherID = otherMatrix[fixed%32][m];
+              if(!(otherID == -1)){
+                  LiteYukonPAObject liteYukker = DaoFactory.getPaoDao().getLiteYukonPAO(otherID);
+                  DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYukker);
+                  java.sql.Connection conn = null;
+                  try {
+                      conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+                      heavyRoute.setDbConnection(conn);
+                      heavyRoute.retrieve();
+                      conn.close();
+                  } catch (SQLException e) {
+                      CTILogger.error(e);
+                  }
+                  int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
+                  LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+                  if(baddies.contains(liteCCUYuk)){
+                      return false;
+                  }
+              }
+          }
+      }
+        
+        return ok;
+    }
+    
+    private boolean checkRangeForAnything(int fixed, int rangeStart, int rangeEnd){
+        boolean ok = true;
+        for( int k = 0; k < 5; k++ ){
+          int[][]otherMatrix = (int[][])currentMatriciesVector.get(k);
+          for( int m = rangeStart; m <= rangeEnd; m++){
+              int otherID = otherMatrix[fixed%32][m];
+              if(!(otherID == -1)){
+                      return false;
+              }
+          }
+      }
+        
+        return ok;
     }
     
     /**
@@ -480,29 +525,115 @@ public class RegenerateRoute
      * @param route com.cannontech.database.db.route.Route
      * @author ASolberg
      */
-    @SuppressWarnings("unchecked")
-    public RouteRole assignRouteLocation( CCURoute route, int startingPoint ) {
+    public RouteRole assignRouteLocation( CCURoute route, RouteRole oldRole, Vector blackList ) {
         
         RouteRole routeRole = new RouteRole();
         Vector duplicates = new Vector();
+        // adjust the spots i start looking at
+        int startingPointFixed;
+        int startingPointVar;
+        if(oldRole == null){
+           startingPointFixed = 0;
+           startingPointVar = 0;
+           // try for a completly open slot
+           
+           Vector rptVector = route.getRepeaterVector();
+           int size = rptVector.size();
+           boolean success = false;
+           int successFixedBit = -1;
+           int runStartPoint = -1;
+           for(int i = startingPointFixed; i <= 31; i++) {
+               int run = 0;
+               int matrixNumber = 0;
+               int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
+               for(int j = startingPointVar; j < 7; j++) {
+                   if(matrix[i][j] == -1 ) {
+                       run++;
+                       if(run == size) {
+                           // check other matricies
+                           boolean ok = checkRangeForAnything(i, j - size + 1, j);
+                           if(ok){
+                               success = true;
+                               runStartPoint = j - size + 1;
+                               successFixedBit = i;
+                               break;
+                           }else{
+                               run = 0;
+                           }
+                       }
+                   }else{
+                       run = 0;
+                       if( (j + 1) + size > 7){
+                           //don't continue looking on this fixed bit if there isn't enough room to fit the route anyway.
+                           break;
+                       }
+                   }
+               }
+               if(success) {
+                   routeRole.setFixedBit(successFixedBit);
+                   routeRole.setVarbit(runStartPoint);
+                   routeRole.setDuplicates(duplicates);
+                   return routeRole;
+               }
+               startingPointVar = 0;
+           }
+           // we failed to find an unused slot, reset the starting spots to find a suitable slot to reuse.
+           startingPointFixed = 0;
+           startingPointVar = 0;
+           
+        }else{
+            startingPointFixed = oldRole.getFixedBit();
+            startingPointVar = oldRole.getVarbit();
         
+            if(startingPointFixed == 154){
+                startingPointFixed = 0;
+            }
+            if(startingPointVar == 6){
+                startingPointVar = 0;
+                startingPointFixed++;
+            }else{
+                startingPointVar++;
+                if(startingPointVar + route.getRepeaterVector().size() > 7){
+                    startingPointVar = 0;
+                    startingPointFixed++;
+                }
+            }
+        }
         // find suitable slot
         Vector rptVector = route.getRepeaterVector();
         int size = rptVector.size();
         boolean success = false;
         int successFixedBit = -1;
         int runStartPoint = -1;
-        for(int i = startingPoint; i <= 155; i++) {
+        for(int i = startingPointFixed; i <= 155; i++) {
             int run = 0;
             int matrixNumber = i / 32;
             int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
-            for(int j = 0; j < 7; j++) {
+            for(int j = startingPointVar; j < 7; j++) {
                 if(matrix[i % 32][j] == -1 ) {
                     run++;
-                    if(run == size) {
-                        success = true;
-                        successFixedBit = i;
-                        runStartPoint = j - size + 1;
+                    if(run >= size) {
+                        
+                        if(blackList == null){
+                            success = true;
+                            runStartPoint = j - size + 1;
+                            successFixedBit = i;
+                            break;
+                        }else{
+                            // verify this range isn't used by a ccu i don't like
+                            boolean ok = checkRangeForBaddies( i, j-size+1, j, blackList );
+                            if(ok){
+                                success = true;
+                                runStartPoint = j - size + 1;
+                                successFixedBit = i;
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    run = 0;
+                    if( (j + 1) + size > 7){
+                        //don't continue looking on this fixed bit if there isn't enough room to fit the route anyway.
                         break;
                     }
                 }
@@ -512,6 +643,7 @@ public class RegenerateRoute
                 routeRole.setVarbit(runStartPoint);
                 break;
             }
+            startingPointVar = 0;
         }
         // look for other ccu's that may use these bits combos
         if(success) {
@@ -568,12 +700,12 @@ public class RegenerateRoute
         for(int i = 0; i < 5; i++) {
             int[][] matrix = (int[][])currentMatriciesVector.get(i);
             Integer id = new Integer(matrix[maskedFixed][variable_]);
-            if (id > -1 && (!ids.contains(id)) && id != me) {
+            if (id.intValue() > -1 && (!ids.contains(id)) && (id.intValue() != me)) {
                 ids.add(id);
             }
-            for(int j = 0; j > rptVariables_.length; i++) {
+            for(int j = 0; j < rptVariables_.length; j++) {
                 Integer rptId = new Integer(matrix[maskedFixed][rptVariables_[j]]);
-                if (rptId > -1 && (!ids.contains(id)) && id != me) {
+                if (rptId.intValue() > -1 && (!ids.contains(rptId)) && (rptId.intValue() != me)) {
                     ids.add(rptId);
                 }
             }

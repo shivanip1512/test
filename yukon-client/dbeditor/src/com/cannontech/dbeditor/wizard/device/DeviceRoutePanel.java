@@ -259,15 +259,10 @@ public class DeviceRoutePanel
                 ((CCURoute) route).getRepeaterVector().addElement(rr);
 
                 route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
-//                Vector regRoute = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(),
-//                                                                   false,
-//                                                                   (CCURoute) route,
-//                                                                   false);
-//                newVal.getDBPersistentVector().add(regRoute.firstElement());
                 
                 Vector changingRoutes = new Vector(1);
                 RegenerateRoute routeBoss = new RegenerateRoute();
-                RouteRole role = routeBoss.assignRouteLocation((CCURoute)route,0);
+                RouteRole role = routeBoss.assignRouteLocation((CCURoute)route, null, null);
                 if( role.getDuplicates().isEmpty() ) {
                     ((CCURoute)route).getCarrierRoute().setCcuFixBits(new Integer(role.getFixedBit()));
                     ((CCURoute)route).getCarrierRoute().setCcuVariableBits(new Integer(role.getVarbit()));
@@ -283,52 +278,32 @@ public class DeviceRoutePanel
                     
                 }else {  // All route combinations have been used,  suggest a suitable role combonation to reuse.
                     
-                    RoleConflictDialog frame = new RoleConflictDialog(owner, role, (CCURoute)route);
+                    RoleConflictDialog frame = new RoleConflictDialog(owner, role, (CCURoute)route, routeBoss);
                     frame.setLocationRelativeTo(this);
                     String choice = frame.getValue();
-                    boolean finished = false;
-                    int startingSpot = role.getFixedBit();
-                    while(!finished) {
                         
-                        if(choice == "Yes") {
-                            finished = true;
-                             ((CCURoute) route).getCarrierRoute().setCcuFixBits(new Integer(frame.getRole().getFixedBit()));
-                             ((CCURoute) route).getCarrierRoute().setCcuVariableBits(new Integer(frame.getRole().getVarbit()));
-                 
-                             int rptVarBit = frame.getRole().getVarbit();
-                 
-                             for (int j = 0; j < ((CCURoute) route).getRepeaterVector().size(); j++) {
-                                 RepeaterRoute rpt = ((RepeaterRoute) ((CCURoute) route).getRepeaterVector().get(j));
-                                 if (rptVarBit + 1 <= 7) {
-                                     rptVarBit++;
-                                 }
-                                 if (j + 1 == ((CCURoute) route).getRepeaterVector().size()) {
-                                     rptVarBit = 7; // Last repeater's variable bit is always lucky 7.
-                                 }
-                                 rpt.setVariableBits(new Integer(rptVarBit));
+                    if(choice == "Yes") {
+                         ((CCURoute) route).getCarrierRoute().setCcuFixBits(new Integer(frame.getRole().getFixedBit()));
+                         ((CCURoute) route).getCarrierRoute().setCcuVariableBits(new Integer(frame.getRole().getVarbit()));
+                         int rptVarBit = frame.getRole().getVarbit();
+                         for (int j = 0; j < ((CCURoute) route).getRepeaterVector().size(); j++) {
+                             RepeaterRoute rpt = ((RepeaterRoute) ((CCURoute) route).getRepeaterVector().get(j));
+                             if (rptVarBit + 1 <= 7) {
+                                 rptVarBit++;
                              }
-                        }else if(choice == "No") {
-                            startingSpot = startingSpot+1;
-                            if(startingSpot >= 32) {
-                                finished = true;
-                            }else {
-                                RouteRole nextRole = routeBoss.assignRouteLocation((CCURoute)route,startingSpot);
-                                startingSpot = nextRole.getFixedBit();
-                                frame.setNewRole(nextRole);
-                                choice = frame.getValue();
-                            }
-                        }else {
-                            finished = true;
-                            return null;
-                        }
+                             if (j + 1 == ((CCURoute) route).getRepeaterVector().size()) {
+                                 rptVarBit = 7; // Last repeater's variable bit is always lucky 7.
+                             }
+                             rpt.setVariableBits(new Integer(rptVarBit));
+                         }
+                    }else if(choice == "Cancel") {
+                        return null;
                     }
-                    
                 }
                 newVal.getDBPersistentVector().add(route);
                 return newVal;
             }
         }
-
         return val;
     }
 	/**
@@ -338,8 +313,8 @@ public class DeviceRoutePanel
 	private void handleException(Throwable exception) {
 
 		/* Uncomment the following lines to print uncaught exceptions to stdout */
-		// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-		// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		 com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+		 com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 	/**
 	 * Initialize the class.

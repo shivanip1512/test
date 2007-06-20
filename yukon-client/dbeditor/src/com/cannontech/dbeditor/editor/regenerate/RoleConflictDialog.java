@@ -1,17 +1,11 @@
 package com.cannontech.dbeditor.editor.regenerate;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.DimensionUIResource;
 
@@ -20,7 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
 
@@ -38,6 +33,13 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
     private JLabel repeater7VariableLabel = null;
     private JLabel ccuFixedLabel = null;
     private JLabel ccuVariableLabel = null;
+    private JCheckBox ccu1CheckBox = null;
+    private JCheckBox ccu2CheckBox = null;
+    private JCheckBox ccu3CheckBox = null;
+    private JCheckBox ccu4CheckBox = null;
+    private JCheckBox ccu5CheckBox = null;
+    private JCheckBox ccu6CheckBox = null;
+    private JCheckBox ccu7CheckBox = null;
     
     private JTextField repeater1VariableTextField = null;
     private JTextField repeater2VariableTextField = null;
@@ -49,7 +51,8 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
     private JTextField ccuFixedTextField = null;
     private JTextField ccuVariableTextField = null;
     
-    private JTextPane duplicateCCUTextArea = null;
+//    private JTextPane duplicateCCUTextArea = null;
+    private JPanel duplicateCheckBoxPanel = null;
     
     private JLabel suggestLabel = null;
     private JPanel contentPanel = null;
@@ -61,6 +64,8 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
     private JButton cancelButton = null;
     private RouteRole role = null;
     private CCURoute route = null;
+    private RegenerateRoute routeMaster = null;
+    private Vector blackList = new Vector();
     
     private String choice = "No";
     private JTextField[] repeaterTextFieldArray = {
@@ -81,16 +86,26 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
             getRepeater6VariableLabel(),
             getRepeater7VariableLabel()
             };
+    private JCheckBox[] ccuCheckBoxArray = {
+            getCCU1CheckBox(),
+            getCCU2CheckBox(),
+            getCCU3CheckBox(),
+            getCCU4CheckBox(),
+            getCCU5CheckBox(),
+            getCCU6CheckBox(),
+            getCCU7CheckBox(),
+            };
     
     /**
      * This method was created in VisualAge.
      * @param contentPanel JPanel
      */
-    public RoleConflictDialog(java.awt.Frame owner, RouteRole role_, CCURoute route_) {
+    public RoleConflictDialog(java.awt.Frame owner, RouteRole role_, CCURoute route_, RegenerateRoute regenerateRoute_) {
         super(owner, true);
         this.owner = owner;
         role = role_;
         route = route_;
+        routeMaster = regenerateRoute_;
         initialize();
     }
 
@@ -101,7 +116,8 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
             this.dispose();
         }else if (source == getNoButton()) {
             choice = "No";
-            this.dispose();
+            getBlackList();
+            getNextSuggestion();
         }else if (source == getCancelButton()) {
             choice = "Cancel";
             this.dispose();
@@ -113,8 +129,35 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
         initializeRoles();
     }
     
+    private Vector getBlackList(){
+        for(int i = 0; i < ccuCheckBoxArray.length; i++){
+            if(ccuCheckBoxArray[i].isEnabled() && ccuCheckBoxArray[i].isSelected()){
+                Enumeration enummer = role.getDuplicates().elements();
+                while(enummer.hasMoreElements()){
+                    LiteYukonPAObject pao = (LiteYukonPAObject)enummer.nextElement();
+                    if(pao.getPaoName().equalsIgnoreCase(ccuCheckBoxArray[i].getText())){
+                        if(!blackList.contains(pao)){
+                            blackList.add(pao);
+                        }
+                    }
+                }
+            }
+        }
+        return blackList;
+    }
+    
     public RouteRole getRole() {
         return role;
+    }
+    
+    private void getNextSuggestion(){
+        role = routeMaster.assignRouteLocation(route, role, blackList);
+        if(role.getFixedBit() == -1){
+            role.setFixedBit(0);
+            role.setVarbit(0);
+            role = routeMaster.assignRouteLocation(route, role, blackList);
+        }
+        setNewRole(role);
     }
     
     /**
@@ -145,7 +188,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
             setName("RoleConflictFrame");
             setTitle("Route Role Conflict");
             setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-            setSize(450, 510);
+            setSize(450, 560);
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -172,7 +215,6 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
         addWindowListener( w );
     }
     
-    @SuppressWarnings("unchecked")
     private void initializeRoles() {
         int fixed = role.getFixedBit() % 32;
         int var = role.getVarbit();
@@ -192,8 +234,11 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
                 field.setText(new Integer(rptVarBit).toString());
                 String routeName = "";
                 try {
-                    routeName = DaoFactory.getPaoDao().getYukonPAOName(rr.getDeviceID());
-                } catch (NotFoundException e) {
+                    routeName = DaoFactory.getPaoDao().getYukonPAOName(rr.getDeviceID().intValue());
+                } catch (Exception e) {
+                    routeName = route.getPAOName();
+                }
+                if(routeName == null){
                     routeName = route.getPAOName();
                 }
                 label.setText(routeName + " Var Bit:");
@@ -206,8 +251,17 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
         }
         
         Vector dups = role.getDuplicates();
-        String largeString = StringUtils.join(dups, ", ");
-        getDuplicateCCUTextArea().setText(largeString);
+        for (int i = 0; i < ccuCheckBoxArray.length; i++){
+            if(i < dups.size()){
+                ccuCheckBoxArray[i].setText(((LiteYukonPAObject) dups.get(i)).getPaoName());
+                ccuCheckBoxArray[i].setEnabled(true);
+                ccuCheckBoxArray[i].setVisible(true);
+                ccuCheckBoxArray[i].setSelected(false);
+            }else{
+                ccuCheckBoxArray[i].setEnabled(false);
+                ccuCheckBoxArray[i].setVisible(false);
+            }
+        }
     }
 
     public JButton getNoButton() {
@@ -220,7 +274,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
 
     public JButton getYesButton() {
         if( yesButton == null ){
-        	yesButton = new JButton();
+            yesButton = new JButton();
             yesButton.setText("Yes");
         }
         return yesButton;
@@ -232,6 +286,62 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
             cancelButton.setText("Cancel");
         }
         return cancelButton;
+    }
+    
+    public JCheckBox getCCU1CheckBox() {
+        if( ccu1CheckBox == null ){
+            ccu1CheckBox = new JCheckBox();
+            ccu1CheckBox.setText("CCU 1");
+        }
+        return ccu1CheckBox;
+    }
+    
+    public JCheckBox getCCU2CheckBox() {
+        if( ccu2CheckBox == null ){
+            ccu2CheckBox = new JCheckBox();
+            ccu2CheckBox.setText("CCU 1");
+        }
+        return ccu2CheckBox;
+    }
+    
+    public JCheckBox getCCU3CheckBox() {
+        if( ccu3CheckBox == null ){
+            ccu3CheckBox = new JCheckBox();
+            ccu3CheckBox.setText("CCU 1");
+        }
+        return ccu3CheckBox;
+    }
+    
+    public JCheckBox getCCU4CheckBox() {
+        if( ccu4CheckBox == null ){
+            ccu4CheckBox = new JCheckBox();
+            ccu4CheckBox.setText("CCU 1");
+        }
+        return ccu4CheckBox;
+    }
+    
+    public JCheckBox getCCU5CheckBox() {
+        if( ccu5CheckBox == null ){
+            ccu5CheckBox = new JCheckBox();
+            ccu5CheckBox.setText("CCU 1");
+        }
+        return ccu5CheckBox;
+    }
+    
+    public JCheckBox getCCU6CheckBox() {
+        if( ccu6CheckBox == null ){
+            ccu6CheckBox = new JCheckBox();
+            ccu6CheckBox.setText("CCU 1");
+        }
+        return ccu6CheckBox;
+    }
+    
+    public JCheckBox getCCU7CheckBox() {
+        if( ccu7CheckBox == null ){
+            ccu7CheckBox = new JCheckBox();
+            ccu7CheckBox.setText("CCU 1");
+        }
+        return ccu7CheckBox;
     }
     
     public JLabel getDescriptionLabel() {
@@ -473,25 +583,86 @@ protected javax.swing.JPanel getComponentPanel() {
             constraintsRepeater7VariableTextField.gridwidth = 1;
             componentPanel.add(getRepeater7VariableTextField(), constraintsRepeater7VariableTextField);
             
-            java.awt.GridBagConstraints constraintsDuplicatesLabel = new java.awt.GridBagConstraints();
-            constraintsDuplicatesLabel.gridx = 0; constraintsDuplicatesLabel.gridy = 8;
-            constraintsDuplicatesLabel.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsDuplicatesLabel.insets = new java.awt.Insets(5, 5, 5, 5);
-            constraintsDuplicatesLabel.gridwidth = 4;
-            componentPanel.add(getDuplicatesLabel(), constraintsDuplicatesLabel);
+//            java.awt.GridBagConstraints constraintsDuplicatesLabel = new java.awt.GridBagConstraints();
+//            constraintsDuplicatesLabel.gridx = 0; constraintsDuplicatesLabel.gridy = 8;
+//            constraintsDuplicatesLabel.anchor = java.awt.GridBagConstraints.WEST;
+//            constraintsDuplicatesLabel.insets = new java.awt.Insets(5, 5, 5, 5);
+//            constraintsDuplicatesLabel.gridwidth = 4;
+//            componentPanel.add(getDuplicatesLabel(), constraintsDuplicatesLabel);
             
-            java.awt.GridBagConstraints constraintsDuplicateTextArea = new java.awt.GridBagConstraints();
-            constraintsDuplicateTextArea.gridx = 0; constraintsDuplicateTextArea.gridy = 9;
-            constraintsDuplicateTextArea.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsDuplicateTextArea.insets = new java.awt.Insets(5, 5, 5, 5);
-            constraintsDuplicateTextArea.gridwidth = 4;
-            componentPanel.add(getDuplicateCCUTextArea(), constraintsDuplicateTextArea);
+            java.awt.GridBagConstraints constraintsDuplicateCheckBoxPanel = new java.awt.GridBagConstraints();
+            constraintsDuplicateCheckBoxPanel.gridx = 0; constraintsDuplicateCheckBoxPanel.gridy = 8;
+            constraintsDuplicateCheckBoxPanel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsDuplicateCheckBoxPanel.insets = new java.awt.Insets(0, 0, 0, 0);
+            constraintsDuplicateCheckBoxPanel.gridwidth = 4;
+            componentPanel.add(getDuplicateCheckBoxPanel(), constraintsDuplicateCheckBoxPanel);
             
         }
         return componentPanel;
     }
     
-    protected javax.swing.JPanel getButtonPanel() {
+    private JPanel getDuplicateCheckBoxPanel(){
+        if(duplicateCheckBoxPanel == null){
+            duplicateCheckBoxPanel = new JPanel();
+            duplicateCheckBoxPanel.setLayout(new java.awt.GridBagLayout());
+            duplicateCheckBoxPanel.setBorder(new TitleBorder("Other CCU's using these bit roles: Check ccu's you want to exclude."));
+            duplicateCheckBoxPanel.setMinimumSize(new Dimension(400, 140));
+            duplicateCheckBoxPanel.setPreferredSize(new Dimension(400, 140));
+            
+            java.awt.GridBagConstraints constraintsCheckBox1 = new java.awt.GridBagConstraints();
+            constraintsCheckBox1.gridx = 0; constraintsCheckBox1.gridy = 0;
+            constraintsCheckBox1.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox1.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox1.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU1CheckBox(), constraintsCheckBox1);
+            
+            java.awt.GridBagConstraints constraintsCheckBox2 = new java.awt.GridBagConstraints();
+            constraintsCheckBox2.gridx = 0; constraintsCheckBox2.gridy = 1;
+            constraintsCheckBox2.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox2.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox2.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU2CheckBox(), constraintsCheckBox2);
+            
+            java.awt.GridBagConstraints constraintsCheckBox3 = new java.awt.GridBagConstraints();
+            constraintsCheckBox3.gridx = 0; constraintsCheckBox3.gridy = 2;
+            constraintsCheckBox3.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox3.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox3.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU3CheckBox(), constraintsCheckBox3);
+            
+            java.awt.GridBagConstraints constraintsCheckBox4 = new java.awt.GridBagConstraints();
+            constraintsCheckBox4.gridx = 0; constraintsCheckBox4.gridy = 3;
+            constraintsCheckBox4.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox4.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox4.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU4CheckBox(), constraintsCheckBox4);
+            
+            java.awt.GridBagConstraints constraintsCheckBox5 = new java.awt.GridBagConstraints();
+            constraintsCheckBox5.gridx = 1; constraintsCheckBox5.gridy = 0;
+            constraintsCheckBox5.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox5.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox5.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU5CheckBox(), constraintsCheckBox5);
+            
+            java.awt.GridBagConstraints constraintsCheckBox6 = new java.awt.GridBagConstraints();
+            constraintsCheckBox6.gridx = 1; constraintsCheckBox6.gridy = 1;
+            constraintsCheckBox6.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox6.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox6.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU6CheckBox(), constraintsCheckBox6);
+            
+            java.awt.GridBagConstraints constraintsCheckBox7 = new java.awt.GridBagConstraints();
+            constraintsCheckBox7.gridx = 1; constraintsCheckBox7.gridy = 2;
+            constraintsCheckBox7.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCheckBox7.insets = new java.awt.Insets(5, 5, 0, 0);
+            constraintsCheckBox7.gridwidth = 1;
+            duplicateCheckBoxPanel.add(getCCU7CheckBox(), constraintsCheckBox7);
+            
+        }
+        return duplicateCheckBoxPanel;
+    }
+    
+    protected JPanel getButtonPanel() {
         
         if(buttonPanel == null) {
             buttonPanel = new JPanel();
@@ -646,7 +817,7 @@ protected javax.swing.JPanel getComponentPanel() {
     
     public JTextField getRepeater7VariableTextField() {
         if( repeater7VariableTextField == null ){
-        	repeater7VariableTextField = new JTextField();
+            repeater7VariableTextField = new JTextField();
             repeater7VariableTextField.setMinimumSize(new Dimension(30, 20));
             repeater7VariableTextField.setPreferredSize(new Dimension(30, 20));
             repeater7VariableTextField.setEditable(false);
@@ -654,42 +825,28 @@ protected javax.swing.JPanel getComponentPanel() {
         return repeater7VariableTextField;
     }
     
-    @SuppressWarnings("unchecked")
-    public JTextPane getDuplicateCCUTextArea() {
-        if( duplicateCCUTextArea == null) {
-            duplicateCCUTextArea = new JTextPane();
-            duplicateCCUTextArea.setMinimumSize(new Dimension(400, 50));
-            duplicateCCUTextArea.setPreferredSize(new Dimension(400, 50));
-            duplicateCCUTextArea.setBackground(Color.pink);
-            duplicateCCUTextArea.setEditable(false);
-            duplicateCCUTextArea.setText("");
+//    public JTextPane getDuplicateCCUTextArea() {
+//        if( duplicateCCUTextArea == null) {
+//            duplicateCCUTextArea = new JTextPane();
+//            duplicateCCUTextArea.setMinimumSize(new Dimension(400, 50));
+//            duplicateCCUTextArea.setPreferredSize(new Dimension(400, 50));
+//            duplicateCCUTextArea.setBackground(Color.pink);
+//            duplicateCCUTextArea.setEditable(false);
+//            duplicateCCUTextArea.setText("");
+//            duplicateCCUTextArea.setFont(new Font("Arial", 0, 11));
 //            Vector dups = role.getDuplicates();
-//            String[] dupsArray = new String[0];
-//            dupsArray= (String[]) dups.toArray(dupsArray);
-//            String largeString = "";
-//            for (int i = 0; i < dupsArray.length; i++) {
-//                largeString += dupsArray[i];
-//                if(!(i + 1 == dupsArray.length)) {
-//                    largeString += ", ";
-//                }
-//            }
-//            duplicateCCUTextArea.setText(largeString);
-            Vector dups = role.getDuplicates();
-            dups.add("foo");                                                      // REMOVE LATER
-            dups.add("bob");
-            dups.add("paul");
-            String largeString = StringUtils.join(dups, ", ");
-            getDuplicateCCUTextArea().setText(largeString);
-            duplicateCCUTextArea.setBorder(new EtchedBorder());
-        }
-        return duplicateCCUTextArea;
-    }
+//
+//            String largeString = StringUtils.join(dups.iterator(), ", ");
+//            getDuplicateCCUTextArea().setText(largeString);
+//            duplicateCCUTextArea.setBorder(new EtchedBorder());
+//        }
+//        return duplicateCCUTextArea;
+//    }
     
     /**
      * Returns the choice selected
      * @return String
      */
-    @SuppressWarnings("deprecation")
     public String getValue() {
 
         if( isShowing() == false )
@@ -701,11 +858,10 @@ protected javax.swing.JPanel getComponentPanel() {
         return choice;
     }
     
-    @SuppressWarnings("deprecation")
     public static void main(java.lang.String[] args) {
         try {
             RoleConflictDialog aRoleConflictDialog;
-            aRoleConflictDialog = new RoleConflictDialog(null,null,null);
+            aRoleConflictDialog = new RoleConflictDialog(null,null,null, null);
             aRoleConflictDialog.setModal(true);
             aRoleConflictDialog.addWindowListener(new java.awt.event.WindowAdapter() {
                 public void windowClosing(java.awt.event.WindowEvent e) {
