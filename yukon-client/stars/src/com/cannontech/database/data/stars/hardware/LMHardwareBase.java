@@ -1,5 +1,10 @@
 package com.cannontech.database.data.stars.hardware;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.database.JdbcTemplateHelper;
+
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -38,6 +43,15 @@ public class LMHardwareBase extends InventoryBase {
 		
 		// delete from LMThermostatManualEvent
 		com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( inventoryID );
+        
+        // remove any entries in the LMHardwareToMeterMapping table if this was a switch assigned to a meter
+		String stmt = "DELETE FROM LMHardwareToMeterMapping WHERE LMHardwareInventoryID = " + inventoryID;
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        
+        try {
+            jdbcOps.execute(stmt);
+        }
+        catch (Exception e) {}
 	}
 	
 	public void deleteLMHardwareBase() throws java.sql.SQLException {
