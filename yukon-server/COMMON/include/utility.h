@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2007/02/22 17:46:43 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2007/06/20 16:03:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,6 +148,9 @@ public:
     CtiHighPerfTimer& relocate(string file, UINT line);
 };
 
+
+
+IM_EX_CTIBASE void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName);
 
 
 IM_EX_CTIBASE string identifyProjectVersion(const CTICOMPILEINFO &Info);

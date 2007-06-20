@@ -464,23 +464,23 @@ INT SynchronizedIdGen(string name, int count)
         // In this case, we poke at the PAO table
         RWDBConnection conn = getConnection();
         RWDBDatabase db = getDatabase();
-    
+
         RWDBTable yukonSequenceTable = getDatabase().table("sequencenumber");
         RWDBUpdater updater = yukonSequenceTable.updater();
-    
+
         updater.where( yukonSequenceTable["sequencename"] == name.c_str() );
         updater << yukonSequenceTable["lastvalue"].assign( yukonSequenceTable["lastvalue"] + count );
-    
+
         status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
-    
+
         if(status == NORMAL)
         {
             RWDBSelector selector = db.selector();
             selector << yukonSequenceTable["lastvalue"];
             selector.where( yukonSequenceTable["sequencename"] == name.c_str() );
-    
+
             RWDBReader rdr = selector.reader(conn);
-    
+
             if(rdr() && rdr.isValid())
             {
                 rdr >> last;
@@ -2683,3 +2683,28 @@ CtiHighPerfTimer& CtiHighPerfTimer::relocate(string file, UINT line) {
     return *this;
 }
 
+
+// Usage: SetThreadName (-1, "MainThread");
+void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
+{
+    struct THREADNAME_INFO
+    {
+        DWORD dwType; // must be 0x1000
+        LPCSTR szName; // pointer to name (in user addr space)
+        DWORD dwThreadID; // thread ID (-1=caller thread)
+        DWORD dwFlags; // reserved for future use, must be zero
+    }  info;
+
+    info.dwType = 0x1000;
+    info.szName = szThreadName;
+    info.dwThreadID = dwThreadID;
+    info.dwFlags = 0;
+
+    __try
+    {
+        RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
+    }
+    __except(EXCEPTION_CONTINUE_EXECUTION)
+    {
+    }
+}
