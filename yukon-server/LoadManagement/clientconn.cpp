@@ -113,14 +113,10 @@ void CtiLMConnection::close()
     _valid = FALSE;
     delete sinbuf;
     delete soubuf;
-    delete oStream;
-    delete iStream;
     delete _portal;
 
     sinbuf = NULL;
     soubuf = NULL;
-    oStream = NULL;
-    iStream = NULL;
     _portal = NULL;
 
     //unblock the in and out thread
@@ -131,6 +127,12 @@ void CtiLMConnection::close()
 
     _recvrunnable.join();
     _sendrunnable.join();
+
+    delete oStream;
+    delete iStream;
+
+    oStream = NULL;
+    iStream = NULL;
 
     RWCollectable* c;
     _queue.close();

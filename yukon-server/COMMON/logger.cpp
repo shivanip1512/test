@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:25:48 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/06/20 21:51:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,11 +64,10 @@ CtiLogger& CtiLogger::setWriteInterval(long millis)
 
 CtiLogger& CtiLogger::flush()
 {
-    if( (_current_stream->pcount()) > 0 )           // Only do this if there is data there. 081001 CGP
+    if( _current_stream != NULL && (_current_stream->pcount()) > 0 )           // Only do this if there is data there. 081001 CGP
     {
         _queue.write(_current_stream);
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
+        _current_stream = NULL;
 
         if( _flush_mux.acquire(0) )
         {
@@ -76,7 +75,7 @@ CtiLogger& CtiLogger::flush()
             _flush_mux.release();
         }
     }
-    else
+    else if( _current_stream != NULL )
     {
         _current_stream->rdbuf()->freeze(false);     // Unfreeze it, for further input...
     }
@@ -173,12 +172,22 @@ bool CtiLogger::acquire(unsigned long millis)
 
 ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << pf;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(ios_base& (*pf)(ios_base&))
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << pf;
     return *_current_stream;
 }
@@ -333,82 +342,152 @@ bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
 
 ostream& CtiLogger::operator<<(const char *s)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << s;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(char c)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << c;
     return *_current_stream;
 }
 ostream& CtiLogger::operator<<(bool n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 ostream& CtiLogger::operator<<(short n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(unsigned short n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(int n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(unsigned int n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(long n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(unsigned long n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(float n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(double n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(long double n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(void * n)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << n;
     return *_current_stream;
 }
 
 ostream& CtiLogger::operator<<(const string& s)
 {
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     *_current_stream << s;
     return *_current_stream;
 }
@@ -421,11 +500,23 @@ ostream& CtiLogger::operator<<(const CtiTime &r)
 char CtiLogger::fill(char cfill)
 {
     _fillChar = cfill;
+    if( _current_stream == NULL )
+    {
+        _current_stream = new strstream;
+        _current_stream->fill(_fillChar);
+    }
     return _current_stream->fill(cfill);
 }
 char CtiLogger::fill() const
 {
-    return _current_stream->fill();
+    if( _current_stream != NULL )
+    {
+        return _current_stream->fill();
+    }
+    else
+    {
+        return _fillChar;
+    }
 }
 
 #ifdef _DEBUG
