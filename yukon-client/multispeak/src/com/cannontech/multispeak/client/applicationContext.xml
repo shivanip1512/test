@@ -73,10 +73,14 @@
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.RawPointHistoryDaoImpl">
   </bean>
 
+  <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
+  </bean>
+
   <bean id="mspAccountInfoDao" class="com.cannontech.multispeak.dao.impl.MspAccountInfoDaoImpl">
+    <property name="mspObjectDao" ref="mspObjectDao"/>
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
     <property name="multispeakDao" ref="multispeakDao"/>
-    <property name="deviceDao" ref="deviceDao"/>
+    <property name="meterDao" ref="meterDao"/>
   </bean>
   
   <bean id="mspMeterReadDao" class="com.cannontech.multispeak.dao.impl.MspMeterReadDaoImpl">
