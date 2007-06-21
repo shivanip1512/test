@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/07/27 18:37:36 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/06/21 16:27:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,7 +159,7 @@ RWBoolean CtiMessage::operator<(const CtiMessage& aRef) const
 {
    RWBoolean bRet(TRUE);
 
-   if(MessagePriority < aRef.getMessagePriority())
+   if(MessagePriority > aRef.getMessagePriority())
    {
       bRet = RWBoolean(FALSE);   // Higher priority is "less".  Sorts ahead of lower priority.
    }
