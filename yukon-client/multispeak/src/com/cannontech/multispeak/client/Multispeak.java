@@ -22,8 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.impl.DeviceDaoImpl;
-import com.cannontech.core.dao.impl.PaoDaoImpl;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -45,6 +45,7 @@ import com.cannontech.multispeak.block.YukonFormattedBlock;
 import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
 import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
 import com.cannontech.multispeak.event.CDStatusEvent;
@@ -76,8 +77,9 @@ public class Multispeak implements MessageListener {
     private BasicServerConnection porterConnection;
     private MspMeterDao mspMeterDao;
     private DBPersistentDao dbPersistentDao;
-    private PaoDaoImpl paoDao;
-    private DeviceDaoImpl deviceDao;
+    private PaoDao paoDao;
+    private DeviceDao deviceDao;
+    private MspObjectDao mspObjectDao;
     private SystemLogHelper _systemLogHelper = null;
     
 	/** Singleton incrementor for messageIDs to send to porter connection */
@@ -101,14 +103,18 @@ public class Multispeak implements MessageListener {
         this.dbPersistentDao = dbPersistentDao;
     }
 
-    public void setPaoDao(PaoDaoImpl paoDao) {
+    public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
-
-    public void setDeviceDao(DeviceDaoImpl deviceDao) {
+    
+    public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
-
+    
+    public void setMspObjectDao(MspObjectDao mspObjectDao) {
+        this.mspObjectDao = mspObjectDao;
+    }
+    
     /**
      * Get the static instance of Multispeak (this) object.
      * Adds a message listener to the pil connection instance. 
@@ -596,7 +602,7 @@ public class Multispeak implements MessageListener {
                     if( address.equalsIgnoreCase(mspMeter.getNameplate().getTransponderID())) { //Same MeterNumber and Address
                         if( disabled ) {        //Disabled Meter found
                         	//Load the CIS serviceLocation.
-                        	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                        	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                         	String billingCycle = mspServiceLocation.getBillingCycle();
                             //Enable Meter and update applicable fields.
                             String oldCollGroup = deviceMeterGroup.getCollectionGroup();
@@ -669,26 +675,8 @@ public class Multispeak implements MessageListener {
                                 
                                 
 //                                  Find a valid Template!
-                                String templateName = "*Default Template";
-                                if( mspMeter.getExtensionsList() != null) {
-	                                ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
-	                                for (int j = 0; j < eItems.length; j++) {
-	                                    ExtensionsItem eItem = eItems[j];
-	                                    String extName = eItem.getExtName();
-	                                    if ( extName.equalsIgnoreCase("AMRMeterType"))
-	                                        templateName = eItem.getExtValue();
-	                                }
-	/*                                    if (templateName == null) { //Template NOT provided!
-	                                        ErrorObject err = multispeakFuncs.getErrorObject(meterNo, "Error: MeterNumber(" + meterNo + ")- AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.");
-	                                        errorObjects.add(err);
-	                                        logMSPActivity("MeterAddNotification",
-	                                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.", 
-	                                                       mspVendor.getCompanyName());
-	                                                                        
-	                                        //TODO Need to use "default" template if possible
-	                                    } 
-	*/
-                                }
+                                String templateName = getMeterTemplate(mspMeter);
+                                
                                 //Find template object in Yukon
                                 LiteYukonPAObject liteYukonPaobjectTemplate = deviceDao.getLiteYukonPaobjectByDeviceName(templateName);
                                 if( liteYukonPaobjectTemplate == null){ 
@@ -702,7 +690,7 @@ public class Multispeak implements MessageListener {
                                 }
                                 else {    //Valid template found
                                 	//Load the CIS serviceLocation.
-                                	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                                	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                                     //Find a valid substation
                                     if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
                                         addImportData(mspMeter, mspServiceLocation, templateName, "");
@@ -736,7 +724,7 @@ public class Multispeak implements MessageListener {
                                 
                                 if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Meter Number object
                                 	//Load the CIS serviceLocation.
-                                	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                                	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                                 	String billingCycle = mspServiceLocation.getBillingCycle();
                                     //TODO deleteRawPointHistory(yukonPaobject);
                                     String oldCollGroup = deviceMeterGroup.getCollectionGroup();
@@ -818,27 +806,8 @@ public class Multispeak implements MessageListener {
                 List liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                 if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                     //Find a valid Template!
-                	String templateName = "*Default Template";
-                	if( mspMeter.getExtensionsList() != null) {
-	                    ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
-	                    for (int j = 0; j < eItems.length; j++) {
-	                        ExtensionsItem eItem = eItems[j];
-	                        String extName = eItem.getExtName();
-	                        if ( extName.equalsIgnoreCase("AMRMeterType"))
-	                            templateName = eItem.getExtValue();
-	                    }
-	                    /*if (templateName == null) { //Template NOT provided!
-	                        ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
-	                                                                         "Error: MeterNumber(" + meterNo + ") - AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.",
-	                                                                         "Meter");
-	                        errorObjects.add(err);
-	                        logMSPActivity("MeterAddNotification",
-	                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.",
-	                                       mspVendor.getCompanyName());
-	                                                        
-	                        //TODO Need to use "default" template if possible
-	                    } */
-                	}
+                	String templateName = getMeterTemplate(mspMeter);
+
                     LiteYukonPAObject liteYukonPaobjectTemplate = deviceDao.getLiteYukonPaobjectByDeviceName(templateName);
                     if( liteYukonPaobjectTemplate == null){ 
                         ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
@@ -851,7 +820,7 @@ public class Multispeak implements MessageListener {
                     }
                     else {    //Valid template found
                     	//Load the CIS serviceLocation.
-                    	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                    	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                         //Find a valid substation
                         if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
                             addImportData(mspMeter, mspServiceLocation, templateName, "");
@@ -884,7 +853,7 @@ public class Multispeak implements MessageListener {
                     if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Address object
                         //TODO deleteRawPointHistory(yukonPaobject);
                     	//Load the CIS serviceLocation.
-                    	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                    	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                     	String billingCycle = mspServiceLocation.getBillingCycle();
                         yukonPaobjectByAddress.setDisabled(false);
                         String logTemp = "";
@@ -1192,28 +1161,30 @@ public class Multispeak implements MessageListener {
         getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName, SystemLog.TYPE_MULTISPEAK); 
     }
     
-    /**
-    * Returns a serviceLocation for the meterNo.
-    * If the interface/method is not supported by mspVendor, or if no object is found, an empty ServiceLocation object is returned.
-    * @param mspVendor
-    * @param meterNo
-    * @return
-    */
-   private ServiceLocation getServiceLocation(MultispeakVendor mspVendor, String meterNo) {
-	   // Load the CIS serviceLocation.
-   		ServiceLocation mspServiceLocation = new ServiceLocation();
-   		String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
-    	try {
-    		CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-   			mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);
-    	} catch (ServiceException e) {
-    		CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getServiceLocationByMeterNo failed.");
-			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
-    	} catch (RemoteException e) {
-    		CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-			CTILogger.info("A default(empty) is being used for ServiceLocation");
+  
+   private String getMeterTemplate(Meter mspMeter) {
+       String templateName = MultispeakDefines.TEMPLATE_NAME_DEFAULT;
+       boolean loaded = false;
+       
+       if( mspMeter.getAMRDeviceType() != null) {
+           templateName = mspMeter.getAMRDeviceType();
+           loaded = true;
        }
-       return mspServiceLocation;
+       
+       if (!loaded) {
+           if( mspMeter.getExtensionsList() != null) {
+               ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
+               for (int j = 0; j < eItems.length; j++) {
+                   ExtensionsItem eItem = eItems[j];
+                   String extName = eItem.getExtName();
+                   if ( extName.equalsIgnoreCase("AMRMeterType")) {
+                       templateName = eItem.getExtValue();
+                       loaded = true;
+                   }
+               }
+           }
+       }
+
+       return templateName;
    }
 }
