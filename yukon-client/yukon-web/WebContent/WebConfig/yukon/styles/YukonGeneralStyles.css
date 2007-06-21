@@ -53,9 +53,13 @@ table.resultsTable th a {
 	text-decoration: none !important;
 }
 
-table.resultsTable tr:hover td, table.resultsTable tr.hover {
+table.resultsTable tr.hover {
 	background-color: yellow;
 	cursor: pointer;
+}
+
+table.resultsTable tr.noPointer {
+	cursor: default !important;
 }
 
 table.resultsTable th a:active, span.navLink a:active {color: #06C}
