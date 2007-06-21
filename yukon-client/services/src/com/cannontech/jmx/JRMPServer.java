@@ -133,7 +133,7 @@ public class JRMPServer
 	{
 		try
 		{
-			System.setProperty("cti.app.name", "MBeanServer");
+			System.setProperty("cti.app.name", "BulkImporter");
             
 			//Assume the default server login operation
             ClientSession session = ClientSession.getInstance(); 
