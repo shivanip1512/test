@@ -8435,7 +8435,7 @@ insert into YukonRoleProperty values(-10917,-109,'Cap Control Reports Group Labe
 insert into YukonRoleProperty values(-10918,-109,'Database Reports Group Label','Database','Label (header) for Database group reports.');
 insert into YukonRoleProperty values(-10919,-109,'Stars Reports Group Label','Stars','Label (header) for Stars group reports.');
 insert into YukonRoleProperty values(-10920,-109,'Other Reports Group Label','Other','Label (header) for Other group reports.');
-insert into YukonRoleProperty values(-10922,-109,'C&I Curtailment Reports Group Label','Stars','Label (header) for C&I Curtailment group reports.');
+insert into YukonRoleProperty values(-10922,-109,'C&I Curtailment Reports Group Label','Curtailment','Label (header) for C&I Curtailment group reports.');
 insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
 
 

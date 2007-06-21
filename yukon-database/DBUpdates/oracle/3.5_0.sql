@@ -144,6 +144,8 @@ insert into yukonlistentry values (142, 100, 0, 'Linear Slope', 0);
 alter table CICUSTOMERPOINTDATA drop constraint PK_CICUSTOMERPOINTDATA;
 alter table CICUSTOMERPOINTDATA add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type);
 
+update YukonRoleProperty set DefaultValue = 'Curtailment' where RolePropertyID = -10922;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -163,6 +163,9 @@ go
 alter table CICUSTOMERPOINTDATA add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type);
 go
 
+update YukonRoleProperty set DefaultValue = 'Curtailment' where RolePropertyID = -10922;
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
