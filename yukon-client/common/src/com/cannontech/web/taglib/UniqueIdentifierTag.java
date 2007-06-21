@@ -11,15 +11,16 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 public class UniqueIdentifierTag extends SimpleTagSupport {
     private String var = null;
     private String prefix = "";
+    private static final int SCOPE = PageContext.SESSION_SCOPE;
     
     @Override
     public void doTag() throws JspException, IOException {
         JspContext jspContext = getJspContext();
         String key = UniqueIdentifierTag.class.getName() + ".last";
-        AtomicInteger last = (AtomicInteger) jspContext.getAttribute(key, PageContext.REQUEST_SCOPE);
+        AtomicInteger last = (AtomicInteger) jspContext.getAttribute(key, SCOPE);
         if (last == null) {
             last = new AtomicInteger(0);
-            jspContext.setAttribute(key, last, PageContext.REQUEST_SCOPE);
+            jspContext.setAttribute(key, last, SCOPE);
         }
         int current = last.incrementAndGet();
         String output = prefix + current;

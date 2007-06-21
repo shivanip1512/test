@@ -16,6 +16,8 @@ JsWidgetObject.prototype = {
   
   onSuccess: function(transport, json) {
     this.parameters = json;
+    // this helps prevent this from growing like crazy each time the widget is refreshed
+    this.linkInfo = $H();
   },
   
   doActionRefresh: function(cmd, actionButton, waitingLabel) {
