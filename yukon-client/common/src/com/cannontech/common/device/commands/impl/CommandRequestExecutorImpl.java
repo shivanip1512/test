@@ -6,10 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
@@ -58,17 +57,16 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
                     if (status != 0) {
                         DeviceErrorDescription description = deviceErrorTranslatorDao.translateErrorCode(status);
                         callback.receivedError(description);
-                    } else {
-                        String resultString = retMessage.getResultString();
-                        callback.receivedResultString(resultString);
-                        Vector resultVector = retMessage.getVector();
-                        for (Object aResult : resultVector) {
-                            if (aResult instanceof PointData) {
-                                PointData pData = (PointData) aResult;
-                                callback.receivedValue(pData);
-                            } else {
-                                handleUnknownReturn(userMessageId, aResult);
-                            }
+                    } 
+                    String resultString = retMessage.getResultString();
+                    callback.receivedResultString(resultString);
+                    Vector resultVector = retMessage.getVector();
+                    for (Object aResult : resultVector) {
+                        if (aResult instanceof PointData) {
+                            PointData pData = (PointData) aResult;
+                            callback.receivedValue(pData);
+                        } else {
+                            handleUnknownReturn(userMessageId, aResult);
                         }
                     }
                     
@@ -102,18 +100,17 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
     }
 
     private final class WaitableCommandCompletionCallback extends CollectingCommandCompletionCallback {
-        private final Lock lock = new ReentrantLock();
+        private final CountDownLatch latch = new CountDownLatch(1);
 
         private WaitableCommandCompletionCallback() {
-            lock.lock();
         }
 
         public void complete() {
-            lock.unlock();
+                latch.countDown();
         }
         
         public void waitForCompletion(long time) throws InterruptedException, TimeoutException {
-            boolean success = lock.tryLock(time, TimeUnit.SECONDS);
+            boolean success = latch.await(time, TimeUnit.SECONDS);
             if (!success) {
                 throw new TimeoutException("Commander command execution did not complete with " + time + " seconds");
             }

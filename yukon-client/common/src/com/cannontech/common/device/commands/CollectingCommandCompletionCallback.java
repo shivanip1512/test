@@ -39,5 +39,14 @@ public abstract class CollectingCommandCompletionCallback implements
     public List<String> getResultStrings() {
         return resultStrings;
     }
+    
+    public String getLastResultString() {
+        
+        if(resultStrings.size() > 0){
+            return resultStrings.get(resultStrings.size() - 1);
+        }
+        
+        return "";
+    }
 
 }

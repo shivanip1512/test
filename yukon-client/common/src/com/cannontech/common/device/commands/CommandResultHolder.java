@@ -14,5 +14,7 @@ public interface CommandResultHolder {
     public List<String> getResultStrings();
     
     public boolean isErrorsExist();
+    
+    public String getLastResultString();
 
 }
