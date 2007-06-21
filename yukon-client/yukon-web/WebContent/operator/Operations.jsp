@@ -259,17 +259,24 @@
 			srvcSearchByList.add(entry);
 		}
 	}
+	
+	String serviceOrderPage = "WorkOrder/WorkOrder.jsp";
+	if(((ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)) == null || 
+		((ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)).size() < 1) { 
+		serviceOrderPage = "WorkOrder/WOFilter.jsp";
+	}
 %>
 
 <c:set var="lastSrvcOption" scope="page" value="<%=lastSrvcOption%>" />
 <c:set var="srvcSearchByList" scope="page" value="<%=srvcSearchByList%>" />
+<c:set var="serviceOrderPage" scope="page" value="<%=serviceOrderPage%>" />
 
 <cti:checkRole roleid="<%= WorkOrderRole.ROLEID %>">
 
 	<tags:operationSection sectionName="Work Orders" sectionImageName="WorkOrdersLogo">
     	<cti:checkProperty property="WorkOrderRole.WORK_ORDER_SHOW_ALL"> 
             <tags:sectionLink>
-            	<a href="WorkOrder/WOFilter.jsp">Service Order List</a>
+            	<a href="${serviceOrderPage}">Service Order List</a>
             </tags:sectionLink>
 		</cti:checkProperty>
 		
