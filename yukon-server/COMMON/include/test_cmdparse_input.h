@@ -4,7 +4,7 @@
 
 #include <string>
 
-#define TEST_SIZE 96
+#define TEST_SIZE 109
 
 std::string inputString[TEST_SIZE] = {
     "getvalue kwh",
@@ -102,9 +102,21 @@ std::string inputString[TEST_SIZE] = {
 "getconfig raw start=0x93",
 "getconfig function raw start=0x90832 2",
 "putconfig emetcon raw start=0x9823 0x83 0x39 0x32",
-"getvalue lp peak interval channel 2 12/31/2003 31"
-      
-    };
+"getvalue lp peak interval channel 2 12/31/2003 31",
+"putstatus xcom prop display",
+"putstatus xcom prop inc",
+"putstatus xcom prop term",
+"putstatus xcom prop rssi",
+"putstatus xcom prop test",
+"putstatus xcom prop ping",
+"putconfig xcom extended tier 2 rate 254 cmd 5 display 3 timeout 600 delay 5432",
+"putconfig xcom display setup LCD",
+"putconfig xcom display setup segment",
+"putconfig xcom display 2 'thisismessage2'",
+"putconfig xcom thermo config 34",
+"putconfig xcom utility usage 1:34, 2:36, 4:56.3",
+"putconfig xcom utility info chan 1 delete 2 name 'julie' currency 'dollars' present usage 2 past usage 33 present charge 333 cents past charge 555 cents"
+};
 
 
 #endif

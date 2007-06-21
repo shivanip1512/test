@@ -4850,52 +4850,29 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xcthermoconfig"] = CtiParseValue( config );
         }
     }
-    else if (CmdStr.contains("display")) 
-    {
-        _cmd["xcdisplay"] = TRUE;
-        if(!(token = CmdStr.match(" setup (LCD|seg(ment?))")).empty())
-        {   
-            if (token.contains("LCD"))
-                _cmd["xclcddisplay"] = TRUE;
-            else
-                _cmd["xclcddisplay"] = FALSE;
-        }
-        else if(!(token = CmdStr.match("display " + str_num + str_quoted_token)).empty())
-        {
-            str = token.match(re_num);
-            int msgid = atoi(str.c_str());
-            _cmd["xcdisplaymessageid"]  = CtiParseValue(msgid );
-
-            if(!(str = token.match(str_quoted_token)).empty())
-            {
-                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-                _cmd["xcdisplaymessage"] = CtiParseValue( str );
-            }
-        }
-    }
     else if (CmdStr.contains("extended tier")) 
     {
         _cmd["xcextier"] = TRUE;
-        if(!(token = CmdStr.match(" tier" + str_num)).empty())
+        if(!(token = CmdStr.match(" tier " + str_num)).empty())
         {  
             str = token.match(re_num);
             int tier = atoi(str.c_str());
             _cmd["xcextierlevel"] = CtiParseValue(tier);
 
-            if(!(token = CmdStr.match(" rate" + str_num)).empty())
+            if(!(token = CmdStr.match(" rate " + str_num)).empty())
             {  
                 str = token.match(re_num);
                 int rate = atoi(str.c_str());
                 _cmd["xcextierrate"] = CtiParseValue(rate);
             }
 
-            if(!(token = CmdStr.match(" (cmd|command)" + str_num)).empty())
+            if(!(token = CmdStr.match(" (cmd|command) " + str_num)).empty())
             {  
                 str = token.match(re_num);
                 int command = atoi(str.c_str());
                 _cmd["xcextiercmd"] = CtiParseValue(command);
             }
-            if(!(token = CmdStr.match(" display" + str_num)).empty())
+            if(!(token = CmdStr.match(" display " + str_num)).empty())
             {  
                 str = token.match(re_num);
                 int display = atoi(str.c_str());
@@ -4920,6 +4897,29 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
         }
 
+    }
+    else if (CmdStr.contains("display")) 
+    {
+        _cmd["xcdisplay"] = TRUE;
+        if(!(token = CmdStr.match(" setup (lcd)|(seg)")).empty())
+        {   
+            if (token.contains("lcd"))
+                _cmd["xclcddisplay"] = CtiParseValue(TRUE);
+            else
+                _cmd["xclcddisplay"] = CtiParseValue(FALSE);
+        }
+        else if(!(token = CmdStr.match(" display " + str_num + " " + str_quoted_token)).empty())
+        {
+            str = token.match(re_num);
+            int msgid = atoi(str.c_str());
+            _cmd["xcdisplaymessageid"]  = CtiParseValue(msgid );
+
+            if(!(str = token.match(str_quoted_token)).empty())
+            {
+                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+                _cmd["xcdisplaymessage"] = CtiParseValue( str );
+            }
+        }
     }
     else if(CmdStr.contains("utility info"))
     {
