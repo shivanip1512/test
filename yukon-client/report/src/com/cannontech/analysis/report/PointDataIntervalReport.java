@@ -105,33 +105,6 @@ public class PointDataIntervalReport extends YukonReportBase
 	}
 
 	/**
-	 * Create a Group for Pao Name.  
-	 * @return Group
-	 */
-	private Group createPaoGroup()
-	{
-		final Group paoGroup = new Group();
-		paoGroup.setName(PointDataIntervalModel.PAO_NAME_STRING + ReportFactory.NAME_GROUP);
-	
-		GroupHeader header = ReportFactory.createGroupHeaderDefault();
-	
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PointDataIntervalModel.PAO_NAME_COLUMN);
-		factory.setText(factory.getText() + ":");
-		header.addElement(factory.createElement());
-		
-		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PointDataIntervalModel.PAO_NAME_COLUMN);
-		tfactory.setAbsolutePosition(new Point2D.Float(75, 1));	//override the posX location
-		header.addElement(tfactory.createElement());
-
-		paoGroup.setHeader(header);
-	
-		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		paoGroup.setFooter(footer);
-
-		return paoGroup;
-	}
-
-	/**
 	 * Create a Group for Point Name.  
 	 * @return Group
 	 */
@@ -143,13 +116,22 @@ public class PointDataIntervalReport extends YukonReportBase
 		pointGroup.addField(PointDataIntervalModel.POINT_NAME_STRING);
 		  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
+        header.setRepeat(true);
+        
+        LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PointDataIntervalModel.PAO_NAME_COLUMN);
+        factory.setText(factory.getText() + ":");
+        header.addElement(factory.createElement());
+        
+        TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PointDataIntervalModel.PAO_NAME_COLUMN);
+        tfactory.setAbsolutePosition(new Point2D.Float(75, 1)); //override the posX location
+        header.addElement(tfactory.createElement());
 
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PointDataIntervalModel.POINT_NAME_COLUMN);
+		factory = ReportFactory.createGroupLabelElementDefault(getModel(), PointDataIntervalModel.POINT_NAME_COLUMN);
 		factory.setText(factory.getText() + ":");
 		header.addElement(factory.createElement());
 
-		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PointDataIntervalModel.POINT_NAME_COLUMN);
-		tfactory.setAbsolutePosition(new Point2D.Float(75, 1));
+		tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PointDataIntervalModel.POINT_NAME_COLUMN);
+		tfactory.setAbsolutePosition(new Point2D.Float(360, 1));
 		header.addElement(tfactory.createElement());
 
 		for (int i = PointDataIntervalModel.DATE_COLUMN; i <= PointDataIntervalModel.QUALITY_COLUMN; i++)
@@ -175,7 +157,6 @@ public class PointDataIntervalReport extends YukonReportBase
 	protected GroupList createGroups()
 	{
 	  final GroupList list = new GroupList();
-	  list.add(createPaoGroup());
 	  list.add(createPointGroup());
 	  return list;
 	}
