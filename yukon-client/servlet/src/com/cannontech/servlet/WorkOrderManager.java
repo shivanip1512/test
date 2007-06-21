@@ -583,9 +583,8 @@ public class WorkOrderManager extends HttpServlet {
 	}
 	
     private ArrayList<LiteWorkOrderBase> getOrderIDsByAccounts(ArrayList accounts, LiteStarsEnergyCompany defaultEnergyCompany) {
-//	private int[] getOrderIDsByAccounts(ArrayList accounts) {
+        ArrayList liteWorkOrderList = new ArrayList<LiteWorkOrderBase>();
 		if (accounts != null && accounts.size() > 0) {
-			ArrayList liteWorkOrderList = new ArrayList<LiteWorkOrderBase>();
 			for (int i = 0; i < accounts.size(); i++) {
                 LiteStarsCustAccountInformation liteAcctInfo = null;             
                 LiteStarsEnergyCompany liteStarsEnergyCompany = null;
@@ -609,11 +608,8 @@ public class WorkOrderManager extends HttpServlet {
                         liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(woIDs[j], true));
 				}
 			}
-			
-			return liteWorkOrderList;
 		}
-		
-		return null;
+        return liteWorkOrderList;
 	}
 	
 	private File createTempFile() throws IOException {
