@@ -58,8 +58,7 @@ public class TrendWidget extends WidgetControllerBase {
 
         // Get the selected attribute
         String selectedAttributeLabel = WidgetParameterHelper.getStringParameter(request,
-                                                                                 "selectedAttributeGraph",
-                                                                                 "Normalized Usage");
+                                                                                 "selectedAttributeGraph");
         AttributeGraphType selectedAttributeGraph = supportedAttributeGraphMap.get(selectedAttributeLabel);
 
         // Get the set of attributes that the trend supports and that exist for
@@ -70,28 +69,37 @@ public class TrendWidget extends WidgetControllerBase {
         for (AttributeGraphType agt : supportedAttributeGraphMap.values()) {
             if (existingAtributes.contains(agt.getAttribute())) {
                 availableAttributeGraphs.add(agt);
+
+                if (selectedAttributeGraph == null) {
+                    selectedAttributeGraph = agt;
+                }
+
             }
         }
 
-        // Get point based on device and attribute
-        LitePoint point = attributeService.getPointForAttribute(device,
-                                                                selectedAttributeGraph.getAttribute());
+        if (selectedAttributeGraph != null) {
+            // Get point based on device and attribute
+            LitePoint point = attributeService.getPointForAttribute(device,
+                                                                    selectedAttributeGraph.getAttribute());
+            int pointId = point.getPointID();
 
-        // Get start date and period
-        Calendar startDate = new GregorianCalendar();
-        startDate.setTime(new Date());
-        String periodString = WidgetParameterHelper.getStringParameter(request, "period", "DAY");
-        ChartPeriod period = ChartPeriod.valueOf(periodString);
+            // Get start date and period
+            Calendar startDate = new GregorianCalendar();
+            startDate.setTime(new Date());
+            String periodString = WidgetParameterHelper.getStringParameter(request, "period", "DAY");
+            ChartPeriod period = ChartPeriod.valueOf(periodString);
+    
+            mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
+            mav.addObject("selectedAttributeGraph", selectedAttributeGraph);
+            mav.addObject("title",
+                          "Previous " + period.getPeriodLabel() + "'s " + selectedAttributeGraph.getGraphType()
+                                                                                                .getLabel() + " " + selectedAttributeGraph.getAttribute()
+                                                                                                                                          .getKey());
+            mav.addObject("pointIds", pointId);
+            mav.addObject("startDate", startDate.getTimeInMillis());
+            mav.addObject("period", periodString);
 
-        mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
-        mav.addObject("selectedAttributeGraph", selectedAttributeGraph);
-        mav.addObject("title",
-                      "Previous " + period.getPeriodLabel() + "'s " + 
-                      selectedAttributeGraph.getGraphType().getLabel() + " " + 
-                      selectedAttributeGraph.getAttribute().getKey());
-        mav.addObject("pointIds", point.getPointID());
-        mav.addObject("startDate", startDate.getTimeInMillis());
-        mav.addObject("period", periodString);
+        }
 
         return mav;
     }

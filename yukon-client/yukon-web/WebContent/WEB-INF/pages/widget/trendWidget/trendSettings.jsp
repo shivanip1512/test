@@ -15,7 +15,7 @@
   <decimals_separator>.</decimals_separator>                  <!-- [,] (string) decimal separator. Note, that this is for displaying data only. Decimals in data xml file must be separated with dot -->
   <thousands_separator>,</thousands_separator>                <!-- [ ] (string) thousand separator -->
   <connect>true</connect>                                    <!-- [false] (true / false) whether to connect points if y data is missing -->
-  <hide_bullets_count>20</hide_bullets_count>                   <!-- [] (Number) if there are more then hideBulletsCount points on the screen, bullets can be hidden, to avoid mess. Leave empty, or 0 to show bullets all the time. This rule doesn't influence if custom bullet is defined near y value, in data file -->  
+  <hide_bullets_count></hide_bullets_count>                   <!-- [] (Number) if there are more then hideBulletsCount points on the screen, bullets can be hidden, to avoid mess. Leave empty, or 0 to show bullets all the time. This rule doesn't influence if custom bullet is defined near y value, in data file -->  
   <redraw>false</redraw>                                      <!-- [false] (true / false) if your chart's width or height is set in percents, and redraw is set to true, the chart will be redrawn then screen size changes -->
                                                               <!-- this function is beta, be careful. Legend, buttons labels will not be repositioned if you set your x and y values for these objects -->
   <reload_data_interval>0</reload_data_interval>              <!-- [0] (Number) how often data should be reloaded (time in seconds) If you are using this feature I strongly recommend to turn off zoom function (set <zoomable>false</zoomable>) -->
@@ -35,10 +35,10 @@
     <color>#FFFFFF</color>                                    <!-- [#FFFFFF](hex color code) -->
     <alpha>0</alpha>                                          <!-- [0] (0 - 100) if you want it to be different than background color, use bigger than 0 value -->                                        
     <margins>                                                 <!-- plot area margins -->
-      <left>80</left>                                         <!-- [60](Number) --> 
+      <left>10</left>                                         <!-- [60](Number) --> 
       <top>60</top>                                           <!-- [60](Number) --> 
-      <right>50</right>                                       <!-- [60](Number) --> 
-      <bottom>40</bottom>                                     <!-- [80](Number) --> 
+      <right>10</right>                                       <!-- [60](Number) --> 
+      <bottom>0</bottom>                                     <!-- [80](Number) --> 
     </margins>
   </plot_area>
   
