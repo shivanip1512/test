@@ -354,68 +354,54 @@ public class WorkOrderBean {
 			}
 			
 			for (int i = 0; i < getFilters().size(); i++)
-			{	//Do just the status filter, since we already handled the other filters.
-	
+			{	
+                //Do just the status filter, since we already handled the other filters.
 				ArrayList<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
 				FilterWrapper filter = getFilters().get(i);
 				Integer filterTypeID = new Integer(filter.getFilterTypeID());
 	            Integer specificFilterID = new Integer(filter.getFilterID());			
 					
-				if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
-				{
-					if (getStartDate() == null && getStopDate() == null)
-					{
-						for (int j = 0; j < workOrders.size(); j++)
-						{
-							LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
-							if (liteOrder.getCurrentStateID() == specificFilterID)
-								filteredWorkOrders.add( liteOrder );
-						}
-					}
-					else
-					{
-						for (int j = 0; j < workOrders.size(); j++)
-						{
-							LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+				if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS) {
+                    for (int j = 0; j < workOrders.size(); j++) {
+                        LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+                        /*no dates are specified, just check current state ID*/
+                        if (getStartDate() == null && getStopDate() == null && liteOrder.getCurrentStateID() == specificFilterID) {
+                            filteredWorkOrders.add( liteOrder );
+    					}
+    					/*Dates were specified so we look at the event type to see if it matches the status filter*/
+                        else {
 							WorkOrderBase workOrderBase = (WorkOrderBase)StarsLiteFactory.createDBPersistent(liteOrder);
 							
-							for (int k = 0; k < workOrderBase.getEventWorkOrders().size(); k++)
-							{
+							for (int k = 0; k < workOrderBase.getEventWorkOrders().size(); k++) {
                                 boolean addWorkOrder = false;
 								EventWorkOrder eventWorkOrder = workOrderBase.getEventWorkOrders().get(k);
-								if( getStartDate() != null && getStopDate() == null)
-								{
-									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
-                                        addWorkOrder = true;
-								}
-								else if (getStopDate() != null && getStartDate() == null)
-								{
-									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
-									    addWorkOrder = true;
-								}
-								else 
-								{
-									if( (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
-										( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
-									    addWorkOrder = true;
-								}
-                                if (addWorkOrder)
-                                {
-                                    filteredWorkOrders.add(liteOrder);
-                                    break;
+                                if(eventWorkOrder.getEventBase().getActionID().intValue() == specificFilterID.intValue()) {
+    								if( getStartDate() != null && getStopDate() == null) {
+    									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
+                                            addWorkOrder = true;
+    								}
+    								else if (getStopDate() != null && getStartDate() == null) {
+    									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
+    									    addWorkOrder = true;
+    								}
+    								else {
+    									if( (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
+    										( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
+    									    addWorkOrder = true;
+    								}
+                                    if (addWorkOrder) {
+                                        filteredWorkOrders.add(liteOrder);
+                                        break;
+                                    }
                                 }
 							}
-						}
-					}
-					workOrders = filteredWorkOrders;
-				}
-				else
-				{
-					//Do nothing, we already handled the other filters.  See previous iteration through filters above.
-				}
+    					}
+    				}
+                    workOrders = filteredWorkOrders;
+                }
 			}
 		}
-		else{
+		else {
 			workOrders = new ArrayList<LiteWorkOrderBase>();	
 		}
 		
