@@ -3,4 +3,4 @@
 
 <cti:pointValue pointId="${widgetParameters.pointId}"/>
 
-<ct:widgetAction method="render" label="Read Now" labelBusy="Reading"/>
+<ct:widgetActionRefresh method="render" label="Read Now" labelBusy="Reading"/>
