@@ -53,6 +53,10 @@ public class MockPointDao implements PointDao {
     public int[] getNextPointIds(int count) {
         return null;
     }
+    
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException {
+        return null;
+    }
 
     public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs,
             Integer[] paoTypes, Integer[] paoCategories, Integer[] paoClasses) {
