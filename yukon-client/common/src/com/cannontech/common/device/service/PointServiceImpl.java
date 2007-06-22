@@ -93,11 +93,11 @@ public class PointServiceImpl implements PointService {
 
     public LitePoint getPointForDevice(YukonDevice device, DevicePointIdentifier template) {
 
-        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getDeviceId(),
-                                                                     template.getOffset(),
-                                                                     template.getType());
+        LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(device.getDeviceId(),
+                                                                             template.getOffset(),
+                                                                             template.getType());
 
-        return pointDao.getLitePoint(pointId);
+        return point;
     }
 
     public boolean pointExistsForDevice(YukonDevice device, DevicePointIdentifier template) {
