@@ -55,7 +55,13 @@ public class MockPointDao implements PointDao {
     }
     
     public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException {
-        return null;
+        
+        switch (deviceId) {
+
+        case 1:
+            return new LitePoint(1, "analog1", 1, 1, 1, 0, 0, 1);
+        }
+        throw new NotFoundException("point not found");
     }
 
     public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs,
