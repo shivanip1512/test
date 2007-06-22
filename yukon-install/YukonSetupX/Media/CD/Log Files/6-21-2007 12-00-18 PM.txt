@@ -1,0 +1,925 @@
+================= Logging started at 6/21/2007 12:00:18 PM ==================
+Calculating size of cabinet files...
+Copying uncompressed setup files...
+Preprocessing data for data1.hdr...
+Feature: <Support>
+Feature: <Support>\Engine
+Feature: <Support>\Engine\Log
+Feature: <Support>\Engine\Kernel
+   Component: <Engine>Kernel Placeholder
+   Component: <Engine>EngineCommonPlaceHolderSelfReg
+Feature: <Support>\Main Installation
+Feature: <Data>
+Feature: Script
+   Component: <Support>Script
+Feature: Setup
+   Component: <Support>Language Independent OS Independent Files
+   Component: <Support>English OS Independent Files
+   Component: <Support>Misc Support Files
+   Component: <Support>Build Generated Support Files
+   Component: <Support>Misc i64 Support Files
+   Component: <Support>Misc x64 Support Files
+Feature: StrTbl
+   Component: <Support>English String Tables
+Feature: RunTime
+   Component: <Support>Non-SelfRegistering
+Feature: Resource
+   Component: <Support>English Files
+Feature: Disk<1>
+   Component: <Disk1>Disk1 Files(1)
+   Component: <Disk1>Disk1 Files(2)
+   Component: <Disk1>Disk1 Files(3)
+   Component: <Disk1>Disk1 Files(4)
+Feature: Yukon Runtime (Java)
+   Component: JRE 1.5
+Feature: Yukon Client
+Feature: Yukon Client\Commander
+   Component: Common Bin
+   Component: Yukon Commander
+Feature: Yukon Client\Tabular Data Console
+   Component: Common Bin
+   Component: Tabular Data Console
+Feature: Yukon Client\Trending
+   Component: Common Bin
+   Component: Trending
+Feature: Yukon Client\Database Editor
+   Component: Common Bin
+   Component: Database Editor
+Feature: Yukon Client\Help Files
+   Component: Help
+Feature: Yukon Client\ESubstation Editor
+   Component: ESub Editor
+Feature: Yukon Client\Alarm Monitor
+   Component: Alarm Monitor
+Feature: Yukon Server
+Feature: Yukon Server\Porter
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+   Component: Port Control
+Adding Object: Yukon Server\Porter\PorterService.
+   Feature: Yukon Server\Porter\PorterService.
+   Feature: NT Services Component.
+   Feature: c101e3fd-1bfc-4007-ad80-4e97fd5105ac.
+Feature: Yukon Server\Scanner
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+   Component: Scanner
+Adding Object: Yukon Server\Scanner\ScannerService.
+   Feature: Yukon Server\Scanner\ScannerService.
+   Feature: NT Services Component.
+   Feature: 8808ad7d-5fdc-4552-87a8-af8eabc95c81.
+Feature: Yukon Server\Message Dispatcher
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+   Component: Message Dispatcher
+Adding Object: Yukon Server\Message Dispatcher\DispatchService.
+   Feature: Yukon Server\Message Dispatcher\DispatchService.
+   Feature: NT Services Component.
+   Feature: 5dd36053-480b-4081-98a8-053d47f26588.
+Feature: Yukon Server\MACS
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+   Component: MACS Server
+Adding Object: Yukon Server\MACS\MACSService.
+   Feature: Yukon Server\MACS\MACSService.
+   Feature: NT Services Component.
+   Feature: 9ba5954e-2441-43f3-9626-fa6765836946.
+Feature: Yukon Server\Cap Control
+   Component: Cap Control
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+Adding Object: Yukon Server\Cap Control\CapControlService.
+   Feature: Yukon Server\Cap Control\CapControlService.
+   Feature: NT Services Component.
+   Feature: a6343744-7713-41d3-b450-f1bf9a3bd373.
+Feature: Yukon Server\Foreign Data Router
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Foreign Data Router
+   Component: Initial Server Config
+Adding Object: Yukon Server\Foreign Data Router\FDRService.
+   Feature: Yukon Server\Foreign Data Router\FDRService.
+   Feature: NT Services Component.
+   Feature: 66d58390-76fa-4c14-af3c-1ca19ae0f7b2.
+Feature: Yukon Server\Calculation Server
+   Component: Calculation Server
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+Adding Object: Yukon Server\Calculation Server\CalcService.
+   Feature: Yukon Server\Calculation Server\CalcService.
+   Feature: NT Services Component.
+   Feature: 352e499b-d3f0-4d42-82ff-1ab7f1ebd02f.
+Feature: Yukon Server\Load Management
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+   Component: Load Management
+Adding Object: Yukon Server\Load Management\LoadManagementService.
+   Feature: Yukon Server\Load Management\LoadManagementService.
+   Feature: NT Services Component.
+   Feature: 3baec49c-5a61-4593-96dd-46c2fd5f1ea6.
+Feature: Yukon Server\Test Applications
+   Component: Test Applications
+Feature: Yukon Server\Web Server
+   Component: Config Properties
+   Component: Tomcat
+   Component: WebStart
+   Component: Yukon Web Deployment
+Feature: Yukon Server\Client Service Manager
+   Component: Java Service Manager
+Feature: Yukon Server\Notification Server
+   Component: Notification
+Feature: Yukon Base
+   Component: Yukon Base
+Processing registries...
+Building cabinet file data1.hdr...
+Building cabinet file data1.cab...
+Feature: <Support>
+Feature: <Support>\Engine
+Feature: <Support>\Engine\Log
+Feature: <Support>\Engine\Kernel
+   Component: <Engine>Kernel Placeholder
+   Component: <Engine>EngineCommonPlaceHolderSelfReg
+Feature: <Support>\Main Installation
+Feature: <Support>\Main Installation\Script
+   Component: <Support>Script
+Feature: <Support>\Main Installation\Setup
+   Component: <Support>Language Independent OS Independent Files
+   Component: <Support>English OS Independent Files
+   Component: <Support>Misc Support Files
+   Component: <Support>Build Generated Support Files
+   Component: <Support>Misc i64 Support Files
+   Component: <Support>Misc x64 Support Files
+Feature: <Support>\Main Installation\StrTbl
+   Component: <Support>English String Tables
+Feature: <Support>\Main Installation\RunTime
+   Component: <Support>Non-SelfRegistering
+Feature: <Support>\Main Installation\Resource
+   Component: <Support>English Files
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Script
+   Component: [PorterService]NS_NSR_NPL_1____1
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Setup
+   Component: [PorterService]NS_NSR_NPL_1_0___1
+   Component: [PorterService]NS_NSR_NPL_1_0009___1
+   Component: [PorterService]NS_NSR_NPL_1____2
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl
+   Component: [PorterService]NS_NSR_NPL_1____3
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Japanese
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Korean
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Arabic
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Catalan
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Croatian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Thai
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Russian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Indonesian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Turkish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Basque
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Czech
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Danish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Dutch
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Finnish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\French (Standard)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\French (Canadian)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\German
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Greek
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Hungarian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Italian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Norwegian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Polish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Portuguese (Standard)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Slovenian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Vietnamese
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Slovak
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Spanish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Swedish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Chinese (Simplified)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Chinese (Traditional)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\English
+   Component: [PorterService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Serbian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Romanian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\StrTbl\Bulgarian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\RunTime
+   Component: [PorterService]NS_NSR_NPL_1____4
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource
+   Component: [PorterService]NS_NSR_NPL_1____5
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Croatian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Basque
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Czech
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Danish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Dutch
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Finnish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\French (Standard)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\French (Canadian)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\German
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Greek
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Hungarian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Italian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Norwegian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Polish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Portuguese (Brazilian)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Portuguese (Standard)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Slovenian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Vietnamese
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Slovak
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Spanish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Swedish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Chinese (Simplified)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Chinese (Traditional)
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Thai
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Russian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Indonesian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Turkish
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Japanese
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Korean
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Arabic
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Catalan
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\English
+   Component: [PorterService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Serbian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Romanian
+Feature: <Support>\c101e3fd-1bfc-4007-ad80-4e97fd5105ac\Resource\Bulgarian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Script
+   Component: [ScannerService]NS_NSR_NPL_1____1
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Setup
+   Component: [ScannerService]NS_NSR_NPL_1_0___1
+   Component: [ScannerService]NS_NSR_NPL_1_0009___1
+   Component: [ScannerService]NS_NSR_NPL_1____2
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl
+   Component: [ScannerService]NS_NSR_NPL_1____3
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Japanese
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Korean
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Arabic
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Catalan
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Croatian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Thai
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Russian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Indonesian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Turkish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Basque
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Czech
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Danish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Dutch
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Finnish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\French (Standard)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\French (Canadian)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\German
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Greek
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Hungarian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Italian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Norwegian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Polish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Portuguese (Standard)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Slovenian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Vietnamese
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Slovak
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Spanish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Swedish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Chinese (Simplified)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Chinese (Traditional)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\English
+   Component: [ScannerService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Serbian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Romanian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\StrTbl\Bulgarian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\RunTime
+   Component: [ScannerService]NS_NSR_NPL_1____4
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource
+   Component: [ScannerService]NS_NSR_NPL_1____5
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Croatian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Basque
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Czech
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Danish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Dutch
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Finnish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\French (Standard)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\French (Canadian)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\German
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Greek
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Hungarian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Italian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Norwegian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Polish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Portuguese (Brazilian)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Portuguese (Standard)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Slovenian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Vietnamese
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Slovak
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Spanish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Swedish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Chinese (Simplified)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Chinese (Traditional)
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Thai
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Russian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Indonesian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Turkish
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Japanese
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Korean
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Arabic
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Catalan
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\English
+   Component: [ScannerService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Serbian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Romanian
+Feature: <Support>\8808ad7d-5fdc-4552-87a8-af8eabc95c81\Resource\Bulgarian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Script
+   Component: [DispatchService]NS_NSR_NPL_1____1
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Setup
+   Component: [DispatchService]NS_NSR_NPL_1_0___1
+   Component: [DispatchService]NS_NSR_NPL_1_0009___1
+   Component: [DispatchService]NS_NSR_NPL_1____2
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl
+   Component: [DispatchService]NS_NSR_NPL_1____3
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Japanese
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Korean
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Arabic
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Catalan
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Croatian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Thai
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Russian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Indonesian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Turkish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Basque
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Czech
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Danish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Dutch
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Finnish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\French (Standard)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\French (Canadian)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\German
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Greek
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Hungarian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Italian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Norwegian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Polish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Portuguese (Standard)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Slovenian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Vietnamese
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Slovak
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Spanish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Swedish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Chinese (Simplified)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Chinese (Traditional)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\English
+   Component: [DispatchService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Serbian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Romanian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\StrTbl\Bulgarian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\RunTime
+   Component: [DispatchService]NS_NSR_NPL_1____4
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource
+   Component: [DispatchService]NS_NSR_NPL_1____5
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Croatian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Basque
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Czech
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Danish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Dutch
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Finnish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\French (Standard)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\French (Canadian)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\German
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Greek
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Hungarian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Italian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Norwegian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Polish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Portuguese (Brazilian)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Portuguese (Standard)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Slovenian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Vietnamese
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Slovak
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Spanish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Swedish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Chinese (Simplified)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Chinese (Traditional)
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Thai
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Russian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Indonesian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Turkish
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Japanese
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Korean
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Arabic
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Catalan
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\English
+   Component: [DispatchService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Serbian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Romanian
+Feature: <Support>\5dd36053-480b-4081-98a8-053d47f26588\Resource\Bulgarian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Script
+   Component: [MACSService]NS_NSR_NPL_1____1
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Setup
+   Component: [MACSService]NS_NSR_NPL_1_0___1
+   Component: [MACSService]NS_NSR_NPL_1_0009___1
+   Component: [MACSService]NS_NSR_NPL_1____2
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl
+   Component: [MACSService]NS_NSR_NPL_1____3
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Japanese
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Korean
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Arabic
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Catalan
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Croatian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Thai
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Russian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Indonesian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Turkish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Basque
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Czech
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Danish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Dutch
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Finnish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\French (Standard)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\French (Canadian)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\German
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Greek
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Hungarian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Italian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Norwegian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Polish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Portuguese (Standard)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Slovenian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Vietnamese
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Slovak
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Spanish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Swedish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Chinese (Simplified)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Chinese (Traditional)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\English
+   Component: [MACSService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Serbian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Romanian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\StrTbl\Bulgarian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\RunTime
+   Component: [MACSService]NS_NSR_NPL_1____4
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource
+   Component: [MACSService]NS_NSR_NPL_1____5
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Croatian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Basque
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Czech
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Danish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Dutch
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Finnish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\French (Standard)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\French (Canadian)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\German
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Greek
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Hungarian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Italian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Norwegian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Polish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Portuguese (Brazilian)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Portuguese (Standard)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Slovenian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Vietnamese
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Slovak
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Spanish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Swedish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Chinese (Simplified)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Chinese (Traditional)
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Thai
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Russian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Indonesian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Turkish
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Japanese
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Korean
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Arabic
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Catalan
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\English
+   Component: [MACSService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Serbian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Romanian
+Feature: <Support>\9ba5954e-2441-43f3-9626-fa6765836946\Resource\Bulgarian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Script
+   Component: [CapControlService]NS_NSR_NPL_1____1
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Setup
+   Component: [CapControlService]NS_NSR_NPL_1_0___1
+   Component: [CapControlService]NS_NSR_NPL_1_0009___1
+   Component: [CapControlService]NS_NSR_NPL_1____2
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl
+   Component: [CapControlService]NS_NSR_NPL_1____3
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Japanese
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Korean
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Arabic
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Catalan
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Croatian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Thai
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Russian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Indonesian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Turkish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Basque
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Czech
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Danish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Dutch
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Finnish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\French (Standard)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\French (Canadian)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\German
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Greek
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Hungarian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Italian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Norwegian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Polish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Portuguese (Standard)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Slovenian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Vietnamese
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Slovak
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Spanish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Swedish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Chinese (Simplified)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Chinese (Traditional)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\English
+   Component: [CapControlService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Serbian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Romanian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\StrTbl\Bulgarian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\RunTime
+   Component: [CapControlService]NS_NSR_NPL_1____4
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource
+   Component: [CapControlService]NS_NSR_NPL_1____5
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Croatian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Basque
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Czech
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Danish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Dutch
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Finnish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\French (Standard)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\French (Canadian)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\German
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Greek
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Hungarian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Italian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Norwegian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Polish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Portuguese (Brazilian)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Portuguese (Standard)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Slovenian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Vietnamese
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Slovak
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Spanish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Swedish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Chinese (Simplified)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Chinese (Traditional)
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Thai
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Russian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Indonesian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Turkish
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Japanese
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Korean
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Arabic
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Catalan
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\English
+   Component: [CapControlService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Serbian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Romanian
+Feature: <Support>\a6343744-7713-41d3-b450-f1bf9a3bd373\Resource\Bulgarian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Script
+   Component: [FDRService]NS_NSR_NPL_1____1
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Setup
+   Component: [FDRService]NS_NSR_NPL_1_0___1
+   Component: [FDRService]NS_NSR_NPL_1_0009___1
+   Component: [FDRService]NS_NSR_NPL_1____2
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl
+   Component: [FDRService]NS_NSR_NPL_1____3
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Japanese
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Korean
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Arabic
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Catalan
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Croatian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Thai
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Russian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Indonesian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Turkish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Basque
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Czech
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Danish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Dutch
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Finnish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\French (Standard)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\French (Canadian)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\German
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Greek
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Hungarian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Italian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Norwegian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Polish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Portuguese (Standard)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Slovenian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Vietnamese
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Slovak
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Spanish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Swedish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Chinese (Simplified)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Chinese (Traditional)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\English
+   Component: [FDRService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Serbian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Romanian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\StrTbl\Bulgarian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\RunTime
+   Component: [FDRService]NS_NSR_NPL_1____4
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource
+   Component: [FDRService]NS_NSR_NPL_1____5
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Croatian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Basque
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Czech
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Danish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Dutch
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Finnish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\French (Standard)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\French (Canadian)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\German
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Greek
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Hungarian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Italian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Norwegian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Polish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Portuguese (Brazilian)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Portuguese (Standard)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Slovenian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Vietnamese
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Slovak
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Spanish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Swedish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Chinese (Simplified)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Chinese (Traditional)
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Thai
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Russian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Indonesian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Turkish
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Japanese
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Korean
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Arabic
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Catalan
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\English
+   Component: [FDRService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Serbian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Romanian
+Feature: <Support>\66d58390-76fa-4c14-af3c-1ca19ae0f7b2\Resource\Bulgarian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Script
+   Component: [CalcService]NS_NSR_NPL_1____1
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Setup
+   Component: [CalcService]NS_NSR_NPL_1_0___1
+   Component: [CalcService]NS_NSR_NPL_1_0009___1
+   Component: [CalcService]NS_NSR_NPL_1____2
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl
+   Component: [CalcService]NS_NSR_NPL_1____3
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Japanese
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Korean
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Arabic
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Catalan
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Croatian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Thai
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Russian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Indonesian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Turkish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Basque
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Czech
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Danish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Dutch
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Finnish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\French (Standard)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\French (Canadian)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\German
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Greek
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Hungarian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Italian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Norwegian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Polish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Portuguese (Standard)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Slovenian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Vietnamese
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Slovak
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Spanish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Swedish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Chinese (Simplified)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Chinese (Traditional)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\English
+   Component: [CalcService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Serbian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Romanian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\StrTbl\Bulgarian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\RunTime
+   Component: [CalcService]NS_NSR_NPL_1____4
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource
+   Component: [CalcService]NS_NSR_NPL_1____5
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Croatian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Basque
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Czech
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Danish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Dutch
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Finnish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\French (Standard)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\French (Canadian)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\German
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Greek
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Hungarian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Italian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Norwegian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Polish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Portuguese (Brazilian)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Portuguese (Standard)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Slovenian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Vietnamese
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Slovak
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Spanish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Swedish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Chinese (Simplified)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Chinese (Traditional)
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Thai
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Russian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Indonesian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Turkish
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Japanese
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Korean
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Arabic
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Catalan
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\English
+   Component: [CalcService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Serbian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Romanian
+Feature: <Support>\352e499b-d3f0-4d42-82ff-1ab7f1ebd02f\Resource\Bulgarian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Script
+   Component: [LoadManagementService]NS_NSR_NPL_1____1
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Setup
+   Component: [LoadManagementService]NS_NSR_NPL_1_0___1
+   Component: [LoadManagementService]NS_NSR_NPL_1_0009___1
+   Component: [LoadManagementService]NS_NSR_NPL_1____2
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl
+   Component: [LoadManagementService]NS_NSR_NPL_1____3
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Japanese
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Korean
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Arabic
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Catalan
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Croatian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Thai
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Russian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Indonesian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Turkish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Basque
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Czech
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Danish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Dutch
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Finnish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\French (Standard)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\French (Canadian)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\German
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Greek
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Hungarian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Italian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Norwegian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Polish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Portuguese (Brazilian)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Portuguese (Standard)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Slovenian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Vietnamese
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Slovak
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Spanish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Swedish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Chinese (Simplified)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Chinese (Traditional)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\English
+   Component: [LoadManagementService]NS_NSR_NPL_1_0009___2
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Serbian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Romanian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\StrTbl\Bulgarian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\RunTime
+   Component: [LoadManagementService]NS_NSR_NPL_1____4
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource
+   Component: [LoadManagementService]NS_NSR_NPL_1____5
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Croatian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Basque
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Czech
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Danish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Dutch
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Finnish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\French (Standard)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\French (Canadian)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\German
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Greek
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Hungarian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Italian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Norwegian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Polish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Portuguese (Brazilian)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Portuguese (Standard)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Slovenian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Vietnamese
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Slovak
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Spanish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Swedish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Chinese (Simplified)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Chinese (Traditional)
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Thai
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Russian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Indonesian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Turkish
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Japanese
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Korean
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Arabic
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Catalan
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\English
+   Component: [LoadManagementService]NS_NSR_NPL_1_0009___3
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Serbian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Romanian
+Feature: <Support>\3baec49c-5a61-4593-96dd-46c2fd5f1ea6\Resource\Bulgarian
+Feature: <Data>
+Building cabinet file data2.cab...
+Feature: <Data>\Disk<1>
+   Component: <Disk1>Disk1 Files(1)
+   Component: <Disk1>Disk1 Files(2)
+   Component: <Disk1>Disk1 Files(3)
+   Component: <Disk1>Disk1 Files(4)
+Feature: <Data>\Yukon Runtime (Java)
+   Component: JRE 1.5
+Feature: <Data>\Yukon Client
+Feature: <Data>\Yukon Client\Commander
+   Component: Common Bin
+   Component: Yukon Commander
+Feature: <Data>\Yukon Client\Tabular Data Console
+   Component: Tabular Data Console
+Feature: <Data>\Yukon Client\Trending
+   Component: Trending
+Feature: <Data>\Yukon Client\Database Editor
+   Component: Database Editor
+Feature: <Data>\Yukon Client\Help Files
+   Component: Help
+Feature: <Data>\Yukon Client\ESubstation Editor
+   Component: ESub Editor
+Feature: <Data>\Yukon Client\Alarm Monitor
+   Component: Alarm Monitor
+Feature: <Data>\Yukon Server
+Feature: <Data>\Yukon Server\Porter
+   Component: Common Directories
+   Component: Common Dlls
+   Component: Initial Server Config
+   Component: Port Control
+Feature: <Data>\Yukon Server\Porter\PorterService
+Feature: <Data>\Yukon Server\Porter\PorterService\NT Services Component
+Feature: <Data>\Yukon Server\Scanner
+   Component: Scanner
+Feature: <Data>\Yukon Server\Scanner\ScannerService
+Feature: <Data>\Yukon Server\Scanner\ScannerService\NT Services Component
+Feature: <Data>\Yukon Server\Message Dispatcher
+   Component: Message Dispatcher
+Feature: <Data>\Yukon Server\Message Dispatcher\DispatchService
+Feature: <Data>\Yukon Server\Message Dispatcher\DispatchService\NT Services Component
+Feature: <Data>\Yukon Server\MACS
+   Component: MACS Server
+Feature: <Data>\Yukon Server\MACS\MACSService
+Feature: <Data>\Yukon Server\MACS\MACSService\NT Services Component
+Feature: <Data>\Yukon Server\Cap Control
+   Component: Cap Control
+Feature: <Data>\Yukon Server\Cap Control\CapControlService
+Feature: <Data>\Yukon Server\Cap Control\CapControlService\NT Services Component
+Feature: <Data>\Yukon Server\Foreign Data Router
+   Component: Foreign Data Router
+Feature: <Data>\Yukon Server\Foreign Data Router\FDRService
+Feature: <Data>\Yukon Server\Foreign Data Router\FDRService\NT Services Component
+Feature: <Data>\Yukon Server\Calculation Server
+   Component: Calculation Server
+Feature: <Data>\Yukon Server\Calculation Server\CalcService
+Feature: <Data>\Yukon Server\Calculation Server\CalcService\NT Services Component
+Feature: <Data>\Yukon Server\Load Management
+   Component: Load Management
+Feature: <Data>\Yukon Server\Load Management\LoadManagementService
+Feature: <Data>\Yukon Server\Load Management\LoadManagementService\NT Services Component
+Feature: <Data>\Yukon Server\Test Applications
+   Component: Test Applications
+Feature: <Data>\Yukon Server\Web Server
+   Component: Config Properties
+   Component: Tomcat
+   Component: WebStart
+   Component: Yukon Web Deployment
+Feature: <Data>\Yukon Server\Client Service Manager
+   Component: Java Service Manager
+Feature: <Data>\Yukon Server\Notification Server
+   Component: Notification
+Feature: <Data>\Yukon Base
+   Component: Yukon Base
+Creating disk layout file 'layout.bin'...
+Build finished at 06/21/07 12:00:22.
+Automatic update notification disabled
+CD - 0 error(s), 0 warning(s)
+================= Logging stopped at 6/21/2007 12:00:23 PM ==================
+Log file has been created: <file:C:\Dev\Eclipse\HEAD\yukon-install\YukonSetupX\Media\CD\Log Files\6-21-2007 12-00-18 PM.txt>
+

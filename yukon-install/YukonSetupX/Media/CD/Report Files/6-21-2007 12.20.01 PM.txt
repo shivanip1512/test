@@ -1,0 +1,5152 @@
+//////////////////////////////////////////////////////////////////////
+/////////////////////////////// Summary //////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+		Features:  			       659
+		Components:			       116
+		Number of Files:		       139
+		Size of Files:   		       7633970
+		Size in Library:		       2754465
+
+
+		<Support>
+			Engine
+				Log
+				Kernel
+			Main Installation
+				Script
+				Setup
+				StrTbl
+				RunTime
+				Resource
+			99e28c30-3f99-4945-96e0-bb279defa5a9
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			3b48ad13-a1cc-4889-8a26-607bb29cc741
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			4fa86954-e5ef-4889-9fc1-74971848c8c2
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			01b736c1-88ca-4ae3-8488-54e98ec2cde0
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			09072aac-c627-4266-84e6-bcdff701f33a
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			f8f55aa5-e6c1-4a8f-b398-81480c06655a
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+			973b7290-36de-4953-91ff-4c4d813135f3
+				Script
+				Setup
+				StrTbl
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					Croatian
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					English
+					Serbian
+					Romanian
+					Bulgarian
+				RunTime
+				Resource
+					Croatian
+					Basque
+					Czech
+					Danish
+					Dutch
+					Finnish
+					French (Standard)
+					French (Canadian)
+					German
+					Greek
+					Hungarian
+					Italian
+					Norwegian
+					Polish
+					Portuguese (Brazilian)
+					Portuguese (Standard)
+					Slovenian
+					Vietnamese
+					Slovak
+					Spanish
+					Swedish
+					Chinese (Simplified)
+					Chinese (Traditional)
+					Thai
+					Russian
+					Indonesian
+					Turkish
+					Japanese
+					Korean
+					Arabic
+					Catalan
+					English
+					Serbian
+					Romanian
+					Bulgarian
+		<Data>
+			Disk<1>
+			Yukon Runtime (Java)
+			Yukon Client
+				Commander
+				Tabular Data Console
+				Trending
+				Database Editor
+				Help Files
+				ESubstation Editor
+				Alarm Monitor
+			Yukon Server
+				Porter
+					PorterService
+						NT Services Component
+				Scanner
+					ScannerService
+						NT Services Component
+				Message Dispatcher
+					DispatchService
+						NT Services Component
+				MACS
+					MACSService
+						NT Services Component
+				Cap Control
+					CapControlService
+						NT Services Component
+				Foreign Data Router
+					FDRService
+						NT Services Component
+				Calculation Server
+					CalcService
+						NT Services Component
+				Load Management
+					LoadManagementService
+						NT Services Component
+				Test Applications
+				Web Server
+				Client Service Manager
+				Notification Server
+			Yukon Base
+
+
+//////////////////////////////////////////////////////////////////////
+///////////////////////////// Features ///////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+*<Support>*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\Engine*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\Engine\Log*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\Engine\Kernel*
+
+		Component
+		------------------------------------------------------
+		"<Engine>Kernel Placeholder"
+		"<Engine>EngineCommonPlaceHolderSelfReg"
+
+*<Support>\Main Installation*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\Main Installation\Script*
+
+		Component
+		------------------------------------------------------
+		"<Support>Script"
+
+*<Support>\Main Installation\Setup*
+
+		Component
+		------------------------------------------------------
+		"<Support>Language Independent OS Independent Files"
+		"<Support>English OS Independent Files"
+		"<Support>Misc Support Files"
+		"<Support>Build Generated Support Files"
+		"<Support>Misc i64 Support Files"
+		"<Support>Misc x64 Support Files"
+
+*<Support>\Main Installation\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"<Support>English String Tables"
+
+*<Support>\Main Installation\RunTime*
+
+		Component
+		------------------------------------------------------
+		"<Support>Non-SelfRegistering"
+
+*<Support>\Main Installation\Resource*
+
+		Component
+		------------------------------------------------------
+		"<Support>English Files"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Script*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1____1"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Setup*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1_0___1"
+		"[PorterService]NS_NSR_NPL_1_0009___1"
+		"[PorterService]NS_NSR_NPL_1____2"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1____3"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1____4"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1____5"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[PorterService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\99e28c30-3f99-4945-96e0-bb279defa5a9\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Script*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1____1"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Setup*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1_0___1"
+		"[ScannerService]NS_NSR_NPL_1_0009___1"
+		"[ScannerService]NS_NSR_NPL_1____2"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1____3"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1____4"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1____5"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[ScannerService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\5d98da4a-9b78-4e7d-ac2d-524af9e6c5b4\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Script*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1____1"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Setup*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1_0___1"
+		"[DispatchService]NS_NSR_NPL_1_0009___1"
+		"[DispatchService]NS_NSR_NPL_1____2"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1____3"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1____4"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1____5"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[DispatchService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\3b48ad13-a1cc-4889-8a26-607bb29cc741\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Script*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1____1"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Setup*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1_0___1"
+		"[MACSService]NS_NSR_NPL_1_0009___1"
+		"[MACSService]NS_NSR_NPL_1____2"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1____3"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1____4"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1____5"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[MACSService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\4fa86954-e5ef-4889-9fc1-74971848c8c2\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Script*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1____1"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Setup*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1_0___1"
+		"[CapControlService]NS_NSR_NPL_1_0009___1"
+		"[CapControlService]NS_NSR_NPL_1____2"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1____3"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1____4"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1____5"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[CapControlService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\01b736c1-88ca-4ae3-8488-54e98ec2cde0\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Script*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1____1"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Setup*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1_0___1"
+		"[FDRService]NS_NSR_NPL_1_0009___1"
+		"[FDRService]NS_NSR_NPL_1____2"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1____3"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1____4"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1____5"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[FDRService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\09072aac-c627-4266-84e6-bcdff701f33a\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Script*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1____1"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Setup*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1_0___1"
+		"[CalcService]NS_NSR_NPL_1_0009___1"
+		"[CalcService]NS_NSR_NPL_1____2"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1____3"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1____4"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1____5"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[CalcService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\f8f55aa5-e6c1-4a8f-b398-81480c06655a\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Script*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1____1"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Setup*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1_0___1"
+		"[LoadManagementService]NS_NSR_NPL_1_0009___1"
+		"[LoadManagementService]NS_NSR_NPL_1____2"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1____3"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\English*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1_0009___2"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\StrTbl\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\RunTime*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1____4"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1____5"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Croatian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Basque*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Czech*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Danish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Dutch*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Finnish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\French (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\French (Canadian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\German*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Greek*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Hungarian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Italian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Norwegian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Polish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Portuguese (Brazilian)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Portuguese (Standard)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Slovenian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Vietnamese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Slovak*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Spanish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Swedish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Chinese (Simplified)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Chinese (Traditional)*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Thai*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Russian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Indonesian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Turkish*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Japanese*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Korean*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Arabic*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Catalan*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\English*
+
+		Component
+		------------------------------------------------------
+		"[LoadManagementService]NS_NSR_NPL_1_0009___3"
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Serbian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Romanian*
+
+		Component
+		------------------------------------------------------
+
+*<Support>\973b7290-36de-4953-91ff-4c4d813135f3\Resource\Bulgarian*
+
+		Component
+		------------------------------------------------------
+
+*<Data>*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Disk<1>*
+
+		Component
+		------------------------------------------------------
+		"<Disk1>Disk1 Files(1)"
+		"<Disk1>Disk1 Files(2)"
+		"<Disk1>Disk1 Files(3)"
+		"<Disk1>Disk1 Files(4)"
+
+*<Data>\Yukon Runtime (Java)*
+
+		Component
+		------------------------------------------------------
+		"JRE 1.5"
+
+*<Data>\Yukon Client*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Client\Commander*
+
+		Component
+		------------------------------------------------------
+		"Common Bin"
+		"Yukon Commander"
+
+*<Data>\Yukon Client\Tabular Data Console*
+
+		Component
+		------------------------------------------------------
+		"Common Bin"
+		"Tabular Data Console"
+
+*<Data>\Yukon Client\Trending*
+
+		Component
+		------------------------------------------------------
+		"Common Bin"
+		"Trending"
+
+*<Data>\Yukon Client\Database Editor*
+
+		Component
+		------------------------------------------------------
+		"Common Bin"
+		"Database Editor"
+
+*<Data>\Yukon Client\Help Files*
+
+		Component
+		------------------------------------------------------
+		"Help"
+
+*<Data>\Yukon Client\ESubstation Editor*
+
+		Component
+		------------------------------------------------------
+		"ESub Editor"
+
+*<Data>\Yukon Client\Alarm Monitor*
+
+		Component
+		------------------------------------------------------
+		"Alarm Monitor"
+
+*<Data>\Yukon Server*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Porter*
+
+		Component
+		------------------------------------------------------
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+		"Port Control"
+
+*<Data>\Yukon Server\Porter\PorterService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Porter\PorterService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Scanner*
+
+		Component
+		------------------------------------------------------
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+		"Scanner"
+
+*<Data>\Yukon Server\Scanner\ScannerService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Scanner\ScannerService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Message Dispatcher*
+
+		Component
+		------------------------------------------------------
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+		"Message Dispatcher"
+
+*<Data>\Yukon Server\Message Dispatcher\DispatchService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Message Dispatcher\DispatchService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\MACS*
+
+		Component
+		------------------------------------------------------
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+		"MACS Server"
+
+*<Data>\Yukon Server\MACS\MACSService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\MACS\MACSService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Cap Control*
+
+		Component
+		------------------------------------------------------
+		"Cap Control"
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+
+*<Data>\Yukon Server\Cap Control\CapControlService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Cap Control\CapControlService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Foreign Data Router*
+
+		Component
+		------------------------------------------------------
+		"Common Directories"
+		"Common Dlls"
+		"Foreign Data Router"
+		"Initial Server Config"
+
+*<Data>\Yukon Server\Foreign Data Router\FDRService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Foreign Data Router\FDRService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Calculation Server*
+
+		Component
+		------------------------------------------------------
+		"Calculation Server"
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+
+*<Data>\Yukon Server\Calculation Server\CalcService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Calculation Server\CalcService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Load Management*
+
+		Component
+		------------------------------------------------------
+		"Common Directories"
+		"Common Dlls"
+		"Initial Server Config"
+		"Load Management"
+
+*<Data>\Yukon Server\Load Management\LoadManagementService*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Load Management\LoadManagementService\NT Services Component*
+
+		Component
+		------------------------------------------------------
+
+*<Data>\Yukon Server\Test Applications*
+
+		Component
+		------------------------------------------------------
+		"Test Applications"
+
+*<Data>\Yukon Server\Web Server*
+
+		Component
+		------------------------------------------------------
+		"Config Properties"
+		"Tomcat"
+		"WebStart"
+		"Yukon Web Deployment"
+
+*<Data>\Yukon Server\Client Service Manager*
+
+		Component
+		------------------------------------------------------
+		"Java Service Manager"
+
+*<Data>\Yukon Server\Notification Server*
+
+		Component
+		------------------------------------------------------
+		"Notification"
+
+*<Data>\Yukon Base*
+
+		Component
+		------------------------------------------------------
+		"Yukon Base"
+
+
+//////////////////////////////////////////////////////////////////////
+///////////////////////////// Components ////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+><Engine>Kernel Placeholder<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+><Engine>EngineCommonPlaceHolderSelfReg<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+><Support>Script<
+
+		Size of Files:   		        244626
+		Size in Library:		        244626
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             06/21/2007  12:19:54 PM       244626  ""                 "A"           "1f29040cff5f0187be2423917f143910"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\script files\setup.inx"
+
+><Support>Language Independent OS Independent Files<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+><Support>English OS Independent Files<
+
+		Size of Files:   		         16384
+		Size in Library:		          2783
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isuser.dll"                                           06/21/2007  12:19:56 PM        16384  ""                 "A"           "a280093f1fe44a0cab34e8f435d7a1fc"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\_isuser\1033\_isuser.dll"
+
+><Support>Misc Support Files<
+
+		Size of Files:   		         76175
+		Size in Library:		         18010
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"corecomp.ini"                                          05/16/2006  11:58:14 AM        65503  ""                 "A"           "09d38ceca6a012f4ce5b54f03db9b21a"      "c:\program files\macrovision\is12\redist\language independent\i386\corecomp.ini"
+		"dotnetinstaller.exe"                                   05/17/2006  11:21:16 AM        10672  "12.0.0.49974"     "A"           "dcb85ac1c2214f8865c0814c8c445b31"      "c:\program files\macrovision\is12\redist\language independent\i386\dotnetinstaller.exe"
+
+><Support>Build Generated Support Files<
+
+		Size of Files:   		            39
+		Size in Library:		            43
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          06/21/2007  12:19:58 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\docume~1\nmever~1\locals~1\temp\fontdata.ini"
+
+><Support>Misc i64 Support Files<
+
+		Size of Files:   		        246192
+		Size in Library:		        106433
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isbew64.exe"                                           01/20/2007  03:42:32 AM       246192  "12.0.0.58849"     "A"           "3a3c9be18713f176f1ced8aadc2bbb0e"      "c:\program files\macrovision\is12\redist\language independent\i64\isbew64.exe"
+
+><Support>Misc x64 Support Files<
+
+		Size of Files:   		        120240
+		Size in Library:		         57343
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isbew64.exe"                                           01/20/2007  03:42:32 AM       120240  "12.0.0.58849"     "A"           "1d461686b0e32f2decb587c895a05402"      "c:\program files\macrovision\is12\redist\language independent\x64\isbew64.exe"
+
+><Support>English String Tables<
+
+		Size of Files:   		          9162
+		Size in Library:		          2107
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          06/21/2007  12:19:54 PM         9162  ""                 "A"           "98f37989886ec943503ba8a2c230f5a0"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\string tables\stringtable-0009-english.ips"
+
+><Support>Non-SelfRegistering<
+
+		Size of Files:   		        209472
+		Size in Library:		        199883
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              01/20/2007  03:44:26 AM       208304  "12.0.0.58849"     "A"           "eddad4bc2b7e8c423deb9f2711fe653b"      "c:\program files\macrovision\is12\redist\language independent\i386\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\redist\language independent\i386\default.pal"
+
+><Support>English Files<
+
+		Size of Files:   		        102832
+		Size in Library:		         91415
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:30 AM       102832  "12.0.0.49974"     "A"           "d94ce5eb6681d17a95dd88e3e7569d6e"      "c:\program files\macrovision\is12\redist\0409\i386\skins\_isres.dll"
+
+><Disk1>Disk1 Files(1)<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"layout.bin"                                            05/16/2006  12:02:16 PM            0  ""                 "A"           "d41d8cd98f00b204e9800998ecf8427e"      "c:\program files\macrovision\is12\support\build\layout.bin"
+		"data1.hdr"                                             05/16/2006  12:02:16 PM            0  ""                 "A"           "d41d8cd98f00b204e9800998ecf8427e"      "c:\program files\macrovision\is12\support\build\data1.hdr"
+		"data1.cab"                                             05/16/2006  12:02:16 PM            0  ""                 "A"           "d41d8cd98f00b204e9800998ecf8427e"      "c:\program files\macrovision\is12\support\build\data1.cab"
+
+><Disk1>Disk1 Files(2)<
+
+		Size of Files:   		       1356792
+		Size in Library:		       1356792
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.exe"                                             01/20/2007  03:46:42 AM       455600  "12.0.0.58849"     "A"           "1108b166160d6023af76435b074052b6"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\media\cd\disk images\disk1\setup.exe"
+		"setup.isn"                                             05/16/2006  02:44:50 PM       256664  ""                 "A"           "5861ddbad48f01e82afb79d0a885fbde"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\media\cd\disk images\disk1\setup.isn"
+		"_setup.dll"                                            05/17/2006  11:21:06 AM       152496  "12.0.0.49974"     "A"           "d5222a5a2d95a6478993c7f72f63b621"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\media\cd\disk images\disk1\_setup.dll"
+		"issetup.dll"                                           04/05/2007  02:36:12 PM       492032  "12.0.0.58851"     ""            "aba37cd7fe50ee3d51bba1884ab32011"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\media\cd\disk images\disk1\issetup.dll"
+
+><Disk1>Disk1 Files(3)<
+
+		Size of Files:   		        244626
+		Size in Library:		        244626
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             06/21/2007  12:19:54 PM       244626  ""                 "A"           "1f29040cff5f0187be2423917f143910"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\script files\setup.inx"
+
+><Disk1>Disk1 Files(4)<
+
+		Size of Files:   		           510
+		Size in Library:		           510
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.ini"                                             06/21/2007  12:19:58 PM          510  ""                 "A"           "ec69f085d6dfa025503c289ccd9689c3"      "c:\dev\eclipse\head\yukon-install\yukonsetupx\media\cd\disk images\disk1\setup.ini"
+
+>JRE 1.5<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Common Bin<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Yukon Commander<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Tabular Data Console<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Trending<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Database Editor<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Help<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>ESub Editor<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Alarm Monitor<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Common Directories<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Common Dlls<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Initial Server Config<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Port Control<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[PorterService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+		Size in Library:		        117184
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[PorterService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[PorterService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[PorterService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+		Size in Library:		            56
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[PorterService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+		Size in Library:		          1412
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[PorterService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[PorterService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+		Size in Library:		        199417
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[PorterService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+		Size in Library:		        111825
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[PorterService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Scanner<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[ScannerService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[ScannerService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[ScannerService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[ScannerService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[ScannerService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[ScannerService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[ScannerService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[ScannerService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[ScannerService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Message Dispatcher<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[DispatchService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[DispatchService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[DispatchService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[DispatchService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[DispatchService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[DispatchService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[DispatchService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[DispatchService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[DispatchService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>MACS Server<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[MACSService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[MACSService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[MACSService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[MACSService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[MACSService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[MACSService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[MACSService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[MACSService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[MACSService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Cap Control<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[CapControlService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[CapControlService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[CapControlService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[CapControlService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[CapControlService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[CapControlService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[CapControlService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[CapControlService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[CapControlService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Foreign Data Router<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[FDRService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[FDRService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[FDRService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[FDRService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[FDRService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[FDRService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[FDRService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[FDRService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[FDRService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Calculation Server<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[CalcService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[CalcService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[CalcService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[CalcService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[CalcService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[CalcService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[CalcService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[CalcService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[CalcService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Load Management<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[LoadManagementService]NS_NSR_NPL_1____1<
+
+		Size of Files:   		        162374
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"setup.inx"                                             05/24/2006  12:20:04 PM       162374  ""                 "A"           "fd72bb47130c7bad61f5031274a50511"      "c:\program files\macrovision\is12\objectspro\nt services object\data\setup.inx"
+
+>[LoadManagementService]NS_NSR_NPL_1_0___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[LoadManagementService]NS_NSR_NPL_1_0009___1<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>[LoadManagementService]NS_NSR_NPL_1____2<
+
+		Size of Files:   		           125
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"fontdata.ini"                                          05/24/2006  12:20:04 PM           39  ""                 "A"           "00f313e3e007599349a0c4d81c7807c4"      "c:\program files\macrovision\is12\objectspro\nt services object\data\fontdata.ini"
+		"difxdata.ini"                                          05/24/2006  12:20:04 PM           86  ""                 "A"           "10baa5b67536f4433f37534b9c8bb828"      "c:\program files\macrovision\is12\objectspro\nt services object\data\difxdata.ini"
+
+>[LoadManagementService]NS_NSR_NPL_1____3<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\stringtable-0009-english.ips"
+
+>[LoadManagementService]NS_NSR_NPL_1_0009___2<
+
+		Size of Files:   		          3635
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"stringtable-0009-english.ips"                          05/24/2006  12:20:04 PM         3635  ""                 "A"           "c2075d64d5f009011cc52b8020b51233"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\stringtable-0009-english.ips"
+
+>[LoadManagementService]NS_NSR_NPL_1____4<
+
+		Size of Files:   		        209472
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"isrt.dll"                                              05/17/2006  11:21:20 AM       208304  "12.0.0.49974"     "A"           "b35dde51d14f9400e73196693148734e"      "c:\program files\macrovision\is12\objectspro\nt services object\data\isrt.dll"
+		"default.pal"                                           05/16/2006  11:58:14 AM         1168  ""                 "A"           "0abafe3f69d053494405061de2629c82"      "c:\program files\macrovision\is12\objectspro\nt services object\data\default.pal"
+
+>[LoadManagementService]NS_NSR_NPL_1____5<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\_isres.dll"
+
+>[LoadManagementService]NS_NSR_NPL_1_0009___3<
+
+		Size of Files:   		        123312
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+		"_isres.dll"                                            05/17/2006  11:19:28 AM       123312  "12.0.0.49974"     "A"           "e54601d8a464a455de081d63d4b7927d"      "c:\program files\macrovision\is12\objectspro\nt services object\data\english\_isres.dll"
+
+>Test Applications<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Config Properties<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Tomcat<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>WebStart<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Yukon Web Deployment<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Java Service Manager<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Notification<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------
+
+>Yukon Base<
+
+		Size of Files:   		             0
+
+
+		File                                                    Date        Time         Size         Version            Attributes    MD5                                     Source file
+		------------------------------------------------------  ----------  -----------  -----------  -----------------  ------------  --------------------------------------  ------------------------------------------------

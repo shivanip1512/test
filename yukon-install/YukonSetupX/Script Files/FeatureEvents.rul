@@ -35,10 +35,12 @@ number nSize;
 
 begin
 
+
 //The following sets up the Yukon Service Manager
 szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-i appserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT ); 
+//SprintfBox ( INFORMATION , 'Test' , '%s' , szPathAndFile + szCmdLine);
 
 //Add this service to the YUKON GROUP so it shows up in TDC
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
