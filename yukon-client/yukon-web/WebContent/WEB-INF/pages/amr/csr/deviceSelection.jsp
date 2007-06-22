@@ -40,30 +40,6 @@
 	
 </script>
 	
-	<form id="filterForm" action="/spring/csr/search">
-		<input type="hidden" name="Filter" value="true" />
-		<input type="hidden" name="startIndex" value="${results.startIndex}" />
-		<input type="hidden"  name="count" value="${results.count}" />
-		<input type="hidden"  name="orderBy" value="${orderBy.field}" />
-		<c:if test="${orderBy.descending}">
-			<input type="hidden" name="descending" value="true"/>
-		</c:if>
-		
-		Filter by<br/><br/>
-		
-		<div>
-		<c:forEach var="field" items="${fields}">
-			<div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">${field.csrString}:&nbsp;<input style="width: 10em" type="text" id="${field.name}" name="${field.name}" value="${param[field.name]}"></input></div>
-		</c:forEach>
-		</div>
-		<div style="clear:both"></div>
-		
-		<br/>
-		<input type="submit" value="Filter"></input>
-		<input type="button" value="Clear Filter" onclick="javascript:clearFilter()"></input>
-	</form>
-	<br/><br/>
-	
 	<c:choose>
 		<c:when test="${results.hitCount == 0}">
 			No results for Filter: ${filterByString}
@@ -74,7 +50,7 @@
 				Filter: 
 				<c:choose>
 					<c:when test="${empty filterByString}">
-						(no filter)
+						Show All
 					</c:when>
 					<c:otherwise>
 						${filterByString}
@@ -82,6 +58,33 @@
 				</c:choose>
 			</b>
 			<br/><br/>
+
+
+    <tags:hideReveal title="Edit Filters" showInitially="true" identifier="deviceSelection">
+    <form id="filterForm" action="/spring/csr/search">
+        <input type="hidden" name="Filter" value="true" />
+        <input type="hidden" name="startIndex" value="${results.startIndex}" />
+        <input type="hidden"  name="count" value="${results.count}" />
+        <input type="hidden"  name="orderBy" value="${orderBy.field}" />
+        <c:if test="${orderBy.descending}">
+            <input type="hidden" name="descending" value="true"/>
+        </c:if>
+        
+        
+        <div>
+        <c:forEach var="field" items="${fields}">
+            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">${field.csrString}:&nbsp;<input style="width: 10em" type="text" id="${field.name}" name="${field.name}" value="${param[field.name]}"></input></div>
+        </c:forEach>
+        </div>
+        <div style="clear:both"></div>
+        
+        <br>
+        <input type="submit" value="Filter"></input>
+        <input type="button" value="Show All" onclick="javascript:clearFilter()"></input>
+    </form>
+    </tags:hideReveal>
+    <br>
+    <br>
 			
 			<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
 			
