@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Mock PointDao class for testing purposes. The methods in this class return
@@ -56,12 +57,12 @@ public class MockPointDao implements PointDao {
     
     public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException {
         
-        switch (deviceId) {
-
-        case 1:
-            return new LitePoint(1, "analog1", 1, 1, 1, 0, 0, 1);
+        int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
+        if (pointId == PointTypes.SYS_PID_SYSTEM) {
+            throw new NotFoundException("nope");
+        } else {
+            return getLitePoint(pointId);
         }
-        throw new NotFoundException("point not found");
     }
 
     public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs,
@@ -113,7 +114,7 @@ public class MockPointDao implements PointDao {
             return 3;
         }
 
-        return -1;
+        return PointTypes.SYS_PID_SYSTEM;
     }
 
     public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate) {
