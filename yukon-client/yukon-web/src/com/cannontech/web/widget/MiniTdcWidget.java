@@ -15,17 +15,17 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class MiniTdcWidget extends WidgetControllerBase {
     private SimpleJdbcOperations jdbcTemplate;
     private PointDao pointDao;
-    private MeterDao meterDao;
+    private PaoDao paoDao;
     
     @Override
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -63,8 +63,8 @@ public class MiniTdcWidget extends WidgetControllerBase {
             LitePoint litePoint = pointDao.getLitePoint(pointId);
             data.put("pointId", litePoint.getPointID());
             data.put("pointName", litePoint.getPointName());
-            Meter meter = meterDao.getForId(litePoint.getPaobjectID());
-            String formattedDeviceName = meterDao.getFormattedDeviceName(meter);
+            LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+            String formattedDeviceName = liteYukonPAO.getPaoName();
             data.put("deviceName", formattedDeviceName);
             
             pointList.add(data);
@@ -86,8 +86,7 @@ public class MiniTdcWidget extends WidgetControllerBase {
     }
     
     @Required
-    final public void setMeterDao(MeterDao deviceDao) {
-        this.meterDao = deviceDao;
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
-    
 }
