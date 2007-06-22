@@ -39,5 +39,10 @@
         <constructor-arg ref="paoGroupsWrapper"/>
     </bean>
     
+    <bean id="meterReadService" class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl">
+        <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
+        <property name="commandExecutor" ref="commandRequestExecutor"/>
+    </bean>
+    
 </beans>
 
