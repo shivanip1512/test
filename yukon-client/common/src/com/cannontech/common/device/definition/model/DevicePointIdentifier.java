@@ -34,8 +34,6 @@ public class DevicePointIdentifier {
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
-            return false;
         final DevicePointIdentifier other = (DevicePointIdentifier) obj;
         if (offset != other.offset)
             return false;
