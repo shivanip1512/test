@@ -62,5 +62,5 @@
 	</div>
 	<div style="clear: both"></div>
 	
-	
+	<ct:dataUpdateEnabler period="5"/>
 </cti:standardPage>
