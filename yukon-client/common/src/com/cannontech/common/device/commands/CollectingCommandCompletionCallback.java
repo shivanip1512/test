@@ -20,7 +20,7 @@ public abstract class CollectingCommandCompletionCallback implements
         values.add(value);
     }
     
-    public void receivedResultString(String resultString) {
+    public void receivedLastResultString(String resultString) {
         resultStrings.add(resultString);
     }
     
