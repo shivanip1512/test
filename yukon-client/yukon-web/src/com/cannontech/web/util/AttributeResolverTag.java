@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -20,17 +21,15 @@ public class AttributeResolverTag extends YukonTagSupport {
     private DeviceDao deviceDao;
     
     // inputs
-    private String attribute;
-    private int deviceId;
     private String var;
+    private YukonDevice device = null;
+    private Attribute attribute = null;
     
     @Override
     public void doTag() throws JspException, IOException {
-        Attribute attr = attributeService.resolveAttributeName(attribute);
-
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
-        
-        LitePoint pointForAttribute = attributeService.getPointForAttribute(device, attr);
+        Validate.notNull(attribute, "attribute or attributeName must be set");
+        Validate.notNull(device, "device or deviceId must be set");
+        LitePoint pointForAttribute = attributeService.getPointForAttribute(device, attribute);
         
         int pointId = pointForAttribute.getPointID();
         
@@ -51,11 +50,19 @@ public class AttributeResolverTag extends YukonTagSupport {
         this.var = var;
     }
     
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
+    public void setDevice(YukonDevice device) {
+        this.device = device;
     }
     
-    public void setAttribute(String attribute) {
+    public void setAttributeName(String attributeName) {
+        this.attribute = attributeService.resolveAttributeName(attributeName);
+    }
+    
+    public void setDeviceId(int deviceId) {
+        this.device = deviceDao.getYukonDevice(deviceId);
+    }
+    
+    public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
 }
