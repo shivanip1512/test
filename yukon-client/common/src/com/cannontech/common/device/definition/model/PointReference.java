@@ -2,6 +2,7 @@ package com.cannontech.common.device.definition.model;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.springframework.core.style.ToStringCreator;
 
 public class PointReference {
 
@@ -36,5 +37,13 @@ public class PointReference {
     public int hashCode() {
         return new HashCodeBuilder(81, 91).append(pointName).toHashCode();
     }
+    
+    @Override
+    public String toString() {
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("pointName", getPointName());
+        return tsc.toString();
+    }
+
 
 }

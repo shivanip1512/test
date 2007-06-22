@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.springframework.core.style.ToStringCreator;
 
 public class CommandDefinition {
 
@@ -61,6 +62,14 @@ public class CommandDefinition {
         return new HashCodeBuilder(89, 99).append(commandStringList)
                                           .append(affectedPointList)
                                           .toHashCode();
+    }
+    
+    @Override
+    public String toString() {
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("commandStringList", getCommandStringList());
+        tsc.append("affectedPointList", getAffectedPointList());
+        return tsc.toString();
     }
 
 }
