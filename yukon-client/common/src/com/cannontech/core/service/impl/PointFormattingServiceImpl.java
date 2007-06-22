@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.core.dao.EnergyCompanyDao;
@@ -31,6 +33,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     private StateDao stateDao;
     private UnitMeasureDao unitMeasureDao;
     private EnergyCompanyDao energyCompanyDao;
+    private Logger log = YukonLogManager.getLogger(PointFormattingServiceImpl.class);
 
     public String getValueString(PointValueHolder value, Format format) {
         return getValueString(value, format.getFormat(), TimeZone.getDefault());
@@ -83,21 +86,28 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             valueStr = liteState.getStateText();
         } else {
             value = data.getValue();
-            try {
-                if (templateProcessor.contains(format, "unit")) {
-                    LiteUnitMeasure unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(data.getId());
+            if (templateProcessor.contains(format, "unit")) {
+                LiteUnitMeasure unitOfMeasure;
+                unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(data.getId());
+                if (unitOfMeasure != null) {
                     unitString = unitOfMeasure.getUnitMeasureName();
+                } else {
+                    log.debug("Couldn't load LiteUnitMeasure for point " + data.getId());
                 }
-                
-                if (templateProcessor.contains(format, "default")) {
+            }
+
+            if (templateProcessor.contains(format, "default")) {
+                int decimalPlaces = 4;
+                try {
                     LitePointUnit pointUnit = pointDao.getPointUnit(data.getId());
-                    int decimalPlaces = pointUnit.getDecimalPlaces();
-                    NumberFormat numberInstance = NumberFormat.getNumberInstance();
-                    numberInstance.setMinimumFractionDigits(decimalPlaces);
-                    numberInstance.setMaximumFractionDigits(decimalPlaces);
-                    valueStr = numberInstance.format(data.getValue());
+                    decimalPlaces = pointUnit.getDecimalPlaces();
+                } catch (NotFoundException e) {
+                    log.debug("Couldn't load LitePointUnit for point " + data.getId() + ", using default");
                 }
-            } catch (NotFoundException e) {
+                NumberFormat numberInstance = NumberFormat.getNumberInstance();
+                numberInstance.setMinimumFractionDigits(decimalPlaces);
+                numberInstance.setMaximumFractionDigits(decimalPlaces);
+                valueStr = numberInstance.format(data.getValue());
             }
         }
         Map<String,Object> params = new HashMap<String, Object>();
