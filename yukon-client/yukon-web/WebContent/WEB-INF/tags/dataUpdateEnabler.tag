@@ -11,5 +11,5 @@ initiateCannonDataUpdate("${updateUrl}", ${period});
 </script>
 
 <div id="cannonUpdaterErrorDiv" style="display: none; position: fixed; bottom: 0; left: 0; width: auto; background: red; color: white; font-weight: bold">
-Automatic point updates disabled
+Connection to server has been lost
 </div>
