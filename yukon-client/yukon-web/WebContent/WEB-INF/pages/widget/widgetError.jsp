@@ -1,5 +1,4 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<ct:hideReveal title="Error processing this widget" styleClass="smallText">
-  ${errorMessage}
-</ct:hideReveal>
+<b>Error processing this widget:</b><br>
+${errorMessage}
