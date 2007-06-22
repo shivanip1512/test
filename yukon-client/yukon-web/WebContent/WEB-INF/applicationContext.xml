@@ -54,7 +54,6 @@
     <bean id="readCurrentTimeWidget"
     	class="com.cannontech.web.widget.ReadCurrentTimeWidget">
     	<property name="title" value="Get Current Time"/>
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
     </bean>
     
     <bean id="pointValueDisplayWidget"
@@ -82,6 +81,27 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
+    <bean id="meterReadingsWidget"
+    	class="com.cannontech.web.widget.MeterReadingsWidget">
+    	<property name="title" value="Meter Readings"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="meterReadService" ref="meterReadService"/>
+        <property name="attributeService" ref="attributeService"/>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="attributesToShow">
+          <list>
+            <value>USAGE</value>
+            <value>DEMAND</value>
+            <value>VOLTAGE</value>
+          </list>
+        </property>
+    </bean>
+    
     <bean id="miniTdcWidget"
     	class="com.cannontech.web.widget.MiniTdcWidget">
     	<property name="title" value="Mini TDC"/>
@@ -97,7 +117,7 @@
         </property>
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="pointDao" ref="pointDao"/>
-        <property name="meterDao" ref="meterDao"/>
+        <property name="paoDao" ref="paoDao"/>
     </bean>
     
     <!-- Update Service -->
