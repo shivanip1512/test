@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.118 $
-* DATE         :  $Date: 2007/05/31 20:30:58 $
+* REVISION     :  $Revision: 1.119 $
+* DATE         :  $Date: 2007/06/22 15:39:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1743,6 +1743,8 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
             }
             else if( getType() == TYPEMCT470 )
             {
+                //  this should move to dev_mct470.cpp and use resolveIEDType() or some such
+
                 found = getOperation(function, OutMessage->Buffer.BSt);
 
                 if( parse.getCommandStr().find(" alpha") != string::npos )
@@ -1792,6 +1794,17 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                     OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
                     OutMessage->Buffer.BSt.Message[1] = 4;     //  meter type: GE kV
+                    OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  1?
+                    OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9
+                    OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
+                    OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
+                }
+                else if( parse.getCommandStr().find(" sentinel") != string::npos )
+                {
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommandWithData;
+                    OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
+                    OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
+                    OutMessage->Buffer.BSt.Message[1] = 6;     //  meter type: Sentinel
                     OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  1?
                     OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9
                     OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
