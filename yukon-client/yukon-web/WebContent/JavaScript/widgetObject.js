@@ -29,6 +29,26 @@ JsWidgetObject.prototype = {
     new Ajax.Updater(this.container, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
   },
   
+  doActionUpdate: function(cmd, theContainer, actionButton, waitingLabel) {
+    $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('show');
+    var input = $(actionButton).getElementsBySelector('input').first();
+    var initialLabel = input.value;
+    input.value = waitingLabel;
+    input.disable();
+    
+    var localSuccess = function() {
+      // the following is only useful for the actionUpdate case
+      $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('hide'); 
+      input.value = initialLabel;
+      input.enable();
+    
+      this.onSuccess();
+    }
+    
+    var url = "/spring/widget/" + this.shortName + "/" + cmd;
+    new Ajax.Updater(theContainer, url, {'parameters': this.getWidgetParameters(), 'evalScripts': true, 'onSuccess': localSuccess});
+  },
+  
   setupLink: function(key, jsonData){
   	this.linkInfo[key] = jsonData;
   },
