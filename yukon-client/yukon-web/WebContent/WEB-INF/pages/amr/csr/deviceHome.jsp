@@ -33,10 +33,7 @@
 			
 			<ct:widget height="65px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
 		
-			<cti:titledContainer title="Meter Readings">
-				<br/><br/><br/><br/><center>TBD</center><br/><br/><br/><br/>
-			</cti:titledContainer>
-		
+			<ct:widget bean="meterReadingsWidget" identify="false" deviceId="${deviceId}"/>
 		
 			<cti:titledContainer title="Actions">
 				Move Out<br/>
