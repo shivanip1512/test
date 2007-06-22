@@ -56,10 +56,9 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
                     int status = retMessage.getStatus();
                     if (status != 0) {
                         DeviceErrorDescription description = deviceErrorTranslatorDao.translateErrorCode(status);
+                        description.setPorter(retMessage.getResultString());
                         callback.receivedError(description);
                     } 
-                    String resultString = retMessage.getResultString();
-                    callback.receivedResultString(resultString);
                     Vector resultVector = retMessage.getVector();
                     for (Object aResult : resultVector) {
                         if (aResult instanceof PointData) {
@@ -71,6 +70,8 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
                     }
                     
                     if (retMessage.getExpectMore() == 0) {
+                        String resultString = retMessage.getResultString();
+                        callback.receivedLastResultString(resultString);
                         pendingUserMessageIds.remove(userMessageId);
                     }
                     
