@@ -240,6 +240,18 @@ public final class PointDaoImpl implements PointDao {
 	
 		return PointTypes.SYS_PID_SYSTEM; //not found
 	}
+
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) {
+	    List<LitePoint> litePoints = getLitePointsByPaObjectId(deviceId);
+	    for (LitePoint point : litePoints) {
+	        if( point.getPointOffset() == pointOffset && pointType == point.getPointType())
+	            return point;
+	    }
+	    
+	    throw new NotFoundException("Unable to find point for deviceId=" + deviceId + ", pointOffset=" + pointOffset + ", pointType=" + pointType); 
+	}
+    
+    
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#retrievePointData(int)
      */

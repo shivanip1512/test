@@ -100,9 +100,22 @@ public interface PointDao {
     /**
      * Returns a pointID (int), where deviceID is used to gain a collection of LitePoints.
      * PointOffset and PointType is used to select one of the LitePoints.
+     * @return the pointId of the matching point or 0
      */
     public int getPointIDByDeviceID_Offset_PointType(int deviceID,
             int pointOffset, int pointType);
+    
+    /**
+     * Similar to getPointIDByDeviceID_Offset_PointType, but will returns the actual LitePoint
+     * and throws a NotFoundException if the point doesn't exist (instead of returning 0).
+     * @param deviceId
+     * @param pointOffset
+     * @param pointType
+     * @throws NotFoundException if no point matches
+     * @return the matching LitePoint
+     */
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException;
+
 
     /**
      * Queries Rawpointhistory for the entries for pointID between startDate and stopDate.
