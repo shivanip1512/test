@@ -36,7 +36,7 @@ public abstract class CollectingCommandCompletionCallback implements
         return values;
     }
     
-    public List<String> getResultStrings() {
+    public List<String> getLastResultStrings() {
         return resultStrings;
     }
     
