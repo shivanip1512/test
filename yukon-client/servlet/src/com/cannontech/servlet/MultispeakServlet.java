@@ -8,12 +8,10 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.rpc.ServiceException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -59,7 +57,7 @@ public class MultispeakServlet extends HttpServlet
 {
 	static final String LF = System.getProperty("line.separator");
 
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException 
 	{
 		String action = req.getParameter("ACTION");
 		String retPage = handleMSPAction(action, req);
@@ -254,7 +252,7 @@ public class MultispeakServlet extends HttpServlet
         }
         
         String meterNumber = liteDevMeterNum.getMeterNumber();
-        MultispeakInterface mspInterface = (MultispeakInterface)mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
+        MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
         String endpointURL = "";
         if( mspInterface != null)
             endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
@@ -271,10 +269,6 @@ public class MultispeakServlet extends HttpServlet
                             
 //            ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
 
-        } catch (ServiceException e) {
-        	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getXXXByMeterNo failed.");
-			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
         } catch (RemoteException e) {
         	CTILogger.error("TargetService: " + endpointURL + " - getXXXByMeterNo (" + mspVendor.getCompanyName() + ")");
 			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
@@ -304,11 +298,7 @@ public class MultispeakServlet extends HttpServlet
                 session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
                 session.setAttribute("resultColor", "blue");
             }
-        } catch (ServiceException e) {
-			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-        }
-        catch (RemoteException re) {
+        }catch (RemoteException re) {
             session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
             session.setAttribute("resultColor", "red");
         }
@@ -340,9 +330,6 @@ public class MultispeakServlet extends HttpServlet
                 session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
                 session.setAttribute("resultColor", "red");
             }
-        } catch (ServiceException e) {
-			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
         }catch (RemoteException re) {
             session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
             session.setAttribute("resultColor", "red");
@@ -359,7 +346,7 @@ public class MultispeakServlet extends HttpServlet
      * @throws RemoteException 
      * @throws ServiceException 
      */
-    public static ArrayOfErrorObject pingURL(MultispeakVendor mspVendor, String service) throws RemoteException, ServiceException
+    public static ArrayOfErrorObject pingURL(MultispeakVendor mspVendor, String service) throws RemoteException
     {
         ArrayOfErrorObject objects = new ArrayOfErrorObject();
         if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
@@ -411,10 +398,8 @@ public class MultispeakServlet extends HttpServlet
      * @param service The string representation of the webservice to run. 
      * @return Returns an ArrayOfErrorObjects
      * @throws RemoteException
-     * @throws ServiceException 
-     * @throws ServiceException  
      */
-    public static ArrayOfString getMethods(MultispeakVendor mspVendor, String service) throws RemoteException, ServiceException
+    public static ArrayOfString getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
     {
         ArrayOfString objects = new ArrayOfString();
         if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {

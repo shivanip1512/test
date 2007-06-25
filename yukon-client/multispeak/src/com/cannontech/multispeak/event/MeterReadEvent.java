@@ -9,8 +9,6 @@ package com.cannontech.multispeak.event;
 
 import java.rmi.RemoteException;
 
-import javax.xml.rpc.ServiceException;
-
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.impl.PointDaoImpl;
@@ -92,9 +90,6 @@ public class MeterReadEvent extends MultispeakEvent{
             if( errObjects != null)
                 ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
             
-        } catch (ServiceException e) {   
-            CTILogger.info("CB_MR service is not defined for company(" + getMspVendor().getCompanyName()+ ") - ReadingChangedNotification failed.");
-            CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());

@@ -9,8 +9,6 @@ package com.cannontech.multispeak.event;
 import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 
-import javax.xml.rpc.ServiceException;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -147,9 +145,6 @@ public class ODEvent extends MultispeakEvent{
             if( errObjects != null)
                 ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
             
-        } catch (ServiceException e) {  
-            CTILogger.error("OA_OD service is not defined for company(" + getMspVendor().getCompanyName()+ ") - ODEventNotification failed.");
-            CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());

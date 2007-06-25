@@ -9,8 +9,6 @@ package com.cannontech.multispeak.event;
 
 import java.rmi.RemoteException;
 
-import javax.xml.rpc.ServiceException;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
@@ -153,10 +151,6 @@ public class CDEvent extends MultispeakEvent{
         {
             CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor());
             port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode());
-            
-        } catch (ServiceException e) {   
-            CTILogger.info("CB_CD service is not defined for company(" + getMspVendor().getCompanyName()+ ") - CDStateChangedNotification failed.");
-            CTILogger.error("ServiceExceptionDetail: "+e.getMessage());
             
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + getMspVendor().getCompanyName() + ")");

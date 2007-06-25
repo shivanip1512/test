@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.xml.rpc.ServiceException;
-
 import org.apache.axis.AxisFault;
 import org.apache.commons.lang.StringUtils;
 
@@ -577,7 +575,7 @@ public class Multispeak implements MessageListener {
         return new ErrorObject[0];
     }
     
-    public ErrorObject[] addMeterObject(MultispeakVendor mspVendor, Meter[] addMeters) {
+    public ErrorObject[] addMeterObject(MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException{
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
         for  (int i = 0; i < addMeters.length; i++){
@@ -1044,9 +1042,6 @@ public class Multispeak implements MessageListener {
                             }
                         }
                     }
-                } catch (ServiceException e) {
-                	CTILogger.error("CB_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - getMeterByServLoc failed.");
-        			CTILogger.error("ServiceExceptionDetail: " + e.getMessage());
                 } catch (RemoteException e) {
                 	CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ")");
         			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());

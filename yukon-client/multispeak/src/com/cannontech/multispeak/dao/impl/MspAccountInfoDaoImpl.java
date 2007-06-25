@@ -34,14 +34,14 @@ public class MspAccountInfoDaoImpl implements AccountInfoDao {
         this.meterDao = meterDao;
     }
     
-    public AccountInfo getAccount(int deviceId) { 
+    public AccountInfo getAccount(int deviceId) throws Exception { 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         Meter meter = meterDao.getForId(deviceId);
         com.cannontech.multispeak.service.Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
         return mapToAccountInfo(mspCustomer);
     }
     
-    public ServiceLocation getServiceLocation(int deviceId) {
+    public ServiceLocation getServiceLocation(int deviceId) throws Exception {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         Meter meter = meterDao.getForId(deviceId);
         com.cannontech.multispeak.service.ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
