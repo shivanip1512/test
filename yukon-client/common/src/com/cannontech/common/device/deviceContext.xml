@@ -44,5 +44,39 @@
         <property name="dynamicDataSource" ref="dynamicDataSource"/>
         <property name="attributeService" ref="attributeService"/>
     </bean>	
-
+    
+    <bean id="staticDeviceGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+    </bean>
+    
+    <bean id="deviceGroupEditorDao"
+        class="com.cannontech.common.device.groups.editor.dao.impl.DeviceGroupEditorDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="nextValueHelper" ref="nextValueHelper"/>
+    </bean>
+    
+    <bean id="deviceGroupDao"
+        class="com.cannontech.common.device.groups.dao.impl.DeviceGroupDaoMain">
+        <property name="providers">
+            <map>
+                <entry key="STATIC" value-ref="staticDeviceGroupProvider"/>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="deviceGroupService"
+        class="com.cannontech.common.device.groups.service.impl.DeviceGroupServiceImpl">
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
+    </bean>
+    
+    <bean id="fixedDeviceGroupingHack"
+        class="com.cannontech.common.device.groups.service.FixedDeviceGroupingHack">
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
 </beans>
