@@ -36,8 +36,10 @@
         <property name="synchronizeOnSession">
             <value type="boolean">true</value>
         </property>
-		<property name="paoDao" ref="paoDao"/>
+		<property name="deviceDao" ref="deviceDao"/>
+		<property name="roleDao" ref="roleDao"/>
 		<property name="csrService" ref="csrService" />
+		<property name="attributeService" ref="attributeService" />
     </bean>
     
 </beans>

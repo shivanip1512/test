@@ -14,6 +14,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -131,14 +132,37 @@ public class LoadProfileController extends MultiActionController {
         }
         mav.addObject("email", email);
         
-        Date now = new Date();
-        String stopDate = dateFormat.format(now);
-        mav.addObject("stopDate", stopDate);
+        String startDateStr = ServletRequestUtils.getStringParameter(request, "startDate", "");
+        String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
         
-        int startOffset = ServletRequestUtils.getIntParameter(request, "startOffset", 7);
-        Date weekAgo = DateUtils.addDays(now, -startOffset);
-        String startDate = dateFormat.format(weekAgo);
-        mav.addObject("startDate", startDate);
+        if(StringUtils.isNotBlank(startDateStr) && StringUtils.isNotBlank(stopDateStr)){
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
+            
+            try {
+                Date startDate = TimeUtil.flexibleDateParser(startDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
+                Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.END_OF_DAY, timeZone);
+            
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
+                
+                mav.addObject("startDate", format.format(startDate));
+                mav.addObject("stopDate", format.format(stopDate));
+            
+            } catch (ParseException e) {
+                mav.addObject("success", false);
+                mav.addObject("errString", "Unable to parse: " + e.getMessage());
+            }
+            
+        } else {
+            Date now = new Date();
+            String stopDate = dateFormat.format(now);
+            mav.addObject("stopDate", stopDate);
+            
+            int startOffset = ServletRequestUtils.getIntParameter(request, "startOffset", 7);
+            Date weekAgo = DateUtils.addDays(now, -startOffset);
+            String startDate = dateFormat.format(weekAgo);
+            mav.addObject("startDate", startDate);
+        }
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         List<Map<String,String>> requestData = new ArrayList<Map<String, String>>();

@@ -13,8 +13,12 @@ function longLoadProfile_display(divId) {
     $(divId + '_holder').show();
     $(divId + '_email').value = json.email;
     $(divId + '_start').value = json.startDate;
+    $(divId + '_startDisplay').innerHTML = json.startDate;
     $(divId + '_stop').value = json.stopDate;
+    $(divId + '_stopDisplay').innerHTML = json.stopDate;
     $(divId + '_startButton').enabled = true;
+    $(divId + '_link').hide();
+    $(divId + '_text').show();
     
     var listEl = $(divId + '_pendingList');
     listEl.descendants().each(function(el) {
@@ -25,7 +29,7 @@ function longLoadProfile_display(divId) {
       // fill in pending section
       json.pendingRequests.each(function(req) {
         var liEl = document.createElement('li');
-        liEl.innerHTML = req.email;
+        liEl.innerHTML = req.from + ' - ' + req.to + ' Requested by: ' + req.email;
         liEl.setAttribute('title', req.requestId + ": \"" + req.command + "\"");
         listEl.appendChild(liEl);
       });
@@ -43,6 +47,8 @@ function longLoadProfile_display(divId) {
   var url = "/spring/loadProfile/defaults";
   var args = {};
   args.startOffset = $F(divId + '_startOffset');
+  args.startDate = $F(divId + '_start');
+  args.stopDate = $F(divId + '_stop');
   args.deviceId = $F(divId + '_deviceId');
   new Ajax.Request(url, {'method': 'post', 'onSuccess': onDisplayComplete, 'onFailure': onDisplayFailure, 'parameters': args});
 }  
@@ -58,6 +64,8 @@ function longLoadProfile_start(divId) {
     $(divId + '_indicator').style.visibility = "hidden";
     if (json.success) {
       $(divId + '_holder').hide();
+      $(divId + '_link').show();
+      $(divId + '_text').hide();
     } else {
       $(divId + '_errors').innerHTML = json.errString;
       $(divId + '_startButton').enabled = true;

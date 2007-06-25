@@ -13,22 +13,27 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.csr.model.CsrSearchField;
+import com.cannontech.amr.csr.model.ExtendedMeter;
 import com.cannontech.amr.csr.model.FilterBy;
 import com.cannontech.amr.csr.model.OrderBy;
-import com.cannontech.amr.csr.model.ExtendedMeter;
 import com.cannontech.amr.csr.service.CsrService;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.RoleDao;
+import com.cannontech.roles.yukon.MultispeakRole;
 
 /**
  * Spring controller class for csr
  */
 public class CsrController extends MultiActionController {
 
-    private PaoDao paoDao = null;
-
+    private RoleDao roleDao = null;
     private CsrService csrService = null;
+    private AttributeService attributeService = null;
+    private DeviceDao deviceDao = null;
 
     public CsrController() {
         super();
@@ -38,8 +43,16 @@ public class CsrController extends MultiActionController {
         this.csrService = csrService;
     }
 
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }
+
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
@@ -89,9 +102,9 @@ public class CsrController extends MultiActionController {
 
         // Perform the search
         SearchResult<ExtendedMeter> results = csrService.search(filterByList,
-                                                            orderBy,
-                                                            startIndex,
-                                                            count);
+                                                                orderBy,
+                                                                startIndex,
+                                                                count);
 
         mav.addObject("filterByString", StringUtils.join(filterByString, " and "));
         mav.addObject("orderBy", orderBy);
@@ -107,11 +120,41 @@ public class CsrController extends MultiActionController {
 
         ModelAndView mav = new ModelAndView("deviceHome.jsp");
 
-        String deviceId = request.getParameter("deviceId");
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(Integer.valueOf(deviceId));
+        int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
-        mav.addObject("device", pao);
+        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        boolean highBillSupported = attributeService.isAttributeSupported(device,
+                                                                          BuiltInAttribute.LOAD_PROFILE);
+
         mav.addObject("deviceId", deviceId);
+        mav.addObject("highBillSupported", highBillSupported);
+        mav.addObject("mspSupported",
+                      Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
+                             .intValue() > 0);
+
+        return mav;
+    }
+
+    public ModelAndView highBill(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+
+        ModelAndView mav = new ModelAndView("highBill.jsp");
+
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        mav.addObject("deviceId", String.valueOf(deviceId));
+
+        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+
+        boolean createLPPoint = ServletRequestUtils.getBooleanParameter(request,
+                                                                        "createLPPoint",
+                                                                        false);
+        if (createLPPoint) {
+            attributeService.createPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
+        }
+
+        boolean lmPointExists = attributeService.pointExistsForAttribute(device,
+                                                                         BuiltInAttribute.LOAD_PROFILE);
+        mav.addObject("lmPointExists", lmPointExists);
 
         return mav;
     }
