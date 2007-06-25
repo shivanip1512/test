@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/05/30 14:32:56 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2007/06/25 19:04:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
 IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
 IM_EX_CTIBASE short         gSimulatePorts = 0;
 IM_EX_CTIBASE set<long>     gSimulatedPorts;
-IM_EX_CTIBASE set<long>     gNonQueuedPorts;
+IM_EX_CTIBASE set<long>     gForeignCCUPorts;
 IM_EX_CTIBASE set<long>     gScanForceDevices;
 
 /*
@@ -443,7 +443,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         }
     }
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_FORCE_PORTS_NONQUEUED")).empty() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_FOREIGN_CCU_PORTS")).empty() )
     {
         boost::char_separator<char> sep(",");
         Boost_char_tokenizer tok(str, sep);
@@ -452,13 +452,13 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         string id_str;
         long   id;
 
-        gNonQueuedPorts.clear();
+        gForeignCCUPorts.clear();
 
         while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
         {
             if( id = atol(id_str.c_str()) )
             {
-                gNonQueuedPorts.insert(id);
+                gForeignCCUPorts.insert(id);
             }
         }
     }
