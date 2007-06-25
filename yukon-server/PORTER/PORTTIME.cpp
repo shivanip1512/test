@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2007/06/25 19:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -615,6 +615,8 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
         /* check for a remote port */
         if(PortRecord->getName()[0] == '@') return;
         if(PortRecord->isInhibited()) return;
+
+        if(gForeignCCUPorts.find(PortRecord->getPortID()) != gForeignCCUPorts.end()) return;
 
         if(PortRecord->getProtocolWrap() == ProtocolWrapIDLC)
         {
