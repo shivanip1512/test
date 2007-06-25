@@ -141,13 +141,11 @@ private static String prepareObjectForSQLStatement( Object o )
 	if( o instanceof Integer ||
 		 o instanceof Double ||
 		 o instanceof Long || 
-		 o instanceof java.math.BigDecimal )
+		 o instanceof java.math.BigDecimal ||
+		 o instanceof Character ||
+		 o instanceof String ||
+		 o instanceof Byte )
 		return o.toString();
-	else
-	if( o instanceof Character ||
-		o instanceof String ||
-		o instanceof Byte )
-		return "'" + o.toString() + "'";
 	else
 	if( o instanceof java.sql.Date )
 	{

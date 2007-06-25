@@ -711,13 +711,11 @@ public class DBPersistentBean implements IDBPersistent {
       if( o instanceof Integer ||
           o instanceof Double ||
           o instanceof Long || 
-          o instanceof BigDecimal )
-         return o.toString();
-      else
-      if( o instanceof Character ||
-         o instanceof String ||
-         o instanceof Byte )
-         return "'" + o.toString() + "'";
+          o instanceof BigDecimal ||
+          o instanceof Character ||
+          o instanceof String ||
+          o instanceof Byte )
+          return o.toString();
       else
       if( o instanceof java.sql.Date )
       {
