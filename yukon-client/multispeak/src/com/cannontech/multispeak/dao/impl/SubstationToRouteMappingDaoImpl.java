@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Route;
-import com.cannontech.multispeak.db.Route;
 
 public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMappingDao {
     private static final SqlStatementBuilder insertSql;

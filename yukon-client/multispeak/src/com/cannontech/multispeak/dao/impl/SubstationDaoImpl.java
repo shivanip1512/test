@@ -13,7 +13,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.dao.SubstationDao;
 import com.cannontech.multispeak.db.Substation;
-import com.cannontech.multispeak.db.Substation;
 
 public class SubstationDaoImpl implements SubstationDao {
     private static final ParameterizedRowMapper<Substation> rowMapper;
