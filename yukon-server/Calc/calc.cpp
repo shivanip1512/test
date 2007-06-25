@@ -1,6 +1,6 @@
 #include "yukon.h"
 
-#include "include\calc.h"
+#include "calc.h"
 #include "logger.h"
 #include "utility.h"
 #include "rwutil.h"
@@ -198,7 +198,7 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
             dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Not found" << endl;
             }
 
-            
+
         }
         _stack.clear();     // Start with a blank stack.
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
@@ -352,7 +352,7 @@ BOOL CtiCalc::ready( void )
         if( isReady )
         {
             CtiPointStore* pointStore = CtiPointStore::getInstance();
-  
+
             //Is the calc point itself disabled?
             CtiHashKey hashKey(_pointId);
             CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
@@ -479,7 +479,7 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &mi
             component_quality = ManualQuality;
             qualityFlag &= ~(1 << ManualQuality);
         }
-    
+
         /* 20060210 CGP - A constant component does not imply a constant result.
         if(qualityFlag & (1 << ConstantQuality) )
         {
@@ -487,7 +487,7 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &mi
             qualityFlag &= ~(1 << ConstantQuality);
         }
         */
-    
+
         if(qualityFlag & (1 << NonUpdatedQuality) )
         {
             component_quality = NonUpdatedQuality;
@@ -496,7 +496,7 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &mi
         {
             component_quality = QuestionableQuality;
         }
-    
+
         if(getUpdateType() == periodicPlusUpdate)
         {
             if(component_quality == NormalQuality && maxTime.seconds() - minTime.seconds() > getUpdateInterval())
