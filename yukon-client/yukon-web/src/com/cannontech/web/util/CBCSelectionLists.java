@@ -2,6 +2,7 @@ package com.cannontech.web.util;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
 
@@ -525,5 +526,10 @@ public class CBCSelectionLists {
                 new SelectItem (new Integer (1800), "1800"),
                 new SelectItem (new Integer (2400), "2400"),
         }; 
+    }
+    
+    public TimeZone getTimeZone () {
+        TimeZone timeZone = TimeZone.getDefault();
+        return timeZone;
     }
 }

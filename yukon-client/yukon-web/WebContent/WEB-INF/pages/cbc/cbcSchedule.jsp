@@ -39,7 +39,7 @@
 			<h:outputText id="lastRunTimeVal" value="#{capControlForm.PAOBase.lastRunTime}"
 					rendered="#{capControlForm.PAOBase.lastRunTime.time > selLists.startOfTime}"
 					styleClass="staticLabel" >
-				<f:convertDateTime dateStyle="long" type="both"/>
+				<f:convertDateTime dateStyle="long" type="both" timeZone="#{selLists.timeZone}"/>
             </h:outputText>
 			<h:outputText id="lastRunTimeDash" value="---"
 					styleClass="staticLabel"
