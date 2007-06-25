@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/02/12 18:19:22 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/06/25 19:20:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,8 @@ protected:
                                                 // so data is returned outbound only via the nexus.
    CTINEXUS _internalNexus;                     // internalNexus is the "server" side of the internal nexus from port_shr and porter proper.
    INT      _internalPort;                      // internal port for porter to share communicaitons.  Used to return IMs from port control.  It's number does not matter.
+
+   map<unsigned char, unsigned char> _ccuError;
 
    virtual void inThread( void ) = 0;
    virtual void outThread( void ) = 0;
@@ -103,6 +105,11 @@ public:
    CTINEXUS* getReturnNexus() { return &_returnNexus; }
 
    CtiPortShare& setListenPort(INT prt);
+
+   void          setSharedCCUError(unsigned char address, unsigned char error_byte);
+   void          clearSharedCCUError(unsigned char address);
+   bool          hasSharedCCUError(unsigned char address) const;
+   unsigned char getSharedCCUError(unsigned char address) const;
 
 };
 

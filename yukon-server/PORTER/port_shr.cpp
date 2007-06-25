@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/05/31 21:41:19 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/06/25 19:20:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,3 +251,46 @@ void CtiPortShare::connectNexus()
       CTISleep(1000L);
    }
 }
+
+
+void CtiPortShare::setSharedCCUError(unsigned char address, unsigned char error_byte)
+{
+    if( _ccuError.find(address) != _ccuError.end() )
+    {
+        _ccuError[address] |= error_byte;
+    }
+    else
+    {
+        _ccuError.insert(std::make_pair(address, error_byte));
+    }
+}
+
+
+void CtiPortShare::clearSharedCCUError(unsigned char address)
+{
+    _ccuError.erase(address);
+}
+
+
+bool CtiPortShare::hasSharedCCUError(unsigned char address) const
+{
+    return _ccuError.find(address) != _ccuError.end();
+}
+
+
+unsigned char CtiPortShare::getSharedCCUError(unsigned char address) const
+{
+    unsigned char error_byte = 0;
+
+    std::map<unsigned char, unsigned char>::const_iterator itr;
+
+    itr = _ccuError.find(address);
+
+    if( itr != _ccuError.end() )
+    {
+        error_byte = itr->second;
+    }
+
+    return error_byte;
+}
+
