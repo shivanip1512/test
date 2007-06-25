@@ -19,28 +19,27 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 2 kWh</name>
+                <name>kWh (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 3 kWh</name>
+                <name>kWh (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 4 kWh</name>
+                <name>kWh (Channel 4)</name>
                 <offset value="4"/>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
@@ -51,102 +50,100 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 1 TOU Rate A</name>
+                <name>TOU Rate A (Channel 1)</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 1 TOU Rate B</name>
+                <name>TOU Rate B (Channel 1)</name>
                 <offset value="121"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 1 TOU Rate C</name>
+                <name>TOU Rate C (Channel 1)</name>
                 <offset value="141"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 1 TOU Rate D</name>
+                <name>TOU Rate D (Channel 1)</name>
                 <offset value="161"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 2 TOU Rate A</name>
+                <name>TOU Rate A (Channel 2)</name>
                 <offset value="102"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 2 TOU Rate B</name>
+                <name>TOU Rate B (Channel 2)</name>
                 <offset value="122"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 2 TOU Rate C</name>
+                <name>TOU Rate C (Channel 2)</name>
                 <offset value="142"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <name>Channel 2 TOU Rate D</name>
+                <name>TOU Rate D (Channel 2)</name>
                 <offset value="162"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 2 kW</name>
+                <name>kW (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 3 kW</name>
+                <name>kW (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 4 kW</name>
+                <name>kW (Channel 4)</name>
                 <offset value="4"/>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW</name>
                 <offset value="11"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Channel 2)</name>
                 <offset value="12"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Channel 3)</name>
                 <offset value="13"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Channel 4)</name>
                 <offset value="14"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             
@@ -154,134 +151,137 @@
             	<attribute name="LOAD_PROFILE" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 2)</name>
                 <offset value="102"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 3)</name>
                 <offset value="103"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 4)</name>
                 <offset value="104"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             
             <point type="DemandAccumulator">
-                <name>Channel 1 TOU Rate A - Peak kW</name>
+                <name>TOU Rate A - Peak kW (Channel 1)</name>
                 <offset value="111"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 2 TOU Rate A - Peak kW</name>
+                <name>TOU Rate A - Peak kW (Channel 2)</name>
                 <offset value="112"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 1 TOU Rate B - Peak kW</name>
+                <name>TOU Rate B - Peak kW (Channel 1)</name>
                 <offset value="131"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 2 TOU Rate B - Peak kW</name>
+                <name>TOU Rate B - Peak kW (Channel 2)</name>
                 <offset value="132"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 1 TOU Rate C - Peak kW</name>
+                <name>TOU Rate C - Peak kW (Channel 1)</name>
                 <offset value="151"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
 			<point type="DemandAccumulator">
-                <name>Channel 2 TOU Rate C - Peak kW</name>
+                <name>TOU Rate C - Peak kW (Channel 2)</name>
                 <offset value="152"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 1 TOU Rate D - Peak kW</name>
+                <name>TOU Rate D - Peak kW (Channel 1)</name>
                 <offset value="171"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Channel 2 TOU Rate D - Peak kW</name>
+                <name>TOU Rate D - Peak kW (Channel 2)</name>
                 <offset value="172"/>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
             	<name>Total kWh</name>
                 <offset value="1"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
@@ -303,6 +303,215 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
+  		<commands>
+        	<command name="Read Energy">
+        		<cmd text="getvalue kWh"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        		<pointRef name="kWh (Channel 4)"/>
+        	</command>
+<!--        	<command name="Read Energy (Frozen)">
+        		<cmd text="getvalue kWh frozen"/>
+        		<pointRef name="kWh"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command> -->
+			<command name="Read Current Demand">
+        		<cmd text="getvalue demand"/>
+        		<pointRef name="kW"/>
+        		<pointRef name="kW (Channel 2)"/>
+        		<pointRef name="kW (Channel 3)"/>
+        		<pointRef name="kW (Channel 4)"/>
+        	</command>
+			<command name="Read Peak">
+        		<cmd text="getvalue peak"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Peak (Channel 2)">
+        		<cmd text="getvalue peak offset 2"/>
+        		<pointRef name="Peak kW (Channel 2)"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        	</command>
+			<command name="Read Peak (Channel 3)">
+        		<cmd text="getvalue peak offset 3"/>
+        		<pointRef name="Peak kW (Channel 3)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+			<command name="Read Peak (Channel 4)">
+        		<cmd text="getvalue peak offset 4"/>
+        		<pointRef name="Peak kW (Channel 4)"/>
+        		<pointRef name="kWh (Channel 4)"/>
+        	</command>
+<!-- 		<command name="Read Frozen Peak">
+        		<cmd text="getvalue peak frozen"/>
+        		<pointRef name="Peak kW"/>
+        		<pointRef name="kWh"/>
+        	</command>
+			<command name="Read Frozen Peak (Channel 2)">
+        		<cmd text="getvalue peak offset 2 frozen"/>
+        		<pointRef name="Peak kW (Channel 2)"/>
+        		<pointRef name="kWh (Channel 2)"/>
+        	</command>
+			<command name="Read Frozen Peak (Channel 3)">
+        		<cmd text="getvalue peak offset 3 frozen"/>
+        		<pointRef name="Peak kW (Channel 3)"/>
+        		<pointRef name="kWh (Channel 3)"/>
+        	</command>
+			<command name="Read Frozen Peak (Channel 4)">
+        		<cmd text="getvalue peak offset 4 frozen"/>
+        		<pointRef name="Peak kW (Channel 4)"/>
+        		<pointRef name="kWh (Channel 4)"/>
+        	</command>-->
+        	
+			<command name="Read TOU Rate A Channel 1">
+        		<cmd text="getvalue kWh rate a"/>
+        		<pointRef name="TOU Rate A (Channel 1)"/>
+        		<pointRef name="TOU Rate A - Peak kW (Channel 1)"/>
+        	</command>
+			<command name="Read TOU Rate B Channel 1">
+        		<cmd text="getvalue kWh rate b"/>
+        		<pointRef name="TOU Rate B (Channel 1)"/>
+        		<pointRef name="TOU Rate B - Peak kW (Channel 1)"/>
+        	</command>
+			<command name="Read TOU Rate C Channel 1">
+        		<cmd text="getvalue kWh rate c"/>
+        		<pointRef name="TOU Rate C (Channel 1)"/>
+        		<pointRef name="TOU Rate C - Peak kW (Channel 1)"/>
+        	</command>
+			<command name="Read TOU Rate D Channel 1">
+        		<cmd text="getvalue kWh rate d"/>
+        		<pointRef name="TOU Rate D (Channel 1)"/>
+        		<pointRef name="TOU Rate D - Peak kW (Channel 1)"/>
+        	</command>
+			<command name="Read TOU Rate A Channel 2">
+        		<cmd text="getvalue kWh rate a channel 2"/>
+        		<pointRef name="TOU Rate A (Channel 2)"/>
+        		<pointRef name="TOU Rate A - Peak kW (Channel 2)"/>
+        	</command>
+			<command name="Read TOU Rate B Channel 2">
+        		<cmd text="getvalue kWh rate b channel 2"/>
+        		<pointRef name="TOU Rate B (Channel 2)"/>
+        		<pointRef name="TOU Rate B - Peak kW (Channel 2)"/>
+        	</command>
+			<command name="Read TOU Rate C Channel 2">
+        		<cmd text="getvalue kWh rate c channel 2"/>
+        		<pointRef name="TOU Rate C (Channel 2)"/>
+        		<pointRef name="TOU Rate C - Peak kW (Channel 2)"/>
+        	</command>
+			<command name="Read TOU Rate D Channel 2">
+        		<cmd text="getvalue kWh rate d channel 2"/>
+        		<pointRef name="TOU Rate D (Channel 2)"/>
+        		<pointRef name="TOU Rate D - Peak kW (Channel 2)"/>
+        	</command>        	
+        	
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 4)"/>
+        	</command>
+        	
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+        	
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
+        	</command>
+        	
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Total kWh">
+				<cmd text="getvalue ied kwht"/>
+				<pointRef name="Total kWh"/>
+			</command>
+			<command name="Read Current Rate A kWh/Peak kW">
+				<cmd text="getvalue ied current kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Current Rate B kWh/Peak kW">
+				<cmd text="getvalue ied current kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Current Rate C kWh/Peak kW">
+				<cmd text="getvalue ied current kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Current Rate D kWh/Peak kW">
+				<cmd text="getvalue ied current kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+<!-- 
+			<command name="Read Frozen Rate A kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Frozen Rate B kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Frozen Rate C kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Frozen Rate D kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+ -->			
+			<command name="Read IED Last Interval Demands">
+				<cmd text="getvalue ied demand"/>
+				<pointRef name="Last Interval kW"/>
+			</command>
+			
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
     <device>
         <type value="1086" javaConstant="MCT430A"/>
@@ -310,66 +519,66 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
-                <attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
-                <multiplier value=".0001"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
-                <multiplier value=".001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+                <attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
-                <multiplier value=".0001"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
-                <multiplier value=".001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
@@ -378,7 +587,129 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE" />            	
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 2)</name>
+                <offset value="102"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 3)</name>
+                <offset value="103"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Voltage Profile</name>
+                <offset value="104"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+            </point>
         </points>
+  		<commands>
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+        	
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Total kWh">
+				<cmd text="getvalue ied kwht"/>
+				<pointRef name="Total kWh"/>
+			</command>
+			<command name="Read Current Rate A kWh/Peak kW">
+				<cmd text="getvalue ied current kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Current Rate B kWh/Peak kW">
+				<cmd text="getvalue ied current kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Current Rate C kWh/Peak kW">
+				<cmd text="getvalue ied current kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Current Rate D kWh/Peak kW">
+				<cmd text="getvalue ied current kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+<!-- 
+			<command name="Read Frozen Rate A kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Frozen Rate B kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Frozen Rate C kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Frozen Rate D kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+ -->			
+			<command name="Read IED Last Interval Demands">
+				<cmd text="getvalue ied demand"/>
+				<pointRef name="Last Interval kW"/>
+			</command>
+			
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
     <device>
         <type value="1087" javaConstant="MCT430S4"/>
@@ -386,67 +717,85 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
-                <attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
-                <multiplier value=".0001"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
-                <multiplier value=".01"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+                <attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
-                <multiplier value=".0001"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
-                <multiplier value=".01"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog">
+                <name>Voltage Phase A</name>
+                <offset value="41"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point type="Analog">
+                <name>Voltage Phase B</name>
+                <offset value="42"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point type="Analog">
+                <name>Voltage Phase C</name>
+                <offset value="43"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -454,7 +803,129 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE" />            	
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 2)</name>
+                <offset value="102"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 3)</name>
+                <offset value="103"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Voltage Profile</name>
+                <offset value="104"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+            </point>
         </points>
+  		<commands>
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+        	
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Total kWh">
+				<cmd text="getvalue ied kwht"/>
+				<pointRef name="Total kWh"/>
+			</command>
+			<command name="Read Current Rate A kWh/Peak kW">
+				<cmd text="getvalue ied current kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Current Rate B kWh/Peak kW">
+				<cmd text="getvalue ied current kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Current Rate C kWh/Peak kW">
+				<cmd text="getvalue ied current kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Current Rate D kWh/Peak kW">
+				<cmd text="getvalue ied current kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+<!-- 
+			<command name="Read Frozen Rate A kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Frozen Rate B kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Frozen Rate C kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Frozen Rate D kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+ -->			
+			<command name="Read IED Last Interval Demands">
+				<cmd text="getvalue ied demand"/>
+				<pointRef name="Last Interval kW"/>
+			</command>
+			
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
         <device>
         <type value="1097" javaConstant="MCT430SN"/>
@@ -462,67 +933,85 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
-                <attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
-                <multiplier value=".0001"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
-                <multiplier value=".001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+                <attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
-                <multiplier value=".0001"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate B kWh</name>
                 <offset value="5"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate C kWh</name>
                 <offset value="7"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
                 <name>Rate D kWh</name>
                 <offset value="9"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
                 <attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
-                <multiplier value=".001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog">
+                <name>Voltage Phase A</name>
+                <offset value="41"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point type="Analog">
+                <name>Voltage Phase B</name>
+                <offset value="42"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point type="Analog">
+                <name>Voltage Phase C</name>
+                <offset value="43"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="Analog">
                 <name>Outages</name>
@@ -530,7 +1019,129 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE" />            	
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 2)</name>
+                <offset value="102"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 3)</name>
+                <offset value="103"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Voltage Profile</name>
+                <offset value="104"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+            </point>
         </points>
+  		<commands>
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+        	
+			<command name="Read Outage Log (6 most recent)">
+				<cmd text="getvalue outage 1"/>
+				<cmd text="getvalue outage 3"/>
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (1 and 2)">
+				<cmd text="getvalue outage 1"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (3 and 4)">
+				<cmd text="getvalue outage 3"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Outage Log (5 and 6)">
+				<cmd text="getvalue outage 5"/>
+				<pointRef name="Outages"/>
+			</command>
+			<command name="Read Total kWh">
+				<cmd text="getvalue ied kwht"/>
+				<pointRef name="Total kWh"/>
+			</command>
+			<command name="Read Current Rate A kWh/Peak kW">
+				<cmd text="getvalue ied current kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Current Rate B kWh/Peak kW">
+				<cmd text="getvalue ied current kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Current Rate C kWh/Peak kW">
+				<cmd text="getvalue ied current kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Current Rate D kWh/Peak kW">
+				<cmd text="getvalue ied current kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+<!-- 
+			<command name="Read Frozen Rate A kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Frozen Rate B kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Frozen Rate C kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Frozen Rate D kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+ -->			
+			<command name="Read IED Last Interval Demands">
+				<cmd text="getvalue ied demand"/>
+				<pointRef name="Last Interval kW"/>
+			</command>
+			
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+        </commands>
     </device>
     <device>
         <type value="1065" javaConstant="MCT410IL" changeGroup="mct"/>
@@ -547,13 +1158,13 @@
             <point type="PulseAccumulator">
                 <name>kWh (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
 
@@ -567,25 +1178,25 @@
             <point type="PulseAccumulator">
                 <name>Rate A kWh</name>
                 <offset value="101"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate B kWh</name>
                 <offset value="121"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate C kWh</name>
                 <offset value="141"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate D kWh</name>
                 <offset value="161"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             
@@ -599,13 +1210,13 @@
             <point type="DemandAccumulator">
                 <name>kW (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
@@ -634,19 +1245,19 @@
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Peak Demand</name>
                 <offset value="21"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Max Volts</name>
                 <offset value="24"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Min Volts</name>
                 <offset value="25"/>
                 <multiplier value="0.1"/>
@@ -662,13 +1273,13 @@
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 2)</name>
                 <offset value="102"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 3)</name>
                 <offset value="103"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
@@ -681,25 +1292,25 @@
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
@@ -709,7 +1320,7 @@
                 <unitofmeasure value="Seconds"/>
             </point>
             
-            <point init="true" type="Status">
+            <point type="Status">
             	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
@@ -873,16 +1484,15 @@
             <point type="PulseAccumulator">
                 <name>kWh (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
-
             <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
@@ -893,25 +1503,25 @@
             <point type="PulseAccumulator">
                 <name>Rate A kWh</name>
                 <offset value="101"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate B kWh</name>
                 <offset value="121"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate C kWh</name>
                 <offset value="141"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate D kWh</name>
                 <offset value="161"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             
@@ -925,13 +1535,13 @@
             <point type="DemandAccumulator">
                 <name>kW (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
@@ -960,19 +1570,19 @@
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Peak Demand</name>
                 <offset value="21"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Max Volts</name>
                 <offset value="24"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Min Volts</name>
                 <offset value="25"/>
                 <multiplier value="0.1"/>
@@ -988,13 +1598,13 @@
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 2)</name>
                 <offset value="102"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 3)</name>
                 <offset value="103"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
@@ -1007,25 +1617,25 @@
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
@@ -1199,13 +1809,13 @@
             <point type="PulseAccumulator">
                 <name>kWh (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>kWh (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
@@ -1218,25 +1828,25 @@
             <point type="PulseAccumulator">
                 <name>Rate A kWh</name>
                 <offset value="101"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate B kWh</name>
                 <offset value="121"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate C kWh</name>
                 <offset value="141"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
                 <name>Rate D kWh</name>
                 <offset value="161"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             
@@ -1250,13 +1860,13 @@
             <point type="DemandAccumulator">
                 <name>kW (Channel 2)</name>
                 <offset value="2"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW (Channel 3)</name>
                 <offset value="3"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
@@ -1285,19 +1895,19 @@
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Peak Demand</name>
                 <offset value="21"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Max Volts</name>
                 <offset value="24"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator">
                 <name>Frozen Min Volts</name>
                 <offset value="25"/>
                 <multiplier value="0.1"/>
@@ -1313,13 +1923,13 @@
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 2)</name>
                 <offset value="102"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>kW-LP (Channel 3)</name>
                 <offset value="103"/>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
@@ -1332,25 +1942,25 @@
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
-                <multiplier value="0.01"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
@@ -1844,8 +2454,7 @@
         <displayName value="MCT-370"/>
         <displayGroup value="MCT"/>
         <points>
-            <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
+            <point type="PulseAccumulator">
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -1889,8 +2498,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             
-            <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
+            <point type="DemandAccumulator">
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -1908,45 +2516,38 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            <point init="true" type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
-                <name>Pulse Input 1 Max demand (MNMX mode) or Pulse Input 1 off peak demand
-                    (LMPK mode)</name>
+            <point type="DemandAccumulator">
+                <name>Max OR Off Peak Demand (Pulse Input 1)</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 1 Min demand (MNMX mode) or Pulse Input 1 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 1)</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 2 Max demand (MNMX mode) or Pulse Input 2 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 2)</name>
                 <offset value="12"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 2 Min demand (MNMX mode) or Pulse Input 2 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 2)</name>
                 <offset value="13"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 3 Max demand (MNMX mode) or Pulse Input 3 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 3)</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 3 Min demand (MNMX mode) or Pulse Input 3 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 3)</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -1959,12 +2560,14 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -2007,6 +2610,7 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
@@ -2066,6 +2670,12 @@
                 <offset value="19"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
+            </point>
+            <point type="Analog">
+                <name>Last Interval kVAr</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
             </point>
             
             <point type="Analog">
@@ -2215,32 +2825,32 @@
         <displayGroup value="MCT"/>
         <points>
             <point type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            <point type="Analog">
+            <point init="true" type="Analog">
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            <point type="Analog">
+            <point init="true" type="Analog">
+            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
-            <point type="Analog">
+            <point init="true" type="Analog">
+            	<attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -2282,7 +2892,13 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            
+            <point type="Analog">
+            	<attribute name="DEMAND"/>
+                <name>Last Interval kW</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
             <point type="Analog">
                 <name>kVArh</name>
                 <offset value="11"/>
@@ -2337,7 +2953,12 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
             </point>
-            
+            <point type="Analog">
+                <name>Last Interval kVAr</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
             <point type="Analog">
                 <name>kVAh</name>
                 <offset value="21"/>
@@ -2507,7 +3128,7 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
@@ -2515,7 +3136,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             
-            <point type="DemandAccumulator">
+            <point init="true" type="DemandAccumulator">
                 <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
@@ -2536,43 +3157,37 @@
             </point>
             <point type="DemandAccumulator">
                 <attribute name="PEAK_DEMAND"/>
-                <name>Pulse Input 1 Max demand (MNMX mode) or Pulse Input 1 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 1)</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 1 Min demand (MNMX mode) or Pulse Input 1 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 1)</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 2 Max demand (MNMX mode) or Pulse Input 2 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 2)</name>
                 <offset value="12"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 2 Min demand (MNMX mode) or Pulse Input 2 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 2)</name>
                 <offset value="13"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 3 Max demand (MNMX mode) or Pulse Input 3 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 3)</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 3 Min demand (MNMX mode) or Pulse Input 3 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 3)</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -2696,7 +3311,7 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
@@ -2704,67 +3319,61 @@
                 <unitofmeasure value="Counts"/>
             </point>
             
-            <point type="DemandAccumulator">
+            <point init="true" type="DemandAccumulator">
                 <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Pulse Input #2 - Demand</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <name>Pulse Input #3 - Demand</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
                 <attribute name="PEAK_DEMAND"/>
-                <name>Pulse Input 1 Max demand (MNMX mode) or Pulse Input 1 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 1)</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 1 Min demand (MNMX mode) or Pulse Input 1 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 1)</name>
                 <offset value="11"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 2 Max demand (MNMX mode) or Pulse Input 2 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 2)</name>
                 <offset value="12"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 2 Min demand (MNMX mode) or Pulse Input 2 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 2)</name>
                 <offset value="13"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 3 Max demand (MNMX mode) or Pulse Input 3 off peak demand
-                    (LMPK mode)</name>
+                <name>Max OR Off Peak Demand (Pulse Input 3)</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <name>Pulse Input 3 Min demand (MNMX mode) or Pulse Input 3 on peak demand
-                    (LMPK mode)</name>
+                <name>Min OR On Peak Demand (Pulse Input 3)</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kW"/>
             </point>
             
             <point type="Status">
@@ -2855,36 +3464,6 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Current)</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Current)</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Frozen)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Frozen)</name>
-                <offset value="5"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Frozen)</name>
-                <offset value="6"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
             <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
@@ -2892,36 +3471,12 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
-            
-            <point type="DemandAccumulator">
+            <point init="true" type="DemandAccumulator">
             	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #2 - Demand</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #3 - Demand</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            
-            <point type="Status">
-                <name>Status of A relay</name>
-                <offset value="5"/>
-                <stategroup value="SystemState"/>
-            </point>
-            <point type="Status">
-                <name>Status of B relay</name>
-                <offset value="6"/>
-                <stategroup value="SystemState"/>
             </point>
             <point type="Status">
                 <name>Power Fail Flag</name>
@@ -2977,36 +3532,6 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Current)</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Current)</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Frozen)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Frozen)</name>
-                <offset value="5"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Frozen)</name>
-                <offset value="6"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
             <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
@@ -3015,35 +3540,12 @@
                 <unitofmeasure value="Counts"/>
             </point>
             
-            <point type="DemandAccumulator">
+            <point init="true" type="DemandAccumulator">
             	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #2 - Demand</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #3 - Demand</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            
-            <point type="Status">
-                <name>Status of A relay</name>
-                <offset value="5"/>
-                <stategroup value="SystemState"/>
-            </point>
-            <point type="Status">
-                <name>Status of B relay</name>
-                <offset value="6"/>
-                <stategroup value="SystemState"/>
             </point>
             <point type="Status">
                 <name>Power Fail Flag</name>
@@ -3106,36 +3608,6 @@
                 <offset value="1"/>
                 <stategroup value="ThreeStateStatus"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Current)</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Current)</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Frozen)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Frozen)</name>
-                <offset value="5"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Frozen)</name>
-                <offset value="6"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
             <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
@@ -3144,35 +3616,12 @@
                 <unitofmeasure value="Counts"/>
             </point>
             
-            <point type="DemandAccumulator">
+            <point init="true" type="DemandAccumulator">
             	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #2 - Demand</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #3 - Demand</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            
-            <point type="Status">
-                <name>Status of A relay</name>
-                <offset value="5"/>
-                <stategroup value="SystemState"/>
-            </point>
-            <point type="Status">
-                <name>Status of B relay</name>
-                <offset value="6"/>
-                <stategroup value="SystemState"/>
             </point>
             <point type="Status">
                 <name>Power Fail Flag</name>
@@ -3338,7 +3787,7 @@
         <displayName value="MCT-310IM"/>
         <displayGroup value="MCT"/>
         <points>
-<point init="true" type="PulseAccumulator">
+			<point init="true" type="PulseAccumulator">
                 <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
@@ -3383,7 +3832,7 @@
                 <unitofmeasure value="Counts"/>
             </point>
             
-            <point type="DemandAccumulator">
+            <point init="true" type="DemandAccumulator">
             	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
@@ -3401,17 +3850,6 @@
                 <offset value="3"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-            </point>
-            
-            <point type="Status">
-                <name>Status of A relay</name>
-                <offset value="5"/>
-                <stategroup value="SystemState"/>
-            </point>
-            <point type="Status">
-                <name>Status of B relay</name>
-                <offset value="6"/>
-                <stategroup value="SystemState"/>
             </point>
             <point type="Status">
                 <name>Power Fail Flag</name>
@@ -3461,73 +3899,12 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Current)</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Current)</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Frozen)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #2 (Frozen)</name>
-                <offset value="5"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #3 (Frozen)</name>
-                <offset value="6"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-            </point>
             <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
-            </point>
-            
-            <point type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
-                <name>kW</name>
-                <offset value="1"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #2 - Demand</name>
-                <offset value="2"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            <point type="DemandAccumulator">
-                <name>Pulse Input #3 - Demand</name>
-                <offset value="3"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-            </point>
-            
-            <point type="Status">
-                <name>Status of A relay</name>
-                <offset value="5"/>
-                <stategroup value="SystemState"/>
-            </point>
-            <point type="Status">
-                <name>Status of B relay</name>
-                <offset value="6"/>
-                <stategroup value="SystemState"/>
             </point>
             <point type="Status">
                 <name>Power Fail Flag</name>
@@ -3559,10 +3936,6 @@
         		<cmd text="getvalue kWh"/>
         		<pointRef name="kWh"/>
         	</command>
-			<command name="Read Current Demand">
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
        	</commands>
     </device>
     <device>
@@ -3570,33 +3943,20 @@
         <displayName value="MCT-250"/>
         <displayGroup value="MCT"/>
         <points>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Previous Register)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-            </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Resettable Pulse Input Register)</name>
-                <offset value="7"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-            </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            
             <point init="true" type="DemandAccumulator">
             	<attribute name="DEMAND"/>
                 <name>kW</name>
@@ -3604,7 +3964,14 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
-            
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE"/>
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+
             <point type="Status">
                 <name>Status Input 1</name>
                 <offset value="1"/>
@@ -3681,20 +4048,14 @@
         <displayName value="MCT-248"/>
         <displayGroup value="MCT"/>
         <points>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Previous Register)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-            </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
@@ -3709,7 +4070,14 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
-            
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE"/>
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+
             <point type="Status">
                 <name>Control Point</name>
                 <offset value="1"/>
@@ -3771,20 +4139,14 @@
         <displayName value="MCT-240"/>
         <displayGroup value="MCT"/>
         <points>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Previous Register)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-            </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
@@ -3797,6 +4159,13 @@
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+            	<attribute name="LOAD_PROFILE"/>
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             
@@ -3856,27 +4225,20 @@
         <displayName value="MCT-213"/>
         <displayGroup value="MCT"/>
         <points>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Previous Register)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-            </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
-            
             <point init="true" type="DemandAccumulator">
             	<attribute name="DEMAND"/>
                 <name>kW</name>
@@ -3885,9 +4247,9 @@
                 <unitofmeasure value="kW"/>
             </point>
             
-            <point type="Status">
+            <point init="true" type="Status">
             	<attribute name="DISCONNECT_STATUS"/>
-                <name>Disconnect Status (3 State: Open, Close, Transition)</name>
+                <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="SystemState"/>
             </point>
@@ -3932,20 +4294,14 @@
         <displayName value="MCT-210"/>
         <displayGroup value="MCT"/>
         <points>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="kWH"/>
             </point>
-            <point type="PulseAccumulator">
-                <name>Pulse Input #1 (Previous Register)</name>
-                <offset value="4"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-            </point>
-            <point type="PulseAccumulator">
+            <point init="true" type="PulseAccumulator">
             	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
