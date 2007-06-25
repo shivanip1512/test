@@ -21,6 +21,12 @@ public class LPDataSummaryModel extends PointDataSummaryModel
 	{
 		this(null, null);
 	}
+    
+    public String getTitleString()
+    {
+        return "Load Profile Summary Data Report";
+    }
+    
 	/**
 	 * Constructor class
 	 * @param startTime_ rph.timestamp
