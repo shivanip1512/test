@@ -5,8 +5,8 @@ import com.cannontech.amr.account.model.ServiceLocation;
 
 public interface AccountInfoDao {
 
-    public AccountInfo getAccount(int deviceId);
+    public AccountInfo getAccount(int deviceId) throws Exception;
     
-    public ServiceLocation getServiceLocation(int deviceId);
+    public ServiceLocation getServiceLocation(int deviceId) throws Exception;
 
 }
