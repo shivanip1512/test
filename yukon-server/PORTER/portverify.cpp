@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2007/03/21 21:52:19 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2007/06/25 18:59:27 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,9 @@ void CtiPorterVerification::run( void )
         dout << CtiTime() << " PortVerificationThread TID: " << CurrentTID () << endl;
     }
 
-    verificationThread();
+    SetThreadName(-1, "PrtVerify");
+	
+	verificationThread();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

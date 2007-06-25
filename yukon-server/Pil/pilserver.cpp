@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2007/05/31 21:41:19 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2007/06/25 19:00:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -757,7 +757,9 @@ void CtiPILServer::nexusThread()
     /* Give us a tiny attitude */
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
-    /* perform the wait loop forever */
+    SetThreadName(-1, "PILNexus ");
+	
+	/* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
         /* Wait for the next result to come back from the RTU */
@@ -862,6 +864,8 @@ void CtiPILServer::nexusWriteThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " NexusWriteThread    : Started as TID " << rwThreadId() << endl;
     }
+
+    SetThreadName(-1, "PILNxsWrt");
 
     /* Give us a tiny attitude */
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -1261,6 +1265,8 @@ void CtiPILServer::vgConnThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " PIL vgConnThrd : Started as TID " << rwThreadId() << endl;
     }
+
+	SetThreadName(-1, "VGConnThd");
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )

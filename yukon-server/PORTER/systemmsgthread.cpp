@@ -7,11 +7,14 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/06/25 18:59:53 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.3  2007/06/25 18:59:53  mfisher
+* added thread names
+*
 * Revision 1.2  2007/02/22 17:46:42  jotteson
 * Bug Id: 814, 651
 * Completed integration of MACS with new system messages. QueueWrites were changed to be sure they put the proper ID into the queues. New messaging used, new device interface used.
@@ -84,7 +87,9 @@ void SystemMsgThread::run( void )
         dout << CtiTime() << " SystemMessageHandlerThread TID: " << CurrentTID () << endl;
     }
 
-    try
+    SetThreadName(-1, "SysMsgThd");
+    
+	try
     {
         while( !isSet(SHUTDOWN) )
         {

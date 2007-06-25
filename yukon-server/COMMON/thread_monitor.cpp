@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/07/27 18:38:18 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2007/06/25 19:00:09 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -115,7 +115,9 @@ void CtiThreadMonitor::run( void )
 
     messageOut( "ts", "Monitor Startup" );
 
-    while( !isSet(CtiThread::SHUTDOWN) )
+	SetThreadName(-1, "ThreadMon");
+    
+	while( !isSet(CtiThread::SHUTDOWN) )
     {
         sleep( snooze );
 

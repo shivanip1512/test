@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2007/05/15 16:33:26 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2007/06/25 18:57:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -254,6 +254,16 @@ void CtiConnection::InThread()
         }
     }
 
+    if(_port >= 0)
+    {
+        string thread_name = "CxnI " + CtiNumStr(_port).zpad(4);
+        SetThreadName(-1, thread_name.c_str());
+    }
+    else
+    {
+        SetThreadName(-1, "CxnI srvr");
+    }
+
     // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 
     for(;!_bQuit;)
@@ -447,6 +457,16 @@ void CtiConnection::OutThread()
         {
             dout << CtiTime() << " OutThread : " << who() << " has begun operations " << " Server Connection" << endl;
         }
+    }
+
+    if(_port >= 0)
+    {
+        string thread_name = "CxnO " + CtiNumStr(_port).spad(4);
+        SetThreadName(-1, thread_name.c_str());
+    }
+    else
+    {
+        SetThreadName(-1, "CxnO srvr");
     }
 
     try

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/04/13 19:37:07 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/06/25 18:59:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,6 +100,8 @@ void CtiPorterService::Run()
    //Start porter
    RWThreadFunction _porterThread = rwMakeThreadFunction( PorterMainFunction, _myargc, _myargv );
    _porterThread.start();
+
+   SetThreadName(-1, "PorterSvc");   
 
    // set service as running Now
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );

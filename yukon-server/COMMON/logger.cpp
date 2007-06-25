@@ -8,13 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/06/20 21:51:00 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/06/25 18:58:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "utility.h"
 #include "cparms.h"
 #include "dllbase.h"
 #include "logger.h"
@@ -103,6 +104,8 @@ void CtiLogger::run()
 
         CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
     }
+
+    SetThreadName(-1, "Logger   ");
 
     while( !isSet(SHUTDOWN) )
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2007/02/22 21:53:47 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/06/25 18:58:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,6 +101,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
     }
+
+    SetThreadName(-1, "DispMsg  ");
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
     VanGoghConnection.setName("Porter to Dispatch");
