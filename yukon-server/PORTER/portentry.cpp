@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2007/05/31 21:41:20 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2007/06/25 19:05:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,6 +127,8 @@ VOID PorterConnectionThread (VOID *Arg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " PorterConnectionThread started as TID:  " << CurrentTID() << endl;
     }
+
+    SetThreadName(-1, "PrtrConn ");
 
     ::strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
 
@@ -910,9 +912,9 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
     if(OutMessage->EventCode & BWORD)
     {
-        //  do not allow queing if NoQueing is set, if the port is forced nonqueued, or on broadcast commands and timesyncs
+        //  do not allow queing if NoQueing is set, if this is a foreign CCU port (shared CCU), if it's a broadcast command, or if it's a timesync
         if( NoQueing
-            || gNonQueuedPorts.find(OutMessage->Port) != gNonQueuedPorts.end()
+            || (gForeignCCUPorts.find(OutMessage->Port) != gForeignCCUPorts.end())
             || (OutMessage->Remote == CCUGLOBAL)
             || (OutMessage->EventCode & TSYNC) )
         {
@@ -1086,6 +1088,7 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage)
 
     pDev = DeviceManager.getEqual(OutMessage->DeviceID);
 
+    //  if this is a nonqueued port, we will come out of this marked DTRAN
     ValidateEmetconMessage(OutMessage);
 
     /* Check if we should do that weird 711 type stuff */
