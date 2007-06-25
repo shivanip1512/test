@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2007/05/31 21:41:19 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2007/06/25 19:00:55 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.71  2007/06/25 19:00:55  mfisher
+* formatting
+*
 * Revision 1.70  2007/05/31 21:41:19  mfisher
 * Reverted text in comments from "CTIDBG_new" back to "new"
 *
@@ -398,7 +401,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     {
         if(OutMessage && OutMessage->MessageFlags & MessageFlag_PortSharing)        // This OM has been tagged as a sharing OM.
         {
-           int blockTime = gConfigParms.getValueAsInt("PORT_SHARE_BLOCKING_DURATION", 0);
+            int blockTime = gConfigParms.getValueAsInt("PORT_SHARE_BLOCKING_DURATION", 0);
 
             if( !blockTime || ((_lastWrite + blockTime) < CtiTime::now()) )
             {
