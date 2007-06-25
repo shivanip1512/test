@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.107 $
-* DATE         :  $Date: 2007/04/30 21:19:40 $
+* REVISION     :  $Revision: 1.108 $
+* DATE         :  $Date: 2007/06/25 19:08:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -224,7 +224,7 @@ CtiPortManager     PortManager(PortThreadFactory);
 CtiDeviceManager   DeviceManager(Application_Porter);
 CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
-vector< CtiPortShare * > PortShareManager;
+map< long, CtiPortShare * > PortShareManager;
 PointDeviceMapping PointToDeviceMap;
 
 //These form the connection between Pil and Porter
@@ -310,6 +310,10 @@ static void applyNewLoad(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
 
 static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
+    //  this is a one-time load, making this thread-safe (if the map is treated as a read-only collection).
+    //  if/when we update this to allow real-time reloads of the port shares,
+    //    we need to keep it thread-safe.
+
     if( (ptPort->getSharedPortType() == "acs") || (ptPort->getSharedPortType() == "ilex" ) )
     {
         CtiPortShare *tmpPortShare = CTIDBG_new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size());
@@ -317,7 +321,7 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
         {
             ((CtiPortShareIP *)tmpPortShare)->setIPPort(ptPort->getSharedSocketNumber());
             tmpPortShare->start();
-            PortShareManager.push_back(tmpPortShare);
+            PortShareManager.insert(std::make_pair(ptPort->getPortID(), tmpPortShare));
         }
         else
         {
@@ -757,6 +761,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         SetConsoleTitle( tstr );
     }
 
+    SetThreadName(-1, "PortrMain");
+
     /* check for various flags */
     if(argc > 1)
     {
@@ -1147,15 +1153,13 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     SetEvent( hPorterEvents[P_QUIT_EVENT] );
     PorterListenNexus.CTINexusClose();
 
-    if(PortShareManager.size() > 0)
+    //  delete/stop the shared ports
+    map<long, CtiPortShare *>::iterator itr;
+    for( itr = PortShareManager.begin(); itr != PortShareManager.end(); itr++ )
     {
-        //  delete/stop the shared ports
-        while(PortShareManager.size() > 0)
-        {
-            delete PortShareManager.back();
-            PortShareManager.pop_back();
-        }
+        delete itr->second;
     }
+    PortShareManager.erase(PortShareManager.begin(), PortShareManager.end());
 
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
