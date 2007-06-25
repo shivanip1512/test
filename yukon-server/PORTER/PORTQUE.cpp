@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2007/04/25 17:59:21 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/06/25 19:32:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,7 @@
 #include "c_port_interface.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
+#include "port_shr.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -79,12 +80,14 @@
 
 using namespace std;
 
-extern CtiPortManager   PortManager;
-extern HCTIQUEUE*       QueueHandle(LONG pid);
+extern CtiPortManager            PortManager;
+extern map<long, CtiPortShare *> PortShareManager;
+
+extern HCTIQUEUE *QueueHandle(LONG pid);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 static ULONG MAX_CCU_QUEUE_TIME = 1800;
-USHORT QueSequence = {0x8000};
+USHORT QueSequence = 0x8000;
 static ULONG QUEUED_MSG_REQ_ID_BASE = 0xFFFFFF00;
 
 static CHAR tempstr[100];
@@ -105,7 +108,9 @@ void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
 
 void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
 {
-    if(Device && Device->getType() == TYPE_CCU711)
+    bool foreignCCU = (gForeignCCUPorts.find(Device->getPortID()) != gForeignCCUPorts.end());
+
+    if(!foreignCCU && Device && Device->getType() == TYPE_CCU711)
     {
         CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
 
@@ -144,7 +149,9 @@ void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
 
 static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
 {
-    if(!Dev->isInhibited() && Dev->getType() == TYPE_CCU711)
+    bool foreignCCU = (gForeignCCUPorts.find(Dev->getPortID()) != gForeignCCUPorts.end());
+
+    if(!foreignCCU && !Dev->isInhibited() && Dev->getType() == TYPE_CCU711)
     {
         CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
         if(pInfo != NULL)
@@ -280,35 +287,41 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
     UINT ErrorReturnCode = (InMessage->EventCode & ~DECODED);
 
-    if(ErrorReturnCode                       &&
-       InMessage->Sequence & 0x8000          &&
-       (ErrorReturnCode != REQACK || OutMessage->Retry == 0))
+    bool foreignCCU = (gForeignCCUPorts.find(InMessage->Port) != gForeignCCUPorts.end());
+
+    //  if this is a foreign CCU, we're not allowed to touch the queues
+    if( !foreignCCU )
     {
-        return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
-    }
-    else if(InMessage->Sequence & 0x8000)
-    {
-        bool detected = false;
-        /* loop through queue entry slots and mark those that are now in the ccu */
-        for(i = 0; i < MAXQUEENTRIES; i++)
+        if(ErrorReturnCode                          &&
+           InMessage->Sequence & 0x8000 &&
+           (ErrorReturnCode != REQACK || OutMessage->Retry == 0))
         {
-            if(pInfo->QueTable[i].InUse)
+            return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
+        }
+        else if(InMessage->Sequence & 0x8000)
+        {
+            bool detected = false;
+            /* loop through queue entry slots and mark those that are now in the ccu */
+            for(i = 0; i < MAXQUEENTRIES; i++)
             {
-                if(pInfo->QueTable[i].QueueEntrySequence == InMessage->Sequence)
+                if(pInfo->QueTable[i].InUse)
                 {
-                    pInfo->QueTable[i].InUse |= INCCU;
-                    pInfo->QueTable[i].TimeSent = LongTime();
-                    detected = true;
+                    if(pInfo->QueTable[i].QueueEntrySequence == InMessage->Sequence)
+                    {
+                        pInfo->QueTable[i].InUse |= INCCU;
+                        pInfo->QueTable[i].TimeSent = LongTime();
+                        detected = true;
+                    }
                 }
             }
-        }
 
-        if(!detected)
-        {
+            if(!detected)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Orphaned CCU queue entry response on device \"" << Dev->getName() << "\".  It will be ignored.  InMessage->Sequence 0x" << hex << (int)InMessage->Sequence << dec << endl;
-                dout << "  Not found in any queue slot" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Orphaned CCU queue entry response on device \"" << Dev->getName() << "\".  It will be ignored.  InMessage->Sequence 0x" << hex << (int)InMessage->Sequence << dec << endl;
+                    dout << "  Not found in any queue slot" << endl;
+                }
             }
         }
     }
@@ -319,20 +332,23 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
 
 
-    /* check the RCONT flag in the returned message */
-    if(InMessage->IDLCStat[2] & 0x10)
+    //  if this is a foreign CCU, we're not allowed to touch the queues
+    if( !foreignCCU )
     {
-        pInfo->clearStatus(INRCONT);
+        /* check the RCONT flag in the returned message */
+        if(InMessage->IDLCStat[2] & 0x10)
+        {
+            pInfo->clearStatus(INRCONT);
+        }
+        else
+        {
+            pInfo->setStatus(INRCONT);
+        }
     }
-    else
-    {
-        pInfo->setStatus(INRCONT);
-    }
-
 
     /* Decode the important contents of message header */
 
-    /* Check if we have a CTIDBG_new power fail */
+    /* Check if we have a new power fail */
     if(InMessage->IDLCStat[6] & STAT_POWER)
     {
         if(!(pInfo->getStatus(POWERFAILED)))
@@ -357,62 +373,66 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
 
 
-    /* Check if we need to issue a time sync to this guy */
-    if(InMessage->IDLCStat[7] & STAT_BADTIM)
+    //  if this is a foreign CCU, we're also not allowed to timesync it - even if there's a reset - so we just ignore this status
+    if( !foreignCCU )
     {
-        if(!(pInfo->getStatus(TIMESYNCED)))
+        /* Check if we need to issue a time sync to this guy */
+        if(InMessage->IDLCStat[7] & STAT_BADTIM)
         {
-            pInfo->setStatus(TIMESYNCED);
-            _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage->Port, InMessage->Remote);
+            if(!(pInfo->getStatus(TIMESYNCED)))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
-            CtiOutMessage *TimeSyncMessage = CTIDBG_new OUTMESS;
-            /* Allocate some memory */
-            if(TimeSyncMessage != NULL)
-            {
-                /* send a time sync to this guy */
-                TimeSyncMessage->Port = InMessage->Port;
-                TimeSyncMessage->Remote = InMessage->Remote;
-                TimeSyncMessage->TimeOut = TIMEOUT;
-                TimeSyncMessage->Retry = 0;
-                TimeSyncMessage->OutLength = 10;
-                TimeSyncMessage->InLength = 0;
-                TimeSyncMessage->Source = 0;
-                TimeSyncMessage->Destination = DEST_TSYNC;
-                TimeSyncMessage->Command = CMND_XTIME;
-                TimeSyncMessage->Sequence = 0;
-                TimeSyncMessage->Priority = MAXPRIORITY;
-                TimeSyncMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC | RCONT;
-
-                if(QueueHandle(InMessage->Port) != NULL)
+                pInfo->setStatus(TIMESYNCED);
+                _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage->Port, InMessage->Remote);
                 {
-                    if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->Request.UserID, sizeof (*TimeSyncMessage), (char *)TimeSyncMessage, TimeSyncMessage->Priority))
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << tempstr << endl;
+                }
+                CtiOutMessage *TimeSyncMessage = CTIDBG_new OUTMESS;
+                /* Allocate some memory */
+                if(TimeSyncMessage != NULL)
+                {
+                    /* send a time sync to this guy */
+                    TimeSyncMessage->Port = InMessage->Port;
+                    TimeSyncMessage->Remote = InMessage->Remote;
+                    TimeSyncMessage->TimeOut = TIMEOUT;
+                    TimeSyncMessage->Retry = 0;
+                    TimeSyncMessage->OutLength = 10;
+                    TimeSyncMessage->InLength = 0;
+                    TimeSyncMessage->Source = 0;
+                    TimeSyncMessage->Destination = DEST_TSYNC;
+                    TimeSyncMessage->Command = CMND_XTIME;
+                    TimeSyncMessage->Sequence = 0;
+                    TimeSyncMessage->Priority = MAXPRIORITY;
+                    TimeSyncMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC | RCONT;
+
+                    if(QueueHandle(InMessage->Port) != NULL)
                     {
-                        _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
+                        if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->Request.UserID, sizeof (*TimeSyncMessage), (char *)TimeSyncMessage, TimeSyncMessage->Priority))
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << tempstr << endl;
+                            _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " " << tempstr << endl;
+                            }
+                            delete (TimeSyncMessage);
                         }
-                        delete (TimeSyncMessage);
-                    }
-                    else
-                    {
-                        pInfo->PortQueueEnts++;
-                        pInfo->PortQueueConts++;
+                        else
+                        {
+                            pInfo->PortQueueEnts++;
+                            pInfo->PortQueueConts++;
+                        }
                     }
                 }
-            }
 
-            /* Now send a message to logger */
-            _snprintf(Message, 50,  "%0.20s Time Sync Loss", Dev->getName().c_str());
-            SendTextToLogger ("Inf", Message);
+                /* Now send a message to logger */
+                _snprintf(Message, 50,  "%0.20s Time Sync Loss", Dev->getName().c_str());
+                SendTextToLogger ("Inf", Message);
+            }
         }
-    }
-    else
-    {
-        pInfo->clearStatus (TIMESYNCED);
+        else
+        {
+            pInfo->clearStatus (TIMESYNCED);
+        }
     }
 
 
@@ -442,6 +462,20 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     /* Check if we have need to re-download this ccu********  Logic needs improvement */
     if(InMessage->IDLCStat[6] & (STAT_FAULTC | STAT_DEADMN | STAT_COLDST))
     {
+        if( foreignCCU )
+        {
+            //  we need to fake a cold start status to the foreign system
+
+            map< long, CtiPortShare * >::iterator ps_itr;
+
+            if( (ps_itr = PortShareManager.find(InMessage->Port)) != PortShareManager.end() )
+            {
+                //  set cold start for this CCU on this port's port share
+
+                ps_itr->second->setSharedCCUError(Dev->getAddress(), InMessage->IDLCStat[6]);
+            }
+        }
+
         if(!(InMessage->IDLCStat[6] & STAT_COLDST) && pInfo->getLastColdStartTime() + gConfigParms.getValueAsInt("COLD_START_FREQUENCY", 300) < CtiTime::now().seconds()
            && !(pInfo->FreeSlots < MAXQUEENTRIES && !pInfo->PortQueueEnts))
         {
@@ -488,7 +522,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 }
                 IDLCFunction(Dev, 0, DEST_BASE, CLCLD);
 
-                /* Assume this could be a CTIDBG_new chip */
+                /* Assume this could be a new chip */
                 pInfo->RColQMin = 0;
 
                 /* Best to flush the queues */
@@ -524,14 +558,19 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             /* Load the delay sets if any */
-            IDLCSetDelaySets(Dev);
+            IDLCSetDelaySets(Dev);  // this could be dodgy in a foreign CCU scenario (port sharing) - we may not have the same delay.dat file
 
             /* set the Base Status List */
             pInfo->setStatus(SETSLIST);
 
             IDLCSetBaseSList(Dev);
 
-            LoadRemoteRoutes(Dev);
+            //  if this is a foreign CCU, we probably also don't have the same routes - but they'll reload them when we release control and
+            //    notify them of the error
+            if( !foreignCCU )
+            {
+                LoadRemoteRoutes(Dev);
+            }
 
             /* set the time sync Algorithm startup time */
             IDLCSetTSStores(Dev, 15, gConfigParms.getValueAsInt("CCU_COMMS_LOST_TIME", 3600), 3600); // Priority, trigger time, period
@@ -640,22 +679,25 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
         pInfo->clearStatus(DLCFAULT);
     }
 
-    /* Load the CCU's interpretation of queue Info available */
-    pInfo->ReadyN = InMessage->IDLCStat[12];
-    pInfo->NCsets = InMessage->IDLCStat[13];
-    pInfo->NCOcts = MAKEUSHORT (InMessage->IDLCStat[15],InMessage->IDLCStat[14]);
-
-
-    //  this is more data than we can ever receive in a single packet - the CCU is confused
-    if( pInfo->NCsets == 1 && pInfo->NCOcts > 241 )
+    //  if it's a foreign CCU, we should ignore any queueing information the CCU is telling us
+    if( !foreignCCU )
     {
-        //  CCU's queues are messed up and need to be reset
-        IDLCFunction(Dev, 0, DEST_BASE, COLD);
+        /* Load the CCU's interpretation of queue Info available */
+        pInfo->ReadyN = InMessage->IDLCStat[12];
+        pInfo->NCsets = InMessage->IDLCStat[13];
+        pInfo->NCOcts = MAKEUSHORT (InMessage->IDLCStat[15],InMessage->IDLCStat[14]);
 
+        //  this is more data than we can ever receive in a single packet - the CCU is confused
+        if( pInfo->NCsets == 1 && pInfo->NCOcts > 241 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - CCU \"" << Dev->getName() << "\"'s internal queue is corrupt, sending cold start ";
-            dout << " (NCsets = " << pInfo->NCsets << ", NCOcts = " << pInfo->NCOcts << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            //  CCU's queues are messed up and need to be reset
+            IDLCFunction(Dev, 0, DEST_BASE, COLD);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - CCU \"" << Dev->getName() << "\"'s internal queue is corrupt, sending cold start ";
+                dout << " (NCsets = " << pInfo->NCsets << ", NCOcts = " << pInfo->NCOcts << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
 
@@ -670,57 +712,60 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             dout << CtiTime() << " " << tempstr << endl;
         }
 
-        /* Check to see what we were up to */
-        if((InMessage->IDLCStat[5] & 0x7f) == CMND_RCOLQ)
+        if( !foreignCCU )
         {
-            /* Some moron put a wrong chip in the CCU */
-            if(pInfo->RColQMin == 0)
+            /* Check to see what we were up to */
+            if((InMessage->IDLCStat[5] & 0x7f) == CMND_RCOLQ)
             {
-                if(InMessage->IDLCStat[3] - 14 < 15)
+                /* Some moron put a wrong chip in the CCU */
+                if(pInfo->RColQMin == 0)
                 {
-                    pInfo->RColQMin = 15;
-                    /* Now send a message to logger */
-                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName().c_str());
-                    SendTextToLogger ("Inf", Message);
+                    if(InMessage->IDLCStat[3] - 14 < 15)
+                    {
+                        pInfo->RColQMin = 15;
+                        /* Now send a message to logger */
+                        _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName().c_str());
+                        SendTextToLogger ("Inf", Message);
+                    }
+                    else if(InMessage->IDLCStat[3] - 14 < 61)
+                    {
+                        pInfo->RColQMin = 61;
+                        _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
+                        SendTextToLogger ("Inf", Message);
+                    }
                 }
-                else if(InMessage->IDLCStat[3] - 14 < 61)
+                else if(pInfo->RColQMin == 15)
                 {
-                    pInfo->RColQMin = 61;
-                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
-                    SendTextToLogger ("Inf", Message);
+                    if(InMessage->IDLCStat[3] - 14 >= 15 && InMessage->IDLCStat[3] - 14 < 61)
+                    {
+                        pInfo->RColQMin = 61;
+                        _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
+                        SendTextToLogger ("Inf", Message);
+                    }
                 }
             }
-            else if(pInfo->RColQMin == 15)
+            else if( !pInfo->getStatus(INRCOLQ) && pInfo->NCOcts)
             {
-                if(InMessage->IDLCStat[3] - 14 >= 15 && InMessage->IDLCStat[3] - 14 < 61)
-                {
-                    pInfo->RColQMin = 61;
-                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
-                    SendTextToLogger ("Inf", Message);
-                }
-            }
-        }
-        else if( !pInfo->getStatus(INRCOLQ) && pInfo->NCOcts)
-        {
-            // REQACK was possibly due to full CCU Queue.
-            // We must send an RCOLQ to empty it out!
+                // REQACK was possibly due to full CCU Queue.
+                // We must send an RCOLQ to empty it out!
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " REQACK with outstanding NCOcts on device \"" << Dev->getName() << "\".  Will RCOLQ." << endl;
-            }
-
-            if(pInfo->NCsets || pInfo->ReadyN)
-            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CCU " << Dev->getName() << endl;
-                    dout << CtiTime() << "   CCU Command Sets Complete (NCSets)   " << pInfo->NCsets << endl;
-                    dout << CtiTime() << "   CCU Command Slots Available (ReadyN) " << pInfo->ReadyN << endl;
+                    dout << CtiTime() << " REQACK with outstanding NCOcts on device \"" << Dev->getName() << "\".  Will RCOLQ." << endl;
                 }
+
+                if(pInfo->NCsets || pInfo->ReadyN)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " CCU " << Dev->getName() << endl;
+                        dout << CtiTime() << "   CCU Command Sets Complete (NCSets)   " << pInfo->NCsets << endl;
+                        dout << CtiTime() << "   CCU Command Slots Available (ReadyN) " << pInfo->ReadyN << endl;
+                    }
+                }
+                // And do the RCOLQ.  CGP -> Should be HIGHEST priority!
+                IDLCRColQ(Dev, MAXPRIORITY);
             }
-            // And do the RCOLQ.  CGP -> Should be HIGHEST priority!
-            IDLCRColQ(Dev, MAXPRIORITY);
         }
 
         if( OutMessage->Retry > 0 )
@@ -749,360 +794,364 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
     }
 
-    /* Check if this was a related reply */
-    if(InMessage->InLength && !ErrorReturnCode)
+    //  if this is a foreign CCU, we're not allowed to touch the queues
+    if( !foreignCCU )
     {
-        /* This is a queue entry reply so loop through and get results */
-
-        /* set the initial pointer into the result field */
-        Offset = 0;
-
-        while(setL = InMessage->Buffer.InMessage[Offset++])
+        /* Check if this was a related reply */
+        if(InMessage->InLength && !ErrorReturnCode)
         {
-            /* This many bytes no longer needed in return message */
-            if(pInfo->NCOcts >= setL)
-            {
-                pInfo->NCOcts -= setL;     // setL is the number of bytes we just pulled from the message!
-            }
-            else
-            {
-                pInfo->NCOcts = 0;         // We must have been messed up before this...
-            }
+            /* This is a queue entry reply so loop through and get results */
 
-            if(pInfo->NCsets)             // This is a count of queue "sets" on the CCU.. We are now processing one.
-            {
-                pInfo->NCsets--;
-            }
+            /* set the initial pointer into the result field */
+            Offset = 0;
 
-            /* Find out which queue entry this is */
-            // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
-            if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
+            while(setL = InMessage->Buffer.InMessage[Offset++])
             {
+                /* This many bytes no longer needed in return message */
+                if(pInfo->NCOcts >= setL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Wrong Offset into CCU Queue Entry Table on device \"" << Dev->getName() << "\"" << endl;
-                }
-                Offset += setL - 1;
-                continue;
-            }
-
-            Offset += 1;
-
-            USHORT OriginalOutMessageSequence = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0);
-
-            Offset += 1;
-
-            /* Make sure this entry is in use */
-            if(!(pInfo->QueTable[QueTabEnt].InUse))                        // Make sure we think we are using this one!
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Entry Received into Unused CCU Queue Entry on \"" << Dev->getName() << "\"" << endl;
-                }
-                Offset += setL - 3;                                         // Hop over this set and process the next one!
-                continue;
-            }
-
-            /* then kinda double check this guy */
-            if(pInfo->QueTable[QueTabEnt].QueueEntrySequence != MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset]) ||
-               LOBYTE(pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence) != OriginalOutMessageSequence)
-            {
-                /* Things are screwed up beyond all recognition */
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unknown Queue Entry Received... Ignoring on \"" << Dev->getName() << "\"" << endl;
-                }
-                Offset += setL - 3;
-                continue;
-            }
-
-            Offset += 2;      // Now looking at the queue entries Priority...
-
-            /* see if we have any interest in decoding the results */
-            if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
-            {
-                ResultMessage.EventCode       = NORMAL;
-
-                ResultMessage.DeviceID        = InMessage->DeviceID;
-                ResultMessage.MessageFlags    = InMessage->MessageFlags;
-
-                /* Load up the info out of the CCUInfo Structure */
-                ResultMessage.TargetID        = pInfo->QueTable[QueTabEnt].TargetID;
-                ResultMessage.ReturnNexus     = pInfo->QueTable[QueTabEnt].ReturnNexus;
-                ResultMessage.SaveNexus       = pInfo->QueTable[QueTabEnt].SaveNexus;
-                ResultMessage.Priority        = pInfo->QueTable[QueTabEnt].Priority;
-                ResultMessage.Sequence        = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
-                ResultMessage.MessageFlags    = pInfo->QueTable[QueTabEnt].MessageFlags;
-
-                ResultMessage.Return          = pInfo->QueTable[QueTabEnt].Request;
-
-
-                ResultMessage.Port            = InMessage->Port;
-                ResultMessage.Remote          = InMessage->Remote;
-
-
-                if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)
-                {
-                    ResultMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
-                }
-
-                /* Check if queue entry completed successfully */
-                if((InMessage->Buffer.InMessage[Offset++] >> 4) != 15)
-                {
-                    /* Nope */
-                    ResultMessage.EventCode = QUEUEEXEC;
-                    Offset = Offset + setL - 5;
+                    pInfo->NCOcts -= setL;     // setL is the number of bytes we just pulled from the message!
                 }
                 else
                 {
-                    /* this is a completed message */
-                    /* get the time this guy was actually read */
-                    TimeAdder = MidNightWas (LongTime (), (USHORT)DSTFlag ()) + (28800 * (InMessage->Buffer.InMessage[Offset++] % 3));
-                    ResultMessage.Time = InMessage->Buffer.InMessage[Offset++] << 8;
-                    ResultMessage.Time |= InMessage->Buffer.InMessage[Offset++];
-                    ResultMessage.Time += TimeAdder;
-
-                    /* Just in case this wasn't today */
-                    while(ResultMessage.Time > LongTime ())
-                    {
-                        ResultMessage.Time -= (3600L * 24L);
-                    }
-
-                    ResultMessage.MilliTime = DSTSET (0);
-
-                    /* Ignore the route information */
-                    Offset++;
-
-                    /* At this point a maximum of two requests per queue entry
-                       are allowed. This code will be subject to change once
-                       we allow full implementation of the queue structure */
-
-                    /* decode number of functions that came back */
-                    ResultMessage.InLength = 0;
-                    switch(InMessage->Buffer.InMessage[Offset++])
-                    {
-                    case 3:
-                        /* Not implemented but we will work on it any way */
-                        switch(InMessage->Buffer.InMessage[Offset++] >> 6)
-                        {
-                        case 0:
-                            ResultMessage.EventCode = NOATTEMPT;
-                            break;
-                        case 1:
-                            ResultMessage.EventCode = NORMAL;
-                            break;
-                        case 2:
-                            ResultMessage.EventCode = ROUTEFAILED;
-                            break;
-                        case 3:
-                            ResultMessage.EventCode = TRANSFAILED;
-                            break;
-                        }
-                        /* Skip next byte */
-                        Offset++;
-
-                        /* Update the length */
-                        ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
-
-                    case 2:
-                        switch(InMessage->Buffer.InMessage[Offset++] >> 6)
-                        {
-                        case 0:
-                            ResultMessage.EventCode = NOATTEMPT;
-                            break;
-                        case 1:
-                            if(!ResultMessage.EventCode)
-                                ResultMessage.EventCode = NORMAL;
-                            break;
-                        case 2:
-                            ResultMessage.EventCode = ROUTEFAILED;
-                            break;
-                        case 3:
-                            ResultMessage.EventCode = TRANSFAILED;
-                            break;
-                        }
-                        /* Skip next byte */
-                        Offset++;
-
-                        /* Update the length */
-                        ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
-
-                    case 1:
-                        switch(InMessage->Buffer.InMessage[Offset++] >> 6)
-                        {
-                        case 0:
-                            ResultMessage.EventCode = NOATTEMPT;
-                            break;
-                        case 1:
-                            if(!ResultMessage.EventCode)
-                                ResultMessage.EventCode = NORMAL;
-                            break;
-                        case 2:
-                            ResultMessage.EventCode = ROUTEFAILED;
-                            break;
-                        case 3:
-                            ResultMessage.EventCode = TRANSFAILED;
-                            break;
-                        }
-                        /* Skip next byte */
-                        Offset++;
-
-                        /* Update the length */
-                        ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
-                    }
-
-                    /* if this was a read pick up alarm bits and data */
-                    if(ResultMessage.InLength)
-                    {
-                        /* Check for device alarm */
-                        if(InMessage->Buffer.InMessage[Offset] & 0x0001)
-                            ResultMessage.Buffer.DSt.Alarm = 1;
-                        else
-                            ResultMessage.Buffer.DSt.Alarm = 0;
-
-                        /* Check for device power fail */
-                        if(InMessage->Buffer.InMessage[Offset] & 0x0002)
-                            ResultMessage.Buffer.DSt.Power = 1;
-                        else
-                            ResultMessage.Buffer.DSt.Power = 0;
-
-                        /* Check for device in Time Sync */
-                        if(InMessage->Buffer.InMessage[Offset] & 0x0008)
-                            ResultMessage.Buffer.DSt.TSync = 1;
-                        else
-                            ResultMessage.Buffer.DSt.TSync = 0;
-
-                        if(InMessage->Buffer.InMessage[Offset] & 0x0040)
-                            ResultMessage.EventCode = EWORDRCV;
-
-                        if(InMessage->Buffer.InMessage[Offset++] & 0x0080)
-                            ResultMessage.EventCode = DLCTIMEOUT;
-
-                        Offset++;
-
-                        if(!ResultMessage.EventCode)
-                        {
-                            ResultMessage.Buffer.DSt.Length = (USHORT)ResultMessage.InLength;
-                            for(i = 0; i < ResultMessage.InLength; i++)
-                            {
-                                ResultMessage.Buffer.DSt.Message[i] = InMessage->Buffer.InMessage[Offset++];
-                            }
-                        }
-                    }
+                    pInfo->NCOcts = 0;         // We must have been messed up before this...
                 }
-                /* this is a completed result so send it to originating process */
-                ResultMessage.EventCode |= DECODED;
-                if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)) != NORMAL)
+
+                if(pInfo->NCsets)             // This is a count of queue "sets" on the CCU.. We are now processing one.
+                {
+                    pInfo->NCsets--;
+                }
+
+                /* Find out which queue entry this is */
+                // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
+                if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error writing to nexus. CCUResponseDecode() on device \"" << Dev->getName() << "\".  "
-                             << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                        dout << CtiTime() << " Wrong Offset into CCU Queue Entry Table on device \"" << Dev->getName() << "\"" << endl;
+                    }
+                    Offset += setL - 1;
+                    continue;
+                }
+
+                Offset += 1;
+
+                USHORT OriginalOutMessageSequence = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0);
+
+                Offset += 1;
+
+                /* Make sure this entry is in use */
+                if(!(pInfo->QueTable[QueTabEnt].InUse))                        // Make sure we think we are using this one!
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Entry Received into Unused CCU Queue Entry on \"" << Dev->getName() << "\"" << endl;
+                    }
+                    Offset += setL - 3;                                         // Hop over this set and process the next one!
+                    continue;
+                }
+
+                /* then kinda double check this guy */
+                if(pInfo->QueTable[QueTabEnt].QueueEntrySequence != MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset]) ||
+                   LOBYTE(pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence) != OriginalOutMessageSequence)
+                {
+                    /* Things are screwed up beyond all recognition */
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Unknown Queue Entry Received... Ignoring on \"" << Dev->getName() << "\"" << endl;
+                    }
+                    Offset += setL - 3;
+                    continue;
+                }
+
+                Offset += 2;      // Now looking at the queue entries Priority...
+
+                /* see if we have any interest in decoding the results */
+                if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
+                {
+                    ResultMessage.EventCode       = NORMAL;
+
+                    ResultMessage.DeviceID        = InMessage->DeviceID;
+                    ResultMessage.MessageFlags    = InMessage->MessageFlags;
+
+                    /* Load up the info out of the CCUInfo Structure */
+                    ResultMessage.TargetID        = pInfo->QueTable[QueTabEnt].TargetID;
+                    ResultMessage.ReturnNexus     = pInfo->QueTable[QueTabEnt].ReturnNexus;
+                    ResultMessage.SaveNexus       = pInfo->QueTable[QueTabEnt].SaveNexus;
+                    ResultMessage.Priority        = pInfo->QueTable[QueTabEnt].Priority;
+                    ResultMessage.Sequence        = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
+                    ResultMessage.MessageFlags    = pInfo->QueTable[QueTabEnt].MessageFlags;
+
+                    ResultMessage.Return          = pInfo->QueTable[QueTabEnt].Request;
+
+
+                    ResultMessage.Port            = InMessage->Port;
+                    ResultMessage.Remote          = InMessage->Remote;
+
+
+                    if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)
+                    {
+                        ResultMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
                     }
 
-                    if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
+                    /* Check if queue entry completed successfully */
+                    if((InMessage->Buffer.InMessage[Offset++] >> 4) != 15)
                     {
-                        status = SocketError;
-                    }
-                }
-
-                //We had a comm error and need to report it.
-                addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
-
-                statisticsNewCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
-            }
-            else
-            {
-                /* we are not going to return results so jump over this one */
-                /* NOTE... This will need to change for statistics */
-                Offset += setL - 5;
-            }
-
-            /* Free up the entry in the QueTable */
-            if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
-            if(pInfo->FreeSlots > MAXQUEENTRIES)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-            pInfo->QueTable[QueTabEnt].InUse = 0;
-            pInfo->QueTable[QueTabEnt].TimeSent = -1L;
-        }
-    }
-
-    /* see if anything is in the ccu queues */
-#ifdef DEBUG
-    if(pInfo->FreeSlots != 32)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Port: " << InMessage->Port <<
-            "  Remote: " << InMessage->Remote <<
-            "  FreeSlots: " << pInfo->FreeSlots <<
-            "  PortQueEnts: " << pInfo->PortQueueEnts <<
-            "  PortQueueConts: " << pInfo->PortQueueConts << endl;
-        }
-    }
-#endif
-
-    if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
-    {
-        pInfo->clearStatus(INRCOLQ);
-    }
-
-    /* See if we need to clear an RCONT */
-    if(pInfo->getStatus(INRCONT))
-    {
-        if(!(pInfo->PortQueueConts))
-        {
-            /* see if any entries on the queue queue for this ccu */
-            QueryQueue(pInfo->QueueHandle, &QueueCount);
-            /* see if any entries on the actin queue for this ccu */
-            QueryQueue(pInfo->ActinQueueHandle, &ActinQueueCount);
-
-            if(!QueueCount && !ActinQueueCount)
-            {
-                /* Lets figure out if we should do a RCONT or a RCOLQ ... */
-
-                /* If nothing is left do something minimal */
-                if(pInfo->FreeSlots == MAXQUEENTRIES)
-                {
-                    IDLCRColQ(Dev);
-                }
-                else if(pInfo->NCOcts + 1 > pInfo->RContInLength)
-                {
-                    if(pInfo->RContInLength != 241)
-                    {
-                        IDLCRColQ(Dev);
+                        /* Nope */
+                        ResultMessage.EventCode = QUEUEEXEC;
+                        Offset = Offset + setL - 5;
                     }
                     else
                     {
-                        IDLCRCont(Dev);
+                        /* this is a completed message */
+                        /* get the time this guy was actually read */
+                        TimeAdder = MidNightWas (LongTime (), (USHORT)DSTFlag ()) + (28800 * (InMessage->Buffer.InMessage[Offset++] % 3));
+                        ResultMessage.Time = InMessage->Buffer.InMessage[Offset++] << 8;
+                        ResultMessage.Time |= InMessage->Buffer.InMessage[Offset++];
+                        ResultMessage.Time += TimeAdder;
+
+                        /* Just in case this wasn't today */
+                        while(ResultMessage.Time > LongTime ())
+                        {
+                            ResultMessage.Time -= (3600L * 24L);
+                        }
+
+                        ResultMessage.MilliTime = DSTSET (0);
+
+                        /* Ignore the route information */
+                        Offset++;
+
+                        /* At this point a maximum of two requests per queue entry
+                           are allowed. This code will be subject to change once
+                           we allow full implementation of the queue structure */
+
+                        /* decode number of functions that came back */
+                        ResultMessage.InLength = 0;
+                        switch(InMessage->Buffer.InMessage[Offset++])
+                        {
+                        case 3:
+                            /* Not implemented but we will work on it any way */
+                            switch(InMessage->Buffer.InMessage[Offset++] >> 6)
+                            {
+                            case 0:
+                                ResultMessage.EventCode = NOATTEMPT;
+                                break;
+                            case 1:
+                                ResultMessage.EventCode = NORMAL;
+                                break;
+                            case 2:
+                                ResultMessage.EventCode = ROUTEFAILED;
+                                break;
+                            case 3:
+                                ResultMessage.EventCode = TRANSFAILED;
+                                break;
+                            }
+                            /* Skip next byte */
+                            Offset++;
+
+                            /* Update the length */
+                            ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
+
+                        case 2:
+                            switch(InMessage->Buffer.InMessage[Offset++] >> 6)
+                            {
+                            case 0:
+                                ResultMessage.EventCode = NOATTEMPT;
+                                break;
+                            case 1:
+                                if(!ResultMessage.EventCode)
+                                    ResultMessage.EventCode = NORMAL;
+                                break;
+                            case 2:
+                                ResultMessage.EventCode = ROUTEFAILED;
+                                break;
+                            case 3:
+                                ResultMessage.EventCode = TRANSFAILED;
+                                break;
+                            }
+                            /* Skip next byte */
+                            Offset++;
+
+                            /* Update the length */
+                            ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
+
+                        case 1:
+                            switch(InMessage->Buffer.InMessage[Offset++] >> 6)
+                            {
+                            case 0:
+                                ResultMessage.EventCode = NOATTEMPT;
+                                break;
+                            case 1:
+                                if(!ResultMessage.EventCode)
+                                    ResultMessage.EventCode = NORMAL;
+                                break;
+                            case 2:
+                                ResultMessage.EventCode = ROUTEFAILED;
+                                break;
+                            case 3:
+                                ResultMessage.EventCode = TRANSFAILED;
+                                break;
+                            }
+                            /* Skip next byte */
+                            Offset++;
+
+                            /* Update the length */
+                            ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
+                        }
+
+                        /* if this was a read pick up alarm bits and data */
+                        if(ResultMessage.InLength)
+                        {
+                            /* Check for device alarm */
+                            if(InMessage->Buffer.InMessage[Offset] & 0x0001)
+                                ResultMessage.Buffer.DSt.Alarm = 1;
+                            else
+                                ResultMessage.Buffer.DSt.Alarm = 0;
+
+                            /* Check for device power fail */
+                            if(InMessage->Buffer.InMessage[Offset] & 0x0002)
+                                ResultMessage.Buffer.DSt.Power = 1;
+                            else
+                                ResultMessage.Buffer.DSt.Power = 0;
+
+                            /* Check for device in Time Sync */
+                            if(InMessage->Buffer.InMessage[Offset] & 0x0008)
+                                ResultMessage.Buffer.DSt.TSync = 1;
+                            else
+                                ResultMessage.Buffer.DSt.TSync = 0;
+
+                            if(InMessage->Buffer.InMessage[Offset] & 0x0040)
+                                ResultMessage.EventCode = EWORDRCV;
+
+                            if(InMessage->Buffer.InMessage[Offset++] & 0x0080)
+                                ResultMessage.EventCode = DLCTIMEOUT;
+
+                            Offset++;
+
+                            if(!ResultMessage.EventCode)
+                            {
+                                ResultMessage.Buffer.DSt.Length = (USHORT)ResultMessage.InLength;
+                                for(i = 0; i < ResultMessage.InLength; i++)
+                                {
+                                    ResultMessage.Buffer.DSt.Message[i] = InMessage->Buffer.InMessage[Offset++];
+                                }
+                            }
+                        }
                     }
+                    /* this is a completed result so send it to originating process */
+                    ResultMessage.EventCode |= DECODED;
+                    if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)) != NORMAL)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Error writing to nexus. CCUResponseDecode() on device \"" << Dev->getName() << "\".  "
+                                 << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                        }
+
+                        if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
+                        {
+                            status = SocketError;
+                        }
+                    }
+
+                    //We had a comm error and need to report it.
+                    addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
+
+                    statisticsNewCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
                 }
                 else
                 {
-                    if(pInfo->NCOcts + 14 <= pInfo->RContInLength)
+                    /* we are not going to return results so jump over this one */
+                    /* NOTE... This will need to change for statistics */
+                    Offset += setL - 5;
+                }
+
+                /* Free up the entry in the QueTable */
+                if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                if(pInfo->FreeSlots > MAXQUEENTRIES)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                pInfo->QueTable[QueTabEnt].InUse = 0;
+                pInfo->QueTable[QueTabEnt].TimeSent = -1L;
+            }
+        }
+
+        /* see if anything is in the ccu queues */
+#ifdef DEBUG
+        if(pInfo->FreeSlots != 32)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Port: " << InMessage->Port <<
+                "  Remote: " << InMessage->Remote <<
+                "  FreeSlots: " << pInfo->FreeSlots <<
+                "  PortQueEnts: " << pInfo->PortQueueEnts <<
+                "  PortQueueConts: " << pInfo->PortQueueConts << endl;
+            }
+        }
+#endif
+
+        if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
+        {
+            pInfo->clearStatus(INRCOLQ);
+        }
+
+        /* See if we need to clear an RCONT */
+        if(pInfo->getStatus(INRCONT))
+        {
+            if(!(pInfo->PortQueueConts))
+            {
+                /* see if any entries on the queue queue for this ccu */
+                QueryQueue(pInfo->QueueHandle, &QueueCount);
+                /* see if any entries on the actin queue for this ccu */
+                QueryQueue(pInfo->ActinQueueHandle, &ActinQueueCount);
+
+                if(!QueueCount && !ActinQueueCount)
+                {
+                    /* Lets figure out if we should do a RCONT or a RCOLQ ... */
+
+                    /* If nothing is left do something minimal */
+                    if(pInfo->FreeSlots == MAXQUEENTRIES)
                     {
                         IDLCRColQ(Dev);
                     }
+                    else if(pInfo->NCOcts + 1 > pInfo->RContInLength)
+                    {
+                        if(pInfo->RContInLength != 241)
+                        {
+                            IDLCRColQ(Dev);
+                        }
+                        else
+                        {
+                            IDLCRCont(Dev);
+                        }
+                    }
                     else
                     {
-                        IDLCRCont(Dev);
+                        if(pInfo->NCOcts + 14 <= pInfo->RContInLength)
+                        {
+                            IDLCRColQ(Dev);
+                        }
+                        else
+                        {
+                            IDLCRCont(Dev);
+                        }
                     }
                 }
             }
         }
-    }
-    else if(pInfo->FreeSlots < MAXQUEENTRIES && !(pInfo->getStatus(INRCOLQ)) && pInfo->NCOcts)
-    {
-        IDLCRColQ(Dev);
+        else if(pInfo->FreeSlots < MAXQUEENTRIES && !(pInfo->getStatus(INRCOLQ)) && pInfo->NCOcts)
+        {
+            IDLCRColQ(Dev);
+        }
     }
 
     return(status);
@@ -1206,6 +1255,8 @@ VOID KickerThread (VOID *Arg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Queue Kicker Thread Starting as TID:  " << CurrentTID() << endl;
     }
+
+    SetThreadName(-1, "KickerThd");
 
     for(; !PorterQuit ;)
     {
