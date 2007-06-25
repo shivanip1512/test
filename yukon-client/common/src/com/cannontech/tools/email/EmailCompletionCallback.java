@@ -40,5 +40,9 @@ public class EmailCompletionCallback implements CompletionCallback {
             log.error("Unable to send onSuccess message",e);
         }
     }
+    
+    public String toString(){
+        return successMessage.getRecipient();
+    }
 
 }

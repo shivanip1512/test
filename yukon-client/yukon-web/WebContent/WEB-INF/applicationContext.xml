@@ -102,6 +102,19 @@
         </property>
     </bean>
     
+    <bean id="profilePeakWidget"
+    	class="com.cannontech.web.widget.ProfilePeakWidget">
+    	<property name="title" value="Profile Peak Summary"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="yukonUserDao" ref="yukonUserDao" />
+        <property name="commandRequestExecutor" ref="commandRequestExecutor" />
+    </bean>
+    
     <bean id="miniTdcWidget"
     	class="com.cannontech.web.widget.MiniTdcWidget">
     	<property name="title" value="Mini TDC"/>
@@ -199,6 +212,16 @@
 							<![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
 							point on the graph is generated using the following formula: (reading - 
 							previousReading) / (days between readings)]]>
+						</value>
+					</property>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="USAGE"/>
+					<property name="graphType" value="RAW_LINE"/>
+					<property name="label" value="Usage"/>
+					<property name="description">
+						<value>
+							<![CDATA[Raw Usage data.]]>
 						</value>
 					</property>
 				</bean>
