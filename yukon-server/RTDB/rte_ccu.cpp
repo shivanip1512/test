@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/06/11 16:46:49 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/06/25 19:17:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,8 +60,19 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
         if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-            OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
-            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
+            OutMessage->Request.CheckSum  = _transmitterDevice->getUniqueIdentifier();
+            OutMessage->MessageFlags     |= MessageFlag_ApplyExclusionLogic;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
+
+            OutMessage->DeviceID = _transmitterDevice->getID();         // This is the route transmitter device, not the causal device.
+            OutMessage->Port     = _transmitterDevice->getPortID();
+            OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
+
+            //  do not allow queing if this is a foreign CCU port (shared CCU)
+            if( gForeignCCUPorts.find(OutMessage->Port) != gForeignCCUPorts.end() )
+            {
+                OutMessage->EventCode |=  DTRAN;
+                OutMessage->EventCode &= ~QUEUED;
+            }
 
             if(OutMessage->EventCode & VERSACOM)
             {
@@ -111,9 +122,6 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     /*
      * Addressing variables SHALL have been assigned at an earlier level!
      */
-    OutMessage->DeviceID       = _transmitterDevice->getID();
-    OutMessage->Port           = _transmitterDevice->getPortID();
-    OutMessage->Remote         = _transmitterDevice->getAddress();
     if(!OutMessage->Retry)     OutMessage->Retry = 2;
 
     if( parse.getiValue("type") == ProtocolVersacomType && parse.isKeyValid("noqueue") )
@@ -317,10 +325,6 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
     BSTRUCT old_bstruct;
     ASTRUCT old_astruct;
 
-    OutMessage->DeviceID = _transmitterDevice->getID();         // This is the route transmitter device, not the causal device.
-    OutMessage->Port     = _transmitterDevice->getPortID();
-    OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
-
     Cti::Protocol::Emetcon prot;
 
     if(OutMessage->EventCode & BWORD)
@@ -468,9 +472,6 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
     /*
      * Addressing variables SHALL have been assigned at an earlier level!
      */
-    OutMessage->DeviceID       = _transmitterDevice->getID();
-    OutMessage->Port           = _transmitterDevice->getPortID();
-    OutMessage->Remote         = _transmitterDevice->getAddress();
     if(!OutMessage->Retry)     OutMessage->Retry = 2;
 
     if( parse.getiValue("type") == ProtocolExpresscomType && parse.isKeyValid("noqueue") )
