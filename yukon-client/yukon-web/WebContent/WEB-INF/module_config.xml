@@ -44,8 +44,17 @@
     </option>
   </quicklinks>
   
-  <module name="amr">    
+  <module name="amr">
     <skin name="standard"/>
+   	<toplinks>
+   		<option id="Scheduler" name="Scheduler">
+   			<sublinks>
+   				<option name="Schedules">
+   					<link>/spring/macsscheduler/scheduledscripts/view</link>	
+   				</option>
+   			</sublinks>
+   		</option>
+  	</toplinks>  
   </module>
   
   <module name="capcontrol">

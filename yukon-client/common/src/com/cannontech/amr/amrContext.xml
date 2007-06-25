@@ -23,6 +23,10 @@
 		<property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
 		<property name="meterRowMapper" ref="extendedMeterRowMapper"/>
 	</bean>
+	
+	<bean id="macsScheduleService" class="com.cannontech.amr.macsscheduler.service.impl.MACSScheduleServiceImpl">
+		<property name="connection" ref="macsConnection"/>
+	</bean>
     
     <bean id="meterDao" class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl">
 	  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>

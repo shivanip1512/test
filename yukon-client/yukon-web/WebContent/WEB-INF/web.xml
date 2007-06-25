@@ -302,6 +302,14 @@
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>macsscheduler</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>	
 
 	<servlet>
 		<servlet-name>widgetDispatcher</servlet-name>
@@ -765,6 +773,11 @@
 	<servlet-mapping>
 		<servlet-name>loadProfile</servlet-name>
 		<url-pattern>/spring/loadProfile/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>macsscheduler</servlet-name>
+		<url-pattern>/spring/macsscheduler/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

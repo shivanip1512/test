@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="simpleUrlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/schedules/*">scheduleController</prop>
+				<prop key="/scheduledscripts/*">scheduledscripts</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="scheduledscripts"
+		class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="scheduledscripts.jsp" />
+	</bean>
+	
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix"
+			value="/WEB-INF/pages/amr/macsscheduler/" />
+	</bean>
+
+	<bean id="scheduleController" class="com.cannontech.web.amr.macsscheduler.MACSScheduleController">
+		<property name="scheduleService"><ref bean="macsScheduleService"/></property>
+		<property name="yukonUserDao"><ref bean="yukonUserDao"/></property>
+		<property name="authDao"><ref bean="authDao"/></property>
+	</bean>
+
+</beans>
