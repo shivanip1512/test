@@ -35,7 +35,7 @@
     <color>#FFFFFF</color>                                    <!-- [#FFFFFF](hex color code) -->
     <alpha>0</alpha>                                          <!-- [0] (0 - 100) if you want it to be different than background color, use bigger than 0 value -->                                        
     <margins>                                                 <!-- plot area margins -->
-      <left>10</left>                                         <!-- [60](Number) --> 
+      <left>60</left>                                         <!-- [60](Number) --> 
       <top>60</top>                                           <!-- [60](Number) --> 
       <right>10</right>                                       <!-- [60](Number) --> 
       <bottom>0</bottom>                                     <!-- [80](Number) --> 
