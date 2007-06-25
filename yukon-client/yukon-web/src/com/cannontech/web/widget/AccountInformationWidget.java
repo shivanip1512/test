@@ -23,7 +23,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         
         try {
             final AccountInfo info = accountInfoDao.getAccount(deviceId);
-            final ServiceLocation serviceInfo = accountInfoDao.getServiceLocation(info.getAccountId());
+            final ServiceLocation serviceInfo = accountInfoDao.getServiceLocation(deviceId);
             
             mav.addObject("deviceId", deviceId);
             mav.addObject("info", info);
