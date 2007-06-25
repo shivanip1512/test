@@ -15,8 +15,10 @@ import com.cannontech.analysis.controller.CapControlScheduleDetailController;
 import com.cannontech.analysis.controller.CapControlStateComparisonController;
 import com.cannontech.analysis.controller.CurtailmentEventSummaryController;
 import com.cannontech.analysis.controller.CurtailmentInterruptionSummaryController;
+import com.cannontech.analysis.controller.MeterKwhDifferenceController;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.controller.ReportControllerAdapter;
+import com.cannontech.analysis.report.MeterKwhDifferenceReport;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
@@ -129,6 +131,7 @@ public class ReportTypes
     
     public static final int SCHEDULED_METER_READ_DATA = 43;
     public static final int REPEATER_ROLE_COLLISION = 44;
+    public static final int METER_KWH_DIFFERENCE = 45;
     
 	private static Class[] typeToClassMap =
 	{
@@ -184,7 +187,8 @@ public class ReportTypes
         CapControlScheduleDetailController.class,
         
         ScheduledMeterReadModel.class,
-        RepeaterRoleCollisionModel.class
+        RepeaterRoleCollisionModel.class,
+        MeterKwhDifferenceController.class
 	};
 		
 	/** String names for report types */
@@ -246,6 +250,7 @@ public class ReportTypes
     
     public static final String SCHEDULED_METER_READ_STRING = "Scheduled Meter Reads";
     public static final String REPEATER_ROLE_COLLISION_STRING = "Repeater Role Collision Report";
+    public static final String METER_KWH_DIFFERENCE_STRING = "Meter kWh Difference Report";
 
     public static final String CAPBANK_DATA_DESCRIPTION = "Detailed report of the capbanks, including information on its location, size, cbc, feeder and substation bus.";
     public static final String CAP_CONTROL_NEW_ACTIVITY_DESCRIPTION = "Detailed report of capbank activity, including manual and automated controls, operation outcomes, and capcontrol database changes.'";
@@ -317,7 +322,8 @@ public class ReportTypes
         CAP_CONTROL_SCHEDULE_DETAIL_STRING,
         
         SCHEDULED_METER_READ_STRING,
-        REPEATER_ROLE_COLLISION_STRING
+        REPEATER_ROLE_COLLISION_STRING,
+        METER_KWH_DIFFERENCE_STRING
 	};
 
     /** Report Description to enum mapping */
@@ -339,6 +345,7 @@ public class ReportTypes
         CAP_CONTROL_RETRIES_DESCRIPTION,
         CAP_BANK_OPERATIONS_PERFORMANCE_DESCRIPTION,
         CAP_CONTROL_SCHEDULE_DETAIL_DESCRIPTION,
+        "",
         "",
         ""
     };    
@@ -390,7 +397,8 @@ public class ReportTypes
         DISCONNECT_METER_DATA, 
         LP_SETUP_DATA, 
         LP_SUMMARY_DATA,
-        REPEATER_ROLE_COLLISION};
+        REPEATER_ROLE_COLLISION,
+        METER_KWH_DIFFERENCE};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
 	private static int[] capControlGroupReportTypes = new int[]{
