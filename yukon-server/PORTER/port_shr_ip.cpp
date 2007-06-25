@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/04/04 18:17:20 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2007/06/25 20:48:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #include "tcpsup.h"
 #include "utility.h"
 #include "numstr.h"
+#include "cti_asmc.h"
 
 #include <rw/toolpro/inetaddr.h>
 
@@ -94,7 +95,7 @@ CtiPortShareIP::~CtiPortShareIP()
  * post the INWAITFOROUT flag.  Otherwise (no post) we clear the inbound socket and
  * continue on our own.
  *
- * If we do get the post, we read a CTIDBG_new message from the socket and write it out
+ * If we do get the post, we read a new message from the socket and write it out
  * to the appropriate portQueue.
  *-----------------------------------------------------------------------------*/
 void CtiPortShareIP::inThread()
@@ -108,6 +109,9 @@ void CtiPortShareIP::inThread()
     CTINEXUS tmpNexus;
 
     OUTMESS *OutMessage = NULL;
+
+    string thread_name = "PSin " + CtiNumStr(_port->getPortID()).zpad(4);
+    SetThreadName(-1, thread_name.c_str());
 
     while( !isSet(SHUTDOWN) )     // Have we been kicked from on high.
     {
@@ -201,9 +205,9 @@ void CtiPortShareIP::inThread()
                         loopsSinceRead = 0;
                     }
 
-                if(!_scadaNexus.CTINexusValid())
-                {
-                    set(CtiPortShareIP::INWAITFOROUT, false);     // Do not cause this thread to wait before resetting scadaNexus.
+                    if(!_scadaNexus.CTINexusValid())
+                    {
+                        set(CtiPortShareIP::INWAITFOROUT, false);     // Do not cause this thread to wait before resetting scadaNexus.
                         sleep(2000);
                     }
                 }
@@ -220,14 +224,23 @@ void CtiPortShareIP::inThread()
                         if(Buffer[0] == 0x7e)
                         {
                             //  it's an IDLC message, read the rest
-                            if(((readStatus = _scadaNexus.CTINexusRead(&(Buffer[4]), (Buffer[3] + 2), &bytesRead, 15)) == NORMAL) && (bytesRead == (Buffer[3] + 2 + 4)))
-                            {
 
+                            //  is this an unsequenced control message?
+                            if(Buffer[2] & 0x01 && Buffer[2] != HDLC_UD )
+                            {
+                                //  we only need to read one more byte, so we don't need any of the fancy ioctl stuff below
+                                readStatus = _scadaNexus.CTINexusRead(&(Buffer[4]), 1, &bytesRead, 15);
+                            }
+                            else if(((readStatus = _scadaNexus.CTINexusRead(&(Buffer[4]), (Buffer[3] + 2), &bytesRead, 15)) == NORMAL) && (bytesRead == (Buffer[3] + 2 + 4)))
+                            {
                                 // If there are any bytes still in the socket we must find the most recent.  The continue will
                                 // cause a new read.
                                 if( (SOCKET_ERROR != ioctlsocket(_scadaNexus.sockt, FIONREAD, &remainderbytes)) && remainderbytes != 0)
                                     continue;
+                            }
 
+                            if( readStatus == NORMAL )
+                            {
                                 // Get an OutMessage.
                                 if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                                 {
@@ -268,8 +281,28 @@ void CtiPortShareIP::inThread()
                                 OutMessage->MessageFlags |= MessageFlag_PortSharing;
                                 OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt("PORTER_PORTSHARE_EXPIRATION_TIME", 600);
 
-                                //  Figure out what the out length is
-                                OutMessage->OutLength = Buffer[3] - 3;
+                                if( Buffer[2] == HDLC_UD )
+                                {
+                                    //  this is an RTU request
+
+                                    //  Figure out what the out length is
+                                    OutMessage->OutLength = Buffer[3] - 3;
+                                }
+                                else
+                                {
+                                    //  this is a CCU request
+
+                                    if( Buffer[2] & 0x01 )
+                                    {
+                                        //  this is an IDLC CCU control message
+                                        OutMessage->OutLength = 5;
+                                    }
+                                    else
+                                    {
+                                        OutMessage->OutLength = bytesRead;
+                                    }
+                                }
+
                                 OutMessage->InLength = 0;
 
                                 //  Now figure out the event code
@@ -314,6 +347,9 @@ void CtiPortShareIP::inThread()
                                         dout << CtiTime() << " " << getIDString() << " - error writing to queue **** " << FILELINE << endl;
                                     }
 
+                                    set(CtiPortShareIP::INWAITFOROUT, false);  //  we couldn't write, so we're not waiting for a response
+                                    sleep(2000);
+
                                     delete OutMessage;
                                 }
                             }
@@ -342,7 +378,7 @@ void CtiPortShareIP::inThread()
                         sleep(1000);        // Make certain we don't loop too crazy here
                         loopsSinceRead++;
 
-                        if( readStatus )
+                        if( readStatus != -ERR_CTINEXUS_READTIMEOUT )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -415,6 +451,9 @@ void CtiPortShareIP::outThread()
     bool bDoReply = true;
 
     INT sendLen, status;
+
+    string thread_name = "PSout" + CtiNumStr(_port->getPortID()).zpad(4);
+    SetThreadName(-1, thread_name.c_str());
 
     try
     {
@@ -491,18 +530,52 @@ void CtiPortShareIP::outThread()
                             dout << endl;
                         }
 
-                        if(_scadaNexus.CTINexusWrite((char*)(InMessage.IDLCStat + 11), InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
+                        if(InMessage.IDLCStat[2] == HDLC_UD)
                         {
+                            if(_scadaNexus.CTINexusWrite((char*)(InMessage.IDLCStat + 11), InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
+                                }
+                                _scadaNexus.CTINexusClose();
+                            }
+                            else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
+                                dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
                             }
-                            _scadaNexus.CTINexusClose();
                         }
-                        else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
+                        else
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
+                            unsigned char address = InMessage.IDLCStat[1] >> 1;
+
+                            if( InMessage.InLength > 5 && hasSharedCCUError(address) )
+                            {
+                                InMessage.IDLCStat[6] |= getSharedCCUError(address);
+
+                                //  refer to PostIDLC() for the proper way to do this - I didn't want to have to export/import the function
+                                unsigned short crc = NCrcCalc_C(InMessage.IDLCStat + 1, InMessage.InLength - 3);
+
+                                InMessage.IDLCStat[InMessage.InLength - 2] = (crc >> 8) & 0xff;
+                                InMessage.IDLCStat[InMessage.InLength - 1] =  crc       & 0xff;
+
+                                clearSharedCCUError(address);
+                            }
+
+                            if(_scadaNexus.CTINexusWrite((char*)InMessage.IDLCStat, InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
+                                }
+                                _scadaNexus.CTINexusClose();
+                            }
+                            else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
+                            }
                         }
                     }
                     else
@@ -592,6 +665,7 @@ int CtiPortShareIP::inThreadConnectNexus()
 
     return getReturnNexus()->CTINexusValid();
 }
+
 
 /*-----------------------------------------------------------------------------*
  * Shuts down the out thread and sets the flags for the in thread to shut down.
