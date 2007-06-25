@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.207 $
-* DATE         :  $Date: 2007/05/31 21:41:20 $
+* REVISION     :  $Revision: 1.208 $
+* DATE         :  $Date: 2007/06/25 19:29:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,6 +217,10 @@ VOID PortThread(void *pid)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
     }
+
+    string thread_name = "Port " + CtiNumStr(Port->getPortID()).zpad(4);
+
+    SetThreadName(-1, thread_name.c_str());
 
     /* make it clear who is the boss */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -500,7 +504,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
     ULONG j;
     INT   eRet = 0;
 
-    if(Port->getPortID() == Device->getPortID() && !Device->isInhibited())
+    if(Port->getPortID() == Device->getPortID() && !Device->isInhibited() )
     {
         if(0 <= Device->getAddress() && Device->getAddress() < MAXIDLC)
         {
@@ -518,7 +522,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
                             {
                                 didareset = true;
 
-                                if(!(Port->isDialup()))
+                                if(!Port->isDialup())
                                 {
                                     j = 0;
                                     while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
@@ -2310,8 +2314,19 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         }
                     case TYPE_CCU711:
                         {
-                            CtiTransmitterInfo *pInfo = Device->getTrxInfo();
-                            PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
+                            if( OutMessage->MessageFlags & MessageFlag_PortSharing &&
+                                OutMessage->Buffer.OutMessage[0] == 0x7e &&
+                                /*OutMessage->Buffer.OutMessage[2]  & 0x01 &&*/
+                                OutMessage->Buffer.OutMessage[2] != HDLC_UD )
+                            {
+                                //  if it's an IDLC control message from a port share, leave it alone
+                            }
+                            else
+                            {
+                                CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                                PreIDLC(OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
+                            }
+
                             break;
                         }
                     default:
@@ -2353,10 +2368,24 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                 case TYPE_CCU711:
                     {
-                        PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL - 2));
+                        if( OutMessage->MessageFlags & MessageFlag_PortSharing &&
+                            OutMessage->Buffer.OutMessage[0] == 0x7e &&
+                            //OutMessage->Buffer.OutMessage[2]  & 0x01 &&
+                            OutMessage->Buffer.OutMessage[2] != HDLC_UD )
+                        {
+                            //  if it's an IDLC control message from a port share, leave it alone
 
-                        trx.setOutBuffer(OutMessage->Buffer.OutMessage);
-                        trx.setOutCount(OutMessage->OutLength + PREIDL);
+                            trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                            trx.setOutCount(OutMessage->OutLength);
+                        }
+                        else
+                        {
+                            //  tack on the CRC
+                            PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL - 2));
+
+                            trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                            trx.setOutCount(OutMessage->OutLength + PREIDL);
+                        }
 
                         status = Port->outMess(trx, Device, traceList);
 
@@ -2568,36 +2597,44 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     }
                                     else if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
                                     {
-                                        /* Ack patooy What to do here now ya don't ya' know */
-                                        switch(InMessage->IDLCStat[2] & 0x0f)
+                                        //  if it's a foreign CCU, we let them deal with the potential error
+                                        if( OutMessage->MessageFlags & MessageFlag_PortSharing )
                                         {
-                                        case REJ:
+                                            InMessage->InLength = 5;
+                                        }
+                                        else
+                                        {
+                                            /* Ack patooy What to do here now ya don't ya' know */
+                                            switch(InMessage->IDLCStat[2] & 0x0f)
                                             {
-                                                if((reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                                case REJ:
                                                 {
-                                                    status = reject_status;
+                                                    if((reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                                    {
+                                                        status = reject_status;
+                                                    }
+                                                    break;
                                                 }
-                                                break;
-                                            }
-                                        default:
-                                            {
+                                                default:
                                                 {
-                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                    dout << CtiTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                                    }
+
+                                                    if(trx.doTrace(status))
+                                                    {
+                                                        trx.setInBuffer(InMessage->IDLCStat);
+                                                        trx.setInCountActual(&InMessage->InLength);
+                                                        Port->traceXfer(trx, traceList, Device, status);
+                                                    }
                                                 }
 
-                                                if(trx.doTrace(status))
-                                                {
-                                                    trx.setInBuffer(InMessage->IDLCStat);
-                                                    trx.setInCountActual(&InMessage->InLength);
-                                                    Port->traceXfer(trx, traceList, Device, status);
-                                                }
+                                                /*
+                                                 *  4/29/99 CGP There are others like Reset Acknowlege which may need to picked up here
+                                                 */
                                             }
                                         }
-
-                                        /*
-                                         *  4/29/99 CGP There are others like Reset Acknowlege which may need to picked up here
-                                         */
                                     }
                                     else
                                     {
@@ -2615,7 +2652,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                         InMessage->InLength += ReadLength;
 
-                                        if(!status)
+                                        if( !status && !(OutMessage->MessageFlags & MessageFlag_PortSharing) )
                                         {
                                             /*
                                              *  This is the guy who does some rudimentary checking on the CCU message
@@ -2644,7 +2681,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     Port->traceXfer(trx, traceList, Device, status);
                                 }
 
-                                if(!status)
+                                if(!status && !(OutMessage->MessageFlags & MessageFlag_PortSharing))
                                 {
                                     InMessage->InLength -= 20;
                                 }
@@ -2965,53 +3002,60 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
         {
         case TYPE_CCU711:
             {
-                CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
-
-                if(OutMessage->Remote == CCUGLOBAL)
+                if( OutMessage->MessageFlags & MessageFlag_PortSharing )
                 {
                     break;
-                }
-
-                InMessage->InLength = OutMessage->InLength;
-
-                /* Clear the RCOLQ flag if neccessary */
-                if(OutMessage->Command == CMND_RCOLQ)
-                {
-                    p711info->clearStatus (INRCOLQ);
-                }
-
-                /* Clear a LGRPQ flag if neccessary */
-                if(OutMessage->Command == CMND_LGRPQ)
-                {
-                    p711info->clearStatus(INLGRPQ);
-                }
-
-                if(OutMessage->EventCode & RCONT)
-                {
-                    status = CCUResponseDecode (InMessage, Device, OutMessage);
                 }
                 else
                 {
-                    j = InMessage->InLength;
-                    InMessage->InLength = 0;
-                    status = CCUResponseDecode (InMessage, Device, OutMessage);
-                    InMessage->InLength = j;
-                }
+                    CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
 
-                if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
-                {
+                    if(OutMessage->Remote == CCUGLOBAL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        break;
                     }
-                    blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
-                    blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
-                }
 
-                //  only break if this is _not_ DTRAN
-                if( !(OutMessage->EventCode & DTRAN) )
-                {
-                    break;
+                    InMessage->InLength = OutMessage->InLength;
+
+                    /* Clear the RCOLQ flag if neccessary */
+                    if(OutMessage->Command == CMND_RCOLQ)
+                    {
+                        p711info->clearStatus (INRCOLQ);
+                    }
+
+                    /* Clear a LGRPQ flag if neccessary */
+                    if(OutMessage->Command == CMND_LGRPQ)
+                    {
+                        p711info->clearStatus(INLGRPQ);
+                    }
+
+                    if(OutMessage->EventCode & RCONT)
+                    {
+                        status = CCUResponseDecode (InMessage, Device, OutMessage);
+                    }
+                    else
+                    {
+                        j = InMessage->InLength;
+                        InMessage->InLength = 0;
+                        status = CCUResponseDecode (InMessage, Device, OutMessage);
+                        InMessage->InLength = j;
+                    }
+
+                    if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
+                        blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
+                    }
+
+                    //  only break if this is _not_ DTRAN
+                    if( !(OutMessage->EventCode & DTRAN) )
+                    {
+                        break;
+                    }
                 }
             }
         case TYPE_CCU700:
@@ -3386,7 +3430,9 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
 {
     INT status = NORMAL;
 
-    if(Device->getAddress() != 0xffff)
+    bool foreignCCU = (gForeignCCUPorts.find(Device->getPortID()) != gForeignCCUPorts.end());
+
+    if(!foreignCCU && Device->getAddress() != 0xffff)
     {
         if( Device->hasTrxInfo() && !Device->isInhibited() ) // Does this device type support TrxInfo?
         {
