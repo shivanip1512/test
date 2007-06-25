@@ -202,79 +202,43 @@ public class PointUtil {
                     multiplier));
             }
             
-            double mult = 1.0;
             // analog points for 470s and 430s
             if (val instanceof MCT470 || val instanceof MCT430A || val instanceof MCT430S4) 
             {
-                if( val instanceof MCT470 )
-                {
-                    mult = 1.0;
-                }else 
-                {
-                    mult = .0001;
-                }
-                
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Total KWh",
                     deviceID,
                     pointDao.getNextPointId(),
                     PointTypes.PT_OFFSET_TOTAL_KWH,
-                    com.cannontech.database.data.point.PointUnits.UOMID_KWH,
-                    mult));
+                    PointUnits.UOMID_KWH,
+                    .0001));
 
-                if( val instanceof MCT470 )
-                {
-                    mult = 1.0;
-                }else if (val instanceof MCT430A)
-                {
-                    mult = .001;
-                }else 
-                {
-                    mult = .01;
-                }
-                
+
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Peak KW (Rate A KW)",
                     deviceID,
                     pointDao.getNextPointId(),                    
                     2,
-                    com.cannontech.database.data.point.PointUnits.UOMID_KW,
-                    mult));
+                    PointUnits.UOMID_KW,
+                    .01));
 
-                if( val instanceof MCT470 )
-                {
-                    mult = 1.0;
-                }else 
-                {
-                    mult = .0001;
-                }
-                
+
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Rate A KWh",
                     deviceID,
                     pointDao.getNextPointId(),                                        
                     3,
-                    com.cannontech.database.data.point.PointUnits.UOMID_KWH,
-                    mult));
+                    PointUnits.UOMID_KWH,
+                    .0001));
 
-                if( val instanceof MCT470 )
-                {
-                    mult = 1.0;
-                }else if (val instanceof MCT430A)
-                {
-                    mult = .001;
-                }else 
-                {
-                    mult = .01;
-                }
-                
+
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Last Interval KW",
                     deviceID,
                     pointDao.getNextPointId(),
                     10,
-                    com.cannontech.database.data.point.PointUnits.UOMID_KW,
-                    mult));
+                    PointUnits.UOMID_KW,
+                    .01));
 
             }
 
