@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/21 15:27:00 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/06/25 19:10:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,6 +71,8 @@ VOID PorterInterfaceThread (VOID *Arg)
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " PorterInterfaceThread started as TID  " << CurrentTID() << endl;
    }
+
+   SetThreadName(-1, "PrtIntrfc");
 
    try
    {
