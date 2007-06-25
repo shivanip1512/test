@@ -20,7 +20,12 @@
 
        <jar jarfile="${yukon.lib}/custom.jar"
             basedir="build/" 
-            manifest="resource/manifest.mf" />
+            manifest="resource/manifest.mf">
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+           </manifest>	
+       </jar>
    </target>
 
 	<target name="install" depends="build">

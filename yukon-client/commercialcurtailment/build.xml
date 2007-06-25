@@ -19,6 +19,10 @@
      	</javac>
 
 		<jar jarfile="${yukon.lib}/commercialcurtailment.jar" basedir="build/" manifest="resource/manifest.mf">
+	        <manifest>
+	            <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+	        	<attribute name="Yukon-Details" value="${yukon.build.details}"/>
+	        </manifest>
 		    <fileset dir="resource">
 				<include name="**/*.gif"/>
 		 		<include name="**/*.au"/>

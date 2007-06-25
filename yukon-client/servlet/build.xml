@@ -19,12 +19,22 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/servlets.jar"
-            basedir="build/" />       
+            basedir="build/">
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+           </manifest>
+       </jar>       
    </target>
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/servlets.jar"
-   			basedir="build/" />   			       
+   			basedir="build/">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+   		</jar>   			       
    </target>
    
    <target name="clean">

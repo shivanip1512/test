@@ -20,13 +20,23 @@
 
        <jar jarfile="${yukon.lib}/logger.jar"
             basedir="build/" 
-            manifest="resource/manifest.mf" />       
+            manifest="resource/manifest.mf">
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+           </manifest>
+       </jar>       
    </target>
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/logger.jar"
    			basedir="build/"
-   			manifest="resource/manifest.mf" />   			 
+   			manifest="resource/manifest.mf">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+   		</jar>   			 
    </target>
    
    <target name="clean">

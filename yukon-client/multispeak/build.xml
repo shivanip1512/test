@@ -20,6 +20,10 @@
      	</javac>
 
 		<jar jarfile="${yukon.lib}/multispeak.jar" basedir="build/" manifest="resource/manifest.mf">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
             <fileset dir="src">
                 <include name="**/*.xml"/>
             </fileset>
@@ -28,7 +32,11 @@
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/multispeak.jar" basedir="build/" manifest="resource/manifest.mf">
-		</jar>   			
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+   		</jar>   			
 	</target>
    
    <target name="clean">

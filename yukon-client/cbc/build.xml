@@ -19,7 +19,11 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/cbc.jar"
-       	basedir="build/" > 
+       	basedir="build/" >
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+           </manifest>    
 	    <fileset dir="src">
 	 		<include name="**/*.xml"/>
 		</fileset>

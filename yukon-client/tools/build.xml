@@ -20,6 +20,10 @@
 
        <jar jarfile="${yukon.lib}/tools.jar"
            basedir="build/"  manifest="resource/manifest.mf">
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+           </manifest>
 	   	   <fileset dir="src">
 		      <include name="**/*.xml"/>
 		   </fileset>
@@ -29,6 +33,8 @@
             basedir="build/" manifest="resource/tztest_manifest.mf">
            <manifest>
                <attribute name="Main-Class" value="com.cannontech.tools.TimeZoneTest"/>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
            </manifest>
            <include name="com/cannontech/tools/TimeZoneTest.class"/>
        </jar>
@@ -43,6 +49,10 @@
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/tools.jar" basedir="build/">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
 	    	<fileset dir="src">
 	 			<include name="**/*.xml"/>
 			</fileset>

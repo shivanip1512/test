@@ -19,7 +19,12 @@
 		</javac>
 
 		<jar jarfile="${yukon.lib}/stars.jar"
-			basedir="build/" />
+			basedir="build/">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+		</jar>
 
 		<copy todir="${yukon.lib}">
 			<fileset dir="resource">
@@ -30,7 +35,12 @@
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/stars.jar"
-   			basedir="build/" />   			       
+   			basedir="build/">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+   		</jar>   			       
    </target>
    
 	<target name="clean">

@@ -21,7 +21,12 @@
 
 	<target name="install" depends="build">
         
-		<jar jarfile="${yukon.client.bin}/yukon-web.jar" basedir="build/" />
+		<jar jarfile="${yukon.client.bin}/yukon-web.jar" basedir="build/">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+		</jar>
         
 	</target>
     
@@ -67,7 +72,12 @@
 			</classpath>
 		</javac>
 
-		<jar jarfile="${yukon.lib}/yukon-web.jar" basedir="${yukon.web.src_build}" />
+		<jar jarfile="${yukon.lib}/yukon-web.jar" basedir="${yukon.web.src_build}">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>    
+		</jar>
         
 	</target>
 

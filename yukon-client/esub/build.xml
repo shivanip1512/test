@@ -15,7 +15,11 @@
 	      </classpath> 
      	</javac>
 		
-       <jar jarfile="${yukon.lib}/esub.jar" basedir="build/">       
+       <jar jarfile="${yukon.lib}/esub.jar" basedir="build/">
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+           </manifest>
 	 	    <fileset dir="resource">
 				<include name="**/*.gif"/>
 				<include name="**/*.ico"/>
@@ -44,7 +48,12 @@
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/esub.jar"
-   			basedir="build/" />   			
+   			basedir="build/">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest>
+   		</jar>   			
    			
    		<copy todir="${yukon.client.bin}">
  	    	<fileset dir="resource">
