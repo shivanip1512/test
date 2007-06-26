@@ -14,7 +14,7 @@
 	<table class="widgetColumns">
 		<tr>
 			<td>
-				<h2 style="display: inline;">Device Name: <cti:deviceName deviceId="${deviceId}"></cti:deviceName></h2>
+				<h2 style="display: inline;"><cti:deviceName deviceId="${deviceId}"></cti:deviceName></h2>
 			</td>
 			<td align="right">
 				<amr:searchResultsLink></amr:searchResultsLink>
