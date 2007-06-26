@@ -60,7 +60,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
         Meter meter = getMeter(request);
-        ModelAndView mav = new ModelAndView("meterReadingsWidget/result.jsp");
+        ModelAndView mav = new ModelAndView("common/meterReadingsResult.jsp");
         
         Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
         

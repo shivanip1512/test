@@ -15,5 +15,5 @@ There was an error reading the meter<br>
 </c:if>
 
 <c:if test="${!errorsExist}">
-  <span title="${result.lastResultString}">Read Succeeded</span>
+  <span title="${result.lastResultString}">Successful Read</span>
 </c:if>
