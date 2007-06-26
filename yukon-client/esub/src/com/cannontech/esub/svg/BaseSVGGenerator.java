@@ -45,6 +45,7 @@ import com.cannontech.util.ServletUtil;
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxLine;
 import com.loox.jloox.LxRectangle;
 
 /**
@@ -171,6 +172,10 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
             if( comp instanceof LineElement ) {
                 elem = createLine(doc, (LineElement) comp);
             }
+            else if (comp instanceof LxLine) //support for the old drawings
+            {
+                elem = createLxLine (doc, (LxLine) comp);
+            }
             else            
             if( comp instanceof LxRectangle ) {
                 elem = createRectangle(doc, (LxRectangle) comp);
@@ -230,6 +235,22 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
 
 
     
+    private Element createLxLine(SVGDocument doc, LxLine line) {
+        Color c = line.getStyle().getLineColor();
+        Shape[] s = line.getShape();
+        float opacity = line.getStyle().getTransparency();
+        
+        String pathStr = getPathString(s, line.getCenterX(), line.getCenterY());
+        float width = line.getStyle().getLineThickness();
+        
+        Element lineElem = doc.createElementNS(svgNS, "path");
+        lineElem.setAttributeNS(null, "id", line.getName());
+        lineElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
+        lineElem.setAttributeNS(null, "d", pathStr);
+
+        return lineElem;            
+    }
+
     private Element createDynamicText(SVGDocument doc, DynamicText text)  {
         
         int x = (int) Math.round(text.getBaseLinePoint1().getX());
