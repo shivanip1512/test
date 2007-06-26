@@ -10,20 +10,19 @@
 	<input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">      
 	<table>
 		<tr>
-	  		<td width="10%" class="SubTitleHeader">Customer:</td>
-	  		<td width="20%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByMeterNo')" 
+	  		<td width="15%" class="SubTitleHeader" align="left">Customer:</td>
+	  		<td width="35%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByMeterNo')" 
 			    onMouseOver="window.status='Read Customer data from CIS';return true;"
 			    onMouseOut="window.status='';return true;">Show Details</a>)
 	  		</td>
-		  	<td width="40%"/>
-		  	<td width="16%" align="left" class="SubTitleHeader">Service Location:</td>
-		  	<td width="14%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getServiceLocationByMeterNo')" 
+		  	<td width="20%" align="left" class="SubTitleHeader">Service Location:</td>
+		  	<td width="30%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getServiceLocationByMeterNo')" 
 			    onMouseOver="window.status='Read Customer data from CIS';return true;"
 			    onMouseOut="window.status='';return true;">Show Details</a>)
 		  	</td>          
 		</tr>
 		<tr>
-	   		<td colspan="3" class="NavText" valign="top">
+	   		<td colspan="2" class="NavText" align="left" valign="top">
 <% 
 		if (session.getAttribute("CustomerDetail") != null) {
 			out.write(session.getAttribute("CustomerDetail").toString());
