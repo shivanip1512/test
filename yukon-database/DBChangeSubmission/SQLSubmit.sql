@@ -2,8 +2,19 @@
 /*to split your new additions from those already there.  Thanks!
 */
 
-/*Tom's DeviceMeterGroup changes*/
+/*3.5 CHANGES IN BY FRI. MORNING PLEASE PLEASE PLEASE*/
+
+/*CURRENT LIST*/
+/*Tom's DeviceMeterGroup changes?*/
+
 
 /*Removal/cleanup of Commercial Metering roles*/
 
+
 /*PAObject constraint change*/
+
+
+/*new CommStatistics from Jess*/
+
+
+/*Thain changes?*/
