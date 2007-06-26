@@ -97,7 +97,7 @@ function applyOrdering(form)
 						    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 						    <input type="hidden" name="showAll" value="0">
 						    <input type="hidden" name="action" value=""> 
-	                		<table width="80%" border="1" cellspacing="0" cellpadding="3" class="TableCell">
+	                		<table width="80%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
 	                			<tr> 
 	                    			<td class="HeaderCell" width="100%">Current Filters</td>
 	                  			</tr>
@@ -110,7 +110,7 @@ function applyOrdering(form)
 								</c:forEach>
 	                		</table>
 		                
-		                	<table width="80%" border="0" cellspacing="0" cellpadding="0">
+		                	<table width="80%" border="1" cellspacing="0" cellpadding="0">
 	                  			<tr>
 	                  				<td> 
 						               	<div align="left">
@@ -122,7 +122,7 @@ function applyOrdering(form)
 			          			</tr>
 			         		</table>
 			          		<c:set target="${inventoryBean}" property="internalRequest" value="${pageContext.request}" />
-				  			<table width="80%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
+				  			<table width="80%" border="1" cellspacing="0" cellpadding="0" align="center" class="TableCell">
 							  	<tr>
 									<td width="100%" class="headeremphasis"> INVENTORY RESULTS: 
 										<c:out value="${inventoryBean.filterInventoryHTML}"/>
