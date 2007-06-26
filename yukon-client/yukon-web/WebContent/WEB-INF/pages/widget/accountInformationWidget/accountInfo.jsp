@@ -11,14 +11,15 @@
         </c:if>
         <tags:notNullDataLine value="${info.address.locationAddress1}"/>
         <tags:notNullDataLine value="${info.address.locationAddress2}"/>
-        <c:if
-            test='${info.address.locationAddress1 != null || info.address.locationAddress2 != null}'>
-                ${info.address.cityName}, ${info.address.stateCode} ${info.address.zipCode}
-            <c:if test='${infoMapURL != null}'>
-                (<a href="${infoMapURL}" target="_blank">map</a>)
-            </c:if>
-            <br>
-        </c:if>
+        <c:if test='${info.address.cityName != null || info.address.stateCode != null || info.address.zipCode != null}'>
+	        <c:if test='${info.address.cityName != null}'>
+	                ${info.address.cityName},
+	        </c:if>
+			${info.address.stateCode} ${info.address.zipCode}
+	        <c:if test='${infoMapURL != null}'>
+	            (<a href="${infoMapURL}" target="_blank">map</a>)
+	        </c:if>
+	    </c:if>
     </div>
     <div class="widgetInternalSectionHeader">
         Service Location
@@ -37,12 +38,14 @@
         </tags:nameValueContainer>
         <tags:notNullDataLine value="${serviceInfo.address.locationAddress1}"/>
         <tags:notNullDataLine value="${serviceInfo.address.locationAddress2}"/>
-        <c:if
-            test='${serviceInfo.address.locationAddress1 != null || serviceInfo.address.locationAddress2 != null}'>
-                    ${serviceInfo.address.cityName}, ${serviceInfo.address.stateCode} ${serviceInfo.address.zipCode}
-            <c:if test='${serviceInfoMapURL != null}'>
-                (<a href="${serviceInfoMapURL}" target="_blank">map</a>)
-            </c:if>
-        </c:if>
+		<c:if test='${serviceInfo.address.cityName != null || serviceInfo.address.stateCode != null || serviceInfo.address.zipCode != null}'>
+	        <c:if test='${serviceInfo.address.cityName != null}'>
+	                ${serviceInfo.address.cityName},
+	        </c:if>
+			${serviceInfo.address.stateCode} ${serviceInfo.address.zipCode}
+	        <c:if test='${serviceInfoMapURL != null}'>
+	            (<a href="${serviceInfoMapURL}" target="_blank">map</a>)
+	        </c:if>
+	    </c:if>
     </div>
 </div>
