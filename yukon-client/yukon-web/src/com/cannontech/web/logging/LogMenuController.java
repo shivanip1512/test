@@ -13,6 +13,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -42,6 +43,7 @@ public class LogMenuController extends LogController {
         
         ModelAndView mav = new ModelAndView("menu");
         
+        mav.addObject("versionDetails", VersionTools.getYukonDetails());
         mav.addObject("dbUser", poolManager.getPrimaryUser());
         mav.addObject("dbUrl", poolManager.getPrimaryUrl());
        

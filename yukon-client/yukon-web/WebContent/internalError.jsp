@@ -101,6 +101,7 @@ function showStack( chkBox ) {
 <div id="showMore"><a href="javascript:showStack()">Detailed information</a></div>
 <div style="display: none" id="stackTrace">
     <b>Yukon Version:</b> <%= VersionTools.getYUKON_VERSION()%>
+    <br><b>Yukon Version Details:</b> <%= VersionTools.getYukonDetails() %>
     <br><b>Status code:</b> <%= status_code.toString()%>
     <br><b>Message</b>: <%= message.toString()%>
     <br><b>Error type</b>: <%= error_type.toString()%>

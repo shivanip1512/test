@@ -3,6 +3,9 @@
 <cti:standardPage title="Log File Menu" module="blank">
 <cti:standardMenu/>
 
+<h3>Version Details</h3>
+${versionDetails}
+
 <h3>DB Connection</h3>
 JDBC URL: ${dbUrl}<br>
 JDBC User: ${dbUser}<br>

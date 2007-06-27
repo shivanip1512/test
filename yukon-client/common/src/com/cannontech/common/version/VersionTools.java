@@ -28,12 +28,14 @@ import com.cannontech.spring.YukonSpringHook;
 public final class VersionTools 
 {	
 	public static final String KEY_YUKON_VERSION = "Yukon-Version";
+    public static final String KEY_YUKON_DETAILS = "Yukon-Details";
 	public static final String COMMON_JAR = "common.jar";
 	
     private static Boolean starsExists = null;
 	private static Boolean crsPtjIntegration = null;
     private static Boolean staticLoadGroupMapping = null;
 	public static String yukonVersion = null;
+    public static String yukonDetails;
 	private static CTIDatabase db_obj = null;
 	
 
@@ -249,6 +251,40 @@ public synchronized final static String getYUKON_VERSION()
 
     return yukonVersion;
 }
+
+public synchronized static final String getYukonDetails() {
+    if (yukonDetails == null) {
+        ClassLoader classLoader = VersionTools.class.getClassLoader();
+        Enumeration<URL> resources;
+        try {
+            resources = classLoader.getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                URL it = null;
+                try {
+                    it = resources.nextElement();
+                    InputStream stream = it.openStream();
+                    Manifest manifest = new Manifest(stream);
+                    yukonDetails = manifest.getMainAttributes().getValue(KEY_YUKON_DETAILS);
+                } catch (Exception e) {
+                }
+                if (yukonDetails != null) {
+                    CTILogger.debug("Found Yukon Details '" + yukonDetails + "' on " + it);
+                    break;
+                }
+            }
+        } catch ( IOException e ) {
+            CTILogger.warn("Caught exception looking up yukon details, setting to 'unknown'", e);
+            yukonDetails = "unknown";
+        }
+
+        if ( yukonDetails == null ) {
+            CTILogger.warn("Yukon details was not found, setting to 'undefined'");
+            yukonDetails = "undefined";
+        }
+    }
+    return yukonDetails;
+}
+
 
 public static Boolean getStaticLoadGroupMapping() {
     return staticLoadGroupMapping;

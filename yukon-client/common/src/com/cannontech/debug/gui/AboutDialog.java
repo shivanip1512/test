@@ -122,16 +122,17 @@ private void init() {
 	try
 	{
 		_listData.addElement( CtiUtilities.COPYRIGHT );
-		_listData.addElement("Version      : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() );
+		_listData.addElement("Version         : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() );
+        _listData.addElement("Version Details : " + com.cannontech.common.version.VersionTools.getYukonDetails());
 	
-	    _listData.addElement("JRE Version  : " + System.getProperty("java.version") );
-	    _listData.addElement("DB URL       : " + PoolManager.getInstance().getPrimaryUrl() );
-	    _listData.addElement("DB USser     : " + PoolManager.getInstance().getPrimaryUser() );
+	    _listData.addElement("JRE Version     : " + System.getProperty("java.version") );
+	    _listData.addElement("DB URL          : " + PoolManager.getInstance().getPrimaryUrl() );
+	    _listData.addElement("DB USser        : " + PoolManager.getInstance().getPrimaryUser() );
 
 		/* ALWAYS leave this as the last thing */
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
-		_listData.addElement("DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
-		_listData.addElement("User         : " + ClientSession.getInstance().getUser().getUsername() );
+		_listData.addElement("DB Version      : " + db.getVersion() + "  Build:  " + db.getBuild() );
+		_listData.addElement("User            : " + ClientSession.getInstance().getUser().getUsername() );
 
 	}
 	catch(Throwable t)  // Catch ALL things and just print them out

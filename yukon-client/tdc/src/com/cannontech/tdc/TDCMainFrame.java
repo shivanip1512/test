@@ -3176,9 +3176,9 @@ public void JComboCurrentDisplayAction_actionPerformed(java.util.EventObject new
 public void jMenuItemAbout_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	ArrayList list = new ArrayList(16);
-	list.add("Max Rows     : " + TDCDefines.MAX_ROWS);
-	list.add("Sound File   : " + CtiUtilities.ALARM_AU);
-	list.add("Temp File    : " + CtiUtilities.OUTPUT_FILE_NAME);
+	list.add("Max Rows        : " + TDCDefines.MAX_ROWS);
+	list.add("Sound File      : " + CtiUtilities.ALARM_AU);
+	list.add("Temp File       : " + CtiUtilities.OUTPUT_FILE_NAME);
 				
 	AboutDialog aboutDialog = new AboutDialog( this, "About TDC", true );
 

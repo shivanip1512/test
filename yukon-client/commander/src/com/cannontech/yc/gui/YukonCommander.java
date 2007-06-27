@@ -179,7 +179,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
 		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
 		javax.swing.JOptionPane.showMessageDialog(popupFrame,
-		"This is version " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "\nCopyright (C) 1999-2003 Cannon Technologies.",
+		"Version : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "\n" + 
+        "Version Details : " + com.cannontech.common.version.VersionTools.getYukonDetails() + "\n" +
+        "Copyright (C) 1999-2003 Cannon Technologies.",
 		"About Yukon Commander",javax.swing.JOptionPane.INFORMATION_MESSAGE);
 	}
 	
