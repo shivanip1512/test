@@ -2,6 +2,7 @@ package com.cannontech.servlet.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -20,19 +21,29 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.springframework.web.HttpSessionRequiredException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 
 public class ErrorHelperFilter  implements Filter {
 
+    private Logger log = YukonLogManager.getLogger(ErrorHelperFilter.class);
 	private static final String SERVLET_STARTUP_ERROR = "comcannontechSERVLET_STARTUP_ERROR";
     private static final String SERVLET_STARTUP_ERROR_ROOT_MESSAGE = "comcannontechSERVLET_STARTUP_ERROR_ROOT_MESSAGE";
     public static final String LOG_KEY = "comcannontechSERVLET_ERROR_LOG_KEY";
     private ServletContext servletContext;
+    
+    private Set<Class<? extends Throwable>> exceptionToIgnore = new HashSet<Class<? extends Throwable>>();
+    {
+        exceptionToIgnore.add(HttpSessionRequiredException.class);
+    }
 
     public void init(FilterConfig arg0) throws ServletException {
         servletContext = arg0.getServletContext();
@@ -133,7 +144,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (RuntimeException re) {
 		    Throwable rc = CtiUtilities.getRootCause(re);
 		    String key = setupUniqueLogKey(request);
-			CTILogger.error("Servlet error filter caught a RuntimeException processing {" + key + "}: " + getRequestInfo(request), rc);
+			handleException(request, rc, key);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -142,7 +153,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (Throwable t) {
 		    Throwable rc = CtiUtilities.getRootCause(t);
 		    String key = setupUniqueLogKey(request);
-			CTILogger.error("Servlet error filter caught a Throwable processing {" + key + "}: " + getRequestInfo(request), rc);
+		    handleException(request, rc, key);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -154,6 +165,14 @@ public class ErrorHelperFilter  implements Filter {
         }
 		
 	}
+
+    private void handleException(ServletRequest request, Throwable rc, String key) {
+        Level level = Level.ERROR;
+        if (exceptionToIgnore.contains(rc.getClass())) {
+            level = Level.DEBUG;
+        }
+        log.log(level, "Servlet error filter caught an exception processing {" + key + "}: " + getRequestInfo(request), rc);
+    }
     
     private String setupUniqueLogKey(ServletRequest request) {
         String uniqueKey = "YK" + RandomStringUtils.randomNumeric(10);
