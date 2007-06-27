@@ -504,6 +504,8 @@
 		<row><td>Help</td><td>&lt;PATH_TO_HELP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Initial Server Config</td><td>&lt;PATH_TO_INITIAL_SERV_CONF_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>JRE 1.5</td><td>&lt;PATH_TO_JRE15_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Java Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Notification</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>WebStart</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Yukon Base</td><td>&lt;PATH_TO_YUKON_BASE&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
@@ -741,6 +743,7 @@
 		<row><td>PATH_TO_TOMCAT_FILES</td><td>yukon\yukon-install\build\Tomcat</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TRENDING_FILES</td><td>yukon\yukon-install\build\Trending</td><td/><td>2</td></row>
 		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>yukon\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
+		<row><td>PATH_TO_WRAPPER_FILES</td><td>yukon\yukon-install\build\Wrapper</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKONINSTALLJRE_FILES</td><td>Z:\install\YukonInstallJRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKON_BASE</td><td>yukon\yukon-install\build\Yukon Base</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKON_COMMANDER_FILES</td><td>yukon\yukon-install\build\Yukon Commander</td><td/><td>2</td></row>
