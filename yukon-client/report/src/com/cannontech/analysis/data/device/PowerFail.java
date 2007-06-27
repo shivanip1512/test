@@ -20,6 +20,8 @@ public class PowerFail
 	private String pointName = null;
 	private Date timestamp = null;
 	private Integer powerFailCount = null;
+    private Integer intervalDifference = null;
+    private Integer totalDifference = null;
 
 	/**
 	 * 
@@ -36,13 +38,15 @@ public class PowerFail
 	 * @param pointID_
 	 * @param powerFailCount_
 	 */
-	public PowerFail(String collGroup_, String deviceName_, String pointName_, Date timestamp_, Integer powerFailCount_)
+	public PowerFail(String collGroup_, String deviceName_, String pointName_, Date timestamp_, Integer powerFailCount_, Integer intervalDifference_, Integer totalDifference_)
 	{
 		collGroup = collGroup_;
 		deviceName = deviceName_;
 		pointName = pointName_;
 		timestamp = timestamp_;
 		powerFailCount = powerFailCount_;			
+        intervalDifference = intervalDifference_;
+        totalDifference = totalDifference_;
 	}
 
 	/**
@@ -84,5 +88,21 @@ public class PowerFail
 	{
 		return pointName;
 	}
+    
+    /**
+     * @return
+     */
+    public Integer getIntervalDifference()
+    {
+        return intervalDifference;
+    }
 
+    /**
+     * @return
+     */
+    public Integer getTotalDifference()
+    {
+        return totalDifference;
+    }
+    
 }

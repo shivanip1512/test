@@ -195,10 +195,10 @@ public class PowerFailReport extends YukonReportBase
                 ("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
         }
 
-        for (int i = PowerFailModel.DEVICE_NAME_COLUMN; i <= PowerFailModel.POWER_FAIL_COUNT_COLUMN; i++)
+        for (int i = PowerFailModel.DEVICE_NAME_COLUMN; i <= PowerFailModel.TOTAL_DIFFERENCE_COLUMN; i++)
         {
             TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-            if( i == PowerFailModel.POWER_FAIL_COUNT_COLUMN)
+            if( i >= PowerFailModel.POWER_FAIL_COUNT_COLUMN)
                 factory.setHorizontalAlignment(ElementAlignment.RIGHT);
             items.addElement(factory.createElement());
         }

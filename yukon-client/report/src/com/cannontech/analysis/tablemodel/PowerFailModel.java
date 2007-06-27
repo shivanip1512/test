@@ -3,6 +3,9 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.PowerFail;
@@ -24,7 +27,7 @@ import com.cannontech.database.PoolManager;
 public class PowerFailModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 5;
+	protected final int NUMBER_COLUMNS = 7;
 
 	/** Enum values for column representation */
 	public final static int COLL_GROUP_NAME_COLUMN = 0;
@@ -33,6 +36,8 @@ public class PowerFailModel extends ReportModelBase
 	public final static int DATE_COLUMN = 3;
 	public final static int TIME_COLUMN = 4;
 	public final static int POWER_FAIL_COUNT_COLUMN = 5;
+    public final static int INTERVAL_DIFFERENCE_COLUMN = 6;
+    public final static int TOTAL_DIFFERENCE_COLUMN = 7;
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
@@ -40,10 +45,23 @@ public class PowerFailModel extends ReportModelBase
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String DATE_STRING = "Date";
 	public final static String TIME_STRING = "Time";
-	public final static String POWER_FAIL_COUNT_STRING = "Power Fail Count";
+	public final static String POWER_FAIL_COUNT_STRING = "PF Count";
+    public final static String INTERVAL_DIFFERENCE_STRING = "Interval Diff";
+    public final static String TOTAL_DIFFERENCE_STRING = "Total Diff";
 
 	/** A string for the title of the data */
 	private static String title = "Power Fail Count By Collection Group";
+    
+    public final static String ATT_MINIMUM_DIFFERENCE = "minimumDifference";
+    
+    /** Temporary counters */
+    private Integer previousCount = null;
+    private String previousDevice = null;
+    private String previousCollection = null;
+    private Integer totalDifference = 0;
+    private Integer minimumDifference = 0;
+    private Vector tempData = new Vector();
+    
 	/**
 	 * 
 	 */
@@ -69,26 +87,114 @@ public class PowerFailModel extends ReportModelBase
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset
 	 */
-	public void addDataRow(ResultSet rset)
+	@SuppressWarnings("unchecked")
+    public void addDataRow(ResultSet rset)
 	{
 		try
 		{
+            PowerFail powerFail;
 			String collGrp = rset.getString(1);
 			String paoName = rset.getString(2);
-			String pointName = rset.getString(3);
-			Timestamp timestamp = rset.getTimestamp(4);
-			Integer powerFailCount = new Integer(rset.getInt(5));
-			PowerFail powerFail = new PowerFail(collGrp, paoName, pointName, new Date(timestamp.getTime()), powerFailCount);
+            String pointName = rset.getString(3);
+            Timestamp timestamp = rset.getTimestamp(4);
+            Integer powerFailCount = new Integer(rset.getInt(5));
+            
+            if( previousCollection != null && previousDevice != null) {
+                
+                if( !previousCollection.equals(collGrp) || !previousDevice.equals(paoName)) {
+                    // new device or new collection grp or both
+                    powerFail = new PowerFail(collGrp, paoName, pointName, new Date(timestamp.getTime()), powerFailCount, null, 0);
+                    previousCount = powerFailCount;
+                    previousDevice = paoName;
+                    previousCollection = collGrp;
+                    totalDifference = 0;
+                }else {
+                    //same device and collection grp
+                    int intervalDif = powerFailCount - previousCount;
+                    totalDifference = totalDifference + intervalDif;
+                    powerFail = new PowerFail(collGrp, paoName, 
+                                              pointName, 
+                                              new Date(timestamp.getTime()),
+                                              powerFailCount, 
+                                              new Integer(powerFailCount - previousCount), 
+                                              totalDifference);
+                    previousCount = powerFailCount;
+                    previousCollection = collGrp;
+                    previousDevice = paoName;
+                }
+            }else {
+                // first result
+                powerFail = new PowerFail(collGrp, paoName, pointName, new Date(timestamp.getTime()), powerFailCount, null, totalDifference);
+                previousCount = powerFailCount;
+                previousCollection = collGrp;
+                previousDevice = paoName;
+            }
+			
 
-			getData().add(powerFail);
+			tempData.add(powerFail);
 		}
 		catch(java.sql.SQLException e)
 		{
 			e.printStackTrace();
 		}
 	}
-
-	/**
+    
+    @SuppressWarnings("unchecked")
+    public void loadTempData()
+    {
+        Vector tempDeviceVector = new Vector(); 
+        for (int i = 0; i < tempData.size(); i ++) {
+            PowerFail currentPF = (PowerFail)tempData.get(i);
+            tempDeviceVector.add(currentPF);
+            if(i+1 < tempData.size()) {
+                PowerFail nextPF = (PowerFail)tempData.get(i + 1);
+                if(!nextPF.getCollGroup().equals(currentPF.getCollGroup()) ||
+                        !nextPF.getDeviceName().equals(currentPF.getDeviceName())) {
+                    //done with this device's readings for this collection grp
+                    if(currentPF.getTotalDifference() >= minimumDifference ) {
+                        // add these device readings to the report and clear the holding vector
+                        getData().addAll(tempDeviceVector);
+                        tempDeviceVector = new Vector();
+                    }else {
+                        tempDeviceVector = new Vector();
+                    }
+                }
+            }else {
+                //very last item in tempData
+                if(currentPF.getTotalDifference() >= minimumDifference ) {
+                    // add these device readings to the report
+                    getData().addAll(tempDeviceVector);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public String getHTMLOptionsTable()
+    {
+        String html = "";
+        html += "      <table>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td>Minimum PF Difference: <input type='text' name='" + ATT_MINIMUM_DIFFERENCE +"' value='0' size='3'>";
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "      </table>" + LINE_SEPARATOR;
+        return html;
+    }
+    @Override
+    public void setParameters( HttpServletRequest req )
+    {
+        super.setParameters(req);
+        if( req != null)
+        {
+            String param = req.getParameter(ATT_MINIMUM_DIFFERENCE);
+            if( param != null) {
+                minimumDifference = (Integer.valueOf(param).intValue());
+            }
+        }
+    }
+    
+    /**
 	 * Build the SQL statement to retrieve PowerFail data.
 	 * @return StringBuffer  an sqlstatement
 	 */
@@ -117,7 +223,7 @@ public class PowerFailModel extends ReportModelBase
 		}
 
 			 
-			sql.append(" AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
+			sql.append(" AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
 		return sql;
 	
 	}
@@ -128,7 +234,6 @@ public class PowerFailModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -178,6 +283,7 @@ public class PowerFailModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
+        loadTempData();
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
@@ -209,6 +315,12 @@ public class PowerFailModel extends ReportModelBase
 					
 				case POWER_FAIL_COUNT_COLUMN:
 					return meter.getPowerFailCount();
+                    
+                case INTERVAL_DIFFERENCE_COLUMN:
+                    return meter.getIntervalDifference();
+                    
+                case TOTAL_DIFFERENCE_COLUMN:
+                    return meter.getTotalDifference();
 			}
 		}
 		return null;
@@ -227,7 +339,9 @@ public class PowerFailModel extends ReportModelBase
 				POINT_NAME_STRING,
 				DATE_STRING,
 				TIME_STRING,
-				POWER_FAIL_COUNT_STRING
+				POWER_FAIL_COUNT_STRING,
+                INTERVAL_DIFFERENCE_STRING,
+                TOTAL_DIFFERENCE_STRING
 			};
 		}
 		return columnNames;
@@ -246,7 +360,9 @@ public class PowerFailModel extends ReportModelBase
 				String.class,
 				Date.class,
 				Date.class,
-				Integer.class
+				Integer.class,
+                Integer.class,
+                Integer.class
 			};
 		}
 		return columnTypes;
@@ -261,12 +377,21 @@ public class PowerFailModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(0, 1, 160, null),
-				new ColumnProperties(160, 1, 160, null),
-				new ColumnProperties(320, 1, 75, "MM/dd/yyyy"),
-				new ColumnProperties(395, 1, 75, "HH:mm:ss"),
-				new ColumnProperties(470, 1, 80, "#")
+//				new ColumnProperties(0, 1, 200, null),
+//				new ColumnProperties(0, 1, 160, null),
+//				new ColumnProperties(160, 1, 160, null),
+//				new ColumnProperties(320, 1, 75, "MM/dd/yyyy"),
+//				new ColumnProperties(395, 1, 75, "HH:mm:ss"),
+//				new ColumnProperties(470, 1, 80, "#")
+                    
+                new ColumnProperties(0, 1, 200, null),
+                new ColumnProperties(0, 1, 120, null),
+                new ColumnProperties(120, 1, 100, null),
+                new ColumnProperties(220, 1, 75, "MM/dd/yyyy"),
+                new ColumnProperties(295, 1, 50, "HH:mm:ss"),
+                new ColumnProperties(345, 1, 50, "#"),
+                new ColumnProperties(395, 1, 70, "#"),
+                new ColumnProperties(465, 1, 50, "#"),
 			};
 		}
 		return columnProperties;
