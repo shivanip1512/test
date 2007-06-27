@@ -2,6 +2,8 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -55,6 +57,11 @@ public abstract class DeviceGroupDaoBase implements DeviceGroupDao {
     
     public DeviceGroup getRootGroup() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Required
+    public void setMainDelegator(DeviceGroupDao mainDelegator) {
+        this.mainDelegator = mainDelegator;
     }
 
 }

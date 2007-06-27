@@ -48,6 +48,8 @@
     <bean id="staticDeviceGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
     
     <bean id="deviceGroupEditorDao"
@@ -77,6 +79,16 @@
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
+    <bean id="deviceGroupTreeFactory"
+        class="com.cannontech.common.device.groups.service.DeviceGroupTreeFactory">
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
+    </bean>
+    
+    <bean id="deviceGroupListFactory"
+        class="com.cannontech.common.device.groups.service.DeviceGroupListFactory">
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
     </bean>
     
 </beans>

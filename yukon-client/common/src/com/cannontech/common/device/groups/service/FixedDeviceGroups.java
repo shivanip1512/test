@@ -1,8 +1,9 @@
 package com.cannontech.common.device.groups.service;
 
 public enum FixedDeviceGroups {
-    BILLING("/Meters/Billing"),
-    Collection("/Meters/Collection"),
+    COLLECTIONGROUP("/Meters/Collection"),
+    TESTCOLLECTIONGROUP("/Meters/Alternate"),
+    BILLINGGROUP("/Meters/Billing"),
     ;
     
     private final String prefix;
@@ -13,5 +14,13 @@ public enum FixedDeviceGroups {
     
     public String getPrefix() {
         return prefix;
+    }
+    
+    public String getGroup(String group) {
+        return getPrefix() + "/" + group;
+    }
+    
+    public static FixedDeviceGroups resolveGroup(String columnName) {
+        return valueOf(columnName.toUpperCase());
     }
 }

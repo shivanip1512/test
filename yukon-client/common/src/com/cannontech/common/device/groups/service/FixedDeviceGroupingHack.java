@@ -2,31 +2,39 @@ package com.cannontech.common.device.groups.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.model.StaticDeviceGroup;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 
+/**
+ * This class is designed to be used solely for the 3.5 release to modify the
+ * existing UIs to use the new tables. Use of this class should be avoided.
+ */
 @Deprecated
 public class FixedDeviceGroupingHack {
     private DeviceGroupService deviceGroupService;
     private DeviceGroupDao deviceGroupDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleJdbcOperations jdbcTemplate;
     
-    public List<YukonDevice> getDevices(FixedDeviceGroups group, String groupName) {
+    public Set<YukonDevice> getDevices(FixedDeviceGroups group, String groupName) {
         String fullName = group.getPrefix() + "/" + groupName;
         
-        List<YukonDevice> devices = deviceGroupService.getDevices(fullName);
+        DeviceGroup resovledGroup = deviceGroupService.resolveGroupName(fullName);
+        Set<YukonDevice> devices = deviceGroupService.getDevices(Collections.singleton(resovledGroup));
         
         return devices;
     }
@@ -45,7 +53,7 @@ public class FixedDeviceGroupingHack {
     }
     
     public void setGroup(FixedDeviceGroups group, YukonDevice device, String groupName) {
-        StaticDeviceGroup parentGroup = (StaticDeviceGroup) deviceGroupService.resolveGroupName(group.getPrefix());
+        StoredDeviceGroup parentGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(group.getPrefix());
         
         stripFromGroup(parentGroup, device);
         if (groupName == null) {
@@ -66,22 +74,22 @@ public class FixedDeviceGroupingHack {
         
         String fullName = group.getPrefix() + "/" + groupName;
         
-        StaticDeviceGroup newGroup;
+        StoredDeviceGroup newGroup;
         try {
-            newGroup = (StaticDeviceGroup) deviceGroupService.resolveGroupName(fullName);
+            newGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullName);
         } catch (NotFoundException e) {
-            newGroup = deviceGroupEditorDao.addGroup(parentGroup, groupName);
+            newGroup = deviceGroupEditorDao.addGroup(parentGroup, DeviceGroupType.STATIC, groupName);
         }
         
         
-        deviceGroupEditorDao.addDevices(newGroup, Collections.singletonList(device));
+        deviceGroupMemberEditorDao.addDevices(newGroup, Collections.singletonList(device));
         
     }
     
-    private void stripFromGroup(StaticDeviceGroup group, YukonDevice device) {
-        deviceGroupEditorDao.removeDevices(group, Collections.singletonList(device));
-        List<StaticDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(group);
-        for (StaticDeviceGroup group2 : childGroups) {
+    private void stripFromGroup(StoredDeviceGroup group, YukonDevice device) {
+        deviceGroupMemberEditorDao.removeDevices(group, Collections.singletonList(device));
+        List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(group);
+        for (StoredDeviceGroup group2 : childGroups) {
             stripFromGroup(group2, device);
         }
     }

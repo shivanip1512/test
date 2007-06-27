@@ -2,7 +2,7 @@ package com.cannontech.common.device.groups.editor.model;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
-public class StaticDeviceGroup extends DeviceGroup {
+public class StoredDeviceGroup extends DeviceGroup {
     private int id;
     private boolean systemGroup;
     

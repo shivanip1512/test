@@ -7,17 +7,17 @@ import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
-import com.cannontech.common.device.groups.editor.model.StaticDeviceGroup;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 
-public class StaticDeviceGroupRowMapper implements ParameterizedRowMapper<StaticDeviceGroup> {
-    private final StaticDeviceGroup parent;
+public class StoredDeviceGroupRowMapper implements ParameterizedRowMapper<StoredDeviceGroup> {
+    private final StoredDeviceGroup parent;
     
-    public StaticDeviceGroupRowMapper(StaticDeviceGroup parent) {
+    public StoredDeviceGroupRowMapper(StoredDeviceGroup parent) {
         this.parent = parent;
     }
 
-    public StaticDeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
-        StaticDeviceGroup group = new StaticDeviceGroup();
+    public StoredDeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+        StoredDeviceGroup group = new StoredDeviceGroup();
         
         int id = rs.getInt("devicegroupid");
         group.setId(id);
