@@ -658,15 +658,15 @@ public class RegenerateRoute
                             conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
                             heavyRoute.setDbConnection(conn);
                             heavyRoute.retrieve();
+                            conn.close();
                         } catch (SQLException e) {
                             CTILogger.error(e);
                         }
-                        finally {
-                            JdbcUtils.closeConnection(conn);
-                        }
                         int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
-                        String ccuName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);
-                        duplicates.add(ccuName);
+                        LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+                        if(!duplicates.contains(liteCCUYuk)){
+                            duplicates.add(liteCCUYuk);
+                        }
                     }
                 }
             }
@@ -719,15 +719,15 @@ public class RegenerateRoute
                 conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
                 heavyRoute.setDbConnection(conn);
                 heavyRoute.retrieve();
+                conn.close();
             } catch (SQLException e) {
                 CTILogger.error(e);
             }
-            finally {
-                JdbcUtils.closeConnection(conn);
-            }
             int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
-            String ccuName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);
-            conflicts.add(ccuName);
+            LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+            if(!conflicts.contains(liteCCUYuk)){
+                conflicts.add(liteCCUYuk);
+            }
         }
         
         return conflicts;
