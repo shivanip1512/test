@@ -1,32 +1,23 @@
 <?xml version="1.0" ?>
 <project name="Yukon CruiseControl Ant Build Script" default="targets" basedir="..">
 
+    <property file="yukon-build/build_version.properties"/>
     <property environment="env" />
-    <tstamp />
-    <property name="tag.date" value="${DSTAMP}" />
-    <property name="tag.time" value="${TSTAMP}" />
-    <property name="yukon.build.version" value="${tag.date}_${yukon.tag}_${tag.time}" />
-    <property name="build.label" value="3_5_0_cc" />
+    <tstamp/>
+	<tstamp>
+	    <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
+    </tstamp>
     <property name="module.name" value="yukon" />
     <property name="log.dir" value="./logs" />
     <property name="dist.dir" value="./dist" />
     <property name="temp.dir" value="./temp" />
 
-
     <target name="targets">
         <echo message="The following targets are available" />
-        <echo message="                  		For all the build targets:" />
-        <echo message="                  		define build.label to embed a label or version into the software" />
-        <echo message=" tag            			- tag the current sandbox, define yukon.tag" />
-        <echo message="                  		I.e. build.label=3_3_3 will create a tag like TG20061003_3_3_3_103043" />
-        <echo message=" branch         			- branch the current sandbox, define yukon.tag" />
-        <echo message="                  		I.e. build.label=3_3_3 will result in a branch tag like BR20061003_3_3_3_103043" />
+        <echo message=""/>
+        <echo message=" checkout				- cvs checkout" />
         <echo message="" />
-        <echo message=" checkout				- cvs checkout the entire Yukon project" />
-        <echo message="                  		  define yukon.tag to checkout a specific tag or branch" />
-        <echo message="" />
-        <echo message=" update					- cvs update the entire Yukon project" />
-        <echo message="                  		  define yukon.tag to update a specific tag or branch" />
+        <echo message=" update					- cvs update" />
         <echo message=" update-client			- cvs update yukon-client module" />
         <echo message=" update-server			- cvs update yukon-server module" />
         <echo message="" />
@@ -34,56 +25,87 @@
         <echo message=" cleandist				- delete old packages and zip files" />
         <echo message="" />
         <echo message=" build					- clean, checkout, compile, and package everything" />
-        <echo message=" build-client				- cvs update, and compile yukon-client module" />
-        <echo message=" build-server				- cvs update, and compile yukon-server module" />
-        <echo message=" build-install				- InstallShield"/>
+        <echo message=" buildquick				- cvs update, compile and package everything" />
+        <echo message=" build-client			- cvs update, and compile yukon-client module" />
+        <echo message=" build-server			- cvs update, and compile yukon-server module" />
+        <echo message=" build-install			- InstallShield"/>
         <echo message=" builddist				- packages and zips everything up for distribution " />
         <echo message="" />
+        <echo message=" tag-build				- build then tag"/>
+        <echo message=" branch-build			- build then branch and tag"/>
+        <echo message=""/>
+        <echo message=" tag						- tags cvs HEAD"/>
+        <echo message=" branch					- branchs cvs HEAD then tags branch"/>
+        <echo message=""/>
     </target>
 
-    <target name="init_date">
-        <tstamp>
-            <format property="cvstimestamp" pattern="yyyy-MM-dd HH:mm:ss" locale="en,US"/>
-        </tstamp>
+	<target name="init">
+	    <!-- Clean trailing white space -->
+        <replaceregexp file="yukon-build/build_version.properties"
+            				   flags="g"
+                               match="\s+$"
+                               replace=""
+                               byline="true"/>
+	    
+	    <condition property="internal.label" value="${internal}(${build.number})" else="${internal}">
+    	    <isset property="build.number"/>
+	    </condition>
+    
+    	<property name="yukon.build.label" value="${external}"/>
+    	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME} ${branch}"/>
+	</target>
+    
+    <target name="init-cleanlabels">
+        <exec failonerror="true" executable="cmd">
+            <arg value="cmd /c echo cleaninternal = ${internal} > yukon-build\cleanversion.properties"/>
+        </exec>
+       	<exec failonerror="true" executable="cmd">
+	       	 <arg value="cmd /c echo cleanexternal = ${external} >> yukon-build\cleanversion.properties"/>
+       	</exec>
+
+        <replaceregexp file="yukon-build/cleanversion.properties"
+            				   flags="g"
+                               match="[^a-zA-Z0-9=_\s]"
+                               replace="_"
+                               byline="true"/>
+        <replaceregexp file="yukon-build/cleanversion.properties"
+            				   flags="g"
+                               match="\s+$"
+                               replace=""
+                               byline="true"/>
+        
+     	<property file="yukon-build/cleanversion.properties"/>
     </target>
-
-    <target name="init_tag">
-        <condition property="yukon.tag" value="${yukon.tag}" else="HEAD">
-            <isset property="yukon.tag"/>
-        </condition>
-    </target>
-
-    <target name="init_cvs" depends="init_date,init_tag"/>
-
-    <target name="checkout" depends="init_cvs">
-        <echo message="checking out module yukon by tag or branch: ${yukon.tag}" />
-        <cvs tag="${yukon.tag}"
+    
+    <target name="checkout" depends="init">
+        <echo message="checking out module yukon by tag or branch: ${branch}" />
+        <cvs tag="${branch}"
              package="${module.name}"
              reallyquiet="false"/>
     </target>
 
-    <target name="update" depends="init_cvs">
-        <echo message="updating module yukon by timestamp: ${cvstimestamp}" />
+    <target name="update" depends="init">
+        <echo message="updating module yukon by timestamp: ${currenttime}" />
         <cvs dest="${module.name}" 
              command="update -A -d" 
              reallyquiet="false"
-             date="${cvstimestamp}"/>
+             date="${currenttime}"/>
     </target>
 
-    <target name="update-client" depends="init_cvs">
-        <echo message="updating module yukon-client by timestamp: ${cvstimestamp}" />
+    <target name="update-client" depends="init">
+        <echo message="updating module yukon-client by timestamp: ${currenttime}" />
         <cvs dest="${module.name}/yukon-client" 
              command="update -A -d" 
              reallyquiet="false"
-        	 date="${cvstimestamp}"/>
+        	 date="${currenttime}"/>
     </target>
 
-    <target name="update-server" depends="init_cvs">
-        <echo message="updating module yukon-server by timestamp: ${cvstimestamp}" />
+    <target name="update-server" depends="init">
+        <echo message="updating module yukon-server by timestamp: ${currenttime}" />
         <cvs dest="${module.name}/yukon-server" 
              command="update -A -d"
              reallyquiet="false"
-             date="${cvstimestamp}"/>
+             date="${currenttime}"/>
     </target>
 
     <target name="build" depends="clean,checkout,buildTarget,builddist" />
@@ -95,7 +117,7 @@
         <mkdir dir="${log.dir}" />
 
         <exec failonerror="false" dir="${module.name}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
-            <arg line="/c antExit.bat -Dyukon.build.version=${build.label} build" />
+            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' -Dyukon.build.details='${yukon.build.details}' build" />
         </exec>
 
         <loadfile property="errormessage" srcFile="${log.dir}/client-error.log" />
@@ -128,7 +150,7 @@
         <replace file="${module.name}/yukon-server/COMMON/include/id_build.h" token="BUILDLABEL" value="${build.label}"/>
 -->
         <exec failonerror="false" dir="${module.name}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
-            <arg line="/c buildhereexit.cmd '${build.label}'" />
+            <arg line="/c buildhereexit.cmd '${yukon.build.label}' '${yukon.build.details}'" />
         </exec>
 
         <loadfile property="errormessage" srcFile="${log.dir}/server-error.log" />
@@ -258,6 +280,11 @@
         <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${module.name}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
         <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${module.name}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
 
+        <!-- Wrapper files -->
+        <copy todir="${install.bag}/Wrapper/Client/bin" preservelastmodified="true">
+            <fileset dir="${install.bag}/Yukon Base/Client/bin" includes="*.exe,*.conf,*.dll"/>
+        </copy>
+        
         <!-- This will be pointing to the install engine in yukon-install module -->
         <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
         <property name="isshield" value="IsSABld.exe" />
@@ -288,9 +315,7 @@
         </fail>
     </target>
 
-
-
-    <target name="builddist">
+    <target name="builddist" depends="init-cleanlabels">
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/installer">
             <fileset dir="${module.name}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
@@ -308,7 +333,7 @@
             <fileset dir="${module.name}/yukon-database/DBUpdates/sqlserver" />
         </copy>
         <mkdir dir="${dist.dir}" />
-        <zip destfile="${dist.dir}/yukon_${tag.date}_${build.label}_${tag.time}.zip">
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}.zip">
             <fileset dir="${temp.dir}" />
         </zip>
         <delete dir="${temp.dir}" />
@@ -336,91 +361,57 @@
         </exec>
     </target>
 
-    <!--	
-    <target name="buildquick" depends="update,build,runUnitTests,cleandist,builddist">
+    <target name="tag-build" depends="init-cleanlabels">
+        <property name="tag.name" value="TG${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
+        
+        <input
+          message="tag: ${tag.name}		continue?"
+          validargs="y,n"
+          addproperty="do.tag"/>
+        
+        <condition property="do.abort">
+          <equals arg1="n" arg2="${do.tag}"/>
+        </condition>
+        <fail if="do.abort">Build aborted by user.</fail>
+		
+		<antcall target="build"/>
+		<antcall target="tag"/>
+		
     </target>
-
-    <target name="buildclean" depends="clean,checkout,build,signclient,runUnitTests,tag,cleandist,builddist">
-    </target>
-
-
-
-    <target name="checkout" depends="init,checktagdefined,checkouthead,checkouttag">
-    </target>
-
-
-
-    <target name="update" depends="init,checktagdefined,updatehead,updatetag">        
-    </target>
-
-    <target name="updatehead" unless="isyukontagdefined">
-        <cvs dest="./yukon" command="update -A -d"/>        
-    </target>
-
-    <target name="updatetag" if="isyukontagdefined">
-        <cvs dest="./yukon" command="update" tag="${yukon.tag}"/>
-    </target>
-
-    <target name="clean">
-       <delete dir="./yukon"/>
-    </target>
-
     
-    <target name="build" depends="buildclient,buildserver,buildinstaller">
+    <target name="branch-build" depends="init-cleanlabels">
+		<property name="branch.name" value="BR${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
+        <property name="tag.name" value="TG${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
+        
+        <input
+          message="branch: ${branch.name}	tag: ${tag.name}	continue?"
+          validargs="y,n"
+          addproperty="do.tag"/>
+        
+        <condition property="do.abort">
+          <equals arg1="n" arg2="${do.tag}"/>
+        </condition>
+        <fail if="do.abort">Build aborted by user.</fail>
+		
+		<antcall target="build"/>
+		<antcall target="branch"/>
+		
     </target>
-
-    <target name="buildserver">
-       <exec failonerror="true" dir="./yukon/yukon-server/" executable="cmd.exe">
-           <arg line="/c buildhereexitAntBuild.cmd ${build.label}"/>
-       </exec>               
+    
+    <target name="tag">
+        <echo message="command: rtag -D '${currenttime}' ${tag.name} yukon"/>
+        <cvs command="rtag -D '${currenttime}' ${tag.name} yukon"/>
     </target>
-
-    <target name="buildclient">
-       <exec failonerror="true" dir="./yukon/yukon-client/build" executable="cmd.exe">
-           <arg line="/c antExit.bat -Dyukon.build.version=${build.label} build"/>
-       </exec>       
+    
+    <target name="branch">
+        <echo message="command: rtag -b -D '${currenttime}' ${branch.name} yukon"/>
+        <echo message="command: rtag -r ${branch.name} ${tag.name} yukon"/>
+        <cvs command="rtag -b -D '${currenttime}' ${branch.name} yukon"/>
+        <cvs command="rtag -r ${branch.name} ${tag.name} yukon"/>
+        
+        <replace file="yukon-build/build_version.properties" token="branch = ${branch}" value="branch = ${branch.name}"/>
+        <cvs command="commit -m 'branch property update' -r ${branch} yukon-build/build_version.properties"/>
+        
     </target>
-
-    <target name="signclient">
-        <exec failonerror="true" dir="./yukon/yukon-client/build" executable="cmd.exe">
-	   <arg line="/c antExit.bat sign"/>
-       </exec>
-    </target>
-
-    <target name="runUnitTests">
-       <exec failonerror="true" dir="./yukon/yukon-client/build" executable="cmd.exe">
-           <arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests"/>
-       </exec>               
-    </target>
-
-    <target name="buildinstaller">
-	<copy todir="c:/software/install/lib/server">
-            <fileset dir="./yukon/yukon-server/bin" includes="*.exe,*.dll"/>
-        </copy>
-
-	<copy todir="c:/software/install/lib/client">
-            <fileset dir="./yukon/yukon-client/lib"/>
-        </copy>
-
-        <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe"/>
-        <property name="isfile" location='.\yukon\yukon-install\YukonSetupX\Yukon Installer.ism'/>
-        <exec failonerror="true" executable="${isshield}">
-            <arg line="-p '${isfile}'"/>
-        </exec>    
-    </target>
-
-
-
-    <target name="tag" depends="init">
-        <cvs command="tag TG${tag.date}_${build.label}_${tag.time} ./yukon"/> 
-    </target>
-
-    <target name="branch" depends="init">
-        <cvs command="tag -b BR${tag.date}_${build.label}_${tag.time} ./yukon"/>
-    </target>
-
-    <target name="fail">
-      <fail/>
-    </target>
- -->
+    
 </project>
