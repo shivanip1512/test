@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.roguewave.tools.v2_0.Collection;
 
 /**
  * @author yao
@@ -274,10 +276,16 @@ public class InventoryBean {
         if(getHtmlStyle() != HTML_STYLE_INVENTORY_SET)
         {
             List<FilterWrapper> slowFilters = new ArrayList<FilterWrapper>();
+            ArrayList previousFilteredHardwareFromSameFilterType = new ArrayList();
             for(int x = 0; x < getFilterByList().size(); x++)
             {
                 ArrayList filteredHardware = new ArrayList();
                 Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterTypeID());
+                
+                /*Adding OR logic to the filters instead of AND logic, so we need to track the previous and next filter type*/
+                Integer previousFilterType = (x > 0 ? new Integer(((FilterWrapper)getFilterByList().get(x - 1)).getFilterTypeID()) : null);
+                Integer nextFilterType = (x + 1 < getFilterByList().size() ? new Integer(((FilterWrapper)getFilterByList().get(x + 1)).getFilterTypeID()) : null);
+                
                 String specificFilterString = ((FilterWrapper)getFilterByList().get(x)).getFilterID(); 
                 Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
                 
@@ -453,7 +461,26 @@ public class InventoryBean {
         			filteredHardware.addAll( hardwares );
         		}
                 
-                hardwares = filteredHardware;
+                /*Adding OR logic to the filters instead of AND logic, so we need to send the same original set
+                 * of hardware back through the filter if they are the same type of filter
+                 * */
+                if((nextFilterType != null && filterType.compareTo(nextFilterType) == 0) 
+                        && (previousFilterType != null && filterType.compareTo(previousFilterType) == 0)) {
+                    hardwares = previousFilteredHardwareFromSameFilterType;
+                    hardwares.addAll(filteredHardware);
+                    previousFilteredHardwareFromSameFilterType = filteredHardware;
+                }
+                else if(nextFilterType != null && filterType.compareTo(nextFilterType) == 0) {
+                    previousFilteredHardwareFromSameFilterType = filteredHardware;
+                }
+                else if(previousFilterType != null && filterType.compareTo(previousFilterType) == 0) {
+                    hardwares = previousFilteredHardwareFromSameFilterType;
+                    hardwares.addAll(filteredHardware);
+                    previousFilteredHardwareFromSameFilterType = new ArrayList();
+                }
+                else {
+                    hardwares = filteredHardware;
+                }
             }
             
             /*
@@ -465,6 +492,11 @@ public class InventoryBean {
                 String specificFilterString = slowFilters.get(y).getFilterID(); 
                 Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
                 ArrayList filteredHardware = new ArrayList();
+                
+                /*Adding OR logic to the filters instead of AND logic, so we need to track the previous and next filter type*/
+                Integer previousFilterType = (y > 0 ? new Integer(((FilterWrapper)getFilterByList().get(y - 1)).getFilterTypeID()) : null);
+                Integer nextFilterType = (y + 1 < getFilterByList().size() ? new Integer(((FilterWrapper)getFilterByList().get(y + 1)).getFilterTypeID()) : null);
+               
                 
                 if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
                 {
@@ -561,7 +593,26 @@ public class InventoryBean {
                     }
                 }
                 
-                hardwares = filteredHardware;
+                /*Adding OR logic to the filters instead of AND logic, so we need to send the same original set
+                 * of hardware back through the filter if they are the same type of filter
+                 * */
+                if((nextFilterType != null && filterType.compareTo(nextFilterType) == 0) 
+                        && (previousFilterType != null && filterType.compareTo(previousFilterType) == 0)) {
+                    hardwares = previousFilteredHardwareFromSameFilterType;
+                    hardwares.addAll(filteredHardware);
+                    previousFilteredHardwareFromSameFilterType = filteredHardware;
+                }
+                else if(nextFilterType != null && filterType.compareTo(nextFilterType) == 0) {
+                    previousFilteredHardwareFromSameFilterType = filteredHardware;
+                }
+                else if(previousFilterType != null && filterType.compareTo(previousFilterType) == 0) {
+                    hardwares = previousFilteredHardwareFromSameFilterType;
+                    hardwares.addAll(filteredHardware);
+                    previousFilteredHardwareFromSameFilterType = new ArrayList();
+                }
+                else {
+                    hardwares = filteredHardware;
+                }
             }
         }
             
@@ -1036,7 +1087,7 @@ public class InventoryBean {
             return;
         
         ArrayList oldFilters = filterByList;
-        filterByList = newFilters;
+        filterByList = new ArrayList();
         boolean memberSpecified = false;
         
         /**
@@ -1051,10 +1102,10 @@ public class InventoryBean {
         if(oldFilters == null || oldFilters.size() != newFilters.size())
             inventoryList = null;
         
-        for(int j = 0; j < filterByList.size(); j++)
+        for(int j = 0; j < newFilters.size(); j++)
         {
-            Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(j)).getFilterTypeID());
-            String specificFilterString = ((FilterWrapper)filterByList.get(j)).getFilterID();
+            Integer filterType = new Integer(((FilterWrapper)newFilters.get(j)).getFilterTypeID());
+            String specificFilterString = ((FilterWrapper)newFilters.get(j)).getFilterID();
             Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
             if(filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER)
             {
@@ -1077,6 +1128,12 @@ public class InventoryBean {
                     inventoryList = null;
             }
         }
+        
+        /*In order to add OR logic to the filters instead of AND logic we need to first
+         * sort the filters by type
+         */
+        Collections.sort(((List<FilterWrapper>)newFilters), FilterWrapper.filterWrapperComparator);
+        filterByList = newFilters;
         
         if(!memberSpecified)
             setMember(-1);
