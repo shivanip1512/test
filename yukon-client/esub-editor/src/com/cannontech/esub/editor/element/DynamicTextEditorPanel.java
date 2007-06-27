@@ -793,6 +793,7 @@ private void initConnections() throws java.lang.Exception {
     getTextPointPanel().getOkButton().addActionListener(this);
     getEnableControlPointButton().addActionListener(this);
     getPointSelectionPropertyPanel().getOkButton().addActionListener(this);
+    getPointSelectionPropertyPanel().getCancelButton().addActionListener(this);
     getEnableControlPointPanel().getOkButton().addActionListener(this);
     getTextPointPanel().getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
     getPointSelectionPropertyPanel().getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
@@ -940,6 +941,8 @@ public void setValue(Object o) {
         int pointid = dynamicText.getControlPointID();
         LitePoint point = DaoFactory.getPointDao().getLitePoint(pointid);
         getEnableControlPointPanel().getPointSelectionPanel().selectPoint(point);
+        getEnableControlPointLabel().setText(point.getPointName());
+
     }else {
         getEnableControlPointLabel().setEnabled(false);
         getEnableControlPointButton().setEnabled(false);
@@ -951,6 +954,8 @@ public void setValue(Object o) {
         LitePoint point = dynamicText.getPoint();
         getPointSelectionPropertyPanel().getPointSelectionPanel().selectPoint(point);
         getTextPointPanel().getPointSelectionPanel().selectPoint(point);
+        getTextPointButton().setText(point.getPointName());
+        getTextPointButton().setForeground(Color.BLACK);
     }
         
     getLinkToPanel().setLinkTo(dynamicText.getLinkTo());
@@ -979,7 +984,9 @@ public void setValue(Object o) {
         getColorPointButton().setEnabled(true);
         getColorButton().setEnabled(false);
         getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
-        getTextColorPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID()));
+        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID());
+        getTextColorPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+        getColorPointLabel().setText(litePoint.getPointName());
     }
     
     if(dynamicText.getBlinkPointID() < 0) {
@@ -989,7 +996,10 @@ public void setValue(Object o) {
         getBlinkPointCheckBox().setSelected(true);
         getBlinkPointButton().setEnabled(true);
         getBlinkCheckBox().setEnabled(false);
-        getBlinkPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID()));
+        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID());
+        getBlinkPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+        getBlinkPointLabel().setText(litePoint.getPointName());
+
     }
 }
 
@@ -1108,7 +1118,11 @@ public void actionPerformed(ActionEvent e) {
         getTextPointButton().setForeground(java.awt.Color.BLACK);
         getTextPointPanel().getPointSelectionPanel().selectPoint(getPointSelectionPropertyPanel().getPointSelectionPanel().getSelectedPoint());
         pointPanelDialog.setVisible(false);
-    }else if( e.getSource() == getEnableControlPointPanel().getOkButton()) {
+    }
+    else if( e.getSource() == getPointSelectionPropertyPanel().getCancelButton()) {
+        pointPanelDialog.setVisible(false);
+    }
+    else if( e.getSource() == getEnableControlPointPanel().getOkButton()) {
         getEnableControlPointLabel().setText( getEnableControlPointPanel().getPointSelectionPanel().getSelectedPoint().getPointName());
         getEnableControlPointLabel().setForeground(java.awt.Color.BLACK);
         pointPanelDialog.setVisible(false);
