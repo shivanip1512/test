@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtcarrier.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/06/27 17:31:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -196,6 +196,7 @@ void CtiTableCarrierRoute::DecodeDatabaseReader(RWDBReader &rdr)
     std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
     _userLocked = rwsTemp[(size_t)0] == 'y' ? true : false;
 
+    CCUFixBits %= 32;
 
     rdr["resetrptsettings"]  >> rwsTemp;
 
