@@ -25,15 +25,15 @@
         Service Location
     </div>
     <div class="widgetInternalSection">
-        <tags:nameValueContainer altRowOn="true">
+        <tags:nameValueContainer>
             <c:if test='${serviceInfo.customerNumber != null}'>
-                <tags:nameValue name="CustomerNumber:">${serviceInfo.customerNumber}</tags:nameValue>
+                <tags:nameValue name="CustomerNumber">${serviceInfo.customerNumber}</tags:nameValue>
             </c:if>
             <c:if test='${serviceInfo.accountNumber != null}'>
-                <tags:nameValue name="AccountNumber:">${serviceInfo.accountNumber}</tags:nameValue>
+                <tags:nameValue name="AccountNumber">${serviceInfo.accountNumber}</tags:nameValue>
             </c:if>
             <c:if test='${serviceInfo.siteNumber != null}'>
-                <tags:nameValue name="SiteNumber:">${serviceInfo.siteNumber}</tags:nameValue>
+                <tags:nameValue name="SiteNumber">${serviceInfo.siteNumber}</tags:nameValue>
             </c:if>
         </tags:nameValueContainer>
         <tags:notNullDataLine value="${serviceInfo.address.locationAddress1}"/>
