@@ -17,7 +17,6 @@
 #include "cctwowaycbcpoints.h"
 #include "ccid.h"
 #include "pointdefs.h"
-#include "device.h"
 #include "logger.h"
 #include "resolvers.h"
 
@@ -30,66 +29,66 @@ extern ULONG _CC_DEBUG;
 ---------------------------------------------------------------------------*/
 CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
 {
-    _paoid = paoid;                     
-    _capacitorBankStateId = 0;      
-    _capacitorBankState = 0;        
-    _reCloseBlockedId = 0;          
-    _reCloseBlocked = 0;            
-    _controlModeId = 0;             
-    _controlMode = 0;               
-    _autoVoltControlId = 0;         
-    _autoVoltControl = 0;           
-    _lastControlLocalId = 0;        
-    _lastControlLocal = 0;          
-    _lastControlRemoteId = 0;       
-    _lastControlRemote = 0;         
-    _lastControlOvUvId = 0;         
-    _lastControlOvUv = 0;           
-    _lastControlNeutralFaultId = 0; 
-    _lastControlNeutralFault = 0;   
-    _lastControlScheduledId = 0;    
-    _lastControlScheduled = 0;      
-    _lastControlDigitalId = 0;      
-    _lastControlDigital = 0;        
-    _lastControlAnalogId = 0;       
-    _lastControlAnalog = 0;         
-    _ovConditionId = 0;             
-    _ovCondition = 0;               
-    _uvConditionId = 0;             
-    _uvCondition = 0;               
-    _opFailedNeutralCurrentId = 0;  
-    _opFailedNeutralCurrent = 0;    
-    _neutralCurrentFaultId = 0;     
-    _neutralCurrentFault = 0;       
-    _badRelayId = 0;                
-    _badRelay = 0;                  
-    _dailyMaxOpsId = 0;             
-    _dailyMaxOps = 0;               
-    _voltageDeltaAbnormalId = 0;    
-    _voltageDeltaAbnormal = 0;      
-    _tempAlarmId = 0;               
-    _tempAlarm = 0;                 
-    _DSTActiveId = 0;               
-    _DSTActive = 0;                 
-    _neutralLockoutId = 0;          
-    _neutralLockout = 0;  
+    _paoid = paoid;
+    _capacitorBankStateId = 0;
+    _capacitorBankState = 0;
+    _reCloseBlockedId = 0;
+    _reCloseBlocked = 0;
+    _controlModeId = 0;
+    _controlMode = 0;
+    _autoVoltControlId = 0;
+    _autoVoltControl = 0;
+    _lastControlLocalId = 0;
+    _lastControlLocal = 0;
+    _lastControlRemoteId = 0;
+    _lastControlRemote = 0;
+    _lastControlOvUvId = 0;
+    _lastControlOvUv = 0;
+    _lastControlNeutralFaultId = 0;
+    _lastControlNeutralFault = 0;
+    _lastControlScheduledId = 0;
+    _lastControlScheduled = 0;
+    _lastControlDigitalId = 0;
+    _lastControlDigital = 0;
+    _lastControlAnalogId = 0;
+    _lastControlAnalog = 0;
+    _ovConditionId = 0;
+    _ovCondition = 0;
+    _uvConditionId = 0;
+    _uvCondition = 0;
+    _opFailedNeutralCurrentId = 0;
+    _opFailedNeutralCurrent = 0;
+    _neutralCurrentFaultId = 0;
+    _neutralCurrentFault = 0;
+    _badRelayId = 0;
+    _badRelay = 0;
+    _dailyMaxOpsId = 0;
+    _dailyMaxOps = 0;
+    _voltageDeltaAbnormalId = 0;
+    _voltageDeltaAbnormal = 0;
+    _tempAlarmId = 0;
+    _tempAlarm = 0;
+    _DSTActiveId = 0;
+    _DSTActive = 0;
+    _neutralLockoutId = 0;
+    _neutralLockout = 0;
 
     //analog inputs
-    _voltageId = 0;      
-    _voltage = 0;        
-    _highVoltageId = 0;  
-    _highVoltage = 0;    
-    _lowVoltageId = 0;   
-    _lowVoltage = 0;     
-    _deltaVoltageId = 0; 
-    _deltaVoltage = 0;   
-    _analogInput1Id = 0; 
-    _analogInput1 = 0; 
+    _voltageId = 0;
+    _voltage = 0;
+    _highVoltageId = 0;
+    _highVoltage = 0;
+    _lowVoltageId = 0;
+    _lowVoltage = 0;
+    _deltaVoltageId = 0;
+    _deltaVoltage = 0;
+    _analogInput1Id = 0;
+    _analogInput1 = 0;
     _rssiId = 0;
     _rssi = 0;
     _ignoredReasonId = 0;
     _ignoredReason = 0;
-    _temperatureId = 0;  
+    _temperatureId = 0;
     _temperature = 0;
 
     //analog outputs
@@ -103,23 +102,23 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _neutralCurrentSensor = 0;
     _neutralCurrentAlarmSetPointId = 0;
     _neutralCurrentAlarmSetPoint = 0;
-    _udpIpAddressId = 0;          
-    _udpIpAddress = 0;  
-    _udpPortNumberId = 0;          
-    _udpPortNumber = 0;  
-                     
-    _totalOpCountId = 0; 
-    _totalOpCount = 0;   
-    _ovCountId = 0;      
-    _ovCount = 0;        
-    _uvCountId = 0;      
-    _uvCount = 0;        
+    _udpIpAddressId = 0;
+    _udpIpAddress = 0;
+    _udpPortNumberId = 0;
+    _udpPortNumber = 0;
 
-    _ovuvCountResetDate = gInvalidCtiTime;                          
+    _totalOpCountId = 0;
+    _totalOpCount = 0;
+    _ovCountId = 0;
+    _ovCount = 0;
+    _uvCountId = 0;
+    _uvCount = 0;
+
+    _ovuvCountResetDate = gInvalidCtiTime;
     _lastOvUvDateTime = gInvalidCtiTime;
 
-    _insertDynamicDataFlag = TRUE;     
-    _dirty = TRUE;   
+    _insertDynamicDataFlag = TRUE;
+    _dirty = TRUE;
 
     return;
 }
@@ -139,7 +138,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(const CtiCCTwoWayPoints& twoWayPt)
 ---------------------------------------------------------------------------*/
 CtiCCTwoWayPoints::~CtiCCTwoWayPoints()
 {
-    
+
 }
 
 LONG CtiCCTwoWayPoints::getPAOId() const
@@ -485,13 +484,13 @@ const CtiTime& CtiCCTwoWayPoints::getLastOvUvDateTime() const
     return _lastOvUvDateTime;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setPAOId(LONG paoId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setPAOId(LONG paoId)
 {
     _paoid = paoId;
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankStateId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankStateId(LONG pointId)
 {
     if (pointId != _capacitorBankStateId)
     {
@@ -500,7 +499,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankStateId(LONG pointId)
     _capacitorBankStateId = pointId;
     return *this;
 }
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankState(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankState(LONG value)
 {
     if (value != _capacitorBankState)
     {
@@ -510,7 +509,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setCapacitorBankState(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setReCloseBlockedId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setReCloseBlockedId(LONG pointId)
 {
     if (pointId != _reCloseBlockedId)
     {
@@ -520,7 +519,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setReCloseBlockedId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setReCloseBlocked(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setReCloseBlocked(LONG value)
 {
     if (value != _reCloseBlocked)
     {
@@ -530,7 +529,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setReCloseBlocked(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setControlModeId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setControlModeId(LONG pointId)
 {
     if (pointId != _controlModeId)
     {
@@ -540,7 +539,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setControlModeId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setControlMode(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setControlMode(LONG value)
 {
     if (value != _controlMode)
     {
@@ -550,7 +549,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setControlMode(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setAutoVoltControlId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setAutoVoltControlId(LONG pointId)
 {
     if (pointId != _autoVoltControlId)
     {
@@ -560,7 +559,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setAutoVoltControlId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setAutoVoltControl(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setAutoVoltControl(LONG value)
 {
     if (value != _autoVoltControl)
     {
@@ -570,7 +569,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setAutoVoltControl(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlLocalId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlLocalId(LONG pointId)
 {
     if (pointId != _lastControlLocalId)
     {
@@ -580,7 +579,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlLocalId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlLocal(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlLocal(LONG value)
 {
     if (value != _lastControlLocal)
     {
@@ -600,7 +599,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlRemoteId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlRemote(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlRemote(LONG value)
 {
     if (value != _lastControlRemote)
     {
@@ -610,7 +609,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlRemote(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlOvUvId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlOvUvId(LONG pointId)
 {
     if (pointId != _lastControlOvUvId)
     {
@@ -620,7 +619,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlOvUvId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlOvUv(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlOvUv(LONG value)
 {
     if (value != _lastControlOvUv)
     {
@@ -629,7 +628,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlOvUv(LONG value)
     _lastControlOvUv = value;
     return *this;
 }
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlNeutralFaultId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlNeutralFaultId(LONG pointId)
 {
     if (pointId != _lastControlNeutralFaultId)
     {
@@ -639,7 +638,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlNeutralFaultId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlNeutralFault(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlNeutralFault(LONG value)
 {
     if (value != _lastControlNeutralFault)
     {
@@ -649,7 +648,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlNeutralFault(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlScheduledId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlScheduledId(LONG pointId)
 {
     if (pointId != _lastControlScheduledId)
     {
@@ -659,7 +658,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlScheduledId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlScheduled(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlScheduled(LONG value)
 {
     if (value != _lastControlScheduled)
     {
@@ -669,7 +668,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlScheduled(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlDigitalId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlDigitalId(LONG pointId)
 {
     if (pointId != _lastControlDigitalId)
     {
@@ -679,7 +678,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlDigitalId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlDigital(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlDigital(LONG value)
 {
     if (value != _lastControlDigital)
     {
@@ -688,7 +687,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlDigital(LONG value)
     _lastControlDigital = value;
     return *this;
 }
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlAnalogId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlAnalogId(LONG pointId)
 {
     if (pointId != _lastControlAnalogId)
     {
@@ -698,7 +697,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlAnalogId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlAnalog(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlAnalog(LONG value)
 {
     if (value != _lastControlAnalog)
     {
@@ -708,7 +707,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlAnalog(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlTemperatureId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlTemperatureId(LONG pointId)
 {
     if (pointId != _lastControlTemperatureId)
     {
@@ -718,7 +717,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlTemperatureId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlTemperature(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlTemperature(LONG value)
 {
     if (value != _lastControlTemperature)
     {
@@ -728,7 +727,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlTemperature(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvConditionId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvConditionId(LONG pointId)
 {
     if (pointId != _ovConditionId)
     {
@@ -748,7 +747,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvCondition(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvConditionId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvConditionId(LONG pointId)
 {
     if (pointId != _uvConditionId)
     {
@@ -758,7 +757,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvConditionId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvCondition(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvCondition(LONG value)
 {
     if (value != _uvCondition)
     {
@@ -768,7 +767,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvCondition(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOpFailedNeutralCurrentId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOpFailedNeutralCurrentId(LONG pointId)
 {
     if (pointId != _opFailedNeutralCurrentId)
     {
@@ -778,7 +777,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOpFailedNeutralCurrentId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOpFailedNeutralCurrent(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOpFailedNeutralCurrent(LONG value)
 {
     if (value != _opFailedNeutralCurrent)
     {
@@ -788,7 +787,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOpFailedNeutralCurrent(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentFaultId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentFaultId(LONG pointId)
 {
     if (pointId != _neutralCurrentFaultId)
     {
@@ -798,7 +797,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentFaultId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentFault(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentFault(LONG value)
 {
     if (value != _neutralCurrentFault)
     {
@@ -808,7 +807,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentFault(LONG value)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setBadRelayId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setBadRelayId(LONG pointId)
 {
     if (pointId != _badRelayId)
     {
@@ -818,7 +817,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setBadRelayId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setBadRelay(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setBadRelay(LONG value)
 {
     if (value != _badRelay)
     {
@@ -827,7 +826,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setBadRelay(LONG value)
     _badRelay = value;
     return *this;
 }
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setDailyMaxOpsId(LONG pointId) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setDailyMaxOpsId(LONG pointId)
 {
     if (pointId != _dailyMaxOpsId)
     {
@@ -915,7 +914,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralLockoutId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralLockout(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralLockout(LONG value)
 {
     if (value != _neutralLockout)
     {
@@ -934,7 +933,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setRSSIId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setRSSI(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setRSSI(LONG value)
 {
     if (value != _rssi)
     {
@@ -955,7 +954,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredIndicatorId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredIndicator(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredIndicator(LONG value)
 {
     if (value != _ignoredIndicator)
     {
@@ -976,7 +975,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredReasonId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredReason(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredReason(LONG value)
 {
     if (value != _ignoredReason)
     {
@@ -997,7 +996,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvSetPointId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvSetPoint(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvSetPoint(LONG value)
 {
     if (value != _uvSetPoint)
     {
@@ -1017,7 +1016,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvSetPointId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvSetPoint(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvSetPoint(LONG value)
 {
     if (value != _ovSetPoint)
     {
@@ -1039,7 +1038,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOVUVTrackTimeId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOVUVTrackTime(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOVUVTrackTime(LONG value)
 {
     if (value != _ovuvTrackTime)
     {
@@ -1059,7 +1058,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentSensorId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentSensor(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentSensor(LONG value)
 {
     if (value != _neutralCurrentSensor)
     {
@@ -1079,7 +1078,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentAlarmSetPointId(LONG poin
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentAlarmSetPoint(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentAlarmSetPoint(LONG value)
 {
     if (value != _neutralCurrentAlarmSetPoint)
     {
@@ -1099,7 +1098,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddressId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddress(ULONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddress(ULONG value)
 {
     if (value != _udpIpAddress)
     {
@@ -1119,7 +1118,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPPortNumberId(LONG pointId)
     return *this;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPPortNumber(LONG value) 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPPortNumber(LONG value)
 {
     if (value != _udpPortNumber)
     {
@@ -1166,7 +1165,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setHighVoltage(LONG value)
     }
     _highVoltage = value;
     return *this;
-}    
+}
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLowVoltageId(LONG pointId)
 {
     if (pointId != _lowVoltageId)
@@ -1299,7 +1298,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvCount(LONG value)
     }
     _uvCount = value;
     return *this;
-}  
+}
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvUvCountResetDate(const CtiTime eventTime)
 {
     if (eventTime != _ovuvCountResetDate)
@@ -1308,7 +1307,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setOvUvCountResetDate(const CtiTime eventT
     }
     _ovuvCountResetDate = eventTime;
     return *this;
-}  
+}
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastOvUvDateTime(const CtiTime eventTime)
 {
     if (eventTime != _uvCount)
@@ -1317,11 +1316,11 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastOvUvDateTime(const CtiTime eventTim
     }
     _lastOvUvDateTime = eventTime;
     return *this;
-}  
+}
 
-                   
 
-BOOL CtiCCTwoWayPoints::isDirty() 
+
+BOOL CtiCCTwoWayPoints::isDirty()
 {
     return _dirty;
 }
@@ -1340,14 +1339,14 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
         RWDBTable dynamicCCTwoWayTable = getDatabase().table( "dynamiccctwowaycbc" );
         if( !_insertDynamicDataFlag )
         {
-            INT lastControl = ( ( _lastControlLocal & 0x01)||         
+            INT lastControl = ( ( _lastControlLocal & 0x01)||
                                 (_lastControlRemote & 0x02 ) ||
-                                (_lastControlOvUv & 0x04 ) ||          
-                                (_lastControlNeutralFault & 0x08 ) ||  
-                                (_lastControlScheduled & 0x10 ) ||     
-                                (_lastControlDigital & 0x20 ) ||       
-                                (_lastControlAnalog & 0x40 ) ||        
-                                (_lastControlTemperature & 0x80 ) );  
+                                (_lastControlOvUv & 0x04 ) ||
+                                (_lastControlNeutralFault & 0x08 ) ||
+                                (_lastControlScheduled & 0x10 ) ||
+                                (_lastControlDigital & 0x20 ) ||
+                                (_lastControlAnalog & 0x40 ) ||
+                                (_lastControlTemperature & 0x80 ) );
             INT condition = 0;
             if (_uvCondition)
                 condition = 1;
@@ -1361,7 +1360,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             updater.where(dynamicCCTwoWayTable["deviceid"] == _paoid);
 
             updater << dynamicCCTwoWayTable["recloseblocked"].assign( _reCloseBlocked?"Y":"N")
-            << dynamicCCTwoWayTable["controlmode"].assign( _controlMode?"Y":"N") 
+            << dynamicCCTwoWayTable["controlmode"].assign( _controlMode?"Y":"N")
             << dynamicCCTwoWayTable["autovoltcontrol"].assign( _autoVoltControl?"Y":"N" )
             << dynamicCCTwoWayTable["lastcontrol"].assign( lastControl )
             << dynamicCCTwoWayTable["condition"].assign( condition )
@@ -1418,14 +1417,14 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 dout << CtiTime() << " - Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId() << endl;
             }
             RWDBInserter inserter = dynamicCCTwoWayTable.inserter();
-            INT lastControl = ( ( _lastControlLocal & 0x01)||         
+            INT lastControl = ( ( _lastControlLocal & 0x01)||
                                 (_lastControlRemote & 0x02 ) ||
-                                (_lastControlOvUv & 0x04 ) ||          
-                                (_lastControlNeutralFault & 0x08 ) ||  
-                                (_lastControlScheduled & 0x10 ) ||     
-                                (_lastControlDigital & 0x20 ) ||       
-                                (_lastControlAnalog & 0x40 ) ||        
-                                (_lastControlTemperature & 0x80 ) );  
+                                (_lastControlOvUv & 0x04 ) ||
+                                (_lastControlNeutralFault & 0x08 ) ||
+                                (_lastControlScheduled & 0x10 ) ||
+                                (_lastControlDigital & 0x20 ) ||
+                                (_lastControlAnalog & 0x40 ) ||
+                                (_lastControlTemperature & 0x80 ) );
             INT condition = 0;
             if (_uvCondition)
                 condition = 1;
@@ -1435,10 +1434,10 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 condition = 0;
 
 
-            inserter << _paoid  
-                     << (_reCloseBlocked?"Y":"N") 
+            inserter << _paoid
+                     << (_reCloseBlocked?"Y":"N")
                      << (_controlMode?"Y":"N")
-                     << (_autoVoltControl?"Y":"N") 
+                     << (_autoVoltControl?"Y":"N")
                      << lastControl
                      << condition
                      << (_opFailedNeutralCurrent?"Y":"N")
@@ -1461,16 +1460,16 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                      << _totalOpCount
                      << _uvCount
                      << _ovCount
-                     << _ovuvCountResetDate 
+                     << _ovuvCountResetDate
                      << _uvSetPoint
                      << _ovSetPoint
                      << _ovuvTrackTime
-                     << _lastOvUvDateTime 
+                     << _lastOvUvDateTime
                      << _neutralCurrentSensor
                      << _neutralCurrentAlarmSetPoint
                      << _udpIpAddress
                      << _udpPortNumber;
-           
+
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1506,253 +1505,253 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
 {
     BOOL retVal = FALSE;
 
-    switch (pointtype) 
+    switch (pointtype)
     {
         //case StatusPointType:
         case 0:
         {
-            switch (offset) 
+            switch (offset)
             {
                 case 1:
                 {
                     setCapacitorBankStateId(pointId);
                     retVal = TRUE;
-                    break;                                   
-                }                                                
-                case 2:                                          
-                {    
+                    break;
+                }
+                case 2:
+                {
                     setReCloseBlockedId(pointId);
                     retVal = TRUE;
-                    break;                                          
-                }                   
-                case 3:                                         
-                {    
-                    setControlModeId(pointId);                                
+                    break;
+                }
+                case 3:
+                {
+                    setControlModeId(pointId);
                     retVal = TRUE;
-                    break;                                     
-                }                                    
-                case 4:                                      
-                {    
+                    break;
+                }
+                case 4:
+                {
                     setAutoVoltControlId(pointId);
                     retVal = TRUE;
-                    break;                                      
-                }                                    
-                case 5:                              
-                {   
-                    setLastControlLocalId(pointId);                                 
+                    break;
+                }
+                case 5:
+                {
+                    setLastControlLocalId(pointId);
                     retVal = TRUE;
-                    break;                           
-                }                                    
-                case 6:                              
-                {      
+                    break;
+                }
+                case 6:
+                {
                      setLastControlRemoteId(pointId);
                      retVal = TRUE;
-                    break;                           
-                }                                    
-                case 7:                              
-                {     
+                    break;
+                }
+                case 7:
+                {
                     setLastControlOvUvId(pointId);
                     retVal = TRUE;
-                    break;                           
-                }                                    
-                case 8:                              
-                {   
-                    setLastControlNeutralFaultId(pointId);                  
+                    break;
+                }
+                case 8:
+                {
+                    setLastControlNeutralFaultId(pointId);
                     retVal = TRUE;
-                    break;                           
-                }                                    
-                case 9:                              
-                {     
-                    setLastControlScheduledId(pointId);      
+                    break;
+                }
+                case 9:
+                {
+                    setLastControlScheduledId(pointId);
                     retVal = TRUE;
-                    break;                           
-                }                                    
-                case 10:                             
-                {        
-                    setLastControlDigitalId(pointId);        
+                    break;
+                }
+                case 10:
+                {
+                    setLastControlDigitalId(pointId);
                     retVal = TRUE;
-                    break;                           
-                }                                    
-                case 11:                             
-                {    
-                    setLastControlAnalogId(pointId);         
+                    break;
+                }
+                case 11:
+                {
+                    setLastControlAnalogId(pointId);
                     retVal = TRUE;
-                    break;                           
+                    break;
                 }
                 case 12:
                 {
-                    setLastControlTemperatureId(pointId);               
+                    setLastControlTemperatureId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 13:
                 {
-                    setOvConditionId(pointId);               
+                    setOvConditionId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 14:
                 {
-                    setUvConditionId(pointId);               
+                    setUvConditionId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 15:
                 {
-                    setOpFailedNeutralCurrentId(pointId);    
+                    setOpFailedNeutralCurrentId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 16:
                 {
-                    setNeutralCurrentFaultId(pointId);       
+                    setNeutralCurrentFaultId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 24:
                 {
-                    setBadRelayId(pointId);                  
+                    setBadRelayId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 25:
                 {
-                    setDailyMaxOpsId(pointId);               
+                    setDailyMaxOpsId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 26:
                 {
-                    setVoltageDeltaAbnormalId(pointId);      
+                    setVoltageDeltaAbnormalId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 27:
                 {
-                    setTempAlarmId(pointId);                 
+                    setTempAlarmId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 28:
                 {
-                    setDSTActiveId(pointId);                 
+                    setDSTActiveId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 29:
                 {
-                    setNeutralLockoutId(pointId);            
+                    setNeutralLockoutId(pointId);
                     retVal = TRUE;
                     break;
                 }
                 case 34:
                 {
-                    setIgnoredIndicatorId(pointId);            
+                    setIgnoredIndicatorId(pointId);
                     retVal = TRUE;
                     break;
                 }
 
                 default:
                     break;
-               
+
             }
             break;
         }
         //case AnalogPointType:
         case 1:
         {
-            switch (offset) 
+            switch (offset)
             {
-                 case 5:                              
-                 {   
-                     setVoltageId(pointId);                                 
+                 case 5:
+                 {
+                     setVoltageId(pointId);
                      retVal = TRUE;
-                     break;                           
-                 }                                    
-                 case 6:                              
-                 {      
+                     break;
+                 }
+                 case 6:
+                 {
                       setHighVoltageId(pointId);
                       retVal = TRUE;
-                     break;                           
-                 }                                    
-                 case 7:                              
-                 {     
+                     break;
+                 }
+                 case 7:
+                 {
                      setLowVoltageId(pointId);
                      retVal = TRUE;
-                     break;                           
-                 }                                    
-                 case 8:                              
-                 {   
-                     setDeltaVoltageId(pointId);                  
-                     retVal = TRUE;
-                     break;                           
-                 }                                    
-                 case 9:                              
-                 {     
-                     setAnalogInput1Id(pointId);      
-                     retVal = TRUE;
-                     break;                           
-                 }                                    
-                 case 10:                             
-                 {        
-                     setTemperatureId(pointId);        
-                     retVal = TRUE;
-                     break;                           
+                     break;
                  }
-                 case 13:                             
-                 {        
-                     setRSSIId(pointId);        
+                 case 8:
+                 {
+                     setDeltaVoltageId(pointId);
                      retVal = TRUE;
-                     break;                           
+                     break;
                  }
-                 case 14:                             
-                 {        
-                     setIgnoredReasonId(pointId);        
+                 case 9:
+                 {
+                     setAnalogInput1Id(pointId);
                      retVal = TRUE;
-                     break;                           
+                     break;
+                 }
+                 case 10:
+                 {
+                     setTemperatureId(pointId);
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 13:
+                 {
+                     setRSSIId(pointId);
+                     retVal = TRUE;
+                     break;
+                 }
+                 case 14:
+                 {
+                     setIgnoredReasonId(pointId);
+                     retVal = TRUE;
+                     break;
                  }
 
                  //dnp analog output points have offsets starting with 10000
                  case 10002:
                  {
-                     setUvSetPointId(pointId);            
+                     setUvSetPointId(pointId);
                      retVal = TRUE;
                      break;
                  }
                  case 10003:
                  {
-                     setOvSetPointId(pointId);            
+                     setOvSetPointId(pointId);
                      retVal = TRUE;
                      break;
                  }
                  case 10004:
                  {
-                     setOVUVTrackTimeId(pointId);            
+                     setOVUVTrackTimeId(pointId);
                      retVal = TRUE;
                      break;
                  }
                  case 10010:
                  {
-                     setNeutralCurrentSensorId(pointId);            
+                     setNeutralCurrentSensorId(pointId);
                      retVal = TRUE;
                      break;
                  }
                  case 10011:
                  {
-                     setNeutralCurrentAlarmSetPointId(pointId);            
+                     setNeutralCurrentAlarmSetPointId(pointId);
                      retVal = TRUE;
                      break;
                  }
                  case 20001:
                  {
-                     setUDPIpAddressId(pointId);            
+                     setUDPIpAddressId(pointId);
                      retVal = TRUE;
                      break;
                  }
-              
+
                  case 20002:
                  {
-                     setUDPPortNumberId(pointId);            
+                     setUDPPortNumberId(pointId);
                      retVal = TRUE;
                      break;
                  }
@@ -1765,25 +1764,25 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
         //case PulseAccumulatorPointType:
         case 2:
         {
-            switch (offset) 
+            switch (offset)
             {
                 case 1:
                 {
                     setTotalOpCountId(pointId);
                     retVal = TRUE;
-                    break;                                   
-                }                                                
-                case 2:                                         
-                {    
-                    setUvCountId(pointId);                                
-                    retVal = TRUE;
-                    break;                                     
+                    break;
                 }
-                case 3:                                          
-                {    
+                case 2:
+                {
+                    setUvCountId(pointId);
+                    retVal = TRUE;
+                    break;
+                }
+                case 3:
+                {
                     setOvCountId(pointId);
                     retVal = TRUE;
-                    break;                                          
+                    break;
                 }
                 default:
                     break;
@@ -1792,7 +1791,7 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
         }
         default:
             break;
-    
+
     }
     return retVal;
 
@@ -1806,119 +1805,119 @@ BOOL CtiCCTwoWayPoints::setTwoWayStatusPointValue(LONG pointID, LONG value)
         setCapacitorBankState(value);
         retVal = TRUE;
     }
-    else if ( getReCloseBlockedId() == pointID ) 
+    else if ( getReCloseBlockedId() == pointID )
     {
         setReCloseBlocked(value);
         retVal = TRUE;
     }
-    else if ( getControlModeId() == pointID ) 
+    else if ( getControlModeId() == pointID )
     {
         setControlMode(value);
         retVal = TRUE;
     }
-    else if ( getAutoVoltControlId() == pointID ) 
+    else if ( getAutoVoltControlId() == pointID )
     {
         setAutoVoltControl(value);
         retVal = TRUE;
     }
-    else if ( getLastControlLocalId() == pointID ) 
+    else if ( getLastControlLocalId() == pointID )
     {
         setLastControlLocal(value);
         retVal = TRUE;
     }
-    else if ( getLastControlRemoteId() == pointID ) 
+    else if ( getLastControlRemoteId() == pointID )
     {
         setLastControlRemote(value);
         retVal = TRUE;
     }
-    else if ( getLastControlOvUvId() == pointID ) 
+    else if ( getLastControlOvUvId() == pointID )
     {
         setLastControlOvUv(value);
         retVal = TRUE;
     }
-    else if ( getLastControlNeutralFaultId() == pointID ) 
+    else if ( getLastControlNeutralFaultId() == pointID )
     {
         setLastControlNeutralFault(value);
         retVal = TRUE;
     }
-    else if ( getLastControlScheduledId() == pointID ) 
+    else if ( getLastControlScheduledId() == pointID )
     {
         setLastControlScheduled(value);
         retVal = TRUE;
     }
-    else if ( getLastControlDigitalId() == pointID ) 
+    else if ( getLastControlDigitalId() == pointID )
     {
         setLastControlDigital(value);
         retVal = TRUE;
     }
-    else if ( getLastControlAnalogId() == pointID ) 
+    else if ( getLastControlAnalogId() == pointID )
     {
         setLastControlAnalog(value);
         retVal = TRUE;
     }
-    else if ( getLastControlTemperatureId() == pointID ) 
+    else if ( getLastControlTemperatureId() == pointID )
     {
         setLastControlTemperature(value);
         retVal = TRUE;
     }
-    else if ( getOvConditionId() == pointID ) 
+    else if ( getOvConditionId() == pointID )
     {
         setOvCondition(value);
         retVal = TRUE;
     }
-    else if ( getUvConditionId() == pointID ) 
+    else if ( getUvConditionId() == pointID )
     {
         setUvCondition(value);
         retVal = TRUE;
     }
-    else if ( getOpFailedNeutralCurrentId() == pointID ) 
+    else if ( getOpFailedNeutralCurrentId() == pointID )
     {
         setOpFailedNeutralCurrent(value);
         retVal = TRUE;
     }
-    else if ( getNeutralCurrentFaultId() == pointID ) 
+    else if ( getNeutralCurrentFaultId() == pointID )
     {
         setNeutralCurrentFault(value);
         retVal = TRUE;
     }
-    else if ( getBadRelayId() == pointID ) 
+    else if ( getBadRelayId() == pointID )
     {
         setBadRelay(value);
         retVal = TRUE;
     }
-    else if ( getDailyMaxOpsId() == pointID ) 
+    else if ( getDailyMaxOpsId() == pointID )
     {
         setDailyMaxOps(value);
         retVal = TRUE;
     }
-    else if ( getVoltageDeltaAbnormalId() == pointID ) 
+    else if ( getVoltageDeltaAbnormalId() == pointID )
     {
         setVoltageDeltaAbnormal(value);
         retVal = TRUE;
     }
-    else if ( getTempAlarmId() == pointID ) 
+    else if ( getTempAlarmId() == pointID )
     {
         setTempAlarm(value);
         retVal = TRUE;
     }
-    else if ( getDSTActiveId() == pointID ) 
+    else if ( getDSTActiveId() == pointID )
     {
         setDSTActive(value);
         retVal = TRUE;
     }
-    else if ( getNeutralLockoutId() == pointID ) 
+    else if ( getNeutralLockoutId() == pointID )
     {
         setNeutralLockout(value);
         retVal = TRUE;
     }
-    else if ( getIgnoredIndicatorId() == pointID ) 
+    else if ( getIgnoredIndicatorId() == pointID )
     {
         setIgnoredIndicator(value);
         retVal = TRUE;
     }
 
     return retVal;
-    
+
 }
 BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value)
 {
@@ -1929,77 +1928,77 @@ BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value)
         setVoltage(value);
         retVal = TRUE;
     }
-    else if ( getHighVoltageId() == pointID ) 
+    else if ( getHighVoltageId() == pointID )
     {
         setHighVoltage(value);
         retVal = TRUE;
     }
-    else if ( getLowVoltageId() == pointID ) 
+    else if ( getLowVoltageId() == pointID )
     {
         setLowVoltage(value);
         retVal = TRUE;
     }
-    else if ( getDeltaVoltageId() == pointID ) 
+    else if ( getDeltaVoltageId() == pointID )
     {
         setDeltaVoltage(value);
         retVal = TRUE;
     }
-    else if ( getAnalogInput1Id() == pointID ) 
+    else if ( getAnalogInput1Id() == pointID )
     {
         setAnalogInput1(value);
         retVal = TRUE;
     }
-    else if ( getTemperatureId() == pointID ) 
+    else if ( getTemperatureId() == pointID )
     {
         setTemperature(value);
         retVal = TRUE;
     }
-    else if ( getRSSIId() == pointID ) 
+    else if ( getRSSIId() == pointID )
     {
         setRSSI(value);
         retVal = TRUE;
     }
-    else if ( getIgnoredReasonId() == pointID ) 
+    else if ( getIgnoredReasonId() == pointID )
     {
         setIgnoredReason(value);
         retVal = TRUE;
     }
-    else if ( getUvSetPointId() == pointID ) 
+    else if ( getUvSetPointId() == pointID )
     {
         setUvSetPoint(value);
         retVal = TRUE;
     }
-    else if ( getOvSetPointId() == pointID ) 
+    else if ( getOvSetPointId() == pointID )
     {
         setOvSetPoint(value);
         retVal = TRUE;
     }
-    else if ( getOVUVTrackTimeId() == pointID ) 
+    else if ( getOVUVTrackTimeId() == pointID )
     {
         setOVUVTrackTime(value);
         retVal = TRUE;
     }
-    else if ( getNeutralCurrentSensorId() == pointID ) 
+    else if ( getNeutralCurrentSensorId() == pointID )
     {
         setNeutralCurrentSensor(value);
         retVal = TRUE;
     }
-    else if ( getNeutralCurrentAlarmSetPointId() == pointID ) 
+    else if ( getNeutralCurrentAlarmSetPointId() == pointID )
     {
         setNeutralCurrentAlarmSetPoint(value);
         retVal = TRUE;
     }
-    else if ( getUDPIpAddressId() == pointID ) 
+    else if ( getUDPIpAddressId() == pointID )
     {
         setUDPIpAddress(value);
         retVal = TRUE;
     }
-    else if ( getUDPPortNumberId() == pointID ) 
+    else if ( getUDPPortNumberId() == pointID )
     {
         setUDPPortNumber(value);
         retVal = TRUE;
     }
-    
+
     return retVal;
 }
 BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG value)
@@ -2011,17 +2010,17 @@ BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG v
         setTotalOpCount(value);
         retVal = TRUE;
     }
-    else if ( getOvCountId() == pointID ) 
+    else if ( getOvCountId() == pointID )
     {
         setOvCount(value);
         retVal = TRUE;
     }
-    else if ( getUvCountId() == pointID ) 
+    else if ( getUvCountId() == pointID )
     {
         setUvCount(value);
         retVal = TRUE;
     }
-    
+
     return retVal;
 }
 
@@ -2031,168 +2030,168 @@ BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG v
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToMsg(CtiCommandMsg *pointAddMsg)
 {
 
-    if( getCapacitorBankStateId()  > 0 ) 
+    if( getCapacitorBankStateId()  > 0 )
     {
         pointAddMsg->insert( getCapacitorBankStateId());
     }
-    if ( getReCloseBlockedId()  > 0 ) 
+    if ( getReCloseBlockedId()  > 0 )
     {
         pointAddMsg->insert(getReCloseBlockedId());
     }
-    if ( getControlModeId()  > 0 ) 
+    if ( getControlModeId()  > 0 )
     {
         pointAddMsg->insert(getControlModeId());
     }
-    if ( getAutoVoltControlId()  > 0 ) 
+    if ( getAutoVoltControlId()  > 0 )
     {
         pointAddMsg->insert(getAutoVoltControlId());
     }
-    if ( getLastControlLocalId()  > 0 ) 
+    if ( getLastControlLocalId()  > 0 )
     {
         pointAddMsg->insert(getLastControlLocalId());
     }
-    if ( getLastControlRemoteId()  > 0 ) 
+    if ( getLastControlRemoteId()  > 0 )
     {
         pointAddMsg->insert(getLastControlRemoteId());
     }
-    if ( getLastControlOvUvId() > 0 ) 
+    if ( getLastControlOvUvId() > 0 )
     {
         pointAddMsg->insert(getLastControlOvUvId());
     }
-    if ( getLastControlNeutralFaultId()  > 0 ) 
+    if ( getLastControlNeutralFaultId()  > 0 )
     {
         pointAddMsg->insert(getLastControlNeutralFaultId());
     }
-    if ( getLastControlScheduledId()  > 0 ) 
+    if ( getLastControlScheduledId()  > 0 )
     {
         pointAddMsg->insert(getLastControlScheduledId());
     }
-    if ( getLastControlDigitalId()  > 0 ) 
+    if ( getLastControlDigitalId()  > 0 )
     {
         pointAddMsg->insert(getLastControlDigitalId());
     }
-    if ( getLastControlAnalogId()  > 0 ) 
+    if ( getLastControlAnalogId()  > 0 )
     {
         pointAddMsg->insert(getLastControlAnalogId());
     }
-    if ( getLastControlTemperatureId()  > 0 ) 
+    if ( getLastControlTemperatureId()  > 0 )
     {
         pointAddMsg->insert(getLastControlTemperatureId());
     }
-    if ( getOvConditionId()  > 0 ) 
+    if ( getOvConditionId()  > 0 )
     {
         pointAddMsg->insert(getOvConditionId());
     }
-    if ( getUvConditionId()  > 0 ) 
+    if ( getUvConditionId()  > 0 )
     {
         pointAddMsg->insert(getUvConditionId());
     }
-    if ( getOpFailedNeutralCurrentId()  > 0 ) 
+    if ( getOpFailedNeutralCurrentId()  > 0 )
     {
         pointAddMsg->insert(getOpFailedNeutralCurrentId());
     }
-    if ( getNeutralCurrentFaultId()  > 0 ) 
+    if ( getNeutralCurrentFaultId()  > 0 )
     {
         pointAddMsg->insert(getNeutralCurrentFaultId());
     }
-    if ( getBadRelayId()  > 0 ) 
+    if ( getBadRelayId()  > 0 )
     {
         pointAddMsg->insert(getBadRelayId());
     }
-    if ( getDailyMaxOpsId()  > 0 ) 
+    if ( getDailyMaxOpsId()  > 0 )
     {
         pointAddMsg->insert(getDailyMaxOpsId());
     }
-    if ( getVoltageDeltaAbnormalId()  > 0 ) 
+    if ( getVoltageDeltaAbnormalId()  > 0 )
     {
         pointAddMsg->insert(getVoltageDeltaAbnormalId());
     }
-    if ( getTempAlarmId()  > 0 ) 
+    if ( getTempAlarmId()  > 0 )
     {
         pointAddMsg->insert(getTempAlarmId());
     }
-    if ( getDSTActiveId()  > 0 ) 
+    if ( getDSTActiveId()  > 0 )
     {
         pointAddMsg->insert(getDSTActiveId());
     }
-    if ( getNeutralLockoutId() > 0 ) 
+    if ( getNeutralLockoutId() > 0 )
     {
         pointAddMsg->insert(getNeutralLockoutId());
     }
-    if ( getIgnoredIndicatorId()  > 0 ) 
+    if ( getIgnoredIndicatorId()  > 0 )
     {
         pointAddMsg->insert(getIgnoredIndicatorId());
     }
-    if ( getRSSIId()  > 0 ) 
+    if ( getRSSIId()  > 0 )
     {
         pointAddMsg->insert(getRSSIId());
     }
-    if ( getIgnoredReasonId()  > 0 ) 
+    if ( getIgnoredReasonId()  > 0 )
     {
         pointAddMsg->insert(getIgnoredReasonId());
     }
-    if ( getUvSetPointId()  > 0 ) 
+    if ( getUvSetPointId()  > 0 )
     {
         pointAddMsg->insert(getUvSetPointId());
     }
-    if ( getOvSetPointId() > 0 ) 
+    if ( getOvSetPointId() > 0 )
     {
         pointAddMsg->insert(getOvSetPointId());
     }
-    if ( getOVUVTrackTimeId() > 0 ) 
+    if ( getOVUVTrackTimeId() > 0 )
     {
         pointAddMsg->insert(getOVUVTrackTimeId());
-    } 
-    if ( getNeutralCurrentSensorId() > 0 ) 
+    }
+    if ( getNeutralCurrentSensorId() > 0 )
     {
         pointAddMsg->insert(getNeutralCurrentSensorId());
     }
-    if ( getNeutralCurrentAlarmSetPointId() > 0 ) 
+    if ( getNeutralCurrentAlarmSetPointId() > 0 )
     {
         pointAddMsg->insert(getNeutralCurrentAlarmSetPointId());
     }
-    if ( getUDPIpAddressId() > 0 ) 
+    if ( getUDPIpAddressId() > 0 )
     {
         pointAddMsg->insert(getUDPIpAddressId());
     }
-    if ( getUDPPortNumberId() > 0 ) 
+    if ( getUDPPortNumberId() > 0 )
     {
         pointAddMsg->insert(getUDPPortNumberId());
     }
-    if ( getVoltageId()  > 0 ) 
+    if ( getVoltageId()  > 0 )
     {
         pointAddMsg->insert(getVoltageId());
     }
-    if ( getHighVoltageId()  > 0 ) 
+    if ( getHighVoltageId()  > 0 )
     {
         pointAddMsg->insert(getHighVoltageId());
     }
-    if ( getLowVoltageId()  > 0 ) 
+    if ( getLowVoltageId()  > 0 )
     {
         pointAddMsg->insert(getLowVoltageId());
     }
-    if ( getDeltaVoltageId()  > 0 ) 
+    if ( getDeltaVoltageId()  > 0 )
     {
         pointAddMsg->insert(getDeltaVoltageId());
     }
-    if ( getAnalogInput1Id()  > 0 ) 
+    if ( getAnalogInput1Id()  > 0 )
     {
         pointAddMsg->insert(getAnalogInput1Id());
     }
-    if ( getTemperatureId() > 0 ) 
+    if ( getTemperatureId() > 0 )
     {
         pointAddMsg->insert(getTemperatureId());
     }
 
-    if ( getTotalOpCountId()  > 0 ) 
+    if ( getTotalOpCountId()  > 0 )
     {
         pointAddMsg->insert(getTotalOpCountId());
     }
-    if ( getOvCountId()  > 0 ) 
+    if ( getOvCountId()  > 0 )
     {
         pointAddMsg->insert(getOvCountId());
     }
-    if ( getUvCountId() > 0 ) 
+    if ( getUvCountId() > 0 )
     {
         pointAddMsg->insert(getUvCountId());
     }
@@ -2202,7 +2201,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToMsg(CtiCommandMsg *pointA
 
 void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
 {
-    INT lastControl;  
+    INT lastControl;
     INT condition = 0;
     string tempBoolString;
 
@@ -2265,14 +2264,14 @@ void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
     rdr["neutralcurrentalarmsetpoint"] >> _neutralCurrentAlarmSetPoint;
     rdr["ipaddress"]  >> _udpIpAddress;
     rdr["udpport"] >>  _udpPortNumber;
-    
-    _lastControlLocal = lastControl & 0x01;         
+
+    _lastControlLocal = lastControl & 0x01;
     _lastControlRemote = lastControl & 0x02;
-    _lastControlOvUv = lastControl & 0x04;          
-    _lastControlNeutralFault = lastControl & 0x08;  
-    _lastControlScheduled = lastControl & 0x10;     
-    _lastControlDigital = lastControl & 0x20;       
-    _lastControlAnalog = lastControl & 0x40;        
+    _lastControlOvUv = lastControl & 0x04;
+    _lastControlNeutralFault = lastControl & 0x08;
+    _lastControlScheduled = lastControl & 0x10;
+    _lastControlDigital = lastControl & 0x20;
+    _lastControlAnalog = lastControl & 0x40;
     _lastControlTemperature = lastControl & 0x80;
 
     _uvCondition = condition & 0x01;
@@ -2299,51 +2298,51 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
     if( this != &right )
     {
         _paoid = right._paoid;
-        _capacitorBankStateId = right._capacitorBankStateId;     
-        _capacitorBankState = right._capacitorBankState;       
-        _reCloseBlockedId = right._reCloseBlockedId;         
-        _reCloseBlocked = right._reCloseBlocked;           
-        _controlModeId = right._controlModeId;            
-        _controlMode = right._controlMode;              
-        _autoVoltControlId = right._autoVoltControlId;        
-        _autoVoltControl = right._autoVoltControl;          
-        _lastControlLocalId = right._lastControlLocalId;       
-        _lastControlLocal = right._lastControlLocal;         
-        _lastControlRemoteId = right._lastControlRemoteId;      
-        _lastControlRemote = right._lastControlRemote;        
-        _lastControlOvUvId = right._lastControlOvUvId;        
-        _lastControlOvUv = right._lastControlOvUv;          
+        _capacitorBankStateId = right._capacitorBankStateId;
+        _capacitorBankState = right._capacitorBankState;
+        _reCloseBlockedId = right._reCloseBlockedId;
+        _reCloseBlocked = right._reCloseBlocked;
+        _controlModeId = right._controlModeId;
+        _controlMode = right._controlMode;
+        _autoVoltControlId = right._autoVoltControlId;
+        _autoVoltControl = right._autoVoltControl;
+        _lastControlLocalId = right._lastControlLocalId;
+        _lastControlLocal = right._lastControlLocal;
+        _lastControlRemoteId = right._lastControlRemoteId;
+        _lastControlRemote = right._lastControlRemote;
+        _lastControlOvUvId = right._lastControlOvUvId;
+        _lastControlOvUv = right._lastControlOvUv;
         _lastControlNeutralFaultId = right._lastControlNeutralFaultId;
-        _lastControlNeutralFault = right._lastControlNeutralFault;  
-        _lastControlScheduledId = right._lastControlScheduledId;   
-        _lastControlScheduled = right._lastControlScheduled;     
-        _lastControlDigitalId = right._lastControlDigitalId;     
-        _lastControlDigital = right._lastControlDigital;       
-        _lastControlAnalogId = right._lastControlAnalogId;      
-        _lastControlAnalog = right._lastControlAnalog;        
-        _lastControlTemperatureId = right._lastControlTemperatureId;      
-        _lastControlTemperature = right._lastControlTemperature;        
-        _ovConditionId = right._ovConditionId;            
-        _ovCondition = right._ovCondition;              
-        _uvConditionId = right._uvConditionId;            
-        _uvCondition = right._uvCondition;              
-        _opFailedNeutralCurrentId = right._opFailedNeutralCurrentId; 
-        _opFailedNeutralCurrent = right._opFailedNeutralCurrent;   
-        _neutralCurrentFaultId = right._neutralCurrentFaultId;    
-        _neutralCurrentFault = right._neutralCurrentFault;      
-        _badRelayId = right._badRelayId;               
-        _badRelay = right._badRelay;                 
-        _dailyMaxOpsId = right._dailyMaxOpsId;            
-        _dailyMaxOps = right._dailyMaxOps;              
-        _voltageDeltaAbnormalId = right._voltageDeltaAbnormalId;   
-        _voltageDeltaAbnormal = right._voltageDeltaAbnormal;     
-        _tempAlarmId = right._tempAlarmId;              
-        _tempAlarm = right._tempAlarm;                
-        _DSTActiveId = right._DSTActiveId;              
-        _DSTActive = right._DSTActive;                
-        _neutralLockoutId = right._neutralLockoutId;         
-        _neutralLockout = right._neutralLockout; 
-        
+        _lastControlNeutralFault = right._lastControlNeutralFault;
+        _lastControlScheduledId = right._lastControlScheduledId;
+        _lastControlScheduled = right._lastControlScheduled;
+        _lastControlDigitalId = right._lastControlDigitalId;
+        _lastControlDigital = right._lastControlDigital;
+        _lastControlAnalogId = right._lastControlAnalogId;
+        _lastControlAnalog = right._lastControlAnalog;
+        _lastControlTemperatureId = right._lastControlTemperatureId;
+        _lastControlTemperature = right._lastControlTemperature;
+        _ovConditionId = right._ovConditionId;
+        _ovCondition = right._ovCondition;
+        _uvConditionId = right._uvConditionId;
+        _uvCondition = right._uvCondition;
+        _opFailedNeutralCurrentId = right._opFailedNeutralCurrentId;
+        _opFailedNeutralCurrent = right._opFailedNeutralCurrent;
+        _neutralCurrentFaultId = right._neutralCurrentFaultId;
+        _neutralCurrentFault = right._neutralCurrentFault;
+        _badRelayId = right._badRelayId;
+        _badRelay = right._badRelay;
+        _dailyMaxOpsId = right._dailyMaxOpsId;
+        _dailyMaxOps = right._dailyMaxOps;
+        _voltageDeltaAbnormalId = right._voltageDeltaAbnormalId;
+        _voltageDeltaAbnormal = right._voltageDeltaAbnormal;
+        _tempAlarmId = right._tempAlarmId;
+        _tempAlarm = right._tempAlarm;
+        _DSTActiveId = right._DSTActiveId;
+        _DSTActive = right._DSTActive;
+        _neutralLockoutId = right._neutralLockoutId;
+        _neutralLockout = right._neutralLockout;
+
         _voltageId = right._voltageId;
         _voltage = right._voltage;
         _highVoltageId = right._highVoltageId;
@@ -2362,20 +2361,20 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _temperatureId = right._temperatureId;
         _temperature = right._temperature;
 
-        _ovSetPointId = right._ovSetPointId;                 
-        _ovSetPoint = right._ovSetPoint;                   
-        _uvSetPointId = right._uvSetPointId;                 
-        _uvSetPoint = right._uvSetPoint;                   
-        _ovuvTrackTimeId = right._ovuvTrackTimeId;              
-        _ovuvTrackTime =right._ovuvTrackTime;                
-        _neutralCurrentSensorId = right._neutralCurrentSensorId;       
-        _neutralCurrentSensor = right._neutralCurrentSensor;         
+        _ovSetPointId = right._ovSetPointId;
+        _ovSetPoint = right._ovSetPoint;
+        _uvSetPointId = right._uvSetPointId;
+        _uvSetPoint = right._uvSetPoint;
+        _ovuvTrackTimeId = right._ovuvTrackTimeId;
+        _ovuvTrackTime =right._ovuvTrackTime;
+        _neutralCurrentSensorId = right._neutralCurrentSensorId;
+        _neutralCurrentSensor = right._neutralCurrentSensor;
         _neutralCurrentAlarmSetPointId = right._neutralCurrentAlarmSetPointId;
-        _neutralCurrentAlarmSetPoint = right. _neutralCurrentAlarmSetPoint;  
-        _udpIpAddressId = right._udpIpAddressId;         
-        _udpIpAddress = right._udpIpAddress; 
-        _udpPortNumberId = right._udpPortNumberId;         
-        _udpPortNumber = right._udpPortNumber; 
+        _neutralCurrentAlarmSetPoint = right. _neutralCurrentAlarmSetPoint;
+        _udpIpAddressId = right._udpIpAddressId;
+        _udpIpAddress = right._udpIpAddress;
+        _udpPortNumberId = right._udpPortNumberId;
+        _udpPortNumber = right._udpPortNumber;
 
         _totalOpCountId = right._totalOpCountId;
         _totalOpCount = right._totalOpCount;
@@ -2383,10 +2382,10 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _ovCount = right._ovCount;
         _uvCountId = right._uvCountId;
         _uvCount = right._uvCount;
-        
 
-        _insertDynamicDataFlag = right._insertDynamicDataFlag;    
-        _dirty = right._dirty;  
+
+        _insertDynamicDataFlag = right._insertDynamicDataFlag;
+        _dirty = right._dirty;
     }
     return *this;
 }

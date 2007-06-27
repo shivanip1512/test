@@ -18,7 +18,6 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
-#include "device.h"
 #include "resolvers.h"
 #include "numstr.h"
 #include "ctidate.h"
@@ -52,7 +51,7 @@ CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
       _controlstarttime(gInvalidCtiTime),
       _controlcompletetime(gInvalidCtiTime),
       _daily_ops(0),
-      _groupcontrolstate(InactiveState),      
+      _groupcontrolstate(InactiveState),
       _insertDynamicDataFlag(TRUE)
 {
     resetInternalState();
@@ -313,7 +312,7 @@ const CtiTime& CtiLMGroupBase::getDynamicTimestamp() const
 
     Returns the number of times this program has operated today
  ---------------------------------------------------------------------------*/
-LONG CtiLMGroupBase::getDailyOps() 
+LONG CtiLMGroupBase::getDailyOps()
 {
     updateDailyOps();
     return _daily_ops; //TODO: check if this is the value for today!
@@ -344,7 +343,7 @@ bool CtiLMGroupBase::getIsRampingOut() const
 
   Returns the amount of time in seconds that we have been controlling.
   If the group is inactive this will be zero.
------------------------------------------------------------------------------*/  
+-----------------------------------------------------------------------------*/
 ULONG CtiLMGroupBase::getCurrentControlDuration() const
 {
     return (getGroupControlState() == ActiveState ?
@@ -710,7 +709,7 @@ CtiLMGroupBase& CtiLMGroupBase::setDynamicTimestamp(const CtiTime& timestamp)
 
 /*-----------------------------------------------------------------------------
   incrementDailyOps
------------------------------------------------------------------------------*/  
+-----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
 {
     updateDailyOps();
@@ -722,7 +721,7 @@ CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
 /*-----------------------------------------------------------------------------
   resetDailyOps
   This only exists so the controlareastore can set the dailyops when
-  it reads it from the database.  usually you won't call this directly. 
+  it reads it from the database.  usually you won't call this directly.
 -----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::resetDailyOps(int ops)
 {
@@ -823,7 +822,7 @@ CtiRequestMsg* CtiLMGroupBase::createLatchingRequestMsg(bool do_shed, int priori
     {  //restore
         control_str = "control restore";
     }
-    
+
     CtiRequestMsg* req_msg = CTIDBG_new CtiRequestMsg(getPAOId(), control_str, 0,0,0,0,0,0, priority);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD)
@@ -896,7 +895,7 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     CtiTime tempTime2;
     CtiTime tempTime3;
     CtiTime tempTime4;
-    
+
     istrm >> _paoid
           >> _paocategory
           >> _paoclass

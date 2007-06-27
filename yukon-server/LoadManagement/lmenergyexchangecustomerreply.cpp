@@ -19,7 +19,6 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
-#include "device.h"
 #include "resolvers.h"
 #include "utility.h"
 
@@ -584,4 +583,4 @@ void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(RWDBReader& rdr)
 const string CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus = "NoResponse";
 const string CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus = "Accepted";
 const string CtiLMEnergyExchangeCustomerReply::DeclinedAcceptStatus = "Declined";
-                                            
+

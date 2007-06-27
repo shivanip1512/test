@@ -18,7 +18,6 @@
 #include "ccpointresponse.h"
 #include "ccid.h"
 #include "pointdefs.h"
-#include "device.h"
 #include "logger.h"
 #include "resolvers.h"
 
@@ -115,12 +114,12 @@ CtiCCPointResponse& CtiCCPointResponse::setPointId(LONG pointId)
 /*---------------------------------------------------------------------------
     setDelta
 
-    Sets the delta of the monitorPoint- 
+    Sets the delta of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCPointResponse& CtiCCPointResponse::setDelta(DOUBLE delta)
 {
     if (_delta != delta)
-    {                
+    {
         _dirty = TRUE;
     }
     _delta = delta;
@@ -132,12 +131,12 @@ CtiCCPointResponse& CtiCCPointResponse::setDelta(DOUBLE delta)
 /*---------------------------------------------------------------------------
     setPreOpValue
 
-    Sets the preOpValue of the monitorPoint- 
+    Sets the preOpValue of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCPointResponse& CtiCCPointResponse::setPreOpValue(DOUBLE value)
 {
     if (_preOpValue != value)
-    {                
+    {
         _dirty = TRUE;
     }
     _preOpValue = value;
@@ -245,10 +244,10 @@ void CtiCCPointResponse::setDynamicData(RWDBReader& rdr)
     rdr["preopvalue"] >> _preOpValue;
     rdr["delta"] >> _delta;
     _insertDynamicDataFlag = FALSE;
-    
+
     _dirty = FALSE;
 
-} 
+}
 
 
 
@@ -301,12 +300,12 @@ void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
 
             RWDBUpdater updater = dynamicCCMonitorPointResponseTable.updater();
 
-            updater.where(dynamicCCMonitorPointResponseTable["bankid"]==_bankId && 
+            updater.where(dynamicCCMonitorPointResponseTable["bankid"]==_bankId &&
                           dynamicCCMonitorPointResponseTable["pointid"]==_pointId );
 
             updater << dynamicCCMonitorPointResponseTable["preopvalue"].assign( _preOpValue )
                     << dynamicCCMonitorPointResponseTable["delta"].assign( _delta );
-                    
+
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << updater.asString().data() << endl;

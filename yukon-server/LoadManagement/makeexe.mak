@@ -140,13 +140,13 @@ allclean:   clean all
 #UPDATE#
 clientconn.obj:	yukon.h precompiled.h ctidbgmem.h clientconn.h \
 		ctdpcptrq.h dlldefs.h CtiPCPtrQueue.h mutex.h guard.h \
-		clrdump.h lmmessage.h ctitime.h message.h collectable.h \
-		rwutil.h boost_time.h lmcontrolarea.h dbmemobject.h \
-		connection.h exchange.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h logger.h thread.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h utility.h queues.h \
-		numstr.h sorted_vector.h observe.h lmprogrambase.h \
+		numstr.h clrdump.h lmmessage.h ctitime.h message.h \
+		collectable.h rwutil.h boost_time.h lmcontrolarea.h \
+		dbmemobject.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h cticonnect.h netports.h logger.h \
+		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h utility.h \
+		queues.h sorted_vector.h observe.h lmprogrambase.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h executor.h msg_server_req.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
@@ -155,13 +155,13 @@ clientconn.obj:	yukon.h precompiled.h ctidbgmem.h clientconn.h \
 		pointtypes.h configparms.h ctibase.h ctinexus.h
 clistener.obj:	yukon.h precompiled.h ctidbgmem.h clistener.h \
 		clientconn.h ctdpcptrq.h dlldefs.h CtiPCPtrQueue.h mutex.h \
-		guard.h clrdump.h lmmessage.h ctitime.h message.h \
+		guard.h numstr.h clrdump.h lmmessage.h ctitime.h message.h \
 		collectable.h rwutil.h boost_time.h lmcontrolarea.h \
 		dbmemobject.h connection.h exchange.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h cticonnect.h netports.h logger.h \
 		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h utility.h \
-		queues.h numstr.h sorted_vector.h observe.h lmprogrambase.h \
+		queues.h sorted_vector.h observe.h lmprogrambase.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h lmcontrolareastore.h lmid.h \
 		configparms.h ctibase.h ctinexus.h executor.h \
@@ -170,13 +170,13 @@ clistener.obj:	yukon.h precompiled.h ctidbgmem.h clistener.h \
 executor.obj:	yukon.h precompiled.h ctidbgmem.h msg_server_req.h \
 		dlldefs.h message.h collectable.h rwutil.h ctitime.h \
 		boost_time.h msg_server_resp.h msg_signal.h executor.h \
-		ctdpcptrq.h CtiPCPtrQueue.h mutex.h guard.h clrdump.h \
-		lmmessage.h clientconn.h lmcontrolarea.h dbmemobject.h \
-		connection.h exchange.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h logger.h thread.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h utility.h queues.h \
-		numstr.h sorted_vector.h observe.h lmprogrambase.h \
+		ctdpcptrq.h CtiPCPtrQueue.h mutex.h guard.h numstr.h \
+		clrdump.h lmmessage.h clientconn.h lmcontrolarea.h \
+		dbmemobject.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h cticonnect.h netports.h logger.h \
+		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h utility.h \
+		queues.h sorted_vector.h observe.h lmprogrambase.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
@@ -190,9 +190,9 @@ executor.obj:	yukon.h precompiled.h ctidbgmem.h msg_server_req.h \
 		devicetypes.h lmconstraint.h ctidate.h
 lmcicustomerbase.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmcicustomerbase.h observe.h utility.h ctitime.h queues.h \
-		numstr.h sorted_vector.h msg_pcrequest.h message.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmcicustomerbase.h observe.h utility.h ctitime.h \
+		queues.h sorted_vector.h msg_pcrequest.h message.h \
 		collectable.h rwutil.h boost_time.h lmid.h logger.h thread.h \
 		CtiPCPtrQueue.h loadmanager.h connection.h exchange.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
@@ -202,8 +202,8 @@ lmcicustomerbase.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmcontrolareatrigger.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h ctibase.h ctinexus.h device.h \
-		devicetypes.h resolvers.h db_entry_defines.h
+		lmcurtailcustomer.h ctibase.h ctinexus.h resolvers.h \
+		db_entry_defines.h
 lmconstraint.obj:	yukon.h precompiled.h ctidbgmem.h lmconstraint.h \
 		lmprogramdirect.h lmprogrambase.h dbmemobject.h observe.h \
 		types.h dlldefs.h utility.h ctitime.h queues.h numstr.h \
@@ -219,16 +219,16 @@ lmconstraint.obj:	yukon.h precompiled.h ctidbgmem.h lmconstraint.h \
 		mgr_holiday.h
 lmcontrolarea.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		msg_signal.h message.h collectable.h rwutil.h ctitime.h \
-		boost_time.h lmcontrolarea.h dbmemobject.h connection.h \
-		exchange.h logger.h thread.h CtiPCPtrQueue.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h utility.h queues.h numstr.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h msg_signal.h message.h collectable.h rwutil.h \
+		ctitime.h boost_time.h lmcontrolarea.h dbmemobject.h \
+		connection.h exchange.h logger.h thread.h CtiPCPtrQueue.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h utility.h queues.h \
 		sorted_vector.h observe.h lmprogrambase.h lmgroupbase.h \
 		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h lmid.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
-		lmprogramcontrolwindow.h pointtypes.h devicetypes.h device.h \
+		lmprogramcontrolwindow.h pointtypes.h devicetypes.h \
 		loadmanager.h configparms.h lmcontrolareastore.h executor.h \
 		ctdpcptrq.h msg_server_req.h lmmessage.h clientconn.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
@@ -236,10 +236,10 @@ lmcontrolarea.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmconstraint.h ctidate.h
 lmcontrolareastore.obj:	yukon.h precompiled.h ctidbgmem.h \
 		mgr_holiday.h ctidate.h dlldefs.h logger.h thread.h mutex.h \
-		guard.h clrdump.h ctitime.h CtiPCPtrQueue.h mgr_season.h \
-		msg_signal.h message.h collectable.h rwutil.h boost_time.h \
-		lmcontrolareastore.h observe.h types.h utility.h queues.h \
-		numstr.h sorted_vector.h lmcontrolarea.h dbmemobject.h \
+		guard.h numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h \
+		mgr_season.h msg_signal.h message.h collectable.h rwutil.h \
+		boost_time.h lmcontrolareastore.h observe.h types.h utility.h \
+		queues.h sorted_vector.h lmcontrolarea.h dbmemobject.h \
 		connection.h exchange.h dllbase.h os2_2w32.h cticalls.h \
 		dsm2.h cticonnect.h netports.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_ptreg.h msg_reg.h queue.h cparms.h \
@@ -263,9 +263,9 @@ lmcontrolareastore.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_paoexclusion.h
 lmcontrolareatrigger.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmcontrolareatrigger.h ctitime.h observe.h utility.h queues.h \
-		numstr.h sorted_vector.h lmid.h lmprogrambase.h dbmemobject.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmcontrolareatrigger.h ctitime.h observe.h utility.h \
+		queues.h sorted_vector.h lmid.h lmprogrambase.h dbmemobject.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
 		rwutil.h boost_time.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		pointtypes.h logger.h thread.h CtiPCPtrQueue.h loadmanager.h \
@@ -277,9 +277,9 @@ lmcontrolareatrigger.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmcurtailcustomer.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmcurtailcustomer.h observe.h utility.h ctitime.h queues.h \
-		numstr.h sorted_vector.h msg_pcrequest.h message.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmcurtailcustomer.h observe.h utility.h ctitime.h \
+		queues.h sorted_vector.h msg_pcrequest.h message.h \
 		collectable.h rwutil.h boost_time.h lmcicustomerbase.h lmid.h \
 		logger.h thread.h CtiPCPtrQueue.h loadmanager.h connection.h \
 		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
@@ -289,13 +289,12 @@ lmcurtailcustomer.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmcontrolareatrigger.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h ctibase.h \
-		ctinexus.h device.h devicetypes.h resolvers.h \
-		db_entry_defines.h
+		ctinexus.h resolvers.h db_entry_defines.h
 lmenergyexchangecustomer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmenergyexchangecustomer.h observe.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmenergyexchangecustomer.h observe.h \
+		utility.h ctitime.h queues.h sorted_vector.h \
 		lmcicustomerbase.h msg_pcrequest.h message.h collectable.h \
 		rwutil.h boost_time.h lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h lmid.h logger.h thread.h \
@@ -307,13 +306,13 @@ lmenergyexchangecustomer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		lmcontrolareatrigger.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h ctibase.h ctinexus.h device.h \
-		devicetypes.h resolvers.h db_entry_defines.h
+		lmcurtailcustomer.h ctibase.h ctinexus.h resolvers.h \
+		db_entry_defines.h
 lmenergyexchangecustomerreply.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmenergyexchangecustomerreply.h ctitime.h observe.h \
-		utility.h queues.h numstr.h sorted_vector.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmenergyexchangecustomerreply.h ctitime.h \
+		observe.h utility.h queues.h sorted_vector.h \
 		lmenergyexchangehourlycustomer.h lmid.h logger.h thread.h \
 		CtiPCPtrQueue.h loadmanager.h connection.h exchange.h \
 		message.h collectable.h rwutil.h boost_time.h msg_multi.h \
@@ -325,12 +324,12 @@ lmenergyexchangecustomerreply.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
-		device.h devicetypes.h resolvers.h db_entry_defines.h
+		resolvers.h db_entry_defines.h
 lmenergyexchangehourlycustomer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmenergyexchangehourlycustomer.h observe.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h lmid.h logger.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmenergyexchangehourlycustomer.h observe.h \
+		utility.h ctitime.h queues.h sorted_vector.h lmid.h logger.h \
 		thread.h CtiPCPtrQueue.h loadmanager.h connection.h \
 		exchange.h message.h collectable.h rwutil.h boost_time.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
@@ -341,12 +340,12 @@ lmenergyexchangehourlycustomer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
-		device.h devicetypes.h resolvers.h db_entry_defines.h
+		resolvers.h db_entry_defines.h
 lmenergyexchangehourlyoffer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmenergyexchangehourlyoffer.h observe.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h lmid.h logger.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmenergyexchangehourlyoffer.h observe.h \
+		utility.h ctitime.h queues.h sorted_vector.h lmid.h logger.h \
 		thread.h CtiPCPtrQueue.h loadmanager.h connection.h \
 		exchange.h message.h collectable.h rwutil.h boost_time.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
@@ -357,31 +356,31 @@ lmenergyexchangehourlyoffer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
-		device.h devicetypes.h resolvers.h db_entry_defines.h
+		resolvers.h db_entry_defines.h
 lmenergyexchangeoffer.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmid.h ctitime.h logger.h thread.h CtiPCPtrQueue.h \
-		lmenergyexchangeoffer.h observe.h utility.h queues.h numstr.h \
-		sorted_vector.h lmenergyexchangeofferrevision.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmid.h ctitime.h logger.h thread.h \
+		CtiPCPtrQueue.h lmenergyexchangeoffer.h observe.h utility.h \
+		queues.h sorted_vector.h lmenergyexchangeofferrevision.h \
 		lmenergyexchangehourlyoffer.h rwutil.h boost_time.h
 lmenergyexchangeofferrevision.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmenergyexchangeofferrevision.h ctitime.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmenergyexchangeofferrevision.h ctitime.h \
 		lmenergyexchangehourlyoffer.h observe.h utility.h queues.h \
-		numstr.h sorted_vector.h lmid.h logger.h thread.h \
-		CtiPCPtrQueue.h loadmanager.h connection.h exchange.h \
-		message.h collectable.h rwutil.h boost_time.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h msg_cmd.h pointtypes.h \
-		configparms.h lmcontrolareastore.h lmcontrolarea.h \
-		dbmemobject.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		sorted_vector.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
+		loadmanager.h connection.h exchange.h message.h collectable.h \
+		rwutil.h boost_time.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h msg_cmd.h pointtypes.h configparms.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
-		device.h devicetypes.h resolvers.h db_entry_defines.h
+		resolvers.h db_entry_defines.h
 lmfactory.obj:	yukon.h precompiled.h ctidbgmem.h lmfactory.h \
 		lmgroupbase.h rwutil.h ctitime.h dlldefs.h boost_time.h \
 		dbmemobject.h observe.h types.h utility.h queues.h numstr.h \
@@ -394,9 +393,9 @@ lmfactory.obj:	yukon.h precompiled.h ctidbgmem.h lmfactory.h \
 		lmgroupsadigital.h lmgroupgolay.h lmgroupmacro.h
 lmgroupbase.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgroupbase.h rwutil.h ctitime.h boost_time.h dbmemobject.h \
-		observe.h utility.h queues.h numstr.h sorted_vector.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgroupbase.h rwutil.h ctitime.h boost_time.h \
+		dbmemobject.h observe.h utility.h queues.h sorted_vector.h \
 		msg_pcrequest.h message.h collectable.h msg_cmd.h lmid.h \
 		logger.h thread.h CtiPCPtrQueue.h loadmanager.h connection.h \
 		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
@@ -406,35 +405,34 @@ lmgroupbase.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		executor.h ctdpcptrq.h msg_server_req.h lmmessage.h \
 		clientconn.h lmprogramdirect.h lmprogramdirectgear.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h ctinexus.h device.h devicetypes.h resolvers.h \
-		db_entry_defines.h ctidate.h
+		ctibase.h ctinexus.h resolvers.h db_entry_defines.h ctidate.h
 lmgroupemetcon.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgroupemetcon.h lmgroupbase.h rwutil.h ctitime.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgroupemetcon.h lmgroupbase.h rwutil.h ctitime.h \
 		boost_time.h dbmemobject.h observe.h utility.h queues.h \
-		numstr.h sorted_vector.h msg_pcrequest.h message.h \
-		collectable.h msg_cmd.h lmid.h logger.h thread.h \
-		CtiPCPtrQueue.h loadmanager.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h pointtypes.h \
-		configparms.h lmcontrolareastore.h lmcontrolarea.h \
-		lmprogrambase.h lmcontrolareatrigger.h executor.h ctdpcptrq.h \
+		sorted_vector.h msg_pcrequest.h message.h collectable.h \
+		msg_cmd.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
+		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h pointtypes.h configparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmcontrolareatrigger.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmgroupexpresscom.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgroupexpresscom.h lmgroupbase.h rwutil.h ctitime.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgroupexpresscom.h lmgroupbase.h rwutil.h ctitime.h \
 		boost_time.h dbmemobject.h observe.h utility.h queues.h \
-		numstr.h sorted_vector.h msg_pcrequest.h message.h \
-		collectable.h msg_cmd.h lmid.h logger.h thread.h \
-		CtiPCPtrQueue.h loadmanager.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h pointtypes.h \
-		configparms.h lmcontrolareastore.h lmcontrolarea.h \
-		lmprogrambase.h lmcontrolareatrigger.h executor.h ctdpcptrq.h \
+		sorted_vector.h msg_pcrequest.h message.h collectable.h \
+		msg_cmd.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
+		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h pointtypes.h configparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmcontrolareatrigger.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
@@ -448,9 +446,9 @@ lmgroupgolay.obj:	yukon.h precompiled.h ctidbgmem.h lmgroupgolay.h \
 		dsm2.h cticonnect.h netports.h sema.h
 lmgroupmacro.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgroupmacro.h lmgroupbase.h rwutil.h ctitime.h boost_time.h \
-		dbmemobject.h observe.h utility.h queues.h numstr.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgroupmacro.h lmgroupbase.h rwutil.h ctitime.h \
+		boost_time.h dbmemobject.h observe.h utility.h queues.h \
 		sorted_vector.h msg_pcrequest.h message.h collectable.h \
 		msg_cmd.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
@@ -463,10 +461,10 @@ lmgroupmacro.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmgroupmct.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h clrdump.h cticonnect.h netports.h sema.h lmgroupmct.h \
-		lmgroupemetcon.h lmgroupbase.h rwutil.h ctitime.h \
-		boost_time.h dbmemobject.h observe.h utility.h queues.h \
-		numstr.h sorted_vector.h msg_pcrequest.h message.h \
+		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h \
+		lmgroupmct.h lmgroupemetcon.h lmgroupbase.h rwutil.h \
+		ctitime.h boost_time.h dbmemobject.h observe.h utility.h \
+		queues.h sorted_vector.h msg_pcrequest.h message.h \
 		collectable.h msg_cmd.h lmid.h logger.h thread.h \
 		CtiPCPtrQueue.h loadmanager.h connection.h exchange.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
@@ -478,9 +476,9 @@ lmgroupmct.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmgrouppoint.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgrouppoint.h lmgroupbase.h rwutil.h ctitime.h boost_time.h \
-		dbmemobject.h observe.h utility.h queues.h numstr.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgrouppoint.h lmgroupbase.h rwutil.h ctitime.h \
+		boost_time.h dbmemobject.h observe.h utility.h queues.h \
 		sorted_vector.h msg_pcrequest.h message.h collectable.h \
 		msg_cmd.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
@@ -493,9 +491,9 @@ lmgrouppoint.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmgroupripple.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgroupripple.h lmgroupbase.h rwutil.h ctitime.h boost_time.h \
-		dbmemobject.h observe.h utility.h queues.h numstr.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgroupripple.h lmgroupbase.h rwutil.h ctitime.h \
+		boost_time.h dbmemobject.h observe.h utility.h queues.h \
 		sorted_vector.h msg_pcrequest.h message.h collectable.h \
 		msg_cmd.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
@@ -551,9 +549,9 @@ lmgroupsadigitalorgolay.obj:	lmgroupsadigitalorgolay.h lmgroupbase.h \
 		netports.h sema.h
 lmgroupversacom.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmgroupbase.h rwutil.h ctitime.h boost_time.h dbmemobject.h \
-		observe.h utility.h queues.h numstr.h sorted_vector.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmgroupbase.h rwutil.h ctitime.h boost_time.h \
+		dbmemobject.h observe.h utility.h queues.h sorted_vector.h \
 		msg_pcrequest.h message.h collectable.h msg_cmd.h \
 		lmgroupversacom.h lmid.h logger.h thread.h CtiPCPtrQueue.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
@@ -566,36 +564,36 @@ lmgroupversacom.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmmessage.obj:	yukon.h precompiled.h ctidbgmem.h lmmessage.h ctitime.h \
 		dlldefs.h clientconn.h ctdpcptrq.h CtiPCPtrQueue.h mutex.h \
-		guard.h clrdump.h message.h collectable.h rwutil.h \
+		guard.h numstr.h clrdump.h message.h collectable.h rwutil.h \
 		boost_time.h lmcontrolarea.h dbmemobject.h connection.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		cticonnect.h netports.h logger.h thread.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h utility.h queues.h numstr.h \
+		cparms.h configkey.h configval.h utility.h queues.h \
 		sorted_vector.h observe.h lmprogrambase.h lmgroupbase.h \
 		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h lmid.h
 lmprogrambase.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmid.h ctitime.h lmprogrambase.h dbmemobject.h observe.h \
-		utility.h queues.h numstr.h sorted_vector.h msg_multi.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmid.h ctitime.h lmprogrambase.h dbmemobject.h \
+		observe.h utility.h queues.h sorted_vector.h msg_multi.h \
 		collectable.h msg_pdata.h pointdefs.h message.h rwutil.h \
 		boost_time.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h lmprogramcontrolwindow.h pointtypes.h \
-		logger.h thread.h CtiPCPtrQueue.h device.h devicetypes.h \
-		loadmanager.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h configparms.h \
-		lmcontrolareastore.h lmcontrolarea.h executor.h ctdpcptrq.h \
-		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
+		logger.h thread.h CtiPCPtrQueue.h loadmanager.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h configparms.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h ctdpcptrq.h msg_server_req.h \
+		lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
 		resolvers.h db_entry_defines.h mgr_holiday.h ctidate.h \
 		mgr_season.h
 lmprogramcontrolwindow.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmid.h ctitime.h lmprogramcontrolwindow.h observe.h \
-		utility.h queues.h numstr.h sorted_vector.h pointdefs.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmid.h ctitime.h lmprogramcontrolwindow.h \
+		observe.h utility.h queues.h sorted_vector.h pointdefs.h \
 		pointtypes.h logger.h thread.h CtiPCPtrQueue.h loadmanager.h \
 		connection.h exchange.h message.h collectable.h rwutil.h \
 		boost_time.h msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h \
@@ -608,9 +606,9 @@ lmprogramcontrolwindow.obj:	yukon.h precompiled.h ctidbgmem.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h
 lmprogramcurtailment.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmid.h ctitime.h lmprogrambase.h dbmemobject.h observe.h \
-		utility.h queues.h numstr.h sorted_vector.h msg_multi.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmid.h ctitime.h lmprogrambase.h dbmemobject.h \
+		observe.h utility.h queues.h sorted_vector.h msg_multi.h \
 		collectable.h msg_pdata.h pointdefs.h message.h rwutil.h \
 		boost_time.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h pointtypes.h logger.h thread.h \
@@ -624,27 +622,26 @@ lmprogramcurtailment.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		msg_notif_email.h msg_notif_email_attachment.h
 lmprogramdirect.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		rwutil.h ctitime.h boost_time.h lmprogramdirect.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h rwutil.h ctitime.h boost_time.h lmprogramdirect.h \
 		lmprogrambase.h dbmemobject.h observe.h utility.h queues.h \
-		numstr.h sorted_vector.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h lmgroupbase.h \
-		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h \
-		lmprogramdirectgear.h lmcontrolarea.h connection.h exchange.h \
-		logger.h thread.h CtiPCPtrQueue.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h lmgrouppoint.h \
-		devicetypes.h lmid.h desolvers.h db_entry_defines.h \
-		pointtypes.h loadmanager.h configparms.h lmcontrolareastore.h \
-		executor.h ctdpcptrq.h msg_server_req.h lmmessage.h \
-		clientconn.h lmprogramcurtailment.h lmcurtailcustomer.h \
-		lmcicustomerbase.h ctibase.h ctinexus.h msg_signal.h \
-		msg_notif_lmcontrol.h lmprogramthermostatgear.h \
+		sorted_vector.h msg_multi.h collectable.h msg_pdata.h \
+		pointdefs.h message.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmcontrolareatrigger.h lmprogramdirectgear.h lmcontrolarea.h \
+		connection.h exchange.h logger.h thread.h CtiPCPtrQueue.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h lmgrouppoint.h devicetypes.h lmid.h desolvers.h \
+		db_entry_defines.h pointtypes.h loadmanager.h configparms.h \
+		lmcontrolareastore.h executor.h ctdpcptrq.h msg_server_req.h \
+		lmmessage.h clientconn.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
+		msg_signal.h msg_notif_lmcontrol.h lmprogramthermostatgear.h \
 		lmprogramcontrolwindow.h lmconstraint.h ctidate.h
 lmprogramdirectgear.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		lmprogramdirectgear.h observe.h utility.h ctitime.h queues.h \
-		numstr.h sorted_vector.h lmid.h lmprogrambase.h dbmemobject.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h lmprogramdirectgear.h observe.h utility.h ctitime.h \
+		queues.h sorted_vector.h lmid.h lmprogrambase.h dbmemobject.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
 		rwutil.h boost_time.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h pointtypes.h logger.h thread.h \
@@ -657,9 +654,9 @@ lmprogramdirectgear.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		ctibase.h ctinexus.h
 lmprogramenergyexchange.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmid.h ctitime.h lmprogrambase.h dbmemobject.h \
-		observe.h utility.h queues.h numstr.h sorted_vector.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmid.h ctitime.h lmprogrambase.h \
+		dbmemobject.h observe.h utility.h queues.h sorted_vector.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
 		rwutil.h boost_time.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h pointtypes.h logger.h thread.h \
@@ -677,9 +674,9 @@ lmprogramenergyexchange.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_notif_email_attachment.h ctidate.h
 lmprogramthermostatgear.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		sema.h lmprogramthermostatgear.h observe.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h \
+		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h sema.h lmprogramthermostatgear.h observe.h \
+		utility.h ctitime.h queues.h sorted_vector.h \
 		lmprogramdirectgear.h lmid.h lmprogrambase.h dbmemobject.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
 		rwutil.h boost_time.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
@@ -692,24 +689,24 @@ lmprogramthermostatgear.obj:	yukon.h precompiled.h ctidbgmem.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h ctinexus.h
 lmserver.obj:	lmserver.h clistener.h clientconn.h ctdpcptrq.h \
-		dlldefs.h CtiPCPtrQueue.h mutex.h guard.h clrdump.h \
+		dlldefs.h CtiPCPtrQueue.h mutex.h guard.h numstr.h clrdump.h \
 		lmmessage.h ctitime.h message.h ctidbgmem.h collectable.h \
 		rwutil.h yukon.h precompiled.h boost_time.h lmcontrolarea.h \
 		dbmemobject.h connection.h exchange.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h cticonnect.h netports.h logger.h \
 		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h utility.h \
-		queues.h numstr.h sorted_vector.h observe.h lmprogrambase.h \
+		queues.h sorted_vector.h observe.h lmprogrambase.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h ctibase.h ctinexus.h configparms.h
 lmservice.obj:	yukon.h precompiled.h ctidbgmem.h lmservice.h \
 		cservice.h dlldefs.h loadmanager.h dbaccess.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
+		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		clrdump.h cticonnect.h netports.h sema.h connection.h \
 		exchange.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		message.h collectable.h rwutil.h boost_time.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h utility.h queues.h numstr.h \
+		cparms.h configkey.h configval.h utility.h queues.h \
 		sorted_vector.h msg_cmd.h pointtypes.h configparms.h \
 		lmcontrolareastore.h observe.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
@@ -721,15 +718,15 @@ lmservice.obj:	yukon.h precompiled.h ctidbgmem.h lmservice.h \
 		ctidate.h
 loadmanager.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
-		connection.h exchange.h logger.h thread.h ctitime.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h connection.h exchange.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h message.h collectable.h rwutil.h boost_time.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h utility.h queues.h \
-		numstr.h sorted_vector.h msg_signal.h msg_cmd.h \
-		msg_pcrequest.h msg_pcreturn.h msg_dbchg.h pointtypes.h \
-		configparms.h loadmanager.h lmcontrolareastore.h observe.h \
-		lmcontrolarea.h dbmemobject.h lmprogrambase.h lmgroupbase.h \
+		sorted_vector.h msg_signal.h msg_cmd.h msg_pcrequest.h \
+		msg_pcreturn.h msg_dbchg.h pointtypes.h configparms.h \
+		loadmanager.h lmcontrolareastore.h observe.h lmcontrolarea.h \
+		dbmemobject.h lmprogrambase.h lmgroupbase.h \
 		lmcontrolareatrigger.h lmid.h executor.h ctdpcptrq.h \
 		msg_server_req.h lmmessage.h clientconn.h lmprogramdirect.h \
 		lmprogramdirectgear.h lmprogramcurtailment.h \

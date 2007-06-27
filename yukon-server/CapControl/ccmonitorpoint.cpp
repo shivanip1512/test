@@ -18,7 +18,6 @@
 #include "ccid.h"
 #include "ccmonitorpoint.h"
 #include "pointdefs.h"
-#include "device.h"
 #include "logger.h"
 #include "resolvers.h"
 #include "utility.h"
@@ -110,7 +109,7 @@ LONG CtiCCMonitorPoint::getNInAvg() const
 }
 /*---------------------------------------------------------------------------
     getUpperBandwidth
-    
+
     Returns the upper bandwidth for the monitor point
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCMonitorPoint::getUpperBandwidth() const
@@ -174,12 +173,12 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setBankId(LONG bankId)
 /*---------------------------------------------------------------------------
     setValue
 
-    Sets the value of the monitorPoint- 
+    Sets the value of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(DOUBLE value)
 {
     if (_value != value)
-    {                
+    {
         _dirty = TRUE;
     }
     _value = value;
@@ -191,12 +190,12 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(DOUBLE value)
 /*---------------------------------------------------------------------------
     setDisplayOrder
 
-    Sets the display order of the monitorPoint- 
+    Sets the display order of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(LONG displayOrder)
-{   
+{
     if (_displayOrder != displayOrder)
-    {                
+    {
         _dirty = TRUE;
     }
     _displayOrder = displayOrder;
@@ -208,12 +207,12 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(LONG displayOrder)
 /*---------------------------------------------------------------------------
     setScannable
 
-    Sets the scannable flag of the monitorPoint- 
+    Sets the scannable flag of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(BOOL flag)
-{   
+{
     if (_scannable != flag)
-    {                
+    {
         _dirty = TRUE;
     }
     _scannable = flag;
@@ -225,12 +224,12 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(BOOL flag)
 /*---------------------------------------------------------------------------
     setNInAvg
 
-    Sets the Number N of points to be averaged together in the value of the monitorPoint- 
+    Sets the Number N of points to be averaged together in the value of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(LONG n)
-{   
+{
     if (_nInAvg != n)
-    {                
+    {
         _dirty = TRUE;
     }
     _nInAvg = n;
@@ -242,12 +241,12 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(LONG n)
 /*---------------------------------------------------------------------------
     setUpperBandwidth
 
-    Sets the UpperBandwidth of the monitorPoint- 
+    Sets the UpperBandwidth of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(DOUBLE upperBW)
-{   
+{
     if (_upperBW != upperBW)
-    {                
+    {
         _dirty = TRUE;
     }
     _upperBW = upperBW;
@@ -259,12 +258,12 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(DOUBLE upperBW)
 /*---------------------------------------------------------------------------
     setLowerBandwidth
 
-    Sets the LowerBandwidth of the monitorPoint- 
+    Sets the LowerBandwidth of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setLowerBandwidth(DOUBLE lowerBW)
-{   
+{
     if (_lowerBW != lowerBW)
-    {                
+    {
         _dirty = TRUE;
     }
     _lowerBW = lowerBW;
@@ -291,13 +290,13 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setTimeStamp(CtiTime timeStamp)
 
 /*---------------------------------------------------------------------------
     setScanInProgress
-    
-    Sets the scanInProgress flag of the monitorPoint- 
+
+    Sets the scanInProgress flag of the monitorPoint-
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setScanInProgress(BOOL flag)
-{   
+{
     if (_scanInProgress != flag)
-    {                
+    {
         _dirty = TRUE;
     }
     _scanInProgress = flag;
@@ -354,10 +353,10 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& right)
         _pointId = right._pointId;
         _bankId = right._bankId;
         _displayOrder = right._displayOrder;
-        _scannable = right._scannable;   
-        _nInAvg = right._nInAvg;      
-        _upperBW = right._upperBW;   
-        _lowerBW = right._lowerBW;   
+        _scannable = right._scannable;
+        _nInAvg = right._nInAvg;
+        _upperBW = right._upperBW;
+        _lowerBW = right._lowerBW;
         _value = right._value;
 
         _timeStamp = right._timeStamp;
@@ -397,7 +396,7 @@ void CtiCCMonitorPoint::restore(RWDBReader& rdr)
 {
     RWDBNullIndicator isNull;
     CtiTime currentDateTime = CtiTime();
-    
+
     CtiTime dynamicTimeStamp;
     string tempBoolString;
 
@@ -410,7 +409,7 @@ void CtiCCMonitorPoint::restore(RWDBReader& rdr)
     rdr["ninavg"] >> _nInAvg;
     rdr["upperbandwidth"] >> _upperBW;
     rdr["lowerbandwidth"] >> _lowerBW;
-        
+
 
     _value = 0;
     _timeStamp = CtiTime();
@@ -498,7 +497,7 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
 
             RWDBUpdater updater = dynamicCCMonitorBankHistoryTable.updater();
 
-            updater.where(dynamicCCMonitorBankHistoryTable["bankid"]==_bankId && 
+            updater.where(dynamicCCMonitorBankHistoryTable["bankid"]==_bankId &&
                           dynamicCCMonitorBankHistoryTable["pointid"]==_pointId );
 
             updater << dynamicCCMonitorBankHistoryTable["value"].assign( _value )

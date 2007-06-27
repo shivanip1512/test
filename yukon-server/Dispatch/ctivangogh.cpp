@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.166 $
-* DATE         :  $Date: 2007/05/31 21:30:24 $
+* REVISION     :  $Revision: 1.167 $
+* DATE         :  $Date: 2007/06/27 17:37:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,7 +78,6 @@
 
 // #include "slctdev.h"
 #include "connection.h"
-#include "device.h"
 #include "dbaccess.h"
 #include "utility.h"
 #include "logger.h"

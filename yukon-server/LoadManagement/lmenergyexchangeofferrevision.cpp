@@ -19,7 +19,6 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
-#include "device.h"
 #include "resolvers.h"
 #include "utility.h"
 

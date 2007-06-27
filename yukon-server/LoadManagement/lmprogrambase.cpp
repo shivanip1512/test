@@ -20,7 +20,6 @@
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "logger.h"
-#include "device.h"
 #include "loadmanager.h"
 #include "resolvers.h"
 #include "mgr_holiday.h"
@@ -594,7 +593,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxDailyOps(LONG max_daily_ops)
 
 /*---------------------------------------------------------------------------
     setMaxActivateTime
-    
+
     Set the maximum activate time of the program in minutes
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxActivateTime(LONG max_activate_time)
@@ -739,20 +738,20 @@ BOOL CtiLMProgramBase::isAvailableToday()
     now.extract(&start_tm);
 
     bool is_holiday = CtiHolidayManager::getInstance().isHoliday(getHolidayScheduleId());
-    
+
     if( (is_holiday &&_availableweekdays[7] == 'E') || //exclude
         (_availableweekdays[start_tm.tm_wday] == 'N' && !(is_holiday && _availableweekdays[7] == 'F')) ||
         ( getSeasonScheduleId() > 0 && !CtiSeasonManager::getInstance().isInSeason(CtiDate(), getSeasonScheduleId())) )
     {
         returnBool = FALSE;
     }
-    
+
     return returnBool;
 }
 
 /*---------------------------------------------------------------------------
     isWithinValidControlWindow()
-    
+
     Returns TRUE if this program is currenly inside a control window or if
     there are no control windows.
 ---------------------------------------------------------------------------*/
@@ -763,7 +762,7 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay
 
     // Try to find the control window we are in
     CtiLMProgramControlWindow* currentControlWindow = getControlWindow(secondsFromBeginningOfDay);
-    return (currentControlWindow != NULL); 
+    return (currentControlWindow != NULL);
 }
 
 
@@ -806,7 +805,7 @@ BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFro
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isPastMinRestartTime(ULONG secondsFrom1901)
 {
-    return TRUE; 
+    return TRUE;
 }
 
 /*-------------------------------------------------------------------------
@@ -898,7 +897,7 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
 CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
 {
     CtiMemDBObject::operator=(right);
-    
+
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -993,7 +992,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
                 << dynamicLMProgramTable["lastcontrolsent"].assign( toRWDBDT(getLastControlSent()) )
                 << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(( (getManualControlReceivedFlag() ? "Y":"N") ))
                 << dynamicLMProgramTable["timestamp"].assign(toRWDBDT(currentDateTime));
-                
+
                 updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
@@ -1153,11 +1152,11 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 }
 
 CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBeginningOfDay)
-{    
+{
     //Control Windows can span midnight, in which case getAvailableStopTime will represent more than 24 hours worth of seconds
     //So add 24 hours worth of seconds and do an additional test
     LONG secondsFromBeginningOfYesterday = secondsFromBeginningOfDay + 24 * 60 * 60;
-    
+
     for(LONG i=0;i<_lmprogramcontrolwindows.size();i++)
     {
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
@@ -1176,7 +1175,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
 
   Returns the next control window, or 0 if there isn't one.
   Note that if there is only 1 control window, that window is always returned
-----------------------------------------------------------------------------*/  
+----------------------------------------------------------------------------*/
 CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFromBeginningOfDay)
 {
     if(_lmprogramcontrolwindows.size() == 0)
@@ -1201,7 +1200,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFr
             if(cw->getAvailableStartTime() > secondsFromBeginningOfDay)
             {
                 return cw;
-            }          
+            }
         }
         if(cw == 0)
         { //all the control windows were earlier today, return the first one for tomorrow
@@ -1210,7 +1209,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFr
     }
     return 0;
 }
-      
+
 
 // Static Members
 const string CtiLMProgramBase::AutomaticType = "Automatic";

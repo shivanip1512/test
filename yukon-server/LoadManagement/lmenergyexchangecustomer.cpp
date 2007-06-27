@@ -2,13 +2,13 @@
         Filename:  lmenergyexchangecustomer.cpp
 
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMEnergyExchangeCustomer.
                         CtiLMEnergyExchangeCustomer maintains the state and handles
                         the persistence of groups in Load Management.
 
         Initial Date:  5/8/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -19,7 +19,6 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
-#include "device.h"
 #include "resolvers.h"
 #include "utility.h"
 
@@ -31,12 +30,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomer, CTILMENERGYEXCHANGECUSTOMER_I
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer()
-{   
+{
 }
 
 CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(const CtiLMEnergyExchangeCustomer& customer)
@@ -74,7 +73,7 @@ BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(LONG offerid) const
     {
         if( ((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getOfferId() == offerid )
         {
-            if( !stringCompareIgnoreCase(((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) ) 
+            if( !stringCompareIgnoreCase(((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
             {
                 returnBoolean = TRUE;
                 break;
@@ -99,10 +98,10 @@ void CtiLMEnergyExchangeCustomer::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeCustomer::saveGuts(RWvostream& ostrm ) const  
+void CtiLMEnergyExchangeCustomer::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMCICustomerBase::saveGuts( ostrm );
 
@@ -113,7 +112,7 @@ void CtiLMEnergyExchangeCustomer::saveGuts(RWvostream& ostrm ) const
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer* CtiLMEnergyExchangeCustomer::replicate() const
@@ -143,7 +142,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLME
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomer::restore(RWDBReader& rdr)
@@ -153,5 +152,5 @@ void CtiLMEnergyExchangeCustomer::restore(RWDBReader& rdr)
 
 // Static Members
 
-// Possible 
+// Possible
 

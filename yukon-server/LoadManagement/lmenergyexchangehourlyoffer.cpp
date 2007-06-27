@@ -18,7 +18,6 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
-#include "device.h"
 #include "resolvers.h"
 
 extern ULONG _LM_DEBUG;
