@@ -47,12 +47,14 @@
   <module name="amr">
     <skin name="standard"/>
    	<toplinks>
+   		<option id="deviceselection" name="Device Selection">
+   		   <link>/spring/csr/search</link>	
+   		</option>
+   		<option id="billing" name="Billing">
+   		   <link>/operator/Metering/Billing.jsp</link>	
+   		</option>
    		<option id="Scheduler" name="Scheduler">
-   			<sublinks>
-   				<option name="Schedules">
-   					<link>/spring/macsscheduler/scheduledscripts/view</link>	
-   				</option>
-   			</sublinks>
+   		   <link>/spring/macsscheduler/scheduledscripts/view</link>	
    		</option>
   	</toplinks>  
   </module>

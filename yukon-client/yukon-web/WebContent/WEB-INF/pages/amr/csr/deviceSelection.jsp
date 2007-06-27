@@ -3,8 +3,8 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Device Selection" module="operations">
-<cti:standardMenu/>
+<cti:standardPage title="Device Selection" module="amr">
+<cti:standardMenu menuSelection="deviceselection"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
     &gt; Device selection

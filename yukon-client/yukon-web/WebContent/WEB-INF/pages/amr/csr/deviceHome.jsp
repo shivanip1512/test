@@ -3,7 +3,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Device Home Page" module="operations">
+<cti:standardPage title="Device Home Page" module="amr">
 <cti:standardMenu/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
