@@ -394,6 +394,11 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
                 }
             }
         }
+        //always add my own ccu to my blackList
+        LiteYukonPAObject myCCU = DaoFactory.getPaoDao().getLiteYukonPAO(route.getDeviceID());
+        if(!blackList.contains(myCCU)) {
+            blackList.add(myCCU);
+        }
         return blackList;
     }
     
