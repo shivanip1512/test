@@ -92,6 +92,8 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     private Vector blackList = new Vector();
     
     private String choice = "No";
+    private String myCCUName = "";
+    private String routeName = "";
     public JTextField[] repeaterTextFieldArray = {
             getRepeater1VariableTextField(),
             getRepeater2VariableTextField(),
@@ -149,6 +151,8 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         this.owner = owner;
         routeMaster = new RegenerateRoute();
         route = route_;
+        myCCUName = DaoFactory.getPaoDao().getYukonPAOName(route.getDeviceID());
+        routeName = route.getPAOName();
         initialize();
     }
 
@@ -429,9 +433,9 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         try {
             
             setName("AdvanceRouteSetupDialog");
-            setTitle("Advanced Route Setup");
+            setTitle("Advanced Route Setup: " + routeName);
             setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-            setSize(440, 600);
+            setSize(520, 600);
             initializeBits();
             setContentPane(getContentPanel());
             this.validate();
@@ -619,7 +623,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     public JLabel getDuplicatesLabel() {
         if( duplicatesLabel == null ){
             duplicatesLabel = new JLabel();
-            duplicatesLabel.setText("Check ccu's you want to exclud from future suggestions.");
+            duplicatesLabel.setText("Check ccu's you want to exclude from future suggestions.");
         }
         return duplicatesLabel;
     }
@@ -750,9 +754,9 @@ protected javax.swing.JPanel getComponentPanel() {
         if(componentPanel == null) {
             componentPanel = new JPanel();
             componentPanel.setLayout(new java.awt.GridBagLayout());
-            componentPanel.setBorder(new TitleBorder("Fixed/Vairable bit roles:"));
-            componentPanel.setMinimumSize(new Dimension(400, 490));
-            componentPanel.setPreferredSize(new Dimension(400, 490));
+            componentPanel.setBorder(new TitleBorder("Fixed/Vairable bit roles on: " + myCCUName));
+            componentPanel.setMinimumSize(new Dimension(500, 490));
+            componentPanel.setPreferredSize(new Dimension(500, 490));
             
             java.awt.GridBagConstraints constraintsCCUFixedLabel = new java.awt.GridBagConstraints();
             constraintsCCUFixedLabel.gridx = 0; constraintsCCUFixedLabel.gridy = 0;
@@ -1137,7 +1141,7 @@ protected javax.swing.JPanel getComponentPanel() {
         if(contentPanel == null) {
             contentPanel = new JPanel();
             contentPanel.setLayout(new java.awt.GridBagLayout());
-            contentPanel.setSize( 400,600);
+            contentPanel.setSize( 500,600);
             
             java.awt.GridBagConstraints constraintsComponentPanel = new java.awt.GridBagConstraints();
             constraintsComponentPanel.gridx = 0; constraintsComponentPanel.gridy = 1;
