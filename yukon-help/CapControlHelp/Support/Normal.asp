@@ -10,7 +10,7 @@
     <!--BeginHiddenExpansion $BP80PageASP_Title; EndHiddenExpansion-->
   </wp:Title>
   <wp:Logo>
-    <wp:Image wp:href="images/cannonlogo.gif" wp:width="216" wp:height="63" wp:alt="Cannon Technologies"/>
+    <wp:Image wp:href="images/cannonlogo.gif" wp:width="217" wp:height="63" wp:alt="Capacitor Control"/>
   </wp:Logo>
   <!--BeginHiddenExpansion $BP80PageASP_Navigation; EndHiddenExpansion-->
   <wp:ContactInfo>
@@ -28,8 +28,8 @@
       Fax: (763) 543-7777
     </wp:Item>
     <wp:Item>
-      <wp:GotoLink wp:href="mailto:sales@cannontech.com">
-        sales@cannontech.com
+      <wp:GotoLink wp:href="mailto:support@cannontech.com">
+        support@cannontech.com
       </wp:GotoLink>
     </wp:Item> 
   </wp:ContactInfo>

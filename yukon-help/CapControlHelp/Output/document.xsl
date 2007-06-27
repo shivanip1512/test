@@ -14,8 +14,8 @@
       <STYLE>
         a:active  { color: #0000CC}
         a:hover  { color: #CC0033}
-        a:link    { color: #3366CC}
-        a:visited { color: #9999CC}
+        a:link    { color: #0066cc}
+        a:visited { color: #0066cc}
 
           { font-family: Verdana,Arial, Helvetica, sans-serif; }
         .Body
@@ -40,52 +40,52 @@
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .CellHeading
-          { color: #003366;
+          { color: #000000;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 11px; font-style: normal; font-weight: bold;
             margin-left: 0em; margin-top: 0em; margin-bottom: 0em;
             text-align: center; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Heading1
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 18px; font-style: normal; font-weight: bold;
             margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Heading2
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 16px; font-style: normal; font-weight: bold;
-            margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
+            margin-left: 0em; margin-top: 0.75em; margin-bottom: 0.5em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Heading3
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 14px; font-style: normal; font-weight: bold;
-            margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
+            margin-left: 0em; margin-top: 0.75em; margin-bottom: 0.5em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Heading4
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 12px; font-style: italic; font-weight: bold;
-            margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
+            margin-left: 0em; margin-top: 0.75em; margin-bottom: 0.5em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Heading5
-          { color: #003366;
+          { color: #000000;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 11px; font-style: italic; font-weight: bold;
-            margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
+            margin-left: 0em; margin-top: 0.75em; margin-bottom: 0.5em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Indented1
           { color: #000000;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 11px; font-style: normal; font-weight: normal;
-            margin-left: 2.5em; margin-top: 0.5em; margin-bottom: 0.5em;
+            margin-left: 2.25em; margin-top: 0.5em; margin-bottom: 0.5em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Indented2
@@ -117,7 +117,7 @@
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .IXGroupTitle
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 16px; font-style: normal; font-weight: bold;
             margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
@@ -166,7 +166,7 @@
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .IXTitle
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 18px; font-style: normal; font-weight: bold;
             margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
@@ -176,7 +176,7 @@
           { color: #000000;
             font-family: monospace;
             font-size: 11px; font-style: normal; font-weight: normal;
-            margin-left: 0em; margin-top: 0em; margin-bottom: 0em;
+            margin-left: 2.0em; margin-top: 0em; margin-bottom: 0em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: pre }
         .SmartList1
@@ -190,7 +190,7 @@
           { color: #000000;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 11px; font-style: normal; font-weight: normal;
-            margin-left: 2.5em; margin-top: 0.25em; margin-bottom: 0.25em;
+            margin-left: 1em; margin-top: 0.25em; margin-bottom: 0.25em;
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .SmartList3
@@ -222,7 +222,7 @@
             text-align: center; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .Title
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 20px; font-style: normal; font-weight: bold;
             margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
@@ -264,7 +264,7 @@
             text-align: left; text-indent: 0em; text-decoration: none;
             white-space: normal }
         .TOCTitle
-          { color: #003366;
+          { color: #0066cc;
             font-family: Verdana,Arial, Helvetica, sans-serif;
             font-size: 18px; font-style: normal; font-weight: bold;
             margin-left: 0em; margin-top: 0.5em; margin-bottom: 0.5em;
@@ -345,7 +345,7 @@
 
       <xsl:choose>
         <xsl:when test="@wp:bullet">
-          <DIV style="margin-left: 1.5em">
+          <DIV style="margin-left: 1em">
             <LI/> <xsl:apply-templates />
           </DIV>
         </xsl:when>

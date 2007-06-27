@@ -2,7 +2,7 @@
 <?xml-stylesheet href="document.xsl" type="text/xsl"?>
 <!--
      Generated using Quadralay WebWorks Publisher Standard Edition 8.0.5337.0 from template XML+XSL.
-     Last updated on 02/01/07 14:16:43.
+     Last updated on 06/27/07 16:31:39.
 -->
 
 <wp:Document xmlns:wp='http://webworks.com/publisher/xml/schema'>
@@ -10,7 +10,7 @@
     Index
   </wp:Title>
   <wp:Logo>
-    <wp:Image wp:href="images/cannonlogo.gif" wp:width="216" wp:height="63" wp:alt="Cannon Technologies"/>
+    <wp:Image wp:href="images/cannonlogo.gif" wp:width="217" wp:height="63" wp:alt="Capacitor Control"/>
   </wp:Logo>
   <wp:Navbar>
     <wp:TOC>
@@ -19,7 +19,7 @@
       </wp:GotoLink>
     </wp:TOC>
     <wp:Prev>
-      <wp:GotoLink wp:href="CapControl-2-1.xml">
+      <wp:GotoLink wp:href="CapControl-1-1.xml">
         <wp:Image wp:href="images/prev.gif" wp:border="0" wp:alt="Previous" />
       </wp:GotoLink>
     </wp:Prev>
@@ -45,8 +45,8 @@
       Fax: (763) 543-7777
     </wp:Item>
     <wp:Item>
-      <wp:GotoLink wp:href="mailto:sales@cannontech.com">
-        sales@cannontech.com
+      <wp:GotoLink wp:href="mailto:support@cannontech.com">
+        support@cannontech.com
       </wp:GotoLink>
     </wp:Item> 
   </wp:ContactInfo>
@@ -63,2055 +63,1339 @@
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5000" wp:style="display: block; ">
       Numerics
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5649" wp:style="display: block; ">
-      30 day kvar/watt
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5651" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1132570">report</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5656" wp:style="display: block; ">
-      30 day power factor
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5658" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1132582">report</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6375" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5748" wp:style="display: block; ">
       7000 series
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6377" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5750" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116827">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1077955">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129960">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1077955">2</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5002" wp:style="display: block; ">
       A
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5998" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5331" wp:style="display: block; ">
       adaptive count
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6000" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126972">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5333" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126972">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5459" wp:style="display: block; ">
-      additional information
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5461" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123942">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6156" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5483" wp:style="display: block; ">
       address
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6158" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121792">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5485" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121792">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6132" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5459" wp:style="display: block; ">
       alt interval
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6134" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5461" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125858">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130136">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125858">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130136">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6629" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6030" wp:style="display: block; ">
       alternate substation bus
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6631" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1122013">feature</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6032" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1122013">feature</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5867" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5201" wp:style="display: block; ">
       analysis interval
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5869" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112530">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5203" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176654">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6300" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114118">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5582" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114118">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199942">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5276" wp:style="display: block; ">
-      area
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5278" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134300">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5030" wp:style="display: block; ">
-      area name
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5032" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137489">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5712" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5894" wp:style="display: block; ">
       assigned cap banks
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5714" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113655">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5896" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1181251">feeders</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5963" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5859" wp:style="display: block; ">
       assigned points
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5965" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126413">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5861" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145091">cap banks</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5705" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5886" wp:style="display: block; ">
       available cap banks
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5707" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113651">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5888" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145211">feeders</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6360" wp:style="display: block; ">
-      available feeders
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6362" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114661">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5956" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5851" wp:style="display: block; ">
       available points
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5958" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126304">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5853" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145089">cap banks</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6022" wp:style="display: block; ">
+      available substations
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6024" wp:style="display: block; ">
+      substation area
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1143692">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200072">2</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5003" wp:style="display: block; ">
       B
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5192" wp:style="display: block; ">
-      bank address
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5194" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131020">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5205" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5038" wp:style="display: block; ">
       bank size
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5207" wp:style="display: block; ">
-      cap bank
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131028">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110041">2</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5040" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1110041">cap bank</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5004" wp:style="display: block; ">
       C
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5182" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5034" wp:style="display: block; ">
       cap bank
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6003" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126972">adaptive count</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6154" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121792">address</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5968" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126413">assigned points</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5961" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126304">available points</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5197" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131020">bank address</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5210" wp:style="display: block; ">
-      bank size
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131028">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110041">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5184" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131012">CB name(order)</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5769" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108965">CBC controller</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5544" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135853">commands</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5742" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110049">control point</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6178" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121804">controller type</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6478" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108018">create</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5203" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131024">date/time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5762" wp:style="display: block; ">
-      disable
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110210">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108260">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6255" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121720">disable upon reaching max operations</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6516" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117210">edit</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5996" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126867">initiate scan on unsolicited</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5989" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126840">lower bandwidth</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6164" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121796">map location ID</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6249" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121716">max daily operations</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5755" wp:style="display: block; ">
-      name
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110157">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108197">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5499" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135525">new control order</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5224" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131036">op count</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5724" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110037">operation method</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5975" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126786">overide feeder limits</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5749" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110153">parent</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5217" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138073">parent feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6262" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121849">points</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5735" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113254">reclose delay</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5190" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131016">state</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6147" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121792">street location</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6171" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121800">switch manufacturer</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6185" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121808">type of swtich</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5982" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126813">upper bandwidth</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6386" wp:style="display: block; ">
-      cap bank controller
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6388" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116829">create</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6445" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117076">edit</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6396" wp:style="display: block; ">
-      cap bank controllers
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6398" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116829">creating</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6367" wp:style="display: block; ">
-      cap control
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6369" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1131530">module</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6671" wp:style="display: block; ">
-      cap control point
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6673" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1078158">create</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6678" wp:style="display: block; ">
-      cap control points
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6680" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1078158">types</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5178" wp:style="display: block; ">
-      CB name(order)
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5180" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131012">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5775" wp:style="display: block; ">
-      CBC
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6380" wp:style="display: block; ">
-      7000 series
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116827">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1077955">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6038" wp:style="display: block; ">
-      address
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128933">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128933">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125826">3</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125826">4</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130113">5</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130113">6</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6137" wp:style="display: block; ">
-      alt interval
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125858">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130136">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6117" wp:style="display: block; ">
-      class 0,1,2,3 scan
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125846">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130128">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6124" wp:style="display: block; ">
-      class 1,2,3 scan
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125850">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130131">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6103" wp:style="display: block; ">
-      comm channel
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125838">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130122">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116847">3</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129997">4</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5784" wp:style="display: block; ">
-      control route
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108976">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128937">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6394" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116829">create</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5809" wp:style="display: block; ">
-      disable
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123839">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116839">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6451" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117076">edit</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6421" wp:style="display: block; ">
-      ExpressCom
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116842">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129987">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6435" wp:style="display: block; ">
-      Fisher Pierce
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116846">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129996">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6130" wp:style="display: block; ">
-      interval
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125854">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130134">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6089" wp:style="display: block; ">
-      master address
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125830">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130116">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5803" wp:style="display: block; ">
-      name
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123835">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116835">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6458" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128942">one-way</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5797" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123831">parent</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6471" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123595">points</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6110" wp:style="display: block; ">
-      post comm wait
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125842">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130125">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6144" wp:style="display: block; ">
-      scan group
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125862">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130140">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5777" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108972">serial number</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6096" wp:style="display: block; ">
-      slave address
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125834">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130119">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6465" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129320">two-way</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5791" wp:style="display: block; ">
-      type
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123823">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116841">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108208">3</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129986">4</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6428" wp:style="display: block; ">
-      VERSACOM
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129958">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129988">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5764" wp:style="display: block; ">
-      CBC controller
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5766" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108965">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6112" wp:style="display: block; ">
-      class 0,1,2,3 scan
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6114" wp:style="display: block; ">
-      CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125846">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130128">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6119" wp:style="display: block; ">
-      class 1,2,3 scan
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6121" wp:style="display: block; ">
-      CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125850">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130131">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5571" wp:style="display: block; ">
-      close
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5573" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133259">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5522" wp:style="display: block; ">
-      close capacitor
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5524" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123990">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5599" wp:style="display: block; ">
-      close fail
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5601" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133271">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5613" wp:style="display: block; ">
-      close pending
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5615" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133277">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5585" wp:style="display: block; ">
-      close questionable
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5587" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133265">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5052" wp:style="display: block; ">
-      closed kvars
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5054" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137499">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6098" wp:style="display: block; ">
-      comm channel
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6100" wp:style="display: block; ">
-      CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125838">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130122">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116847">3</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129997">4</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5355" wp:style="display: block; ">
-      command
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5576" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133259">close</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5527" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123990">close capacitor</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5604" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133271">close fail</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5618" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133277">close pending</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5590" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133265">close questionable</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5513" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123988">confirm</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5357" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138156">confirm area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5394" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133184">confirm sub</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5364" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138158">disable area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5551" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123993">disable cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5474" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135235">disable feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5541" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133748">disable OV/UV</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5401" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133185">disable sub</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5371" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138158">enable area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5558" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123993">enable cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5336" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126972">adaptive count</wp:GotoLink>
     </IXLevel2>
     <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5481" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135235">enable feeder</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121792">address</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5534" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133747">enable OV/UV</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5043" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1110041">bank size</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5408" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133185">enable sub</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5157" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108965">CBC controller</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5569" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133256">open</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5520" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123989">open capacitor</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5597" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133268">open fail</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5611" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133274">open pending</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5583" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133262">open questionable</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5415" wp:style="display: block; ">
-      reset op counts
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133186">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135236">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123994">3</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5057" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1203291">control point</wp:GotoLink>
     </IXLevel2>
     <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5506" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135543">temp move back</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121804">controller type</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5808" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108018">create</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5078" wp:style="display: block; ">
+      disable
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136661">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108260">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5846" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1164229">edit</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5329" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126867">initiate scan on unsolicited</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5322" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126840">lower bandwidth</wp:GotoLink>
     </IXLevel2>
     <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5492" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135518">temporarily move cap bank</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121796">map location ID</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5422" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133731">verify all banks</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5282" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145051">max daily operations</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5429" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133732">verify failed and questionable banks</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5071" wp:style="display: block; ">
+      name
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136656">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108197">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5436" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133733">verify failed banks</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5036" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1110037">operation method</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5308" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126786">override feeder limits</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5064" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136651">parent</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5289" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145061">points</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5050" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1113254">reclose delay</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5474" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121792">street location</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5499" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121800">switch manufacturer</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5513" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121808">type of switch</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5315" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126813">upper bandwidth</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5712" wp:style="display: block; ">
+      cap bank controller
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5714" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116829">create</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5771" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1164253">edit</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5855" wp:style="display: block; ">
+      cap banks
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5864" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145091">assigned points</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5857" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145089">available points</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5700" wp:style="display: block; ">
+      cap control
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5702" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1134114">module</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6121" wp:style="display: block; ">
+      cap control points
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6123" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1078158">create</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6129" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1078158">types</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5099" wp:style="display: block; ">
+      CBC
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5753" wp:style="display: block; ">
+      7000 series
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129960">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1077955">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5371" wp:style="display: block; ">
+      address
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183236">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183236">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125826">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125826">4</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130113">5</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130113">6</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5464" wp:style="display: block; ">
+      alt interval
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125858">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130136">2</wp:GotoLink>
     </IXLevel2>
     <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5443" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133734">verify questionable banks</wp:GotoLink>
+      class 0,1,2,3 scan
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125846">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130128">2</wp:GotoLink>
     </IXLevel2>
     <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5450" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134123">verify stop</wp:GotoLink>
+      class 1,2,3 scan
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125850">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130131">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5343" wp:style="display: block; ">
-      commands
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5429" wp:style="display: block; ">
+      comm channel
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125838">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130122">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116847">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129997">4</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5171" wp:style="display: block; ">
+      control route
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108976">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183241">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5720" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116829">create</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5119" wp:style="display: block; ">
+      disable
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135365">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116839">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5777" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1164253">edit</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5739" wp:style="display: block; ">
+      ExpressCom
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116842">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129987">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5760" wp:style="display: block; ">
+      Fisher Pierce
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116846">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129996">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5457" wp:style="display: block; ">
+      interval
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125854">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130134">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5415" wp:style="display: block; ">
+      master address
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125830">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130116">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5113" wp:style="display: block; ">
+      name
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135360">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116835">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5784" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1185240">one-way</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5107" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135355">parent</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5790" wp:style="display: block; ">
+      points
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183318">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135788">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5436" wp:style="display: block; ">
+      post comm wait
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125842">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130125">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5471" wp:style="display: block; ">
+      scan group
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125862">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130140">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5164" wp:style="display: block; ">
+      serial number
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108972">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1134693">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5422" wp:style="display: block; ">
+      slave address
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125834">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130119">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5797" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145515">two-way</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5101" wp:style="display: block; ">
+      type
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135346">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116841">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108208">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129986">4</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5746" wp:style="display: block; ">
+      VERSACOM
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129958">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129988">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5152" wp:style="display: block; ">
+      CBC controller
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5383" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138093">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5154" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108965">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5345" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138153">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5508" wp:style="display: block; ">
-      confirm
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5438" wp:style="display: block; ">
+      class 0,1,2,3 scan
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5510" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123988">command</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5440" wp:style="display: block; ">
+      CBC
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125846">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130128">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5351" wp:style="display: block; ">
-      confirm area
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5445" wp:style="display: block; ">
+      class 1,2,3 scan
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5353" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138156">command</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5447" wp:style="display: block; ">
+      CBC
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125850">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130131">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5389" wp:style="display: block; ">
-      confirm sub
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5424" wp:style="display: block; ">
+      comm channel
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5391" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133184">command</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5426" wp:style="display: block; ">
+      CBC
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125838">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130122">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116847">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129997">4</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5909" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5243" wp:style="display: block; ">
       control algorithm
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5911" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128588">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5245" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128588">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6546" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5927" wp:style="display: block; ">
       kvar
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128610">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128773">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128610">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128773">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200014">3</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6567" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5941" wp:style="display: block; ">
       multi volt
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128099">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128783">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128099">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128783">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200027">3</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6574" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5955" wp:style="display: block; ">
       multi volt var
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128171">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128786">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128171">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176134">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200031">3</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6553" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5934" wp:style="display: block; ">
       power factor
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128044">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128776">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128044">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128776">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200018">3</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6006" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128751">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5339" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128751">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199987">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6560" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5948" wp:style="display: block; ">
       volts
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128094">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128780">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1175691">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176137">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200023">3</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5283" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5194" wp:style="display: block; ">
       control method
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5862" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112526">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5196" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176648">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5285" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5576" wp:style="display: block; ">
       substation bus
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134304">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114114">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114114">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199936">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5737" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5052" wp:style="display: block; ">
       control point
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5739" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110049">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5054" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1203291">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5779" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5166" wp:style="display: block; ">
       control route
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5781" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5168" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108976">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128937">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108976">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183241">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6173" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5501" wp:style="display: block; ">
       controller type
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6175" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121804">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5503" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121804">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6382" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5708" wp:style="display: block; ">
       create
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6481" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108018">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5811" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108018">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6384" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116829">cap bank controller</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5710" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116829">cap bank controller</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6676" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1078158">cap control point</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6126" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1078158">cap control points</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6391" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116829">CBC</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5717" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116829">CBC</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6525" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1078055">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5870" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1078055">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6654" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117831">schedule</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6103" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177717">schedule</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6587" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113682">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6055" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199850">substation area</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6400" wp:style="display: block; ">
-      creating
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6402" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116829">cap bank controllers</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5968" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1113682">substation bus</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5005" wp:style="display: block; ">
       D
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5121" wp:style="display: block; ">
-      daily/max ops
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5173" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138055">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5123" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130584">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5101" wp:style="display: block; ">
-      date/time
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5200" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131024">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5155" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138041">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5103" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130572">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5902" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5236" wp:style="display: block; ">
       delay time
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5904" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112550">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5238" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176679">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6330" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114138">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5612" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114138">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199967">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5269" wp:style="display: block; ">
-      delete
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5271" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133582">schedule</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5757" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5073" wp:style="display: block; ">
       disable
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5759" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5075" wp:style="display: block; ">
       cap bank
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110210">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108260">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136661">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108260">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5806" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5116" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123839">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116839">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135365">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116839">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5824" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5135" wp:style="display: block; ">
       feeder
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111359">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111581">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1137416">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1111581">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6053" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5298" wp:style="display: block; ">
       schedule
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117883">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117838">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177551">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177647">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5951" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5147" wp:style="display: block; ">
       substation bus
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117474">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113775">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1195707">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199905">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177981">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199859">4</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5359" wp:style="display: block; ">
-      disable area
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5361" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138158">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5546" wp:style="display: block; ">
-      disable cap bank
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5548" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123993">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5469" wp:style="display: block; ">
-      disable feeder
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5471" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135235">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5536" wp:style="display: block; ">
-      disable OV/UV
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5538" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133748">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5396" wp:style="display: block; ">
-      disable sub
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5398" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133185">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6643" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6044" wp:style="display: block; ">
       disable substation bus
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6645" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121982">feature</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6046" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121982">feature</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6194" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5180" wp:style="display: block; ">
       disable upon reaching max operations
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6252" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121720">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6196" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113088">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6342" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114196">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5255" wp:style="display: block; ">
-      disabled
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5257" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133574">schedule</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5182" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176450">feeder</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5006" wp:style="display: block; ">
       E
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5262" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5766" wp:style="display: block; ">
       edit
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6519" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117210">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5849" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1164229">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6442" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117076">cap bank controller</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5768" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1164253">cap bank controller</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6448" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117076">CBC</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5774" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1164253">CBC</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6539" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117261">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5884" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1117261">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5264" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133578">schedule</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6069" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199872">substation area</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6601" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117422">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5982" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1175987">substation bus</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6667" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6117" wp:style="display: block; ">
       editing
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6669" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117848">substation buses</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6119" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177593">substation buses</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5366" wp:style="display: block; ">
-      enable area
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6038" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1122013">enable dual bus</wp:GotoLink>
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5368" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138158">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5553" wp:style="display: block; ">
-      enable cap bank
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5555" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123993">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6637" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1122013">enable dual bus</wp:GotoLink>
-    </IXLevel1>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5476" wp:style="display: block; ">
-      enable feeder
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5478" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135235">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5529" wp:style="display: block; ">
-      enable OV/UV
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5531" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133747">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5403" wp:style="display: block; ">
-      enable sub
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5405" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133185">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6416" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5734" wp:style="display: block; ">
       ExpressCom
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6418" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5736" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116842">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129987">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116842">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129987">2</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5007" wp:style="display: block; ">
       F
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5888" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5222" wp:style="display: block; ">
       failure percent
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5890" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112542">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5224" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176668">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6318" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114130">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5600" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114130">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199956">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6633" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6034" wp:style="display: block; ">
       feature
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6635" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1122013">alternate substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6036" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1122013">alternate substation bus</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6648" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121982">disable substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6049" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121982">disable substation bus</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5132" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5124" wp:style="display: block; ">
       feeder
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5872" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112530">analysis interval</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5206" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176654">analysis interval</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5717" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113655">assigned cap banks</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5248" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128588">control algorithm</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5710" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113651">available cap banks</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5199" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176648">control method</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5467" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135229">commands</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5867" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1078055">create</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5914" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128588">control algorithm</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5241" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176679">delay time</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5865" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112526">control method</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6522" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1078055">create</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5176" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138055">daily/max ops</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5158" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138041">date/time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5907" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112550">delay time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5827" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5138" wp:style="display: block; ">
       disable
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111359">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111581">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1137416">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1111581">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6199" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113088">disable upon reaching max operations</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5185" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176450">disable upon reaching max operations</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6536" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117261">edit</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5881" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1117261">edit</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5893" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112542">failure percent</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5227" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176668">failure percent</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5134" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138021">feeder name</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5567" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199612">map location ID</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5834" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1102318">map location ID</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5213" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176658">max confirm time</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5879" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112534">max confirm time</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5178" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176445">max daily operations</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6192" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113084">max daily operations</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5821" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5132" wp:style="display: block; ">
       name
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111355">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110921">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1137411">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1110921">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5942" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128604">off peak settings</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5276" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128604">off peak settings</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5815" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111351">parent</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5126" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1137406">parent</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5886" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112538">pass percent</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5220" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176663">pass percent</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6581" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113153">peak operating days</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5962" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176354">peak operating days</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5935" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128600">peak settings</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5269" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128600">peak settings</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5921" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128592">peak start time</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5255" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128592">peak start time</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5928" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128596">peak stop time</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5262" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128596">peak stop time</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5164" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138046">pfactor/est.</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5234" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176674">send retries</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5900" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112546">send retries</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5192" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176644">strategy name</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5140" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138026">state</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5906" wp:style="display: block; ">
+      var point
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199651">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199767">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5859" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112522">strategy name</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5920" wp:style="display: block; ">
+      volt point
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199658">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199775">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5146" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138031">target</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5913" wp:style="display: block; ">
+      watt point
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199654">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199770">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5152" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138036">var load/est.</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5840" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113342">var point</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5852" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111676">volt point</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5846" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113353">watt point</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5170" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138051">watts/volts</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5128" wp:style="display: block; ">
-      feeder name
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5890" wp:style="display: block; ">
+      feeders
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5130" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138021">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5899" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1181251">assigned  cap banks</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5455" wp:style="display: block; ">
-      feeders and capacitor banks
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5457" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123896">information</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5892" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145211">available cap banks</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6430" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5755" wp:style="display: block; ">
       Fisher Pierce
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6432" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5757" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116846">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129996">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116846">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129996">2</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5008" wp:style="display: block; ">
       G
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6264" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5617" wp:style="display: block; ">
       geographical name
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6266" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114052">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5619" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199723">substation bus</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5010" wp:style="display: block; ">
       I
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6069" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5395" wp:style="display: block; ">
       info
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6071" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1118094">schedule</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5397" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177419">schedule</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5329" wp:style="display: block; ">
-      information
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5453" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123896">feeders and capacitor banks</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5374" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130754">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5331" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1124978">substation bus areas</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5991" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5324" wp:style="display: block; ">
       initiate scan on unsolicited
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5993" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126867">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5326" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126867">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5248" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5452" wp:style="display: block; ">
       interval
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6127" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5454" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125854">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130134">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5250" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133570">schedule</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125854">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130134">2</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5012" wp:style="display: block; ">
       K
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6541" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5922" wp:style="display: block; ">
       kvar
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6543" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5924" wp:style="display: block; ">
       control algorithm
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128610">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128773">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128610">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128773">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200014">3</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5013" wp:style="display: block; ">
       L
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5241" wp:style="display: block; ">
-      last run time
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5243" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133566">schedule</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5984" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5317" wp:style="display: block; ">
       lower bandwidth
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5986" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126840">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5319" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126840">cap bank</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5014" wp:style="display: block; ">
       M
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5829" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5487" wp:style="display: block; ">
       map location ID
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6161" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121796">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5489" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121796">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5831" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1102318">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5564" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199612">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6272" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114029">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5625" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199728">substation bus</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6084" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5410" wp:style="display: block; ">
       master address
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6086" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5412" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125830">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130116">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125830">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130116">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5874" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5208" wp:style="display: block; ">
       max confirm time
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5876" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112534">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5210" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176658">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6306" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114122">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5588" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114122">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199946">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6187" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5173" wp:style="display: block; ">
       max daily operations
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6246" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121716">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5279" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145051">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6189" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113084">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5175" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176445">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6336" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114192">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5631" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114192">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200045">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6371" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5704" wp:style="display: block; ">
       module
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6373" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1131530">cap control</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5706" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1134114">cap control</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6562" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5936" wp:style="display: block; ">
       multi volt
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6564" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5938" wp:style="display: block; ">
       control algorithm
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128099">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128783">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128099">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128783">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200027">3</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6569" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5950" wp:style="display: block; ">
       multi volt var
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6571" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5952" wp:style="display: block; ">
       control algorithm
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128171">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128786">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128171">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176134">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200031">3</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5015" wp:style="display: block; ">
       N
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5226" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5066" wp:style="display: block; ">
       name
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5752" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5068" wp:style="display: block; ">
       cap bank
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110157">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108197">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136656">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108197">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5800" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5110" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123835">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116835">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135360">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116835">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5818" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5129" wp:style="display: block; ">
       feeder
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111355">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110921">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1137411">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1110921">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5228" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5292" wp:style="display: block; ">
       schedule
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133558">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117879">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117837">3</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177546">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177667">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5945" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5141" wp:style="display: block; ">
       substation bus
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117470">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113774">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1195702">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199900">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1113774">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199857">4</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5494" wp:style="display: block; ">
-      new control order
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5496" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135525">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5234" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5388" wp:style="display: block; ">
       next run time
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5236" wp:style="display: block; ">
-      schedule
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133562">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1118016">2</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5390" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177414">schedule</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5016" wp:style="display: block; ">
       O
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5937" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5271" wp:style="display: block; ">
       off peak settings
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5939" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128604">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5273" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128604">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6030" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128767">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5363" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128767">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200007">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6453" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5779" wp:style="display: block; ">
       one-way
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6455" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128942">CBC</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5781" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1185240">CBC</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5219" wp:style="display: block; ">
-      op count
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5221" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131036">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5620" wp:style="display: block; ">
-      op count value
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5622" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135588">reset op counts</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5564" wp:style="display: block; ">
-      open
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5566" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133256">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5515" wp:style="display: block; ">
-      open capacitor
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5517" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123989">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5592" wp:style="display: block; ">
-      open fail
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5594" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133268">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5606" wp:style="display: block; ">
-      open pending
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5608" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133274">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5578" wp:style="display: block; ">
-      open questionable
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5580" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133262">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5719" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5030" wp:style="display: block; ">
       operation method
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5721" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110037">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5032" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1110037">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5670" wp:style="display: block; ">
-      orphaned capacitor banks
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5672" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131133">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5677" wp:style="display: block; ">
-      orphaned CBCs
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5679" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131210">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5663" wp:style="display: block; ">
-      orphaned feeders
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5665" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131068">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6353" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5088" wp:style="display: block; ">
       outgoing command
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6355" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114580">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5090" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177776">substation bus</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5970" wp:style="display: block; ">
-      overide feeder limits
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5303" wp:style="display: block; ">
+      override feeder limits
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5972" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126786">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5305" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126786">cap bank</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5017" wp:style="display: block; ">
       P
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5322" wp:style="display: block; ">
-      page
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5324" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1129228">substation bus areas</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5744" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5059" wp:style="display: block; ">
       parent
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5746" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1110153">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5061" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1136651">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5794" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123831">CBC</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5104" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135355">CBC</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5812" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111351">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5122" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1137406">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5212" wp:style="display: block; ">
-      parent feeder
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5214" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138073">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5881" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5215" wp:style="display: block; ">
       pass percent
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5883" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112538">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5217" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176663">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6312" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114126">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5594" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114126">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199951">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6576" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5957" wp:style="display: block; ">
       peak operating days
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6578" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113153">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5959" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176354">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6624" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129594">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6017" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129594">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200059">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5930" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5264" wp:style="display: block; ">
       peak settings
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5932" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128600">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5266" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128600">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6024" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128763">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5357" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128763">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200002">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5916" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5250" wp:style="display: block; ">
       peak start time
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5918" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128592">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5252" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128592">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6012" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128755">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5345" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128755">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199992">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5923" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5257" wp:style="display: block; ">
       peak stop time
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5925" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128596">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5259" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128596">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6018" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128759">substation bus</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5351" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128759">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199997">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5066" wp:style="display: block; ">
-      pfactor/est.
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5161" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138046">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5109" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130576">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5068" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137509">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6682" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6131" wp:style="display: block; ">
       point editor
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6702" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1115374">alarms</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6151" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1115374">alarms</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6705" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1115371">foreign data</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6154" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1115371">foreign data</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6684" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6133" wp:style="display: block; ">
       general
     </IXLevel2>
-    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6686" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1115031">analog</wp:GotoLink>
+    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6135" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1115031">analog</wp:GotoLink>
     </IXLevel3>
-    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6690" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1104329">status</wp:GotoLink>
+    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6139" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1104329">status</wp:GotoLink>
     </IXLevel3>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6693" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6142" wp:style="display: block; ">
       physical setup
     </IXLevel2>
-    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6695" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1104364">analog</wp:GotoLink>
+    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6144" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1104364">analog</wp:GotoLink>
     </IXLevel3>
-    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6699" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1104403">status</wp:GotoLink>
+    <IXLevel3 wp:type="para" wp:class="IXLevel3" wp:id="wp6148" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1104403">status</wp:GotoLink>
     </IXLevel3>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6257" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5284" wp:style="display: block; ">
       points
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6259" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121849">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5286" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145061">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6468" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123595">CBC</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5787" wp:style="display: block; ">
+      CBC
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183318">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135788">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6105" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5431" wp:style="display: block; ">
       post comm wait
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6107" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5433" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125842">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130125">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125842">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130125">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6548" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5929" wp:style="display: block; ">
       power factor
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6550" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5931" wp:style="display: block; ">
       control algorithm
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128044">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128776">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128044">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128776">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200018">3</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5019" wp:style="display: block; ">
       R
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5698" wp:style="display: block; ">
-      recent cap bank moves
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5700" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135064">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5691" wp:style="display: block; ">
-      recent controls
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5693" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1136461">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5730" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5045" wp:style="display: block; ">
       reclose delay
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5732" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113254">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5047" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1113254">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6058" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5381" wp:style="display: block; ">
       repeat interval
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6060" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1118012">schedule</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5631" wp:style="display: block; ">
-      report
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5654" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1132570">30 day kvar/watt</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5661" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1132582">30 day power factor</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5640" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131770">today's kvar/watt</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5647" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1132187">today's power factor</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5633" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131391">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5410" wp:style="display: block; ">
-      reset op counts
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5412" wp:style="display: block; ">
-      command
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133186">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135236">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123994">3</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5625" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135588">op count value</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5383" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177409">schedule</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5020" wp:style="display: block; ">
       S
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6139" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5466" wp:style="display: block; ">
       scan group
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6141" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5468" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125862">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130140">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125862">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130140">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5230" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5080" wp:style="display: block; ">
       schedule
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6651" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117831">create</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6100" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177717">create</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5274" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133582">delete</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6056" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5301" wp:style="display: block; ">
       disable
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117883">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117838">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177551">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177647">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5260" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133574">disabled</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5267" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133578">edit</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6074" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1118094">info</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5253" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133570">interval</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5246" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133566">last run time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5232" wp:style="display: block; ">
-      name
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133558">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117879">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117837">3</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5239" wp:style="display: block; ">
-      next run time
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133562">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1118016">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6063" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1118012">repeat interval</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6348" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114576">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5684" wp:style="display: block; ">
-      schedules
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5686" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133587">view</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5895" wp:style="display: block; ">
-      send retries
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5897" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112546">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6324" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114134">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5771" wp:style="display: block; ">
-      serial number
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5773" wp:style="display: block; ">
-      CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108972">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128933">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128933">3</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125826">4</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125826">5</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130113">6</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130113">7</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5045" wp:style="display: block; ">
-      setup
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5047" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137494">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6091" wp:style="display: block; ">
-      slave address
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6093" wp:style="display: block; ">
-      CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1125834">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1130119">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5038" wp:style="display: block; ">
-      state
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5187" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131016">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5137" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138026">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5082" wp:style="display: block; ">
-      substation bus
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130560">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138093">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5040" wp:style="display: block; ">
-      substation bus area
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138079">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138153">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5854" wp:style="display: block; ">
-      strategy name
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5856" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1112522">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6290" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114110">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6149" wp:style="display: block; ">
-      street location
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6151" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121792">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5073" wp:style="display: block; ">
-      sub name
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5075" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134226">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5077" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1122013">substation bus</wp:GotoLink>
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5464" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123942">additional information</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6303" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114118">analysis interval</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5281" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134300">area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6365" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114661">available feeders</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5380" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138093">commands</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6009" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128751">control algorithm</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5288" wp:style="display: block; ">
-      control method
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134304">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114114">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6584" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113682">create</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5126" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130584">daily/max ops</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5106" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130572">date/time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6333" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114138">delay time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5954" wp:style="display: block; ">
-      disable
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117474">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113775">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6345" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114196">disable upon reaching max operations</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6598" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117422">edit</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6641" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1122013">enable dual bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6269" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114052">geographical name</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5377" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130754">information</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6275" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114029">map location ID</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6309" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114122">max confirm time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6339" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114192">max daily operations</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5948" wp:style="display: block; ">
-      name
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117470">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113774">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6033" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128767">off peak settings</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6358" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114580">outgoing command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6321" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114130">pass failure</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6315" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114126">pass percent</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6027" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128763">peak settings</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6015" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128755">peak start time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6021" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128759">peak stop time</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5112" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130576">pfactor/est.</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6351" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114576">schedule</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6327" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114134">send retries</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5085" wp:style="display: block; ">
-      state
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130560">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138093">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6293" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114110">strategy name</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5079" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134226">sub name</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6627" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129594">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5092" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130564">target</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5099" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130568">var load/est.</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5400" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177419">info</wp:GotoLink>
     </IXLevel2>
     <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5295" wp:style="display: block; ">
-      var point
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134308">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114033">2</wp:GotoLink>
+      name
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177546">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177667">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5309" wp:style="display: block; ">
-      volt point
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134316">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114041">2</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5393" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177414">next run time</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5302" wp:style="display: block; ">
-      watt point
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134370">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114037">2</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5386" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177409">repeat interval</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5119" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130580">watts/volts</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5082" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177771">substation bus</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5034" wp:style="display: block; ">
-      substation bus area
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5229" wp:style="display: block; ">
+      send retries
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5036" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137489">area name</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5231" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176674">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5057" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137499">closed kvars</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5606" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114134">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199962">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5341" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138153">commands</wp:GotoLink>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5159" wp:style="display: block; ">
+      serial number
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5161" wp:style="display: block; ">
+      CBC
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108972">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183236">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1183236">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125826">4</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125826">5</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130113">6</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130113">7</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1134693">8</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5327" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1124978">information</wp:GotoLink>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5417" wp:style="display: block; ">
+      slave address
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5419" wp:style="display: block; ">
+      CBC
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1125834">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1130119">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5320" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1129228">page</wp:GotoLink>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5187" wp:style="display: block; ">
+      strategy name
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5189" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176644">feeder</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5071" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137509">pfactor/est.</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5570" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114110">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199932">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5050" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137494">setup</wp:GotoLink>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5476" wp:style="display: block; ">
+      street location
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5478" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121792">cap bank</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5043" wp:style="display: block; ">
-      state
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138079">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138153">2</wp:GotoLink>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6026" wp:style="display: block; ">
+      substation area
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6028" wp:style="display: block; ">
+      available substations
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1143692">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200072">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5338" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123842">substation buses</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6052" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199850">create</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5064" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137504">tripped kvars</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6066" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199872">edit</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5333" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5084" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1122013">substation bus</wp:GotoLink>
+    </IXLevel1>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5585" wp:style="display: block; ">
+      analysis interval
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114118">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199942">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5342" wp:style="display: block; ">
+      control algorithm
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128751">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199987">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5579" wp:style="display: block; ">
+      control method
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114114">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199936">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5965" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1113682">create</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5615" wp:style="display: block; ">
+      delay time
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114138">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199967">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5150" wp:style="display: block; ">
+      disable
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1195707">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199905">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177981">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199859">4</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5979" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1175987">edit</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6042" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1122013">enable dual bus</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5622" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199723">geographical name</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5628" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199728">map location ID</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5591" wp:style="display: block; ">
+      max confirm time
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114122">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199946">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5634" wp:style="display: block; ">
+      max daily operations
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114192">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200045">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5144" wp:style="display: block; ">
+      name
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1195702">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199900">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1113774">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199857">4</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5366" wp:style="display: block; ">
+      off peak settings
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128767">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200007">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5093" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177776">outgoing command</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5603" wp:style="display: block; ">
+      pass failure
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114130">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199956">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5597" wp:style="display: block; ">
+      pass percent
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114126">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199951">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5360" wp:style="display: block; ">
+      peak settings
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128763">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200002">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5348" wp:style="display: block; ">
+      peak start time
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128755">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199992">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5354" wp:style="display: block; ">
+      peak stop time
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1128759">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199997">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5086" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177771">schedule</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5609" wp:style="display: block; ">
+      send retries
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114134">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199962">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5573" wp:style="display: block; ">
+      strategy name
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1114110">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199932">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6020" wp:style="display: block; ">
+      substation bus
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129594">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200059">2</wp:GotoLink>
+    </IXLevel2>
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6113" wp:style="display: block; ">
       substation buses
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6665" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1117848">editing</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6115" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1177593">editing</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5335" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123842">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6166" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5494" wp:style="display: block; ">
       switch manufacturer
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6168" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121800">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5496" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121800">cap bank</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5021" wp:style="display: block; ">
       T
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5087" wp:style="display: block; ">
-      target
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5143" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138031">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5089" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130564">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5501" wp:style="display: block; ">
-      temp move back
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5503" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135543">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5487" wp:style="display: block; ">
-      temporarily move cap bank
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5489" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135518">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5635" wp:style="display: block; ">
-      today's kvar/watt
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5637" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131770">report</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5642" wp:style="display: block; ">
-      today's power factor
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5644" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1132187">report</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5059" wp:style="display: block; ">
-      tripped kvars
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5061" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1137504">substation bus area</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6460" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5792" wp:style="display: block; ">
       two-way
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6462" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129320">CBC</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5794" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1145515">CBC</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5786" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5095" wp:style="display: block; ">
       type
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5788" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5097" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1123823">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1116841">2</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1108208">3</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129986">4</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1135346">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1116841">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1108208">3</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129986">4</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6180" wp:style="display: block; ">
-      type of swtich
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5508" wp:style="display: block; ">
+      type of switch
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6182" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1121808">cap bank</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5510" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1121808">cap bank</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5022" wp:style="display: block; ">
       U
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5977" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5310" wp:style="display: block; ">
       upper bandwidth
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5979" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1126813">cap bank</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5315" wp:style="display: block; ">
-      using
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5317" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123798">web based capacitor control</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5312" wp:style="display: block; ">
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1126813">cap bank</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5023" wp:style="display: block; ">
       V
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5094" wp:style="display: block; ">
-      var load/est.
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5149" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138036">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5096" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130568">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5290" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5901" wp:style="display: block; ">
       var point
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5837" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113342">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5903" wp:style="display: block; ">
+      feeder
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199651">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199767">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5292" wp:style="display: block; ">
-      substation bus
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134308">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114033">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5417" wp:style="display: block; ">
-      verify all banks
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5419" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133731">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5424" wp:style="display: block; ">
-      verify failed and questionable banks
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5426" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133732">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5431" wp:style="display: block; ">
-      verify failed banks
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5433" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133733">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5438" wp:style="display: block; ">
-      verify questionable banks
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5440" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133734">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5445" wp:style="display: block; ">
-      verify stop
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5447" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134123">command</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6423" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5741" wp:style="display: block; ">
       VERSACOM
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6425" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5743" wp:style="display: block; ">
       CBC
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129958">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1129988">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129958">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1129988">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5627" wp:style="display: block; ">
-      view
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5675" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131133">orphaned capacitor banks</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5682" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131210">orphaned CBCs</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5668" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131068">orphaned feeders</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5703" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1135064">recent cap bank moves</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5696" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1136461">recent controls</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5629" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1131391">report</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5689" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1133587">schedules</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5304" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5915" wp:style="display: block; ">
       volt point
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5849" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1111676">feeder</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5917" wp:style="display: block; ">
+      feeder
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199658">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199775">2</wp:GotoLink>
     </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5306" wp:style="display: block; ">
-      substation bus
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134316">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114041">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp6555" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5943" wp:style="display: block; ">
       volts
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp6557" wp:style="display: block; ">
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5945" wp:style="display: block; ">
       control algorithm
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128094">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1128780">2</wp:GotoLink>
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1175691">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1176137">2</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1200023">3</wp:GotoLink>
     </IXLevel2>
     <IXGroupTitle wp:type="para" wp:class="IXGroupTitle" wp:id="wp5024" wp:style="display: block; ">
       W
     </IXGroupTitle>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5297" wp:style="display: block; ">
+    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5908" wp:style="display: block; ">
       watt point
     </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5843" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1113353">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5299" wp:style="display: block; ">
-      substation bus
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1134370">1</wp:GotoLink>,
-      <wp:GotoLink wp:href="CapControl-2-1.xml#1114037">2</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5114" wp:style="display: block; ">
-      watts/volts
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5167" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1138051">feeder</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5116" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1130580">substation bus</wp:GotoLink>
-    </IXLevel2>
-    <IXLevel1 wp:type="para" wp:class="IXLevel1" wp:id="wp5311" wp:style="display: block; ">
-      web based capacitor control
-    </IXLevel1>
-    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5313" wp:style="display: block; ">
-      <wp:GotoLink wp:href="CapControl-1-1.xml#1123798">using</wp:GotoLink>
+    <IXLevel2 wp:type="para" wp:class="IXLevel2" wp:id="wp5910" wp:style="display: block; ">
+      feeder
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199654">1</wp:GotoLink>,
+      <wp:GotoLink wp:href="CapControl-1-1.xml#1199770">2</wp:GotoLink>
     </IXLevel2>
   </wp:Content>
 </wp:Document>
