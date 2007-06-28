@@ -86,6 +86,10 @@ public class FixedDeviceGroupingHack {
         
     }
     
+    public String getGroupForDevice(FixedDeviceGroups group, YukonDevice device) {
+        return null;
+    }
+    
     private void stripFromGroup(StoredDeviceGroup group, YukonDevice device) {
         deviceGroupMemberEditorDao.removeDevices(group, Collections.singletonList(device));
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(group);
