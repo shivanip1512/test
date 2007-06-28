@@ -70,7 +70,6 @@ public class NCDC_HandheldFormat extends FileFormatBase
 			com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME,
 			com.cannontech.database.db.point.RawPointHistory.TABLE_NAME,
 			com.cannontech.database.db.point.Point.TABLE_NAME,
-			com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();

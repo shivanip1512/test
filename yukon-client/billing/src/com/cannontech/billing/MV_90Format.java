@@ -49,7 +49,6 @@ public class MV_90Format extends FileFormatBase
 		{
 			com.cannontech.database.db.point.RawPointHistory.TABLE_NAME,
 			com.cannontech.database.db.point.Point.TABLE_NAME,
-			com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
