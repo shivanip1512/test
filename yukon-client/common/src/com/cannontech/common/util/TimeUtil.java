@@ -201,9 +201,25 @@ public static void roundDateUp(Calendar date, int minuteInterval) {
 }
 
 public static Date addMinutes(Date date, int minutes) {
+    return TimeUtil.addUnit(date, Calendar.MINUTE, minutes);
+}
+
+public static Date addDays(Date date, int days) {
+    return TimeUtil.addUnit(date, Calendar.DAY_OF_YEAR, days);
+}
+
+/**
+ * Method to add a given amount of the time unit passed in to the date passed in.  
+ * (this will also work for subtraction if you pass in a negative amount)
+ * @param date - Date to add to
+ * @param timeUnit - Calendar time unit to increment. ex: Calendar.MINUTE
+ * @param amount - Amount to add to the time
+ * @return Date with updated time
+ */
+public static Date addUnit(Date date, int timeUnit, int amount) {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(date);
-    calendar.add(Calendar.MINUTE, minutes);
+    calendar.add(timeUnit, amount);
     return calendar.getTime();
 }
 
