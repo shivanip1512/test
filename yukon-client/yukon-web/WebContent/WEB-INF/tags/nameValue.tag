@@ -7,7 +7,7 @@
 	<c:when test="${nameValueContainter}">
 		<c:choose>
 			<c:when test="${rowHighlight}">
-				<tr style="background-color: yellow">
+				<tr class="highlighted">
 			</c:when>
 			<c:when test="${altRowOn && altRow}">
 				<tr class="altRow">
