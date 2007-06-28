@@ -117,7 +117,7 @@
         <mkdir dir="${log.dir}" />
 
         <exec failonerror="false" dir="${module.name}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
-            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' -Dyukon.build.details='${yukon.build.details}' build" />
+            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' -Dyukon.build.details='${yukon.build.details}' clean build" />
         </exec>
 
         <loadfile property="errormessage" srcFile="${log.dir}/client-error.log" />
