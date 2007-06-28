@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -17,14 +19,14 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
  */
 public class MeterInformationWidget extends WidgetControllerBase {
 
-    private PaoDao paoDao = null;
+    private MeterDao meterDao = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
 
     @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
     }
-
+    
     @Required
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
         this.paoGroupsWrapper = paoGroupsWrapper;
@@ -36,11 +38,10 @@ public class MeterInformationWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView();
 
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
-
-        String type = paoGroupsWrapper.getPAOTypeString(pao.getType());
+        Meter meter = meterDao.getForId(deviceId);
+        String type = paoGroupsWrapper.getPAOTypeString(meter.getType());
         
-        mav.addObject("device", pao);
+        mav.addObject("meter", meter);
         mav.addObject("deviceType", type);
 
         return mav;
