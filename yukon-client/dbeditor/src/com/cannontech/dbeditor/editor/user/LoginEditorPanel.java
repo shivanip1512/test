@@ -50,11 +50,6 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 				objs[0] = new UserRolePanel();
 				objs[1] = "Roles";
 				break;			
-				
-			case 3: 
-				objs[0] = new YukonUserOwnershipPanel();
-				objs[1] = "Yukon Ownership";
-				break;
 
 		}
 			
