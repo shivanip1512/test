@@ -16,7 +16,7 @@
 </ct:nameValueContainer>
 
 <br>
-<div id="${widgetParameter.widgetId}_results"></div>
+<div id="${widgetParameters.widgetId}_results"></div>
 <div style="text-align: right">
-<ct:widgetActionUpdate method="read" label="Read Now" labelBusy="Reading" container="${widgetParameter.widgetId}_results"/>
+<ct:widgetActionUpdate method="read" label="Read Now" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
 </div>
