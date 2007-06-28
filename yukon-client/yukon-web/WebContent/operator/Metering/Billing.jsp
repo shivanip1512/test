@@ -55,12 +55,6 @@
         </td>
     </tr>
     <tr> 
-        <td align="right">Append to File </td>
-        <td >
-            <input type="checkbox" name="appendToFile" <%=(billingBean.getAppendToFile()?"checked":"")%>>
-        </td>
-    </tr>
-    <tr> 
         <td align="right">Remove Multiplier</td>
         <td> 
             <input type="checkbox" name="removeMultiplier" <%=(billingBean.getRemoveMult()?"checked":"")%> >

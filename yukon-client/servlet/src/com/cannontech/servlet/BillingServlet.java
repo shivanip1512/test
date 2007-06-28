@@ -58,7 +58,6 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		
 		String fileFormat = req.getParameter("fileFormat");
 		String[] billGroupArray = req.getParameterValues("billGroup");
-		String appendToFile = req.getParameter("appendToFile");
 		String removeMultiplier = req.getParameter("removeMultiplier");
 		String demandDays = req.getParameter("demandDays");
 		String energyDays = req.getParameter("energyDays");
@@ -75,7 +74,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
                
         localBean.setFileFormat(fileFormatValue);
         localBean.setBillGroup(Arrays.asList(billGroupArray));
-		localBean.setAppendToFile(appendToFile != null);
+		localBean.setAppendToFile(false);
 		localBean.setRemoveMult(removeMultiplier != null);
 		localBean.setDemandDaysPrev(demandDaysValue);
 		localBean.setEnergyDaysPrev(energyDaysValue);
