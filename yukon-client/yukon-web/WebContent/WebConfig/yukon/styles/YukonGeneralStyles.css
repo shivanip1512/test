@@ -76,6 +76,7 @@ table.nameValueTable {
 
 table.nameValueTable td.name {
 	width: 40%;
+	vertical-align: top;
 	font-weight: bold;
 }
 
