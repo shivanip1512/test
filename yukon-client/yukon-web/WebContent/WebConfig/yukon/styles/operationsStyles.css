@@ -10,7 +10,7 @@ form {
   	height: 102px;
 }
 
-#CommercialMeteringLogo {
+#MeteringLogo {
 	float: left;
   	background-image: url(../MeterImage.jpg);
   	background-repeat: no-repeat;
