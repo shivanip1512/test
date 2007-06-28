@@ -47,8 +47,8 @@
                                replace=""
                                byline="true"/>
 	    
-	    <condition property="internal.label" value="${internal}(${build.number})" else="${internal}">
-    	    <isset property="build.number"/>
+	    <condition property="internal.label" value="${internal}(${label})" else="${internal}">
+    	    <isset property="label"/>
 	    </condition>
     
     	<property name="yukon.build.label" value="${external}"/>
