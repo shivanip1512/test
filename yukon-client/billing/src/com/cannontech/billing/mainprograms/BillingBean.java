@@ -5,21 +5,28 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (3/4/2002 8:36:18 AM)
  * @author: 
  */ 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.format.BillingFormatter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.roles.yukon.BillingRole;
+import com.cannontech.spring.YukonSpringHook;
 
 public class BillingBean implements java.util.Observer
 {
 	public static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
+    private DeviceGroupDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupDao.class);
 		
 	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;
@@ -27,8 +34,7 @@ public class BillingBean implements java.util.Observer
 	private int fileFormat = FileFormatTypes.INVALID;
 	private int demandDaysPrev = -1;
 	private int energyDaysPrev = -1;
-	private String billGroup = "Default";
-	private int billGroupType = DeviceMeterGroup.COLLECTION_GROUP;
+	private List<String> billGroup = Collections.singletonList("/Meters");
 	private String outputFile = null;
 	private String inputFile = null;
 	private Boolean removeMult = null;
@@ -45,17 +51,6 @@ public class BillingBean implements java.util.Observer
 public BillingBean()
 {
 	super();
-}
-public String[] getValidBillGroups()
-{
-	getBillingDefaults().setBillGroupType(getBillGroupType());
-	java.util.Vector valids = getBillingFile().retrieveAllBillGroupsVector();
-	String [] validBillGroups = new String[valids.size()];
-	for (int i = 0; i < valids.size(); i++)
-	{
-		validBillGroups[i] = valids.get(i).toString();
-	}
-	return validBillGroups;
 }
 
 /**
@@ -84,7 +79,7 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 	getFileFormat(),
 	(new Integer( getDemandDaysPrev()).intValue()),
 	(new Integer( getEnergyDaysPrev()).intValue()),
-	getBillGroup(),getBillGroupType(),
+	getBillGroup(),
 	getOutputFile(),
 	getRemoveMult(),
 	getInputFile(),
@@ -113,7 +108,15 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 //	getBillingDefaults().writeDefaultsFile();
 }
 
-
+public List<String> getAvailableGroups() {
+    List<? extends DeviceGroup> allGroups = deviceGroupDao.getAllGroups();
+    List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
+        public String map(DeviceGroup from) {
+            return from.getFullName();
+        }
+    });
+    return mappingList;
+}
 
 
 private BillingFile getBillingFile()
@@ -121,7 +124,6 @@ private BillingFile getBillingFile()
 	if(billingFile == null)
 	{
 		billingFile = new BillingFile();
-		billingFile.setAllBillGroupsVector(getBillingFile().retrieveAllBillGroupsVector());
 	}
 	return billingFile;
 }
@@ -230,23 +232,13 @@ public void setRemoveMult(boolean isRemoveMult)
 	removeMult = Boolean.valueOf(isRemoveMult);
 }
 
-public String getBillGroup()
+public List<String> getBillGroup()
 {
 	return billGroup;
 }
-public void setBillGroup(String billGroup)
+public void setBillGroup(List<String> billGroup)
 {
 	this.billGroup = billGroup;
-}
-
-public int getBillGroupType()
-{
-	return billGroupType;
-}
-public void setBillGroupType(int billGroupType)
-{
-	this.billGroupType = billGroupType;
-	getBillingDefaults().setBillGroupType(billGroupType);
 }
 
 public String getOutputFile()

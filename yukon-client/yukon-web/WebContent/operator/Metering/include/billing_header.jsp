@@ -5,11 +5,8 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.billing.mainprograms.BillingFileDefaults" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup" %>
-<%@ page import="com.cannontech.billing.FileFormatTypes"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-
-<cti:checklogin/>
 
 <%
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  

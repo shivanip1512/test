@@ -1,6 +1,12 @@
 package com.cannontech.billing;
 
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -26,7 +32,7 @@ public class SQLStringBuilder
 		StringBuffer sqlBuffer = new StringBuffer(buildSelectClause(columns));
 		
 		sqlBuffer.append( buildFromClause(tables));
-		sqlBuffer.append( buildWhereClause( billingDefaults.getBillGroup(), billingDefaults.getBillGroupType(), analogOffsets, pulseAccOffsets, demandAccOffsets));
+		sqlBuffer.append( buildWhereClause( billingDefaults.getDeviceGroups(), analogOffsets, pulseAccOffsets, demandAccOffsets));
 	
 	
 		com.cannontech.clientutils.CTILogger.info(" SQL Statement: " + sqlBuffer.toString());
@@ -130,7 +136,7 @@ public class SQLStringBuilder
 		return selectString;
 	}
 	
-	private String buildWhereClause(java.util.Vector groupVector, String groupingColumn, int [] analogOffsets, int [] pulseAccOffsets, int []demandAccOffsets)
+	private String buildWhereClause(List<String> groupVector, int [] analogOffsets, int [] pulseAccOffsets, int []demandAccOffsets)
 	{
 		Vector<String> whereClauses = new Vector<String>();
 		
@@ -157,13 +163,14 @@ public class SQLStringBuilder
 				whereClauses.add(new String(" RAWPOINTHISTORY.POINTID = POINT.POINTID "));
 			}
 		}
-		if( deviceMeterGroup_from)
+		if( groupVector.size() > 0)
 		{
-			String inCollectionGroup = new String(groupingColumn + " IN ('" + groupVector.get(0) + "'");
-			for (int i = 1; i < groupVector.size(); i++)
-			{
-				inCollectionGroup += ", '" + groupVector.get(i) + "'";
-			}
+			String inCollectionGroup = new String("YUKONPAOBJECT.PAOBJECTID IN (");
+            DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(groupVector);
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            inCollectionGroup += deviceGroupSqlInClause;
 			inCollectionGroup += ")";
 				
 			whereClauses.add(inCollectionGroup);

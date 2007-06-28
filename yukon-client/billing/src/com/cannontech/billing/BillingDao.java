@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import com.cannontech.billing.device.BillableDeviceFactory;
@@ -25,8 +26,11 @@ import com.cannontech.billing.device.base.DeviceData;
 import com.cannontech.billing.format.ExtendedTOURecordFormatter;
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Class used to retrieve billing data
@@ -336,25 +340,14 @@ public class BillingDao {
      * @return String where clause
      */
     private static String getDeviceMeterGroupWhereClause(BillingFileDefaults defaults) {
+        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
 
-        StringBuffer where = new StringBuffer(" AND " + defaults.getBillGroupType() + " IN ('");
-        Vector billGroupVector = defaults.getBillGroup();
-
-        boolean first = true;
-        Iterator billGroupIter = billGroupVector.iterator();
-        while (billGroupIter.hasNext()) {
-
-            if (!first) {
-                where.append(", '");
-            } else {
-                first = false;
-            }
-
-            String billGroup = (String) billGroupIter.next();
-
-            where.append(billGroup + "'");
-
-        }
+        StringBuffer where = new StringBuffer(" AND ypo.paobjectid IN (");
+        
+        List<String> deviceGroupNames = defaults.getDeviceGroups();
+        Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
+        String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+        where.append(deviceGroupSqlInClause);
 
         where.append(")");
 

@@ -5,13 +5,13 @@ package com.cannontech.servlet;
  * @author: 
  */
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServlet;
 
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.mainprograms.BillingBean;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.util.ServletUtil;
 
 public class BillingServlet extends HttpServlet
@@ -57,8 +57,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		}
 		
 		String fileFormat = req.getParameter("fileFormat");
-		String billGroupType = req.getParameter("billGroupType");
-		String billGroup = req.getParameter("billGroup");
+		String[] billGroupArray = req.getParameterValues("billGroup");
 		String appendToFile = req.getParameter("appendToFile");
 		String removeMultiplier = req.getParameter("removeMultiplier");
 		String demandDays = req.getParameter("demandDays");
@@ -68,12 +67,6 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
         final int fileFormatValue = (fileFormat != null) ?
                 Integer.parseInt(fileFormat) : FileFormatTypes.INVALID;
                 
-        final int billGroupTypeValue = (billGroupType != null) ?
-                Integer.parseInt(billGroupType) : DeviceMeterGroup.COLLECTION_GROUP;
-                
-        final String billGroupValue = (billGroup != null) ?
-                billGroup : "";
-
         final int demandDaysValue = (demandDays != null) ?
                 Integer.parseInt(demandDays) : 30;
         
@@ -81,8 +74,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
                 Integer.parseInt(energyDays) : 7;
                
         localBean.setFileFormat(fileFormatValue);
-        localBean.setBillGroupType(billGroupTypeValue);
-        localBean.setBillGroup(billGroupValue);
+        localBean.setBillGroup(Arrays.asList(billGroupArray));
 		localBean.setAppendToFile(appendToFile != null);
 		localBean.setRemoveMult(removeMultiplier != null);
 		localBean.setDemandDaysPrev(demandDaysValue);

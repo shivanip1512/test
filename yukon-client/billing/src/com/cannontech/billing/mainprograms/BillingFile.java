@@ -6,6 +6,7 @@ package com.cannontech.billing.mainprograms;
  * @author: 
  */
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.billing.BillingDao;
@@ -16,9 +17,8 @@ import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatter;
 import com.cannontech.billing.format.BillingFormatterFactory;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.util.ServletUtil;
 
 public class BillingFile extends java.util.Observable implements Runnable
@@ -85,23 +85,23 @@ public class BillingFile extends java.util.Observable implements Runnable
 				else if( argLowerCase.startsWith("coll") ||  argLowerCase.startsWith("group") )
 				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
-					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.COLLECTION_GROUP);
 					String subString = args[i].substring(startIndex);
-					billingFile.getBillingDefaults().setBillGroup(subString);
+                    String group = FixedDeviceGroups.COLLECTIONGROUP.getGroup(subString);
+					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("test") ||  argLowerCase.startsWith("alt") )
 				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
-					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
 					String subString = args[i].substring(startIndex);
-					billingFile.getBillingDefaults().setBillGroup(subString);
+					String group = FixedDeviceGroups.TESTCOLLECTIONGROUP.getGroup(subString);
+					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("bill") )
 				{//BillingFileDefaults.billGroupTypeString.BILLINGGROUP
 				 //BillingFileDefaults.billGroup
-					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.BILLING_GROUP);
 					String subString = args[i].substring(startIndex);
-					billingFile.getBillingDefaults().setBillGroup(subString);
+					String group = FixedDeviceGroups.BILLINGGROUP.getGroup(subString);
+					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("end"))
 				{//BillingFileDefaults.endDate
@@ -143,52 +143,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 			CTILogger.error(exception);
 		}
 	}
-	/**
-	 * Method retrieveAllBillGroupsVector.
-	 * Retrieve all possible billGroups from database relative to getBillingFileDefaults().billGroupSQLString.
-	 * @return java.util.Vector
-	 */
-	public java.util.Vector retrieveAllBillGroupsVector()
-	{
-		java.util.Vector<String> billGroupVector = new java.util.Vector<String>();
-			
-		java.sql.Statement stmt = null;
-		java.sql.Connection conn = null;
-		java.sql.ResultSet rset = null;
-		
-		String sql = new String( "SELECT DISTINCT " + getBillingDefaults().getBillGroupType() + " FROM "
-						+ DeviceMeterGroup.TABLE_NAME
-						+ " ORDER BY " + getBillingDefaults().getBillGroupType());
-		try
-		{
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
-			stmt = conn.createStatement();	
-			rset = stmt.executeQuery(sql.toString());
-	
-			while (rset.next())
-			{
-				billGroupVector.addElement(rset.getString(1));
-			}
-		}
-		catch( java.sql.SQLException e ) {
-			CTILogger.error(e);
-		}
-		finally
-		{
-			try {
-				if( rset != null )
-					rset.close();
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e ) {
-				CTILogger.error(e);
-			}
-		}
-		return billGroupVector;
-	}
 
 	/**
 	 * Retrieve all billingData and writeTofile for a formatBase.
@@ -208,7 +162,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 
             List<BillableDevice> deviceList = null;
 
-            if (!getBillingDefaults().getBillGroup().isEmpty()) {
+            if (!getBillingDefaults().getDeviceGroups().isEmpty()) {
 
                 deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
             }
@@ -246,7 +200,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 		    
 		    boolean success = false;
 		    
-		    if (getBillingDefaults().getBillGroup().isEmpty())
+		    if (getBillingDefaults().getDeviceGroups().isEmpty())
 		        success = false;
 		    else
 		        success = fileFormatBase.retrieveBillingData();
@@ -291,7 +245,7 @@ public class BillingFile extends java.util.Observable implements Runnable
             boolean success = false;
             
             List<BillableDevice> deviceList = null;
-            if (!getBillingDefaults().getBillGroup().isEmpty()) {
+            if (!getBillingDefaults().getDeviceGroups().isEmpty()) {
 
                 deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
 
@@ -326,7 +280,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 	
 			boolean success = false;
 			
-			if (getBillingDefaults().getBillGroup().isEmpty())
+			if (getBillingDefaults().getDeviceGroups().isEmpty())
 				success = false;
 			else
 				success = fileFormatBase.retrieveBillingData( );	
@@ -354,17 +308,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 	{
 		this.notifyObservers(notifyString );
 		CTILogger.info(notifyString);
-	}
-	/**
-	 * Returns the allBillGroupsVector.
-	 * If null, value is set by retrieveAllBillGroupsVector().
-	 * @return java.util.Vector
-	 */
-	public java.util.Vector getAllBillGroupsVector()
-	{
-		if( allBillGroupsVector == null)
-			allBillGroupsVector = retrieveAllBillGroupsVector();
-		return allBillGroupsVector;
 	}
 
 	/**
