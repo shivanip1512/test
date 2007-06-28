@@ -47,7 +47,7 @@
                                replace=""
                                byline="true"/>
 	    
-	    <condition property="internal.label" value="${internal}(${label})" else="${internal}">
+	    <condition property="internal.label" value="${internal}-${label}" else="${internal}">
     	    <isset property="label"/>
 	    </condition>
     
