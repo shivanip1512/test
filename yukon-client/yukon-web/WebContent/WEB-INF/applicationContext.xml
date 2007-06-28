@@ -113,6 +113,7 @@
         </property>
         <property name="yukonUserDao" ref="yukonUserDao" />
         <property name="commandRequestExecutor" ref="commandRequestExecutor" />
+        <property name="profilePeakDao" ref="profilePeakDao" />
     </bean>
     
     <bean id="miniTdcWidget"

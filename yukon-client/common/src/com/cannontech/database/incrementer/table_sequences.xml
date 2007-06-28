@@ -71,5 +71,8 @@
       <sequence name="DeviceGroup">
         <table name="DeviceGroup" identitycolumn="DeviceGroupId" initsequence="true"/>
       </sequence>
+      <sequence name="ProfilePeakResult">
+        <table name="ProfilePeakResult" identitycolumn="resultId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

@@ -1,18 +1,23 @@
 <%@ attribute name="name" required="true" %>
+<%@ attribute name="rowHighlight" required="false" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter}">
 		<c:choose>
+			<c:when test="${rowHighlight}">
+				<tr style="background-color: yellow">
+			</c:when>
 			<c:when test="${altRowOn && altRow}">
-				<c:set var="altRow" value="false" scope="request"/>
 				<tr class="altRow">
 			</c:when>
 			<c:otherwise>
-				<c:set var="altRow" value="true" scope="request"/>
 				<tr>
 			</c:otherwise>
 		</c:choose>
+		<c:set var="altRow" value="${!altRow}" scope="request"/>
+
 			<td class="name">${name}:</td>
 			<td class="value"><jsp:doBody/></td>
 		</tr>

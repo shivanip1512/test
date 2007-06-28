@@ -18,3 +18,20 @@
 
 
 /*Thain changes?*/
+
+/************** Jason - High bill complaint table - 3.5/head only ****************/
+create table ProfilePeakResult (
+	resultid numeric,
+	deviceId numeric,
+	resultFrom varchar(30),
+	resultTo varchar(30),
+	runDate varchar(30),
+	peakDay varchar(30),
+	usage  varchar(25),
+	demand varchar(25),
+	averageDailyUsage varchar(25),
+	totalUsage varchar(25),
+	resultType varchar(5),
+	days numeric
+)
+/*********************************************************************************/

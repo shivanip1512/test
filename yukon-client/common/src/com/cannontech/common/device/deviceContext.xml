@@ -81,14 +81,10 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
-    <bean id="deviceGroupTreeFactory"
-        class="com.cannontech.common.device.groups.service.DeviceGroupTreeFactory">
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
-    </bean>
-    
-    <bean id="deviceGroupListFactory"
-        class="com.cannontech.common.device.groups.service.DeviceGroupListFactory">
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
+    <bean id="profilePeakDao"
+        class="com.cannontech.common.device.profilePeak.dao.impl.ProfilePeakDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper"></property>
     </bean>
     
 </beans>

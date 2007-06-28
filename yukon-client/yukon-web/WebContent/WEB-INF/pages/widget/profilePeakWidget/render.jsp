@@ -3,6 +3,7 @@
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
+<cti:includeScript link="/JavaScript/longLoadProfile.js"/>
 
 <span class="widgetText">
 	
@@ -45,8 +46,8 @@
 				<input type="text" id="startDate" name="startDate" value="${startDate}" />
 			</td>
 			<td>
-				Days:
-				<input type="text" id="days" name="days" size="3" value="${days}" />
+				End Date:
+				<input type="text" id="stopDate" name="stopDate" value="${stopDate}" />
 			</td>
 			<td align="right">
 				<tags:widgetActionRefresh method="getReport" label="Get Report" labelBusy="Get Report" />
@@ -55,39 +56,65 @@
 	</table>
 	
 	<!-- Profile peak results section -->
-	<c:if test="${! empty deviceResults}">
-		<br><b>Profile Peak Reports</b><br><br>
+	<c:if test="${!empty preResult || !empty postResult}">
+		<br><b>Previous Profile Peak Reports:</b><br>
 	</c:if>
-	<c:set var="first" value="true" scope="page" />
-	<c:forEach var="result" items="${deviceResults}">
-	
-		<tags:hideReveal title="Report range: ${result.fromDate} - ${result.toDate}" showInitially="${first}">
+	<c:if test="${! empty preResult}">
+		<tags:hideReveal title="Report range: ${preResult.startDate} - ${preResult.stopDate}" showInitially="${true}">
 			<div style="margin: 0px 30px;">
 				<c:choose>
-					<c:when test="${!result.noData}">
+					<c:when test="${!preResult.noData}">
 						<tags:nameValueContainer altRowOn="true">
-							<tags:nameValue name="Date report run">${result.runDate}</tags:nameValue>
-							<tags:nameValue name="Peak Day">${result.peakDate}</tags:nameValue>
-							<tags:nameValue name="Usage">${result.usage}</tags:nameValue>
-							<tags:nameValue name="Demand">${result.demand}</tags:nameValue>
-							<tags:nameValue name="Average daily usage over range">${result.averageDailyUsage}</tags:nameValue>
-							<tags:nameValue name="Total usage over range">${result.totalUsage}</tags:nameValue>
+							<tags:nameValue name="Date report run" rowHighlight="${highlight.reportRun}">${preResult.runDate}</tags:nameValue>
+							<tags:nameValue name="Peak Day" rowHighlight="${highlight.peakDay}">${preResult.peakDate}</tags:nameValue>
+							<tags:nameValue name="Usage" rowHighlight="${highlight.usage}">${preResult.usage}</tags:nameValue>
+							<tags:nameValue name="Demand" rowHighlight="${highlight.demand}">${preResult.demand}</tags:nameValue>
+							<tags:nameValue name="Average daily usage over range" rowHighlight="${highlight.averageUsage}">${preResult.averageDailyUsage}</tags:nameValue>
+							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.usage}">${preResult.totalUsage}</tags:nameValue>
 						</tags:nameValueContainer>
 		
 						<!-- Load Profile collection -->
-						<c:if test="${collectLPVisible}">
+						<c:if test="${widgetParameters.collectLPVisible && (preResult.days <= 90)}">
 							<br/>
-							<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${result.fromDate}" lpStopDate="${result.toDate}">Collect Long Load Profile for this period</tags:longLoadProfile>
+							<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">Collect Long Load Profile for this period</tags:longLoadProfile>
 						</c:if>
 					</c:when>
 					<c:otherwise>
 						No results
 					</c:otherwise>
 				</c:choose>
+				${preResult.error}
 			</div>
 		</tags:hideReveal>
-		<br>
-		<c:set var="first" value="false" scope="page" />
-	</c:forEach>
+	</c:if>
+	<br/>
+	<c:if test="${! empty postResult}">
+		<tags:hideReveal title="Report range: ${postResult.startDate} - ${postResult.stopDate}" showInitially="${true}">
+			<div style="margin: 0px 30px;">
+				<c:choose>
+					<c:when test="${!postResult.noData}">
+						<tags:nameValueContainer altRowOn="true">
+							<tags:nameValue name="Date report run" rowHighlight="${highlight.reportRun}">${postResult.runDate}</tags:nameValue>
+							<tags:nameValue name="Peak Day" rowHighlight="${highlight.peakDay}">${postResult.peakDate}</tags:nameValue>
+							<tags:nameValue name="Usage" rowHighlight="${highlight.usage}">${postResult.usage}</tags:nameValue>
+							<tags:nameValue name="Demand" rowHighlight="${highlight.demand}">${postResult.demand}</tags:nameValue>
+							<tags:nameValue name="Average daily usage over range" rowHighlight="${highlight.averageUsage}">${postResult.averageDailyUsage}</tags:nameValue>
+							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.usage}">${postResult.totalUsage}</tags:nameValue>
+						</tags:nameValueContainer>
+		
+						<!-- Load Profile collection -->
+						<c:if test="${widgetParameters.collectLPVisible && (postResult.days <= 90)}">
+							<br/>
+							<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}">Collect Long Load Profile for this period</tags:longLoadProfile>
+						</c:if>
+					</c:when>
+					<c:otherwise>
+						No results
+					</c:otherwise>
+				</c:choose>
+				${postResult.error}
+			</div>
+		</tags:hideReveal>
+	</c:if>
 
 </span>

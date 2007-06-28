@@ -3,10 +3,8 @@ package com.cannontech.web.widget;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -14,12 +12,19 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.CommandRequest;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.profilePeak.dao.ProfilePeakDao;
+import com.cannontech.common.device.profilePeak.model.ProfilePeakResult;
+import com.cannontech.common.device.profilePeak.model.ProfilePeakResultType;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -37,18 +42,15 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     private static final SimpleDateFormat DISPLAY_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     private YukonUserDao yukonUserDao = null;
+    private ProfilePeakDao profilePeakDao = null;
     private CommandRequestExecutor commandRequestExecutor = null;
-
-    // Result map is a cache of device peak profile reads - the map will save up
-    // to 5 readings for up to 100 devices
-    private Map<Integer, List<ProfilePeakResult>> resultMap = new LinkedHashMap<Integer, List<ProfilePeakResult>>() {
-        protected boolean removeEldestEntry(Map.Entry eldest) {
-            return size() > 100;
-        }
-    };
 
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    public void setProfilePeakDao(ProfilePeakDao profilePeakDao) {
+        this.profilePeakDao = profilePeakDao;
     }
 
     public void setCommandRequestExecutor(CommandRequestExecutor commandRequestExecutor) {
@@ -61,20 +63,23 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
         ModelAndView mav = new ModelAndView();
 
-        boolean collectLPVisible = WidgetParameterHelper.getBooleanParameter(request,
-                                                                             "collectLPVisible",
-                                                                             false);
-        mav.addObject("collectLPVisible", collectLPVisible);
-
         // Add any previous results for the device into the mav
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        List deviceResults = resultMap.get(deviceId);
-        mav.addObject("deviceResults", deviceResults);
+        ProfilePeakResult preResult = profilePeakDao.getResult(deviceId, ProfilePeakResultType.PRE);
+        mav.addObject("preResult", preResult);
+
+        ProfilePeakResult postResult = profilePeakDao.getResult(deviceId,
+                                                                ProfilePeakResultType.POST);
+        mav.addObject("postResult", postResult);
+
+        addHighlightedFields(request, mav);
 
         // Add the default report settings to the mav
         mav.addObject("reportType", "day");
-        mav.addObject("startDate", COMMAND_FORMAT.format(new Date()));
-        mav.addObject("days", "5");
+
+        Date now = new Date();
+        mav.addObject("startDate", COMMAND_FORMAT.format(TimeUtil.addDays(now, -5)));
+        mav.addObject("stopDate", COMMAND_FORMAT.format(now));
 
         return mav;
     }
@@ -83,77 +88,172 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             throws Exception {
         ModelAndView mav = new ModelAndView("profilePeakWidget/render.jsp");
 
-        boolean collectLPVisible = WidgetParameterHelper.getBooleanParameter(request,
-                                                                             "collectLPVisible",
-                                                                             false);
-        mav.addObject("collectLPVisible", collectLPVisible);
+        addHighlightedFields(request, mav);
 
-        // Build the command to be executed
-        StringBuffer command = new StringBuffer();
-        command.append("getvalue lp peak");
-
-        String reportType = WidgetParameterHelper.getStringParameter(request, "reportType", "day");
-        mav.addObject("reportType", reportType);
-        command.append(" " + reportType);
-
-        command.append(" channel 1");
-
-        // Get the number of days for the command
-        int days = WidgetParameterHelper.getIntParameter(request, "days", 5);
-        mav.addObject("days", String.valueOf(days));
-
-        // Get the user's timezone to parse the start date
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
-
-        // Get and parse the start date for the command
-        String startDateStr = WidgetParameterHelper.getStringParameter(request,
-                                                                       "startDate",
-                                                                       COMMAND_FORMAT.format(new Date()));
-        mav.addObject("startDate", startDateStr);
-
-        // Get the id of the device to send the command for
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        ProfilePeakResult preResult = null;
+        ProfilePeakResult postResult = null;
         try {
-            Date startDate = TimeUtil.flexibleDateParser(startDateStr,
-                                                         TimeUtil.NO_TIME_MODE.START_OF_DAY,
-                                                         timeZone);
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(startDate);
-            cal.add(Calendar.DAY_OF_YEAR, days);
-            Date stopDate = cal.getTime();
-            command.append(" " + COMMAND_FORMAT.format(stopDate));
-            command.append(" " + days);
-            mav.addObject("command", command.toString());
 
-            // Execute command to get profile peak summary results
-            CommandRequest commandRequest = new CommandRequest();
-            commandRequest.setCommand(command.toString());
-            commandRequest.setDeviceId(deviceId);
-            CommandResultHolder resultHolder = null;
-            resultHolder = commandRequestExecutor.execute(commandRequest);
+            // Get the user's timezone
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
 
-            // Parse result and add it to the device result list
-            ProfilePeakResult result = parseResults(resultHolder);
-            result.setRunDate(DISPLAY_FORMAT.format(new Date()));
-            result.setFromDate(DISPLAY_FORMAT.format(startDate));
-            result.setToDate(DISPLAY_FORMAT.format(stopDate));
-            addResultToMap(deviceId, result);
+            // Get the report type for the commands
+            String reportType = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                               "reportType");
+            mav.addObject("reportType", reportType);
+
+            // Calculate the times and days for each command
+            String startDateStr = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                                 "startDate");
+            mav.addObject("startDate", startDateStr);
+            String stopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "stopDate");
+            mav.addObject("stopDate", stopDateStr);
+
+            Date preCommandStartDate = null;
+            try {
+                preCommandStartDate = TimeUtil.flexibleDateParser(startDateStr,
+                                                                  TimeUtil.NO_TIME_MODE.START_OF_DAY,
+                                                                  timeZone);
+            } catch (ParseException e) {
+                mav.addObject("errorMsg",
+                              "Start date: " + startDateStr + " is not formatted correctly - example(mm/dd/yyyy).  Please try again.");
+                return mav;
+            }
+            Date preCommandStopDate = null;
+            try {
+                preCommandStopDate = TimeUtil.flexibleDateParser(stopDateStr,
+                                                                 TimeUtil.NO_TIME_MODE.START_OF_DAY,
+                                                                 timeZone);
+            } catch (ParseException e) {
+                mav.addObject("errorMsg",
+                              "Stop date: " + stopDateStr + " is not formatted correctly - example(mm/dd/yyyy).  Please try again.");
+                return mav;
+            }
+
+            if (preCommandStopDate.before(preCommandStartDate) || preCommandStartDate.getTime() == preCommandStopDate.getTime()) {
+                mav.addObject("errorMsg", "Start date must be before stop date.  Please try again.");
+                return mav;
+            }
+
+            // Post command is from today back to the pre command stop date
+            Date postCommandStopDate = new Date();
+
+            // Build the commands to be executed
+            StringBuffer preCommand = new StringBuffer();
+            preCommand.append("getvalue lp peak");
+            preCommand.append(" " + reportType);
+            preCommand.append(" channel 1");
+            preCommand.append(" " + COMMAND_FORMAT.format(preCommandStopDate));
+            long preCommandDays = (getDaysBetween(preCommandStopDate, preCommandStartDate) + 1);
+            preCommand.append(" " + preCommandDays);
+
+            StringBuffer postCommand = new StringBuffer();
+            // Build post command only if days are 1 or more
+            long postCommandDays = getDaysBetween(postCommandStopDate, preCommandStopDate);
+            if (postCommandDays > 0) {
+                postCommand.append("getvalue lp peak");
+                postCommand.append(" " + reportType);
+                postCommand.append(" channel 1");
+                postCommand.append(" " + COMMAND_FORMAT.format(postCommandStopDate));
+                postCommand.append(" " + postCommandDays);
+            }
+
+            System.out.println("pre: " + preCommand.toString());
+            System.out.println("post: " + postCommand.toString());
+
+            int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+
+            // Execute pre command to get profile peak summary results for user
+            // request
+            preResult = executeCommand(preCommand.toString(), deviceId, ProfilePeakResultType.PRE);
+            preResult.setStartDate(DISPLAY_FORMAT.format(preCommandStartDate));
+
+            // Stop date is actually 1 day later - stop date is inclusive
+            preResult.setStopDate(DISPLAY_FORMAT.format(TimeUtil.addDays(preCommandStopDate, 1)));
+            preResult.setDays(preCommandDays);
+
+            // Execute post command to get profile peak summary results for
+            // user request end date to now
+            if (!StringUtils.isBlank(postCommand.toString())) {
+                postResult = executeCommand(postCommand.toString(),
+                                            deviceId,
+                                            ProfilePeakResultType.POST);
+                postResult.setStartDate(DISPLAY_FORMAT.format(TimeUtil.addDays(preCommandStopDate, 1)));
+
+                // Stop date is actually 1 day later - stop date is inclusive
+                postResult.setStopDate(DISPLAY_FORMAT.format(TimeUtil.addDays(postCommandStopDate,
+                                                                              1)));
+                postResult.setDays(postCommandDays);
+            }
+
+            // Persist the results
+            List<ProfilePeakResult> results = new ArrayList<ProfilePeakResult>();
+            if (!preResult.isNoData()) {
+                results.add(preResult);
+            }
+            if (postResult != null && !postResult.isNoData()) {
+                results.add(postResult);
+            }
+
+            profilePeakDao.saveResults(deviceId, results);
+
         } catch (CommandCompletionException e) {
-            mav.addObject("errorMsg",
-                          e.getMessage());
+            mav.addObject("errorMsg", e.getMessage());
         } catch (ConnectionException e) {
-            mav.addObject("errorMsg",
-                          e.getMessage());
-        } catch (ParseException e) {
-            mav.addObject("errorMsg",
-                          "Date entered: '" + startDateStr + "' is not formatted correctly - example(mm/dd/yyyy).  Please try again.");
+            mav.addObject("errorMsg", e.getMessage());
         }
 
-        List<ProfilePeakResult> deviceResults = resultMap.get(deviceId);
-        mav.addObject("deviceResults", deviceResults);
+        mav.addObject("preResult", preResult);
+        mav.addObject("postResult", postResult);
 
         return mav;
+    }
+
+    /**
+     * Helper method to add highlighted fields to the ModelAndView
+     * @param request - Current request
+     * @param mav - Model and view to add to
+     * @throws ServletRequestBindingException
+     */
+    private void addHighlightedFields(HttpServletRequest request, ModelAndView mav)
+            throws ServletRequestBindingException {
+
+        // Get highlighted fields - if any
+        String highlightData = WidgetParameterHelper.getStringParameter(request, "highlight");
+        String[] highlightDataArray = highlightData.split(",");
+
+        Map<String, Boolean> highlightDataMap = new HashMap<String, Boolean>();
+        for (String data : highlightDataArray) {
+            highlightDataMap.put(data, true);
+        }
+
+        mav.addObject("highlight", highlightDataMap);
+    }
+
+    /**
+     * Helper method to execute a profile peak result command and return the
+     * resulting profile peak result
+     * @param command - Command to execute
+     * @param deviceId - Id of device to execute command for
+     * @param type - Type of results
+     * @return Results
+     * @throws CommandCompletionException
+     */
+    private ProfilePeakResult executeCommand(String command, int deviceId,
+            ProfilePeakResultType type) throws CommandCompletionException {
+
+        CommandRequest commandRequest = new CommandRequest();
+        commandRequest.setCommand(command);
+        commandRequest.setDeviceId(deviceId);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(commandRequest);
+
+        ProfilePeakResult result = parseResults(resultHolder);
+        result.setRunDate(DISPLAY_FORMAT.format(new Date()));
+        result.setDeviceId(deviceId);
+        result.setResultType(type);
+
+        return result;
     }
 
     /**
@@ -167,11 +267,17 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
         String resultString = resultHolder.getLastResultString();
 
-        if (resultString.startsWith("Peak timestamp")) {
-            // No results
+        if (resultHolder.isErrorsExist()) {
+            StringBuffer sb = new StringBuffer();
+            List<DeviceErrorDescription> errors = resultHolder.getErrors();
+            for (DeviceErrorDescription ded : errors) {
+                sb.append(ded.toString() + "\n");
+            }
+
+            result.setError(sb.toString());
             result.setNoData(true);
         } else {
-            // There are results
+            // Results exist
 
             String[] strings = resultString.split("\n");
             for (String string : strings) {
@@ -196,132 +302,13 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         return result;
     }
 
-    /**
-     * Helper method to add the result to the result map
-     * @param deviceId - Device the result is for
-     * @param result - The result
-     */
-    private void addResultToMap(Integer deviceId, ProfilePeakResult result) {
+    private long getDaysBetween(Date date1, Date date2) {
 
-        if (!resultMap.containsKey(deviceId)) {
-            resultMap.put(deviceId, new ArrayList<ProfilePeakResult>());
-        }
-        List<ProfilePeakResult> deviceResultList = resultMap.get(deviceId);
+        long delta = date1.getTime() - date2.getTime();
+        // Convert delta to days (86400000 milliseconds in a day)
+        long days = delta / 86400000;
 
-        // Remove any duplicate results
-        ProfilePeakResult removeResult = null;
-        for (ProfilePeakResult existingResult : deviceResultList) {
-            if (result.getFromDate().equals(existingResult.getFromDate()) && result.getToDate()
-                                                                                   .equals(existingResult.getToDate())) {
-                removeResult = existingResult;
-                break;
-            }
-        }
-        if (removeResult != null) {
-            deviceResultList.remove(removeResult);
-        }
-
-        deviceResultList.add(0, result);
-        // Only keep track of the previous 5 reads
-        if (deviceResultList.size() > 5) {
-            deviceResultList.remove(deviceResultList.size() - 1);
-        }
-    }
-
-    public static class ProfilePeakResult {
-
-        private String range = null;
-        private String peakDate = "No Data available";
-        private String usage = "No Data available";
-        private String demand = "No Data available";
-        private String averageDailyUsage = "No Data available";
-        private String totalUsage = "No Data available";
-
-        private boolean noData = false;
-        private String runDate = null;
-        private String fromDate = null;
-        private String toDate = null;
-
-        public String getRunDate() {
-            return runDate;
-        }
-
-        public void setRunDate(String runDate) {
-            this.runDate = runDate;
-        }
-
-        public String getAverageDailyUsage() {
-            return averageDailyUsage;
-        }
-
-        public void setAverageDailyUsage(String averageDailyUsage) {
-            this.averageDailyUsage = averageDailyUsage;
-        }
-
-        public String getDemand() {
-            return demand;
-        }
-
-        public void setDemand(String demand) {
-            this.demand = demand;
-        }
-
-        public String getPeakDate() {
-            return peakDate;
-        }
-
-        public void setPeakDate(String peakDate) {
-            this.peakDate = peakDate;
-        }
-
-        public String getRange() {
-            return range;
-        }
-
-        public void setRange(String range) {
-            this.range = range;
-        }
-
-        public String getTotalUsage() {
-            return totalUsage;
-        }
-
-        public void setTotalUsage(String totalUsage) {
-            this.totalUsage = totalUsage;
-        }
-
-        public String getUsage() {
-            return usage;
-        }
-
-        public void setUsage(String usage) {
-            this.usage = usage;
-        }
-
-        public boolean isNoData() {
-            return noData;
-        }
-
-        public void setNoData(boolean noData) {
-            this.noData = noData;
-        }
-
-        public String getFromDate() {
-            return fromDate;
-        }
-
-        public void setFromDate(String fromDate) {
-            this.fromDate = fromDate;
-        }
-
-        public String getToDate() {
-            return toDate;
-        }
-
-        public void setToDate(String toDate) {
-            this.toDate = toDate;
-        }
-
+        return days;
     }
 
 }
