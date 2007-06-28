@@ -94,7 +94,7 @@
                       <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph" > 
                     <%}
                   %>
-                  <br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>
+                  <br><font size="-1"><cti:getProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"/></font>
                   </center>
                 </td>
               </tr>

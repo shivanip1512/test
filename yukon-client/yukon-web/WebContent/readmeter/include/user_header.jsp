@@ -5,7 +5,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ page import="com.cannontech.roles.cicustomer.CommercialMeteringRole"%>
+<%@ page import="com.cannontech.roles.application.TrendingRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <cti:checklogin/>

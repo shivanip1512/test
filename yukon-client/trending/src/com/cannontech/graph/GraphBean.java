@@ -25,7 +25,7 @@ import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.roles.cicustomer.CommercialMeteringRole;
+import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.SessionAttribute;
 
@@ -310,14 +310,14 @@ public class GraphBean extends Graph
 			ActivityLogSummary.LogSummary logSummary = (ActivityLogSummary.LogSummary)actLogSummary.getLogSummaryVector().get(i); 
 			if( logSummary.action.equals(ActivityLogActions.SCAN_DATA_NOW_ACTION))
 			{
-				if( logSummary.count >= Integer.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MAXIMUM_DAILY_SCANS)).intValue())
+				if( logSummary.count >= Integer.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, TrendingRole.MAXIMUM_DAILY_SCANS)).intValue())
 				{
 					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Maximum Scans allowed for today exceeded" );
 				}
 							
 				Date now = new Date();
 				long sinceLast = now.getTime() - logSummary.maxTimeStamp.getTime();
-				long duration = Long.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MINIMUM_SCAN_FREQUENCY)).longValue() * 36000;
+				long duration = Long.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, TrendingRole.MINIMUM_SCAN_FREQUENCY)).longValue() * 36000;
 				if (sinceLast <= duration)
 				{
 					long waitTime = duration - sinceLast;

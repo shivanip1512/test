@@ -175,7 +175,7 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
-<cti:checkRole roleid="<%=CommercialMeteringRole.ROLEID%>">
+<cti:checkRole roleid="<%=TrendingRole.ROLEID%>">
   <tr> 
     <td height="30" valign="bottom">
       <div align="left">

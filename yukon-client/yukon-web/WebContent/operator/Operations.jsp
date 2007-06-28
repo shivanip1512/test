@@ -101,9 +101,8 @@
 </cti:checkRole>
 
 <!-- Metering section -->
-<cti:checkRole role="operator.CommercialMeteringRole.ROLEID">
-	
-	<tags:operationSection sectionName="Metering" sectionImageName="CommercialMeteringLogo">
+<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,BillingRole.ROLEID,TrendingRole.ROLEID">
+	<tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
 		<cti:checkRole role="BillingRole.ROLEID">
 			<tags:sectionLink>
 	        	<a href="Metering/Billing.jsp"><cti:getProperty property="BillingRole.HEADER_LABEL" defaultvalue="Billing"/></a>
@@ -114,7 +113,7 @@
 	        	<a href="Metering/Metering.jsp">All Trends</a>
 	        </tags:sectionLink>
         </cti:checkRole>
-		<cti:checkProperty property="operator.CommercialMeteringRole.IMPORTER_ENABLED">
+		<cti:checkProperty property="operator.MeteringRole.IMPORTER_ENABLED">
 			<tags:sectionLink>
 	        	<a href="../bulk/importer.jsp">Bulk Importer</a>
 	        </tags:sectionLink>
@@ -124,7 +123,7 @@
         </tags:sectionLink>
 	</tags:operationSection>
 
-</cti:checkRole>
+</cti:checkMultiRole>
 
 <!-- Client Launcher section -->
 <cti:checkProperty property="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED">

@@ -30,7 +30,7 @@
                 	<td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
 				</tr>
 				<tr>
-					<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
+					<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Metering&nbsp;&nbsp;</td>
 					<td width="253" valign="middle">&nbsp;</td>
 					<td width="58" valign="middle">
                 		<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -100,8 +100,8 @@
 					<img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph" > 
 				<%}
 				%>
-    		    <cti:checkProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"> 
-					<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>
+    		    <cti:checkProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"> 
+					<br><font size="-1"><cti:getProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"/></font>
 				</cti:checkProperty>
 				</center></td>
 			</tr>

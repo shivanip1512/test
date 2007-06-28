@@ -1,6 +1,5 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
-<%@ page import="com.cannontech.roles.operator.CommercialMeteringRole" %>
 <%@ page import="com.cannontech.roles.loadcontrol.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
 <%@ page import="com.cannontech.roles.application.DBEditorRole" %>
