@@ -186,7 +186,7 @@
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
-    <requireRole value="operator.CommercialMeteringRole.ROLEID"/>
+    <requireRole value="TrendingRole.ROLEID"/>
   </module>
   
   <module name="commercialcurtailment_user">
@@ -204,7 +204,7 @@
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
-    <requireRole value="cicustomer.CommercialMeteringRole.ROLEID"/>
+    <requireRole value="application.TrendingRole.ROLEID"/>
   </module>
   
   <module name="reporting">
