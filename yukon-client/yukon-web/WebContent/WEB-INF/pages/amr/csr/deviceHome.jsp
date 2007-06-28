@@ -28,16 +28,27 @@
 		<div class="left">
 			
 			<c:if test="${mspSupported}">
-				<ct:widget height="100px" bean="accountInformationWidget" identify="false" deviceId="${deviceId}"/>
+				<ct:widget bean="accountInformationWidget" identify="false" deviceId="${deviceId}"/>
 			</c:if>
 			
-			<ct:widget height="65px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
+			<ct:widget bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
 		
 			<ct:widget bean="meterReadingsWidget" identify="false" deviceId="${deviceId}"/>
 		
 			<cti:titledContainer title="Actions">
 				Move Out<br/>
-				High Bill Complaint (not supported)<br/>
+				
+				<c:choose>
+					<c:when test="${highBillSupported}">
+						<c:url var="highBillUrl" value="/spring/csr/highBill">
+							<c:param name="deviceId" value="${deviceId}" />
+						</c:url>
+						<a href="${highBillUrl}">High Bill Complaint</a><br/>
+					</c:when>
+					<c:otherwise>
+						High Bill Complaint (not supported)<br/>
+					</c:otherwise>
+				</c:choose>
 				Meter Change Out<br/>
 				STARS<br/>
 				Read History<br/>
@@ -46,7 +57,7 @@
 		</div>
 		<div class="right">
 
-			<ct:widget height="300px" bean="trendWidget" identify="false" deviceId="${deviceId}"/>
+			<ct:widget bean="trendWidget" identify="false" deviceId="${deviceId}"/>
 
 			<cti:titledContainer title="Profile">
 				<br/><br/><br/><br/><center>TBD</center><br/><br/><br/><br/>
