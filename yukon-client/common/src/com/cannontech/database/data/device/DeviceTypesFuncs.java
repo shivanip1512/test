@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -21,6 +22,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceMCT400Series;
 
 /**
  * This type was created in VisualAge.
@@ -1391,8 +1393,17 @@ public static Object changeType (String newType,
 		}
 	}
 
-
-
-
-
+    /**
+     * Returns true for all Disconnect MCTs and All MCTs(400series) with disconnect collar defined.
+     * @param yukonDevice
+     * @return
+     */
+    public static boolean isDisconnectEnabled( YukonDevice yukonDevice )
+    {
+        if (isDisconnectMCT(yukonDevice.getType()) )
+            return true;
+        if( isMCT410(yukonDevice.getType()) )
+            return DeviceMCT400Series.hasExistingDisconnectAddress(yukonDevice.getDeviceId());
+        return false;
+    }
 }
