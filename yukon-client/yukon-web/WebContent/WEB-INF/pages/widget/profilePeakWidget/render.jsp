@@ -70,7 +70,7 @@
 							<tags:nameValue name="Usage" rowHighlight="${highlight.usage}">${preResult.usage}</tags:nameValue>
 							<tags:nameValue name="Demand" rowHighlight="${highlight.demand}">${preResult.demand}</tags:nameValue>
 							<tags:nameValue name="Average daily usage over range" rowHighlight="${highlight.averageUsage}">${preResult.averageDailyUsage}</tags:nameValue>
-							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.usage}">${preResult.totalUsage}</tags:nameValue>
+							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.totalUsage}">${preResult.totalUsage}</tags:nameValue>
 						</tags:nameValueContainer>
 		
 						<!-- Load Profile collection -->
@@ -99,7 +99,7 @@
 							<tags:nameValue name="Usage" rowHighlight="${highlight.usage}">${postResult.usage}</tags:nameValue>
 							<tags:nameValue name="Demand" rowHighlight="${highlight.demand}">${postResult.demand}</tags:nameValue>
 							<tags:nameValue name="Average daily usage over range" rowHighlight="${highlight.averageUsage}">${postResult.averageDailyUsage}</tags:nameValue>
-							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.usage}">${postResult.totalUsage}</tags:nameValue>
+							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.totalUsage}">${postResult.totalUsage}</tags:nameValue>
 						</tags:nameValueContainer>
 		
 						<!-- Load Profile collection -->
