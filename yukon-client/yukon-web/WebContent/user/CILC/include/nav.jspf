@@ -77,7 +77,7 @@ function dispStatusMsg(msgStr)
 	  </div>
     </td>
   </tr>
-  <cti:checkProperty propertyid="<%=TrendingRole.GET_DATA_NOW_ENABLED%>">
+  <cti:checkProperty propertyid="<%=TrendingRole.SCAN_NOW_ENABLED%>">
   <tr>
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Display</span><br>
