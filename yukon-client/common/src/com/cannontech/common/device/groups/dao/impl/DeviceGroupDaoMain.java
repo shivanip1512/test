@@ -1,15 +1,22 @@
 package com.cannontech.common.device.groups.dao.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
+import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
 public class DeviceGroupDaoMain implements DeviceGroupDao {
-    private Map<DeviceGroupType, DeviceGroupDao> providers;
+    private Map<DeviceGroupType, DeviceGroupProvider> providers;
+    private StaticDeviceGroupProvider staticProvider;
 
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
         return getProvider(group).getChildDevices(group);
@@ -36,15 +43,36 @@ public class DeviceGroupDaoMain implements DeviceGroupDao {
     }
     
     public DeviceGroup getRootGroup() {
-        return providers.get(DeviceGroupType.STATIC).getRootGroup();
+        return staticProvider.getRootGroup();
     }
     
-    protected DeviceGroupDao getProvider(DeviceGroup group) {
+    public List<? extends DeviceGroup> getAllGroups() {
+        List<DeviceGroup> result = new ArrayList<DeviceGroup>(10);
+        collectChildGroups(result, getRootGroup());
+        
+        return result;
+    }
+    
+    private void collectChildGroups(Collection<DeviceGroup> result, DeviceGroup rootGroup) {
+        List<? extends DeviceGroup> childGroups = getChildGroups(rootGroup);
+        for (DeviceGroup group : childGroups) {
+            result.add(group);
+            collectChildGroups(result, group);
+        }
+    }
+
+    protected DeviceGroupProvider getProvider(DeviceGroup group) {
         return providers.get(group.getType());
     }
     
-    public void setProviders(Map<DeviceGroupType, DeviceGroupDao> providers) {
+    @Required
+    public void setProviders(Map<DeviceGroupType, DeviceGroupProvider> providers) {
         this.providers = providers;
+    }
+    
+    @Required
+    public void setStaticProvider(StaticDeviceGroupProvider staticProvider) {
+        this.staticProvider = staticProvider;
     }
     
 }

@@ -27,7 +27,7 @@ public class DeviceGroup {
     public DeviceGroupType getType() {
         return type;
     }
-
+    
     public String getFullName() {
         if (parent == null) {
             return getName();

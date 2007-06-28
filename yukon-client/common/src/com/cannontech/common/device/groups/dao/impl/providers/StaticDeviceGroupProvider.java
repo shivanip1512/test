@@ -35,7 +35,6 @@ public class StaticDeviceGroupProvider extends DeviceGroupDaoBase {
         return sdg;
     }
     
-    @Override
     public DeviceGroup getRootGroup() {
         StoredDeviceGroup rootGroup = deviceGroupEditorDao.getRootGroup();
         return rootGroup;

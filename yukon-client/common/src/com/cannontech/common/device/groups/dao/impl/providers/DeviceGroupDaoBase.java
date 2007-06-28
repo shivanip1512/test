@@ -12,7 +12,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 
-public abstract class DeviceGroupDaoBase implements DeviceGroupDao {
+public abstract class DeviceGroupDaoBase implements DeviceGroupProvider {
     private DeviceGroupDao mainDelegator;
 
     public abstract List<YukonDevice> getChildDevices(DeviceGroup group);
@@ -53,10 +53,6 @@ public abstract class DeviceGroupDaoBase implements DeviceGroupDao {
             deviceList.addAll(devices);
         }
         return deviceList;
-    }
-    
-    public DeviceGroup getRootGroup() {
-        throw new UnsupportedOperationException();
     }
     
     @Required
