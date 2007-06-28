@@ -57,9 +57,9 @@
 		<div class="right">
 
 			<ct:widget bean="trendWidget" identify="false" deviceId="${deviceId}"/>
-
-			<ct:widget bean="disconnectMeterWidget" identify="false" deviceId="${deviceId}"/>
-
+			<c:if test="${disconnectSupported}">
+				<ct:widget bean="disconnectMeterWidget" identify="false" deviceId="${deviceId}"/>
+			</c:if>
 
 			<cti:titledContainer title="Profile">
 				<br/><br/><br/><br/><center>TBD</center><br/><br/><br/><br/>

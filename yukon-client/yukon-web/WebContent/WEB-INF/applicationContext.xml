@@ -67,6 +67,23 @@
         </property>
         <property name="pointDao" ref="pointDao"/>
     </bean>
+
+    <bean id="disconnectMeterWidget"
+    	class="com.cannontech.web.widget.DisconnectMeterWidget">
+    	<property name="title" value="Disconnect"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+		<property name="meterReadService" ref="meterReadService"/>
+        <property name="attributeService" ref="attributeService"/>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="stateDao" ref="stateDao"/>
+        <property name="dynamicDataSource" ref="dynamicDataSource"/>
+        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
+    </bean>
     
     <bean id="meterInformationWidget"
     	class="com.cannontech.web.widget.MeterInformationWidget">
@@ -77,7 +94,7 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="paoDao" ref="paoDao"/>
+        <property name="meterDao" ref="meterDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
@@ -96,6 +113,7 @@
         <property name="attributesToShow">
           <list>
             <value>USAGE</value>
+            <value>PEAK_DEMAND</value>
             <value>DEMAND</value>
             <value>VOLTAGE</value>
           </list>
