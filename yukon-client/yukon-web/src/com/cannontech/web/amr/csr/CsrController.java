@@ -23,6 +23,7 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.roles.yukon.MultispeakRole;
 
 /**
@@ -131,6 +132,9 @@ public class CsrController extends MultiActionController {
         mav.addObject("mspSupported",
                       Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
                              .intValue() > 0);
+
+        boolean disconnectSupported =  DeviceTypesFuncs.isDisconnectEnabled(device);
+        mav.addObject("disconnectSupported", disconnectSupported);
 
         return mav;
     }
