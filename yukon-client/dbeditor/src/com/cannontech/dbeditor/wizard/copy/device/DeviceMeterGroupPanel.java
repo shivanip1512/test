@@ -3,19 +3,41 @@ package com.cannontech.dbeditor.wizard.copy.device;
 /**
  * This type was created in VisualAge.
  */
- import com.cannontech.database.data.device.MCTBase;
+ import java.awt.Dimension;
+import java.awt.Font;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
+import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.spring.YukonSpringHook;
  
 public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataInputPanel {
     
     private javax.swing.JLabel ivjAreaCodeGroupLabel = null;
     private javax.swing.JLabel ivjCycleGroupLabel = null;
-    private javax.swing.JComboBox ivjAreaCodeGroupComboBox = null;
+    private javax.swing.JComboBox alternateGroupComboBox = null;
     private javax.swing.JComboBox ivjCycleGroupComboBox = null;
     private javax.swing.JComboBox ivjJComboBoxBillingGroup = null;
+    private JComboBox customGroup1ComboBox = null;
+    private JComboBox customGroup2ComboBox = null;
+    private JComboBox customGroup3ComboBox = null;
     private javax.swing.JLabel ivjJLabelBillingGroup = null;
+    private JLabel customGroup1Label = null;
+    private JLabel customGroup2Label = null;
+    private JLabel customGroup3Label = null;
+    
+    FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack"); 
     
     public DeviceMeterGroupPanel() {
         super();
@@ -24,8 +46,6 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     
     private void initialize() {
         try {
-            // user code begin {1}
-            // user code end
             setName("DeviceMeterGroupPanel");
             setLayout(new java.awt.GridBagLayout());
             setSize(350, 200);
@@ -66,14 +86,14 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
             constraintsAreaCodeGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsAreaCodeGroupComboBox.weightx = 1.0;
             constraintsAreaCodeGroupComboBox.insets = new java.awt.Insets(3, 0, 3, 22);
-            add(getAreaCodeGroupComboBox(), constraintsAreaCodeGroupComboBox);
+            add(getAlternateGroupComboBox(), constraintsAreaCodeGroupComboBox);
 
             java.awt.GridBagConstraints constraintsJLabelBillingGroup = new java.awt.GridBagConstraints();
             constraintsJLabelBillingGroup.gridx = 1; constraintsJLabelBillingGroup.gridy = 4;
             constraintsJLabelBillingGroup.anchor = java.awt.GridBagConstraints.WEST;
             constraintsJLabelBillingGroup.ipadx = 9;
             constraintsJLabelBillingGroup.ipady = 2;
-            constraintsJLabelBillingGroup.insets = new java.awt.Insets(7, 16, 23, 0);
+            constraintsJLabelBillingGroup.insets = new java.awt.Insets(7, 16, 3, 0);
             add(getJLabelBillingGroup(), constraintsJLabelBillingGroup);
 
             java.awt.GridBagConstraints constraintsJComboBoxBillingGroup = new java.awt.GridBagConstraints();
@@ -81,15 +101,112 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
             constraintsJComboBoxBillingGroup.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsJComboBoxBillingGroup.anchor = java.awt.GridBagConstraints.WEST;
             constraintsJComboBoxBillingGroup.weightx = 1.0;
-            constraintsJComboBoxBillingGroup.insets = new java.awt.Insets(3, 1, 20, 21);
+            constraintsJComboBoxBillingGroup.insets = new java.awt.Insets(3, 1, 3, 21);
             add(getJComboBoxBillingGroup(), constraintsJComboBoxBillingGroup);
+            
+            java.awt.GridBagConstraints constraintsCustomGroup1Label = new java.awt.GridBagConstraints();
+            constraintsCustomGroup1Label.gridx = 1; constraintsCustomGroup1Label.gridy = 5;
+            constraintsCustomGroup1Label.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCustomGroup1Label.ipadx = 9;
+            constraintsCustomGroup1Label.ipady = 2;
+            constraintsCustomGroup1Label.insets = new java.awt.Insets(7, 16, 3, 0);
+            add(getCustomGroup1Label(), constraintsCustomGroup1Label);
+
+            java.awt.GridBagConstraints constraintsCustomGroup1ComboBox = new java.awt.GridBagConstraints();
+            constraintsCustomGroup1ComboBox.gridx = 2; constraintsCustomGroup1ComboBox.gridy = 5;
+            constraintsCustomGroup1ComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsCustomGroup1ComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCustomGroup1ComboBox.weightx = 1.0;
+            constraintsCustomGroup1ComboBox.insets = new java.awt.Insets(3, 1, 3, 21);
+            add(getCustomGroup1ComboBox(), constraintsCustomGroup1ComboBox);
+            
+            java.awt.GridBagConstraints constraintsCustomGroup2Label = new java.awt.GridBagConstraints();
+            constraintsCustomGroup2Label.gridx = 1; constraintsCustomGroup2Label.gridy = 6;
+            constraintsCustomGroup2Label.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCustomGroup2Label.ipadx = 9;
+            constraintsCustomGroup2Label.ipady = 2;
+            constraintsCustomGroup2Label.insets = new java.awt.Insets(7, 16, 3, 0);
+            add(getCustomGroup2Label(), constraintsCustomGroup2Label);
+
+            java.awt.GridBagConstraints constraintsCustomGroup2ComboBox = new java.awt.GridBagConstraints();
+            constraintsCustomGroup2ComboBox.gridx = 2; constraintsCustomGroup2ComboBox.gridy = 6;
+            constraintsCustomGroup2ComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsCustomGroup2ComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCustomGroup2ComboBox.weightx = 1.0;
+            constraintsCustomGroup2ComboBox.insets = new java.awt.Insets(3, 1, 3, 21);
+            add(getCustomGroup2ComboBox(), constraintsCustomGroup2ComboBox);
+            
+            java.awt.GridBagConstraints constraintsCustomGroup3Label = new java.awt.GridBagConstraints();
+            constraintsCustomGroup3Label.gridx = 1; constraintsCustomGroup3Label.gridy = 7;
+            constraintsCustomGroup3Label.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCustomGroup3Label.ipadx = 9;
+            constraintsCustomGroup3Label.ipady = 2;
+            constraintsCustomGroup3Label.insets = new java.awt.Insets(7, 16, 3, 0);
+            add(getCustomGroup3Label(), constraintsCustomGroup3Label);
+
+            java.awt.GridBagConstraints constraintsCustomGroup3ComboBox = new java.awt.GridBagConstraints();
+            constraintsCustomGroup3ComboBox.gridx = 2; constraintsCustomGroup3ComboBox.gridy = 7;
+            constraintsCustomGroup3ComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsCustomGroup3ComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsCustomGroup3ComboBox.weightx = 1.0;
+            constraintsCustomGroup3ComboBox.insets = new java.awt.Insets(3, 1, 3, 21);
+            add(getCustomGroup3ComboBox(), constraintsCustomGroup3ComboBox);
 
             
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
-        // user code begin {2}
-        // user code end
+    }
+    
+    private JLabel getCustomGroup1Label() {
+        if (customGroup1Label == null) {
+            try {
+                customGroup1Label = new javax.swing.JLabel();
+                customGroup1Label.setName("CustomGroup1Label");
+                customGroup1Label.setText("Custom Group 1:");
+                customGroup1Label.setMaximumSize(new Dimension(114, 16));
+                customGroup1Label.setPreferredSize(new Dimension(114, 16));
+                customGroup1Label.setFont(new Font("dialog", 0, 14));
+                customGroup1Label.setMinimumSize(new Dimension(114, 16));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return customGroup1Label;
+    }
+
+    private JLabel getCustomGroup2Label() {
+        if (customGroup2Label == null) {
+            try {
+                customGroup2Label = new javax.swing.JLabel();
+                customGroup2Label.setName("CustomGroup2Label");
+                customGroup2Label.setText("Custom Group 2:");
+                customGroup2Label.setMaximumSize(new Dimension(114, 16));
+                customGroup2Label.setPreferredSize(new Dimension(114, 16));
+                customGroup2Label.setFont(new Font("dialog", 0, 14));
+                customGroup2Label.setMinimumSize(new Dimension(114, 16));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return customGroup2Label;
+    }
+
+    private JLabel getCustomGroup3Label() {
+        if (customGroup3Label == null) {
+            try {
+                customGroup3Label = new javax.swing.JLabel();
+                customGroup3Label.setName("CustomGroup3Label");
+                customGroup3Label.setText("Custom Group 3:");
+                customGroup3Label.setMaximumSize(new Dimension(114, 16));
+                customGroup3Label.setPreferredSize(new Dimension(114, 16));
+                customGroup3Label.setFont(new Font("dialog", 0, 14));
+                customGroup3Label.setMinimumSize(new Dimension(114, 16));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return customGroup3Label;
     }
     
     /**
@@ -123,7 +240,6 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
      * Return the CycleGroupComboBox property value.
      * @return javax.swing.JComboBox
      */
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
     private javax.swing.JComboBox getCycleGroupComboBox() {
         if (ivjCycleGroupComboBox == null) {
             try {
@@ -132,23 +248,13 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
                 ivjCycleGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
                 ivjCycleGroupComboBox.setEditable(true);
                 ivjCycleGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
-                // user code begin {1}
+                List<String> availableCollectionGroups = hacker.getGroups(FixedDeviceGroups.COLLECTIONGROUP);
+                Iterator<String> iter = availableCollectionGroups.iterator();
+                while(iter.hasNext()) {
+                    ivjCycleGroupComboBox.addItem(iter.next());
+                }
              
-             try
-             {
-                String availableCycleGroups[] = DeviceMeterGroup.getDeviceCollectionGroups();
-                for(int i=0;i<availableCycleGroups.length;i++)
-                   ivjCycleGroupComboBox.addItem( availableCycleGroups[i] );
-             }
-             catch(java.sql.SQLException e)
-             {
-                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-             }
-             
-                // user code end
             } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }
@@ -185,36 +291,86 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
      * Return the AreaCodeGroupComboBox property value.
      * @return javax.swing.JComboBox
      */
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getAreaCodeGroupComboBox() {
-        if (ivjAreaCodeGroupComboBox == null) {
+    private javax.swing.JComboBox getAlternateGroupComboBox() {
+        if (alternateGroupComboBox == null) {
             try {
-                ivjAreaCodeGroupComboBox = new javax.swing.JComboBox();
-                ivjAreaCodeGroupComboBox.setName("AreaCodeGroupComboBox");
-                ivjAreaCodeGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
-                ivjAreaCodeGroupComboBox.setEditable(true);
-                ivjAreaCodeGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
-                // user code begin {1}
-             
-             try
-             {
-                String availableAreaCodeGroups[] = DeviceMeterGroup.getDeviceTestCollectionGroups();
-                for(int i=0;i<availableAreaCodeGroups.length;i++)
-                   ivjAreaCodeGroupComboBox.addItem( availableAreaCodeGroups[i] );
-             }
-             catch(java.sql.SQLException e)
-             {
-                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-             }
-             
-                // user code end
+                alternateGroupComboBox = new javax.swing.JComboBox();
+                alternateGroupComboBox.setName("AreaCodeGroupComboBox");
+                alternateGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
+                alternateGroupComboBox.setEditable(true);
+                alternateGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
+                List<String> availableAlternateGroups = hacker.getGroups(FixedDeviceGroups.TESTCOLLECTIONGROUP);
+                Iterator<String> iter = availableAlternateGroups.iterator();
+                while(iter.hasNext()) {
+                    alternateGroupComboBox.addItem(iter.next());
+                }
             } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }
-        return ivjAreaCodeGroupComboBox;
+        return alternateGroupComboBox;
+    }
+    
+    private JComboBox getCustomGroup1ComboBox() {
+        if (customGroup1ComboBox == null) {
+            try {
+                customGroup1ComboBox = new JComboBox();
+                customGroup1ComboBox.setName("CustomGroup1ComboBox");
+                customGroup1ComboBox.setPreferredSize(new Dimension(200, 25));
+                customGroup1ComboBox.setEditable(true);
+                customGroup1ComboBox.setMinimumSize(new Dimension(200, 25));
+
+                List<String> availableCustom1Groups = hacker.getGroups(FixedDeviceGroups.CUSTOM1GROUP);
+                Iterator<String> iter = availableCustom1Groups.iterator();
+                while(iter.hasNext()) {
+                    customGroup1ComboBox.addItem(iter.next());
+                }
+
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return customGroup1ComboBox;
+    }
+
+    private JComboBox getCustomGroup2ComboBox() {
+        if (customGroup2ComboBox == null) {
+            try {
+                customGroup2ComboBox = new JComboBox();
+                customGroup2ComboBox.setName("CustomGroup2ComboBox");
+                customGroup2ComboBox.setPreferredSize(new Dimension(200, 25));
+                customGroup2ComboBox.setEditable(true);
+                customGroup2ComboBox.setMinimumSize(new Dimension(200, 25));
+                List<String> availableCustom2Groups = hacker.getGroups(FixedDeviceGroups.CUSTOM2GROUP);
+                Iterator<String> iter = availableCustom2Groups.iterator();
+                while(iter.hasNext()) {
+                    customGroup2ComboBox.addItem(iter.next());
+                }
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return customGroup2ComboBox;
+    }
+
+    private JComboBox getCustomGroup3ComboBox() {
+        if (customGroup3ComboBox == null) {
+            try {
+                customGroup3ComboBox = new JComboBox();
+                customGroup3ComboBox.setName("CustomGroup3ComboBox");
+                customGroup3ComboBox.setPreferredSize(new Dimension(200, 25));
+                customGroup3ComboBox.setEditable(true);
+                customGroup3ComboBox.setMinimumSize(new Dimension(200, 25));
+                List<String> availableCustom3Groups = hacker.getGroups(FixedDeviceGroups.CUSTOM3GROUP);
+                Iterator<String> iter = availableCustom3Groups.iterator();
+                while(iter.hasNext()) {
+                    customGroup3ComboBox.addItem(iter.next());
+                }
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return customGroup3ComboBox;
     }
     
     /**
@@ -248,7 +404,6 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
      * Return the JComboBoxBillingGroup property value.
      * @return javax.swing.JComboBox
      */
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
     private javax.swing.JComboBox getJComboBoxBillingGroup() {
         if (ivjJComboBoxBillingGroup == null) {
             try {
@@ -257,23 +412,12 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
                 ivjJComboBoxBillingGroup.setPreferredSize(new java.awt.Dimension(200, 25));
                 ivjJComboBoxBillingGroup.setEditable(true);
                 ivjJComboBoxBillingGroup.setMinimumSize(new java.awt.Dimension(200, 25));
-                // user code begin {1}
-             
-             try
-             {
-                String avBillGrps[] = DeviceMeterGroup.getDeviceBillingGroups();
-                for( int i = 0; i < avBillGrps.length; i++ )
-                   ivjJComboBoxBillingGroup.addItem( avBillGrps[i] );
-             }
-             catch(java.sql.SQLException e)
-             {
-                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-             }
-             
-                // user code end
+                List<String> availableBillingsGroups = hacker.getGroups(FixedDeviceGroups.BILLINGGROUP);
+                Iterator<String> iter = availableBillingsGroups.iterator();
+                while(iter.hasNext()) {
+                    ivjJComboBoxBillingGroup.addItem(iter.next());
+                }
             } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }
@@ -292,63 +436,74 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     }
     
     
+    @SuppressWarnings("deprecation")
     public Object getValue(Object val) {
         
-        DeviceMeterGroup dmg = null;
+        LiteYukonPAObject liteYuk = null;
         
         if (val instanceof MultiDBPersistent)
         {
             if ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof MCTBase)
             {
-                dmg = ((MCTBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0))).getDeviceMeterGroup();
+                liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0))).getPAObjectID());
             }
         }
         else
         {
-            dmg = ((MCTBase) val).getDeviceMeterGroup();
+            liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
         }
 
         String cycleGroup = getCycleGroupComboBox().getSelectedItem().toString();
-        String areaCodeGroup = getAreaCodeGroupComboBox().getSelectedItem().toString();
-        
+        String alternateGroup = getAlternateGroupComboBox().getSelectedItem().toString();
         String billingGroup = getJComboBoxBillingGroup().getSelectedItem().toString();
+        String customGroup1 = getCustomGroup1ComboBox().getSelectedItem().toString();
+        String customGroup2 = getCustomGroup2ComboBox().getSelectedItem().toString();
+        String customGroup3 = getCustomGroup3ComboBox().getSelectedItem().toString();
         
-        if( cycleGroup != null && cycleGroup.length() > 0 )
-        {
-            dmg.setCollectionGroup( cycleGroup );
-        } 
-        if( areaCodeGroup != null && areaCodeGroup.length() > 0 )
-        {
-            dmg.setTestCollectionGroup( areaCodeGroup );
-        }
-        if( billingGroup != null && billingGroup.length() > 0 )
-        {
-            dmg.setBillingGroup( billingGroup );
-        }
+        YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+        hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
+        hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
+        hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
+        hacker.setGroup(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice, customGroup1);
+        hacker.setGroup(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice, customGroup2);
+        hacker.setGroup(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice, customGroup3);
         return val;
         
     }
 
     
+    @SuppressWarnings("deprecation")
     public void setValue(Object o) 
     {
-        DeviceMeterGroup dmg = null;
+//        DeviceMeterGroup dmg = null;
+        LiteYukonPAObject liteYuk = null;
         
         if (o instanceof MultiDBPersistent)
         {
             if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof MCTBase)
             {
-                dmg = ((MCTBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0))).getDeviceMeterGroup();
+                
+                liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0))).getPAObjectID());
             }
         }
         else
         {
-            dmg = ((MCTBase) o).getDeviceMeterGroup();
+            liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) o).getPAObjectID());
         }
         
-        getCycleGroupComboBox().setSelectedItem(dmg.getCollectionGroup());
-        getAreaCodeGroupComboBox().setSelectedItem(dmg.getTestCollectionGroup());
-        getJComboBoxBillingGroup().setSelectedItem(dmg.getBillingGroup());
+        YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+        String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
+        String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
+        String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
+        String customGroup1 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice);
+        String customGroup2 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice);
+        String customGroup3 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice);
+        getCycleGroupComboBox().setSelectedItem( collectionGroup );
+        getAlternateGroupComboBox().setSelectedItem( alternateGroup );
+        getJComboBoxBillingGroup().setSelectedItem( billingGroup );
+        getCustomGroup1ComboBox().setSelectedItem(customGroup1);
+        getCustomGroup2ComboBox().setSelectedItem(customGroup2);
+        getCustomGroup3ComboBox().setSelectedItem(customGroup3);
     }
     
     public void setFirstFocus() 
