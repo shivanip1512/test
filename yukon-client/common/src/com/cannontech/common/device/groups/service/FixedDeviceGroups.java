@@ -4,6 +4,9 @@ public enum FixedDeviceGroups {
     COLLECTIONGROUP("/Meters/Collection"),
     TESTCOLLECTIONGROUP("/Meters/Alternate"),
     BILLINGGROUP("/Meters/Billing"),
+    CUSTOM1GROUP("/Meters/Custom1"),
+    CUSTOM2GROUP("/Meters/Custom2"),
+    CUSTOM3GROUP("/Meters/Custom2"),
     ;
     
     private final String prefix;
