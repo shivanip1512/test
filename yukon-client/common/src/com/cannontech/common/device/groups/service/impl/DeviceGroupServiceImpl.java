@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -35,8 +36,19 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     }
 
     private Set<? extends DeviceGroup> removeDuplicates(Collection<? extends DeviceGroup> groups) {
-        //TODO this needs to remove children of parents
-        return new HashSet<DeviceGroup>(groups);
+        Set<DeviceGroup> result = new HashSet<DeviceGroup>(groups);
+        Iterator<DeviceGroup> iter = result.iterator();
+        while (iter.hasNext()) {
+            DeviceGroup myParent = iter.next().getParent();
+            while (myParent != null) {
+                if (result.contains(myParent)) {
+                    iter.remove();
+                    break;
+                }
+                myParent = myParent.getParent();
+            }
+        }
+        return result;
     }
 
     public Set<Integer> getDeviceIds(Collection<? extends DeviceGroup> groups) {
