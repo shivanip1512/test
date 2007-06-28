@@ -4,8 +4,38 @@
 /*3.5 CHANGES IN BY FRI. MORNING PLEASE PLEASE PLEASE*/
 
 /*CURRENT LIST*/
-/*Tom's DeviceMeterGroup changes?*/
+/*Tom's DeviceMeterGroup changes*/
+CREATE TABLE DeviceGroup(
+	DeviceGroupId numeric(18, 0) NOT NULL,
+	GroupName varchar(255) NOT NULL,
+	ParentDeviceGroupId numeric(18, 0) NULL,
+	SystemGroup char(1) NOT NULL,
+	Type varchar(255) NOT NULL,
+ CONSTRAINT PK_DeviceGroup PRIMARY KEY CLUSTERED (DeviceGroupId ASC)
+)
 
+ALTER TABLE DeviceGroup  WITH CHECK ADD  CONSTRAINT FK_DeviceGroup_DeviceGroup FOREIGN KEY(ParentDeviceGroupId)
+REFERENCES DeviceGroup (DeviceGroupId)
+
+CREATE TABLE DeviceGroupMember(
+	DeviceGroupId numeric(18, 0) NOT NULL,
+	YukonPaoId numeric(18, 0) NOT NULL,
+ CONSTRAINT PK_DeviceGroupMember PRIMARY KEY CLUSTERED (DeviceGroupId ASC,YukonPaoId ASC)
+)
+
+ALTER TABLE DeviceGroupMember  WITH CHECK ADD  CONSTRAINT FK_DeviceGroupMember_DEVICE FOREIGN KEY(YukonPaoId)
+REFERENCES DEVICE (DEVICEID)
+GO
+ALTER TABLE DeviceGroupMember  WITH CHECK ADD  CONSTRAINT FK_DeviceGroupMember_DeviceGroup FOREIGN KEY(DeviceGroupId)
+REFERENCES DeviceGroup (DeviceGroupId)
+
+insert into DeviceGroup values (0,'',null,'Y','STATIC');
+insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
+insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
+insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
+insert into DeviceGroup values (4,'Alternate',1,'Y','STATIC');
+
+/* we also need to drop CollectionGroup, TestCollectionGroup, BillingGroup from DeviceMeterGroup */
 
 /*Removal/cleanup of Commercial Metering roles*/
 /******SN - Deprecating of CICustomer.CommercialMetering, changed to Application.Trending properites /*****/
