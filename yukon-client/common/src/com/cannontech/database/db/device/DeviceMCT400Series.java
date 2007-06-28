@@ -6,6 +6,9 @@
  */
 package com.cannontech.database.db.device;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -205,32 +208,31 @@ public void update()
 	}
 }
 
-public final static boolean hasExistingDisconnectAddress(Integer mctID) throws java.sql.SQLException 
+public final static boolean hasExistingDisconnectAddress(Integer mctID) 
 {	
-	return hasExistingDisconnect(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+	return hasExistingDisconnect(mctID, CtiUtilities.getDatabaseAlias());
 }
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static boolean hasExistingDisconnect(Integer mctID, String databaseAlias) throws java.sql.SQLException 
+public final static boolean hasExistingDisconnect(Integer mctID, String databaseAlias) 
 {
-	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT DisconnectAddress FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
-													databaseAlias );
+	SqlStatement stmt = 
+        new SqlStatement("SELECT DisconnectAddress FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
+                         databaseAlias );
 
-	try
-	{
+	try {
 		stmt.execute();
 		return (stmt.getRowCount() > 0 );
-	}
-	catch( Exception e )
-	{
+        
+	} catch( Exception e ) {
+        CTILogger.error( e );
 		return false;
 	}
 }
 
-public final static boolean hasExistingTOUSchedule(Integer mctID) throws java.sql.SQLException 
+public final static boolean hasExistingTOUSchedule(Integer mctID) 
 {	
 	return hasExistingTOUSchedule(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 }
@@ -238,19 +240,18 @@ public final static boolean hasExistingTOUSchedule(Integer mctID) throws java.sq
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static boolean hasExistingTOUSchedule(Integer mctID, String databaseAlias) throws java.sql.SQLException 
+public final static boolean hasExistingTOUSchedule(Integer mctID, String databaseAlias) 
 {
-	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT TOUScheduleID FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
-													databaseAlias );
+	SqlStatement stmt =
+        new SqlStatement("SELECT TOUScheduleID FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
+                         databaseAlias );
 
-	try
-	{
+	try {
 		stmt.execute();
 		return (stmt.getRowCount() > 0 );
-	}
-	catch( Exception e )
-	{
+        
+	} catch( Exception e ) {
+        CTILogger.error( e );
 		return false;
 	}
 }

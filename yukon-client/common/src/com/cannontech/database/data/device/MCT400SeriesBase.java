@@ -144,32 +144,12 @@ public void setHasNewDisconnect(boolean usesDisconn)
 	hasNewDisconnect = usesDisconn;
 }
 
-public boolean hasExistingDisconnect()
-{
-	try
-	{
-		return DeviceMCT400Series.hasExistingDisconnectAddress(getDevice().getDeviceID());
-	}
-	catch( java.sql.SQLException e2 )
-	{
-		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-	}	
-	
-	return false;
+public boolean hasExistingDisconnect() {
+    return DeviceMCT400Series.hasExistingDisconnectAddress(getDevice().getDeviceID());
 }
 
-public boolean hasExistingTOU()
-{
-	try
-	{
-		return DeviceMCT400Series.hasExistingTOUSchedule(getDevice().getDeviceID());
-	}
-	catch( java.sql.SQLException e2 )
-	{
-		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-	}	
-	
-	return false;
+public boolean hasExistingTOU() {
+    return DeviceMCT400Series.hasExistingTOUSchedule(getDevice().getDeviceID());
 }
 
 }
