@@ -141,6 +141,23 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_operators)
 
 }
 
+BOOST_AUTO_UNIT_TEST(test_ctidate_daysfrom1970)
+{
+    CtiDate zeroTest(1, 1, 1970);
+    CtiDate oneTest(2, 1, 1970);
+    CtiDate yearTest(1, 1, 1971);
+    CtiDate twoYearTest(1, 1, 1972);
+    CtiDate threeYearTest(1, 1, 1973);
+    CtiDate manyYearTest(1, 1, 2001); //2000 is a tricky year, and is a leap year. 8 leap years since 1970...
+
+    BOOST_CHECK_EQUAL( 0, zeroTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( 1, oneTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( 365, yearTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( 730, twoYearTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( 1096, threeYearTest.daysFrom1970() );//leap year included!
+    BOOST_CHECK_EQUAL( (2001-1970)*365 + 8, manyYearTest.daysFrom1970() );//leap year included!
+}
+
 
 //test_suite
 //init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {

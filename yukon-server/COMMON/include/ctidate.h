@@ -66,6 +66,7 @@ public:
     CtiDate & toUTCdate();
 
     unsigned int day() const;
+    unsigned int daysFrom1970() const;
     unsigned int dayOfMonth() const;
     unsigned int year() const;
     unsigned int month() const;

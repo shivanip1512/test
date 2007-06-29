@@ -145,6 +145,13 @@ unsigned int CtiDate::day() const
     return dp.length().days() + 1;
 }
 
+unsigned int CtiDate::daysFrom1970() const
+{
+    date_period dp(date(1970, 1, 1), bdate);
+
+    return dp.length().days();
+}
+
 unsigned int CtiDate::dayOfMonth() const
 {
     return bdate.day();
