@@ -97,7 +97,7 @@
         <property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
-        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
+        <property name="pointFormattingService" ref="pointFormattingService"/>
     </bean>
     
     <bean id="meterInformationWidget"
