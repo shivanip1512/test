@@ -1,7 +1,12 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<cti:standardPage title="MultiSpeak Setup" module="multispeak">
-<cti:standardMenu />
+<cti:standardPage title="MultiSpeak Interfaces" module="multispeak">
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/msp_setup.jsp" title="Multispeak"  />
+    &gt; Interfaces
+</cti:breadCrumbs>
+<cti:standardMenu menuSelection="multispeak|interfaces"/>
 <%@ page import="com.cannontech.multispeak.client.*" %>
 
 <jsp:useBean id="multispeakBean" class="com.cannontech.multispeak.client.MultispeakBean" scope="session"/>
@@ -179,7 +184,7 @@ function vendorChanged(vendor)
         </td>
         <c:if test="${status.first}">
         <td rowspan='<%=MultispeakDefines.MSP_INTERFACE_ARRAY.length%>'>
-          <textarea name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${sessionScope.resultColor}"/>'><c:out value="${sessionScope.MSP_RESULT_MSG}"/></textarea>
+          <textarea cols="50" rows='<%=MultispeakDefines.MSP_INTERFACE_ARRAY.length * 2%>' name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${sessionScope.resultColor}"/>'><c:out value="${sessionScope.MSP_RESULT_MSG}"/></textarea>
         </td>
         </c:if>          
       </tr>
@@ -193,6 +198,5 @@ function vendorChanged(vendor)
   </tr>
 </table>
 </form>
-</div>
 </cti:titledContainer>
 </cti:standardPage>
