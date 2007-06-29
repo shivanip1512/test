@@ -2,6 +2,7 @@ package com.cannontech.common.util;
 
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -331,5 +332,26 @@ public static int differenceMinutes(Date from, Date to) {
         return flexibleDateParser(dateStr, NO_TIME_MODE.START_OF_DAY, timeZone);
     }
 
+    /**
+     * Convert seconds of time into hh:mm:ss string.
+     * @param int seconds
+     * @return String in format hh:mm:ss
+     */
+    public static String convertSecondsToTimeString(double seconds)
+    {
+        int iSeconds = (int)seconds;
+        DecimalFormat format = new DecimalFormat();
+        format.setMaximumFractionDigits(0);
+        format.setMinimumIntegerDigits(2);
+        DecimalFormat format2 = new DecimalFormat();
+        format2.setMaximumIntegerDigits(0);
+        format2.setMinimumFractionDigits(3);
+        
+        int hour = iSeconds / 3600;
+        int temp = iSeconds % 3600;
+        int min = temp / 60;
+        int sec = temp % 60; 
 
+        return format.format(hour) + ":" + format.format(min) + ":" + format.format(Math.floor(sec))+  format2.format(seconds).toString();
+    }    
 }
