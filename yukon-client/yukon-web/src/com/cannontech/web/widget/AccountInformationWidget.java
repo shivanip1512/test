@@ -60,7 +60,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         sb.append(address.getStateCode());
         sb.append("+");
         sb.append(address.getZipCode());
-        sb.append("&ie=UTF8&om=1&z=16&iwloc=addr");
+        sb.append("&ie=UTF8&om=1&z=16&iwloc=addr&t=h");
         return sb.toString();
     }
     
