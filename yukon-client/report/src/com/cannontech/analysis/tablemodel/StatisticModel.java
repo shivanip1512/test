@@ -76,13 +76,15 @@ public class StatisticModel extends ReportModelBase
 	public static String YESTERDAY_STAT_PERIOD_TYPE_STRING = "Yesterday";
 	public static String MONTHLY_STAT_PERIOD_TYPE_STRING = "Monthly";
 	public static String LASTMONTH_STAT_PERIOD_TYPE_STRING = "LastMonth";
+	public static String LIFETIME_STAT_PERIOD_TYPE_STRING = "Lifetime";
 	private String statPeriodType = null;	
 
 	private String[] statPeriodTypes = new String[]{
 		DAILY_STAT_PERIOD_TYPE_STRING,
 		YESTERDAY_STAT_PERIOD_TYPE_STRING,
 		MONTHLY_STAT_PERIOD_TYPE_STRING,
-		LASTMONTH_STAT_PERIOD_TYPE_STRING
+		LASTMONTH_STAT_PERIOD_TYPE_STRING,
+		LIFETIME_STAT_PERIOD_TYPE_STRING
 	};
 	
 	private static final String ATT_STAT_TYPE = "statType";
@@ -146,8 +148,11 @@ public class StatisticModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				CTILogger.info("START DATE > " + getStartDate());
+				if(getStatPeriodType() == null || !getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING))
+				{
+					pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+					CTILogger.info("START DATE > " + getStartDate());
+				}	
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -206,8 +211,11 @@ public class StatisticModel extends ReportModelBase
 		if (getStatPeriodType() != null )
 			sql.append(" AND DPS.STATISTICTYPE='" + getStatPeriodType() + "' ");
 			
-		
-		sql.append(" AND (STARTDATETIME >= ? ) ORDER BY PAO.PAOName");
+		if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING))
+			sql.append(" ORDER BY PAO.PAOName");
+		else
+			sql.append(" AND (STARTDATETIME >= ? ) ORDER BY PAO.PAOName");
+			
 		return sql;
 		
 	}
@@ -345,7 +353,15 @@ public class StatisticModel extends ReportModelBase
 			
 			setStopDate(cal.getTime());
 	
-		}		
+		}
+		else if (statPeriodType_.equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING))
+		{
+			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+			cal.set(java.util.Calendar.MILLISECOND, 0);
+			setStartDate(cal.getTime());
+			setStopDate(cal.getTime());
+			
+		}
 		statPeriodType = statPeriodType_;
 	}
 	
