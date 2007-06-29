@@ -44,6 +44,8 @@ private:
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
+   int  getDeviceGroupMembers( string groupname, queue<long> &members );
+
 public:
 
    typedef CtiServer Inherited;

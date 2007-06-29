@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2007/06/25 19:00:28 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2007/06/29 16:27:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -758,8 +758,8 @@ void CtiPILServer::nexusThread()
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
     SetThreadName(-1, "PILNexus ");
-	
-	/* perform the wait loop forever */
+
+    /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
         /* Wait for the next result to come back from the RTU */
@@ -1266,7 +1266,7 @@ void CtiPILServer::vgConnThread()
         dout << CtiTime() << " PIL vgConnThrd : Started as TID " << rwThreadId() << endl;
     }
 
-	SetThreadName(-1, "VGConnThd");
+    SetThreadName(-1, "VGConnThd");
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -1334,6 +1334,73 @@ void CtiPILServer::vgConnThread()
         dout << CtiTime() << " PIL vgConnThrd : " << rwThreadId() << " terminating " << endl;
     }
 
+}
+
+int CtiPILServer::getDeviceGroupMembers( string groupname, queue<long> &members )
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    RWDBDatabase db = getDatabase();
+
+    RWDBTable deviceGroupMember, deviceGroup_parent, deviceGroup_child;
+    RWDBSelector selector = db.selector();
+
+    int deviceid;
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Loading group \"" << groupname << "\"" << endl;
+    }
+
+    vector< string > group_taxonomy;
+    string::size_type slashpos = 0;
+
+    while( (slashpos = groupname.find_last_of('/')) != string::npos )
+    {
+        //  substr will copy all available if length == string::npos
+        group_taxonomy.push_back(groupname.substr(slashpos + 1));
+
+        //  erase everything after the slash
+        groupname.erase(slashpos);
+    }
+
+    deviceGroupMember  = db.table("DeviceGroupMember");
+    deviceGroup_parent = db.table("DeviceGroup");
+
+    selector << deviceGroupMember["yukonpaoid"];
+
+    selector.where(deviceGroup_parent["parentdevicegroupid"].isNull());
+
+    while( !group_taxonomy.empty() )
+    {
+        deviceGroup_child = db.table("DeviceGroup");
+
+        selector.where(deviceGroup_parent["devicegroupid"] == deviceGroup_child["parentdevicegroupid"] &&
+                       deviceGroup_child["groupname"] == group_taxonomy.back().c_str() && selector.where());
+
+        group_taxonomy.pop_back();
+
+        deviceGroup_parent = deviceGroup_child;
+    }
+
+    selector.where(deviceGroup_parent["devicegroupid"] == deviceGroupMember["devicegroupid"] && selector.where());
+
+    RWDBReader rdr = selector.reader(conn);
+
+    if( DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+    }
+
+    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    {
+        rdr[0] >> deviceid;
+
+        members.push(deviceid);
+    }
+
+    return rdr.status().errorCode();
 }
 
 
@@ -1411,7 +1478,8 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if(!pReq->DeviceId())
+    //  if we have no device id, check to see if we're a group command
+    if( !pReq->DeviceId() )
     {
         bool group     = false,
              altgroup  = false,
@@ -1424,56 +1492,62 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             (billgroup = parse.isKeyValid("billgroup")) )
         {
             string groupname;
+            int groupsubmitcnt = 0;
+            queue<long> members;
 
-            // We are to do some magiks here.  Looking for names in groups
             if( group )     groupname = parse.getsValue("group");
             if( altgroup )  groupname = parse.getsValue("altgroup");
             if( billgroup ) groupname = parse.getsValue("billgroup");
 
-            std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
-
-            int groupsubmitcnt = 0;
-            CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
-            CtiDeviceManager::spiterator itr_dev;
-
-            vector< CtiDeviceManager::ptr_type > match_coll;
-            if( group )     DeviceManager->select(findMeterGroupName,    (void*)(groupname.c_str()), match_coll);
-            if( altgroup )  DeviceManager->select(findAltMeterGroupName, (void*)(groupname.c_str()), match_coll);
-            if( billgroup ) DeviceManager->select(findBillingGroupName,  (void*)(groupname.c_str()), match_coll);
-            CtiDeviceSPtr sptr;
-
-            string grouptype;
-            if( group )     grouptype = "Collection Group";
-            if( altgroup )  grouptype = "Alternate Collection Group";
-            if( billgroup ) grouptype = "Billing Group";
-
-            while(!match_coll.empty())
+            //  this catches any old-style group names with embedded slashes
+            if( groupname.find_first_of('/') > 0 )
             {
-                sptr = match_coll.back();
-                match_coll.pop_back();
-
-                CtiDeviceBase &device = *(sptr.get());
-
-                groupsubmitcnt++;
-
-                // We have a name match
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - groupname \"" << groupname << "\" is malformed - cannot determine group hierarchy **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else
+            {
+                //  if it's not a new-style group, convert it
+                if( groupname.find_first_of('/') == string::npos )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Adding device " << device.getID() << " / " << device.getName() << " for group execution" << endl;
+                    if( group )     groupname = "/Meters/Collection/" + groupname;
+                    if( altgroup )  groupname = "/Meters/Alternate/"  + groupname;
+                    if( billgroup ) groupname = "/Meters/Billing/"    + groupname;
                 }
 
-                // Create a message for this one!
-                pReq->setDeviceId(device.getID());
+                std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
-                CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                pNew->setConnectionHandle( pReq->getConnectionHandle() );
+                getDeviceGroupMembers(groupname, members);
+            }
 
-                execList.push_back( pNew );
+            while( !members.empty() )
+            {
+                CtiDeviceManager::ptr_type device = DeviceManager->getEqual(members.front());
+
+                if( device )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Adding device " << device->getID() << " / " << device->getName() << " for group execution" << endl;
+                    }
+
+                    // Create a message for this one!
+                    pReq->setDeviceId(device->getID());
+
+                    CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
+                    pNew->setConnectionHandle( pReq->getConnectionHandle() );
+
+                    execList.push_back( pNew );
+
+                    groupsubmitcnt++;
+                }
+
+                members.pop();
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << grouptype << " " << groupname << " found " << groupsubmitcnt << " target devices." << endl;
+                dout << CtiTime() << " " << groupname << " found " << groupsubmitcnt << " target devices." << endl;
             }
         }
     }
