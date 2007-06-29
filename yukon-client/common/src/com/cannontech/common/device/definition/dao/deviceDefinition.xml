@@ -285,6 +285,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -439,18 +440,6 @@
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
 			<command name="Read Total kWh">
 				<cmd text="getvalue ied kwht"/>
 				<pointRef name="Total kWh"/>
@@ -582,6 +571,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+             	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -634,18 +624,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
@@ -798,6 +776,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -850,18 +829,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
@@ -1014,6 +981,7 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -1066,18 +1034,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
@@ -1314,6 +1270,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -1384,18 +1341,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
@@ -1639,6 +1584,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -1709,18 +1655,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
@@ -1964,6 +1898,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -2034,18 +1969,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
@@ -2290,6 +2213,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -2362,18 +2286,6 @@
 			<command name="Read Outage Log (6 most recent)">
 				<cmd text="getvalue outage 1"/>
 				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (1 and 2)">
-				<cmd text="getvalue outage 1"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (3 and 4)">
-				<cmd text="getvalue outage 3"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command name="Read Outage Log (5 and 6)">
 				<cmd text="getvalue outage 5"/>
 				<pointRef name="Outages"/>
 			</command>
