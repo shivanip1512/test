@@ -4,11 +4,11 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage title="Device Home Page" module="amr">
-<cti:standardMenu/>
+<cti:standardMenu menuSelection="deviceselection"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/csr/search" title="Device selection"  />
-    &gt; Device page
+    <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
+    &gt; Device Details
 </cti:breadCrumbs>
 
 	<table class="widgetColumns">

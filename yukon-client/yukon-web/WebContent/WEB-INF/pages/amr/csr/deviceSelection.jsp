@@ -7,7 +7,7 @@
 <cti:standardMenu menuSelection="deviceselection"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    &gt; Device selection
+    &gt; Device Selection
 </cti:breadCrumbs>
 
 <c:url value="/spring/csr/home" var="csrHomeUrl"/>
