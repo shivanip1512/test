@@ -143,28 +143,29 @@ public class Multispeak implements MessageListener {
 		if(in instanceof Return)
 		{
 			Return returnMsg = (Return) in;
-			synchronized(this)
-			{
-                CTILogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                                " DevID:" + returnMsg.getDeviceID() + 
-                                " Command:" + returnMsg.getCommandString() +
-                                " Result:" + returnMsg.getResultString() + 
-                                " Status:" + returnMsg.getStatus() +
-                                " More:" + returnMsg.getExpectMore()+"]");
+            MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
 
-                if( returnMsg.getExpectMore() == 0) {
-                    
-					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+            if( event != null) {    // This message is one that Multispeak is waiting for...
 
-                    MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
-
-                    if( event != null) {    // This message is one that Multispeak is waiting for...
+    			synchronized(this)
+    			{
+                    CTILogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                                    " DevID:" + returnMsg.getDeviceID() + 
+                                    " Command:" + returnMsg.getCommandString() +
+                                    " Result:" + returnMsg.getResultString() + 
+                                    " Status:" + returnMsg.getStatus() +
+                                    " More:" + returnMsg.getExpectMore()+"]");
+    
+                    if( returnMsg.getExpectMore() == 0) {
+                        
+    					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+    
                         boolean doneProcessing = event.messageReceived(returnMsg);
                         if (doneProcessing)
                             getEventsMap().remove(new Long(event.getPilMessageID()));
-                    }
-				}
-			}
+    				}
+    			}
+            }
 		}
 	}
     
