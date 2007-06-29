@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/04/25 20:45:20 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2007/06/29 19:16:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -514,6 +514,24 @@ void statisticsRecord()
                         dbstat = dStats.Update(conn);
                     }
                     conn.commitTransaction();
+
+                    if( gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10) > 0 )
+                    {
+                        conn.beginTransaction();
+                        for(dirtyStatItr = dirtyStatCol.begin(); dirtyStatItr != dirtyStatCol.end(); dirtyStatItr++)
+                        {
+                            CtiStatistics &dStats = *dirtyStatItr;
+                            dbstat = dStats.InsertDaily(conn);
+                        }
+                        conn.commitTransaction();
+
+                        conn.beginTransaction();
+                        {
+                            CtiStatistics &dStats = *(dirtyStatCol.begin());
+                            dStats.PruneDaily(conn);
+                        }
+                        conn.commitTransaction();
+                    }
                 }
             }
 
