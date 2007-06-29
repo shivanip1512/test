@@ -51,9 +51,10 @@
    		   <link>/spring/csr/search</link>	
    		</option>
    		<option id="billing" name="Billing">
+		   <requireRole value="BillingRole.ROLEID"/>
    		   <link>/operator/Metering/Billing.jsp</link>	
    		</option>
-   		<option id="Scheduler" name="Scheduler">
+		<option id="scheduler" name="Scheduler">
    		   <link>/spring/macsscheduler/scheduledscripts/view</link>	
    		</option>
   	</toplinks>  
@@ -282,9 +283,13 @@
     <skin name="standard"/>
     <css file="setupStyle.css"/>
     
+    
     <toplinks>
-   	  <option id="setup" name="Setup">
+    <option id="multispeak" name="MultiSpeak">
     	<sublinks>
+    	  <option id="interfaces" name="Interfaces">
+    		<link>/msp_setup.jsp</link>
+    	  </option>
     	  <option id="mappings" name="Substation To Route Mappings">
     		<link>/spring/multispeak/setup/routemapping/mappings</link>
     	  </option>
