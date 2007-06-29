@@ -530,7 +530,7 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     else if( controlArea.getCurrentDailyStopTime() < controlArea.getCurrentDailyStartTime() && stopSecondsFromDayBegin > (controlArea.getCurrentDailyStopTime() + 24*60*60) )
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += CtiTime(proposed_start_from_1901).asString();
+        result += CtiTime(proposed_stop_from_1901).asString();
         result += " is outside the CONTROL AREA control window that runs from ";
         result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
         result += " to ";
@@ -542,7 +542,7 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     else if( controlArea.getCurrentDailyStopTime() > controlArea.getCurrentDailyStartTime() && stopSecondsFromDayBegin > controlArea.getCurrentDailyStopTime() )
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += CtiTime(proposed_start_from_1901).asString();
+        result += CtiTime(proposed_stop_from_1901).asString();
         result += " is outside the CONTROL AREA control window that runs from ";
         result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
         result += " to ";
