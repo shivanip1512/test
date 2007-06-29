@@ -60,14 +60,13 @@
 			<c:if test="${disconnectSupported}">
 				<ct:widget bean="disconnectMeterWidget" identify="false" deviceId="${deviceId}"/>
 			</c:if>
+	
+			<ct:widget bean="meterOutagesWidget" identify="false" deviceId="${deviceId}"/>
 
 			<cti:titledContainer title="Profile">
 				<br/><br/><br/><br/><center>TBD</center><br/><br/><br/><br/>
 			</cti:titledContainer>
 
-			<cti:titledContainer title="Outages">
-				<br/><br/><br/><br/><center>TBD</center><br/><br/><br/><br/>
-			</cti:titledContainer>
 		</div>
 	</div>
 	<div style="clear: both"></div>

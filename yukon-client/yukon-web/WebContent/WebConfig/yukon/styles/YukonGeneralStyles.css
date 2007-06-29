@@ -67,6 +67,28 @@ table.resultsTable th a:visited, span.navLink a:visited {color: #06C}
 table.resultsTable th a:link, span.navLink a:link {color: #06C}
 table.resultsTable th a:hover, span.navLink a:hover {color: #06C}
 
+
+/* Data results table styles */
+table.miniResultsTable {
+	width: 95%;	
+  	border: 1px solid #ccc;
+	border-collapse: collapse;
+}
+
+table.miniResultsTable th {
+	background: #E5E5E5;
+	padding: .2em .5em;
+  	border: 1px solid #ccc;
+	color: 	#06C;
+	font-size: 12px;
+}
+
+table.miniResultsTable td {
+  text-align: left;
+  padding: .3em .5em;
+  border: 1px solid #ccc;
+}
+
 /* Name value pair styles */
 table.nameValueTable {
 	border: none;

@@ -85,6 +85,21 @@
         <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
     </bean>
     
+    <bean id="meterOutagesWidget"
+    	class="com.cannontech.web.widget.MeterOutagesWidget">
+    	<property name="title" value="Outages"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="meterReadService" ref="meterReadService"/>
+        <property name="attributeService" ref="attributeService"/>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
+    </bean>
+    
     <bean id="meterInformationWidget"
     	class="com.cannontech.web.widget.MeterInformationWidget">
     	<property name="title" value="Meter Information"/>
