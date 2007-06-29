@@ -28,8 +28,10 @@ public class FormatDateTag extends YukonTagSupport {
         
         DateFormat df = createDateFormat();
         df.setTimeZone(zone);
-        String formattedDate = df.format(value);
-        this.getJspContext().setAttribute(var, formattedDate);
+        if( value != null) {
+            String formattedDate = df.format(value);
+            this.getJspContext().setAttribute(var, formattedDate);
+        }
     }
     
     private DateFormat createDateFormat() {
@@ -42,7 +44,7 @@ public class FormatDateTag extends YukonTagSupport {
         }
 
         if (type.equalsIgnoreCase("both")) {
-            return new SimpleDateFormat("MM/dd/yyyy HH:mm z");
+            return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
         }
         return new SimpleDateFormat();
     }
