@@ -4,19 +4,48 @@
 
 <ct:nameValueContainer>
   <ct:nameValue name="${attribute.description}">
-  <c:if test="${isConfigured}">
-    <ct:attributeValue device="${device}" attribute="${attribute}" />
-  </c:if>
-  <c:if test="${not isConfigured}">
-    Blink Count Accumulator Point is not configured.
-  </c:if>
+    <c:if test="${not isBlinkConfigured}">
+    	Blink Count Accumulator Point is not configured.
+	</c:if>
+  	<c:if test="${isBlinkConfigured}">
+    	<ct:attributeValue device="${device}" attribute="${attribute}" />
+	</c:if>
   </ct:nameValue>
-<br>
+  <br>
 </ct:nameValueContainer>
+
 <div style="text-align: right">
-<ct:widgetActionUpdate method="read" label="Read Blink Count" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
+  <ct:widgetActionRefresh method="read" label="Read Now" labelBusy="Reading"/>
 </div>
 <BR>
-<div id="${widgetParameters.widgetId}_results">
-<c:import url="/WEB-INF/pages/widget/meterOutagesWidget/outages.jsp"/>
+
+<ct:nameValueContainer>
+  <ct:nameValue name="Outages Last Retrieved">
+    <c:if test="${not isOutageConfigured}">
+    	Outage Log Analog Point is not configured.
+    </c:if>
+    <c:if test="${isOutageConfigured}">
+		<cti:formatDate value="${data.readDate}" type="both" var="formattedReadDate" />${formattedReadDate}
+    </c:if>
+  </ct:nameValue>
+</ct:nameValueContainer>
+
+<div class="widgetInternalSection">
+<table class="miniResultsTable">
+  <tr>
+    <th>Time</th>
+    <th>Duration</th>
+  </tr>
+  <c:forEach items="${data.outageData}" var="outage">
+  <tr class="<ct:alternateRow odd="" even="altRow"/>">
+	<td>${outage.timestamp }</td>
+	<td>${outage.duration }</td>
+  </tr>
+  </c:forEach>
+</table>
 </div>
+<BR>
+
+<c:if test="${isRead}">
+	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
+</c:if>
