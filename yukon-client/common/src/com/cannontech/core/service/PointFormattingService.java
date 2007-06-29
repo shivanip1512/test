@@ -20,7 +20,8 @@ public interface PointFormattingService {
     
     static public enum Format {
         FULL("{default} {status||{unit}} {time|MM/dd/yyyy HH:mm:ss z}"),
-        SHORT("{default} {status||{unit}}");
+        SHORT("{default} {status||{unit}}"),
+        DATE("{time|MM/dd/yyyy HH:mm:ss z}");
         
         private final String format;
 
