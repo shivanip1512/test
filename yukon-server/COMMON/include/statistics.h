@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/04/25 20:43:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/06/29 19:17:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include <rw/db/status.h>
 
 #include "counter.h"
+#include "ctidate.h"
 #include "yukon.h"
 
 using std::pair;
@@ -66,6 +67,7 @@ public:
         Yesterday,
         Monthly,
         LastMonth,
+        Lifetime,
 
         FinalCounterBin               // Leave this guy last!
     };
@@ -111,12 +113,15 @@ public:
 
     int get(int counter, int index ) const;
     static string getTableName();
+    static string getTableNameDynamicHistory();
 
     RWDBStatus::ErrorCode Update(RWDBConnection &conn);
     RWDBStatus::ErrorCode Update();
     RWDBStatus::ErrorCode Insert(RWDBConnection &conn);
     RWDBStatus::ErrorCode Insert();
     RWDBStatus::ErrorCode Restore();
+    RWDBStatus::ErrorCode InsertDaily(RWDBConnection &conn);
+    RWDBStatus::ErrorCode PruneDaily(RWDBConnection &conn);
     int resolveStatisticsType(const string& rwsTemp) const;
     void computeHourInterval(int hournumber, pair<CtiTime, CtiTime> &myinterval);
     void computeDailyInterval(pair<CtiTime, CtiTime> &myinterval);
@@ -157,6 +162,8 @@ private:
     bool _dirty;
 
     CtiTime _previoustime;
+    bool _doHistInsert;
+    static CtiDate _lastPrune;
 
     int newHour(const CtiTime &newtime, CtiStatisticsCounters_t countertoclean);
     void incrementFail(const CtiTime &stattime, CtiStatisticsCounters_t failtype);

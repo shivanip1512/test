@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/05/03 21:30:49 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/06/29 19:17:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,10 +36,13 @@ using namespace std;
 #include "ctidate.h"
 #include "cparms.h"
 
+CtiDate CtiStatistics::_lastPrune = _lastPrune.now();
+
 CtiStatistics::CtiStatistics(long id) :
     _restoreworked(0),
     _dirty(false),
-    _pid(id)
+    _pid(id),
+    _doHistInsert(false)
 {
     int i;
     for(i = 0; i < FinalCounterBin; i++)
@@ -107,6 +110,7 @@ void CtiStatistics::incrementRequest(const CtiTime &stattime)
     incrementCounter( Requests, HourNo, 1);
     incrementCounter( Requests, Daily, 1);
     incrementCounter( Requests, Monthly, 1);
+    incrementCounter( Requests, Lifetime, 1);
 }
 
 void CtiStatistics::decrementRequest(const CtiTime &stattime)        // This is a retry scenario
@@ -117,6 +121,7 @@ void CtiStatistics::decrementRequest(const CtiTime &stattime)        // This is 
     incrementCounter( Requests, HourNo, -1);
     incrementCounter( Requests, Daily, -1);
     incrementCounter( Requests, Monthly, -1);
+    incrementCounter( Requests, Lifetime, -1);
 }
 
 void CtiStatistics::incrementAttempts(const CtiTime &stattime, int CompletionStatus)        // This is a retry scenario
@@ -128,6 +133,7 @@ void CtiStatistics::incrementAttempts(const CtiTime &stattime, int CompletionSta
     incrementCounter( Attempts, HourNo, 1);
     incrementCounter( Attempts, Daily, 1);
     incrementCounter( Attempts, Monthly, 1);
+    incrementCounter( Attempts, Lifetime, 1);
 
     if(CompletionStatus != NORMAL)
     {
@@ -174,6 +180,7 @@ void CtiStatistics::incrementFail(const CtiTime &stattime, CtiStatisticsCounters
     incrementCounter( failtype, HourNo, 1);
     incrementCounter( failtype, Daily, 1);
     incrementCounter( failtype, Monthly, 1);
+    incrementCounter( failtype, Lifetime, 1);
 }
 
 void CtiStatistics::incrementSuccess(const CtiTime &stattime)
@@ -185,6 +192,7 @@ void CtiStatistics::incrementSuccess(const CtiTime &stattime)
     incrementCounter( Completions, HourNo, 1);
     incrementCounter( Completions, Daily, 1);
     incrementCounter( Completions, Monthly, 1);
+    incrementCounter( Completions, Lifetime, 1);
 
     if(getDebugLevel() & DEBUGLEVEL_STATISTICS && getCounter( Requests, Daily ) < getCounter( Completions, Daily ))
     {
@@ -255,6 +263,7 @@ int CtiStatistics::newHour(const CtiTime &newtime, CtiStatisticsCounters_t count
         _dirtyCounter[ Yesterday ] = true;
         _dirtyCounter[ Daily ] = true;
         _dirty = true;
+        _doHistInsert = true;
     }
 
     if(lastdate.month() != newdate.month())
@@ -306,6 +315,7 @@ CtiStatistics& CtiStatistics::operator=(const CtiStatistics& aRef)
         setID(aRef.getID());
         _previoustime = aRef._previoustime;
         _restoreworked = aRef._restoreworked;
+        _doHistInsert = aRef._doHistInsert;
 
         for(i = 0; i < FinalCounterBin; i++)
         {
@@ -441,7 +451,8 @@ string CtiStatistics::_counterName[FinalCounterBin] = {
     "Daily",
     "Yesterday",
     "Monthly",
-    "LastMonth"
+    "LastMonth",
+    "Lifetime"
     };
 
 double CtiStatistics::getThreshold(int Counter) const
@@ -466,6 +477,11 @@ int CtiStatistics::get(int counter, int index ) const
 string CtiStatistics::getTableName()
 {
     return string("DynamicPaoStatistics");
+}
+
+string CtiStatistics::getTableNameDynamicHistory()
+{
+    return string("DynamicPAOStatisticsHistory");
 }
 
 RWDBStatus::ErrorCode CtiStatistics::Restore()
@@ -608,6 +624,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
     RWDBTable table = getDatabase().table( string2RWCString(getTableName()) );
     RWDBUpdater updater = table.updater();
 
+    _startStopTimePairs[Lifetime].second.resetToNow();
 
     for(int i = 0; i < FinalCounterBin && ec == RWDBStatus::ok; i++)
     {
@@ -645,6 +662,65 @@ RWDBStatus::ErrorCode  CtiStatistics::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     return Update(conn);
+}
+
+RWDBStatus::ErrorCode  CtiStatistics::InsertDaily(RWDBConnection &conn)
+{
+    // CtiLockGuard<CtiMutex> guard(_statMux);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+
+    RWDBStatus stat;
+
+    if( _doHistInsert )
+    {
+        _doHistInsert = false;
+        RWDBTable insertTable = getDatabase().table( string2RWCString(getTableNameDynamicHistory()) );
+        RWDBInserter inserter = insertTable.inserter();
+        inserter << getID() << _startStopTimePairs[Yesterday].first.date().daysFrom1970() <<
+            getCounter( Requests, Yesterday ) <<
+            getCounter( Completions, Yesterday ) <<
+            getCounter( Attempts, Yesterday ) <<
+            getCounter( CommErrors, Yesterday ) <<
+            getCounter( ProtocolErrors, Yesterday ) <<
+            getCounter( SystemErrors, Yesterday );
+
+        stat = ExecuteInserter(conn, inserter, __FILE__, __LINE__);
+
+        if( stat.errorCode() != RWDBStatus::ok )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
+            dout << inserter.asString() << endl;
+        }
+    }
+
+    return stat.errorCode();
+}
+
+RWDBStatus::ErrorCode  CtiStatistics::PruneDaily(RWDBConnection &conn)
+{
+    // CtiLockGuard<CtiMutex> guard(_statMux);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+
+    RWDBStatus stat;
+
+    if( _lastPrune < _lastPrune.now() )
+    {
+        CtiDate today;
+        RWDBTable deleteTable = getDatabase().table( string2RWCString(getTableNameDynamicHistory()) );
+        RWDBDeleter deleter = deleteTable.deleter();
+        int numDays = gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10) + 1; //No magic here, I just like +1
+
+        _lastPrune = _lastPrune.now();
+        deleter.where( deleteTable["dateoffset"] < (today.daysFrom1970() - numDays) );
+
+        if( numDays > 0 )
+        {
+            deleter.execute();
+        }
+    }
+
+    return stat.errorCode();
 }
 
 int CtiStatistics::resolveStatisticsType(const string& _rwsTemp) const
@@ -767,6 +843,10 @@ int CtiStatistics::resolveStatisticsType(const string& _rwsTemp) const
     {
         stattype = Hour23;
     }
+    else if(rwsTemp == "lifetime")
+    {
+        stattype = Lifetime;
+    }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -867,6 +947,12 @@ bool CtiStatistics::isDirty() const
 CtiStatistics& CtiStatistics::resetDirty()
 {
     _dirty = false;
+    _doHistInsert = false;
+
+    for(int i = 0; i < FinalCounterBin; i++)
+    {
+        _dirtyCounter[ i ] = false;
+    }
     return *this;
 }
 
