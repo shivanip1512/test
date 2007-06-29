@@ -63,6 +63,29 @@ update yukonrole set ROleName = 'Metering', RoleDescription='Operator access to 
 
 /*new CommStatistics from Jess*/
 
+/*** THIS NEEDS A ORACLE COUNTERPART FOR GETUTCDATE ****/
+insert into dynamicpaostatistics select distinct paobjectid, 'Lifetime', 0, 0, 0, 0, 0, 0, getutcdate(), getutcdate() from dynamicpaostatistics;
+
+CREATE TABLE DynamicPAOStatisticsHistory (
+	PAOBjectID numeric(18, 0) NOT NULL ,
+	DateOffset numeric(18, 0) NOT NULL ,
+	Requests numeric(18, 0) NOT NULL ,
+	Completions numeric(18, 0) NOT NULL ,
+	Attempts numeric(18, 0) NOT NULL ,
+	CommErrors numeric(18, 0) NOT NULL ,
+	ProtocolErrors numeric(18, 0) NOT NULL ,
+	SystemErrors numeric(18, 0) NOT NULL ,
+	CONSTRAINT PK_DYNAMICPAOSTATISTICSHISTORY PRIMARY KEY
+	(
+		PAOBjectID,
+		DateOffset
+	)  ON PRIMARY ,
+	CONSTRAINT FK_DynPAOStHist_YkPA FOREIGN KEY 
+	(
+		PAOBjectID
+	) REFERENCES YukonPAObject(PAObjectID)
+) ON PRIMARY
+GO
 
 /*Thain changes?*/
 
