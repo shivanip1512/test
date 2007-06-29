@@ -10,7 +10,7 @@
 wrapper.java.command=../../Runtime/bin/java
 
 # Java Main class
-wrapper.java.mainclass=com.silveregg.wrapper.WrapperSimpleApp
+wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
 
 # Java Classpath (include wrapper.jar)  Add class path elements as
 #  needed starting from 1
@@ -50,7 +50,7 @@ wrapper.console.format=PM
 wrapper.console.loglevel=INFO
 
 # Log file to use for wrapper output logging.
-wrapper.logfile=appserver.debug.log
+wrapper.logfile=..\Log\appserver.debug.log
 
 # Format of output for the log file.  (See docs for formats)
 wrapper.logfile.format=PTM
