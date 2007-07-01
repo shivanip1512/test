@@ -5,12 +5,17 @@
 <ct:nameValueContainer altRowOn="true">
 <c:forEach items="${attributes}" var="attribute">
   <ct:nameValue name="${attribute.description}">
-  <c:if test="${supportedAttributes[attribute]}">
-    <ct:attributeValue device="${device}" attribute="${attribute}" />
-  </c:if>
-  <c:if test="${not supportedAttributes[attribute]}">
+  <c:choose>
+    <c:when test="${not supportedAttributes[attribute]}">
     unsupported
-  </c:if>
+    </c:when>
+    <c:when test="${not existingAttributes[attribute]}">
+    not configured
+    </c:when>
+    <c:when test="${supportedAttributes[attribute]}">
+    <ct:attributeValue device="${device}" attribute="${attribute}" />
+    </c:when>
+  </c:choose>
   </ct:nameValue>
 </c:forEach>
 </ct:nameValueContainer>

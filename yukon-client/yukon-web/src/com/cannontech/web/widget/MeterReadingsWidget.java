@@ -50,9 +50,12 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("meterReadingsWidget/render.jsp");
         mav.addObject("device", meter);
         mav.addObject("attributes", attributesToShow);
-        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
-        Map<Attribute, Boolean> supportedAttributes = convertSetToMap(allExistingAtributes);
+        Set<Attribute> allSupportedAtributes = attributeService.getAvailableAttributes(meter);
+        Map<Attribute, Boolean> supportedAttributes = convertSetToMap(allSupportedAtributes);
         mav.addObject("supportedAttributes", supportedAttributes);
+        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
+        Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAtributes);
+        mav.addObject("existingAttributes", existingAttributes);
         
         return mav;
     }
