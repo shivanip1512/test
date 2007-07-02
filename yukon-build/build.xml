@@ -332,10 +332,18 @@
         <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/SqlServer">
             <fileset dir="${module.name}/yukon-database/DBUpdates/sqlserver" />
         </copy>
+        
         <mkdir dir="${dist.dir}" />
+        
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}.zip">
             <fileset dir="${temp.dir}" />
         </zip>
+        
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}-src.zip">
+            <zipfileset dir="${module.name}/yukon-server" prefix="yukon-server"/>
+            <zipfileset dir="${module.name}/yukon-client" prefix="yukon-client"/>
+        </zip>
+        
         <delete dir="${temp.dir}" />
     </target>
 
