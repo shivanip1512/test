@@ -85,7 +85,7 @@ if (allowCtlVal!=null)
 				<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
 				<input type="image" id="showAreas<%=i%>"
 					src="images/nav-plus.gif"
-					onclick="showRowElems( 'allAreas<%=i%>', toggleImg('showAreas<%=i%>') ); return false;"/>
+					onclick="showRowElems( 'allAreas<%=i%>', 'showAreas<%=i%>'); return false;"/>
 				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=area.getPaoName()%>')">
 				<%=area.getPaoName()%></a>
 				</td>

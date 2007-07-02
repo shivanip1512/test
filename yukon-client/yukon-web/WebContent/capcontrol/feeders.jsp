@@ -106,7 +106,7 @@ if( subBus != null ) {
 					<% } %>				
 					<input type="image" id="showSnap"
 						src="images/nav-plus.gif"
-						onclick="showRowElems( 'subSnapShot', toggleImg('showSnap') ); return false;"/>
+						onclick="showRowElems( 'subSnapShot', 'showSnap'); return false;"/>
 								
 					</td>
 					
@@ -151,7 +151,7 @@ if( subBus != null ) {
 				</tr>
 <% } %>
 
-		<a id="subSnapShot">
+		<table id="subSnapShot">
 		<%
 		if (subBus != null)
 		{
@@ -190,7 +190,6 @@ if( subBus != null ) {
 		        <td><b><font  class="lIndent">Volt Point: <%=vPoint%>
 		        </font></b></td>
 				</tr>
-			</a>
 
 <% 
 		}

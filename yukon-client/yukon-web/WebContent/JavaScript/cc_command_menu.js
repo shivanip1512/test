@@ -74,7 +74,7 @@ function update_Command_Menu (type, id, state, opts) {
 	var cmd_div_uniq_id = 'cmdDiv';
 	   
 	var header = "<HTML><BODY><div id='" + cmd_div_uniq_id + id + "' ";
-	header += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
+	header += " style='background-color:white; height:100%; width:100%; border:1px solid black;'>";
 	//!!!!!!!!!!!!!!attempt to use ctiTitledContainer!!!!!!!!!!!!!!!!!!!!!
 	//header += " class='cmdPopupMenu' >";
 	//var container = new CTITitledContainer (opts[1]);
@@ -216,7 +216,7 @@ function generate_SubAreaMenu (id, name, enable) {
      var div_start_tag = "<HTML><BODY><div id='area" + id + "' ";
      var div_end_tag = " </div></BODY></HTML>";
      //css for the div
-     div_start_tag += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
+     div_start_tag += " style='background:white; height:100%; width:100%; border:1px solid black;'>";
      //init return variable
      var html = div_start_tag;
      //generate the table

@@ -15,14 +15,16 @@ var xmlHttp_isIE = false;
 //Ensure our call to new XMLHttpRequest() returns the
 // browser specific XMLHttpRequest object
 // -------------------------------------------
-if( typeof XMLHttpRequest != "object" )
+if( new XMLHttpRequest() == null)
 {
+	
 	function XMLHttpRequest()
 	{ 
 		xmlHttp_isIE = true;
 		return new ActiveXObject("Microsoft.XMLHTTP");
 	}
 }
+
 
 // -------------------------------------------
 //Performs a GET request to the given URL and
@@ -115,7 +117,6 @@ function getReq( reqID )
 function processReqChangeXML()
 {
     var xmlHTTPreq = getReq(xmlHttp_msgId);
-
     // only if req shows "complete"
     if( xmlHTTPreq != null
     	&& getReq(xmlHttp_msgId).req != null
@@ -133,7 +134,6 @@ function processReqChangeXML()
 
 	      	result =
 	      		response.getElementsByTagName('result');
-
 			eval(method + '(result)');
 
 			//always do this
