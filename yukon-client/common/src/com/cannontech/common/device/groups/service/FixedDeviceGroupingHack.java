@@ -72,7 +72,7 @@ public class FixedDeviceGroupingHack {
             return;
         }
         
-        String fullName = group.getPrefix() + "/" + groupName;
+        String fullName = group.getGroup(groupName);
         
         StoredDeviceGroup newGroup;
         try {
@@ -106,6 +106,11 @@ public class FixedDeviceGroupingHack {
     @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
+    }
+    
+    @Required
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
     
     @Required

@@ -78,6 +78,7 @@
         class="com.cannontech.common.device.groups.service.FixedDeviceGroupingHack">
         <property name="deviceGroupDao" ref="deviceGroupDao"/>
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupEditorDao"/>
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
