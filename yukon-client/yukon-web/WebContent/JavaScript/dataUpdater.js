@@ -17,7 +17,7 @@ function initiateCannonDataUpdate(url, periodSecs) {
                 // data was sent and is different than current
                 it.innerHTML = newData;
                 // make it glow
-                new Effect.Highlight(it);
+                new Effect.Highlight(it, {'duration': 3.5, 'startcolor': '#FFE900'});
             }
            
         });
