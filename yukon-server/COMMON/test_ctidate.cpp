@@ -156,6 +156,18 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_daysfrom1970)
     BOOST_CHECK_EQUAL( 730, twoYearTest.daysFrom1970() );
     BOOST_CHECK_EQUAL( 1096, threeYearTest.daysFrom1970() );//leap year included!
     BOOST_CHECK_EQUAL( (2001-1970)*365 + 8, manyYearTest.daysFrom1970() );//leap year included!
+
+    CtiDate dayBeforeTest(10, 3, 2007);
+    CtiDate dayOfTest(11, 3, 2007);
+    CtiDate dayAfterTest(12, 3, 2007);
+    CtiDate endDayBeforeTest(3, 11, 2007);
+    CtiDate endDayOfTest(4, 11, 2007);
+    CtiDate endDayAfterTest(5, 11, 2007);
+
+    BOOST_CHECK_EQUAL( dayBeforeTest.daysFrom1970() + 1, dayOfTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( dayBeforeTest.daysFrom1970() + 2, dayAfterTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 1, endDayOfTest.daysFrom1970() );
+    BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 2, endDayAfterTest.daysFrom1970() );
 }
 
 
