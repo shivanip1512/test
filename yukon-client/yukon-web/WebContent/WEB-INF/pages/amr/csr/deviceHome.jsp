@@ -26,10 +26,10 @@
 	
 	<div class="widgetColumns">
 		<div class="left">
+			<ct:widget height="75px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
+					
 			<ct:widget bean="meterReadingsWidget" identify="false" deviceId="${deviceId}"/>
 
-			<ct:widget height="75px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
-			
 			<c:if test="${mspSupported}">
 				<ct:widget height="185px" bean="accountInformationWidget" identify="false" deviceId="${deviceId}"/>
 			</c:if>
@@ -62,10 +62,6 @@
 			</c:if>
 	
 			<ct:widget bean="meterOutagesWidget" identify="false" deviceId="${deviceId}"/>
-
-			<cti:titledContainer title="Profile">
-				<br/><br/><br/><br/><center>TBD</center><br/><br/><br/><br/>
-			</cti:titledContainer>
 
 		</div>
 	</div>
