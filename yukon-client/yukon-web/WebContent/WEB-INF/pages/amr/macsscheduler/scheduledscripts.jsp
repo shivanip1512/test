@@ -4,7 +4,7 @@
 
 <cti:standardPage title="Scheduled Scripts"
     module="amr">
-    <cti:standardMenu />
+	<cti:standardMenu menuSelection="scheduler"/>
 
 <script language="JavaScript">
     Event.observe(window, 'load', function() {
