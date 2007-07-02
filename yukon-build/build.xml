@@ -177,7 +177,7 @@
         <loadfile property="testserrormessage" srcFile="${log.dir}/servertests-error.log" />
         <loadfile property="testserroroutput" srcFile="${log.dir}/servertests-output.log" />
 
-        <condition property="testsout" value="${erroroutput}" else="">
+        <condition property="testsout" value="${testerroroutput}" else="">
             <isfailure code="${testserrorcode}"/>
         </condition>
 
