@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/15/2007 3:59:44 PM                         */
+/* Created on:     7/2/2007 4:39:20 PM                          */
 /*==============================================================*/
 
 
@@ -1125,6 +1125,20 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DEVICEGROUP')
+            and   type = 'U')
+   drop table DEVICEGROUP
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEGROUPMEMBER')
+            and   type = 'U')
+   drop table DEVICEGROUPMEMBER
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('DEVICEIDLCREMOTE')
             and   type = 'U')
    drop table DEVICEIDLCREMOTE
@@ -1233,6 +1247,13 @@ if exists (select 1
            where  id = object_id('DYNAMICDEVICESCANDATA')
             and   type = 'U')
    drop table DYNAMICDEVICESCANDATA
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICPAOSTATISTICSHISTORY')
+            and   type = 'U')
+   drop table DYNAMICPAOSTATISTICSHISTORY
 go
 
 if exists (select 1
@@ -2045,6 +2066,13 @@ if exists (select 1
            where  id = object_id('PORTTERMINALSERVER')
             and   type = 'U')
    drop table PORTTERMINALSERVER
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PROFILEPEAKRESULT')
+            and   type = 'U')
+   drop table PROFILEPEAKRESULT
 go
 
 if exists (select 1
@@ -3991,6 +4019,41 @@ alter table DEVICEDIALUPSETTINGS
 go
 
 /*==============================================================*/
+/* Table: DEVICEGROUP                                           */
+/*==============================================================*/
+create table DEVICEGROUP (
+   DeviceGroupId        numeric(18,0)        not null,
+   GroupName            varchar(255)         null,
+   ParentDeviceGroupId  numeric(18,0)        null,
+   SystemGroup          char(1)              not null,
+   Type                 varchar(255)         not null
+)
+go
+
+insert into DeviceGroup values (0,'',null,'Y','STATIC');
+insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
+insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
+insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
+insert into DeviceGroup values (4,'Alternate',1,'Y','STATIC');
+
+alter table DEVICEGROUP
+   add constraint PK_DEVICEGROUP primary key (DeviceGroupId)
+go
+
+/*==============================================================*/
+/* Table: DEVICEGROUPMEMBER                                     */
+/*==============================================================*/
+create table DEVICEGROUPMEMBER (
+   DeviceGroupID        numeric(18,0)        not null,
+   YukonPaoId           numeric(18,0)        not null
+)
+go
+
+alter table DEVICEGROUPMEMBER
+   add constraint PK_DEVICEGROUPMEMBER primary key (DeviceGroupID, YukonPaoId)
+go
+
+/*==============================================================*/
 /* Table: DEVICEIDLCREMOTE                                      */
 /*==============================================================*/
 create table DEVICEIDLCREMOTE (
@@ -4059,10 +4122,7 @@ go
 /*==============================================================*/
 create table DEVICEMETERGROUP (
    DEVICEID             numeric              not null,
-   CollectionGroup      varchar(50)          not null,
-   TestCollectionGroup  varchar(50)          not null,
-   METERNUMBER          varchar(50)          not null,
-   BillingGroup         varchar(50)          not null
+   METERNUMBER          varchar(50)          not null
 )
 go
 
@@ -4557,6 +4617,25 @@ go
 
 alter table DYNAMICDEVICESCANDATA
    add constraint PK_DYNAMICDEVICESCANDATA primary key nonclustered (DEVICEID)
+go
+
+/*==============================================================*/
+/* Table: DYNAMICPAOSTATISTICSHISTORY                           */
+/*==============================================================*/
+create table DYNAMICPAOSTATISTICSHISTORY (
+   PAObjectID           numeric(18,0)        not null,
+   DateOffset           numeric(18,0)        not null,
+   Requests             numeric(18,0)        not null,
+   Completions          numeric(18,0)        not null,
+   Attempts             numeric(18,0)        not null,
+   CommErrors           numeric(18,0)        not null,
+   ProtocolErrors       numeric(18,0)        not null,
+   SystemErrors         numeric(18,0)        not null
+)
+go
+
+alter table DYNAMICPAOSTATISTICSHISTORY
+   add constraint PK_DYNAMICPAOSTATISTICSHISTORY primary key (PAObjectID, DateOffset)
 go
 
 /*==============================================================*/
@@ -7637,6 +7716,29 @@ alter table PORTTERMINALSERVER
 go
 
 /*==============================================================*/
+/* Table: PROFILEPEAKRESULT                                     */
+/*==============================================================*/
+create table PROFILEPEAKRESULT (
+   ResultId             numeric              not null,
+   DeviceId             numeric              not null,
+   ResultFrom           varchar(30)          not null,
+   ResultTo             varchar(30)          not null,
+   RunDate              varchar(30)          not null,
+   PeakDay              varchar(30)          not null,
+   Usage                varchar(25)          not null,
+   Demand               varchar(25)          not null,
+   AverageDailyUsage    varchar(25)          not null,
+   TotalUsage           varchar(25)          not null,
+   ResultType           varchar(5)           not null,
+   Days                 numeric              not null
+)
+go
+
+alter table PROFILEPEAKRESULT
+   add constraint PK_PROFILEPEAKRESULT primary key nonclustered (ResultId)
+go
+
+/*==============================================================*/
 /* Table: PointAlarming                                         */
 /*==============================================================*/
 create table PointAlarming (
@@ -8451,13 +8553,13 @@ insert into yukongrouprole values (-407, -302, -300, -30000, '(none)');
 insert into yukongrouprole values (-408, -302, -300, -30001, 'true');
 
 /* Web Client Customers Commercial Metering role */
-insert into yukongrouprole values (-413, -302, -304, -30400, '(none)');
-insert into yukongrouprole values (-414, -302, -304, -30401, 'true');
+insert into yukongrouprole values (-413, -302, -102, -10202, '(none)');
+insert into yukongrouprole values (-414, -302, -102, -10203, 'true');
 
 /* Web Client Customers Administrator role */
 insert into yukongrouprole values (-415, -302, -305, -30500, 'true');
-insert into YukonGroupRole values (-416, -302, -304, -30402, '(none)');
-insert into YukonGroupRole values (-417, -302, -304, -30403, '(none)');
+insert into YukonGroupRole values (-416, -302, -102, -10205, '(none)');
+insert into YukonGroupRole values (-417, -302, -102, -10206, '(none)');
 
 insert into yukongrouprole values (-500,-300,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
 insert into yukongrouprole values (-502,-300,-108,-10802,'(none)');
@@ -8581,8 +8683,6 @@ insert into yukongrouprole values (-761,-301,-201,-20161,'(none)');
 insert into yukongrouprole values (-765,-301,-210,-21000,'(none)');
 insert into yukongrouprole values (-766,-301,-210,-21001,'(none)');
 insert into yukongrouprole values (-767,-301,-210,-21002,'(none)');
-
-insert into yukongrouprole values (-770,-301,-202,-20200,'(none)');
 
 insert into yukongrouprole values (-775,-301,-900,-90000,'(none)');
 insert into yukongrouprole values (-776,-301,-900,-90001,'(none)');
@@ -9541,7 +9641,7 @@ insert into YukonRole values(-109,'Reporting','Application','Access to reports g
 /* Web client operator roles */
 insert into YukonRole values(-200,'Administrator','Operator','Access to Yukon administration');
 insert into YukonRole values(-201,'Consumer Info','Operator','Operator access to consumer account information');
-insert into YukonRole values(-202,'Commercial Metering','Operator','Operator access to commerical metering');
+insert into YukonRole values(-202,'Metering','Operator','Operator access to metering');
 
 /* Operator roles */
 insert into YukonRole values(-206,'Esubstation Drawings','Operator','Operator access to esubstation drawings');
@@ -9559,8 +9659,7 @@ insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access t
 
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
-insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
-insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privilages.');
+insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privileges.');
 insert into YukonRole values(-306,'User Control', 'CICustomer', 'Customer access to user control operations.');
 
 /* Consumer roles */
@@ -9846,9 +9945,6 @@ insert into YukonRoleProperty values(-20011,-200,'MultiSpeak Setup','false','Con
 insert into YukonRoleProperty values(-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
 
 /* Operator Metering Role Properties*/
-insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
-insert into YukonRoleProperty values(-20201,-202,'Enable Billing','true','Allows access to billing');
-insert into YukonRoleProperty values(-20202,-202,'Enable Trending','true','Allows access to Trending');
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
 
 /* Operator Esubstation Drawings Role Properties */
@@ -9945,12 +10041,6 @@ insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curt
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
 insert into YukonRoleProperty values(-30001,-300,'Individual Switch','false','Controls access to customer individual switch control');
-
-/* CICustomer Commercial Metering Role Properties */
-insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
-insert into yukonroleproperty values(-30401, -304, 'Trending Get Data Now Button', 'false', 'Controls access to retrieve meter data on demand');
-insert into yukonroleproperty values(-30402, -304, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events');
-insert into yukonroleproperty values(-30403, -304, 'Maximum Daily Scans', '2', 'Maximum number of get data now scans available daily');
 
 /* CICustomer Administrator Role */
 insert into yukonroleproperty values(-30500, -305, 'Contact Information Editable', 'false', 'Contact information is editable by the customer');
@@ -11106,6 +11196,21 @@ alter table DEVICEDIALUPSETTINGS
       references DEVICE (DEVICEID)
 go
 
+alter table DEVICEGROUP
+   add constraint FK_DEVICEGROUP_DEVICEGROUP foreign key (ParentDeviceGroupId)
+      references DEVICEGROUP (DeviceGroupId)
+go
+
+alter table DEVICEGROUPMEMBER
+   add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
+      references DEVICEGROUP (DeviceGroupId)
+go
+
+alter table DEVICEGROUPMEMBER
+   add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
+      references DEVICE (DEVICEID)
+go
+
 alter table DEVICEIDLCREMOTE
    add constraint SYS_C0013241 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
@@ -11189,6 +11294,11 @@ go
 alter table DYNAMICDEVICESCANDATA
    add constraint SYS_C0015139 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
+go
+
+alter table DYNAMICPAOSTATISTICSHISTORY
+   add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
 go
 
 alter table DYNAMICPOINTDISPATCH
@@ -11997,6 +12107,11 @@ go
 alter table PORTTERMINALSERVER
    add constraint SYS_C0013151 foreign key (PORTID)
       references CommPort (PORTID)
+go
+
+alter table PROFILEPEAKRESULT
+   add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
+      references DEVICE (DEVICEID)
 go
 
 alter table PointAlarming

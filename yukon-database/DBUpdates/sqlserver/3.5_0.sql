@@ -166,6 +166,127 @@ go
 update YukonRoleProperty set DefaultValue = 'Curtailment' where RolePropertyID = -10922;
 go
 
+create table DEVICEGROUP (
+   DeviceGroupId        numeric(18,0)        not null,
+   GroupName            varchar(255)         not null,
+   ParentDeviceGroupId  numeric(18,0)        null,
+   SystemGroup          char(1)              not null,
+   Type                 varchar(255)         not null
+);
+go
+
+insert into DeviceGroup values (0,'',null,'Y','STATIC');
+insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
+insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
+insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
+insert into DeviceGroup values (4,'Alternate',1,'Y','STATIC');
+
+insert into DeviceGroup select distinct 5, CollectionGroup, 3, 'N', 'STATIC' from DeviceMeterGroup;
+insert into DeviceGroup select distinct 5, TestCollectionGroup, 4, 'N', 'STATIC' from DeviceMeterGroup;
+insert into DeviceGroup select distinct 5, BillingGroup, 2, 'N', 'STATIC' from DeviceMeterGroup;
+declare @cnt numeric set @cnt = 4 update DeviceGroup set @cnt = DeviceGroupID = @cnt + 1 where DeviceGroupID > 4;
+
+alter table DEVICEGROUP
+   add constraint PK_DEVICEGROUP primary key (DeviceGroupId);
+go
+
+alter table DEVICEGROUP
+   add constraint FK_DEVICEGROUP_DEVICEGROUP foreign key (ParentDeviceGroupId)
+      references DEVICEGROUP (DeviceGroupId);
+go
+
+create table DEVICEGROUPMEMBER (
+   DeviceGroupID        numeric(18,0)        not null,
+   YukonPaoId           numeric(18,0)        not null
+);
+go
+
+alter table DEVICEGROUPMEMBER
+   add constraint PK_DEVICEGROUPMEMBER primary key (DeviceGroupID, YukonPaoId);
+go
+
+alter table DEVICEGROUPMEMBER
+   add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
+      references DEVICE (DEVICEID);
+go
+
+alter table DEVICEGROUPMEMBER
+   add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
+      references DEVICEGROUP (DeviceGroupId);
+go
+
+alter table DeviceMeterGroup drop column CollectionGroup;
+alter table DeviceMeterGroup drop column TestCollectionGroup;
+alter table DeviceMeterGroup drop column BillingGroup;
+go
+
+update YukonGroupRole set RoleID=-102, RolePropertyID=-10206 where RoleID= -304 and RolePropertyID = -30403;
+update YukonGroupRole set RoleID=-102, RolePropertyID=-10205 where RoleID= -304 and RolePropertyID = -30402;
+update YukonGroupRole set RoleID=-102, RolePropertyID=-10203 where RoleID= -304 and RolePropertyID = -30401;
+update YukonGroupRole set RoleID=-102, RolePropertyID=-10202 where RoleID= -304 and RolePropertyID = -30400;
+go
+
+delete YukonGroupRole where RoleID = -304;
+delete YukonUserRole where RoleID = -304;
+delete YukonRoleProperty where RoleID= -304;
+delete YukonRole where RoleID= -304;
+go
+
+delete YukonGroupRole where RolePropertyID in(-20202, -20201, -20200);
+delete YukonUserRole where RolePropertyID in(-20202, -20201, -20200);
+delete YukonRoleProperty where RolePropertyID in(-20202, -20201, -20200);
+update YukonRole set ROleName = 'Metering', RoleDescription='Operator access to Metering' where RoleID = -202;
+go
+
+create table DYNAMICPAOSTATISTICSHISTORY (
+   PAObjectID           numeric(18,0)        not null,
+   DateOffset           numeric(18,0)        not null,
+   Requests             numeric(18,0)        not null,
+   Completions          numeric(18,0)        not null,
+   Attempts             numeric(18,0)        not null,
+   CommErrors           numeric(18,0)        not null,
+   ProtocolErrors       numeric(18,0)        not null,
+   SystemErrors         numeric(18,0)        not null
+);
+go
+
+alter table DYNAMICPAOSTATISTICSHISTORY
+   add constraint PK_DYNAMICPAOSTATISTICSHISTORY primary key (PAObjectID, DateOffset);
+go
+
+alter table DYNAMICPAOSTATISTICSHISTORY
+   add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
+go
+
+insert into DynamicPAOStatistics select distinct paobjectid, 'Lifetime', 0, 0, 0, 0, 0, 0, getutcdate(), getutcdate() from DynamicPAOStatistics;
+go
+
+create table PROFILEPEAKRESULT (
+   ResultId             numeric              not null,
+   DeviceId             numeric              not null,
+   ResultFrom           varchar(30)          not null,
+   ResultTo             varchar(30)          not null,
+   RunDate              varchar(30)          not null,
+   PeakDay              varchar(30)          not null,
+   Usage                varchar(25)          not null,
+   Demand               varchar(25)          not null,
+   AverageDailyUsage    varchar(25)          not null,
+   TotalUsage           varchar(25)          not null,
+   ResultType           varchar(5)           not null,
+   Days                 numeric              not null
+);
+go
+
+alter table PROFILEPEAKRESULT
+   add constraint PK_PROFILEPEAKRESULT primary key nonclustered (ResultId);
+go
+
+alter table PROFILEPEAKRESULT
+   add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
+      references DEVICE (DEVICEID);
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
