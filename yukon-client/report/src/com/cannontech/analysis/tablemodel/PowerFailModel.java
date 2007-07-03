@@ -70,6 +70,7 @@ public class PowerFailModel extends ReportModelBase
 		super();
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.METER,
+                ReportFilter.DEVICE,
 				ReportFilter.COLLECTIONGROUP, 
     			ReportFilter.ALTERNATEGROUP, 
     			ReportFilter.BILLINGGROUP}
