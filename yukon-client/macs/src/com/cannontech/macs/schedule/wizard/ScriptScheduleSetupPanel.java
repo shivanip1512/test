@@ -846,7 +846,7 @@ private javax.swing.JLabel getFilePathLabel() {
 			ivjFilePathLabel = new javax.swing.JLabel();
 			ivjFilePathLabel.setName("FilePathLabel");
 			ivjFilePathLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjFilePathLabel.setText("Flie Path:");
+			ivjFilePathLabel.setText("File Path:");
 			// user code begin {1}
 			ivjFilePathLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(FILE_PATH_PARAM));
 			// user code end
