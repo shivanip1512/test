@@ -180,11 +180,14 @@ insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
 insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
 insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
 insert into DeviceGroup values (4,'Alternate',1,'Y','STATIC');
+insert into DeviceGroup values (5,'CustomGroup1',1,'Y','STATIC');
+insert into DeviceGroup values (6,'CustomGroup2',1,'Y','STATIC');
+insert into DeviceGroup values (7,'CustomGroup3',1,'Y','STATIC');
 
-insert into DeviceGroup select distinct 5, CollectionGroup, 3, 'N', 'STATIC' from DeviceMeterGroup;
-insert into DeviceGroup select distinct 5, TestCollectionGroup, 4, 'N', 'STATIC' from DeviceMeterGroup;
-insert into DeviceGroup select distinct 5, BillingGroup, 2, 'N', 'STATIC' from DeviceMeterGroup;
-declare @cnt numeric set @cnt = 4 update DeviceGroup set @cnt = DeviceGroupID = @cnt + 1 where DeviceGroupID > 4;
+insert into DeviceGroup select distinct 8, CollectionGroup, 3, 'N', 'STATIC' from DeviceMeterGroup;
+insert into DeviceGroup select distinct 8, TestCollectionGroup, 4, 'N', 'STATIC' from DeviceMeterGroup;
+insert into DeviceGroup select distinct 8, BillingGroup, 2, 'N', 'STATIC' from DeviceMeterGroup;
+declare @cnt numeric set @cnt = 7 update DeviceGroup set @cnt = DeviceGroupID = @cnt + 1 where DeviceGroupID > 7;
 
 alter table DEVICEGROUP
    add constraint PK_DEVICEGROUP primary key (DeviceGroupId);
