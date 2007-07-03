@@ -1,10 +1,36 @@
 package com.cannontech.macs.schedule.wizard;
 
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_DEMAND_DAYS_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_ENERGY_DAYS_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FILE_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FILE_PATH_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FLAG_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FORMAT_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_GROUP_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.EMAIL_SUBJECT_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.FILE_PATH_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.GROUP_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_FLAG_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.MAX_RETRY_HOURS_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.MISSED_FILE_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFICATION_FLAG_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFY_GROUP_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.PORTER_TIMEOUT_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.QUEUE_OFF_COUNT_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.READ_FROZEN_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.READ_WITH_RETRY_FLAG_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.RESET_COUNT_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.RETRY_COUNT_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.SCHEDULE_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_DESC_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -17,6 +43,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -28,20 +56,14 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.schedule.script.ScriptTemplate;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
 
-/**
- * Insert the type's description here.
- * Creation date: (2/15/2001 12:44:42 PM)
- * @author: 
- */
 
-public class ScriptScheduleSetupPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.database.data.schedule.script.ScriptParameters, com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.ItemListener, java.awt.event.KeyListener, javax.swing.event.CaretListener, javax.swing.event.ChangeListener {
+public class ScriptScheduleSetupPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.ItemListener, java.awt.event.KeyListener, javax.swing.event.CaretListener, javax.swing.event.ChangeListener {
     private int templateType = ScriptTemplateTypes.METER_READ_SCRIPT;
     private ScriptTemplate scriptTemplate = null;
     //String for holding the script file.
@@ -62,10 +84,6 @@ public class ScriptScheduleSetupPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JLabel ivjEnergyDaysLabel = null;
 	private javax.swing.JLabel ivjFilePathLabel = null;
 	private javax.swing.JTextField ivjFilePathTextField = null;
-	private javax.swing.JComboBox ivjGroupComboBox = null;
-	private javax.swing.JLabel ivjGroupNameLabel = null;
-	private javax.swing.JComboBox ivjGroupTypeComboBox = null;
-	private javax.swing.JLabel ivjGroupTypeLabel = null;
 	private javax.swing.JPanel ivjIEDPanel = null;
 	private javax.swing.JPanel ivjMeterReadPanel = null;
 	private javax.swing.JLabel ivjMissedFileNameLabel = null;
@@ -96,10 +114,7 @@ public class ScriptScheduleSetupPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JTextField ivjRetryCountTextField = null;
 	private javax.swing.JLabel ivjSecsLabel = null;
 	private javax.swing.JCheckBox ivjSendEmailCheckBox = null;
-	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
-	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
 	private javax.swing.JComboBox ivjBillingGroupComboBox = null;
-	private javax.swing.JLabel ivjBillingGroupNameLabel = null;
 	private javax.swing.JLabel ivjBillingFormatLabel = null;
 	private javax.swing.JPanel ivjMeterReadSetupPanel = null;
 	private javax.swing.JLabel ivjExampleLabel = null;
@@ -116,11 +131,9 @@ public class ScriptScheduleSetupPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JCheckBox ivjS4FrozenRegisterCheckBox = null;
 	private javax.swing.JSeparator ivjSeparatorFrozenRegister = null;
 	private javax.swing.ButtonGroup frozenRegisterGroup  = null;
-    private java.awt.Frame owner = (java.awt.Frame)com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 /**
  * Constructor
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public ScriptScheduleSetupPanel() {
     
 	initialize();
@@ -144,17 +157,9 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 			getFilePathTextField().setText( file );
 		repaint();
 	}
-//	else if (e.getSource() == getGroupTypeComboBox()) {
-//		loadGroupComboBox(getGroupComboBox(), getGroupTypeComboBox().getSelectedIndex());
-//	}
-	else if (e.getSource() == getBillingGroupTypeComboBox()) {
-		loadGroupComboBox(getBillingGroupComboBox(), getBillingGroupTypeComboBox().getSelectedIndex());
-	}	
     fireInputUpdate();
 }
-/**
- * Comment
- */
+
 private String browseOutput(String directory)
 {
 	javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
@@ -166,9 +171,7 @@ private String browseOutput(String directory)
 	}
 	return null;
 }
-/**
- * @return
- */
+
 private String buildScript()
 {
     //Simply retrun the text area if this is a noTemplate script.
@@ -219,6 +222,7 @@ private String buildScript()
 	
     return text;
 }
+
 /* (non-Javadoc)
  * @see javax.swing.event.CaretListener#caretUpdate(javax.swing.event.CaretEvent)
  */
@@ -226,6 +230,7 @@ public void caretUpdate(CaretEvent e)
 {
 	fireInputUpdate();
 }
+
 public void enableContainer(Container c, boolean enable)
 {
 	Component[] components = c.getComponents();
@@ -238,13 +243,14 @@ public void enableContainer(Container c, boolean enable)
 		}
 	}
 }
+
 /* (non-Javadoc)
  * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
  */
 public void focusGained(FocusEvent e)
 {
-    // TODO Auto-generated method stub
 }
+
 /* (non-Javadoc)
  * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
  */
@@ -257,11 +263,11 @@ public void focusLost(FocusEvent e)
         initSwingCompValues();
     }
 }
+
 /**
  * Return the AlphaFrozenRegisterCheckBox property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getAlphaFrozenRegisterCheckBox() {
 	if (ivjAlphaFrozenRegisterCheckBox == null) {
 		try {
@@ -270,7 +276,7 @@ private javax.swing.JCheckBox getAlphaFrozenRegisterCheckBox() {
 			ivjAlphaFrozenRegisterCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjAlphaFrozenRegisterCheckBox.setText("Alpha");
 			// user code begin {1}
-			ivjAlphaFrozenRegisterCheckBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(READ_FROZEN_PARAM));
+			ivjAlphaFrozenRegisterCheckBox.setToolTipText(getScriptTemplate().getParamaterDescription(READ_FROZEN_PARAM));
 			ivjAlphaFrozenRegisterCheckBox.setSelected(true);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -281,11 +287,11 @@ private javax.swing.JCheckBox getAlphaFrozenRegisterCheckBox() {
 	}
 	return ivjAlphaFrozenRegisterCheckBox;
 }
+
 /**
  * Return the BrowseButton property value.
  * @return javax.swing.JButton
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JButton getBillingFileBrowseButton() {
 	if (ivjBillingFileBrowseButton == null) {
 		try {
@@ -303,11 +309,11 @@ private javax.swing.JButton getBillingFileBrowseButton() {
 	}
 	return ivjBillingFileBrowseButton;
 }
+
 /**
  * Return the BillingFileNameLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getBillingFileNameLabel() {
 	if (ivjBillingFileNameLabel == null) {
 		try {
@@ -316,7 +322,7 @@ private javax.swing.JLabel getBillingFileNameLabel() {
 			ivjBillingFileNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjBillingFileNameLabel.setText("File Name:");
 			// user code begin {1}
-			ivjBillingFileNameLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FILE_NAME_PARAM));			
+			ivjBillingFileNameLabel.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FILE_NAME_PARAM));			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -326,18 +332,18 @@ private javax.swing.JLabel getBillingFileNameLabel() {
 	}
 	return ivjBillingFileNameLabel;
 }
+
 /**
  * Return the BillingFileNameTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getBillingFileNameTextField() {
 	if (ivjBillingFileNameTextField == null) {
 		try {
 			ivjBillingFileNameTextField = new javax.swing.JTextField();
 			ivjBillingFileNameTextField.setName("BillingFileNameTextField");
 			// user code begin {1}
-			ivjBillingFileNameTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FILE_NAME_PARAM));
+			ivjBillingFileNameTextField.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -347,18 +353,18 @@ private javax.swing.JTextField getBillingFileNameTextField() {
 	}
 	return ivjBillingFileNameTextField;
 }
+
 /**
  * Return the BillingFilePathTextBox property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getBillingFilePathTextBox() {
 	if (ivjBillingFilePathTextBox == null) {
 		try {
 			ivjBillingFilePathTextBox = new javax.swing.JTextField();
 			ivjBillingFilePathTextBox.setName("BillingFilePathTextBox");
 			// user code begin {1}
-			ivjBillingFilePathTextBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FILE_PATH_PARAM));
+			ivjBillingFilePathTextBox.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FILE_PATH_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -368,11 +374,11 @@ private javax.swing.JTextField getBillingFilePathTextBox() {
 	}
 	return ivjBillingFilePathTextBox;
 }
+
 /**
  * Return the BillingFormatComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getBillingFormatComboBox() {
 	if (ivjBillingFormatComboBox == null) {
 		try {
@@ -384,7 +390,7 @@ private javax.swing.JComboBox getBillingFormatComboBox() {
 			for(int i = 0; i < formats.length; i++)
 				ivjBillingFormatComboBox.addItem(formats[i]);
 			
-			ivjBillingFormatComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FORMAT_PARAM));
+			ivjBillingFormatComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FORMAT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -394,11 +400,11 @@ private javax.swing.JComboBox getBillingFormatComboBox() {
 	}
 	return ivjBillingFormatComboBox;
 }
+
 /**
  * Return the BillingFormatLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getBillingFormatLabel() {
 	if (ivjBillingFormatLabel == null) {
 		try {
@@ -407,7 +413,7 @@ private javax.swing.JLabel getBillingFormatLabel() {
 			ivjBillingFormatLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjBillingFormatLabel.setText("FileFormat:");
 			// user code begin {1}
-			ivjBillingFormatLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FORMAT_PARAM));
+			ivjBillingFormatLabel.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FORMAT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -417,68 +423,18 @@ private javax.swing.JLabel getBillingFormatLabel() {
 	}
 	return ivjBillingFormatLabel;
 }
-/**
- * Return the BillingGroupTypeComboBox property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getBillingGroupTypeComboBox() {
-	if (ivjBillingGroupTypeComboBox == null) {
-		try {
-			ivjBillingGroupTypeComboBox = new javax.swing.JComboBox();
-			ivjBillingGroupTypeComboBox.setName("BillingGroupTypeComboBox");
-			ivjBillingGroupTypeComboBox.setToolTipText("The type of group for billing generation.");
-			// user code begin {1}
-			for( int i = 0; i < DeviceMeterGroup.getValidBillGroupTypeDisplayStrings().length; i++)
-			    ivjBillingGroupTypeComboBox.addItem(DeviceMeterGroup.getValidBillGroupTypeDisplayStrings()[i]);
-
-			ivjBillingGroupTypeComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_TYPE_PARAM));
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjBillingGroupTypeComboBox;
-}
-/**
- * Return the BillingGroupTypeLabel property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getBillingGroupTypeLabel() {
-	if (ivjBillingGroupTypeLabel == null) {
-		try {
-			ivjBillingGroupTypeLabel = new javax.swing.JLabel();
-			ivjBillingGroupTypeLabel.setName("BillingGroupTypeLabel");
-			ivjBillingGroupTypeLabel.setToolTipText("The type of group for billing generation.");
-			ivjBillingGroupTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjBillingGroupTypeLabel.setText("Group Type:");
-			// user code begin {1}
-			ivjBillingGroupTypeLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_TYPE_PARAM));
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjBillingGroupTypeLabel;
-}
 
 /**
  * Return the GroupComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getBillingGroupComboBox() {
 	if (ivjBillingGroupComboBox == null) {
 		try {
 			ivjBillingGroupComboBox = new javax.swing.JComboBox();
 			ivjBillingGroupComboBox.setName("BillingGroupComboBox");
 			// user code begin {1}
-			ivjBillingGroupComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_NAME_PARAM));
+			ivjBillingGroupComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_GROUP_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -488,29 +444,7 @@ private javax.swing.JComboBox getBillingGroupComboBox() {
 	}
 	return ivjBillingGroupComboBox;
 }
-/**
- * Return the GroupNameLabel property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getBillingGroupNameLabel() {
-	if (ivjBillingGroupNameLabel == null) {
-		try {
-			ivjBillingGroupNameLabel = new javax.swing.JLabel();
-			ivjBillingGroupNameLabel.setName("BillingGroupNameLabel");
-			ivjBillingGroupNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjBillingGroupNameLabel.setText("Group Name:");
-			// user code begin {1}
-			ivjBillingGroupNameLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_GROUP_NAME_PARAM));
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjBillingGroupNameLabel;
-}
+
 /**
  * Return the BillingPanel property value.
  * @return javax.swing.JPanel
@@ -616,7 +550,6 @@ private javax.swing.JPanel getBillingPanel() {
  * Return the BilllingFilePathLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getBilllingFilePathLabel() {
 	if (ivjBilllingFilePathLabel == null) {
 		try {
@@ -625,7 +558,7 @@ private javax.swing.JLabel getBilllingFilePathLabel() {
 			ivjBilllingFilePathLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjBilllingFilePathLabel.setText("File Path:");
 			// user code begin {1}
-			ivjBilllingFilePathLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FILE_PATH_PARAM));
+			ivjBilllingFilePathLabel.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FILE_PATH_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -639,7 +572,6 @@ private javax.swing.JLabel getBilllingFilePathLabel() {
  * Return the BrowseButton property value.
  * @return javax.swing.JButton
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JButton getBrowseButton() {
 	if (ivjBrowseButton == null) {
 		try {
@@ -662,7 +594,6 @@ private javax.swing.JButton getBrowseButton() {
  * Return the DemandDaysLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getDemandDaysLabel() {
 	if (ivjDemandDaysLabel == null) {
 		try {
@@ -671,7 +602,7 @@ private javax.swing.JLabel getDemandDaysLabel() {
 			ivjDemandDaysLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjDemandDaysLabel.setText("Demand Days:");
 			// user code begin {1}
-			ivjDemandDaysLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_DEMAND_DAYS_PARAM));
+			ivjDemandDaysLabel.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_DEMAND_DAYS_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -685,14 +616,13 @@ private javax.swing.JLabel getDemandDaysLabel() {
  * Return the JTextField1 property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getDemandDaysTextField() {
 	if (ivjDemandDaysTextField == null) {
 		try {
 			ivjDemandDaysTextField = new javax.swing.JTextField();
 			ivjDemandDaysTextField.setName("DemandDaysTextField");
 			// user code begin {1}
-			ivjDemandDaysTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_DEMAND_DAYS_PARAM));
+			ivjDemandDaysTextField.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_DEMAND_DAYS_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -706,7 +636,6 @@ private javax.swing.JTextField getDemandDaysTextField() {
  * Return the DemandResetSpinBox property value.
  * @return com.klg.jclass.util.swing.JCSpinNumberBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private com.klg.jclass.util.swing.JCSpinNumberBox getDemandResetSpinBox() {
 	if (ivjDemandResetSpinBox == null) {
 		try {
@@ -715,7 +644,7 @@ private com.klg.jclass.util.swing.JCSpinNumberBox getDemandResetSpinBox() {
 			// user code begin {1}
 			ivjDemandResetSpinBox.setValueRange(new Integer(1), new Integer(5));
 			ivjDemandResetSpinBox.setValue(new Integer(2));
-			ivjDemandResetSpinBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(RESET_COUNT_PARAM));
+			ivjDemandResetSpinBox.setToolTipText(getScriptTemplate().getParamaterDescription(RESET_COUNT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -729,7 +658,6 @@ private com.klg.jclass.util.swing.JCSpinNumberBox getDemandResetSpinBox() {
  * Return the DescriptionLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getDescriptionLabel() {
 	if (ivjDescriptionLabel == null) {
 		try {
@@ -738,7 +666,7 @@ private javax.swing.JLabel getDescriptionLabel() {
 			ivjDescriptionLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjDescriptionLabel.setText("Description:");
 			// user code begin {1}
-			ivjDescriptionLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(SCRIPT_DESC_PARAM));
+			ivjDescriptionLabel.setToolTipText(getScriptTemplate().getParamaterDescription(SCRIPT_DESC_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -752,14 +680,13 @@ private javax.swing.JLabel getDescriptionLabel() {
  * Return the DescriptionTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getDescriptionTextField() {
 	if (ivjDescriptionTextField == null) {
 		try {
 			ivjDescriptionTextField = new javax.swing.JTextField();
 			ivjDescriptionTextField.setName("DescriptionTextField");
 			// user code begin {1}
-			ivjDescriptionTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(SCRIPT_DESC_PARAM));
+			ivjDescriptionTextField.setToolTipText(getScriptTemplate().getParamaterDescription(SCRIPT_DESC_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -773,7 +700,6 @@ private javax.swing.JTextField getDescriptionTextField() {
  * Return the EnergyDaysLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getEnergyDaysLabel() {
 	if (ivjEnergyDaysLabel == null) {
 		try {
@@ -782,7 +708,7 @@ private javax.swing.JLabel getEnergyDaysLabel() {
 			ivjEnergyDaysLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjEnergyDaysLabel.setText("Energy Days:");
 			// user code begin {1}
-			ivjEnergyDaysLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_ENERGY_DAYS_PARAM));
+			ivjEnergyDaysLabel.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_ENERGY_DAYS_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -796,14 +722,13 @@ private javax.swing.JLabel getEnergyDaysLabel() {
  * Return the JTextField2 property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getEnergyDaysTextField() {
 	if (ivjEnergyDaysTextField == null) {
 		try {
 			ivjEnergyDaysTextField = new javax.swing.JTextField();
 			ivjEnergyDaysTextField.setName("EnergyDaysTextField");
 			// user code begin {1}
-			ivjEnergyDaysTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_ENERGY_DAYS_PARAM));
+			ivjEnergyDaysTextField.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_ENERGY_DAYS_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -817,7 +742,6 @@ private javax.swing.JTextField getEnergyDaysTextField() {
  * Return the ExampleLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getExampleLabel() {
 	if (ivjExampleLabel == null) {
 		try {
@@ -839,7 +763,6 @@ private javax.swing.JLabel getExampleLabel() {
  * Return the FilePathLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getFilePathLabel() {
 	if (ivjFilePathLabel == null) {
 		try {
@@ -848,7 +771,7 @@ private javax.swing.JLabel getFilePathLabel() {
 			ivjFilePathLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjFilePathLabel.setText("File Path:");
 			// user code begin {1}
-			ivjFilePathLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(FILE_PATH_PARAM));
+			ivjFilePathLabel.setToolTipText(getScriptTemplate().getParamaterDescription(FILE_PATH_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -862,14 +785,13 @@ private javax.swing.JLabel getFilePathLabel() {
  * Return the FilePathTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getFilePathTextField() {
 	if (ivjFilePathTextField == null) {
 		try {
 			ivjFilePathTextField = new javax.swing.JTextField();
 			ivjFilePathTextField.setName("FilePathTextField");
 			// user code begin {1}
-			ivjFilePathTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(FILE_PATH_PARAM));
+			ivjFilePathTextField.setToolTipText(getScriptTemplate().getParamaterDescription(FILE_PATH_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -883,7 +805,6 @@ private javax.swing.JTextField getFilePathTextField() {
  * Return the JCheckBox3 property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getGenerateBillingCheckBox() {
 	if (ivjGenerateBillingCheckBox == null) {
 		try {
@@ -892,7 +813,7 @@ private javax.swing.JCheckBox getGenerateBillingCheckBox() {
 			ivjGenerateBillingCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjGenerateBillingCheckBox.setText("Generate Billing File");
 			// user code begin {1}
-			ivjGenerateBillingCheckBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(BILLING_FLAG_PARAM));
+			ivjGenerateBillingCheckBox.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_FLAG_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -907,12 +828,12 @@ private javax.swing.JCheckBox getGenerateBillingCheckBox() {
  * Return the GroupList property value.
  * @return javax.swing.JList
  */
-private javax.swing.JTree getMeterReadGroupList() {
+private javax.swing.JTree getMeterReadGroupTree() {
     if (meterReadGroupTree == null) {
         DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
         try {
-            CustomRenderJTree<DeviceGroup> customTree = new CustomRenderJTree<DeviceGroup>(DeviceGroup.class);
-            customTree.setRenderer(new DeviceGroupRenderer());
+            CustomRenderJTree customTree = new CustomRenderJTree();
+            customTree.addRenderer(new DeviceGroupRenderer());
             meterReadGroupTree = customTree;
             meterReadGroupTree.setName("GroupList");
             meterReadGroupTree.setBounds(0, 0, 160, 120);
@@ -937,12 +858,12 @@ private javax.swing.JTree getMeterReadGroupList() {
  * Return the GroupList property value.
  * @return javax.swing.JList
  */
-private javax.swing.JTree getOptionsGroupList() {
+private javax.swing.JTree getBillingGroupTree() {
     if (optionsGroupTree == null) {
         DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
         try {
-            CustomRenderJTree<DeviceGroup> customTree = new CustomRenderJTree<DeviceGroup>(DeviceGroup.class);
-            customTree.setRenderer(new DeviceGroupRenderer());
+            CustomRenderJTree customTree = new CustomRenderJTree();
+            customTree.addRenderer(new DeviceGroupRenderer());
             optionsGroupTree = customTree;
             optionsGroupTree.setName("GroupList");
             optionsGroupTree.setBounds(0, 0, 160, 120);
@@ -974,7 +895,7 @@ private javax.swing.JScrollPane getMeterReadGroupListScrollPane() {
             meterReadGroupListScrollPane.setName("MeterReadGroupListScrollPane");
             meterReadGroupListScrollPane.setToolTipText("Select Billing Collection Group(s).");
             meterReadGroupListScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            getMeterReadGroupListScrollPane().setViewportView(getMeterReadGroupList());
+            getMeterReadGroupListScrollPane().setViewportView(getMeterReadGroupTree());
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -993,7 +914,7 @@ private javax.swing.JScrollPane getOptionsGroupListScrollPane() {
             optionsGroupListScrollPane.setName("OptionsGroupListScrollPane");
             optionsGroupListScrollPane.setToolTipText("Select Billing Collection Group(s).");
             optionsGroupListScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            getOptionsGroupListScrollPane().setViewportView(getOptionsGroupList());
+            getOptionsGroupListScrollPane().setViewportView(getBillingGroupTree());
 //            optionsGroupListScrollPane.setPreferredSize(new Dimension(200,200));
 //            optionsGroupListScrollPane.setMinimumSize(new Dimension(200,200));
         } catch (java.lang.Throwable ivjExc) {
@@ -1007,7 +928,6 @@ private javax.swing.JScrollPane getOptionsGroupListScrollPane() {
  * Return the IEDPanel property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getIEDPanel() {
 	if (ivjIEDPanel == null) {
 		try {
@@ -1087,11 +1007,11 @@ private javax.swing.JPanel getIEDPanel() {
 	}
 	return ivjIEDPanel;
 }
+
 /**
  * Return the JLabel7 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getMaxRetryHoursLabel() {
 	if (ivjMaxRetryHoursLabel == null) {
 		try {
@@ -1100,7 +1020,7 @@ private javax.swing.JLabel getMaxRetryHoursLabel() {
 			ivjMaxRetryHoursLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjMaxRetryHoursLabel.setText("Max Retry Hours:");
 			// user code begin {1}
-			ivjMaxRetryHoursLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(MAX_RETRY_HOURS_PARAM));
+			ivjMaxRetryHoursLabel.setToolTipText(getScriptTemplate().getParamaterDescription(MAX_RETRY_HOURS_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1110,18 +1030,18 @@ private javax.swing.JLabel getMaxRetryHoursLabel() {
 	}
 	return ivjMaxRetryHoursLabel;
 }
+
 /**
  * Return the JTextField5 property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getMaxRetryHoursTextField() {
 	if (ivjMaxRetryHoursTextField == null) {
 		try {
 			ivjMaxRetryHoursTextField = new javax.swing.JTextField();
 			ivjMaxRetryHoursTextField.setName("MaxRetryHoursTextField");
 			// user code begin {1}
-			ivjMaxRetryHoursTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(MAX_RETRY_HOURS_PARAM));
+			ivjMaxRetryHoursTextField.setToolTipText(getScriptTemplate().getParamaterDescription(MAX_RETRY_HOURS_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1131,11 +1051,11 @@ private javax.swing.JTextField getMaxRetryHoursTextField() {
 	}
 	return ivjMaxRetryHoursTextField;
 }
+
 /**
  * Return the JLabel61 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getMessageSubjectLabel() {
 	if (ivjMessageSubjectLabel == null) {
 		try {
@@ -1144,7 +1064,7 @@ private javax.swing.JLabel getMessageSubjectLabel() {
 			ivjMessageSubjectLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjMessageSubjectLabel.setText("Message Subject:");
 			// user code begin {1}
-			ivjMessageSubjectLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(EMAIL_SUBJECT_PARAM));
+			ivjMessageSubjectLabel.setToolTipText(getScriptTemplate().getParamaterDescription(EMAIL_SUBJECT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1154,18 +1074,18 @@ private javax.swing.JLabel getMessageSubjectLabel() {
 	}
 	return ivjMessageSubjectLabel;
 }
+
 /**
  * Return the JTextField41 property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getMessageSubjectTextField() {
 	if (ivjMessageSubjectTextField == null) {
 		try {
 			ivjMessageSubjectTextField = new javax.swing.JTextField();
 			ivjMessageSubjectTextField.setName("MessageSubjectTextField");
 			// user code begin {1}
-			ivjMessageSubjectTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(EMAIL_SUBJECT_PARAM));
+			ivjMessageSubjectTextField.setToolTipText(getScriptTemplate().getParamaterDescription(EMAIL_SUBJECT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1175,11 +1095,11 @@ private javax.swing.JTextField getMessageSubjectTextField() {
 	}
 	return ivjMessageSubjectTextField;
 }
+
 /**
  * Return the MeterReadPanel property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getMeterReadPanel() {
 	if (ivjMeterReadPanel == null) {
 		try {
@@ -1268,11 +1188,11 @@ private javax.swing.JPanel getMeterReadPanel() {
 	}
 	return ivjMeterReadPanel;
 }
+
 /**
  * Return the MeterReadSetupPanel property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getMeterReadSetupPanel() {
 	if (ivjMeterReadSetupPanel == null) {
 		try {
@@ -1311,11 +1231,11 @@ private javax.swing.JPanel getMeterReadSetupPanel() {
 	}
 	return ivjMeterReadSetupPanel;
 }
+
 /**
  * Return the MissedFileNameLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getMissedFileNameLabel() {
 	if (ivjMissedFileNameLabel == null) {
 		try {
@@ -1324,7 +1244,7 @@ private javax.swing.JLabel getMissedFileNameLabel() {
 			ivjMissedFileNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjMissedFileNameLabel.setText("Missed File Name:");
 			// user code begin {1}
-			ivjMissedFileNameLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(MISSED_FILE_NAME_PARAM));
+			ivjMissedFileNameLabel.setToolTipText(getScriptTemplate().getParamaterDescription(MISSED_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1334,18 +1254,18 @@ private javax.swing.JLabel getMissedFileNameLabel() {
 	}
 	return ivjMissedFileNameLabel;
 }
+
 /**
  * Return the MissedFileNameTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getMissedFileNameTextField() {
 	if (ivjMissedFileNameTextField == null) {
 		try {
 			ivjMissedFileNameTextField = new javax.swing.JTextField();
 			ivjMissedFileNameTextField.setName("MissedFileNameTextField");
 			// user code begin {1}
-			ivjMissedFileNameTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(MISSED_FILE_NAME_PARAM));
+			ivjMissedFileNameTextField.setToolTipText(getScriptTemplate().getParamaterDescription(MISSED_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1355,11 +1275,11 @@ private javax.swing.JTextField getMissedFileNameTextField() {
 	}
 	return ivjMissedFileNameTextField;
 }
+
 /**
  * Return the JPanel property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getNotificationPanel() {
 	if (ivjNotificationPanel == null) {
 		try {
@@ -1403,11 +1323,11 @@ private javax.swing.JPanel getNotificationPanel() {
 	}
 	return ivjNotificationPanel;
 }
+
 /**
  * Return the JComboBox1 property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getNotifyGroupComboBox() {
 	if (ivjNotifyGroupComboBox == null) {
 		try {
@@ -1421,7 +1341,7 @@ private javax.swing.JComboBox getNotifyGroupComboBox() {
 				LiteNotificationGroup lng = (LiteNotificationGroup) notGroups.get(i);
 				ivjNotifyGroupComboBox.addItem(lng.getNotificationGroupName());
 			}
-			ivjNotifyGroupComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(NOTIFY_GROUP_PARAM));
+			ivjNotifyGroupComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(NOTIFY_GROUP_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1431,11 +1351,11 @@ private javax.swing.JComboBox getNotifyGroupComboBox() {
 	}
 	return ivjNotifyGroupComboBox;
 }
+
 /**
  * Return the JLabel51 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getNotifyGroupLabel() {
 	if (ivjNotifyGroupLabel == null) {
 		try {
@@ -1444,7 +1364,7 @@ private javax.swing.JLabel getNotifyGroupLabel() {
 			ivjNotifyGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjNotifyGroupLabel.setText("Notify Group:");
 			// user code begin {1}
-			ivjNotifyGroupLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(NOTIFY_GROUP_PARAM));
+			ivjNotifyGroupLabel.setToolTipText(getScriptTemplate().getParamaterDescription(NOTIFY_GROUP_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1454,11 +1374,11 @@ private javax.swing.JLabel getNotifyGroupLabel() {
 	}
 	return ivjNotifyGroupLabel;
 }
+
 /**
  * Return the OtherPanel property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getOptionsPanel() {
 	if (ivjOptionsPanel == null) {
 		try {
@@ -1505,11 +1425,11 @@ private javax.swing.JPanel getOptionsPanel() {
 	}
 	return ivjOptionsPanel;
 }
+
 /**
  * Return the PorterTimeoutLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getPorterTimeoutLabel() {
 	if (ivjPorterTimeoutLabel == null) {
 		try {
@@ -1518,7 +1438,7 @@ private javax.swing.JLabel getPorterTimeoutLabel() {
 			ivjPorterTimeoutLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjPorterTimeoutLabel.setText("Porter Timeout:");
 			// user code begin {1}
-			ivjPorterTimeoutLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(PORTER_TIMEOUT_PARAM));
+			ivjPorterTimeoutLabel.setToolTipText(getScriptTemplate().getParamaterDescription(PORTER_TIMEOUT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1528,18 +1448,18 @@ private javax.swing.JLabel getPorterTimeoutLabel() {
 	}
 	return ivjPorterTimeoutLabel;
 }
+
 /**
  * Return the PorterTimeoutTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getPorterTimeoutTextField() {
 	if (ivjPorterTimeoutTextField == null) {
 		try {
 			ivjPorterTimeoutTextField = new javax.swing.JTextField();
 			ivjPorterTimeoutTextField.setName("PorterTimeoutTextField");
 			// user code begin {1}
-			ivjPorterTimeoutTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(PORTER_TIMEOUT_PARAM));
+			ivjPorterTimeoutTextField.setToolTipText(getScriptTemplate().getParamaterDescription(PORTER_TIMEOUT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1549,11 +1469,11 @@ private javax.swing.JTextField getPorterTimeoutTextField() {
 	}
 	return ivjPorterTimeoutTextField;
 }
+
 /**
  * Return the JLabel6 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getQueueOffCountLabel() {
 	if (ivjQueueOffCountLabel == null) {
 		try {
@@ -1562,7 +1482,7 @@ private javax.swing.JLabel getQueueOffCountLabel() {
 			ivjQueueOffCountLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjQueueOffCountLabel.setText("Queue Off Count:");
 			// user code begin {1}
-			ivjQueueOffCountLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(QUEUE_OFF_COUNT_PARAM));
+			ivjQueueOffCountLabel.setToolTipText(getScriptTemplate().getParamaterDescription(QUEUE_OFF_COUNT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1572,18 +1492,18 @@ private javax.swing.JLabel getQueueOffCountLabel() {
 	}
 	return ivjQueueOffCountLabel;
 }
+
 /**
  * Return the JTextField4 property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getQueueOffCountTextField() {
 	if (ivjQueueOffCountTextField == null) {
 		try {
 			ivjQueueOffCountTextField = new javax.swing.JTextField();
 			ivjQueueOffCountTextField.setName("QueueOffCountTextField");
 			// user code begin {1}
-			ivjQueueOffCountTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(QUEUE_OFF_COUNT_PARAM));
+			ivjQueueOffCountTextField.setToolTipText(getScriptTemplate().getParamaterDescription(QUEUE_OFF_COUNT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1593,11 +1513,11 @@ private javax.swing.JTextField getQueueOffCountTextField() {
 	}
 	return ivjQueueOffCountTextField;
 }
+
 /**
  * Return the JLabel1 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getReadFrozenDemandRegister() {
 	if (ivjReadFrozenDemandRegister == null) {
 		try {
@@ -1616,11 +1536,11 @@ private javax.swing.JLabel getReadFrozenDemandRegister() {
 	}
 	return ivjReadFrozenDemandRegister;
 }
+
 /**
  * Return the ResetCountLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getResetCountLabel() {
 	if (ivjResetCountLabel == null) {
 		try {
@@ -1629,7 +1549,7 @@ private javax.swing.JLabel getResetCountLabel() {
 			ivjResetCountLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjResetCountLabel.setText("Reset Demand Count:");
 			// user code begin {1}
-			ivjResetCountLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(RESET_COUNT_PARAM));
+			ivjResetCountLabel.setToolTipText(getScriptTemplate().getParamaterDescription(RESET_COUNT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1639,11 +1559,11 @@ private javax.swing.JLabel getResetCountLabel() {
 	}
 	return ivjResetCountLabel;
 }
+
 /**
  * Return the JLabel5 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getRetryCountLabel() {
 	if (ivjRetryCountLabel == null) {
 		try {
@@ -1652,7 +1572,7 @@ private javax.swing.JLabel getRetryCountLabel() {
 			ivjRetryCountLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjRetryCountLabel.setText("Retry Count:");
 			// user code begin {1}
-			ivjRetryCountLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(RETRY_COUNT_PARAM));
+			ivjRetryCountLabel.setToolTipText(getScriptTemplate().getParamaterDescription(RETRY_COUNT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1662,18 +1582,18 @@ private javax.swing.JLabel getRetryCountLabel() {
 	}
 	return ivjRetryCountLabel;
 }
+
 /**
  * Return the JTextField3 property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getRetryCountTextField() {
 	if (ivjRetryCountTextField == null) {
 		try {
 			ivjRetryCountTextField = new javax.swing.JTextField();
 			ivjRetryCountTextField.setName("RetryCountTextField");
 			// user code begin {1}
-			ivjRetryCountTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(RETRY_COUNT_PARAM));
+			ivjRetryCountTextField.setToolTipText(getScriptTemplate().getParamaterDescription(RETRY_COUNT_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1683,11 +1603,11 @@ private javax.swing.JTextField getRetryCountTextField() {
 	}
 	return ivjRetryCountTextField;
 }
+
 /**
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getRetryPanel() {
 	if (ivjRetryPanel == null) {
 		try {
@@ -1748,11 +1668,11 @@ private javax.swing.JPanel getRetryPanel() {
 	}
 	return ivjRetryPanel;
 }
+
 /**
  * Return the JCheckBox1 property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getS4FrozenRegisterCheckBox() {
 	if (ivjS4FrozenRegisterCheckBox == null) {
 		try {
@@ -1761,7 +1681,7 @@ private javax.swing.JCheckBox getS4FrozenRegisterCheckBox() {
 			ivjS4FrozenRegisterCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjS4FrozenRegisterCheckBox.setText("Landis-Gyr S4");
 			// user code begin {1}
-			ivjS4FrozenRegisterCheckBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(READ_FROZEN_PARAM));
+			ivjS4FrozenRegisterCheckBox.setToolTipText(getScriptTemplate().getParamaterDescription(READ_FROZEN_PARAM));
 			ivjS4FrozenRegisterCheckBox.setSelected(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1772,11 +1692,11 @@ private javax.swing.JCheckBox getS4FrozenRegisterCheckBox() {
 	}
 	return ivjS4FrozenRegisterCheckBox;
 }
+
 /**
  * Return the ScriptNameLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getScriptNameLabel() {
 	if (ivjScriptNameLabel == null) {
 		try {
@@ -1785,7 +1705,7 @@ private javax.swing.JLabel getScriptNameLabel() {
 			ivjScriptNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjScriptNameLabel.setText("Script Name:");
 			// user code begin {1}
-			ivjScriptNameLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(SCRIPT_FILE_NAME_PARAM));
+			ivjScriptNameLabel.setToolTipText(getScriptTemplate().getParamaterDescription(SCRIPT_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1795,11 +1715,11 @@ private javax.swing.JLabel getScriptNameLabel() {
 	}
 	return ivjScriptNameLabel;
 }
+
 /**
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getScriptNamePanel() {
 	if (ivjScriptNamePanel == null) {
 		try {
@@ -1846,18 +1766,18 @@ private javax.swing.JPanel getScriptNamePanel() {
 	}
 	return ivjScriptNamePanel;
 }
+
 /**
  * Return the ScriptNameTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getScriptNameTextField() {
 	if (ivjScriptNameTextField == null) {
 		try {
 			ivjScriptNameTextField = new javax.swing.JTextField();
 			ivjScriptNameTextField.setName("ScriptNameTextField");
 			// user code begin {1}
-			ivjScriptNameTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(SCRIPT_FILE_NAME_PARAM));
+			ivjScriptNameTextField.setToolTipText(getScriptTemplate().getParamaterDescription(SCRIPT_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1867,11 +1787,11 @@ private javax.swing.JTextField getScriptNameTextField() {
 	}
 	return ivjScriptNameTextField;
 }
+
 /**
  * Return the ScriptScrollPane property value.
  * @return javax.swing.JScrollPane
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JScrollPane getScriptScrollPane() {
 	if (ivjScriptScrollPane == null) {
 		try {
@@ -1888,6 +1808,7 @@ private javax.swing.JScrollPane getScriptScrollPane() {
 	}
 	return ivjScriptScrollPane;
 }
+
 /**
  * @return Returns the scriptParams.
  */
@@ -1897,6 +1818,7 @@ public ScriptTemplate getScriptTemplate()
         scriptTemplate = new ScriptTemplate();
     return scriptTemplate;
 }
+
 /**
  * @return Returns the mainCode.
  */
@@ -1904,11 +1826,11 @@ public String getScriptText()
 {
     return scriptText;
 }
+
 /**
  * Return the ScriptTextArea property value.
  * @return javax.swing.JTextArea
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextArea getScriptTextArea() {
 	if (ivjScriptTextArea == null) {
 		try {
@@ -1925,11 +1847,11 @@ private javax.swing.JTextArea getScriptTextArea() {
 	}
 	return ivjScriptTextArea;
 }
+
 /**
  * Return the JLabel3 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getSecsLabel() {
 	if (ivjSecsLabel == null) {
 		try {
@@ -1947,11 +1869,11 @@ private javax.swing.JLabel getSecsLabel() {
 	}
 	return ivjSecsLabel;
 }
+
 /**
  * Return the JCheckBox2 property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getSendEmailCheckBox() {
 	if (ivjSendEmailCheckBox == null) {
 		try {
@@ -1960,7 +1882,7 @@ private javax.swing.JCheckBox getSendEmailCheckBox() {
 			ivjSendEmailCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjSendEmailCheckBox.setText("Send Email Notification");
 			// user code begin {1}
-			ivjSendEmailCheckBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(NOTIFICATION_FLAG_PARAM));
+			ivjSendEmailCheckBox.setToolTipText(getScriptTemplate().getParamaterDescription(NOTIFICATION_FLAG_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1970,11 +1892,11 @@ private javax.swing.JCheckBox getSendEmailCheckBox() {
 	}
 	return ivjSendEmailCheckBox;
 }
+
 /**
  * Return the SeparatorFrozenRegister property value.
  * @return javax.swing.JSeparator
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JSeparator getSeparatorFrozenRegister() {
 	if (ivjSeparatorFrozenRegister == null) {
 		try {
@@ -1990,11 +1912,11 @@ private javax.swing.JSeparator getSeparatorFrozenRegister() {
 	}
 	return ivjSeparatorFrozenRegister;
 }
+
 /**
  * Return the SuccessFileNameLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getSuccessFileNameLabel() {
 	if (ivjSuccessFileNameLabel == null) {
 		try {
@@ -2003,7 +1925,7 @@ private javax.swing.JLabel getSuccessFileNameLabel() {
 			ivjSuccessFileNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjSuccessFileNameLabel.setText("Success File Name:");
 			// user code begin {1}
-			ivjSuccessFileNameLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(SUCCESS_FILE_NAME_PARAM));
+			ivjSuccessFileNameLabel.setToolTipText(getScriptTemplate().getParamaterDescription(SUCCESS_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2013,18 +1935,18 @@ private javax.swing.JLabel getSuccessFileNameLabel() {
 	}
 	return ivjSuccessFileNameLabel;
 }
+
 /**
  * Return the SuccessFileNameTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getSuccessFileNameTextField() {
 	if (ivjSuccessFileNameTextField == null) {
 		try {
 			ivjSuccessFileNameTextField = new javax.swing.JTextField();
 			ivjSuccessFileNameTextField.setName("SuccessFileNameTextField");
 			// user code begin {1}
-			ivjSuccessFileNameTextField.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(SUCCESS_FILE_NAME_PARAM));
+			ivjSuccessFileNameTextField.setToolTipText(getScriptTemplate().getParamaterDescription(SUCCESS_FILE_NAME_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2034,11 +1956,11 @@ private javax.swing.JTextField getSuccessFileNameTextField() {
 	}
 	return ivjSuccessFileNameTextField;
 }
+
 /**
  * Return the TabbedPane property value.
  * @return javax.swing.JTabbedPane
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTabbedPane getTabbedPane() {
 	if (ivjTabbedPane == null) {
 		try {
@@ -2057,6 +1979,7 @@ private javax.swing.JTabbedPane getTabbedPane() {
 	}
 	return ivjTabbedPane;
 }
+
 /**
  * @return Returns the templateType.
  */
@@ -2064,11 +1987,11 @@ public int getTemplateType()
 {
     return templateType;
 }
+
 /**
  * Return the TOURateComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getTOURateComboBox() {
 	if (ivjTOURateComboBox == null) {
 		try {
@@ -2078,7 +2001,7 @@ private javax.swing.JComboBox getTOURateComboBox() {
 			ivjTOURateComboBox.addItem("rate A");
 			ivjTOURateComboBox.addItem("rate B");
 			ivjTOURateComboBox.addItem("rate C");
-			ivjTOURateComboBox.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(TOU_RATE_PARAM));
+			ivjTOURateComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(TOU_RATE_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2088,11 +2011,11 @@ private javax.swing.JComboBox getTOURateComboBox() {
 	}
 	return ivjTOURateComboBox;
 }
+
 /**
  * Return the TOURateLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getTOURateLabel() {
 	if (ivjTOURateLabel == null) {
 		try {
@@ -2101,7 +2024,7 @@ private javax.swing.JLabel getTOURateLabel() {
 			ivjTOURateLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTOURateLabel.setText("TOU Rate:");
 			// user code begin {1}
-			ivjTOURateLabel.setToolTipText((String)getScriptTemplate().getParamToDescMap().get(TOU_RATE_PARAM));
+			ivjTOURateLabel.setToolTipText(getScriptTemplate().getParamaterDescription(TOU_RATE_PARAM));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2111,6 +2034,7 @@ private javax.swing.JLabel getTOURateLabel() {
 	}
 	return ivjTOURateLabel;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -2120,7 +2044,7 @@ private javax.swing.JLabel getTOURateLabel() {
 public Object getValue(Object val)
 {
 	Schedule sch = (Schedule)val;
-	getScriptTemplate().getParamToValueMap().put(SCHEDULE_NAME_PARAM, sch.getScheduleName());
+	getScriptTemplate().setParameterValue(SCHEDULE_NAME_PARAM, sch.getScheduleName());
 	
 	sch.setScriptFileName(getScriptNameTextField().getText());
 	sch.getNonPersistantData().getScript().setFileName(getScriptNameTextField().getText());
@@ -2147,6 +2071,7 @@ public Object getValue(Object val)
 
 	return val;
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -2157,10 +2082,10 @@ private void handleException(java.lang.Throwable exception) {
 	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	CTILogger.error( exception.getMessage(), exception );;
 }
+
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
 		setName("ScriptSchedulePanel");
@@ -2206,7 +2131,6 @@ private void initialize() {
 	
 	getGenerateBillingCheckBox().addItemListener(this);
 	getBillingGroupComboBox().addActionListener(this);
-	getBillingGroupTypeComboBox().addActionListener(this);
 	getBillingFormatComboBox().addItemListener(this);
 	getBillingFileNameTextField().addCaretListener(this);
 	getDemandDaysTextField().addCaretListener(this);
@@ -2223,74 +2147,68 @@ private void initialize() {
 	initSwingCompValues();
 	// user code end
 }
+
 /**
  * This method was created in VisualAge.
  */
-
 @SuppressWarnings({ "unchecked", "cast" })
 private void initSwingCompValues()
 {
-    getScriptTemplate().getParamToValueMap().put(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())));
+    getScriptTemplate().setParameterValue(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())));
 
     //The read_with..._param is for showing options to retry during a multiple read schedule, 
 	//so we NOT the result which is from a retry script, one that is a read once type script 
-    getScriptTemplate().getParamToValueMap().put(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())));
+    getScriptTemplate().setParameterValue(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())));
     
-    getScriptNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(SCRIPT_FILE_NAME_PARAM));
-    getDescriptionTextField().setText((String)getScriptTemplate().getParamToValueMap().get(SCRIPT_DESC_PARAM));
-    getFilePathTextField().setText((String)getScriptTemplate().getParamToValueMap().get(FILE_PATH_PARAM));
-    getMissedFileNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(MISSED_FILE_NAME_PARAM));
-    getSuccessFileNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(SUCCESS_FILE_NAME_PARAM));
-    getPorterTimeoutTextField().setText((String)getScriptTemplate().getParamToValueMap().get(PORTER_TIMEOUT_PARAM));
+    getScriptNameTextField().setText(getScriptTemplate().getParameterValue(SCRIPT_FILE_NAME_PARAM));
+    getDescriptionTextField().setText(getScriptTemplate().getParameterValue(SCRIPT_DESC_PARAM));
+    getFilePathTextField().setText(getScriptTemplate().getParameterValue(FILE_PATH_PARAM));
+    getMissedFileNameTextField().setText(getScriptTemplate().getParameterValue(MISSED_FILE_NAME_PARAM));
+    getSuccessFileNameTextField().setText(getScriptTemplate().getParameterValue(SUCCESS_FILE_NAME_PARAM));
+    getPorterTimeoutTextField().setText(getScriptTemplate().getParameterValue(PORTER_TIMEOUT_PARAM));
     
-    getRetryCountTextField().setText((String)getScriptTemplate().getParamToValueMap().get(RETRY_COUNT_PARAM));
-    getMaxRetryHoursTextField().setText((String)getScriptTemplate().getParamToValueMap().get(MAX_RETRY_HOURS_PARAM));
-    getQueueOffCountTextField().setText((String)getScriptTemplate().getParamToValueMap().get(QUEUE_OFF_COUNT_PARAM));
+    getRetryCountTextField().setText(getScriptTemplate().getParameterValue(RETRY_COUNT_PARAM));
+    getMaxRetryHoursTextField().setText(getScriptTemplate().getParameterValue(MAX_RETRY_HOURS_PARAM));
+    getQueueOffCountTextField().setText(getScriptTemplate().getParameterValue(QUEUE_OFF_COUNT_PARAM));
 
     //This must be set after the groupTypeComboBox is set, then we have the group values for the correct type loaded
     DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
     DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-    String groupName = (String)getScriptTemplate().getParamToValueMap().get(GROUP_NAME_PARAM);
-    if(groupName != null && groupName.length() > 0) {
+    String groupName = getScriptTemplate().getParameterValue(GROUP_NAME_PARAM);
+    if(StringUtils.isNotEmpty(groupName)) {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getMeterReadGroupList().getModel().getRoot(), group);
-        getMeterReadGroupList().getSelectionModel().addSelectionPath(pathForGroup);
-        meterReadGroupTree.makeVisible(pathForGroup);
+        TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getMeterReadGroupTree().getModel().getRoot(), group);
+        getMeterReadGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
+        getMeterReadGroupTree().makeVisible(pathForGroup);
     }
     
     //Billing setup
-    enableContainer(getBillingPanel(), Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(BILLING_FLAG_PARAM)).booleanValue());
-    getGenerateBillingCheckBox().setSelected(Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(BILLING_FLAG_PARAM)).booleanValue());
-    getBillingFileNameTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_FILE_NAME_PARAM));
-    getBillingFilePathTextBox().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_FILE_PATH_PARAM));
-    getBillingFormatComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(BILLING_FORMAT_PARAM));
-    getDemandDaysTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_DEMAND_DAYS_PARAM));
-    getEnergyDaysTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_ENERGY_DAYS_PARAM));
-    
-    if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup")) {
-        getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING);
-        loadGroupComboBox(getBillingGroupComboBox(), DeviceMeterGroup.TEST_COLLECTION_GROUP);
-    }
-    else if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup")) {
-        getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING);
-        loadGroupComboBox(getBillingGroupComboBox(), DeviceMeterGroup.BILLING_GROUP);
-    }
-    else { //if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
-        getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING);
-        loadGroupComboBox(getBillingGroupComboBox(), DeviceMeterGroup.COLLECTION_GROUP);
+    enableContainer(getBillingPanel(), Boolean.valueOf(getScriptTemplate().getParameterValue(BILLING_FLAG_PARAM)).booleanValue());
+    getGenerateBillingCheckBox().setSelected(Boolean.valueOf(getScriptTemplate().getParameterValue(BILLING_FLAG_PARAM)).booleanValue());
+    getBillingFileNameTextField().setText(getScriptTemplate().getParameterValue(BILLING_FILE_NAME_PARAM));
+    getBillingFilePathTextBox().setText(getScriptTemplate().getParameterValue(BILLING_FILE_PATH_PARAM));
+    getBillingFormatComboBox().setSelectedItem(getScriptTemplate().getParameterValue(BILLING_FORMAT_PARAM));
+    getDemandDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_DEMAND_DAYS_PARAM));
+    getEnergyDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_ENERGY_DAYS_PARAM));
+    String billGroupName = getScriptTemplate().getParameterValue(GROUP_NAME_PARAM);
+    if(StringUtils.isNotEmpty(billGroupName)) {
+        DeviceGroup group = deviceGroupService.resolveGroupName(billGroupName);
+        TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getBillingGroupTree().getModel().getRoot(), group);
+        getBillingGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
+        getBillingGroupTree().makeVisible(pathForGroup);
     }
     
     //This must be set after the billingGroupTypeComboBox is set, then we have the group values for the correct type loaded
-    getBillingGroupComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_NAME_PARAM));
+    getBillingGroupComboBox().setSelectedItem(getScriptTemplate().getParameterValue(BILLING_GROUP_NAME_PARAM));
     
     //Notification setup
-    enableContainer(getNotificationPanel(), Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(NOTIFICATION_FLAG_PARAM)).booleanValue());
-    getSendEmailCheckBox().setSelected(Boolean.valueOf((String)getScriptTemplate().getParamToValueMap().get(NOTIFICATION_FLAG_PARAM)).booleanValue());
-    getMessageSubjectTextField().setText((String)getScriptTemplate().getParamToValueMap().get(EMAIL_SUBJECT_PARAM));
-    getNotifyGroupComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(NOTIFY_GROUP_PARAM));
+    enableContainer(getNotificationPanel(), Boolean.valueOf(getScriptTemplate().getParameterValue(NOTIFICATION_FLAG_PARAM)).booleanValue());
+    getSendEmailCheckBox().setSelected(Boolean.valueOf(getScriptTemplate().getParameterValue(NOTIFICATION_FLAG_PARAM)).booleanValue());
+    getMessageSubjectTextField().setText(getScriptTemplate().getParameterValue(EMAIL_SUBJECT_PARAM));
+    getNotifyGroupComboBox().setSelectedItem(getScriptTemplate().getParameterValue(NOTIFY_GROUP_PARAM));
     
     //IED panel setup
-    String frozen = ((String)getScriptTemplate().getParamToValueMap().get(READ_FROZEN_PARAM));
+    String frozen = (getScriptTemplate().getParameterValue(READ_FROZEN_PARAM));
 	if(frozen.length() > 0)
 	{
 		if( frozen.indexOf("72") > 0)	//we have an alpha command (this way we don't have to have the register be exact (0 vs 00)
@@ -2299,11 +2217,12 @@ private void initSwingCompValues()
 			getS4FrozenRegisterCheckBox().setSelected(true);
 		
 	}
-    getDemandResetSpinBox().setValue(Integer.valueOf((String)getScriptTemplate().getParamToValueMap().get(RESET_COUNT_PARAM)));
-    getTOURateComboBox().setSelectedItem((String)getScriptTemplate().getParamToValueMap().get(TOU_RATE_PARAM));
+    getDemandResetSpinBox().setValue(Integer.valueOf(getScriptTemplate().getParameterValue(RESET_COUNT_PARAM)));
+    getTOURateComboBox().setSelectedItem(getScriptTemplate().getParameterValue(TOU_RATE_PARAM));
     
     CTILogger.info("Set swing component values");
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -2320,6 +2239,7 @@ public boolean isInputValid()
 
 	return true;
 }
+
 /* (non-Javadoc)
  * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
  */
@@ -2330,42 +2250,42 @@ public void itemStateChanged(ItemEvent e)
 	{
 	    boolean selected = e.getStateChange() == ItemEvent.SELECTED;
 		enableContainer(getBillingPanel(), selected);
-		getScriptTemplate().getParamToValueMap().put(BILLING_FLAG_PARAM, String.valueOf(selected));
+		getScriptTemplate().setParameterValue(BILLING_FLAG_PARAM, String.valueOf(selected));
 	}
 	else if( e.getSource() == getSendEmailCheckBox())
 	{
 	    boolean selected = e.getStateChange() == ItemEvent.SELECTED;
 		enableContainer(getNotificationPanel(), selected);
-		getScriptTemplate().getParamToValueMap().put(NOTIFICATION_FLAG_PARAM, String.valueOf(selected));
+		getScriptTemplate().setParameterValue(NOTIFICATION_FLAG_PARAM, String.valueOf(selected));
 	}
 	else if(e.getSource() == getAlphaFrozenRegisterCheckBox())
 	{
 	    if( e.getStateChange() == ItemEvent.SELECTED)
-	        getScriptTemplate().getParamToValueMap().put(READ_FROZEN_PARAM, READ_FROZEN_ALPHA_COMMAND_STRING);
+	        getScriptTemplate().setParameterValue(READ_FROZEN_PARAM, ScriptTemplate.READ_FROZEN_ALPHA_COMMAND_STRING);
 	    else
-	        getScriptTemplate().getParamToValueMap().put(READ_FROZEN_PARAM, "");
+	        getScriptTemplate().setParameterValue(READ_FROZEN_PARAM, "");
 	}
 	else if(e.getSource() == getS4FrozenRegisterCheckBox())
 	{
 		if( e.getStateChange() == ItemEvent.SELECTED)
-			getScriptTemplate().getParamToValueMap().put(READ_FROZEN_PARAM, READ_FROZEN_S4_COMMAND_STRING);
+			getScriptTemplate().setParameterValue(READ_FROZEN_PARAM, ScriptTemplate.READ_FROZEN_S4_COMMAND_STRING);
 		else
-			getScriptTemplate().getParamToValueMap().put(READ_FROZEN_PARAM, "");
+			getScriptTemplate().setParameterValue(READ_FROZEN_PARAM, "");
 	}	
 	fireInputUpdate();	
 }
-/**
- * Comment
- */
+
 public void jButtonCheckScript_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	CTILogger.info("Check script is not implemented");
 	
 	return;
 }
+
 public void keyPressed(java.awt.event.KeyEvent e) 
 {
 }
+
 /**
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
@@ -2374,6 +2294,7 @@ public void keyReleased(java.awt.event.KeyEvent e)
 {
 	fireInputUpdate();
 }
+
 /**
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
@@ -2381,6 +2302,7 @@ public void keyReleased(java.awt.event.KeyEvent e)
 public void keyTyped(java.awt.event.KeyEvent e) 
 {
 }
+
 /**
  * 
  */
@@ -2393,47 +2315,48 @@ private void loadParamMapFromSwingComp()
 	String fileName = getScriptNameTextField().getText();
 	if (!fileName.endsWith(".ctl"))
 	    fileName += ".ctl";
-    getScriptTemplate().getParamToValueMap().put(SCRIPT_FILE_NAME_PARAM, fileName);
-    getScriptTemplate().getParamToValueMap().put(SCRIPT_DESC_PARAM, getDescriptionTextField().getText());
+    getScriptTemplate().setParameterValue(SCRIPT_FILE_NAME_PARAM, fileName);
+    getScriptTemplate().setParameterValue(SCRIPT_DESC_PARAM, getDescriptionTextField().getText());
     DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
-    DeviceGroup group = modelFactory.getGroupForPath(getMeterReadGroupList().getSelectionPath());
-    getScriptTemplate().getParamToValueMap().put(GROUP_NAME_PARAM, group.getFullName());
+    DeviceGroup group = modelFactory.getGroupForPath(getMeterReadGroupTree().getSelectionPath());
+    getScriptTemplate().setParameterValue(GROUP_NAME_PARAM, group.getFullName());
 
-    getScriptTemplate().getParamToValueMap().put(PORTER_TIMEOUT_PARAM, getPorterTimeoutTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(FILE_PATH_PARAM, getFilePathTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(MISSED_FILE_NAME_PARAM, getMissedFileNameTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(SUCCESS_FILE_NAME_PARAM, getSuccessFileNameTextField().getText());
+    getScriptTemplate().setParameterValue(PORTER_TIMEOUT_PARAM, getPorterTimeoutTextField().getText());
+    getScriptTemplate().setParameterValue(FILE_PATH_PARAM, getFilePathTextField().getText());
+    getScriptTemplate().setParameterValue(MISSED_FILE_NAME_PARAM, getMissedFileNameTextField().getText());
+    getScriptTemplate().setParameterValue(SUCCESS_FILE_NAME_PARAM, getSuccessFileNameTextField().getText());
 
     //Billing in script
-    getScriptTemplate().getParamToValueMap().put(BILLING_FLAG_PARAM, String.valueOf(getGenerateBillingCheckBox().isSelected()).toString());
-    getScriptTemplate().getParamToValueMap().put(BILLING_FILE_NAME_PARAM, getBillingFileNameTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(BILLING_FILE_PATH_PARAM, getBillingFilePathTextBox().getText());
-    getScriptTemplate().getParamToValueMap().put(BILLING_FORMAT_PARAM, getBillingFormatComboBox().getSelectedItem().toString());
-    getScriptTemplate().getParamToValueMap().put(BILLING_ENERGY_DAYS_PARAM, getEnergyDaysTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(BILLING_DEMAND_DAYS_PARAM, getDemandDaysTextField().getText());
+    getScriptTemplate().setParameterValue(BILLING_FLAG_PARAM, String.valueOf(getGenerateBillingCheckBox().isSelected()).toString());
+    getScriptTemplate().setParameterValue(BILLING_FILE_NAME_PARAM, getBillingFileNameTextField().getText());
+    getScriptTemplate().setParameterValue(BILLING_FILE_PATH_PARAM, getBillingFilePathTextBox().getText());
+    getScriptTemplate().setParameterValue(BILLING_FORMAT_PARAM, getBillingFormatComboBox().getSelectedItem().toString());
+    getScriptTemplate().setParameterValue(BILLING_ENERGY_DAYS_PARAM, getEnergyDaysTextField().getText());
+    getScriptTemplate().setParameterValue(BILLING_DEMAND_DAYS_PARAM, getDemandDaysTextField().getText());
 
-    if(getOptionsGroupList().getSelectionPath() != null && ((TreeNode)getOptionsGroupList().getSelectionPath().getLastPathComponent()).isLeaf()) {
-        DeviceGroup billingGroup = modelFactory.getGroupForPath(getOptionsGroupList().getSelectionPath());
-        getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_NAME_PARAM, billingGroup.getFullName());
+    if(getBillingGroupTree().getSelectionPath() != null && ((TreeNode)getBillingGroupTree().getSelectionPath().getLastPathComponent()).isLeaf()) {
+        DeviceGroup billingGroup = modelFactory.getGroupForPath(getBillingGroupTree().getSelectionPath());
+        getScriptTemplate().setParameterValue(BILLING_GROUP_NAME_PARAM, billingGroup.getFullName());
     }
     
     //Notification in script
-    getScriptTemplate().getParamToValueMap().put(NOTIFICATION_FLAG_PARAM, String.valueOf(getSendEmailCheckBox().isSelected()).toString());
+    getScriptTemplate().setParameterValue(NOTIFICATION_FLAG_PARAM, String.valueOf(getSendEmailCheckBox().isSelected()).toString());
     if (getNotifyGroupComboBox().getSelectedItem() != null)
-    	getScriptTemplate().getParamToValueMap().put(NOTIFY_GROUP_PARAM, getNotifyGroupComboBox().getSelectedItem().toString());
-    getScriptTemplate().getParamToValueMap().put(EMAIL_SUBJECT_PARAM, getMessageSubjectTextField().getText());
+    	getScriptTemplate().setParameterValue(NOTIFY_GROUP_PARAM, getNotifyGroupComboBox().getSelectedItem().toString());
+    getScriptTemplate().setParameterValue(EMAIL_SUBJECT_PARAM, getMessageSubjectTextField().getText());
     //Multiple reads script (one with retries)
-    getScriptTemplate().getParamToValueMap().put(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())).toString());
-    getScriptTemplate().getParamToValueMap().put(RETRY_COUNT_PARAM, getRetryCountTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(QUEUE_OFF_COUNT_PARAM, getQueueOffCountTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(MAX_RETRY_HOURS_PARAM, getMaxRetryHoursTextField().getText());
+    getScriptTemplate().setParameterValue(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())).toString());
+    getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, getRetryCountTextField().getText());
+    getScriptTemplate().setParameterValue(QUEUE_OFF_COUNT_PARAM, getQueueOffCountTextField().getText());
+    getScriptTemplate().setParameterValue(MAX_RETRY_HOURS_PARAM, getMaxRetryHoursTextField().getText());
     //IED read script
-    getScriptTemplate().getParamToValueMap().put(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())).toString());
-    getScriptTemplate().getParamToValueMap().put(TOU_RATE_PARAM, getTOURateComboBox().getSelectedItem().toString());
-    getScriptTemplate().getParamToValueMap().put(RESET_COUNT_PARAM, getDemandResetSpinBox().getValue().toString());
+    getScriptTemplate().setParameterValue(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())).toString());
+    getScriptTemplate().setParameterValue(TOU_RATE_PARAM, getTOURateComboBox().getSelectedItem().toString());
+    getScriptTemplate().setParameterValue(RESET_COUNT_PARAM, getDemandResetSpinBox().getValue().toString());
     
     CTILogger.info("Loaded parameter map based on swing components.");
 }
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -2460,6 +2383,7 @@ public static void main(java.lang.String[] args) {
 		CTILogger.error( exception.getMessage(), exception );;
 	}
 }
+
 /**
  * @param string
  */
@@ -2467,6 +2391,7 @@ public void setScriptNameText(String name)
 {
     getScriptNameTextField().setText(name);
 }
+
 /**
  * @param scriptParams The scriptParams to set.
  */
@@ -2474,6 +2399,7 @@ public void setScriptTemplate(ScriptTemplate scriptTemplate)
 {
     this.scriptTemplate = scriptTemplate;
 }
+
 /**
  * @param mainCode The mainCode to set.
  */
@@ -2481,12 +2407,7 @@ public void setScriptText(String text)
 {
     this.scriptText = text;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/12/2001 5:13:39 PM)
- * @param file com.cannontech.message.macs.message.ScriptFile
- */
-@SuppressWarnings("static-access")
+
 public void setScriptValues(final ScriptFile file) 
 {
 	try
@@ -2502,7 +2423,7 @@ public void setScriptValues(final ScriptFile file)
 			else
 			{
 			    CTILogger.info("		** Sleeping until ScriptEditor isVisible()");
-				Thread.currentThread().sleep(200);
+				Thread.sleep(200);
 			}
 		}
 
@@ -2523,7 +2444,7 @@ public void setScriptValues(final ScriptFile file)
 		@SuppressWarnings("unchecked")
         public void run()
 		{
-			getScriptTemplate().getParamToValueMap().put(SCRIPT_FILE_NAME_PARAM, file.getFileName() );
+			getScriptTemplate().setParameterValue(SCRIPT_FILE_NAME_PARAM, file.getFileName() );
 			setScriptText( file.getFileContents() );
 			
 			//Init the textArea to display the script text.
@@ -2539,6 +2460,7 @@ public void setScriptValues(final ScriptFile file)
 		}
 	});
 }
+
 /**
  * @param templateType The templateType to set.
  */
@@ -2571,6 +2493,7 @@ public void setTemplateType(int templateType)
 
     CTILogger.info("Set TemplateType, component visiblity updated.");
 }
+
 /**
  * This method was created in VisualAge.
  * @param o java.lang.Object
@@ -2591,6 +2514,7 @@ public void setValue(Object o)
 	//getJTextFieldFileName().setText( sched.getScriptFileName() );
 	//getJTextPaneScript().setText( sched.getNonPersistantData().getScript().getFileContents() );
 }
+
 /* (non-Javadoc)
  * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
  */
@@ -2602,8 +2526,8 @@ public void stateChanged(ChangeEvent e)
         getScriptTextArea().setText(getScriptText());
         getScriptTextArea().setCaretPosition(0);
     }
-    // TODO Auto-generated method stub
 }
+
 /* (non-Javadoc)
  * @see com.klg.jclass.util.value.JCValueListener#valueChanged(com.klg.jclass.util.value.JCValueEvent)
  */
@@ -2611,6 +2535,7 @@ public void valueChanged(JCValueEvent arg0)
 {
 	fireInputUpdate();
 }
+
 /* (non-Javadoc)
  * @see com.klg.jclass.util.value.JCValueListener#valueChanging(com.klg.jclass.util.value.JCValueEvent)
  */
@@ -2618,6 +2543,7 @@ public void valueChanging(JCValueEvent arg0)
 {
 	//do nothing	
 }
+
 	/**
 	 * @return
 	 */
@@ -2634,23 +2560,5 @@ public void valueChanging(JCValueEvent arg0)
 	public void setFrozenRegisterGroup(javax.swing.ButtonGroup group)
 	{
 		frozenRegisterGroup = group;
-	}
-	
-	public void loadGroupComboBox(javax.swing.JComboBox comboBox, int groupType) {
-		comboBox.removeAllItems();
-		String [] groups = null;
-		try {
-			if( groupType == DeviceMeterGroup.TEST_COLLECTION_GROUP) {
-					groups = DeviceMeterGroup.getDeviceTestCollectionGroups();
-			} else if (groupType == DeviceMeterGroup.BILLING_GROUP) {
-				groups = DeviceMeterGroup.getDeviceBillingGroups();
-			} else {
-				groups = DeviceMeterGroup.getDeviceCollectionGroups();
-			}
-			for (int i = 0; i < groups.length; i++)
-				comboBox.addItem(groups[i]);
-		} catch (SQLException e1) {
-			CTILogger.error(e1);
-		}
 	}
 }

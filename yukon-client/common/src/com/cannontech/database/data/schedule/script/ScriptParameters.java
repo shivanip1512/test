@@ -12,63 +12,66 @@ package com.cannontech.database.data.schedule.script;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public interface ScriptParameters
+public enum ScriptParameters
 {
-    public static final String COMMENT = "#";
-    public static final String ENDLINE = "\r\n";
-    public static final String SET = "set ";
-
-    //Strings for code block comments
-    public static final String START = "START_";
-    public static final String END = "END_";
-    
-    public static final String HEADER = "HEADER";
-    public static final String PARAMETER_LIST = "PARAMETER_LIST";
-    public static final String MAIN_CODE = "MAIN_CODE";
-    public static final String NOTIFICATION = "NOTIFICATION";
-    public static final String BILLING = "BILLING";
-    public static final String FOOTER = "FOOTER";
-
     /** Strings for the file parameters, allows us to re/generate or edit an existing file*/
     /** When adding new parameters, please add set default value and a description text in paramToValueMap and paramToDescMap getters*/
-    public static final String SCHEDULE_NAME_PARAM = "ScheduleName";
-    public static final String SCRIPT_FILE_NAME_PARAM = "ScriptFileName";
-    public static final String SCRIPT_DESC_PARAM = "ScriptDescription";
-    public static final String GROUP_NAME_PARAM = "GroupName";
-    public static final String GROUP_TYPE_PARAM = "GroupType";
-    public static final String PORTER_TIMEOUT_PARAM = "PorterTimeout";
-    public static final String FILE_PATH_PARAM = "FilePath";
-    public static final String MISSED_FILE_NAME_PARAM = "MissedFileName";
-    public static final String SUCCESS_FILE_NAME_PARAM = "SuccessFileName";
+    SCHEDULE_NAME_PARAM("ScheduleName"),
+    SCRIPT_FILE_NAME_PARAM("ScriptFileName"),
+    SCRIPT_DESC_PARAM("ScriptDescription"),
+    GROUP_NAME_PARAM("GroupName"),
+    GROUP_TYPE_PARAM("GroupType"), // this isn't so much a group as a keyword now
+    PORTER_TIMEOUT_PARAM("PorterTimeout"),
+    FILE_PATH_PARAM("FilePath"),
+    MISSED_FILE_NAME_PARAM("MissedFileName"),
+    SUCCESS_FILE_NAME_PARAM("SuccessFileName"),
     
     //Notification parameters
-    public static final String NOTIFICATION_FLAG_PARAM = "NotificationFlag";
-    public static final String NOTIFY_GROUP_PARAM = "NotifyGroup";
-    public static final String EMAIL_SUBJECT_PARAM = "EmailSubject";
+    NOTIFICATION_FLAG_PARAM("NotificationFlag"),
+    NOTIFY_GROUP_PARAM("NotifyGroup"),
+    EMAIL_SUBJECT_PARAM("EmailSubject"),
     
     //Retry (within a read script by collectiongroup, not a retry read of a list)
-    public static final String READ_WITH_RETRY_FLAG_PARAM = "ReadWithRetryFlag";
-    public static final String RETRY_COUNT_PARAM = "RetryCount";
-    public static final String QUEUE_OFF_COUNT_PARAM = "QueueOffCount";
-    public static final String MAX_RETRY_HOURS_PARAM = "MaxRetryHours";
+    READ_WITH_RETRY_FLAG_PARAM("ReadWithRetryFlag"),
+    RETRY_COUNT_PARAM("RetryCount"),
+    QUEUE_OFF_COUNT_PARAM("QueueOffCount"),
+    MAX_RETRY_HOURS_PARAM("MaxRetryHours"),
     
     //Billing parameters
-    public static final String BILLING_FLAG_PARAM = "BillingFlag";
-    public static final String BILLING_FILE_NAME_PARAM = "BillingFileName";
-    public static final String BILLING_FILE_PATH_PARAM = "BillingFilePath";
-    public static final String BILLING_FORMAT_PARAM = "BillingFormat";
-    public static final String BILLING_GROUP_TYPE_PARAM = "BillingGroupType";
-    public static final String BILLING_ENERGY_DAYS_PARAM = "BillingEnergyDays";
-    public static final String BILLING_DEMAND_DAYS_PARAM = "BillingDemandDays";
-    public static final String BILLING_GROUP_NAME_PARAM = "BillGroupName";
+    BILLING_FLAG_PARAM("BillingFlag"),
+    BILLING_FILE_NAME_PARAM("BillingFileName"),
+    BILLING_FILE_PATH_PARAM("BillingFilePath"),
+    BILLING_FORMAT_PARAM("BillingFormat"),
+    BILLING_GROUP_TYPE_PARAM("BillingGroupType"), // this isn't so much a group as a keyword now
+    BILLING_ENERGY_DAYS_PARAM("BillingEnergyDays"),
+    BILLING_DEMAND_DAYS_PARAM("BillingDemandDays"),
+    BILLING_GROUP_NAME_PARAM("BillGroupName"),
     
     //IED parameters
-    public static final String IED_FLAG_PARAM = "IEDFlag";
-    public static final String TOU_RATE_PARAM = "TOURate";
-    public static final String RESET_COUNT_PARAM = "ResetCount";
-    public static final String READ_FROZEN_PARAM = "ReadFrozen";    
+    IED_FLAG_PARAM("IEDFlag"),
+    TOU_RATE_PARAM("TOURate"),
+    RESET_COUNT_PARAM("ResetCount"),
+    READ_FROZEN_PARAM("ReadFrozen"),    
+    ;
+    
+    private final String value;
 
-    //VERY CUSTOM, string command to Read Frozen 
-    public static final String READ_FROZEN_ALPHA_COMMAND_STRING = "putconfig emetcon ied class 72 02";
-	public static final String READ_FROZEN_S4_COMMAND_STRING = "putconfig emetcon ied class 0 1";
+    private ScriptParameters(String value) {
+        this.value = value;
+    }
+    
+    public static ScriptParameters lookup(String value) {
+        ScriptParameters[] parameters = ScriptParameters.values();
+        for (ScriptParameters parameter : parameters) {
+            if (parameter.value.equals(value)) {
+                return parameter;
+            }
+        }
+        throw new IllegalArgumentException("Can't find a value for: " + value);
+    }
+    
+    @Override
+    public String toString() {
+        return value;
+    }
 }
