@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
@@ -38,6 +39,11 @@ public class StaticDeviceGroupProvider extends DeviceGroupDaoBase {
     public DeviceGroup getRootGroup() {
         StoredDeviceGroup rootGroup = deviceGroupEditorDao.getRootGroup();
         return rootGroup;
+    }
+    
+    public Set<? extends DeviceGroup> getGroups(YukonDevice device) {
+        Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroups(device);
+        return groups;
     }
     
     @Required

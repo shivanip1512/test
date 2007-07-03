@@ -1,9 +1,13 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -105,6 +109,37 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         jdbcTemplate.update(sql.toString(), group.getId());
         
         addDevices(group, devices);
+    }
+    
+    public Set<StoredDeviceGroup> getGroups(YukonDevice device) {
+        ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
+        return getGroups(device, mapper);
+    }
+    
+    @Transactional(propagation=Propagation.REQUIRED)
+    public Set<StoredDeviceGroup> getGroups(YukonDevice device, ResolvingDeviceGroupRowMapper mapper) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroupMember dgm");
+        sql.append("join DeviceGroup dg on dg.devicegroupid = dgm.devicegroupid");
+        sql.append("where dgm.yukonpaoid = ?");
+        List<StoredDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, device.getDeviceId());
+        return new HashSet<StoredDeviceGroup>(groups);
+    }
+    
+    public StoredDeviceGroup getGroupById(int groupId) {
+        ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
+        return getGroupById(groupId, mapper);
+    }
+    
+    @Transactional(propagation=Propagation.REQUIRED)
+    public StoredDeviceGroup getGroupById(int groupId, ResolvingDeviceGroupRowMapper mapper) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroup dg");
+        sql.append("where dg.devicegroupid = ?");
+        StoredDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, groupId);
+        return group;
     }
     
     @Required

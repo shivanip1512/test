@@ -10,4 +10,5 @@ public interface DeviceGroupEditorDao {
     public List<StoredDeviceGroup> getChildGroups(StoredDeviceGroup group);
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName);
     public void removeGroup(StoredDeviceGroup group);
+    public StoredDeviceGroup getGroupById(int groupId);
 }

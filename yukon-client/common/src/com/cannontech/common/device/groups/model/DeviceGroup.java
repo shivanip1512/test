@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.model;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -34,6 +35,22 @@ public class DeviceGroup {
         } else {
             return getParent().getFullName() + "/" + getName();
         }
+    }
+    
+    public boolean isDescendantOf(DeviceGroup possibleParent) {
+        if (isChildOf(possibleParent)) {
+            return true;
+        } else if (parent == null) {
+            return false;
+        } else {
+            return parent.isDescendantOf(possibleParent);
+        }
+    }
+    
+    public boolean isChildOf(DeviceGroup possibleParent) {
+        Validate.notNull(possibleParent);
+        boolean equals = possibleParent.equals(parent);
+        return equals;
     }
 
     @Override

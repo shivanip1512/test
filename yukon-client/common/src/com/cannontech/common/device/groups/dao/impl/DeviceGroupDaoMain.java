@@ -2,8 +2,10 @@ package com.cannontech.common.device.groups.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -50,6 +52,16 @@ public class DeviceGroupDaoMain implements DeviceGroupDao {
         List<DeviceGroup> result = new ArrayList<DeviceGroup>(10);
         collectChildGroups(result, getRootGroup());
         
+        return result;
+    }
+    
+    public Set<? extends DeviceGroup> getGroups(YukonDevice device) {
+        Set<DeviceGroup> result = new HashSet<DeviceGroup>();
+        
+        for (DeviceGroupProvider provider : providers.values()) {
+            Set<? extends DeviceGroup> groups = provider.getGroups(device);
+            result.addAll(groups);
+        }
         return result;
     }
     

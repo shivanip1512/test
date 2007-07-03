@@ -86,7 +86,21 @@ public class FixedDeviceGroupingHack {
         
     }
     
-    public String getGroupForDevice(FixedDeviceGroups group, YukonDevice device) {
+    /**
+     * Returns the name (not full name) of the first group directly under fixedGroup
+     * that contains device.
+     * @param fixedGroup
+     * @param device
+     * @return
+     */
+    public String getGroupForDevice(FixedDeviceGroups fixedGroup, YukonDevice device) {
+        StoredDeviceGroup parentGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fixedGroup.getPrefix());
+        Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroups(device);
+        for (StoredDeviceGroup aGroup : groups) {
+            if (aGroup.isChildOf(parentGroup)) {
+                return aGroup.getName();
+            }
+        }
         return null;
     }
     

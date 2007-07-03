@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -13,4 +14,5 @@ public interface DeviceGroupProvider {
     public List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
     public List<YukonDevice> getChildDevices(DeviceGroup group);
     public DeviceGroup getGroup(DeviceGroup base, String groupName) throws NotFoundException;
+    public Set<? extends DeviceGroup> getGroups(YukonDevice device);
 }
