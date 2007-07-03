@@ -22,13 +22,15 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
+import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, ItemListener
@@ -53,38 +55,24 @@ public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSe
 	private static OkCancelDialog dialog = null;
 	
 
-/**
- * TreeViewPanel constructor comment.
- */
+
 public TreeViewPanel() {
 	super();
 	initialize();
 }
 
-/**
- * This method was created in VisualAge.
- * @param l java.awt.event.ItemListener
- */
 public void addItemListener(ItemListener l) {
 	itemListeners.addElement(l);
 }
-/**
- * This method was created in VisualAge.
- * @param listener javax.swing.event.TreeSelectionListener
- */
+
 public void addTreeSelectionListener(TreeSelectionListener listener) {
 	getTree().addTreeSelectionListener( listener );
 }
-/**
- * This method was created in VisualAge.
- */
+
 public void clearSelection() {
 	getTree().getSelectionModel().clearSelection();
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:19:25 PM)
- */
+
 private void expandRoot() 
 {
 	TreeNode rootNode = (TreeNode) getCurrentTreeModel().getRoot();
@@ -94,27 +82,17 @@ private void expandRoot()
 	pathToExpand[0] = rootNode;
 	getTree().expandPath( new TreePath(pathToExpand) );	
 }
-/**
- * This method was created in VisualAge.
- * @param e java.awt.event.ItemEvent
- */
+
 protected void fireItemEvent(ItemEvent e) {
 	for( int i = itemListeners.size() - 1; i >= 0; i-- )
 		((ItemListener) itemListeners.elementAt(i)).itemStateChanged(e);
 } 
-/**
- * Insert the method's description here.
- * Creation date: (4/19/2002 12:54:50 PM)
- * @return com.cannontech.database.model.LiteBaseTreeModel
- */
+
 private LiteBaseTreeModel getCurrentTreeModel() 
 {
 	return (LiteBaseTreeModel)getTree().getModel();
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Object[]
- */
+
 public Object getSelectedItem() {
 	TreePath path = getTree().getSelectionPath();
 	
@@ -127,10 +105,7 @@ public Object getSelectedItem() {
 		return null;
 	
 }
-/**
- * This method was created in VisualAge.
- * @return javax.swing.tree.DefaultMutableTreeNode
- */
+
 public DefaultMutableTreeNode getSelectedNode() {
 	TreePath path = getTree().getSelectionPath();
 	
@@ -142,10 +117,7 @@ public DefaultMutableTreeNode getSelectedNode() {
 	else
 		return null;
 }
-/**
- * This method was created in VisualAge.
- * @return javax.swing.tree.DefaultMutableTreeNode
- */
+
 public DefaultMutableTreeNode[] getSelectedNodes() 
 {
 	TreePath[] path = getTree().getSelectionPaths();	
@@ -164,26 +136,17 @@ public DefaultMutableTreeNode[] getSelectedNodes()
 	else
 		return null;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Object[]
- */
+
 public Object[] getSelectedObjects() {
 	Object[] items = new Object[1];
 	items[0] = getSelectedNode();
 	return items;
 }
-/**
- * This method was created in VisualAge.
- * @return javax.swing.tree.TreeModel
- */
-public TreeModel getSelectedTreeModel() {
-	return (TreeModel) getSortBySelection();
+
+public LiteBaseTreeModel getSelectedTreeModel() {
+	return (LiteBaseTreeModel) getSortByComboBox().getSelectedItem();
 }
-/**
- * This method was created in VisualAge.
- * @return javax.swing.JComboBox
- */
+
 public JComboBox getSortByComboBox() 
 {
 
@@ -196,10 +159,7 @@ public JComboBox getSortByComboBox()
 
 	return sortByComboBox;
 }
-/**
- * This method was created in VisualAge.
- * @return javax.swing.JLabel
- */
+
 private JLabel getSortByLabel() {
 	
 	if( sortByLabel == null )
@@ -210,23 +170,15 @@ private JLabel getSortByLabel() {
 		
 	return sortByLabel;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Object
- */
-public Object getSortBySelection() {
-	return getSortByComboBox().getSelectedItem();
-}
-/**
- * This method was created in VisualAge.
- * @return javax.swing.JTree
- */
+
 public JTree getTree() 
 {
 	if( tree == null )
 	{		
-		tree = new JTree( 
-			new com.cannontech.database.model.NullDBTreeModel() );
+		CustomRenderJTree customTree = new CustomRenderJTree(); 
+        customTree.setModel(new NullDBTreeModel());
+        customTree.addRenderer(new DeviceGroupRenderer());
+        tree = customTree;
 
 		//this removes the automatic expand/collapse from our tree
 		tree.setUI(new BasicTreeUI() 
@@ -243,17 +195,11 @@ public JTree getTree()
 
 	return tree;
 }
-/**
- * This method was created in VisualAge.
- * @return LiteBaseTreeModel[]
- */
+
 public LiteBaseTreeModel[] getTreeModels() {
 	return treeModels;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/25/2002 12:23:32 PM)
- */
+
 private void initConnections() 
 {
 	getSortByComboBox().addItemListener(this);
@@ -349,9 +295,6 @@ private void initConnections()
 		
 }
 
-/**
- * This method was created in VisualAge.
- */
 private void initialize() {
 
 	setLayout( new java.awt.BorderLayout() );
@@ -396,10 +339,7 @@ private void initialize() {
 		
 	initConnections();
 }
-/**
- * This method was created in VisualAge.
- * @param event java.awt.event.ItemEvent
- */
+
 public void itemStateChanged(ItemEvent event) {
 
 	if( event.getStateChange() == ItemEvent.SELECTED )
@@ -453,39 +393,24 @@ com.cannontech.clientutils.CTILogger.info(
 		
 	}
 }
-/**
- * This method was created in VisualAge.
- */
+
 public void refresh() 
 {
 	getCurrentTreeModel().update();
 }
-/**
- * This method was created in VisualAge.
- * @param l java.awt.event.ItemListener
- */
+
 public void removeItemListener(ItemListener l)  {
 	itemListeners.removeElement(l);
 }
-/**
- * This method was created in VisualAge.
- * @param l javax.swing.event.TreeExpansionListener
- */
+
 public void removeTreeExpansionListener(TreeExpansionListener l) {
 	getTree().removeTreeExpansionListener(l);
 }
-/**
- * This method was created in VisualAge.
- * @param e TreeSelectionEvent
- */
+
 public void removeTreeSelectionListener(TreeSelectionListener l) {
 	getTree().removeTreeSelectionListener(l);
 }
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param val java.lang.Object
- */
+
 public boolean searchFirstLevelString(String val)
 {
 	if( val == null || val.length() <= 0 )
@@ -539,9 +464,7 @@ public boolean selectByString(String str)
 		
 	return false;	
 }
-/**
- * This method was created in VisualAge.
- */
+
 public boolean selectLiteBase(TreePath path, LiteBase lBase ) 
 {
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
@@ -580,6 +503,7 @@ public boolean selectLiteBase(TreePath path, LiteBase lBase )
 	
 		
 }
+
 /**
  * This method will select objects looking in current tree model first
  */
@@ -619,6 +543,7 @@ public void selectLiteObject(com.cannontech.database.data.lite.LiteBase liteObj)
 		}
 	}
 }
+
 /**
  * This method will select objects looking in current tree model first
  */
@@ -659,11 +584,7 @@ public void selectObject(com.cannontech.database.db.DBPersistent obj) {
 		}
 	}
 }
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param val java.lang.Object
- */
+
 private boolean selectString(String val, TreePath path) {
 
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
@@ -703,18 +624,12 @@ private boolean selectString(String val, TreePath path) {
 	
 		
 }
-/**
- * This method was created in VisualAge.
- * @param int
- */
+
 public void setSelectedSortByIndex(int indx)
 {
 	getSortByComboBox().setSelectedIndex( indx );
 }
-/**
- * This method was created in VisualAge.
- * @param models javax.swing.tree.TreeModel[]
- */
+
 public void setTreeModels(LiteBaseTreeModel[] models) 
 {
 	treeModels = models;
@@ -737,18 +652,13 @@ public void setTreeModels(LiteBaseTreeModel[] models)
 		getTree().setModel( new com.cannontech.database.model.NullDBTreeModel() );
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:55:28 PM)
- * @param changeType int
- */
+
 public void treeObjectDelete( LiteBase lb )
 {
 	getCurrentTreeModel().removeTreeObject( lb );
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:55:28 PM)
  * @param changeType int
  * @return boolean true if the LiteBase object is found in the current model
  */
@@ -759,26 +669,14 @@ public boolean treeObjectInsert( LiteBase lb )
 	
 	return getCurrentTreeModel().insertTreeObject( lb );
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:55:28 PM)
- * @param changeType int
- */
+
 public void treeObjectUpdated( LiteBase lb )
 {
 	getCurrentTreeModel().updateTreeObject( lb );
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/25/2002 12:19:42 PM)
- * @param event javax.swing.event.TreeExpansionEvent
- */
+
 public void treeWillCollapse(TreeExpansionEvent event) {}
-/**
- * Insert the method's description here.
- * Creation date: (4/25/2002 12:19:42 PM)
- * @param event javax.swing.event.TreeExpansionEvent
- */
+
 public void treeWillExpand(TreeExpansionEvent event) 
 {
 
@@ -791,10 +689,7 @@ public void treeWillExpand(TreeExpansionEvent event)
 	}
 
 }
-/**
- * This method was created in VisualAge.
- * @param val boolean
- */
+
 public void undoLastSelection(boolean val) {
 	this.undoLastSelection = val;
 }

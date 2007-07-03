@@ -1,4 +1,10 @@
 package com.cannontech.database.model;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang.Validate;
+
 /**
  * This type was created in VisualAge.
  */
@@ -113,8 +119,8 @@ public final class ModelFactory
 		DeviceTree_CustomPointsModel.class,
 		HolidayScheduleModel.class,
 		DeviceMeterGroupModel.class,
-		CollectionGroupModel.class,
-		TestCollectionGroupModel.class,
+		null,
+		null,
 /*27*/CapControlFeederModel.class,
 	  	MCTBroadcastGroupTreeModel.class,
 	  	LoginTreeModel.class,
@@ -145,7 +151,7 @@ public final class ModelFactory
 		LMGroupMacroModel.class,
 		TOUScheduleModel.class,
 		CBCOrderByTreeModel.class,
-		BillingGroupModel.class,
+		null,
 		ReceiverTreeModel.class,
         SystemDeviceModel.class,
 /* 60*/ DeviceConfigurationTreeModel.class,         
@@ -181,8 +187,8 @@ public final class ModelFactory
 		"Device - CustomPoints",	//overridden value in class.toString()
 		"Holiday Schedule",
 		"Meter Number",
-		"Collection Group",
-		"Alternate Group",
+		null,
+		null,
 /*27*/	"Cap Feeders",
 		"MCT Broadcast",
 		"Login",
@@ -196,7 +202,7 @@ public final class ModelFactory
 		"Device",
 		"Transmitter",
 		"Comm Channels",
-		"Collection Group",
+		null,
 		"Constraint",
 /* 42*/	"Scenario",
 		"Versacom Serial",
@@ -267,11 +273,12 @@ public static DBTreeModel create(int type) {
 	 * and return the typeToStringMap value for that same index.
 	 * @return
 	 */
-	public static String getModelString(Class model)
+	public static String getModelString(Class<? extends DBTreeModel> model)
 	{
+        Validate.notNull(model);
 	    for (int i = 0; i < typeToClassMap.length; i++)
 	    {
-	        if( model.toString().equalsIgnoreCase(typeToClassMap[i].toString()))
+	        if( model.equals(typeToClassMap[i]))
 	            return getModelString(i);
 	    }
 	    return "Unknown";
@@ -284,18 +291,21 @@ public static DBTreeModel create(int type) {
 	    return typeToStringMap[modelType];
 	}
 	
+    private static final Set<Class<? extends LiteBaseTreeModel>> editableSerialClasses = new HashSet<Class<? extends LiteBaseTreeModel>>();
+    {
+        editableSerialClasses.add(EditableSA205Model.class);
+        editableSerialClasses.add(EditableSA305Model.class);
+        editableSerialClasses.add(EditableVersacomModel.class);
+        editableSerialClasses.add(EditableExpresscomModel.class);
+        editableSerialClasses.add(EditableLCRSerialModel.class);
+    }
+
 	/**
 	 * @param type
 	 * @return
 	 */
-	public static boolean isEditableSerial(int type)
+	public static boolean isEditableSerial(Class<? extends LiteBaseTreeModel> model)
 	{
-		if( type == EDITABLE_SA205_SERIAL ||
-			type == EDITABLE_SA305_SERIAL || 
-			type == EDITABLE_VERSACOM_SERIAL || 
-			type == EDITABLE_EXPRESSCOM_SERIAL || 
-			type == EDITABLE_LCR_SERIAL)
-				return true;
-		return false; 
+	    return editableSerialClasses.contains(model);
 	}
 }

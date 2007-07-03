@@ -11,8 +11,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -21,6 +24,9 @@ import javax.swing.Timer;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
@@ -50,8 +56,9 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.Device;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.ModelFactory;
+import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -61,6 +68,7 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ColorUtil;
 import com.cannontech.yc.MessageType;
+import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -104,7 +112,7 @@ public class YC extends Observable implements MessageListener
 	/** selected routeid, used for serialNumber commands or for some loop commands*/
 	private int routeID = -1;
 	/** Selected tree model type. Refer to com.cannontech.database.model.* for valid models. */
-	private int modelType = 0;
+	private Class<? extends LiteBaseTreeModel> modelType = NullDBTreeModel.class;
 	
 	/** Valid send command modes */ 
 	public static int DEFAULT_MODE = 0;	//send commands with YC addt's (loop, queue, route..)
@@ -198,7 +206,7 @@ public class YC extends Observable implements MessageListener
 		getPilConn().addMessageListener(this);
 	}
 
-    protected IServerConnection getPilConn()
+    protected BasicServerConnection getPilConn()
     {
         return ConnPool.getInstance().getDefPorterConn();        
     }
@@ -206,104 +214,87 @@ public class YC extends Observable implements MessageListener
 	/**
 	 * Execute the command, based on commandMode, selected object type, and YC properties.
 	 */
-	public void executeCommand()
-	{
-		//---------------------------------------------------------------------------------------
-		try
-		{
-			if ( getCommandMode() == CGP_MODE )
-			{
-				porterRequest = new Request( 0, getExecuteCmdsVector().get(0), currentUserMessageID );
-				porterRequest.setPriority(getCommandPriority());
-				getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
-				writeNewRequestToPorter( porterRequest );
-			}
-				
-			else if( getTreeItem() != null )	//must setup the request to send
-			{
-				// Stops the requests from continuing (a.k.a. kills the "loop" command).
-				sendMore = 0;
-					
-				// Device item selected (including other models)
-				if( getTreeItem() instanceof LiteYukonPAObject )
-				{
-					LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
-					setDeviceID(liteYukonPao.getYukonID());
-					handleDevice();
-				}
-				// Meter number item in tree selected.
-				else if( getTreeItem() instanceof LiteDeviceMeterNumber )
-				{
-					LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
-					setDeviceID(ldmn.getLiteID());
-					handleDevice();
-				}		
-				// Serial Number item in tree selected.
-				else if (ModelFactory.isEditableSerial(getModelType()))
-				{
-					handleSerialNumber();
-				}
-				// TestCollectionGroup is selected.
-				else if ( getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
-				{
-					synchronized(YC.this)
-					{
-						Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-						Vector<String> savedVector = (Vector<String>)getExecuteCmdsVector().clone();
-						
-						for ( int i = 0; i < deviceMeterGroupIds.length; i++)
-						{
-							setDeviceID(deviceMeterGroupIds [i].intValue());
-							handleDevice();
-							//clone the vector because handleDevice() removed the command but in truth, it
-							// shouldn't be removed until all of the devices have been looped through.							
-							if( i+1 < deviceMeterGroupIds.length)
-								executeCmdsVector = (Vector<String>)savedVector.clone();
-						}
-					}
-				}
-				// Collectiongroup is selected.
-				else if ( getModelType() == ModelFactory.COLLECTIONGROUP )
-				{
-					synchronized(YC.this)
-					{
-						Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-						Vector<String> savedVector = (Vector<String>)getExecuteCmdsVector().clone();
-						
-						for ( int i = 0; i < deviceMeterGroupIds.length; i++)
-						{
-							setDeviceID(deviceMeterGroupIds [i].intValue());
-							handleDevice();
-							//clone the vector because handleDevice() removed the command but in truth, it
-							// shouldn't be removed until all of the devices have been looped through.							
-							if( i+1 < deviceMeterGroupIds.length)
-								executeCmdsVector = (Vector<String>)savedVector.clone();
-						}
-					}
-				}
-				else
-				{
-					CTILogger.info(getModelType() + " - New type needs to be handled");
-				}
-			}
-			else	//are we coming from the servlet and have no treeObject? (only deviceID or serial number)
-			{
-				//Send the command out on deviceID/serialNumber
-				if( getDeviceID() > PAOGroups.INVALID )
-				{	
-					handleDevice();
-				}
-				else if( !serialNumber.equalsIgnoreCase(PAOGroups.STRING_INVALID))
-				{
-					handleSerialNumber();
-				}
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-	}
+    public void executeCommand()
+    {
+        //---------------------------------------------------------------------------------------
+        if ( getCommandMode() == CGP_MODE )
+        {
+            porterRequest = new Request( 0, getExecuteCmdsVector().get(0), currentUserMessageID );
+            porterRequest.setPriority(getCommandPriority());
+            getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
+            writeNewRequestToPorter( porterRequest );
+        }
+
+        else if( getTreeItem() != null )	//must setup the request to send
+        {
+            // Stops the requests from continuing (a.k.a. kills the "loop" command).
+            sendMore = 0;
+
+            // Device item selected (including other models)
+            if( getTreeItem() instanceof LiteYukonPAObject )
+            {
+                LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
+                setDeviceID(liteYukonPao.getYukonID());
+                handleDevice();
+            }
+            // Meter number item in tree selected.
+            else if( getTreeItem() instanceof LiteDeviceMeterNumber )
+            {
+                LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
+                setDeviceID(ldmn.getLiteID());
+                handleDevice();
+            }		
+            // Serial Number item in tree selected.
+            else if (ModelFactory.isEditableSerial(getModelType()))
+            {
+                handleSerialNumber();
+            }
+            // TestCollectionGroup is selected.
+            else if ( getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class )
+            {
+                synchronized(YC.this)
+                {
+                    DeviceGroup deviceGroup = (DeviceGroup) getTreeItem();
+                    DeviceGroupService dgs = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+                    Set<Integer> deviceIds = dgs.getDeviceIds(Collections.singleton(deviceGroup));
+                    //Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
+                    Vector<String> savedVector = (Vector<String>)getExecuteCmdsVector().clone();
+                    Vector<String> finishedVector = null;
+                    
+                    Iterator<Integer> deviceIter = deviceIds.iterator();
+                    while (deviceIter.hasNext())
+                    {
+                        int deviceId = deviceIter.next();
+                        setDeviceID(deviceId);
+                        handleDevice();
+                        // clone the vector because handleDevice() removed the command but in truth, it
+                        // shouldn't be removed until all of the devices have been looped through.							
+                        finishedVector = executeCmdsVector;
+                        executeCmdsVector = (Vector<String>)savedVector.clone();
+                    }
+                    executeCmdsVector = finishedVector;
+                }
+            }
+            else
+            {
+                CTILogger.info(getModelType() + " - New type needs to be handled");
+            }
+        }
+        else	//are we coming from the servlet and have no treeObject? (only deviceID or serial number)
+        {
+            //Send the command out on deviceID/serialNumber
+            if( getDeviceID() > PAOGroups.INVALID )
+            {	
+                handleDevice();
+            }
+            else if( !serialNumber.equalsIgnoreCase(PAOGroups.STRING_INVALID))
+            {
+                handleSerialNumber();
+            }
+        }
+    }
+
+	
 	/**
 	 * Returns the allRoutes.
 	 * @return Object[]
@@ -358,7 +349,7 @@ public class YC extends Observable implements MessageListener
 	 * Refer to com.cannontech.database.model.* for valid models.
 	 * @return int modelType
 	 */
-	public int getModelType()
+	public Class<? extends LiteBaseTreeModel> getModelType()
 	{
 		return modelType;
 	}
@@ -703,8 +694,8 @@ public class YC extends Observable implements MessageListener
 
             return this.isAllowCommand(command, user, pao);
 
-        } else if (getModelType() == ModelFactory.TESTCOLLECTIONGROUP
-                || getModelType() == ModelFactory.COLLECTIONGROUP) {
+
+        } else if (getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class) {
             return this.isAllowCommand(command, user, new LiteYukonPAObject(-1));
         } else if (!PAOGroups.STRING_INVALID.equalsIgnoreCase(serialNumber)) {
             return this.isAllowCommand(command, user, "lmdevice");
@@ -792,7 +783,7 @@ public class YC extends Observable implements MessageListener
 	 * Refer to com.cannontech.database.model.* for valid models. 
 	 * @param modelType_ int
 	 */
-	public void setModelType(int modelType_)
+	public void setModelType(Class<? extends LiteBaseTreeModel> modelType_)
 	{
 		modelType = modelType_;	
 	}

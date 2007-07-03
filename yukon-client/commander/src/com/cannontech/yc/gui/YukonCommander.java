@@ -16,6 +16,8 @@ import java.awt.print.PrinterException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
@@ -34,6 +36,8 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.gui.util.TreeViewPanel;
@@ -57,7 +61,12 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.model.EditableExpresscomModel;
+import com.cannontech.database.model.EditableSA205Model;
+import com.cannontech.database.model.EditableSA305Model;
 import com.cannontech.database.model.EditableTextModel;
+import com.cannontech.database.model.EditableVersacomModel;
+import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.CommanderRole;
@@ -928,7 +937,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 * Returns ycClass.getModelType().
 	 * @return int com.cannontech.database.model.ModelFactory.
 	 */
-	private int getModelType()
+	private Class<? extends LiteBaseTreeModel> getModelType()
 	{
 		return getYC().getModelType();
 	}
@@ -1349,28 +1358,34 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		// that model type.  Create a new model for that type (false sets showPoints off).
 		// For all other 'normal' types, we can follow through with OO and use the same
 		// constructor template (no parameters).
-		com.cannontech.database.model.LiteBaseTreeModel[] models =
-			new com.cannontech.database.model.LiteBaseTreeModel[getTreeModels().length];
+		List<LiteBaseTreeModel> models = new ArrayList<LiteBaseTreeModel>();
 		
-		for (int i = 0; i < models.length; i++)
+		int[] modelIds = getTreeModels();
+        for (int i = 0; i < modelIds.length; i++)
 		{
-			if( getTreeModels()[i] == ModelFactory.DEVICE)
-				models[i] =  new com.cannontech.database.model.DeviceTreeModel(false);
-			else if ( getTreeModels()[i] == ModelFactory.LMGROUPS)
-				models[i] = new com.cannontech.database.model.LMGroupsModel(false);
-			else if ( getTreeModels()[i] == ModelFactory.CAPBANKCONTROLLER )
-				models[i] = new com.cannontech.database.model.CapBankControllerModel(false);
-			else if ( getTreeModels()[i] == ModelFactory.TRANSMITTER )
-				models[i] = new com.cannontech.database.model.TransmitterTreeModel(false);
+			if( modelIds[i] == ModelFactory.DEVICE)
+				models.add(new com.cannontech.database.model.DeviceTreeModel(false));
+			else if ( modelIds[i] == ModelFactory.LMGROUPS)
+				models.add(new com.cannontech.database.model.LMGroupsModel(false));
+			else if ( modelIds[i] == ModelFactory.CAPBANKCONTROLLER )
+				models.add(new com.cannontech.database.model.CapBankControllerModel(false));
+			else if ( modelIds[i] == ModelFactory.TRANSMITTER )
+				models.add(new com.cannontech.database.model.TransmitterTreeModel(false));
 			else
-				models[i] = ModelFactory.create(getTreeModels()[i]);
+				models.add(ModelFactory.create(modelIds[i]));
 		}
+        
+        // add the group model
+        DeviceGroupTreeFactory dgtf = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
+        LiteBaseTreeModel liteBaseDeviceGroupModel = dgtf.getLiteBaseModel(false);
+        models.add(liteBaseDeviceGroupModel);
 
 		//serial and route panel visible only when first item in tree is Versacom Serial #
-		if (!ModelFactory.isEditableSerial(getTreeModels()[0]))
-			enableSerialAndRoute(false);
+		if (!ModelFactory.isEditableSerial(models.get(0).getClass())) {
+            enableSerialAndRoute(false);
+        }
 	
-		getTreeViewPanel().setTreeModels(models);
+		getTreeViewPanel().setTreeModels(models.toArray(new LiteBaseTreeModel[]{}));
 			
 		setRouteModel(); //fill route combo box
 
@@ -1759,7 +1774,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, BILLINGGROUP, EDITABLE_xxx
 	 * @param typeSelected int
 	 */
-	private void setModelType(int typeSelected)
+	private void setModelType(Class<? extends LiteBaseTreeModel> typeSelected)
 	{
 		getYC().setModelType( typeSelected);
 	}
@@ -1831,11 +1846,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 */
 	private void treeModelChanged()
 	{
-		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
-		if( index < 0 )
+		LiteBaseTreeModel model = (LiteBaseTreeModel) getTreeViewPanel().getSortByComboBox().getSelectedItem();
+		if( model == null )
 			return;
 			
-		setModelType( getTreeModels()[index] );
+		setModelType( model.getClass() );
 		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		
 		if (ModelFactory.isEditableSerial(getModelType()))
@@ -1882,10 +1897,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	public void valueChanged(TreeSelectionEvent event)
 	{
 	    //TODO - On change of model, reset the recent devices.
-		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
-		if( index < 0 )
-			return;
-		setModelType( getTreeModels()[index] );
+        LiteBaseTreeModel model = (LiteBaseTreeModel) getTreeViewPanel().getSelectedTreeModel();
+        if( model == null )
+            return;
+            
+        setModelType( model.getClass() );
 		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		setTreeItem(selectedItem);
 
@@ -1931,14 +1947,14 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			setSerialNumber( (String)selectedItem);
 			getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
-			
-			if( getModelType() == ModelFactory.EDITABLE_EXPRESSCOM_SERIAL)
+            
+			if( getModelType() == EditableExpresscomModel.class)
 				getYC().setDeviceType(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
-			else if( getModelType() == ModelFactory.EDITABLE_VERSACOM_SERIAL)
+			else if( getModelType() == EditableVersacomModel.class)
 				getYC().setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
-			else if( getModelType() == ModelFactory.EDITABLE_SA205_SERIAL)
+			else if( getModelType() == EditableSA205Model.class)
 				getYC().setDeviceType(CommandCategory.STRING_CMD_SA205_SERIAL);
-			else if( getModelType() == ModelFactory.EDITABLE_SA305_SERIAL)
+			else if( getModelType() == EditableSA305Model.class)
 				getYC().setDeviceType(CommandCategory.STRING_CMD_SA305_SERIAL);
 			else
 				getYC().setDeviceType(CommandCategory.STRING_CMD_SERIALNUMBER);
@@ -1952,12 +1968,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
 			setTitle(displayTitle + " - " + getYC().getDeviceType() + " # " + getSerialNumber().toString());
 		}
-		else if( getModelType() == ModelFactory.COLLECTIONGROUP ||
-				getModelType() == ModelFactory.TESTCOLLECTIONGROUP ||
-				getModelType() == ModelFactory.BILLING_GROUP)
+		else if( getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class)
 		{
+            DeviceGroup deviceGroup = (DeviceGroup) selectedItem;
 			getYC().setDeviceType(CommandCategory.STRING_CMD_COLLECTION_GROUP);
-			setTitle(displayTitle + " : " + selectedItem.toString());
+			setTitle(displayTitle + " : " + deviceGroup.getFullName());
 		}
 		else
 		{
@@ -2160,9 +2175,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			tempModel.add( ModelFactory.TRANSMITTER);
 			tempModel.add( ModelFactory.LMGROUPS);
 			tempModel.add( ModelFactory.CAPBANKCONTROLLER);
-			tempModel.add( ModelFactory.COLLECTIONGROUP);
-			tempModel.add( ModelFactory.TESTCOLLECTIONGROUP);
-			tempModel.add( ModelFactory.BILLING_GROUP);
+			//tempModel.add( ModelFactory.COLLECTIONGROUP);
+			//tempModel.add( ModelFactory.TESTCOLLECTIONGROUP);
+			//tempModel.add( ModelFactory.BILLING_GROUP);
 
 			boolean needDefault = true;
 			ClientSession session = ClientSession.getInstance();

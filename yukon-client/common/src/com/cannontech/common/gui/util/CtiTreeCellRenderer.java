@@ -35,18 +35,18 @@ public java.awt.Component getTreeCellRendererComponent(
 	int row,
 	boolean hasFocus)
 {
-
+    String text = tree.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
 	if (value instanceof com.cannontech.database.model.DummyTreeNode)
 	{
 
 		if (selected)
 		{
-			selectedBoldLabel.setText(value.toString());
+			selectedBoldLabel.setText(text);
 			return selectedBoldLabel;
 		}
 		else
 		{
-			unselectedBoldLabel.setText(value.toString());
+			unselectedBoldLabel.setText(text);
 			return unselectedBoldLabel;
 		}
 	}
@@ -54,7 +54,7 @@ public java.awt.Component getTreeCellRendererComponent(
 
 	if (selected)
 	{
-		selectedLabel.setText(value.toString());
+		selectedLabel.setText(text);
 		return selectedLabel;
 	}
 	else
@@ -63,12 +63,12 @@ public java.awt.Component getTreeCellRendererComponent(
 		{
 			if( ((DBTreeNode)value).isSystemReserved() )
 			{ 
-				unselectedRdOnlyLabel.setText( value.toString() );
+				unselectedRdOnlyLabel.setText( text );
 				return unselectedRdOnlyLabel;
 			}
 		}
 
-		unselectedLabel.setText(value.toString());
+		unselectedLabel.setText(text);
 		return unselectedLabel;
 	}
 }

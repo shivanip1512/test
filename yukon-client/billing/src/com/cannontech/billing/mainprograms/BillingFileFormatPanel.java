@@ -702,8 +702,8 @@ private javax.swing.JTree getGroupList() {
         DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
 		try {
-            CustomRenderJTree<DeviceGroup> customTree = new CustomRenderJTree<DeviceGroup>(DeviceGroup.class);
-            customTree.setRenderer(new DeviceGroupRenderer());
+            CustomRenderJTree customTree = new CustomRenderJTree();
+            customTree.addRenderer(new DeviceGroupRenderer());
 			ivjGroupTree = customTree;
 			ivjGroupTree.setName("GroupList");
 			ivjGroupTree.setBounds(0, 0, 160, 120);
