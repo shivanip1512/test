@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2007/05/31 21:38:45 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2007/07/03 15:44:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1581,7 +1581,7 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 
 bool CtiDeviceTapPagingTerminal::blockedByPageRate() const
 {
-    return (_pagesPerMinute >= pagesPerMinute);
+    return (_pagesPerMinute >= pagesPerMinute && pagesPerMinute > 0);
 }
 
 bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
