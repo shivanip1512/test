@@ -2414,7 +2414,7 @@ private void loadParamMapFromSwingComp()
 
     if(getOptionsGroupList().getSelectionPath() != null && ((TreeNode)getOptionsGroupList().getSelectionPath().getLastPathComponent()).isLeaf()) {
         DeviceGroup billingGroup = modelFactory.getGroupForPath(getOptionsGroupList().getSelectionPath());
-        getScriptTemplate().getParamToValueMap().put(GROUP_NAME_PARAM, billingGroup.getFullName());
+        getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_NAME_PARAM, billingGroup.getFullName());
     }
     
     //Notification in script
