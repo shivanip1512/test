@@ -20,7 +20,7 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     private Set<Integer> deviceIds;
-//    private Set<Integer> groupIds;
+    private Set<Integer> deviceNames;
     private Double previousKwh = null;
     private String previousDevice= null;
     
@@ -93,17 +93,17 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
         String result = null;
         
         if(deviceIds != null && !deviceIds.isEmpty()) {
-            result = "DMG.meternumber in ( ";
+            result = "DMG.DEVICEID in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceIds);
             result += wheres;
             result += " ) ";
         }
-//        else if(groupIds != null && !groupIds.isEmpty()) {
-//            result = "DMG.collectiongroupid in ( ";
-//            String wheres = SqlStatementBuilder.convertToSqlLikeList(groupIds);
-//            result += wheres;
-//            result += " ) ";
-//        }
+        else if(deviceNames != null && !deviceNames.isEmpty()) {
+            result = "PAO.PAOBJECTID in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceNames);
+            result += wheres;
+            result += " ) ";
+        }
         
         if (result != null) {
             sql.append(" and ");
@@ -136,8 +136,8 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
         this.deviceIds = deviceIds;
     }
     
-    public void setGroupIdsFilter(Set<Integer> groupIds) {
-//        this.groupIds = groupIds;
+    public void setDeviceNamesFilter(Set<Integer> deviceNameIds) {
+        this.deviceNames = deviceNameIds;
     }
-
+    
 }

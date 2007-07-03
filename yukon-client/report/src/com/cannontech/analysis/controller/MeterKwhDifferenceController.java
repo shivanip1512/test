@@ -1,6 +1,7 @@
 package com.cannontech.analysis.controller;
 
 import java.util.HashSet;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,13 +13,15 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.MeterKwhDifferenceModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.util.ServletUtil;
 
 public class MeterKwhDifferenceController extends ReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.METER,
-            ReportFilter.COLLECTIONGROUP};
+            ReportFilter.DEVICE};
     
     private TimeZone timeZone = TimeZone.getDefault();
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -52,21 +55,44 @@ public class MeterKwhDifferenceController extends ReportControllerBase {
         
         MeterKwhDifferenceModel kwhModel = (MeterKwhDifferenceModel) model;
         super.setRequestParameters(request);
-        int idsArray[] = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_METER_VALUES);
-        HashSet<Integer> idsSet = new HashSet<Integer>();
-        for (int id : idsArray) {
-            idsSet.add(id);
-        }
-        
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
-
         if (filterModelType == ReportFilter.METER.ordinal()) {
-            kwhModel.setGroupIdsFilter(null);
+            String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_METER_VALUES).trim();
+            StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
+            int[] idsArray = new int[st.countTokens()];
+            int i = 0;
+            while (st.hasMoreTokens()) {
+                String meterNumber = st.nextToken().trim();
+                LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNumber);
+                if( lPao != null) {
+                    idsArray[i++] = lPao.getYukonID();
+                }
+            }
+            HashSet<Integer> idsSet = new HashSet<Integer>();
+            for (int id : idsArray) {
+                idsSet.add(id);
+            }
+            kwhModel.setDeviceNamesFilter(null);
             kwhModel.setDeviceIdsFilter(idsSet);
-        } else if (filterModelType == ReportFilter.COLLECTIONGROUP.ordinal()) {
+        }else if (filterModelType == ReportFilter.DEVICE.ordinal()) {
+            String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
+            StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
+            int[] devicesArray = new int[st.countTokens()];
+            int i = 0;
+            while (st.hasMoreTokens()) {
+                String deviceName = st.nextToken().trim();
+                LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(deviceName);
+                if( lPao != null) {
+                    devicesArray[i++] = lPao.getYukonID();
+                }
+            }
+            HashSet<Integer> devicesSet = new HashSet<Integer>();
+            for (int id : devicesArray) {
+                devicesSet.add(id);
+            }
             kwhModel.setDeviceIdsFilter(null);
-            kwhModel.setGroupIdsFilter(idsSet);
-        } 
+            kwhModel.setDeviceNamesFilter(devicesSet);
+        }
         
         String param = request.getParameter(ReportModelBase.ATT_START_DATE);
         if( param != null) {
