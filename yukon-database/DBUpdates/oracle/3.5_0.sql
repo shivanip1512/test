@@ -248,7 +248,19 @@ alter table PROFILEPEAKRESULT
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key ("DeviceId")
       references DEVICE (DEVICEID);
+
+drop index "Indx_PAO";
       
+update YukonPAObject set PAOName = PAOName + SUBSTR(Type, 4, LENGTH(Type))
+where PAObjectID in
+(select PAObjectID from YukonPAObject 
+where PAOName in (select PAOName from YukonPAObject group by PAOName, PAOClass having count(PAOName) > 1 AND PAOClass = 'Carrier'));
+
+create unique index "Indx_PAO" on "YukonPAObject" (
+   "Category" ASC,
+   "PAOName" ASC,
+   "PAOClass" ASC
+);
       
 /******************************************************************************/
 /* Run the Stars Update if needed here */

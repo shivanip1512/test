@@ -287,6 +287,28 @@ alter table PROFILEPEAKRESULT
       references DEVICE (DEVICEID);
 go
 
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonPAObject')
+            and   name  = 'Indx_PAO'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonPAObject.Indx_PAO;
+go
+
+update YukonPAObject set PAOName = PAOName + SUBSTRING(Type, 4, LEN(Type))
+where PAObjectID in
+(select PAObjectID from YukonPAObject 
+where PAOName in (select PAOName from YukonPAObject group by PAOName, PAOClass having count(PAOName) > 1 AND PAOClass = 'Carrier'));
+go
+
+create unique  index Indx_PAO on YukonPAObject (
+Category,
+PAOName,
+PAOClass
+);
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

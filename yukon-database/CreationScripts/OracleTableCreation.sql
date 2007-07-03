@@ -8227,8 +8227,7 @@ alter table "YukonPAObject"
 create unique index "Indx_PAO" on "YukonPAObject" (
    "Category" ASC,
    "PAOName" ASC,
-   "PAOClass" ASC,
-   "Type" ASC
+   "PAOClass" ASC
 )
 /
 
