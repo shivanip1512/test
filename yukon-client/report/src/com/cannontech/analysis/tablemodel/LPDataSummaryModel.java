@@ -37,6 +37,7 @@ public class LPDataSummaryModel extends PointDataSummaryModel
 		super(start_, stop_);
 		setFilterModelTypes(new ReportFilter[]{ 
 				ReportFilter.METER,
+                ReportFilter.DEVICE,
 				ReportFilter.COLLECTIONGROUP, 
 				ReportFilter.ALTERNATEGROUP, 
 				ReportFilter.BILLINGGROUP}
