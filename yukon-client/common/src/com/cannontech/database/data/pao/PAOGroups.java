@@ -322,6 +322,10 @@ public final static int getDeviceType(String typeString)
         return SIMPLE_SCHEDULE;
     else if (isStringDevice(compareString, Schedule.SCRIPT_TYPE))
         return SCRIPT;
+    else if ( isStringDevice(compareString, STRING_NEUTRAL_CS[0] ))
+        return NEUTRAL_CS;
+    else if ( isStringDevice(compareString, STRING_FAULT_CI[0] ))
+        return FAULT_CI;  
    	else
 	  return INVALID;
 }
@@ -601,7 +605,10 @@ public final static String getPAOTypeString(int type)
             return Schedule.SIMPLE_TYPE;
         case SCRIPT:
             return Schedule.SCRIPT_TYPE;
-            
+        case FAULT_CI:
+            return STRING_FAULT_CI[0];
+        case NEUTRAL_CS:
+            return STRING_NEUTRAL_CS[0];
  	  	default:
 		  	return STRING_INVALID;
 	}

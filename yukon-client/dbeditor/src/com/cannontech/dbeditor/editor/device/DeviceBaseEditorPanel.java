@@ -6,31 +6,7 @@ import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.config.ConfigTwoWay;
-import com.cannontech.database.data.device.CarrierBase;
-import com.cannontech.database.data.device.DNPBase;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.IEDBase;
-import com.cannontech.database.data.device.KV;
-import com.cannontech.database.data.device.MCT210;
-import com.cannontech.database.data.device.MCT213;
-import com.cannontech.database.data.device.MCT240;
-import com.cannontech.database.data.device.MCT248;
-import com.cannontech.database.data.device.MCT250;
-import com.cannontech.database.data.device.MCT400SeriesBase;
-import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
-import com.cannontech.database.data.device.RTCBase;
-import com.cannontech.database.data.device.RTM;
-import com.cannontech.database.data.device.RemoteBase;
-import com.cannontech.database.data.device.Repeater900;
-import com.cannontech.database.data.device.Repeater902;
-import com.cannontech.database.data.device.SNPPTerminal;
-import com.cannontech.database.data.device.Schlumberger;
-import com.cannontech.database.data.device.Series5Base;
-import com.cannontech.database.data.device.Sixnet;
-import com.cannontech.database.data.device.WCTPTerminal;
+import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -1691,7 +1667,6 @@ public Object getValue(Object val)
     // used to ensure the type string in the DB is the same as the code
     d.setDeviceType( PAOGroups.getPAOTypeString(devType) );
 
-
 	if( getDisableFlagCheckBox().isSelected() )
 		d.setDisableFlag( new Character('Y') );
 	else
@@ -1732,7 +1707,15 @@ public Object getValue(Object val)
 			com.cannontech.clientutils.CTILogger.error( n.getMessage(), n );
 		}
 	}
-
+    
+    if( val instanceof GridAdvBase )
+    {
+        LiteYukonPAObject litePort = null;
+        litePort = (LiteYukonPAObject)getPortComboBox().getSelectedItem();
+        //get new port from combo box and set it.
+        ((GridAdvBase)val).getDeviceDirectCommSettings().setPortID(litePort.getLiteID());
+    }
+    
 	if( val instanceof RemoteBase )
 	{
 		DeviceDirectCommSettings dDirect = ((RemoteBase) val).getDeviceDirectCommSettings();
@@ -2325,6 +2308,53 @@ private void setNonRemBaseValue( Object base )
 	}
    
 }
+
+private void setGridBaseValue ( GridAdvBase gBase, int intType )
+{
+    getRouteLabel().setVisible(false);
+    getRouteComboBox().setVisible(false);
+    getJLabelCCUAmpUseType().setVisible(false);
+    getJComboBoxAmpUseType().setVisible(false);
+
+    getPortLabel().setVisible(true);
+    getPortComboBox().setVisible(true);
+    getPostCommWaitLabel().setVisible(true);
+    getPostCommWaitSpinner().setVisible(true);
+    getWaitLabel().setVisible(true);
+
+    if( getRouteComboBox().getModel().getSize() > 0 )
+        getRouteComboBox().removeAllItems();
+    
+    int portID = 0;
+    if( gBase.getDeviceDirectCommSettings().getPortID() != null )
+        portID = gBase.getDeviceDirectCommSettings().getPortID().intValue();
+    
+    //Load the combo box
+    IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+    synchronized(cache)
+    {
+        java.util.List ports = cache.getAllPorts();
+        if( getPortComboBox().getModel().getSize() > 0 )
+            getPortComboBox().removeAllItems();
+            
+        com.cannontech.database.data.lite.LiteYukonPAObject litePort = null;
+        for( int i = 0; i < ports.size(); i++ )
+        {
+            litePort = (com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i);
+            getPortComboBox().addItem(litePort);
+            
+            if( ((com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i)).getYukonID() == portID )
+            {
+                getPortComboBox().setSelectedItem(litePort);
+            }
+        }
+    }
+    getPasswordLabel().setVisible(false);
+    getPasswordTextField().setVisible(false);
+    getSlaveAddressLabel().setVisible(false);
+    getSlaveAddressComboBox().setVisible(false);
+    
+}
 /**
  * Insert the method's description here.
  * Creation date: (9/18/2001 1:58:37 PM)
@@ -2693,7 +2723,9 @@ public void setValue(Object val)
 	if( val instanceof RemoteBase )
 	{
 		setRemoteBaseValue( (RemoteBase)val, deviceType );		
-	}
+	}else if( val instanceof GridAdvBase ){
+        setGridBaseValue( (GridAdvBase)val, deviceType );
+    }
 	
 	else
 	{

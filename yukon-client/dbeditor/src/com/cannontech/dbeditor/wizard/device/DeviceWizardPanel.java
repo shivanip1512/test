@@ -18,6 +18,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceTapVerizonPanel deviceTapVerizonPanel;
 	private DeviceIEDNamePanel deviceIEDNamePanel;
 	private DeviceVirtualNamePanel deviceVirtualNamePanel;
+    private DeviceGridPanel deviceGridPanel;
 	private DeviceMeterNumberPanel deviceMeterNumberPanel;
 	private DeviceSixnetWizardPanel deviceSixnetWizardPanel;
 	private MCTBroadcastListEditorPanel mctBroadcastListEditorPanel;
@@ -177,6 +178,13 @@ protected DeviceVirtualNamePanel getDeviceVirtualNamePanel()
 	return deviceVirtualNamePanel;
 }
 
+protected DeviceGridPanel getDeviceGridPanel()
+{
+    if( deviceGridPanel == null )
+        deviceGridPanel = new DeviceGridPanel();
+        
+    return deviceGridPanel;    
+}
 
 /**
  * This method was created in VisualAge.
@@ -263,6 +271,11 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			getDeviceVirtualNamePanel().setFirstFocus();
             return getDeviceVirtualNamePanel();
 		}
+        else if ( devType == PAOGroups.NEUTRAL_CS || devType == PAOGroups.FAULT_CI )
+        {
+            getDeviceGridPanel().setFirstFocus();
+            return getDeviceGridPanel();
+        }
 		else
 		{
 			getDeviceNameAddressPanel().setDeviceType( devType );
@@ -387,6 +400,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || (currentPanel == getDeviceCommChannelPanel() && !getDeviceCommChannelPanel().isDialupPort())
             || currentPanel == getDeviceRoutePanel() 
             || currentPanel == getDeviceVirtualNamePanel()
+            || currentPanel == getDeviceGridPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
                 (getDeviceTypePanel().getDeviceType() == PAOGroups.RTU_DNP

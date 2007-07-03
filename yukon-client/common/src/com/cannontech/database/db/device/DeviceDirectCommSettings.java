@@ -8,6 +8,7 @@ public class DeviceDirectCommSettings extends com.cannontech.database.db.DBPersi
 	private Integer deviceID = null;
 	private Integer portID = null;
 
+    public static final String COMMPORT_TABLE_NAME = "Commport";
 	public static final String TABLE_NAME = "DeviceDirectCommSettings";
 /**
  * DeviceDirectCommSettings constructor comment.
@@ -84,6 +85,19 @@ public void retrieve() throws java.sql.SQLException {
 	{
 		setPortID( (Integer)results[0] );
 	}
+}
+public void setDefaultPortID() throws java.sql.SQLException, Exception
+{
+    String selectColumns[] = { "PortID" };
+    String constraintColumns[] = {};
+    Object constraintValues[] = {};
+    Object results[] = retrieve( selectColumns, COMMPORT_TABLE_NAME, constraintColumns, constraintValues );
+
+    if( results.length == selectColumns.length )
+    {
+        setPortID( (Integer)results[0] );
+    }else
+        throw new Exception("No CommPorts set up in the database");
 }
 /**
  * This method was created in VisualAge.

@@ -14,6 +14,7 @@ public final class DeviceClasses
    public final static int VIRTUAL           = 1007;
    public final static int LOADMANAGEMENT    = 1008;
    public final static int SYSTEM            = 1009;
+   public final static int GRID              = 1010;
    public final static int INVALID           = 1011;
    
    public static final String STRING_CLASS_RTU = "RTU";
@@ -25,6 +26,7 @@ public final class DeviceClasses
    public static final String STRING_CLASS_SYSTEM = "SYSTEM";
    public static final String STRING_CLASS_VIRTUAL = "VIRTUAL";
    public static final String STRING_CLASS_LOADMANAGER = "LOADMANAGEMENT";
+   public static final String STRING_CLASS_GRID = "GRIDADVISOR";
    
    public static final Integer[] IN_DEVICEDIRECTCOMMSETTINGS_TABLE = 
    {
@@ -35,7 +37,7 @@ public final class DeviceClasses
    public static final Integer[] CORE_DEVICE_CLASSES = 
    {
 		CARRIER, IED, METER,
-		RTU, TRANSMITTER, VIRTUAL
+		RTU, TRANSMITTER, VIRTUAL, GRID
    };
  
 /**
@@ -76,6 +78,9 @@ public final static int getClass(String classString) {
 	else
 	if( compareString.equals(STRING_CLASS_LOADMANAGER) )
 		return LOADMANAGEMENT;
+    else
+        if( compareString.equals(STRING_CLASS_GRID) )
+            return GRID;
 	else
 		return INVALID;
 }
@@ -115,6 +120,9 @@ public final static String getClass(int classInt)
 
 		case LOADMANAGEMENT:
 			return STRING_CLASS_LOADMANAGER;
+
+        case GRID:
+            return STRING_CLASS_GRID;
             
         case PAOGroups.CAT_CAPCONTROL:
             return PAOGroups.STRING_CAT_CAPCONTROL;

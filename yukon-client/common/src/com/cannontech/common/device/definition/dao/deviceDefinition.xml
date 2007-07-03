@@ -9032,6 +9032,18 @@
         <displayGroup value="Virtual"/>
     </device>
     
+    <!-- Grid Advisor -->
+    <device>
+        <type value="1102" javaConstant="FAULT_CI"/>
+        <displayName value="Fault Current Indicator"/>
+        <displayGroup value="Grid Advisor"/>
+    </device>
+    <device>
+        <type value="1103" javaConstant="NEUTRAL_CS"/>
+        <displayName value="Neutral Current Sensor"/>
+        <displayGroup value="Grid Advisor"/>
+    </device>
+    
     <!-- LM Groups -->
     <device>
         <type value="1041" javaConstant="LM_GROUP_EMETCON" changeGroup="lm"/>
