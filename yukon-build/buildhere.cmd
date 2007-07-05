@@ -1,12 +1,4 @@
 @echo off
-rem title %cd%
-
-if "%1" equ "/exit" (
-        set exit=true
-        shift
-) else (
-        set exit=
-)
 
 rem  This logic for this script is based from these assumptions:
 rem
@@ -21,6 +13,38 @@ set cwd=%cd%
 echo.
 echo +---------------------------------------
 echo ^|
+
+rem ---- check to see if we should exit if the build has an error
+
+echo %1
+
+if "%~1" equ "/exit" (
+        set exit=true
+        shift
+) else (
+        set exit=
+)
+
+rem ---- look for build labels
+
+echo %1
+
+if "%~1" equ "/labels" ( 
+	if "%~2" neq "" ( 
+	if "%~3" neq "" ( 
+		set build_version=%~2
+		set build_version_details=%~3
+	) else ( 
+		echo ^| Must specify build_version and build_version_details if using "/labels"
+		goto failed
+	) 
+	) else ( 
+		echo ^| Must specify build_version and build_version_details if using "/labels"
+		goto failed
+	)
+)
+
+echo %*
 
 rem ---- look for Makefile in the current directory - if found, we can build here
 
@@ -81,10 +105,8 @@ echo ^| Project root is %cd%.
 set compilebase=%cd%
 set yukonoutput=%cd%\bin
 
-if "%1" neq "" ( set build_version=%1 )
-if "%2" neq "" ( set build_version_details=%2 )
-
-if "%build_version% %build_version_details%" equ " " (
+if not defined build_version (
+if not defined build_version_details (
 
         if exist %cd%\..\..\yukon-build\setenv.exe (
 
@@ -98,39 +120,40 @@ if "%build_version% %build_version_details%" equ " " (
                         goto failed
                 )
         )
-) else (
+) )
 
-        if "%build_version%" equ "" (
-
-                echo ^|
-                echo +---------------------------------------
-                echo ^|
-                echo ^| Build version: [ ^!^! not set ^!^! ]
-                echo ^| Build version details: %build_version_details%
-                echo ^|
-                echo ^| Build version details set, but build version not set.
-                goto failed
-        )
-        if "%build_version_details%" equ "" (
-
-                echo ^|
-                echo +---------------------------------------
-                echo ^|
-                echo ^| Build version: %build_version%
-                echo ^| Build version details: [ ^!^! not set ^!^! ]
-                echo ^|
-                echo ^| Build version set, but build version details not set.
-                goto failed
-        )
-)
-
-if defined %build_version% (
+rem ----  we have to have both build labels or neither
 
         echo +---------------------------------------
         echo ^|
-        echo ^| Build version: %build_version%
-        echo ^| Build version details: %build_version_details%
-        echo ^|
+
+if defined build_version (
+	if defined build_version_details (
+
+	        echo ^| Build version: %build_version%
+	        echo ^| Build version details: %build_version_details%
+	        echo ^|
+	
+	) else (
+	        echo ^| Build version: %build_version%
+	        echo ^| Build version details: [ ^!^! not set ^!^! ]
+	        echo ^|
+	        echo ^| Build version set, but build version details not set.
+	        goto failed
+
+	) 
+) else ( 
+	if defined build_version_details (
+
+	        echo ^| Build version: [ ^!^! not set ^!^! ]
+	        echo ^| Build version details: %build_version_details%
+	        echo ^|
+	        echo ^| Build version details set, but build version not set.
+	        goto failed
+
+	) else (
+        	echo ^| Build version and details unset - build will be untagged
+	)
 )
 
 if not exist %yukonoutput% md %yukonoutput%
