@@ -4,7 +4,7 @@
 
 #include <string>
 
-#define TEST_SIZE 109
+#define TEST_SIZE 118
 
 std::string inputString[TEST_SIZE] = {
     "getvalue kwh",
@@ -115,7 +115,16 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom display 2 'thisismessage2'",
 "putconfig xcom thermo config 34",
 "putconfig xcom utility usage 1:34, 2:36, 4:56.3",
-"putconfig xcom utility info chan 1 delete 2 name 'julie' currency 'dollars' present usage 2 past usage 33 present charge 333 cents past charge 555 cents"
+"putconfig xcom utility info chan 1 delete 2 name 'julie' currency 'dollars' present usage 2 past usage 33 present charge 333 cents past charge 555 cents",
+"control xcom tcycle 12 period 2 count 35 ctrl temp 45 limit 34 afallback 4 max rate 23 bfallback 76 delay time 4",
+"control xcom setpoint min 2 max 50 tr 25 ta 26 tb 27 dsb 4 tc 30 td 29 dsd -1 te 32 tf 35 dsf 11 stage 15 hold bump",
+"putconfig xcom setstate run hold timeout 40 cooltemp 33 fan on system auto",
+"putconfig xcom setstate run timeout 40 cooltemp 33 heattemp 43 fan auto system off",
+"putconfig xcom setstate run timeout 40 heattemp 43 fan circulate system heat",
+"putconfig xcom setstate run timeout 40 heattemp 43 fan circulate system cool",
+"putconfig xcom setstate run timeout 40 heattemp 43 cooltemp 33 fan circulate system emheat",
+"putconfig xcom data 0x33222345",
+"control xcom backlight cycles 23 duty 34 bperiod 45"
 };
 
 

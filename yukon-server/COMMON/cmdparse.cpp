@@ -4598,10 +4598,27 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
     if(!(token = CmdStr.match(" data( (0x)?[0-9a-f]+)+")).empty())
     {
-        token.replace(" data", "");
-        if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).empty())
+        if(!(token = CmdStr.match("data " + str_quoted_token)).empty())
+        {   
+            _cmd["xcascii"] = CtiParseValue(TRUE);
+            if(!(str = token.match(str_quoted_token)).empty())
+            {
+                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+                _cmd["xcdata"] = CtiParseValue( str );
+            }
+            if(!(token = CmdStr.match(" dport " + str_num)).empty())
+            {
+                _cmd["xcdataport"] = CtiParseValue(str_num);
+            }
+             
+        }
+        else
         {
-            _cmd["xcdata"] = CtiParseValue( str );
+            token.replace(" data", "");
+            if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).empty())
+            {
+                _cmd["xcdata"] = CtiParseValue( str );
+            }
         }
     }
 
