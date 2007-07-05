@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2007/06/12 23:03:21 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2007/07/05 21:32:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1319,7 +1319,23 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 
     if(parse.isKeyValid("xcdata"))
     {
-        status = data(parse.getsValue("xcdata"));
+        /*if (parse.isKeyValid("xcascii")) 
+        {
+            _cmd["xcdata"] = CtiParseValue( str );
+            _cmd["xcdataport"] = CtiParseValue(str_num);
+            
+
+            dataMessageBlock(priority,
+                             hourFlag,
+                             deleteFlag,
+                             clearFlag,
+                             timePeriod,
+                             str);
+        }
+        else
+        {  */
+            status = data(parse.getsValue("xcdata"));
+        //}
     }
 
     if(parse.isKeyValid("xcschedule"))

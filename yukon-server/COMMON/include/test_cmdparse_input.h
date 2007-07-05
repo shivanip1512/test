@@ -4,7 +4,7 @@
 
 #include <string>
 
-#define TEST_SIZE 118
+#define TEST_SIZE 117
 
 std::string inputString[TEST_SIZE] = {
     "getvalue kwh",
@@ -123,7 +123,6 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom setstate run timeout 40 heattemp 43 fan circulate system heat",
 "putconfig xcom setstate run timeout 40 heattemp 43 fan circulate system cool",
 "putconfig xcom setstate run timeout 40 heattemp 43 cooltemp 33 fan circulate system emheat",
-"putconfig xcom data 0x33222345",
 "control xcom backlight cycles 23 duty 34 bperiod 45"
 };
 
