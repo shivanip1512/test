@@ -11,6 +11,13 @@ if NOT exist "yukon-client\build\ant" (
 	echo:
 	cvs -Q checkout yukon-client/build/ant
 	SET ANT_HOME=yukon-client\build\ant
+) else (
+	if NOT defined ant_home (
+		echo:
+		echo setting ANT_HOME to yukon-client\build\ant
+		echo:
+		SET ANT_HOME=yukon-client\build\ant
+	)
 )
 
 if NOT exist "..\yukon\yukon-server" (
