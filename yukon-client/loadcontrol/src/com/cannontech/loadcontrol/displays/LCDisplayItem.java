@@ -2,6 +2,8 @@ package com.cannontech.loadcontrol.displays;
 
 import javax.swing.table.TableModel;
 
+import com.cannontech.tdc.data.IDisplay;
+
 /**
  * @author rneuharth
  *
@@ -10,7 +12,7 @@ import javax.swing.table.TableModel;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LCDisplayItem
+public class LCDisplayItem implements IDisplay
 {
 	//indexes into the array of TableModels
 	public static final int TYPE_CONTROL_AREA		= 0;

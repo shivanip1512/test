@@ -44,6 +44,7 @@ import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
 import com.cannontech.tdc.createdisplay.EditTemplateWarningDialog;
 import com.cannontech.tdc.createdisplay.RemoveTemplateDialog;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.data.IDisplay;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
@@ -4707,7 +4708,7 @@ private void writeParameters()
 		};
 
 		// get the current values for the params
-		Display currentDisplay = (Display) getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+        IDisplay currentDisplay = (IDisplay) getMainPanel().getJComboCurrentDisplay().getSelectedItem();
         final String[] paramValues =
 		{
 			(currentDisplay == null
