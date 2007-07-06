@@ -1,19 +1,12 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Created on May 17, 2005
@@ -27,19 +20,14 @@ import com.cannontech.database.data.pao.PAOGroups;
  *  String collGroup		- DeviceMeterGroup.collectionGroup
  *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
  */
-public class RouteDBModel extends ReportModelBase
+public class RouteDBModel extends CarrierDBModel 
 {
-	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 7;
-	
-	/** Enum values for column representation */
 	public final static int ROUTE_NAME_COLUMN = 0;
-	public final static int METER_NAME_COLUMN = 1;
+	public final static int PAO_NAME_COLUMN = 1;
 	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int ADDRESS_COLUMN = 3;	
+	public final static int ADDRESS_COLUMN = 3;
 	public final static int PAO_TYPE_COLUMN = 4;
-	public final static int COLL_GROUP_NAME_COLUMN = 5;
-	public final static int TEST_COLL_GROUP_NAME_COLUMN = 6;
+	public final static int PAO_DISABLE_FLAG_COLUMN = 5;
 	
 	/** String values for column representation */
 	public final static String ROUTE_NAME_STRING = "Route Name";
@@ -47,16 +35,15 @@ public class RouteDBModel extends ReportModelBase
 	public final static String METER_TYPE_STRING = "Type";
 	public final static String METER_NUMBER_STRING = "Meter #";
 	public final static String ADDRESS_STRING  = "Address";
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
-	public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
+	public final static String DISABLED_STRING  = "Disabled";
 	
 	public static final int ORDER_BY_METER_NAME = 0;
 	public static final int ORDER_BY_METER_NUMBER = 1;
-	public static final int ORDER_BY_COLL_GRP = 2;
 	private int orderBy = ORDER_BY_METER_NAME;	//default
-	private static final int[] ALL_ORDER_BYS = new int[]
-	{
-		ORDER_BY_METER_NAME, ORDER_BY_METER_NUMBER, ORDER_BY_COLL_GRP
+    
+	private static final int[] ALL_ORDER_BYS = new int[] {
+		ORDER_BY_METER_NAME, 
+        ORDER_BY_METER_NUMBER
 	};
 
 	private static final String ATT_ORDER_BY = "orderBy";
@@ -64,200 +51,72 @@ public class RouteDBModel extends ReportModelBase
 	/** A string for the title of the data */
 	private static String title = "Database Report";
 		
-	public Comparator routeDBComparator = new java.util.Comparator()
+	public Comparator routeDBComparator = new java.util.Comparator<Meter>()
 	{
-		public int compare(Object o1, Object o2){
+		public int compare(Meter o1, Meter o2){
 
-		    LiteYukonPAObject pao1 = DaoFactory.getPaoDao().getLiteYukonPAO( ((Integer)o1).intValue());
-		    LiteYukonPAObject pao2 = DaoFactory.getPaoDao().getLiteYukonPAO( ((Integer)o2).intValue());
-	        
-		    //Always sort by routeName first
-		    String thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getRouteID());
-		    String anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getRouteID());
-			
-			if( thisVal.equalsIgnoreCase(anotherVal))
-			{
-			    LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((Integer)o1).intValue());
-			    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((Integer)o2).intValue());
+		    String thisVal = o1.getRoute();
+		    String anotherVal = o2.getRoute();
+            
+			if( thisVal.equalsIgnoreCase(anotherVal)) {
 				    
-			    if( getOrderBy() == ORDER_BY_COLL_GRP)
-			    {
-			        thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getCollGroup());
-			        anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getCollGroup());
-			    }
-			    else if( getOrderBy() == ORDER_BY_METER_NUMBER)
-			    {
-			        thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getMeterNumber());
-					anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getMeterNumber());
+			    if( getOrderBy() == ORDER_BY_METER_NUMBER) {
+			        thisVal = o1.getMeterNumber();
+					anotherVal = o2.getMeterNumber();
 			    }
 	
-			    if (getOrderBy() == ORDER_BY_METER_NAME || thisVal.equalsIgnoreCase(anotherVal))
-			    {
-			        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getYukonID());
-			        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getYukonID());
+			    if (getOrderBy() == ORDER_BY_METER_NAME || thisVal.equalsIgnoreCase(anotherVal)) {
+			        thisVal = o1.getName();
+			        anotherVal = o2.getName();
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
 		}
-		public boolean equals(Object obj){
-			return false;
-		}
 	};
 	
-	/**
-	 * Default Constructor
-	 */
-	public RouteDBModel()
-	{
-		super();
-	}
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
+    {
+        if ( o instanceof Meter)
+        {
+            Meter meter = (Meter)o;
+            switch( columnIndex)
+            {
+                case PAO_NAME_COLUMN:
+                    return meter.getName();
+                
+                case PAO_DISABLE_FLAG_COLUMN:
+                    return (meter.isDisabled() ? "Disabled" : "");
+        
+                case PAO_TYPE_COLUMN:
+                    return meter.getTypeStr();
 
-	/**
-	 * Add Integer (paobjectID) objects to data, retrieved from rset.
-	 * @param ResultSet rset
-	 */
-	public void addDataRow(ResultSet rset)
-	{
-		try
-		{
-			Integer paobjectID = new Integer(rset.getInt(1));
-			getData().add(paobjectID);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
+                case METER_NUMBER_COLUMN:
+                    return meter.getMeterNumber();
+                    
+                case ADDRESS_COLUMN:
+                    return meter.getAddress();
+    
+                case ROUTE_NAME_COLUMN:
+                    return meter.getRoute();
+                
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Build the SQL statement to retrieve DatabaseModel data.
-	 * @return StringBuffer  an sqlstatement
-	 */
-	public StringBuffer buildSQLStatement()
-	{
-		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAOBJECTID, PAO2.PAONAME ROUTE " + 
-			" FROM YUKONPAOBJECT PAO1, YUKONPAOBJECT PAO2, DEVICEROUTES DR "+
-			" WHERE PAO1.PAOBJECTID = DR.DEVICEID " + 
-			" AND PAO2.PAOBJECTID = DR.ROUTEID ");
 
-			//Use paoIDs in query if they exist, ROUTE IDS!!!
-			if( getPaoIDs() != null && getPaoIDs().length > 0)
-			{
-				sql.append(" AND PAO2.PAOBJECTID IN (" + getPaoIDs()[0]);
-				for (int i = 1; i < getPaoIDs().length; i++)
-					sql.append(", " + getPaoIDs()[i]);
-				sql.append(") ");
-			}
-			
-			sql.append(" ORDER BY PAO2.PAONAME " );	//All ordering done by RouteName first, rest of ordering is configurable
-			
-		return sql;
-	}
-		
 	@Override
 	public void collectData()
 	{
-		//Reset all objects, new data being collected!
-		setData(null);
-		
-		int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());	
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-				if(getData() != null)
-				{
-//					Order the records
-					Collections.sort(getData(), routeDBComparator);
-					if( getSortOrder() == DESCENDING)
-					    Collections.reverse(getData());				
-				}				
-			}
+		super.collectData();
+        
+		if(getData() != null) {
+		    //Order the records
+			Collections.sort(getData(), routeDBComparator);
+			if( getSortOrder() == DESCENDING)
+			    Collections.reverse(getData());				
 		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
-		}
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
-	}
-	
-	@Override
-	public String getDateRangeString()
-	{
-		//Use current date 
-		return getDateFormat().format(new java.util.Date());
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if ( o instanceof Integer)	//Integer is the PaobjectID
-		{
-		    LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)o).intValue());
-		    LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((Integer)o).intValue());		    
-			switch( columnIndex)
-			{
-				case METER_NAME_COLUMN:
-					return lPao.getPaoName();
-		
-				case PAO_TYPE_COLUMN:
-					return PAOGroups.getPAOTypeString(lPao.getType());
-
-				case METER_NUMBER_COLUMN:
-				    return (ldmn == null ? NULL_STRING : ldmn.getMeterNumber());
-				    
-				case ADDRESS_COLUMN:
-					return String.valueOf(lPao.getAddress());
-	
-				case ROUTE_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
-				
-				case COLL_GROUP_NAME_COLUMN:
-					return (ldmn == null ? NULL_STRING : ldmn.getCollGroup());
-				
-				case TEST_COLL_GROUP_NAME_COLUMN:
-					return (ldmn == null ? NULL_STRING : ldmn.getTestCollGroup());
-			}
-		}
-		return null;
 	}
 
 	/* (non-Javadoc)
@@ -272,35 +131,14 @@ public class RouteDBModel extends ReportModelBase
 				METER_NAME_STRING,
 				METER_NUMBER_STRING,
 				ADDRESS_STRING,
-				METER_TYPE_STRING,				
-				COLL_GROUP_NAME_STRING,
-				TEST_COLL_GROUP_NAME_STRING,
+				METER_TYPE_STRING,
+				DISABLED_STRING
 			};
 		}
 		return columnNames;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
-	 */
-	public Class[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = new Class[]{
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class
-			};
-		}
-		return columnTypes;
-	}
-
-	/* (non-Javadoc)
+	
+    /* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
 	public ColumnProperties[] getColumnProperties()
@@ -313,33 +151,18 @@ public class RouteDBModel extends ReportModelBase
 				new ColumnProperties(200, 1, 100, null),
 				new ColumnProperties(300, 1, 100, null),
 				new ColumnProperties(400, 1, 100, null),
-				new ColumnProperties(500, 1, 100, null),
-				new ColumnProperties(600, 1, 100, null)
+				new ColumnProperties(500, 1, 100, null)
 			};
 		}
 		return columnProperties;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getTitleString()
-	 */
+	@Override
 	public String getTitleString()
 	{
 		return title + " - Routes";
 	}
 	
-	@Override
-	public boolean useStartDate()
-	{
-		return false;
-	}
-
-	@Override
-	public boolean useStopDate()
-	{
-		return false;
-	}
 	/**
 	 * @return
 	 */
@@ -363,8 +186,6 @@ public class RouteDBModel extends ReportModelBase
 				return "Meter Name";
 			case ORDER_BY_METER_NUMBER:
 				return "Meter Number";
-			case ORDER_BY_COLL_GRP:
-			    return "Collection Group";
 		}
 		return "UNKNOWN";
 	}
