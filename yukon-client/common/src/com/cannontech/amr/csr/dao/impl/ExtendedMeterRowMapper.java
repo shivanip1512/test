@@ -20,8 +20,6 @@ public class ExtendedMeterRowMapper extends BaseMeterRowMapper  implements Param
         ExtendedMeter pao = new ExtendedMeter();
         fillInMeter(rs, pao);
         pao.setMeterNumber(rs.getString("meternumber"));
-        pao.setCollectionGroup(rs.getString("collectiongroup"));
-        pao.setBillingGroup(rs.getString("billinggroup"));
         return pao;
     }
 

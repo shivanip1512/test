@@ -40,13 +40,13 @@
 	
 </script>
 	
+	<b>
 	<c:choose>
 		<c:when test="${results.hitCount == 0}">
 			No results for Filter: ${filterByString}
 		</c:when>
 		<c:otherwise>
 	
-			<b>
 				Filter: 
 				<c:choose>
 					<c:when test="${empty filterByString}">
@@ -56,9 +56,11 @@
 						${filterByString}
 					</c:otherwise>
 				</c:choose>
-			</b>
-			<br/><br/>
-
+		</c:otherwise>
+	</c:choose>
+	</b>
+	
+	<br/><br/>
 
     <tags:hideReveal title="Edit Filters" showInitially="true" identifier="deviceSelection">
     <form id="filterForm" action="/spring/csr/search">
@@ -86,66 +88,61 @@
     <br>
     <br>
 			
-			<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
-			
-			<table class="resultsTable">
-			  <tr>
-			  	<th>
-					Name
-			  	</th>
+	<c:if test="${results.hitCount > 0}">
+		<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
+		
+		<table class="resultsTable">
+		  <tr>
+		  	<th>
+				Name
+		  	</th>
+	
+			<!-- Output column headers -->
+			<c:forEach var="field" items="${fields}">
+			    <th>
+			    	<amr:sortByLink 
+			    		fieldName="${field.name}" 
+			    		startIndex="${results.startIndex}" 
+			    		count="${results.count}" 
+			    		orderByField="${orderBy.field}" 
+			    		orderByDesc="${orderBy.descending}" 
+			    		selected="${orderBy.field == field.name}" 
+			    		arrow="true" 
+			    		filterByList="${filterByList}">
+			    			${field.csrString}
+			    	</amr:sortByLink>
+			    </th>
+			</c:forEach>
+	
+			</tr>
+		    
+		    <c:forEach var="device" items="${results.resultList}">
+			  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(${device.deviceId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+			    <td>
+			    	<cti:deviceName device="${device}"/>&nbsp;
+			    </td>
+			    <td>
+					${device.meterNumber}&nbsp;
+			    </td>
+			    <td>
+					${device.name}&nbsp;
+			    </td>
+			    <td>
+					${device.typeStr}&nbsp;
+			    </td>
+			    <td>
+					${device.address}&nbsp;
+			    </td>
+			    <td>
+					${device.route}&nbsp;
+			    </td>
+			  </tr>
+		    </c:forEach>
+		</table>
+	
+		<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
 
-				<!-- Output column headers -->
-				<c:forEach var="field" items="${fields}">
-				    <th>
-				    	<amr:sortByLink 
-				    		fieldName="${field.name}" 
-				    		startIndex="${results.startIndex}" 
-				    		count="${results.count}" 
-				    		orderByField="${orderBy.field}" 
-				    		orderByDesc="${orderBy.descending}" 
-				    		selected="${orderBy.field == field.name}" 
-				    		arrow="true" 
-				    		filterByList="${filterByList}">
-				    			${field.csrString}
-				    	</amr:sortByLink>
-				    </th>
-				</c:forEach>
+	</c:if>
 
-				</tr>
-			    
-			    <c:forEach var="device" items="${results.resultList}">
-				  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(${device.deviceId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
-				    <td>
-				    	<cti:deviceName device="${device}"/>&nbsp;
-				    </td>
-				    <td>
-						${device.meterNumber}&nbsp;
-				    </td>
-				    <td>
-						${device.name}&nbsp;
-				    </td>
-				    <td>
-						${device.typeStr}&nbsp;
-				    </td>
-				    <td>
-						${device.address}&nbsp;
-				    </td>
-				    <td>
-						${device.collectionGroup}&nbsp;
-				    </td>
-				    <td>
-						${device.billingGroup}&nbsp;
-				    </td>
-				    <td>
-						${device.route}&nbsp;
-				    </td>
-				  </tr>
-			    </c:forEach>
-			</table>
-
-			<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
-
-			</c:otherwise>
-	</c:choose>
 	
 </cti:standardPage>

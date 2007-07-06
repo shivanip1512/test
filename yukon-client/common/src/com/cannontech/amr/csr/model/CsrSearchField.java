@@ -19,8 +19,6 @@ public enum CsrSearchField {
 
     },
     ADDRESS("Address"), 
-    COLLECTIONGROUP("Collection Group"), 
-    BILLINGGROUP("Billing Group"), 
     ROUTE(
             "Route") {
         public String getSearchQueryField() {

@@ -70,8 +70,6 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         "       ypo.disableFlag,                                                " + 
         "       dcs.address,                                                    " + 
         "       dmg.meternumber,                                                " + 
-        "       dmg.collectiongroup,                                            " + 
-        "       dmg.billinggroup,                                               " + 
         "       dr.routeId,                                                     " + 
         "       rypo.paoname as route                                           " + 
         "   FROM                                                                " + 
