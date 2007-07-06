@@ -1,5 +1,9 @@
 package com.cannontech.analysis.data.statistic;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 
 /**
  * Created on Dec 15, 2003
@@ -14,6 +18,7 @@ public class StatisticData
 	public static final String YESTERDAY_STAT_TYPE = "Yesterday";	
 	public static final String MONTHLY_STAT_TYPE = "Monthly";
 	public static final String LAST_MONTH_STAT_TYPE = "LastMonth";
+	private static final SimpleDateFormat dailyDateFormat = new SimpleDateFormat("MMM dd, yyyy");
 	
 	
 	private String paoName = null;
@@ -23,6 +28,7 @@ public class StatisticData
 	private Integer protocolErrs = null;
 	private Integer completions = null;
 	private Integer requests = null;
+	private Integer dateOffset = null;
 	
 	/** (attempts - commErrors) / attempts */
 	private Double portPercent = null;
@@ -60,7 +66,28 @@ public class StatisticData
 		setProtocolErrs( protocolErrs_);
 		setCompletions( completions_);
 		setRequests( requests_);
-	}			
+	}
+	
+	/**
+	 * @param paoName_
+	 * @param attempts_
+	 * @param commErrors_
+	 * @param systemErrors_
+	 * @param protocolErrs_
+	 * @param completions_
+	 * @param requests_
+	 */
+	public StatisticData(String paoName_, Integer attempts_, Integer commErrors_, Integer systemErrors_, Integer protocolErrs_, Integer completions_, Integer requests_, Integer offset_)
+	{	
+		setPAOName( paoName_);
+		setAttempts( attempts_);
+		setCommErrors( commErrors_);
+		setSystemErrors( systemErrors_);
+		setProtocolErrs( protocolErrs_);
+		setCompletions( completions_);
+		setRequests( requests_);
+		setDateOffset( offset_);
+	}
 
 	/**
 	 * Default constructor.
@@ -183,6 +210,15 @@ public class StatisticData
 	}
 	
 	/**
+	 * @param integer
+	 */
+	private void setDateOffset(Integer offset_) 
+	{
+		dateOffset = offset_;
+		
+	}
+	
+	/**
 	 * @return
 	 */
 	public Double getPortPercent()
@@ -240,5 +276,17 @@ public class StatisticData
 		if( dlcPercent == null )
 			dlcPercent = new Double( (getAttempts().doubleValue() - getProtocolErrs().doubleValue()) / getAttempts().doubleValue());
 		return dlcPercent;
-	}	
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getDate()
+	{
+		Calendar newCal = Calendar.getInstance();
+		newCal.set(1970, 0, 1, 0, 0);
+		newCal.add(Calendar.DAY_OF_YEAR, dateOffset);
+		String toLocaleString = dailyDateFormat.format(newCal.getTime());
+		return toLocaleString;
+	}
 }

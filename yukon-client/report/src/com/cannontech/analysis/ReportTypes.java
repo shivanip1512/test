@@ -55,6 +55,10 @@ import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
 import com.cannontech.analysis.tablemodel.StarsAMRSummaryModel;
 import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
+import com.cannontech.analysis.tablemodel.StatisticHistoryDeviceModel;
+import com.cannontech.analysis.tablemodel.StatisticHistoryModel;
+import com.cannontech.analysis.tablemodel.StatisticHistoryPortModel;
+import com.cannontech.analysis.tablemodel.StatisticHistoryTransmitterModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
@@ -135,6 +139,9 @@ public class ReportTypes
     public static final int REPEATER_ROLE_COLLISION = 44;
     public static final int METER_KWH_DIFFERENCE = 45;
     public static final int DISCONNECT_COLLAR = 46;
+    public static final int STATISTIC_HISTORY_PORT_DATA = 47;
+    public static final int STATISTIC_HISTORY_DEVICE_DATA = 48;
+    public static final int STATISTIC_HISTORY_TRANSMITTER_DATA = 49;
     
 	private static Class[] typeToClassMap =
 	{
@@ -192,11 +199,17 @@ public class ReportTypes
         ScheduledMeterReadModel.class,
         RepeaterRoleCollisionModel.class,
         MeterKwhDifferenceController.class,
-        DisconnectCollarController.class
+        DisconnectCollarController.class,
+        StatisticHistoryPortModel.class,
+        StatisticHistoryDeviceModel.class,
+        StatisticHistoryTransmitterModel.class
 	};
 		
 	/** String names for report types */
 	public static final String STATISTIC_DATA_STRING = "Communication Statistics";
+	public static final String STATISTIC_HISTORY_PORT_STRING = "Historical Daily Port Statistics";
+	public static final String STATISTIC_HISTORY_DEVICE_STRING = "Historical Daily Device Statistics";
+	public static final String STATISTIC_HISTORY_TRANSMITTER_STRING = "Historical Daily Transmitter Statistics";
 
 	public static final String SYSTEM_LOG_DATA_STRING = "System Log";
 	public static final String LM_CONTROL_LOG_DATA_STRING = "Load Management Log";
@@ -329,7 +342,10 @@ public class ReportTypes
         SCHEDULED_METER_READ_STRING,
         REPEATER_ROLE_COLLISION_STRING,
         METER_KWH_DIFFERENCE_STRING,
-        DISCONNECT_COLLAR_STRING
+        DISCONNECT_COLLAR_STRING,
+        STATISTIC_HISTORY_PORT_STRING,
+        STATISTIC_HISTORY_DEVICE_STRING,
+        STATISTIC_HISTORY_TRANSMITTER_STRING
 	};
 
     /** Report Description to enum mapping */
@@ -351,6 +367,9 @@ public class ReportTypes
         CAP_CONTROL_RETRIES_DESCRIPTION,
         CAP_BANK_OPERATIONS_PERFORMANCE_DESCRIPTION,
         CAP_CONTROL_SCHEDULE_DETAIL_DESCRIPTION,
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -407,7 +426,7 @@ public class ReportTypes
         REPEATER_ROLE_COLLISION,
         METER_KWH_DIFFERENCE,
         DISCONNECT_COLLAR};
-	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
+	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA, STATISTIC_HISTORY_PORT_DATA, STATISTIC_HISTORY_DEVICE_DATA, STATISTIC_HISTORY_TRANSMITTER_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
 	private static int[] capControlGroupReportTypes = new int[]{
         CBC_BANK_DATA, 
