@@ -35,8 +35,6 @@
 			</c:if>
 		
 			<cti:titledContainer title="Actions">
-				Move Out<br/>
-				
 				<c:choose>
 					<c:when test="${highBillSupported}">
 						<c:url var="highBillUrl" value="/spring/csr/highBill">
@@ -48,9 +46,12 @@
 						High Bill Complaint (not supported)<br/>
 					</c:otherwise>
 				</c:choose>
-				Meter Change Out<br/>
-				STARS<br/>
-				Read History<br/>
+		        <cti:checkRole role="CommanderRole.ROLEID">
+						<c:url var="commanderUrl" value="/apps/CommandDevice.jsp">
+							<c:param name="deviceID" value="${deviceId}" />
+						</c:url>
+						<a href="${commanderUrl}">Manual Commander</a><br/>
+		        </cti:checkRole>
 			</cti:titledContainer>
 
 		</div>

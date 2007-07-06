@@ -209,6 +209,13 @@
 				<a href="SelectDevice.jsp" class="Link1">Select Device</a>
 			</div>
 
+			<div class="sideMenuLink">
+						<c:url var="devDetailsUrl" value="/spring/csr/home">
+							<c:param name="deviceId" value="${deviceId}" />
+						</c:url>
+						<a href="${devDetailsUrl}" class="Link1">Device Details</a>
+			</div>
+			
 			<div class="horizontalRule" ></div>
 		
 			<!-- Devices side menu section -->
