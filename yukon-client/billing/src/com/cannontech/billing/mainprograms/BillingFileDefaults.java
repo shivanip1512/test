@@ -38,7 +38,11 @@ public class BillingFileDefaults
 	public static final String BILLING_DEFAULTS_FILENAME_v2 = "BillingDefaultSetting.properties";
 	public static final String BILLING_DEFAULTS_DIRECTORY = CtiUtilities.getConfigDirPath();
 
-	//Number of members in this class.
+    // These are the old names, should only be used for converting.
+    public static final String[] validBillGroupTypeStrings = 
+        {"COLLECTIONGROUP", "TESTCOLLECTIONGROUP", "BILLINGGROUP"};
+    
+    //Number of members in this class.
 	private final int NUMBER_OF_PARAMETERS = 8;
 
 	private int formatID = com.cannontech.billing.FileFormatTypes.CTICSV;
@@ -46,7 +50,6 @@ public class BillingFileDefaults
 	private int energyDaysPrev = 7;
 	private java.util.Vector <String> billGroup = null;
 	private String outputFileDir = null;
-	private String billGroupType = DeviceMeterGroup.validBillGroupTypeStrings[DeviceMeterGroup.COLLECTION_GROUP];
 	private boolean removeMultiplier = false;
 
 	private boolean appendToFile = false;
@@ -78,7 +81,7 @@ public class BillingFileDefaults
 		this.formatID = formatID;
 		this.demandDaysPrev = demandDaysPrev;
 		this.energyDaysPrev = energyDaysPrev;
-        processOldBillGroup(DeviceMeterGroup.validBillGroupTypeStrings[billGroupType], billGroupString);
+        processOldBillGroup(validBillGroupTypeStrings[billGroupType], billGroupString);
 		this.outputFileDir = outputFileDir;
 		this.removeMultiplier = removeMultiplier;
 		this.inputFileDir = inputFile;
@@ -106,15 +109,6 @@ public class BillingFileDefaults
 		this.appendToFile = appendToFile;
 	}
 	
-	/**
-	 * Returns the billGroupTypeDisplayString for index (this.billGroupTypeID).
-	 * @return java.lang.String
-	 */
-	public static String getBillGroupTypeDisplayString(int index)
-	{
-		return DeviceMeterGroup.validBillGroupTypeDisplayStrings[index];
-	}
-
 	/**
 	 * Returns the demandDaysPrev.
 	 * The number of days previous to endDate for valid demand readings.

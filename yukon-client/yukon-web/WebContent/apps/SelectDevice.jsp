@@ -64,7 +64,6 @@
 		function changeFilter(filterBy) {
 			document.getElementById("DivRoute").style.display = (filterBy == <%= CommandDeviceBean.ROUTE_FILTER %>)? "" : "none";
 			document.getElementById("DivCommChannel").style.display = (filterBy == <%= CommandDeviceBean.COMM_CHANNEL_FILTER %>)? "" : "none";
-			document.getElementById("DivCollectionGroup").style.display = (filterBy == <%= CommandDeviceBean.COLLECTION_GROUP_FILTER%>)? "" : "none";
 		    document.getElementById("DivCBCType").style.display = (filterBy == <%= CommandDeviceBean.CBC_TYPE_FILTER%>)? "" : "none";
 		}
 		
@@ -148,7 +147,6 @@
 					    <select name="FilterBy" onChange="changeFilter(this.value)">
 					    	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
 					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ROUTE_FILTER')}" ${routeSelected ? 'selected' : ''}>Route</option>
-					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COLLECTION_GROUP_FILTER')}" ${collectionGroupSelected ? 'selected' : ''}>Collection Group</option>
 				        </select>
 				    </c:when>
 					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.IED') ||
@@ -157,7 +155,6 @@
 				        <select name="FilterBy" onChange="changeFilter(this.value)">
 				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
 				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}>Comm Channel</option>
-				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COLLECTION_GROUP_FILTER')}" ${collectionGroupSelected ? 'selected' : ''}>Collection Group</option>
 				        </select>
 				    </c:when>
 					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER')}">
@@ -195,14 +192,6 @@
 			      			<option value="${channel.yukonID}" ${commandDeviceBean.filterValue == channel ? 'selected' : ''}>${channel.paoName}</option>
 			      		</c:forEach>
 			      </select>
-			    </span>
-			    <!-- Collection Group filter by drop down -->      
-			    <span id="DivCollectionGroup" style="display:none"> 
-			   		<select name="CollGroupFilterValue">
-			      		<c:forEach items="${commandDeviceBean.validCollGroups}" var="group">
-			      			<option value="${group}" ${commandDeviceBean.filterValue == group ? 'selected' : ''}>${group}</option>
-			      		</c:forEach>
-			      	</select>
 			    </span>
 			    <!-- CBC filter by drop down -->      
 			    <span id="DivCBCType" style="display:none"> 

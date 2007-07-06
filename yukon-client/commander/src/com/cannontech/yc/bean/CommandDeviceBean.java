@@ -28,7 +28,6 @@ import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.lm.LMGroup;
 import com.cannontech.database.db.device.lm.LMGroupExpressCom;
 import com.cannontech.database.db.device.lm.LMGroupVersacom;
@@ -82,7 +81,7 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	// Possible Filters 
 	public static final int NO_FILTER = 0;
 	public static final int ROUTE_FILTER = 1;
-	public static final int COLLECTION_GROUP_FILTER = 2;
+	//public static final int COLLECTION_GROUP_FILTER = 2;
 	public static final int COMM_CHANNEL_FILTER = 3;
     public static final int CBC_TYPE_FILTER = 4;
 
@@ -90,7 +89,6 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	private static final String DEVICE_TYPE_STRING = "Device Type";
 	private static final String ADDRESS_STRING = "Address";
 	private static final String METER_NUMBER_STRING = "Meter Number";
-	private static final String COLL_GROUP_STRING = "Collection Group";
 	private static final String ROUTE_STRING = "Route";
 	private static final String COMM_CHANNEL_STRING = "Comm Channel";
 
@@ -106,14 +104,12 @@ public class CommandDeviceBean implements DBChangeLiteListener
 			DEVICE_TYPE_STRING, 
 			ADDRESS_STRING,
 			METER_NUMBER_STRING, 
-			COLL_GROUP_STRING,
 			ROUTE_STRING };
 
 	private static final String[] orderByStrings_Meter = new String[] { 
 			DEVICE_NAME_STRING, 
 			DEVICE_TYPE_STRING, 
 			METER_NUMBER_STRING, 
-			COLL_GROUP_STRING,
 			COMM_CHANNEL_STRING};
 
 	private static final String[] orderByStrings_Transmitter = new String[] { 
@@ -121,11 +117,6 @@ public class CommandDeviceBean implements DBChangeLiteListener
 			DEVICE_TYPE_STRING, 
 			COMM_CHANNEL_STRING};
     
-	private static final String[] orderByStrings_SimpleDevice = new String[] { 
-			DEVICE_NAME_STRING, 
-			DEVICE_TYPE_STRING};
-
-	
 	public static final String[] orderByStrings_LoadGroup = new String[] { 
 			LOAD_GROUP_STRING,
 			LMGROUP_ROUTE_STRING,
@@ -597,11 +588,6 @@ public class CommandDeviceBean implements DBChangeLiteListener
 						{
 							if (!(String.valueOf(lPao.getRouteID()).equals(getFilterValue()))) isValid = false;
 						}
-						else if (getFilterBy() == COLLECTION_GROUP_FILTER)
-						{
-							LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
-							if (!(ldmn != null && ldmn.getCollGroup().equalsIgnoreCase(getFilterValue()))) isValid = false;
-						}
 						else if( getFilterBy() == COMM_CHANNEL_FILTER)
 						{
 							if (!(String.valueOf(lPao.getPortID()).equals(getFilterValue()))) isValid = false;
@@ -918,25 +904,6 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		}
 		return validCommChannels;
 	}
-	public ArrayList getValidCollGroups()
-	{
-		if (validCollGroups == null)
-		{
-			try
-			{
-				String[] valids = DeviceMeterGroup.getDeviceCollectionGroups();
-				validCollGroups = new ArrayList(valids.length);
-				for (int i = 0; i < valids.length; i++)
-					validCollGroups.add(valids[i]);
-			}
-			catch (SQLException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return validCollGroups;
-	}
 
     public ArrayList getValidCBCTypes()
     {
@@ -1067,12 +1034,6 @@ public class CommandDeviceBean implements DBChangeLiteListener
 			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 			if (ldmn != null)
 				return ldmn.getMeterNumber().trim();
-		}
-		else if( valueString.equalsIgnoreCase(COLL_GROUP_STRING))
-		{
-			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
-			if (ldmn != null)
-				return ldmn.getCollGroup().trim();
 		}
 		else if( valueString.equalsIgnoreCase(ROUTE_STRING))
 		{
