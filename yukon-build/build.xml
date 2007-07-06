@@ -150,7 +150,7 @@
         <replace file="${module.name}/yukon-server/COMMON/include/id_build.h" token="BUILDLABEL" value="${build.label}"/>
 -->
         <exec failonerror="false" dir="${module.name}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
-            <arg line='/c ${basedir}\yukon-build\buildhere.cmd /exit /labels "${yukon.build.label}" "${yukon.build.details}"' />
+            <arg line='/c ${basedir}\yukon-build\buildhere.cmd /exit /basedir "${basedir}" /labels "${yukon.build.label}" "${yukon.build.details}"' />
         </exec>
 
         <loadfile property="errormessage" srcFile="${log.dir}/server-error.log" />
