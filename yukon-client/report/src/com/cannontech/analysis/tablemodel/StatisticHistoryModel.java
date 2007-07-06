@@ -1,21 +1,15 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import sun.security.krb5.internal.crypto.b;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.statistic.StatisticData;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Created on Dec 15, 2003
@@ -128,7 +122,6 @@ public class StatisticHistoryModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -220,7 +213,8 @@ public class StatisticHistoryModel extends ReportModelBase
 	 * Add <innerClass> objects to data, retrieved from rset.
 	 * @param ResultSet rset
 	 */
-	public void addDataRow(java.sql.ResultSet rset)
+	@SuppressWarnings("unchecked")
+    public void addDataRow(java.sql.ResultSet rset)
 	{
 		try
 		{
