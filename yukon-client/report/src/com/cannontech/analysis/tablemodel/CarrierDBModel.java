@@ -1,16 +1,17 @@
 package com.cannontech.analysis.tablemodel;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Set;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -27,19 +28,19 @@ import com.cannontech.database.data.pao.PAOGroups;
 public class CarrierDBModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 7;
+	protected final int NUMBER_COLUMNS = 6;
 	
 	/** Enum values for column representation */
 	public final static int PAO_NAME_COLUMN = 0;
-	public final static int PAO_TYPE_COLUMN = 1;
-	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int ADDRESS_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
-	public final static int COLL_GROUP_NAME_COLUMN = 5;
-	public final static int TEST_COLL_GROUP_NAME_COLUMN = 6;
+    public final static int PAO_DISABLE_FLAG_COLUMN = 1;
+	public final static int PAO_TYPE_COLUMN = 2;
+	public final static int METER_NUMBER_COLUMN = 3;
+	public final static int ADDRESS_COLUMN = 4;
+	public final static int ROUTE_NAME_COLUMN = 5;
 	
 	/** String values for column representation */
 	public final static String PAO_NAME_STRING = "MCT Name";
+    public final static String PAO_DISABLE_FLAG_STRING = "Disabled";
 	public final static String PAO_TYPE_STRING = "Type";
 	public final static String METER_NUMBER_STRING = "Meter Number";
 	public final static String ADDRESS_STRING  = "Address";
@@ -57,9 +58,7 @@ public class CarrierDBModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new ReportFilter[]{ 
-		        			ReportFilter.COLLECTIONGROUP, 
-		        			ReportFilter.ALTERNATEGROUP, 
-		        			ReportFilter.BILLINGGROUP}
+		        			ReportFilter.GROUPS}
 							);
 	}
 
@@ -69,27 +68,27 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAOBJECTID " + 
-			" FROM YUKONPAOBJECT PAO1 ");
-			if( getBillingGroups() != null && getBillingGroups().length > 0)
-			    sql.append(", DEVICEMETERGROUP DMG ");
-			    
-			sql.append(" WHERE PAO1.PAOCLASS = '" + DeviceClasses.STRING_CLASS_CARRIER +"' ");
+		StringBuffer sql = new StringBuffer("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, " +
+                                            " DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME ");	
+			sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, DEVICEROUTES DR, YUKONPAOBJECT ROUTE " );
+            sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID " + 
+                       " AND PAO.PAOBJECTID = DCS.DEVICEID " + 
+                       " AND PAO.PAOBJECTID = DR.DEVICEID " +
+                       " AND ROUTE.PAOBJECTID = DR.ROUTEID "); 
 			
-			//billing group selection
-			if( getBillingGroups() != null && getBillingGroups().length > 0)
-			{
-				sql.append(" AND PAO1.PAOBJECTID = DMG.DEVICEID " +
-						" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
-				for (int i = 1; i < getBillingGroups().length; i++)
-					sql.append("', '" + getBillingGroups()[i]);
-				sql.append("') ");
+            // Use paoIDs from group if they exist
+			if( getBillingGroups() != null && getBillingGroups().length > 0) {
+                sql.append(" AND PAO.PAOBJECTID IN (");
+                DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+                Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
+                String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+                sql.append(deviceGroupSqlInClause);
+                sql.append(")");
 			}
 			
 			//Use paoIDs in query if they exist
-			if( getPaoIDs() != null && getPaoIDs().length > 0)
-			{
-				sql.append(" AND PAO1.PAOBJECTID IN (" + getPaoIDs()[0]);
+			if( getPaoIDs() != null && getPaoIDs().length > 0)  {
+				sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
 				for (int i = 1; i < getPaoIDs().length; i++)
 					sql.append(", " + getPaoIDs()[i]);
 				sql.append(") ");
@@ -126,8 +125,28 @@ public class CarrierDBModel extends ReportModelBase
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
-					Integer paobjectID = new Integer(rset.getInt(1));
-					getData().add(paobjectID);
+                    Meter meter = new Meter();
+ 
+					int paobjectID = rset.getInt(1);
+                    meter.setDeviceId(paobjectID);
+                    String paoName = rset.getString(2);
+                    meter.setName(paoName);
+                    String type = rset.getString(3);
+                    int deviceType = PAOGroups.getDeviceType(type);
+                    meter.setType(deviceType);
+                    meter.setTypeStr(type);
+                    String disabledStr = rset.getString(4);
+                    boolean disabled = CtiUtilities.isTrue(disabledStr);
+                    meter.setDisabled(disabled);
+                    String meterNumber = rset.getString(5);
+                    meter.setMeterNumber(meterNumber);
+                    String address = rset.getString(6);
+                    meter.setAddress(address);
+                    int routeID = rset.getInt(7);
+                    meter.setRouteId(routeID);
+                    String routeName = rset.getString(8);
+                    meter.setRoute(routeName);
+					getData().add(meter);
 				}
 			}
 		}
@@ -166,34 +185,29 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof Integer)
+		if ( o instanceof Meter)
 		{
-		    LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)o).intValue());
-		    if (lPao == null)
-		    	return null;
-		    LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
+		    Meter meter = (Meter)o;
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return lPao.getPaoName();
+					return meter.getName();
+                
+                case PAO_DISABLE_FLAG_COLUMN:
+                    return (meter.isDisabled() ? "Disabled" : "");
 		
 				case PAO_TYPE_COLUMN:
-					return PAOGroups.getPAOTypeString(lPao.getType());
+					return meter.getTypeStr();
 
 				case METER_NUMBER_COLUMN:
-				    return (ldmn != null ? ldmn.getMeterNumber() : null);
+				    return meter.getMeterNumber();
 				    
 				case ADDRESS_COLUMN:
-					return String.valueOf(lPao.getAddress());
+					return meter.getAddress();
 	
 				case ROUTE_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
+					return meter.getRoute();
 				
-				case COLL_GROUP_NAME_COLUMN:
-					return (ldmn != null ? ldmn.getCollGroup() : null);
-				
-				case TEST_COLL_GROUP_NAME_COLUMN:
-					return (ldmn != null ? ldmn.getTestCollGroup() : null);
 			}
 		}
 		return null;
@@ -208,12 +222,11 @@ public class CarrierDBModel extends ReportModelBase
 		{
 			columnNames = new String[]{
 				PAO_NAME_STRING,
+                PAO_DISABLE_FLAG_STRING,
 				PAO_TYPE_STRING,
 				METER_NUMBER_STRING,
 				ADDRESS_STRING,
-				ROUTE_NAME_STRING,
-				COLL_GROUP_NAME_STRING,
-				TEST_COLL_GROUP_NAME_STRING,
+				ROUTE_NAME_STRING
 			};
 		}
 		return columnNames;
@@ -227,7 +240,6 @@ public class CarrierDBModel extends ReportModelBase
 		if( columnTypes == null)
 		{
 			columnTypes = new Class[]{
-				String.class,
 				String.class,
 				String.class,
 				String.class,
@@ -251,9 +263,8 @@ public class CarrierDBModel extends ReportModelBase
 				new ColumnProperties(200, 1, 75, null),
 				new ColumnProperties(275, 1, 75, null),
 				new ColumnProperties(350, 1, 75, null),
-				new ColumnProperties(425, 1, 145, null),
-				new ColumnProperties(570, 1, 80, null),
-				new ColumnProperties(650, 1, 80, null)
+				new ColumnProperties(425, 1, 75, null),
+				new ColumnProperties(500, 1, 200, null)
 			};
 		}
 		return columnProperties;

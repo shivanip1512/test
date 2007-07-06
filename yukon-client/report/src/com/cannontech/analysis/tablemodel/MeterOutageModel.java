@@ -3,18 +3,16 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -90,14 +88,37 @@ public class MeterOutageModel extends ReportModelBase
 	{
 		try
 		{
-		    Integer paobjectID = new Integer(rset.getInt(1));
-		    Integer pointID = new Integer(rset.getInt(2));
-			Timestamp ts = rset.getTimestamp(3);
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTimeInMillis(ts.getTime());
-			Double value = new Double(rset.getDouble(4));
-
-			MeterAndPointData meterAndPointData = new MeterAndPointData(paobjectID, pointID, new Date(cal.getTimeInMillis()), value);
+Meter meter = new Meter();
+            
+            int paobjectID = rset.getInt(1);
+            meter.setDeviceId(paobjectID);
+            String paoName = rset.getString(2);
+            meter.setName(paoName);
+            String type = rset.getString(3);
+            int deviceType = PAOGroups.getDeviceType(type);
+            meter.setType(deviceType);
+            meter.setTypeStr(type);
+            String disabledStr = rset.getString(4);
+            boolean disabled = CtiUtilities.isTrue(disabledStr);
+            meter.setDisabled(disabled);
+            String meterNumber = rset.getString(5);
+            meter.setMeterNumber(meterNumber);
+            String address = rset.getString(6);
+            meter.setAddress(address);
+            int routeID = rset.getInt(7);
+            meter.setRouteId(routeID);
+            String routeName = rset.getString(8);
+            meter.setRoute(routeName);
+            int pointID = rset.getInt(9);
+            String pointName = rset.getString(10);
+            
+            Date ts = null;
+            Double value = null;
+            Timestamp timestamp = rset.getTimestamp(11);
+            ts = new Date(timestamp.getTime());
+            value = new Double(rset.getDouble(12));
+            
+			MeterAndPointData meterAndPointData = new MeterAndPointData(meter, pointID, pointName, ts, value);
 
 			getData().add(meterAndPointData);
 		}
@@ -113,13 +134,24 @@ public class MeterOutageModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, P.POINTID, TIMESTAMP, VALUE, PAO.PAONAME " + 
-			" FROM YUKONPAOBJECT PAO, POINT P, RAWPOINTHISTORY RPH " +
-			" WHERE P.POINTOFFSET = 100 AND P.POINTTYPE = 'Analog' " +	// OUTAGE POINT OFFSET and POINTTYPE
-			" AND P.POINTID = RPH.POINTID " +
-			" AND P.PAOBJECTID = PAO.PAOBJECTID " +
-			" AND VALUE >= " + getMinOutageSecs() + 
-			" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+
+        StringBuffer sql = new StringBuffer("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, " +
+                                            " DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME, " +
+                                            " P.POINTID, P.POINTNAME, TIMESTAMP, VALUE ");
+
+        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, " + 
+                   " DEVICEROUTES DR, YUKONPAOBJECT ROUTE, POINT P , RAWPOINTHISTORY RPH");
+        
+        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID " + 
+                    " AND PAO.PAOBJECTID = DCS.DEVICEID " + 
+                    " AND PAO.PAOBJECTID = DR.DEVICEID " +
+                    " AND ROUTE.PAOBJECTID = DR.ROUTEID " +
+                    " AND P.POINTID = RPH.POINTID " +
+                    " AND PAO.PAOBJECTID = P.PAOBJECTID "); 
+
+        sql.append(" AND P.POINTOFFSET = 100 AND P.POINTTYPE = 'Analog' " +	// OUTAGE POINT OFFSET and POINTTYPE
+					" AND VALUE >= " + getMinOutageSecs() +
+                    " AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 		
 		sql.append(" ORDER BY ");	//TODO what to order by?
 		if (getOrderBy() == ORDER_BY_TIMESTAMP)
@@ -203,30 +235,28 @@ public class MeterOutageModel extends ReportModelBase
 		if ( o instanceof MeterAndPointData)
 		{
 			MeterAndPointData meterPD = ((MeterAndPointData)o);
-			LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(meterPD.getPaobjectID().intValue());
 			switch( columnIndex)
 			{
 				case DEVICE_NAME_COLUMN:
-					return lPao.getPaoName();
+					return meterPD.getMeter().getName();
 					
 				case DEVICE_TYPE_COLUMN:
-				    return PAOGroups.getPAOTypeString(lPao.getType());
+				    return meterPD.getMeter().getTypeStr();
 				    
 				case METER_NUMBER_COLUMN:
-				    LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(meterPD.getPaobjectID().intValue());
-				    return ( ldmn == null ? null : ldmn.getMeterNumber());
+				    return meterPD.getMeter().getMeterNumber();
 				    
 				case PHYSICAL_ADDRESS_COLUMN:
-				    return String.valueOf(lPao.getAddress());
+				    return meterPD.getMeter().getAddress();
 				    
 				case ROUTE_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
+					return meterPD.getMeter().getRoute();
 					
 				case DATE_TIME_COLUMN:
 				    return meterPD.getTimeStamp();
 
 				case DURATION:
-				    return convertSecondsToTimeString(meterPD.getValue().doubleValue());
+				    return TimeUtil.convertSecondsToTimeString(meterPD.getValue().doubleValue());
 			}
 		}
 		return null;

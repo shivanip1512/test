@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class StatisticHistoryTransmitterModel extends StatisticHistoryModel
 {

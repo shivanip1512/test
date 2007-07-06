@@ -85,10 +85,10 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		
 		ScheduledMeterReadModel model = new ScheduledMeterReadModel();
 //		model.setStopDate(stop);
-		model.setFilterModelType(ReportFilter.ALTERNATEGROUP);
+		model.setFilterModelType(ReportFilter.GROUPS);
 		model.setGroupBy(ScheduledMeterReadModel.GroupBy.GROUP_BY_DEVICE);
 //		model.setStatusCodeType(ScheduledMeterReadModel.StatusCodeType.SUCCESS_METER_READ_TYPE);
-		YukonReportBase meterReadReport =new ScheduledMeterReadReport(model);
+		YukonReportBase meterReadReport = new ScheduledMeterReadReport(model);
 		meterReadReport.getModel().collectData();
 		
 		//Create the report

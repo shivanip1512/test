@@ -86,43 +86,8 @@ public class CapControlCurrentStatusReport extends YukonReportBase
 		dialog.pack();
 		dialog.setVisible(true);
 	}
-	/**
-	 * Create a Group for CollectionGroup  
-	 * @return Group
-	 */
-	private Group createCollGrpGroup()
-	{
-	    final Group collGrpGroup = new Group();
-	    collGrpGroup.setName( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
-	    collGrpGroup.addField( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN));
 
-	    GroupHeader header = ReportFactory.createGroupHeaderDefault();
-
-	    LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), MeterReadModel.SORT_BY_GROUP_NAME_COLUMN);
-	    factory.setText(factory.getText() + ":");
-	    header.addElement(factory.createElement());
-
-	    TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), MeterReadModel.SORT_BY_GROUP_NAME_COLUMN);
-	    tfactory.setAbsolutePosition(new Point2D.Float(110, 1));	//override the posX location
-	    header.addElement(tfactory.createElement());
-
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
-
-	    for (int i = MeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
-	    {
-	        factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
-		    header.addElement(factory.createElement());
-		}
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
-	    collGrpGroup.setHeader(header);
-
-
-	  	GroupFooter footer = ReportFactory.createGroupFooterDefault();
-	  	collGrpGroup.setFooter(footer);
-	  	return collGrpGroup;
-	}
-	/**
+    /**
 	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */

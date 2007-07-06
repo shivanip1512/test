@@ -103,11 +103,7 @@ public class StarsAMRDetailReport extends YukonReportBase
 		    sortByGroup.setName(StarsAMRDetailModel.ROUTE_NAME_STRING + ReportFactory.NAME_GROUP);
 		    sortByGroup.addField(StarsAMRDetailModel.ROUTE_NAME_STRING);
 	    }
-	    else	///collectionGroup default
-	    {
-		    sortByGroup.setName(StarsAMRDetailModel.COLLECTION_GROUP_STRING + ReportFactory.NAME_GROUP);
-		    sortByGroup.addField(StarsAMRDetailModel.COLLECTION_GROUP_STRING);
-	    }		
+        
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		
 		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), StarsAMRDetailModel.SORT_BY_COLUMN);

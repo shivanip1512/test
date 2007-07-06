@@ -200,12 +200,6 @@ public class DisconnectReport extends YukonReportBase
 		hideItem.setElement(DisconnectModel.ROUTE_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemCollGrp");
-		hideItem.setField(DisconnectModel.COLL_GROUP_NAME_STRING);
-		hideItem.setElement(DisconnectModel.COLL_GROUP_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
 		return expressions;
 	}	
 }

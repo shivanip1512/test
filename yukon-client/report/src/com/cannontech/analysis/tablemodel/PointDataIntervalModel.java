@@ -3,21 +3,28 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -133,9 +140,7 @@ public class PointDataIntervalModel extends ReportModelBase
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.METER,
 				ReportFilter.DEVICE,
-				ReportFilter.COLLECTIONGROUP, 
-				ReportFilter.ALTERNATEGROUP, 
-				ReportFilter.BILLINGGROUP,
+				ReportFilter.GROUPS,
 				ReportFilter.RTU}
 				);
 	}
@@ -158,12 +163,11 @@ public class PointDataIntervalModel extends ReportModelBase
             int paobjectID = rset.getInt(7);
 					
 			//Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
-            LiteYukonPAObject lPao = new LiteYukonPAObject(paobjectID);
-            lPao.setPaoName(paoName);
-            MeterAndPointData mpData = new MeterAndPointData(new Integer(paobjectID), new Integer(pointID), pointName, 
+            Meter meter = new Meter();
+            meter.setDeviceId(paobjectID);
+            meter.setName(paoName);
+            MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
                                                              cal.getTime(), new Double(value), new Integer(quality));
-            mpData.setLitePaobject(lPao);
-//			LiteRawPointHistory rph = new LiteRawPointHistory(-1, pointID, cal.getTimeInMillis(), quality, value);
 			getData().add(mpData);	
 		}
 		catch(java.sql.SQLException e)
@@ -189,13 +193,18 @@ public class PointDataIntervalModel extends ReportModelBase
 			" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 
 			//Use billing groups in query if they exist
-			if( getBillingGroups() != null && getBillingGroups().length > 0)
-			{
-			    sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");			    
-				sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
-				for (int i = 1; i < getBillingGroups().length; i++)
-					sql.append("', '" + getBillingGroups()[i]);
-				sql.append("') ");
+            final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+            final String[] groups = getBillingGroups();
+            
+			if (groups != null && groups.length > 0) {
+			    sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID AND PAO.PAOBJECTID IN (");
+				
+                List<String> deviceGroupNames = Arrays.asList(groups);
+                Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
+                String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+                sql.append(deviceGroupSqlInClause);
+
+                sql.append(") ");
 			}
 			//Use paoIDs in query if they exist			
 			if( getPaoIDs() != null && getPaoIDs().length > 0)
@@ -316,7 +325,7 @@ public class PointDataIntervalModel extends ReportModelBase
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return mpData.getLitePaobject().getPaoName();
+					return mpData.getMeter().getName();
 		
 				case POINT_NAME_COLUMN:
 					return mpData.getPointName();

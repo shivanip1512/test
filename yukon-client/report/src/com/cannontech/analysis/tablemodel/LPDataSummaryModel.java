@@ -38,9 +38,7 @@ public class LPDataSummaryModel extends PointDataSummaryModel
 		setFilterModelTypes(new ReportFilter[]{ 
 				ReportFilter.METER,
                 ReportFilter.DEVICE,
-				ReportFilter.COLLECTIONGROUP, 
-				ReportFilter.ALTERNATEGROUP, 
-				ReportFilter.BILLINGGROUP}
+				ReportFilter.GROUPS}
 				);
 		setPointType(LOAD_PROFILE_POINT_TYPE);
 	}

@@ -41,14 +41,12 @@ import com.cannontech.util.ServletUtil;
  * 
  * @author snebben
  */
-public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
+public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTableModel implements Reportable
 {
 	public enum ReportFilter{ NONE(""),
 			METER("Meter Number"),
 			DEVICE("Device"),
-			COLLECTIONGROUP("Collection Group"),
-			ALTERNATEGROUP("Alternate Group"),
-			BILLINGGROUP("Billing Group"),
+			GROUPS("Groups"),
 			ROUTE("Route"),
 			RECEIVER("Receiver"),
 			LMGROUP("LM Group"),
@@ -60,7 +58,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			CAPBANK("Cap Bank"),
             SCHEDULE("Schedule (Script)"),
             AREA("Area"),
-            PORTS("Port");
+            PORT("Port");
 
 		private String filterTitle;
 		
@@ -103,7 +101,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	private int[] paoIDs = null;
 	
 	/** Vector of data (of inner class type from implementors)*/
-	protected java.util.Vector data = new java.util.Vector(100);
+	protected java.util.Vector<E> data = new java.util.Vector<E>(100);
 
 	private Date startDate = null;
 	private Date stopDate = null;
@@ -177,11 +175,11 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 * Return the Vector of data objects
 	 * @return Vector data
 	 */
-	public java.util.Vector getData()
+	public java.util.Vector<E> getData()
 	{
 		if (data == null)
 		{
-			data = new Vector();
+			data = new Vector<E>();
 		}
 		
 		return data;
@@ -404,9 +402,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 				setFilterModelType(ReportFilter.NONE);	//default to nothing selected?
 			
 			//Load billingGroup model values
-			if ( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP) ||
-		        getFilterModelType().equals(ReportFilter.ALTERNATEGROUP) ||
-		        getFilterModelType().equals(ReportFilter.BILLINGGROUP) )
+			if ( getFilterModelType().equals(ReportFilter.GROUPS) )
 			{
 				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
 				if( paramArray != null)
@@ -555,15 +551,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	    filterModelTypes = filters;
 	}
 
-	public static String getBillingGroupDatabaseString(ReportFilter filter)
-	{
-	    if ( filter.equals(ReportFilter.ALTERNATEGROUP) )
-	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.TEST_COLLECTION_GROUP];
-	    else if ( filter.equals(ReportFilter.BILLINGGROUP) )
-	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.BILLING_GROUP];
-	    else	// ReportFilter.COLLECTIONGROUP)
-	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.COLLECTION_GROUP];
-	}
 	public int getSortOrder()
 	{
 		return sortOrder;
@@ -610,29 +597,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 
 		return tempCal;
 	}
-	
-	/**
-	 * Convert seconds of time into hh:mm:ss string.
-	 * @param int seconds
-	 * @return String in format hh:mm:ss
-	 */
-	protected static String convertSecondsToTimeString(double seconds)
-	{
-		int iSeconds = (int)seconds;
-        DecimalFormat format = new DecimalFormat();
-        format.setMaximumFractionDigits(0);
-        format.setMinimumIntegerDigits(2);
-        DecimalFormat format2 = new DecimalFormat();
-        format2.setMaximumIntegerDigits(0);
-        format2.setMinimumFractionDigits(3);
-        
-        int hour = iSeconds / 3600;
-        int temp = iSeconds % 3600;
-        int min = temp / 60;
-        int sec = temp % 60; 
-
-        return format.format(hour) + ":" + format.format(min) + ":" + format.format(Math.floor(sec))+  format2.format(temp).toString();
-    }
 	
 	public void buildByteStream(OutputStream out) throws IOException
 	{

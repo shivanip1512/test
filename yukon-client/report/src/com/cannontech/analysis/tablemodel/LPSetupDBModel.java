@@ -1,11 +1,14 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
@@ -15,7 +18,9 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Created on Dec 15, 2003
@@ -27,8 +32,7 @@ import com.cannontech.database.data.pao.PAOGroups;
  *  String address			- DeviceCarrierSettings.address
  *  String routeName		- YukonPaobject.paoName (route)
  */
-public class LPSetupDBModel extends ReportModelBase
-{
+public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comparator<LPMeterData> {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 9;
 	
@@ -67,40 +71,6 @@ public class LPSetupDBModel extends ReportModelBase
 	
 	/** A string for the title of the data */
 	private static String title = "Database Report";
-		
-	public Comparator lpSetupComparator = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2){
-
-		    String thisVal = NULL_STRING;
-		    String anotherVal = NULL_STRING;
-		    LiteYukonPAObject pao1 = DaoFactory.getPaoDao().getLiteYukonPAO( ((LPMeterData)o1).getMeterAndPointData().getPaobjectID().intValue());
-		    LiteYukonPAObject pao2 = DaoFactory.getPaoDao().getLiteYukonPAO( ((LPMeterData)o2).getMeterAndPointData().getPaobjectID().intValue());
-		    
-		    if( getOrderBy() == ORDER_BY_ROUTE_NAME)
-		    {
-		        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getRouteID());
-				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getRouteID());
-		    }
-		    else if( getOrderBy() == ORDER_BY_METER_NUMBER)
-		    {
-		        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((LPMeterData)o1).getMeterAndPointData().getPaobjectID().intValue());
-			    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((LPMeterData)o2).getMeterAndPointData().getPaobjectID().intValue());
-		        
-		        thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getMeterNumber());
-				anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getMeterNumber());
-		    }
-		    if (getOrderBy() == ORDER_BY_DEVICE_NAME || thisVal.equalsIgnoreCase(anotherVal))
-		    {
-		        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getYukonID());
-		        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getYukonID());
-		    }
-			return (thisVal.compareToIgnoreCase(anotherVal));
-		}
-		public boolean equals(Object obj){
-			return false;
-		}
-	};
 	
 	/**
 	 * Default Constructor
@@ -114,22 +84,39 @@ public class LPSetupDBModel extends ReportModelBase
 	 * Add LPMeterData objects to data, retrieved from rset.
 	 * @param ResultSet rset
 	 */
-	public void addDataRow(ResultSet rset)
-	{
-		try
-		{
-			Integer paobjectID = new Integer(rset.getInt(1));
-			String lastIntDemand = String.valueOf(rset.getInt(2));
-			String lastIntVoltage = String.valueOf(rset.getInt(3));
-			String dmdRate = String.valueOf(rset.getInt(4));
-			String voltageDmdRate = String.valueOf(rset.getInt(5));
-				
-			MeterAndPointData mpData = new MeterAndPointData(paobjectID, null, null, null);
-			LPMeterData lpMeterData = new LPMeterData(mpData, lastIntDemand, lastIntVoltage, dmdRate, voltageDmdRate);
-			getData().add(lpMeterData);
-		}
-		catch(java.sql.SQLException e)
-		{
+	public void addDataRow(ResultSet rs) {
+		try {
+            final Meter meter = new Meter();
+            meter.setDeviceId(rs.getInt("PAOBJECTID"));
+            meter.setName(rs.getString("PAONAME"));
+            meter.setTypeStr(rs.getString("TYPE"));
+            meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG")));
+            meter.setMeterNumber(rs.getString("METERNUMBER"));
+            meter.setAddress(rs.getString("ADDRESS"));
+            meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
+            meter.setRoute(rs.getString("ROUTEPAONAME"));
+
+            final MeterAndPointData mpData = 
+                new MeterAndPointData(
+                    meter,
+                    rs.getInt("POINTID"),
+                    rs.getString("POINTNAME"),
+                    null,
+                    null
+                );
+
+			
+            getData().add(
+                new LPMeterData(
+                    mpData,
+                    rs.getString("LASTINTERVALDEMANDRATE"),
+                    rs.getString("VOLTAGEDMDINTERVAL"),
+                    rs.getString("LOADPROFILEDEMANDRATE"),
+                    rs.getString("VOLTAGEDMDRATE")
+                ));
+            
+		} catch(java.sql.SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -138,12 +125,28 @@ public class LPSetupDBModel extends ReportModelBase
 	 * Build the SQL statement to retrieve DatabaseModel data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
-	{
-		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAOBJECTID,  DLP.LASTINTERVALDEMANDRATE, VOLTAGEDMDINTERVAL, LOADPROFILEDEMANDRATE, VOLTAGEDMDRATE " +
-			" FROM YUKONPAOBJECT PAO1, DEVICELOADPROFILE DLP "+
-			" WHERE PAO1.PAOBJECTID = DLP.DEVICEID " +
-			" ORDER BY PAO1.PAOBJECTID ");
+	public StringBuilder buildSQLStatement() {
+		final StringBuilder sql = new StringBuilder();
+        //SELECT
+        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
+        sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
+        sql.append("P.POINTID, P.POINTNAME, DLP.LASTINTERVALDEMANDRATE, VOLTAGEDMDINTERVAL, ");
+        sql.append("LOADPROFILEDEMANDRATE, VOLTAGEDMDRATE ");
+        
+        //FROM
+        sql.append("FROM YUKONPAOBJECT PAO, DEVICELOADPROFILE DLP, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
+        sql.append("POINT P, DEVICEROUTES DR, YUKONPAOBJECT ROUTE ");
+        
+        //WHERE
+		sql.append("WHERE PAO.PAOBJECTID = DLP.DEVICEID ");
+        sql.append("AND PAO.PAOBJECTID = P.PAOBJECTID ");
+        sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
+        sql.append("AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+        
+        //ORDER
+		sql.append("ORDER BY PAO.PAOBJECTID");
 		return sql;
 	}
 		
@@ -153,39 +156,28 @@ public class LPSetupDBModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
+		StringBuilder sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
 
 		try
 		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		    conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-				if(getData() != null)
-				{
-//					Order the records
-					Collections.sort(getData(), lpSetupComparator);
-					if( getSortOrder() == DESCENDING)
-					    Collections.reverse(getData());				
-				}				
-			}
+		    if( conn == null )
+		    {
+		        CTILogger.error(getClass() + ":  Error getting database connection.");
+		        return;
+		    }
+		    pstmt = conn.prepareStatement(sql.toString());
+		    rset = pstmt.executeQuery();
+		    while( rset.next())
+		    {
+		        addDataRow(rset);
+		    }
 		}
 			
 		catch( java.sql.SQLException e )
@@ -206,6 +198,14 @@ public class LPSetupDBModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
+        
+        if(getData() != null) {
+            //Order the records
+            Collections.sort(getData(), this);
+            if( getSortOrder() == DESCENDING)
+                Collections.reverse(getData());             
+        }
+        
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
@@ -220,35 +220,32 @@ public class LPSetupDBModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if ( o instanceof LPMeterData)
-		{
-			LPMeterData lpMeter = ((LPMeterData)o);
-			switch( columnIndex)
-			{
-				case DEVICE_NAME_COLUMN:
-					return lpMeter.getMeterAndPointData().getLitePaobject().getPaoName();
+	public Object getAttribute(int columnIndex, Object o) {
 		
+        if (o instanceof LPMeterData) {
+            
+            final LPMeterData lpData = (LPMeterData) o;
+            final MeterAndPointData mpData = lpData.getMeterAndPointData();
+            
+			switch( columnIndex) {
+				case DEVICE_NAME_COLUMN:
+                    return mpData.getMeter().getName();
 				case DEVICE_TYPE_COLUMN:
-					return PAOGroups.getPAOTypeString(lpMeter.getMeterAndPointData().getLitePaobject().getType());
-
+                    return mpData.getMeter().getTypeStr();
 				case METER_NUMBER_COLUMN:
-				    return ( lpMeter.getMeterAndPointData().getLiteDeviceMeterNumber() == null ? NULL_STRING : lpMeter.getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber());
+                    return mpData.getMeter().getMeterNumber();
 				case ADDRESS_COLUMN:
-					return String.valueOf(lpMeter.getMeterAndPointData().getLitePaobject().getAddress());
-	
+                    return mpData.getMeter().getAddress();
 				case ROUTE_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lpMeter.getMeterAndPointData().getLitePaobject().getRouteID());
-				
+                    return mpData.getMeter().getRoute();
 				case LAST_INTERVAL_DEMAND_COLUMN:
-				    return lpMeter.getLastIntervalDemand();
+				    return lpData.getLastIntervalDemand();
 				case LAST_INTERVAL_VOLTAGE_COLUMN:
-				    return lpMeter.getLastIntervalVoltage();
+				    return lpData.getLastIntervalVoltage();
 				case CHANNEL_1_DEMAND_RATE_COLUMN:
-				    return lpMeter.getDemandRate();
+				    return lpData.getDemandRate();
 				case CHANNEL_4_VOLTAGE_DEMAND_RATE_COLUMN:
-				    return lpMeter.getVoltageDemandRate();				
+				    return lpData.getVoltageDemandRate();
 			}
 		}
 		return null;
@@ -369,33 +366,33 @@ public class LPSetupDBModel extends ReportModelBase
 	public static int[] getAllOrderBys()
 	{
 		return ALL_ORDER_BYS;
-	}	
+	}
+    
 	@Override
-	public String getHTMLOptionsTable()
-	{
-	    String html = "";
-		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
+	public String getHTMLOptionsTable() {
+	    final StringBuilder sb = new StringBuilder();
+		sb.append("<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("  <tr>" + LINE_SEPARATOR);
 	    
-		html += "    <td valign='top'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
+        sb.append("    <td valign='top'>" + LINE_SEPARATOR);
+        sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
 		for (int i = 0; i < getAllOrderBys().length; i++)
 		{
-			html += "        <tr>" + LINE_SEPARATOR;
-			html += "          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' " +  
-			 (i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR;
-			html += "          </td>" + LINE_SEPARATOR;
-			html += "        </tr>" + LINE_SEPARATOR;
+            sb.append("        <tr>" + LINE_SEPARATOR);
+            sb.append("          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' ");  
+            sb.append((i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR);
+            sb.append("          </td>" + LINE_SEPARATOR);
+            sb.append("        </tr>" + LINE_SEPARATOR);
 		}
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
+        sb.append("      </table>" + LINE_SEPARATOR);
+        sb.append("    </td>" + LINE_SEPARATOR);
 		
-		html += "  </tr>" + LINE_SEPARATOR;
-		html += "</table>" + LINE_SEPARATOR;
-		return html;
+        sb.append("  </tr>" + LINE_SEPARATOR);
+        sb.append("</table>" + LINE_SEPARATOR);
+		return sb.toString();
 
 	}
 	@Override
@@ -411,4 +408,19 @@ public class LPSetupDBModel extends ReportModelBase
 				setOrderBy(ORDER_BY_DEVICE_NAME);			
 		}		
 	}
+    
+    public int compare(LPMeterData o1, LPMeterData o2) {
+        final MeterAndPointData mpData1 = o1.getMeterAndPointData();
+        final MeterAndPointData mpData2 = o2.getMeterAndPointData();
+        
+        if (getOrderBy() == ORDER_BY_ROUTE_NAME) {
+            return mpData1.getMeter().getRoute().compareToIgnoreCase(mpData2.getMeter().getRoute());
+        }
+        
+        if (getOrderBy() == ORDER_BY_METER_NUMBER) {
+            return mpData1.getMeter().getMeterNumber().compareTo(mpData2.getMeter().getMeterNumber());
+        }
+        
+        return mpData1.getMeter().getName().compareToIgnoreCase(mpData2.getMeter().getName());
+    }
 }

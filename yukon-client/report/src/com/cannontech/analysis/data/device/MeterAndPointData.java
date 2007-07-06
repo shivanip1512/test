@@ -3,6 +3,7 @@
  */
 package com.cannontech.analysis.data.device;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -18,15 +19,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class MeterAndPointData
 {	
 //    private MeterData meterData = null;
-    private Integer paobjectID = null;
+    private Meter meter = null;
     private Integer pointID = null;
     private String pointName = null;
 	private java.util.Date timeStamp = null;
 	private Double value = null;
     private Integer quality = null; 
-	private LiteYukonPAObject litePaobject = null;
-	private LiteDeviceMeterNumber liteDeviceMeterNumber = null;
-	
 	
 	/**
 	 * 
@@ -43,9 +41,9 @@ public class MeterAndPointData
 	 * @param timestamp_
 	 * @param value_
 	 */
-	public MeterAndPointData(Integer paobjectID_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_, Integer quality_)
+	public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_, Integer quality_)
 	{
-	    paobjectID = paobjectID_;
+	    meter = meter_;
 	    pointID = pointID_;
 		timeStamp = timeStamp_;
 		value = value_;			
@@ -53,10 +51,11 @@ public class MeterAndPointData
         quality = quality_;
 	}
 
-    public MeterAndPointData(Integer paobjectID_, Integer pointID_, java.util.Date timeStamp_, Double value_)
+    public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_)
     {
-        paobjectID = paobjectID_;
+        meter = meter_;
         pointID = pointID_;
+        pointName = pointName_;
         timeStamp = timeStamp_;
         value = value_;         
     }
@@ -92,48 +91,11 @@ public class MeterAndPointData
     {
         return pointID;
     }
-	/**
-	 * @return Returns the paobjectID.
-	 */
-	public Integer getPaobjectID()
-	{
-	    return paobjectID;
-	}
 
-	public LiteYukonPAObject getLitePaobject()
-	{
-	    if( litePaobject == null )
-	    {
-	        litePaobject = DaoFactory.getPaoDao().getLiteYukonPAO(getPaobjectID().intValue());
-	    }
-	    return litePaobject;
-	}
-
-    /**
-     * @param litePaobject The litePaobject to set.
-     */
-    public void setLitePaobject(LiteYukonPAObject litePaobject)
-    {
-        this.litePaobject = litePaobject;
+    public Meter getMeter() {
+        return meter;
     }
     
-    public LiteDeviceMeterNumber getLiteDeviceMeterNumber()
-    {
-        if( liteDeviceMeterNumber == null )
-        {
-            liteDeviceMeterNumber = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(getPaobjectID().intValue());
-        }
-        return liteDeviceMeterNumber;
-    }
-
-    /**
-     * @param liteDeviceMeterNumber The liteDeviceMeterNumber to set.
-     */
-    public void setLiteDeviceMeterNumber(LiteDeviceMeterNumber liteDeviceMeterNumber)
-    {
-        this.liteDeviceMeterNumber = liteDeviceMeterNumber;
-    }
-
     /**
      * @return Returns the pointName.
      */

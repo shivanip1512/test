@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class StatisticHistoryPortModel extends StatisticHistoryModel
 {
@@ -14,7 +13,7 @@ public class StatisticHistoryPortModel extends StatisticHistoryModel
 	public StatisticHistoryPortModel()
 	{
 		super(StatisticHistoryModel.DAILY_STAT_PERIOD_TYPE_STRING, StatisticHistoryModel.STAT_COMM_CHANNEL_DATA);
-		setFilterModelTypes(new ReportFilter[]{ ReportFilter.PORTS });
+		setFilterModelTypes(new ReportFilter[]{ ReportFilter.PORT });
 	}
 	
 	/**
@@ -26,6 +25,6 @@ public class StatisticHistoryPortModel extends StatisticHistoryModel
 	public StatisticHistoryPortModel(String statPeriodType_, int statType_)
 	{
 		super(statPeriodType_, StatisticHistoryModel.STAT_COMM_CHANNEL_DATA);
-		setFilterModelTypes(new ReportFilter[]{ ReportFilter.PORTS });
+		setFilterModelTypes(new ReportFilter[]{ ReportFilter.PORT });
 	}
 }

@@ -2,15 +2,23 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -22,7 +30,7 @@ import com.cannontech.database.PoolManager;
  *  String routeName  
  * @author snebben
  */
-public class ScheduledMeterReadModel extends ReportModelBase
+public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadModel.ScheduledMeterReadRow>
 {
     static public class ScheduledMeterReadRow {
     	public String scheduleName;
@@ -224,29 +232,38 @@ public class ScheduledMeterReadModel extends ReportModelBase
 											" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID " + 
 											" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 		
+        final StringBuilder sb = new StringBuilder();
 //		Use paoIDs in query if they exist
 		if( getFilterModelType().equals(ReportFilter.SCHEDULE)) {
 			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-				sql.append(" AND DRJL.ScheduleID IN (" + getPaoIDs()[0]);
-				for (int i = 1; i < getPaoIDs().length; i++)
-					sql.append(", " + getPaoIDs()[i]);
-				sql.append(") ");
+                for (final int i : getPaoIDs()) {
+                    sb.append(i + ",");
+                }
+                sql.append(" AND DRJL.ScheduleID IN (" + StringUtils.chop(sb.toString()) + ") ");
 			}
 		} else if (getFilterModelType().equals(ReportFilter.METER) | getFilterModelType().equals(ReportFilter.DEVICE)) {
 			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-				sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-				for (int i = 1; i < getPaoIDs().length; i++)
-					sql.append(", " + getPaoIDs()[i]);
-				sql.append(") ");
+                for (final int i : getPaoIDs()) {
+                    sb.append(i + ",");
+                }
+                sql.append(" AND PAO.PAOBJECTID IN (" + StringUtils.chop(sb.toString()) + ") ");
 			}
 		}
 		
-		if( getBillingGroups() != null && getBillingGroups().length > 0) {
-			sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);			        
-			for (int i = 1; i < getBillingGroups().length; i++)
-				sql.append("', '" + getBillingGroups()[i]);
-			sql.append("') ");
-		}
+        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        final String[] groups = getBillingGroups();
+        
+        if (groups != null && groups.length > 0) {
+            sql.append(" AND PAO.PAOBJECTID IN (");
+            
+            List<String> deviceGroupNames = Arrays.asList(groups);
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            sql.append(deviceGroupSqlInClause);
+            
+            sql.append(")");
+        }
+        
 		if( getStatusCodeType() == StatusCodeType.ERROR_METER_READ_TYPE)
 			sql.append(" AND DRL.STATUSCODE > 0");
 		else if( getStatusCodeType() == StatusCodeType.SUCCESS_METER_READ_TYPE)
@@ -662,7 +679,7 @@ public class ScheduledMeterReadModel extends ReportModelBase
 			totals = new HashMap();
 			for(int i = 0; i < getData().size(); i++)
 			{
-				String key = String.valueOf(((ScheduledMeterReadRow)getData().get(i)).statusCode);
+				String key = String.valueOf((getData().get(i)).statusCode);
 				Integer initValue = (Integer)totals.get(key);
 				if( initValue == null)
 					initValue = new Integer(0);

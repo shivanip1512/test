@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -345,19 +346,19 @@ public class LoadGroupModel extends ReportModelBase
 				case CONTROL_STOP_TIME_COLUMN:
 					return lmch.getStopDateTime();
 				case CONTROL_DURATION_COLUMN:
-					return convertSecondsToTimeString(lmch.getControlDuration().doubleValue());
+					return TimeUtil.convertSecondsToTimeString(lmch.getControlDuration().doubleValue());
 				case ACTIVE_RESTORE_COLUMN:
 					return getActiveRestoreString(lmch.getActiveRestore());
 				case CONTROL_TYPE_COLUMN:
 					return lmch.getControlType();
 				case DAILY_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentDailyTime().doubleValue());
+					return TimeUtil.convertSecondsToTimeString(lmch.getCurrentDailyTime().doubleValue());
 				case MONTHLY_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentMonthlyTime().doubleValue());
+					return TimeUtil.convertSecondsToTimeString(lmch.getCurrentMonthlyTime().doubleValue());
 				case SEASONAL_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentSeasonalTime().doubleValue());
+					return TimeUtil.convertSecondsToTimeString(lmch.getCurrentSeasonalTime().doubleValue());
 				case ANNUAL_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentAnnualTime().doubleValue());
+					return TimeUtil.convertSecondsToTimeString(lmch.getCurrentAnnualTime().doubleValue());
 			}
 		}
 		return null;

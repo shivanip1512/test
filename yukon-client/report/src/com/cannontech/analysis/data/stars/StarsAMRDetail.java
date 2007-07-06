@@ -20,7 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
  */
 public class StarsAMRDetail
 {
-    private MeterAndPointData meterPointData = null;
+    private MeterAndPointData meterAndPointData = null;
     private String accountNumber = null;
     private Integer customerID = null;
     private String mapNumber = null;
@@ -33,7 +33,7 @@ public class StarsAMRDetail
      */
     public StarsAMRDetail(MeterAndPointData meterPointData, String accountNumber, Integer customerID, String mapNumber) {
         super();
-        this.meterPointData = meterPointData;
+        this.meterAndPointData = meterPointData;
         this.accountNumber = accountNumber;
         this.customerID = customerID;
         this.mapNumber = mapNumber;
@@ -55,9 +55,9 @@ public class StarsAMRDetail
     /**
      * @return Returns the meterPointData.
      */
-    public MeterAndPointData getMeterPointData()
+    public MeterAndPointData getMeterAndPointData()
     {
-        return meterPointData;
+        return meterAndPointData;
     }
     /**
      * @return Returns the customerID.
@@ -73,13 +73,5 @@ public class StarsAMRDetail
             litePrimaryContact = DaoFactory.getCustomerDao().getPrimaryContact(getCustomerID().intValue());
         }
         return litePrimaryContact;
-    }
-    public LiteYukonPAObject getLitePaobject()
-    {
-        return getMeterPointData().getLitePaobject();
-    }
-    public LiteDeviceMeterNumber getLiteDeviceMeterNumber()
-    {
-        return getMeterPointData().getLiteDeviceMeterNumber();
     }
 }

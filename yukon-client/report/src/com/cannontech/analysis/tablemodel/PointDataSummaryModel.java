@@ -1,30 +1,32 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -215,25 +217,25 @@ public class PointDataSummaryModel extends ReportModelBase
 		ORDER_BY_DEVICE_NAME, ORDER_BY_METER_NUMBER, ORDER_BY_PHYSICAL_ADDRESS 
 	};
 
-	public Comparator lpDataSummaryComparator = new java.util.Comparator()
+	public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
 	{
-		public int compare(Object o1, Object o2){
+		public int compare(LPMeterData o1, LPMeterData o2){
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
 		    if( getOrderBy() == ORDER_BY_DEVICE_NAME)
 		    {
-		        thisVal = ((LPMeterData)o1).getMeterAndPointData().getLitePaobject().getPaoName();
-		        anotherVal = ((LPMeterData)o2).getMeterAndPointData().getLitePaobject().getPaoName();
+		        thisVal = o1.getMeterAndPointData().getMeter().getName();
+		        anotherVal = o2.getMeterAndPointData().getMeter().getName();
 		    }
 		    if( getOrderBy() == ORDER_BY_PHYSICAL_ADDRESS)
 		    {
-		        thisVal = String.valueOf( ((LPMeterData)o1).getMeterAndPointData().getLitePaobject().getAddress());
-				anotherVal = String.valueOf( ((LPMeterData)o2).getMeterAndPointData().getLitePaobject().getAddress());
+                thisVal = o1.getMeterAndPointData().getMeter().getAddress();
+                anotherVal = o2.getMeterAndPointData().getMeter().getAddress();
 		    }
 		    if( getOrderBy() == ORDER_BY_METER_NUMBER)
 		    {
-		        thisVal = ((LPMeterData)o1).getMeterAndPointData().getLiteDeviceMeterNumber() == null ? NULL_STRING : ((LPMeterData)o1).getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
-				anotherVal = ((LPMeterData)o2).getMeterAndPointData().getLiteDeviceMeterNumber() == null ? NULL_STRING : ((LPMeterData)o2).getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
+                thisVal = o1.getMeterAndPointData().getMeter().getMeterNumber();
+                anotherVal = o2.getMeterAndPointData().getMeter().getMeterNumber();
 		    }
 	        return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
@@ -271,9 +273,7 @@ public class PointDataSummaryModel extends ReportModelBase
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.METER,
 				ReportFilter.DEVICE,
-				ReportFilter.COLLECTIONGROUP, 
-				ReportFilter.ALTERNATEGROUP, 
-				ReportFilter.BILLINGGROUP,
+				ReportFilter.GROUPS,
 				ReportFilter.RTU}
 				);
 		setPointType(summaryPointType);
@@ -353,13 +353,18 @@ public class PointDataSummaryModel extends ReportModelBase
 				" OR P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT) + "' )");
 		}
 		//Use paoIDs in query if they exist
-		if( getBillingGroups() != null && getBillingGroups().length > 0)
-		{
-			sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
-			sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
-			for (int i = 1; i < getBillingGroups().length; i++)
-				sql.append("', '" + getBillingGroups()[i]);
-			sql.append("') ");
+        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        final String[] groups = getBillingGroups();
+        
+		if (groups != null && groups.length > 0) {
+			sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID AND PAO.PAOBJECTID IN (");
+			
+            List<String> deviceGroupNames = Arrays.asList(groups);
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            sql.append(deviceGroupSqlInClause);
+            
+            sql.append(") ");
 		}
 		if( getPaoIDs() != null && getPaoIDs().length > 0)
 		{
@@ -421,7 +426,7 @@ public class PointDataSummaryModel extends ReportModelBase
                     String paoCategory = rset.getString(3);
                     String paoType = rset.getString(4);
                     String meterNumber = rset.getString(5);
-                    Object address = rset.getObject(6);
+                    String address = rset.getString(6);
                     String pointName = rset.getString(7);
                     Integer pointID = new Integer(rset.getInt(8));
                     
@@ -470,18 +475,19 @@ public class PointDataSummaryModel extends ReportModelBase
 					    voltageDemandInterval = String.valueOf(rset.getInt(15));
 					}
 								
-					MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, pointName, new Date(ts.getTime()), value, quality);
-                    LiteYukonPAObject litePaobject = new LiteYukonPAObject(paobjectID);
-                    litePaobject.setPaoName(paoName);
+                    Meter meter = new Meter();
+                    meter.setDeviceId(paobjectID);
+                    meter.setName(paoName);
                     if( address != null)
-                    	litePaobject.setAddress(((BigDecimal)address).intValue());
-                    litePaobject.setType(PAOGroups.getPAOType(paoCategory, paoType));
-                    mpData.setLitePaobject(litePaobject);
+                    	meter.setAddress(address);
+                    meter.setTypeStr(paoType);
+
                     if (meterNumber != null) {
-	                    LiteDeviceMeterNumber liteDevMeterNum = new LiteDeviceMeterNumber(paobjectID.intValue());
-	                    liteDevMeterNum.setMeterNumber(meterNumber);
-	                    mpData.setLiteDeviceMeterNumber(liteDevMeterNum);
+                        meter.setMeterNumber(meterNumber);
                     }
+                    
+                    MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, new Date(ts.getTime()), value, quality);
+
 					LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
 					getData().add(lpMeterData);
 					tempMPDataVector.add(mpData);
@@ -568,25 +574,18 @@ public class PointDataSummaryModel extends ReportModelBase
 		if ( o instanceof LPMeterData)
 		{
 		    LPMeterData lpMeterData = ((LPMeterData)o);
-//			LiteRawPointHistory rphData = ((LiteRawPointHistory)o);
-//			LitePoint lp = DaoFactory.getPointDao().getLitePoint(rphData.getPointID());
 			switch( columnIndex)
 			{			
 				case PAO_NAME_COLUMN:
-					return lpMeterData.getMeterAndPointData().getLitePaobject().getPaoName();
+					return lpMeterData.getMeterAndPointData().getMeter().getName();
 				case PAO_TYPE_COLUMN:
-				    return PAOGroups.getPAOTypeString(lpMeterData.getMeterAndPointData().getLitePaobject().getType());
+				    return lpMeterData.getMeterAndPointData().getMeter().getTypeStr();
 				case METER_NUMBER_COLUMN:
-				    if(lpMeterData.getMeterAndPointData().getLiteDeviceMeterNumber() != null)
-				        return lpMeterData.getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
-				    return null;
+				    return lpMeterData.getMeterAndPointData().getMeter().getMeterNumber();
 				case PHYSICAL_ADDRESS_COLUMN:
-				    if( lpMeterData.getMeterAndPointData().getLitePaobject().getAddress() > -1)
-				        return String.valueOf(lpMeterData.getMeterAndPointData().getLitePaobject().getAddress());
-				    return null;
+                    return lpMeterData.getMeterAndPointData().getMeter().getAddress();
 				case POINT_NAME_COLUMN:
 				    return lpMeterData.getMeterAndPointData().getPointName();
-//                    return DaoFactory.getPointDao().getPointName(lpMeterData.getMeterAndPointData().getPointID().intValue());                   
 				case CHANNEL_NUMBER_COLUMN:
 				{
 				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());

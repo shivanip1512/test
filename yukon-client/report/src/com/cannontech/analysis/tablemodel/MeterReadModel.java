@@ -1,60 +1,60 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
  * MeterData TableModel object
- *  String collGroup	- DeviceMeterGroup.collectionGroup 
  *  String deviceName	- YukonPaobject.paoName
  *  String pointName	- Point.pointName
  *  Integer pointID		- Point.pointID
  *  String routeName  
  * @author snebben
  */
-public class MeterReadModel extends ReportModelBase
+public class MeterReadModel extends ReportModelBase<MeterAndPointData> implements Comparator<MeterAndPointData>
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 8;
+	protected final int NUMBER_COLUMNS = 7;
 	
 	/** Enum values for column representation */
-	public final static int SORT_BY_GROUP_NAME_COLUMN = 0;
-	public final static int DEVICE_NAME_COLUMN = 1;
-	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int PHYSICAL_ADDRESS_COLUMN = 3;
-	public final static int POINT_NAME_COLUMN = 4;
-	public final static int ROUTE_NAME_COLUMN = 5;
-	public final static int GROUP_NAME_1_OR_TIMESTAMP_COLUMN = 6;
-	public final static int GROUP_NAME_2_OR_VALUE_COLUMN = 7;
+	public final static int DEVICE_NAME_COLUMN = 0;
+	public final static int METER_NUMBER_COLUMN = 1;
+	public final static int PHYSICAL_ADDRESS_COLUMN = 2;
+	public final static int POINT_NAME_COLUMN = 3;
+	public final static int ROUTE_NAME_COLUMN = 4;
+	public final static int TIMESTAMP_COLUMN = 5;
+	public final static int VALUE_COLUMN = 6;
 	//Alternate columns for a successful meter report
 
 	/** String values for column representation */
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String METER_NUMBER_STRING = "Meter Number";
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String ALT_GROUP_NAME_STRING = "Alternate\nGroup";
-	public final static String BILLING_GROUP_NAME_STRING = "Billing\nGroup";
-	//Alternate columns for a successful meter report
 	public final static String TIMESTAMP_STRING= "Timestamp";
 	public final static String VALUE_STRING = "Value";
 	
@@ -77,64 +77,6 @@ public class MeterReadModel extends ReportModelBase
 	private static String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
 	
-	public class MeterReadComparator implements Comparator, Serializable
-	{
-		public int compare(Object o1, Object o2){
-	        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((MeterAndPointData)o1).getPaobjectID().intValue());
-		    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((MeterAndPointData)o2).getPaobjectID().intValue());
-
-		    String thisVal = NULL_STRING;
-		    String anotherVal = NULL_STRING;
-		    //Always sort by group first
-			if (getFilterModelType().equals(ReportFilter.ALTERNATEGROUP)) {
-			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getTestCollGroup());
-			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getTestCollGroup());
-			}
-			else if ( getFilterModelType().equals(ReportFilter.BILLINGGROUP)) {
-			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getBillGroup());
-			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getBillGroup());
-			}
-			else	//CollectionGroup
-			{
-			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getCollGroup());
-			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getCollGroup());
-			}
-			if( thisVal.equalsIgnoreCase(anotherVal))
-			{
-			    LiteYukonPAObject pao1 = DaoFactory.getPaoDao().getLiteYukonPAO( ((MeterAndPointData)o1).getPaobjectID().intValue());
-			    LiteYukonPAObject pao2 = DaoFactory.getPaoDao().getLiteYukonPAO( ((MeterAndPointData)o2).getPaobjectID().intValue());
-			    
-			    if( getOrderBy() == ORDER_BY_ROUTE_NAME)
-			    {
-			        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getRouteID());
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getRouteID());
-			    }
-			    else if( getOrderBy() == ORDER_BY_METER_NUMBER)
-			    {
-			        thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getMeterNumber());
-					anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getMeterNumber());
-			    }
-			    if (getOrderBy() == ORDER_BY_DEVICE_NAME || thisVal.equalsIgnoreCase(anotherVal))
-			    {
-			        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getYukonID());
-			        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getYukonID());
-			        if( thisVal.equalsIgnoreCase(anotherVal))
-			        {
-					    		            
-				        thisVal = DaoFactory.getPointDao().getPointName( ((MeterAndPointData)o1).getPointID().intValue());
-				        anotherVal = DaoFactory.getPointDao().getPointName( ((MeterAndPointData)o2).getPointID().intValue());
-			        }
-			    }
-			}
-			return (thisVal.compareToIgnoreCase(anotherVal));
-		}
-		public boolean equals(Object obj){
-			return false;
-		}
-	};
-	
-	public MeterReadComparator meterReadComparator = new MeterReadComparator();
-
 	/**
 	 * 
 	 */
@@ -156,7 +98,7 @@ public class MeterReadModel extends ReportModelBase
 	public MeterReadModel(Date start_)
 	{
 		//Long.MIN_VALUE is the default (null) value for time
-		this(MISSED_METER_READ_TYPE, null);
+		this(MISSED_METER_READ_TYPE, start_);
 	}	
 	/**
 	 * 
@@ -167,9 +109,7 @@ public class MeterReadModel extends ReportModelBase
 		super(start_, null);
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.METER,
-				ReportFilter.COLLECTIONGROUP, 
-				ReportFilter.ALTERNATEGROUP, 
-				ReportFilter.BILLINGGROUP
+				ReportFilter.GROUPS
 				} 
 		);
 	}
@@ -179,20 +119,40 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public void addDataRow(ResultSet rset)
 	{
-		try
-		{
-		    
-			Integer paobjectID = new Integer(rset.getInt(1));
-			Integer pointID = new Integer(rset.getInt(2));
+		try {
+            Meter meter = new Meter();
+            
+            int paobjectID = rset.getInt(1);
+            meter.setDeviceId(paobjectID);
+            String paoName = rset.getString(2);
+            meter.setName(paoName);
+            String type = rset.getString(3);
+            int deviceType = PAOGroups.getDeviceType(type);
+            meter.setType(deviceType);
+            meter.setTypeStr(type);
+            String disabledStr = rset.getString(4);
+            boolean disabled = CtiUtilities.isTrue(disabledStr);
+            meter.setDisabled(disabled);
+            String meterNumber = rset.getString(5);
+            meter.setMeterNumber(meterNumber);
+            String address = rset.getString(6);
+            meter.setAddress(address);
+            int routeID = rset.getInt(7);
+            meter.setRouteId(routeID);
+            String routeName = rset.getString(8);
+            meter.setRoute(routeName);
+            int pointID = rset.getInt(9);
+            String pointName = rset.getString(10);
+            
 			Date ts = null;
 			Double value = null;
 			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
 			{
-			    Timestamp timestamp = rset.getTimestamp(3);
+			    Timestamp timestamp = rset.getTimestamp(11);
 			    ts = new Date(timestamp.getTime());
-			    value = new Double(rset.getDouble(4));
+			    value = new Double(rset.getDouble(12));
 			}
-			MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, ts, value);
+			MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, ts, value);
 
 			getData().add(mpData);
 		}
@@ -206,44 +166,44 @@ public class MeterReadModel extends ReportModelBase
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
-	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, P.POINTID ");
-		
-		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-		    sql.append(", TIMESTAMP, VALUE ");
-			
-		sql.append(" FROM YUKONPAOBJECT PAO, POINT P ");
+	public StringBuffer buildSQLStatement() {
+        
+        StringBuffer sql = new StringBuffer("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, " +
+                                            " DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME, " +
+                                            " P.POINTID, P.POINTNAME "); 
 
 		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-		    sql.append(", RAWPOINTHISTORY RPH1");
-		
-		if( getBillingGroups() != null && getBillingGroups().length > 0)
-		    sql.append(", DEVICEMETERGROUP DMG ");
-			
-		sql.append(" WHERE PAO.PAOCLASS = '" + DeviceClasses.STRING_CLASS_CARRIER + "' " +
-		" AND P.PAOBJECTID = PAO.PAOBJECTID " +		        
-		//  Select only billing points
-		" AND (P.POINTTYPE = 'PulseAccumulator' AND P.POINTOFFSET IN (1, 2, 3) " +
-		"      OR P.POINTTYPE = 'Analog' AND P.POINTOFFSET IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24, 25, 26, 27, 28) ) ");		    
-			
+		    sql.append(", TIMESTAMP, VALUE ");
+
+        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, DEVICEROUTES DR, YUKONPAOBJECT ROUTE, POINT P " );
+        
+        if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+            sql.append(", RAWPOINTHISTORY RPH1");
+        
+        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID " + 
+                    " AND PAO.PAOBJECTID = DCS.DEVICEID " + 
+                    " AND PAO.PAOBJECTID = DR.DEVICEID " +
+                    " AND ROUTE.PAOBJECTID = DR.ROUTEID " + 
+                    " AND PAO.PAOBJECTID = P.PAOBJECTID "); 
+
+		//CHANGED TO GET ALL POINTS...NO LIMITS
 //		Use paoIDs in query if they exist			
-		if( getPaoIDs() != null && getPaoIDs().length > 0)
-		{
-			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-			for (int i = 1; i < getPaoIDs().length; i++)
-				sql.append(", " + getPaoIDs()[i]);
-			sql.append(") ");
+		if( getPaoIDs() != null && getPaoIDs().length > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (final int i : getPaoIDs()) {
+                sb.append(i + ",");
+            }
+			sql.append(" AND PAO.PAOBJECTID IN (" + StringUtils.chop(sb.toString()) + ") ");
 		}
 		
-		if( getBillingGroups() != null && getBillingGroups().length > 0)
-		{
-			sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID " +
-			        " AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);			        
-			for (int i = 1; i < getBillingGroups().length; i++)
-				sql.append("', '" + getBillingGroups()[i]);
-			sql.append("') ");
-		}
+        if( getBillingGroups() != null && getBillingGroups().length > 0) {
+            sql.append(" AND PAO.paobjectid IN (");
+            DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            sql.append(deviceGroupSqlInClause);
+            sql.append(")");
+        }
 
 		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 		    sql.append( " AND RPH1.POINTID = P.POINTID " +
@@ -255,19 +215,6 @@ public class MeterReadModel extends ReportModelBase
 		else if (getMeterReadType() == MISSED_METER_READ_TYPE)
 		    sql.append(" AND P.POINTID " + getInclusiveSQLString() +
 				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
-//		sql.append(" ORDER BY ");
-//		if( getBillingGroups() != null && getBillingGroups().length > 0)
-//		{
-//			if (getBillingGroupType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
-//				sql.append(" DMG.TESTCOLLECTIONGROUP, ");
-//			else if ( getBillingGroupType() == DeviceMeterGroup.BILLING_GROUP)
-//		    	sql.append(" DMG.BILLINGGROUP, ");
-//			else	//CollectionGroup
-//			    sql.append(" DMG.COLLECTIONGROUP, ");
-//		}
-//		
-////		if (getOrderBy() == ORDER_BY_DEVICE_NAME)
-//			sql.append(" PAO.PAONAME, P.POINTNAME " );
 		
 		return sql;
 	}
@@ -278,7 +225,6 @@ public class MeterReadModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
 		
@@ -292,28 +238,25 @@ public class MeterReadModel extends ReportModelBase
 
 			if( conn == null )
 			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
+			    CTILogger.error(getClass() + ":  Error getting database connection.");
+			    return;
 			}
-			else
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
+			CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+			rset = pstmt.executeQuery();
+
+			while( rset.next())
 			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-				if(getData() != null)
-				{
-//					Order the records
-					Collections.sort(getData(), meterReadComparator);
-					if( getSortOrder() == DESCENDING)
-					    Collections.reverse(getData());				
-				}
+			    addDataRow(rset);
+			}
+			if(getData() != null)
+			{
+//			    Order the records
+			    Collections.sort(getData(), this);
+			    if( getSortOrder() == DESCENDING)
+			        Collections.reverse(getData());				
 			}
 		}
 			
@@ -359,59 +302,37 @@ public class MeterReadModel extends ReportModelBase
 		if ( o instanceof MeterAndPointData)
 		{
 			MeterAndPointData mpData = ((MeterAndPointData)o);
-			LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(mpData.getPaobjectID().intValue());
-			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(mpData.getPaobjectID().intValue());
+
 			switch( columnIndex)
 			{
-				case SORT_BY_GROUP_NAME_COLUMN:
-				{
-				    if( ldmn == null)
-				        return null;
-				    if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
-				        return ldmn.getTestCollGroup();
-				    else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-				        return ldmn.getBillGroup();
-				    else //ReportFilter.COLLECTION_GROUP)
-				        return ldmn.getCollGroup();
-				}
 				case DEVICE_NAME_COLUMN:
-					return lPao.getPaoName();
+					return mpData.getMeter().getName();
 					
 				case METER_NUMBER_COLUMN:
-				    return ( ldmn == null ? null : ldmn.getMeterNumber());
+				    return mpData.getMeter().getMeterNumber();
 				    
 				case PHYSICAL_ADDRESS_COLUMN:
-				    return String.valueOf(lPao.getAddress());
+				    return mpData.getMeter().getAddress();
 				    
 				case POINT_NAME_COLUMN:
-					return DaoFactory.getPointDao().getPointName(mpData.getPointID().intValue());
+					return mpData.getPointName();
 	
 				case ROUTE_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
+					return mpData.getMeter().getRoute();
 					
-				case GROUP_NAME_1_OR_TIMESTAMP_COLUMN:
+				case TIMESTAMP_COLUMN:
 				{
 				    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 				        return mpData.getTimeStamp();
 				        
-				    if( ldmn == null)
-				        return null;
-				    if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
-				        return ldmn.getTestCollGroup();
-				    else 
-				        return ldmn.getCollGroup();
+                    return null;
 				}				    
-				case GROUP_NAME_2_OR_VALUE_COLUMN:
+				case VALUE_COLUMN:
 				{
 				    if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
 				        return mpData.getValue();
 				    
-				    if( ldmn == null)
-				        return null;
-				    if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-				        return ldmn.getTestCollGroup();
-				    else 
-				        return ldmn.getBillGroup();
+				    return null;
 				}				    
 			}
 		}
@@ -425,47 +346,30 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
-		    String tempStr1;
-		    String tempStr2;
-		    String tempStr3;
-		    
-		    if(getFilterModelType().equals(ReportFilter.ALTERNATEGROUP ))
-		    {
-		        tempStr1 = ALT_GROUP_NAME_STRING;
-		    	tempStr2 = COLL_GROUP_NAME_STRING;
-		    	tempStr3 = BILLING_GROUP_NAME_STRING;
-		    }
-			else if(getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-			{
-			    tempStr1 = BILLING_GROUP_NAME_STRING;
-		        tempStr2 = ALT_GROUP_NAME_STRING;
-		    	tempStr3 = COLL_GROUP_NAME_STRING;
-		    }
-			else //ReportFilter.COLLECTIONGROUP)
-			{
-			    tempStr1 = COLL_GROUP_NAME_STRING;
-		        tempStr2 = ALT_GROUP_NAME_STRING;
-		        tempStr3 = BILLING_GROUP_NAME_STRING;
-		    }			
+		   
 		    
 		    //Reupdate the string values if success meter model
 		    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 		    {
-		        tempStr2 = TIMESTAMP_STRING;
-		        tempStr3 = VALUE_STRING;
-		    }
+                columnNames = new String[]{
+                        DEVICE_NAME_STRING,
+                        METER_NUMBER_STRING,
+                        PHYSICAL_ADDRESS_STRING,
+                        POINT_NAME_STRING,
+                        ROUTE_NAME_STRING, 
+                        TIMESTAMP_STRING, 
+                        VALUE_STRING
+                    };      
+		    } else {
+                columnNames = new String[]{
+                        DEVICE_NAME_STRING,
+                        METER_NUMBER_STRING,
+                        PHYSICAL_ADDRESS_STRING,
+                        POINT_NAME_STRING,
+                        ROUTE_NAME_STRING
+                    };      
+            }
 
-		    columnNames = new String[]{
-				tempStr1,
-				DEVICE_NAME_STRING,
-				METER_NUMBER_STRING,
-				PHYSICAL_ADDRESS_STRING,
-				POINT_NAME_STRING,
-				ROUTE_NAME_STRING,
-				tempStr2,
-				tempStr3
-			};
-		    
 		}
 		return columnNames;
 	}
@@ -485,7 +389,6 @@ public class MeterReadModel extends ReportModelBase
 					String.class,
 					String.class,
 					String.class,
-					String.class,
 					Date.class,
 					Double.class
 				};
@@ -498,9 +401,6 @@ public class MeterReadModel extends ReportModelBase
 						String.class,
 						String.class,
 						String.class,
-						String.class,
-						String.class,
-						String.class
 					};
 		    }
 		}
@@ -518,28 +418,24 @@ public class MeterReadModel extends ReportModelBase
 		    {
 				columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-					new ColumnProperties(0, 1, 200, null),
-					new ColumnProperties(0, 1, 180, null),
-					new ColumnProperties(180, 1, 65, null),
-					new ColumnProperties(245, 1, 60, null),
-					new ColumnProperties(305, 1, 90, null),
-					new ColumnProperties(395, 1, 165, null),
-					new ColumnProperties(560, 1, 92, "MM/dd/yyyy HH:mm:ss"),
-					new ColumnProperties(652, 1, 75, "0.000")
+					new ColumnProperties(0, 1, 150, null),
+					new ColumnProperties(150, 1, 75, null),
+					new ColumnProperties(225, 1, 75, null),
+					new ColumnProperties(300, 1, 100, null),
+					new ColumnProperties(400, 1, 150, null),
+					new ColumnProperties(550, 1, 92, "MM/dd/yyyy HH:mm:ss"),
+					new ColumnProperties(642, 1, 75, "0.000")
 				};
 		    }
 		    else
 		    {
 		    	columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-					new ColumnProperties(0, 1, 200, null),
-					new ColumnProperties(0, 1, 180, null),
-					new ColumnProperties(180, 1, 65, null),
-					new ColumnProperties(245, 1, 60, null),
-					new ColumnProperties(305, 1, 90, null),
-					new ColumnProperties(395, 1, 165, null),
-					new ColumnProperties(560, 1, 77, null),
-					new ColumnProperties(637, 1, 75, null)
+                    new ColumnProperties(0, 1, 150, null),
+                    new ColumnProperties(150, 1, 75, null),
+                    new ColumnProperties(225, 1, 75, null),
+                    new ColumnProperties(300, 1, 100, null),
+                    new ColumnProperties(400, 1, 150, null),
 				};
 			}
 		}
@@ -557,13 +453,13 @@ public class MeterReadModel extends ReportModelBase
 		else if( getMeterReadType() ==  MISSED_METER_READ_TYPE)
     	    title += "Missed ";
 	    	    
-		title += "Meter Data";
-		if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
-		    title += " By Collection Group";
-		else if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
-		    title += " By Alternate Group";
-		else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-		    title += " By Billing Group";
+		title += "Meter Data - ";
+		if( getFilterModelType().equals(ReportFilter.GROUPS) &&
+                getBillingGroups() != null) {
+            for (String group : getBillingGroups()) {
+                title += group;
+            }
+        }
 		return title;
 	}
 	
@@ -623,70 +519,58 @@ public class MeterReadModel extends ReportModelBase
 	@Override
 	public String getHTMLOptionsTable()
 	{
-		String html = "";
-		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
-		/*html += "    <td valign='top' align='center'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='radio' name='" + ATT_POINT_TYPE +"' value='kWh' checked disabled>kWh" + LINE_SEPARATOR;
-		html += "          </td>" + LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
-*/
-		html += "    <td valign='top'>" + LINE_SEPARATOR;		
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td valign='top' class='TitleHeader'>Meter Read Status</td>" +LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
+		final StringBuilder sb = new StringBuilder();
+        sb.append("<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("  <tr>" + LINE_SEPARATOR);
+        sb.append("    <td valign='top'>" + LINE_SEPARATOR);		
+        sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td valign='top' class='TitleHeader'>Meter Read Status</td>" +LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
 
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + MISSED_METER_READ_TYPE + "' checked>Missed Read" + LINE_SEPARATOR;
-		html += "          </td>" + LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + SUCCESS_METER_READ_TYPE + "' >Successful Read" + LINE_SEPARATOR;
-		html += "          </td>" + LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + MISSED_METER_READ_TYPE + "' checked>Missed Read" + LINE_SEPARATOR);
+        sb.append("          </td>" + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + SUCCESS_METER_READ_TYPE + "' >Successful Read" + LINE_SEPARATOR);
+        sb.append("          </td>" + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("      </table>" + LINE_SEPARATOR);
+        sb.append("    </td>" + LINE_SEPARATOR);
 
-		html += "    <td valign='top'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
+        sb.append("    <td valign='top'>" + LINE_SEPARATOR);
+        sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
 		for (int i = 0; i < getAllOrderBys().length; i++)
 		{
-			html += "        <tr>" + LINE_SEPARATOR;
-			html += "          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' " +  
-			 (i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR;
-			html += "          </td>" + LINE_SEPARATOR;
-			html += "        </tr>" + LINE_SEPARATOR;
+            sb.append("        <tr>" + LINE_SEPARATOR);
+            sb.append("          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' ");  
+            sb.append((i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR);
+            sb.append("          </td>" + LINE_SEPARATOR);
+            sb.append("        </tr>" + LINE_SEPARATOR);
 		}
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
+        sb.append("      </table>" + LINE_SEPARATOR);
+        sb.append("    </td>" + LINE_SEPARATOR);
 
 
-		html += "    <td valign='middle'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td>* Click this button to generate a list of missed meters that MACS can process.</td>"+ LINE_SEPARATOR;		
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='button' name='GenerateMissedList' value='Generate Missed List' onclick='document.reportForm.ACTION.value=\"GenerateMissedMeterList\";reportForm.submit();'>"+ LINE_SEPARATOR;
-		html += "          </td>" + LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
+        sb.append("    <td valign='middle'>" + LINE_SEPARATOR);
+        sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td>* Click this button to generate a list of missed meters that MACS can process.</td>"+ LINE_SEPARATOR);		
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td><input type='button' name='GenerateMissedList' value='Generate Missed List' onclick='document.reportForm.ACTION.value=\"GenerateMissedMeterList\";reportForm.submit();'>"+ LINE_SEPARATOR);
+        sb.append("          </td>" + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("      </table>" + LINE_SEPARATOR);
+        sb.append("    </td>" + LINE_SEPARATOR);
 
-		html += "  </tr>" + LINE_SEPARATOR;
-		html += "</table>" + LINE_SEPARATOR;
-		return html;
+        sb.append("  </tr>" + LINE_SEPARATOR);
+        sb.append("</table>" + LINE_SEPARATOR);
+		return sb.toString();
 	}
 	@Override
 	public void setParameters( HttpServletRequest req )
@@ -715,5 +599,34 @@ public class MeterReadModel extends ReportModelBase
 			columnNames = null;
 	    super.setFilterModelType(filterModelType);
 	}
+    
+    public int compare(MeterAndPointData o1, MeterAndPointData o2) {
+
+        String thisVal = NULL_STRING;
+        String anotherVal = NULL_STRING;
+
+        if( getOrderBy() == ORDER_BY_ROUTE_NAME)
+        {
+            thisVal = o1.getMeter().getRoute();
+            anotherVal = o2.getMeter().getRoute();
+        }
+        else if( getOrderBy() == ORDER_BY_METER_NUMBER)
+        {
+            thisVal = o1.getMeter().getMeterNumber();
+            anotherVal = o2.getMeter().getMeterNumber();
+        }
+        if (getOrderBy() == ORDER_BY_DEVICE_NAME || thisVal.equalsIgnoreCase(anotherVal))
+        {
+            thisVal = o1.getMeter().getName();
+            anotherVal = o2.getMeter().getName();
+            
+            if( thisVal.equalsIgnoreCase(anotherVal)) {
+                thisVal = o1.getPointName();
+                anotherVal = o2.getPointName();
+            }
+        }
+        
+        return (thisVal.compareToIgnoreCase(anotherVal));
+    }
 
 }

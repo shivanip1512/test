@@ -97,6 +97,10 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
@@ -263,14 +267,18 @@ public class ReportFuncs
         
         if( filter.equals(ReportFilter.DEVICE)){
             return cache.getAllDevices();
-        } else if( filter.equals(ReportFilter.PORTS)){
+
+        } else if( filter.equals(ReportFilter.PORT)){
             return cache.getAllPorts();
-        } else if( filter.equals(ReportFilter.COLLECTIONGROUP)){
-            return cache.getAllDMG_CollectionGroups();
-        } else if( filter.equals(ReportFilter.ALTERNATEGROUP)){
-            return cache.getAllDMG_AlternateGroups();
-        } else if( filter.equals(ReportFilter.BILLINGGROUP)){
-            return cache.getAllDMG_AlternateGroups();
+
+        } else if( filter.equals(ReportFilter.GROUPS)){
+            List<? extends DeviceGroup> allGroups = ((DeviceGroupDao)YukonSpringHook.getBean("deviceGroupDao")).getAllGroups();
+            List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
+                public String map(DeviceGroup from) {
+                    return from.getFullName();
+                }
+            });
+            return mappingList;
         } else if( filter.equals(ReportFilter.ROUTE)){
             return cache.getAllRoutes();
         } else if( filter.equals(ReportFilter.LMCONTROLAREA)){

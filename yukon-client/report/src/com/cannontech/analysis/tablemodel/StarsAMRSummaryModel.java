@@ -1,22 +1,32 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -28,10 +38,10 @@ import com.cannontech.database.data.point.PointTypes;
  *  String routeName  
  * @author snebben
  */
-public class StarsAMRSummaryModel extends ReportModelBase
+public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implements Comparator<StarsAMRDetail>
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 11;
+	protected final int NUMBER_COLUMNS = 10;
 	
 	/** Enum values for column representation */
 	public final static int SORT_BY_COLUMN = 0;	//collgroup or route
@@ -42,12 +52,10 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	public final static int DEVICE_TYPE_COLUMN = 5;
 	public final static int PHYSICAL_ADDRESS_COLUMN = 6;
 	public final static int METER_NUMBER_COLUMN = 7;
-	public final static int ROUTE_NAME_OR_COLL_GROUP_COLUMN = 8;	//the other one of the sort by column value
-	public final static int LAST_KWH_READING_COLUMN = 9;
-	public final static int DATE_TIME_COLUMN = 10;
+	public final static int LAST_KWH_READING_COLUMN = 8;
+	public final static int DATE_TIME_COLUMN = 9;
 
 	/** String values for column representation */
-	public final static String COLLECTION_GROUP_STRING = "Collection Group";	//collgroup or route
 	public final static String ACCOUNT_NUMBER_STRING = "Account #";
 	public final static String CONTACT_NAME_STRING = "Contact";
 	public final static String MAP_NUMBER_STRING = "Map #";
@@ -75,92 +83,6 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		ORDER_BY_DEVICE_NAME, ORDER_BY_DEVICE_TYPE, ORDER_BY_METER_NUMBER 
 	};
 
-	public Comparator starsAMRSummaryComparator = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2){
-		    int tempOrderBy = getOrderBy();
-	        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((StarsAMRDetail)o1).getMeterPointData().getPaobjectID().intValue());
-		    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((StarsAMRDetail)o2).getMeterPointData().getPaobjectID().intValue());
-			
-//			if (getOrderBy() == ORDER_BY_DEVICE_NAME)
-//				sql.append(", PAO.PAONAME, P.POINTNAME " );
-//			else if (getOrderBy() == ORDER_BY_ROUTE_NAME)
-//				sql.append(", PAO2.PAONAME " );		
-//			else if (getOrderBy() == ORDER_BY_METER_NUMBER)
-//			    sql.append(", DMG.METERNUMBER ");
-
-		    String thisVal = NULL_STRING;
-		    String anotherVal = NULL_STRING;
-		    //Always sort by group first
-			if (getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
-			{
-			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getTestCollGroup());
-			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getTestCollGroup());
-			}
-			else if ( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-			{
-			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getBillGroup());
-			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getBillGroup());
-			}
-			else	//CollectionGroup
-			{
-			    thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getCollGroup());
-			    anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getCollGroup());
-			}
-			if ( thisVal.equalsIgnoreCase(anotherVal) )
-	        {
-			    if( tempOrderBy == ORDER_BY_DEVICE_TYPE)
-			    {
-			        thisVal = PAOGroups.getPAOTypeString( ((StarsAMRDetail)o1).getLitePaobject().getType());
-			        anotherVal = PAOGroups.getPAOTypeString( ((StarsAMRDetail)o2).getLitePaobject().getType());
-			        if( thisVal.equalsIgnoreCase(anotherVal))
-			            tempOrderBy = ORDER_BY_DEVICE_NAME;
-			    }
-			    if( tempOrderBy == ORDER_BY_DEVICE_NAME)
-			    {
-			        thisVal = ((StarsAMRDetail)o1).getLitePaobject().getPaoName();
-			        anotherVal = ((StarsAMRDetail)o2).getLitePaobject().getPaoName();
-			        if( thisVal.equalsIgnoreCase(anotherVal))
-			            tempOrderBy = ORDER_BY_PHYSICAL_ADDRESS;
-			    }
-			    if( tempOrderBy == ORDER_BY_ACCOUNT_NUMBER)
-			    {
-			        thisVal = ((StarsAMRDetail)o1).getAccountNumber();
-					anotherVal = ((StarsAMRDetail)o2).getAccountNumber();
-					if (thisVal.equalsIgnoreCase(anotherVal))
-					    tempOrderBy = ORDER_BY_LAST_NAME;	//Need to order by lastName
-			    }
-			    if( tempOrderBy == ORDER_BY_LAST_NAME )
-			    {
-			        thisVal = ((StarsAMRDetail)o1).getLitePrimaryContact().getContLastName();
-					anotherVal = ((StarsAMRDetail)o2).getLitePrimaryContact().getContLastName();
-					if ( thisVal.equalsIgnoreCase(anotherVal))
-					{
-					    thisVal = ((StarsAMRDetail)o1).getLitePrimaryContact().getContFirstName();
-					    anotherVal = ((StarsAMRDetail)o2).getLitePrimaryContact().getContFirstName();
-					    if (thisVal.equalsIgnoreCase(anotherVal))					    
-					        tempOrderBy = ORDER_BY_PHYSICAL_ADDRESS;	//Need to order by physicalAddress
-					}
-			    }
-			    if( tempOrderBy == ORDER_BY_PHYSICAL_ADDRESS)
-			    {
-			        thisVal = String.valueOf( ((StarsAMRDetail)o1).getLitePaobject().getAddress());
-					anotherVal = String.valueOf( ((StarsAMRDetail)o2).getLitePaobject().getAddress());
-			    }
-			    if( tempOrderBy == ORDER_BY_MAP_NUMBER)
-			    {
-			        thisVal = ((StarsAMRDetail)o1).getMapNumber();
-					anotherVal = ((StarsAMRDetail)o2).getMapNumber();
-			    }
-			    if( tempOrderBy == ORDER_BY_METER_NUMBER)
-			    {
-			        thisVal = ((StarsAMRDetail)o1).getLiteDeviceMeterNumber() == null ? NULL_STRING : ((StarsAMRDetail)o1).getLiteDeviceMeterNumber().getMeterNumber();
-					anotherVal = ((StarsAMRDetail)o2).getLiteDeviceMeterNumber() == null ? NULL_STRING : ((StarsAMRDetail)o2).getLiteDeviceMeterNumber().getMeterNumber();
-			    }
-	        }
-	        return ( thisVal.compareToIgnoreCase(anotherVal));
-		}
-	};
 	//servlet attributes/parameter strings
 	private static final String ATT_ORDER_BY = "orderBy";
 	/**
@@ -187,7 +109,7 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		//Long.MIN_VALUE is the default (null) value for time
 		super(start_, stop_);
 		setFilterModelTypes(new ReportFilter[]{ 
-				ReportFilter.COLLECTIONGROUP,
+				ReportFilter.GROUPS,
 				ReportFilter.ROUTE}
 				);
 	}
@@ -195,26 +117,38 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset
 	 */
-	public void addDataRow(ResultSet rset)
+	public void addDataRow(ResultSet rs)
 	{
-		try
-		{
-//PAO1.PAOBJECTID, P.POINTID, CA.ACCOUNTNUMBER, SITE.SITENUMBER, RPH1.VALUE, RPH1.TIMESTAMP, CUST.CUSTOMERID 
-			Integer paobjectID = new Integer(rset.getInt(1));
-			Integer pointID = new Integer(rset.getInt(2));
-			String accountNumber = rset.getString(3);
-			String mapNumber = rset.getString(4);
-			Double value = new Double(rset.getDouble(5));
-			Timestamp dtTS = rset.getTimestamp(6);
-			Date dateTime = new Date(dtTS.getTime());
-			Integer customerID = new Integer(rset.getInt(7));
-			MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, dateTime, value );
-			StarsAMRDetail detail = new StarsAMRDetail(mpData, accountNumber, customerID, mapNumber);
+		try {
+            final Meter meter = new Meter();
+            meter.setDeviceId(rs.getInt("PAOBJECTID"));
+            meter.setName(rs.getString("PAONAME"));
+            meter.setTypeStr(rs.getString("TYPE"));
+            meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG")));
+            meter.setMeterNumber(rs.getString("METERNUMBER"));
+            meter.setAddress(rs.getString("ADDRESS"));
+            meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
+            meter.setRoute(rs.getString("ROUTEPAONAME"));
 
-			getData().add(detail);
-		}
-		catch(java.sql.SQLException e)
-		{
+            final MeterAndPointData mpData = 
+                new MeterAndPointData(
+                    meter,
+                    rs.getInt("POINTID"),
+                    rs.getString("POINTNAME"),
+                    rs.getTimestamp("TIMESTAMP"),
+                    rs.getDouble("VALUE")
+                );
+            
+           getData().add(
+               new StarsAMRDetail(
+                   mpData,
+                   rs.getString("ACCOUNTNUMBER"),
+                   rs.getInt("CUSTOMERID"),
+                   rs.getString("SITENUMBER")
+               ));
+           
+		} catch(java.sql.SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -223,43 +157,53 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
-	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO1.PAOBJECTID, P.POINTID, " +
-				" CA.ACCOUNTNUMBER, SITE.SITENUMBER, RPH1.VALUE, RPH1.TIMESTAMP, CUST.CUSTOMERID " +
-				" FROM YUKONPAOBJECT PAO1, CUSTOMERACCOUNT CA, ACCOUNTSITE SITE, CUSTOMER CUST, INVENTORYBASE IB, POINT P, RAWPOINTHISTORY RPH1 ");
-			if( getBillingGroups() != null && getBillingGroups().length > 0)
-			    sql.append(", DEVICEMETERGROUP DMG ");
-		 		
-				sql.append(" WHERE CUST.CUSTOMERID = CA.CUSTOMERID " +
-				" AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID " +
-				" AND IB.ACCOUNTID = CA.ACCOUNTID " +
-				" AND IB.DEVICEID > 0 " +
-				" AND IB.DEVICEID = PAO1.PAOBJECTID " +
-				" AND P.PAOBJECTID = PAO1.PAOBJECTID " +
-				" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) +"' " +
-				" AND P.POINTOFFSET = 1 " +
-				" AND P.POINTID = RPH1.POINTID " +
-				" AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 " +
-				" WHERE RPH1.POINTID = RPH2.POINTID)");
+	public StringBuilder buildSQLStatement() {
+		final StringBuilder sql = new StringBuilder();
+        //SELECT
+        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
+        sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
+        sql.append("P.POINTID, P.POINTNAME, RPH1.TIMESTAMP, RPH1.VALUE, ");
+        sql.append("CA.ACCOUNTNUMBER, SITE.SITENUMBER, CUST.CUSTOMERID ");
+		
+        //FROM
+        sql.append("FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
+        sql.append("POINT P, DEVICEROUTES DR, YUKONPAOBJECT ROUTE, RAWPOINTHISTORY RPH1, ");
+        sql.append("CUSTOMERACCOUNT CA, ACCOUNTSITE SITE, CUSTOMER CUST, INVENTORYBASE IB");
+        
+        //WHERE
+        sql.append("WHERE CUST.CUSTOMERID = CA.CUSTOMERID ");
+        sql.append("AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID ");
+        sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
+        sql.append("AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+        sql.append("AND IB.ACCOUNTID = CA.ACCOUNTID ");
+        sql.append("AND IB.DEVICEID > 0 ");
+        sql.append("AND IB.DEVICEID = PAO.PAOBJECTID ");
+        sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
+        sql.append("AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) +"' ");
+        sql.append("AND P.POINTOFFSET = 1 ");
+        sql.append("AND P.POINTID = RPH1.POINTID ");
+        sql.append("AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 ");
+        sql.append("WHERE RPH1.POINTID = RPH2.POINTID) ");
 				
 //				TODO ??? sql.append(" AND P.POINTID " + getInclusiveSQLString() +
 //				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
 
-		if( getBillingGroups() != null && getBillingGroups().length > 0)
-		{
-			sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
-			for (int i = 1; i < getBillingGroups().length; i++)
-				sql.append("', '" + getBillingGroups()[i]);
-			sql.append("') ");
-		
-		if (getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
-			sql.append(" ORDER BY DMG.TESTCOLLECTIONGROUP");
-		else if ( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-	    	sql.append(" ORDER BY DMG.BILLINGGROUP");
-		else	//CollectionGroup
-		    sql.append(" ORDER BY DMG.COLLECTIONGROUP");
-		}		
+        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        final String[] groups = getBillingGroups();                
+                
+		if (groups != null && groups.length > 0) {
+			sql.append(" AND PAO.PAOBJECTID IN (");
+            
+            List<String> deviceGroupNames = Arrays.asList(groups);
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            sql.append(deviceGroupSqlInClause);
+            
+            sql.append(") ");
+        }
+        
 		return sql;
 	}
 	
@@ -269,13 +213,12 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
+		StringBuilder sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
 
 		try
 		{
@@ -283,21 +226,18 @@ public class StarsAMRSummaryModel extends ReportModelBase
 
 			if( conn == null )
 			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
+			    CTILogger.error(getClass() + ":  Error getting database connection.");
+			    return;
 			}
-			else
+			pstmt = conn.prepareStatement(sql.toString());
+//			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+//			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
+//			CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+			rset = pstmt.executeQuery();
+
+			while( rset.next())
 			{
-				pstmt = conn.prepareStatement(sql.toString());
-//				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-//				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-//				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
+			    addDataRow(rset);
 			}
 		}
 			
@@ -319,6 +259,14 @@ public class StarsAMRSummaryModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
+        
+        if( getData() != null)
+        {
+            Collections.sort(getData(), this);
+            if( getOrderBy() == DESCENDING)
+                Collections.reverse(getData());
+        }
+        
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
@@ -328,20 +276,15 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof StarsAMRDetail)
-		{
-			StarsAMRDetail detail = ((StarsAMRDetail)o);
+		if (o instanceof StarsAMRDetail) {
+			
+            final StarsAMRDetail detail = (StarsAMRDetail) o;
+            final MeterAndPointData mpData = detail.getMeterAndPointData();
+            
 			switch( columnIndex)
 			{
 				case SORT_BY_COLUMN:	//TODO ADD route sort column
-				{
-				    if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
-				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getTestCollGroup());
-				    else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getBillGroup());
-				    else //ReportFilter.COLLECTIONGROUP)
-				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
-				}
+                    
 				case ACCOUNT_NUMBER_COLUMN:
 				    return detail.getAccountNumber();
 				case CONTACT_NAME_COLUMN:
@@ -349,19 +292,17 @@ public class StarsAMRSummaryModel extends ReportModelBase
 				case MAP_NUMBER_COLUMN:
 				    return detail.getMapNumber();
 				case DEVICE_NAME_COLUMN:
-					return detail.getLitePaobject().getPaoName();
+					return mpData.getMeter().getName();
 		        case DEVICE_TYPE_COLUMN:
-		            return PAOGroups.getPAOTypeString(detail.getLitePaobject().getType());
+		            return mpData.getMeter().getTypeStr();
 				case METER_NUMBER_COLUMN:
-				    return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getMeterNumber());
+				    return mpData.getMeter().getMeterNumber();
 				case PHYSICAL_ADDRESS_COLUMN:
-				    return String.valueOf(detail.getLitePaobject().getAddress());
-				case ROUTE_NAME_OR_COLL_GROUP_COLUMN:	//TODO collectionGroup
-					return DaoFactory.getPaoDao().getYukonPAOName(detail.getLitePaobject().getRouteID());
+				    return mpData.getMeter().getAddress();
 				case LAST_KWH_READING_COLUMN:
-				    return detail.getMeterPointData().getValue();
+				    return mpData.getValue();
 				case DATE_TIME_COLUMN:
-				    return detail.getMeterPointData().getTimeStamp();
+				    return mpData.getTimeStamp();
 			}
 		}
 		return null;
@@ -394,7 +335,6 @@ public class StarsAMRSummaryModel extends ReportModelBase
 //		    else //if(getBillingGroupType() == DeviceMeterGroup.COLLECTION_GROUP)
 		    {
 				columnNames = new String[]{
-				    COLLECTION_GROUP_STRING,
 				    ACCOUNT_NUMBER_STRING, 
 				    CONTACT_NAME_STRING,
 				    MAP_NUMBER_STRING,
@@ -419,7 +359,6 @@ public class StarsAMRSummaryModel extends ReportModelBase
 		if( columnTypes == null)
 		{
 			columnTypes = new Class[]{
-				String.class,
 				String.class,
 				String.class,
 				String.class,
@@ -466,13 +405,7 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-	    String title = "Stars AMR Detail - ";
-		if( getFilterModelType().equals(ReportFilter.COLLECTIONGROUP))
-		    title += " By Collection Group";
-		else if( getFilterModelType().equals(ReportFilter.ALTERNATEGROUP))
-		    title += " By Alternate Group";
-		else if( getFilterModelType().equals(ReportFilter.BILLINGGROUP))
-		    title += " By Billing Group";
+	    String title = "Stars AMR Detail";
 //		else if( ROUTE)
 //			title += " By Route";
 		return title;
@@ -568,5 +501,65 @@ public class StarsAMRSummaryModel extends ReportModelBase
         if( ! (getFilterModelType().equals(filterModelType)) )
             columnNames = null;
         super.setFilterModelType(filterModelType);
-    } 
+    }
+    
+    public int compare(StarsAMRDetail o1, StarsAMRDetail o2){
+        int tempOrderBy = getOrderBy();
+        final MeterAndPointData mpData1 = o1.getMeterAndPointData();
+        final MeterAndPointData mpData2 = o2.getMeterAndPointData();
+
+        String thisVal = NULL_STRING;
+        String anotherVal = NULL_STRING;
+        
+        if( tempOrderBy == ORDER_BY_DEVICE_TYPE)
+        {
+            thisVal = mpData1.getMeter().getTypeStr();
+            anotherVal = mpData2.getMeter().getTypeStr();
+            if( thisVal.equalsIgnoreCase(anotherVal))
+                tempOrderBy = ORDER_BY_DEVICE_NAME;
+        }
+        if( tempOrderBy == ORDER_BY_DEVICE_NAME)
+        {
+            thisVal = mpData1.getMeter().getName();
+            anotherVal = mpData2.getMeter().getName();
+            if( thisVal.equalsIgnoreCase(anotherVal))
+                tempOrderBy = ORDER_BY_PHYSICAL_ADDRESS;
+        }
+        if( tempOrderBy == ORDER_BY_ACCOUNT_NUMBER)
+        {
+            thisVal = o1.getAccountNumber();
+            anotherVal = o2.getAccountNumber();
+            if (thisVal.equalsIgnoreCase(anotherVal))
+                tempOrderBy = ORDER_BY_LAST_NAME;   //Need to order by lastName
+        }
+        if( tempOrderBy == ORDER_BY_LAST_NAME )
+        {
+            thisVal = o1.getLitePrimaryContact().getContLastName();
+            anotherVal = o2.getLitePrimaryContact().getContLastName();
+            if ( thisVal.equalsIgnoreCase(anotherVal))
+            {
+                thisVal = o1.getLitePrimaryContact().getContFirstName();
+                anotherVal = o2.getLitePrimaryContact().getContFirstName();
+                if (thisVal.equalsIgnoreCase(anotherVal))                       
+                    tempOrderBy = ORDER_BY_PHYSICAL_ADDRESS;    //Need to order by physicalAddress
+            }
+        }
+        if( tempOrderBy == ORDER_BY_PHYSICAL_ADDRESS)
+        {
+            thisVal = mpData1.getMeter().getAddress();
+            anotherVal = mpData2.getMeter().getAddress();
+        }
+        if( tempOrderBy == ORDER_BY_MAP_NUMBER)
+        {
+            thisVal = o1.getMapNumber();
+            anotherVal = o2.getMapNumber();
+        }
+        if( tempOrderBy == ORDER_BY_METER_NUMBER)
+        {
+            thisVal = mpData1.getMeter().getMeterNumber();
+            anotherVal = mpData2.getMeter().getMeterNumber();
+        }
+        
+        return thisVal.compareToIgnoreCase(anotherVal);
+    }
 }

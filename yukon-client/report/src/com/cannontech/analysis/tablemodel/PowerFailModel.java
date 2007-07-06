@@ -2,7 +2,10 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -71,9 +77,7 @@ public class PowerFailModel extends ReportModelBase
 		setFilterModelTypes(new ReportFilter[]{
 				ReportFilter.METER,
                 ReportFilter.DEVICE,
-				ReportFilter.COLLECTIONGROUP, 
-    			ReportFilter.ALTERNATEGROUP, 
-    			ReportFilter.BILLINGGROUP}
+				ReportFilter.GROUPS}
 				);
 	}
 	
@@ -215,12 +219,18 @@ public class PowerFailModel extends ReportModelBase
 			sql.append(") ");
 		}
 					
-		if( getBillingGroups() != null && getBillingGroups().length > 0)
-		{
-			sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
-			for (int i = 1; i < getBillingGroups().length; i++)
-				sql.append("', '" + getBillingGroups()[i]);
-			sql.append("') ");
+        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        final String[] groups = getBillingGroups();
+        
+		if (groups != null && groups.length > 0) {
+			sql.append(" AND PAO.PAOBJECTID IN (");
+            
+            List<String> deviceGroupNames = Arrays.asList(groups);
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            sql.append(deviceGroupSqlInClause);
+            
+            sql.append(") ");
 		}
 
 			 
