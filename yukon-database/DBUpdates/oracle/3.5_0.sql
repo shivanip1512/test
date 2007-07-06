@@ -190,6 +190,21 @@ alter table DEVICEGROUPMEMBER
 alter table DEVICEGROUPMEMBER
    add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
       references DEVICEGROUP (DeviceGroupId);
+      
+insert into DeviceGroupMember
+select DeviceGroupId, DeviceId 
+from DeviceMeterGroup
+join DeviceGroup on ParentDeviceGroupId=3 and GroupName = CollectionGroup;
+
+insert into DeviceGroupMember
+select DeviceGroupId, DeviceId 
+from DeviceMeterGroup
+join DeviceGroup on ParentDeviceGroupId=4 and GroupName = TestCollectionGroup;
+
+insert into DeviceGroupMember
+select DeviceGroupId, DeviceId 
+from DeviceMeterGroup
+join DeviceGroup on ParentDeviceGroupId=2 and GroupName = BillingGroup;
 
 alter table DeviceMeterGroup drop column CollectionGroup;
 alter table DeviceMeterGroup drop column TestCollectionGroup;
