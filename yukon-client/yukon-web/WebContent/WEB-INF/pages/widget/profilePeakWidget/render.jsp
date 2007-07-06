@@ -59,62 +59,120 @@
 	<c:if test="${!empty preResult || !empty postResult}">
 		<br><b>Previous Profile Peak Reports:</b><br>
 	</c:if>
-	<c:if test="${! empty preResult}">
-		<tags:hideReveal title="Report range: ${preResult.startDate} - ${preResult.stopDate}" showInitially="${true}">
-			<div style="margin: 0px 30px;">
-				<c:choose>
-					<c:when test="${!preResult.noData}">
-						<tags:nameValueContainer altRowOn="true">
-							<tags:nameValue name="Date report run" rowHighlight="${highlight.reportRun}">${preResult.runDate}</tags:nameValue>
-							<tags:nameValue name="Peak Day" rowHighlight="${highlight.peakDay}">${preResult.peakDate}</tags:nameValue>
-							<tags:nameValue name="Usage" rowHighlight="${highlight.usage}">${preResult.usage}</tags:nameValue>
-							<tags:nameValue name="Demand" rowHighlight="${highlight.demand}">${preResult.demand}</tags:nameValue>
-							<tags:nameValue name="Average daily usage over range" rowHighlight="${highlight.averageUsage}">${preResult.averageDailyUsage}</tags:nameValue>
-							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.totalUsage}">${preResult.totalUsage}</tags:nameValue>
-						</tags:nameValueContainer>
-		
-						<!-- Load Profile collection -->
-						<c:if test="${widgetParameters.collectLPVisible && (preResult.days <= 90)}">
-							<br/>
-							<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">Collect Long Load Profile for this period</tags:longLoadProfile>
-						</c:if>
-					</c:when>
-					<c:otherwise>
-						No results
-					</c:otherwise>
-				</c:choose>
-				${preResult.error}
-			</div>
-		</tags:hideReveal>
-	</c:if>
-	<br/>
-	<c:if test="${! empty postResult}">
-		<tags:hideReveal title="Report range: ${postResult.startDate} - ${postResult.stopDate}" showInitially="${true}">
-			<div style="margin: 0px 30px;">
-				<c:choose>
-					<c:when test="${!postResult.noData}">
-						<tags:nameValueContainer altRowOn="true">
-							<tags:nameValue name="Date report run" rowHighlight="${highlight.reportRun}">${postResult.runDate}</tags:nameValue>
-							<tags:nameValue name="Peak Day" rowHighlight="${highlight.peakDay}">${postResult.peakDate}</tags:nameValue>
-							<tags:nameValue name="Usage" rowHighlight="${highlight.usage}">${postResult.usage}</tags:nameValue>
-							<tags:nameValue name="Demand" rowHighlight="${highlight.demand}">${postResult.demand}</tags:nameValue>
-							<tags:nameValue name="Average daily usage over range" rowHighlight="${highlight.averageUsage}">${postResult.averageDailyUsage}</tags:nameValue>
-							<tags:nameValue name="Total usage over range" rowHighlight="${highlight.totalUsage}">${postResult.totalUsage}</tags:nameValue>
-						</tags:nameValueContainer>
-		
-						<!-- Load Profile collection -->
-						<c:if test="${widgetParameters.collectLPVisible && (postResult.days <= 90)}">
-							<br/>
-							<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}">Collect Long Load Profile for this period</tags:longLoadProfile>
-						</c:if>
-					</c:when>
-					<c:otherwise>
-						No results
-					</c:otherwise>
-				</c:choose>
-				${postResult.error}
-			</div>
-		</tags:hideReveal>
-	</c:if>
+	
+	<br/><br/>
+	
+	<c:if test="${! empty preResult || ! empty postResult}">
+		<table class="resultsTable">
+			<tr>
+				<th>
+					Range
+				</th>
+				<th>
+					Avg Daily / Total
+				</th>
+				<th>
+					Peak kWh
+				</th>
+				<th>
+					Peak Date
+				</th>
+				<th>&nbsp;</th>
+			</tr>
+				<c:if test="${! empty preResult && !preResult.noData}">
+					<c:choose>
+						<c:when test="${!preResult.noData}">
+							<tr>
+								<td>
+									${preResult.startDate} - ${preResult.stopDate}
+								</td>
+								<td>
+									${preResult.averageDailyUsage} / ${preResult.totalUsage}
+								</td>
+								<td>
+									${preResult.usage}
+								</td>
+								<td>
+									${preResult.peakDate}
+								</td>
+								<td>
+									<!-- Load Profile collection -->
+									<c:if test="${widgetParameters.collectLPVisible}">
+										<br/>
+										<c:choose>
+											<c:when test="${preResult.days <= 90}">
+												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">LP</tags:longLoadProfile>
+											</c:when>
+											<c:otherwise>
+												<div title="Load Profile Collection is unavailable for collection periods of more than 90 days.">
+													LP N/A
+												</div>
+											</c:otherwise>
+										</c:choose>
+									</c:if>
+								</td>
+							</tr>
+						</c:when>
+						<c:otherwise>
+							<tr>
+								<td>
+									${preResult.startDate} - ${preResult.stopDate}
+								</td>					
+								<td colspan="4">
+									${preResult.error}
+								</td>
+							</tr>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
 
+				<c:if test="${!empty postResult}">
+					<c:choose>
+						<c:when test="${!postResult.noData}">
+							<tr>
+								<td>
+									${postResult.startDate} - ${postResult.stopDate}
+								</td>
+								<td>
+									${postResult.averageDailyUsage} / ${postResult.totalUsage}
+								</td>
+								<td>
+									${postResult.usage}
+								</td>
+								<td>
+									${postResult.peakDate}
+								</td>
+								<td>
+									<!-- Load Profile collection -->
+									<c:if test="${widgetParameters.collectLPVisible}">
+										<br/>
+										<c:choose>
+											<c:when test="${postResult.days <= 90}">
+												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}">LP</tags:longLoadProfile>
+											</c:when>
+											<c:otherwise>
+												<div title="Load Profile Collection is unavailable for collection periods of more than 90 days.">
+													LP N/A
+												</div>
+											</c:otherwise>
+										</c:choose>
+									</c:if>
+								</td>
+							</tr>
+						</c:when>
+						<c:otherwise>
+							<tr>
+								<td>
+									${postResult.startDate} - ${postResult.stopDate}
+								</td>					
+								<td colspan="4">
+									${postResult.error}
+								</td>
+							</tr>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+		</table>
+	</c:if>
+	
 </span>

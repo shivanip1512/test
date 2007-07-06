@@ -17,8 +17,6 @@ function longLoadProfile_display(divId) {
     $(divId + '_stop').value = json.stopDate;
     $(divId + '_stopDisplay').innerHTML = json.stopDate;
     $(divId + '_startButton').enabled = true;
-    $(divId + '_link').hide();
-    $(divId + '_text').show();
     
     var listEl = $(divId + '_pendingList');
     listEl.descendants().each(function(el) {
@@ -64,8 +62,6 @@ function longLoadProfile_start(divId) {
     $(divId + '_indicator').style.visibility = "hidden";
     if (json.success) {
       $(divId + '_holder').hide();
-      $(divId + '_link').show();
-      $(divId + '_text').hide();
     } else {
       $(divId + '_errors').innerHTML = json.errString;
       $(divId + '_startButton').enabled = true;

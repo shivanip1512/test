@@ -13,13 +13,15 @@
 
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
 <div style="position:relative">
-<a id="${thisId}_link" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')"><jsp:doBody/></a>
-<span id="${thisId}_text" style="display:none; font-weight: bold"><jsp:doBody/></span>
+<a class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')"><jsp:doBody/></a>
 <span id="${thisId}_indicator" style="visibility:hidden"><img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>"></span>
-<div id="${thisId}_holder" style="display:none;margin-left: 20px" class="longLoadProfileHolder">
+<div id="${thisId}_holder" style="display:none; position:absolute; background-color: white; padding: .5em; border: 1px #888 solid;z-index:2" class="longLoadProfileHolder">
 <input id="${thisId}_startOffset" type="hidden" value="${startOffset}">
 <input id="${thisId}_deviceId" type="hidden" value="${deviceId}">
   <table>
+  	<tr>
+  		<th colspan="4">Collect Long Load Profile</th>
+  	</tr>
     <tr>
     	<td>
 	      	<b>Start Date:</b>
@@ -30,6 +32,7 @@
 	      		</c:when>
 	      		<c:otherwise>
 					<input id="${thisId}_start" type="text">
+	      			<span id="${thisId}_startDisplay" style="display:none"></span>
 	      		</c:otherwise>
 	      	</c:choose>
 	    </td>
@@ -42,6 +45,7 @@
 	      		</c:when>
 	      		<c:otherwise>
 					<input id="${thisId}_stop" type="text">
+	      			<span id="${thisId}_stopDisplay" style="display:none"></span>
 	      		</c:otherwise>
 	      	</c:choose>
 	    	
@@ -54,12 +58,16 @@
 			<button id="${thisId}_startButton" type="button" onclick="longLoadProfile_start('${thisId}')">Start</button>
 		</td>
     </tr>
+    <tr>
+    	<td colspan="4">
+			  <div id="${thisId}_errors" class="formErrorSummary"></div>
+			  <div id="${thisId}_pendingHolder" style="display:none">
+			  <tags:hideReveal styleClass="smallText" title="Pending requests in progress" showInitially="true">
+			  	<ol id="${thisId}_pendingList" style="margin: 0 0 10px 0; padding: 0 0 0 40px" class="smallText"></ol>
+			  </tags:hideReveal>
+			  </div>
+    	</td>
+    </tr>
   </table>
-  <div id="${thisId}_errors" class="formErrorSummary"></div>
-  <div id="${thisId}_pendingHolder" style="display:none">
-  <tags:hideReveal styleClass="smallText" title="Pending requests in progress" showInitially="true">
-  <ol id="${thisId}_pendingList" style="margin: 0 0 10px 0; padding: 0 0 0 40px" class="smallText"></ol>
-  </tags:hideReveal>
-  </div>
 </div>
 </div>
