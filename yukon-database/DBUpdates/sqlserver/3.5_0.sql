@@ -198,6 +198,21 @@ alter table DEVICEGROUP
       references DEVICEGROUP (DeviceGroupId);
 go
 
+insert into DeviceGroupMember
+select DeviceGroupId, DeviceId 
+from DeviceMeterGroup
+join DeviceGroup on ParentDeviceGroupId=3 and GroupName = CollectionGroup;
+
+insert into DeviceGroupMember
+select DeviceGroupId, DeviceId 
+from DeviceMeterGroup
+join DeviceGroup on ParentDeviceGroupId=4 and GroupName = TestCollectionGroup;
+
+insert into DeviceGroupMember
+select DeviceGroupId, DeviceId 
+from DeviceMeterGroup
+join DeviceGroup on ParentDeviceGroupId=2 and GroupName = BillingGroup;
+
 create table DEVICEGROUPMEMBER (
    DeviceGroupID        numeric(18,0)        not null,
    YukonPaoId           numeric(18,0)        not null
