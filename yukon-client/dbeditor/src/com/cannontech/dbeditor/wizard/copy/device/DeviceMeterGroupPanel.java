@@ -16,10 +16,14 @@ import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
  
 public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataInputPanel {
@@ -431,42 +435,36 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     private void handleException(Throwable exception) {
 
         /* Uncomment the following lines to print uncaught exceptions to stdout */
-        // com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-        // com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+         com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+         com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
     }
     
     
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "unchecked" })
     public Object getValue(Object val) {
+        MCTBase pao = null;
         
-        LiteYukonPAObject liteYuk = null;
-        
+        YukonDevice yd = null;
         if (val instanceof MultiDBPersistent)
         {
             if ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof MCTBase)
             {
-                liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0))).getPAObjectID());
+                pao = (MCTBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0));
             }
+        } else {
+            pao = (MCTBase) val;
         }
-        else
-        {
-            liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
-        }
-
-        String cycleGroup = getCycleGroupComboBox().getSelectedItem().toString();
-        String alternateGroup = getAlternateGroupComboBox().getSelectedItem().toString();
-        String billingGroup = getJComboBoxBillingGroup().getSelectedItem().toString();
-        String customGroup1 = getCustomGroup1ComboBox().getSelectedItem().toString();
-        String customGroup2 = getCustomGroup2ComboBox().getSelectedItem().toString();
-        String customGroup3 = getCustomGroup3ComboBox().getSelectedItem().toString();
+        yd = new YukonDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
+        String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
+        String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
+        String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
+        String customGroup1 = (String)getCustomGroup1ComboBox().getSelectedItem();
+        String customGroup2 = (String)getCustomGroup2ComboBox().getSelectedItem();
+        String customGroup3 = (String)getCustomGroup3ComboBox().getSelectedItem();
         
-        YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
-        hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
-        hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
-        hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice, customGroup1);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice, customGroup2);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice, customGroup3);
+        DeviceGroupMember dgm = new DeviceGroupMember(yd, cycleGroup, alternateGroup, billingGroup, customGroup1, customGroup2, customGroup3);
+        ((MultiDBPersistent) val).getDBPersistentVector().add(dgm);
+        
         return val;
         
     }
@@ -475,29 +473,26 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     @SuppressWarnings("deprecation")
     public void setValue(Object o) 
     {
-//        DeviceMeterGroup dmg = null;
-        LiteYukonPAObject liteYuk = null;
+        MCTBase pao = null;
         
+        YukonDevice yd = null;
         if (o instanceof MultiDBPersistent)
         {
             if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof MCTBase)
             {
-                
-                liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0))).getPAObjectID());
+                pao = (MCTBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0));
             }
-        }
-        else
-        {
-            liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) o).getPAObjectID());
+        } else {
+            pao = (MCTBase) o;
         }
         
-        YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
-        String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
-        String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
-        String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
-        String customGroup1 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice);
-        String customGroup2 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice);
-        String customGroup3 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice);
+        yd = new YukonDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
+        String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yd);
+        String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yd);
+        String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yd);
+        String customGroup1 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM1GROUP, yd);
+        String customGroup2 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM2GROUP, yd);
+        String customGroup3 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM3GROUP, yd);
         getCycleGroupComboBox().setSelectedItem( collectionGroup );
         getAlternateGroupComboBox().setSelectedItem( alternateGroup );
         getJComboBoxBillingGroup().setSelectedItem( billingGroup );
