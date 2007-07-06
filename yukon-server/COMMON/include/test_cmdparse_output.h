@@ -118,6 +118,7 @@ std::string  outputString[TEST_SIZE]= {
 "command=putconfig,6,6.000:relaymask=(none),1,1.000:type=expresscom,8,8.000:xcfanstate=(none),1,1.000:xcrunprog=(none),1,1.000:xcsetheattemp=(none),43,43.000:xcsetstate=(none),1,1.000:xcsysstate=(none),8,8.000:xctimeout=(none),40,40.000:xctwosetpoints=(none),1,1.000",
 "command=putconfig,6,6.000:relaymask=(none),1,1.000:type=expresscom,8,8.000:xcfanstate=(none),1,1.000:xcrunprog=(none),1,1.000:xcsetheattemp=(none),43,43.000:xcsetstate=(none),1,1.000:xcsysstate=(none),12,12.000:xctimeout=(none),40,40.000:xctwosetpoints=(none),1,1.000",
 "command=putconfig,6,6.000:relaymask=(none),1,1.000:type=expresscom,8,8.000:xcfanstate=(none),1,1.000:xcrunprog=(none),1,1.000:xcsetcooltemp=(none),33,33.000:xcsetheattemp=(none),43,43.000:xcsetstate=(none),1,1.000:xcsysstate=(none),16,16.000:xctimeout=(none),40,40.000:xctwosetpoints=(none),1,1.000",
-"command=control,8,8.000:flag=(none),0,0.000:offset=(none),0,0.000:sa_dlc_mode=(none),0,0.000:sa_f0bit=(none),1,1.000:sa_f1bit=(none),0,0.000:type=expresscom,8,8.000:xcbacklight=(none),1,1.000:xcbacklightcycle=(none),0,0.000:xcbacklightduty=(none),0,0.000:xcbacklightperiod=(none),0,0.000"
+"command=control,8,8.000:flag=(none),0,0.000:offset=(none),0,0.000:sa_dlc_mode=(none),0,0.000:sa_f0bit=(none),1,1.000:sa_f1bit=(none),0,0.000:type=expresscom,8,8.000:xcbacklight=(none),1,1.000:xcbacklightcycle=(none),0,0.000:xcbacklightduty=(none),0,0.000:xcbacklightperiod=(none),0,0.000",
+"command=putconfig,6,6.000:type=expresscom,8,8.000:xcascii=(none),1,1.000:xcclear=(none),1,1.000:xcdata=julie rocks!,-2147483648,0.000:xcdataport=(none),2,2.000:xcdatatimeout=(none),30,30.000:xcdeletable=(none),1,1.000:xchour=(none),1,1.000:xcpriority=(none),7,7.000"
 };
 #endif

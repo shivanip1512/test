@@ -4598,27 +4598,56 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
     if(!(token = CmdStr.match(" data( (0x)?[0-9a-f]+)+")).empty())
     {
-        if(!(token = CmdStr.match("data " + str_quoted_token)).empty())
-        {   
-            _cmd["xcascii"] = CtiParseValue(TRUE);
-            if(!(str = token.match(str_quoted_token)).empty())
-            {
-                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-                _cmd["xcdata"] = CtiParseValue( str );
-            }
-            if(!(token = CmdStr.match(" dport " + str_num)).empty())
-            {
-                _cmd["xcdataport"] = CtiParseValue(str_num);
-            }
-             
-        }
-        else
+        
+        token.replace(" data", "");
+        if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).empty())
         {
-            token.replace(" data", "");
-            if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).empty())
+            _cmd["xcdata"] = CtiParseValue( str );
+        }
+    }
+    if(!(token = CmdStr.match("data " + str_quoted_token)).empty())
+    {   
+        _cmd["xcascii"] = CtiParseValue(TRUE);
+        if(!(str = token.match(str_quoted_token)).empty())
+        {
+            str.erase(0,1);str.erase(str.length()-1,str.length()-1);
+            _cmd["xcdata"] = CtiParseValue( str );
+        }
+        if(!(temp = CmdStr.match("port " + str_num)).empty())
+        {
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                _cmd["xcdata"] = CtiParseValue( str );
+                iValue = atoi(valStr.c_str());
+                _cmd["xcdataport"] = CtiParseValue( iValue );
             }
+        }
+        if(!(temp = CmdStr.match(" priority " + str_num)).empty())
+        {
+            if(!(valStr = temp.match(re_num)).empty())
+            {
+                iValue = atoi(valStr.c_str());
+                _cmd["xcpriority"] = CtiParseValue( iValue );
+            } 
+        }
+        if(!(temp = CmdStr.match(" deletable")).empty())
+        {
+            _cmd["xcdeletable"] = CtiParseValue( TRUE );
+        }
+        if(!(temp = CmdStr.match("timeout " + str_num)).empty())
+        {
+            if(!(valStr = temp.match(re_num)).empty())
+            {
+                iValue = atoi(valStr.c_str());
+                _cmd["xcdatatimeout"] = CtiParseValue( iValue );
+            }
+        }
+        if(!(temp = CmdStr.match("hour")).empty())
+        {
+            _cmd["xchour"] = CtiParseValue( TRUE );
+        }
+        if(!(temp = CmdStr.match("clear")).empty())
+        {
+            _cmd["xcclear"] = CtiParseValue( TRUE );
         }
     }
 
