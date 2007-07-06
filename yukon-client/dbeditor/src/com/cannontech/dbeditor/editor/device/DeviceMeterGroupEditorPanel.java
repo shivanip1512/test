@@ -4,15 +4,20 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.CaretListener;
+
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyListener;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.impl.DeviceGroupDaoMain;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
@@ -28,7 +33,7 @@ import com.cannontech.spring.YukonSpringHook;
 /**
  * This type was created in VisualAge.
  */
-public class DeviceMeterGroupEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.KeyListener, javax.swing.event.CaretListener {
+public class DeviceMeterGroupEditorPanel extends DataInputPanel implements ActionListener, ItemListener, KeyListener, CaretListener {
 	private javax.swing.JLabel alternateGroupLabel = null;
 	private javax.swing.JLabel ivjCycleGroupLabel = null;
     private JLabel customGroup1Label = null;
@@ -57,54 +62,12 @@ public class DeviceMeterGroupEditorPanel extends com.cannontech.common.gui.util.
 	private javax.swing.JComboBox ivjJComboBoxlVoltRate = null;
 	private javax.swing.JLabel ivjJLabelVoltDmdRate = null;
 	private javax.swing.JLabel ivjJLabelVoltIntervalDmdRate = null;
-	private boolean is410 = false;
-	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+    @SuppressWarnings("deprecation")
     FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack");  
 
-class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.KeyListener, javax.swing.event.CaretListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getCycleGroupComboBox()) 
-				connEtoC5(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getAlternateGroupComboBox()) 
-				connEtoC6(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getChannel2CheckBox()) 
-				connEtoC1(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getChannel1CheckBox()) 
-				connEtoC2(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getChannel3CheckBox()) 
-				connEtoC7(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getChannel4CheckBox()) 
-				connEtoC8(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getLoadProfileDemandRateComboBox()) 
-				connEtoC9(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getJComboBoxBillingGroup()) 
-				connEtoC3(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getJComboBoxlVoltInterval()) 
-				connEtoC13(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getJComboBoxlVoltRate()) 
-				connEtoC14(e);
-		};
-		public void caretUpdate(javax.swing.event.CaretEvent e) {
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getMeterNumberTextField()) 
-				connEtoC12(e);
-		};
-		public void itemStateChanged(java.awt.event.ItemEvent e) {
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getLastIntervalDemandRateComboBox()) 
-				connEtoC4(e);
-		};
-		public void keyPressed(java.awt.event.KeyEvent e) {};
-		public void keyReleased(java.awt.event.KeyEvent e) {};
-		public void keyTyped(java.awt.event.KeyEvent e) {
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getCycleGroupComboBox()) 
-				connEtoC10(e);
-			if (e.getSource() == DeviceMeterGroupEditorPanel.this.getAlternateGroupComboBox()) 
-				connEtoC11(e);
-		};
-	};
 /**
  * Constructor
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public DeviceMeterGroupEditorPanel() {
 	super();
 	initialize();
@@ -113,304 +76,96 @@ public DeviceMeterGroupEditorPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getCycleGroupComboBox()) 
-		connEtoC5(e);
-	if (e.getSource() == getAlternateGroupComboBox()) 
-		connEtoC6(e);
-	if (e.getSource() == getChannel2CheckBox()) 
-		connEtoC1(e);
-	if (e.getSource() == getChannel1CheckBox()) 
-		connEtoC2(e);
-	if (e.getSource() == getChannel3CheckBox()) 
-		connEtoC7(e);
-	if (e.getSource() == getChannel4CheckBox()) 
-		connEtoC8(e);
-	if (e.getSource() == getLoadProfileDemandRateComboBox()) 
-		connEtoC9(e);
-	if (e.getSource() == getJComboBoxBillingGroup()) 
-		connEtoC3(e);
-	if (e.getSource() == getJComboBoxlVoltInterval()) 
-		connEtoC13(e);
-	if (e.getSource() == getJComboBoxlVoltRate()) 
-		connEtoC14(e);
-	// user code begin {2}
-	// user code end
+	if (e.getSource() == getCycleGroupComboBox() || 
+	    e.getSource() == getAlternateGroupComboBox() || 
+	    e.getSource() == getChannel2CheckBox() ||
+	    e.getSource() == getChannel1CheckBox() ||
+	    e.getSource() == getChannel3CheckBox() ||
+	    e.getSource() == getChannel4CheckBox() ||
+	    e.getSource() == getLoadProfileDemandRateComboBox() || 
+	    e.getSource() == getJComboBoxBillingGroup() || 
+	    e.getSource() == getJComboBoxlVoltInterval() || 
+	    e.getSource() == getJComboBoxlVoltRate()) {
+	    fireInputUpdate();
+    }
 }
+
+/**
+ * Method to handle events for the ItemListener interface.
+ * @param e java.awt.event.ItemEvent
+ */
+public void itemStateChanged(java.awt.event.ItemEvent e) {
+    if (e.getSource() == getLastIntervalDemandRateComboBox()) {
+        fireInputUpdate();
+    }
+}
+/**
+ * Method to handle events for the KeyListener interface.
+ * @param e java.awt.event.KeyEvent
+ */
+public void keyPressed(java.awt.event.KeyEvent e) {
+}
+/**
+ * Method to handle events for the KeyListener interface.
+ * @param e java.awt.event.KeyEvent
+ */
+public void keyReleased(java.awt.event.KeyEvent e) {
+}
+/**
+ * Method to handle events for the KeyListener interface.
+ * @param e java.awt.event.KeyEvent
+ */
+public void keyTyped(java.awt.event.KeyEvent e) {
+    if (e.getSource() == getCycleGroupComboBox().getEditor().getEditorComponent() ||
+            e.getSource() == getAlternateGroupComboBox().getEditor().getEditorComponent() ||
+            e.getSource() == getJComboBoxBillingGroup().getEditor().getEditorComponent() ||
+            e.getSource() == getCustomGroup1ComboBox().getEditor().getEditorComponent() ||
+            e.getSource() == getCustomGroup2ComboBox().getEditor().getEditorComponent() ||
+            e.getSource() == getCustomGroup3ComboBox().getEditor().getEditorComponent()) {
+      fireInputUpdate();
+    }
+}
+
 /**
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void caretUpdate(javax.swing.event.CaretEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getMeterNumberTextField()) 
-		connEtoC12(e);
-	// user code begin {2}
-	// user code end
+    if (e.getSource() == getMeterNumberTextField()) {
+        fireInputUpdate();
+    }
 }
-/**
- * connEtoC1:  (Channel2CheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC10:  (CycleGroupComboBox.key.keyTyped(java.awt.event.KeyEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.KeyEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC10(java.awt.event.KeyEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC11:  (AreaCodeGroupComboBox.key.keyTyped(java.awt.event.KeyEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.KeyEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC11(java.awt.event.KeyEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC12:  (MeterNumberTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC12(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC13:  (JComboBoxlVoltInterval.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC13(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC14:  (JComboBoxlVoltRate.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC14(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC2:  (Channel1CheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC3:  (JComboBoxBillingGroup.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC3(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC4:  (DemandIntervalComboBox.item.itemStateChanged(java.awt.event.ItemEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ItemEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC4(java.awt.event.ItemEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC5:  (CycleGroupComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC6:  (AreaCodeGroupComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC6(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC7:  (Channel3CheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC7(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC8:  (Channel4CheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC8(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
 
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
 /**
- * connEtoC9:  (LoadProfileDemandRateComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceMeterGroupEditorPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
+ * Initializes connections
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC9(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
+private void initConnections() throws java.lang.Exception {
+    getLastIntervalDemandRateComboBox().addItemListener(this);
+    
+    getJComboBoxlVoltInterval().addActionListener(this);
+    getJComboBoxlVoltRate().addActionListener(this);
+    getChannel2CheckBox().addActionListener(this);
+    getChannel1CheckBox().addActionListener(this);
+    getChannel3CheckBox().addActionListener(this);
+    getChannel4CheckBox().addActionListener(this);
+    getLoadProfileDemandRateComboBox().addActionListener(this);
+    
+    getCycleGroupComboBox().getEditor().getEditorComponent().addKeyListener(this);
+    getAlternateGroupComboBox().getEditor().getEditorComponent().addKeyListener(this);
+    getJComboBoxBillingGroup().getEditor().getEditorComponent().addKeyListener(this);
+    getCustomGroup1ComboBox().getEditor().getEditorComponent().addKeyListener(this);
+    getCustomGroup2ComboBox().getEditor().getEditorComponent().addKeyListener(this);
+    getCustomGroup3ComboBox().getEditor().getEditorComponent().addKeyListener(this);
+    getMeterNumberTextField().addKeyListener(this);
+    
 }
+
 /**
  * Return the AreaCodeGroupComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
+@SuppressWarnings("deprecation")
 private javax.swing.JComboBox getAlternateGroupComboBox() {
 	if (alternateGroupComboBox == null) {
 		try {
@@ -431,6 +186,7 @@ private javax.swing.JComboBox getAlternateGroupComboBox() {
 	return alternateGroupComboBox;
 }
 
+@SuppressWarnings("deprecation")
 private JComboBox getCustomGroup1ComboBox() {
     if (customGroup1ComboBox == null) {
         try {
@@ -453,6 +209,7 @@ private JComboBox getCustomGroup1ComboBox() {
     return customGroup1ComboBox;
 }
 
+@SuppressWarnings("deprecation")
 private JComboBox getCustomGroup2ComboBox() {
     if (customGroup2ComboBox == null) {
         try {
@@ -473,6 +230,7 @@ private JComboBox getCustomGroup2ComboBox() {
     return customGroup2ComboBox;
 }
 
+@SuppressWarnings("deprecation")
 private JComboBox getCustomGroup3ComboBox() {
     if (customGroup3ComboBox == null) {
         try {
@@ -497,7 +255,6 @@ private JComboBox getCustomGroup3ComboBox() {
  * Return the AreaCodeGroupLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getAlternateGroupLabel() {
 	if (alternateGroupLabel == null) {
 		try {
@@ -508,11 +265,7 @@ private javax.swing.JLabel getAlternateGroupLabel() {
 			alternateGroupLabel.setPreferredSize(new java.awt.Dimension(114, 16));
 			alternateGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			alternateGroupLabel.setMinimumSize(new java.awt.Dimension(114, 16));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -574,7 +327,6 @@ private JLabel getCustomGroup3Label() {
  * Return the Channel1CheckBox property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getChannel1CheckBox() {
 	if (ivjChannel1CheckBox == null) {
 		try {
@@ -585,11 +337,7 @@ private javax.swing.JCheckBox getChannel1CheckBox() {
 			ivjChannel1CheckBox.setPreferredSize(new java.awt.Dimension(150, 27));
 			ivjChannel1CheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjChannel1CheckBox.setMinimumSize(new java.awt.Dimension(150, 27));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -599,7 +347,6 @@ private javax.swing.JCheckBox getChannel1CheckBox() {
  * Return the Channel2CheckBox property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getChannel2CheckBox() {
 	if (ivjChannel2CheckBox == null) {
 		try {
@@ -610,11 +357,7 @@ private javax.swing.JCheckBox getChannel2CheckBox() {
 			ivjChannel2CheckBox.setPreferredSize(new java.awt.Dimension(150, 27));
 			ivjChannel2CheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjChannel2CheckBox.setMinimumSize(new java.awt.Dimension(150, 27));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -624,7 +367,6 @@ private javax.swing.JCheckBox getChannel2CheckBox() {
  * Return the Channel3CheckBox property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getChannel3CheckBox() {
 	if (ivjChannel3CheckBox == null) {
 		try {
@@ -635,11 +377,7 @@ private javax.swing.JCheckBox getChannel3CheckBox() {
 			ivjChannel3CheckBox.setPreferredSize(new java.awt.Dimension(150, 27));
 			ivjChannel3CheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjChannel3CheckBox.setMinimumSize(new java.awt.Dimension(150, 27));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -649,7 +387,6 @@ private javax.swing.JCheckBox getChannel3CheckBox() {
  * Return the Channel4CheckBox property value.
  * @return javax.swing.JCheckBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JCheckBox getChannel4CheckBox() {
 	if (ivjChannel4CheckBox == null) {
 		try {
@@ -660,11 +397,7 @@ private javax.swing.JCheckBox getChannel4CheckBox() {
 			ivjChannel4CheckBox.setPreferredSize(new java.awt.Dimension(150, 27));
 			ivjChannel4CheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjChannel4CheckBox.setMinimumSize(new java.awt.Dimension(150, 27));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -674,6 +407,7 @@ private javax.swing.JCheckBox getChannel4CheckBox() {
  * Return the CycleGroupComboBox property value.
  * @return javax.swing.JComboBox
  */
+@SuppressWarnings("deprecation")
 private javax.swing.JComboBox getCycleGroupComboBox() {
 	if (ivjCycleGroupComboBox == null) {
 		try {
@@ -698,7 +432,6 @@ private javax.swing.JComboBox getCycleGroupComboBox() {
  * Return the CycleGroupLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getCycleGroupLabel() {
 	if (ivjCycleGroupLabel == null) {
 		try {
@@ -710,11 +443,7 @@ private javax.swing.JLabel getCycleGroupLabel() {
 			ivjCycleGroupLabel.setPreferredSize(new java.awt.Dimension(140, 16));
 			ivjCycleGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjCycleGroupLabel.setMinimumSize(new java.awt.Dimension(140, 16));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -724,7 +453,6 @@ private javax.swing.JLabel getCycleGroupLabel() {
  * Return the DataCollectionPanel property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getDataCollectionPanel() {
 	if (ivjDataCollectionPanel == null) {
 		try {
@@ -860,7 +588,7 @@ private javax.swing.JPanel getDataCollectionPanel() {
  * Return the JComboBoxBillingGroup property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
+@SuppressWarnings("deprecation")
 private javax.swing.JComboBox getJComboBoxBillingGroup() {
 	if (ivjJComboBoxBillingGroup == null) {
 		try {
@@ -885,7 +613,6 @@ private javax.swing.JComboBox getJComboBoxBillingGroup() {
  * Return the JComboBoxlVoltInterval property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getJComboBoxlVoltInterval() {
 	if (ivjJComboBoxlVoltInterval == null) {
 		try {
@@ -894,8 +621,6 @@ private javax.swing.JComboBox getJComboBoxlVoltInterval() {
 			ivjJComboBoxlVoltInterval.setPreferredSize(new java.awt.Dimension(133, 23));
 			ivjJComboBoxlVoltInterval.setEnabled(true);
 			ivjJComboBoxlVoltInterval.setMinimumSize(new java.awt.Dimension(133, 23));
-			// user code begin {1}
-
 			ivjJComboBoxlVoltInterval.addItem("15 second");
 			ivjJComboBoxlVoltInterval.addItem("30 second");
 			ivjJComboBoxlVoltInterval.addItem("45 second");
@@ -909,11 +634,7 @@ private javax.swing.JComboBox getJComboBoxlVoltInterval() {
 			ivjJComboBoxlVoltInterval.addItem("15 minute");
 			ivjJComboBoxlVoltInterval.addItem("30 minute");
 			ivjJComboBoxlVoltInterval.addItem("1 hour");
-
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -923,7 +644,6 @@ private javax.swing.JComboBox getJComboBoxlVoltInterval() {
  * Return the JComboBoxlVoltRate property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getJComboBoxlVoltRate() {
 	if (ivjJComboBoxlVoltRate == null) {
 		try {
@@ -932,8 +652,6 @@ private javax.swing.JComboBox getJComboBoxlVoltRate() {
 			ivjJComboBoxlVoltRate.setPreferredSize(new java.awt.Dimension(133, 23));
 			ivjJComboBoxlVoltRate.setEnabled(true);
 			ivjJComboBoxlVoltRate.setMinimumSize(new java.awt.Dimension(133, 23));
-			// user code begin {1}
-			
 			ivjJComboBoxlVoltRate.addItem("1 minute");
 			ivjJComboBoxlVoltRate.addItem("2 minute");
 			ivjJComboBoxlVoltRate.addItem("3 minute");
@@ -943,10 +661,7 @@ private javax.swing.JComboBox getJComboBoxlVoltRate() {
 			ivjJComboBoxlVoltRate.addItem("30 minute");
 			ivjJComboBoxlVoltRate.addItem("1 hour");
 
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -956,7 +671,6 @@ private javax.swing.JComboBox getJComboBoxlVoltRate() {
  * Return the JLabelBillingGroup property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabelBillingGroup() {
 	if (ivjJLabelBillingGroup == null) {
 		try {
@@ -968,11 +682,7 @@ private javax.swing.JLabel getJLabelBillingGroup() {
 			ivjJLabelBillingGroup.setPreferredSize(new java.awt.Dimension(140, 16));
 			ivjJLabelBillingGroup.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelBillingGroup.setMinimumSize(new java.awt.Dimension(140, 16));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -982,7 +692,6 @@ private javax.swing.JLabel getJLabelBillingGroup() {
  * Return the JLabelVoltDmdRate property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabelVoltDmdRate() {
 	if (ivjJLabelVoltDmdRate == null) {
 		try {
@@ -995,11 +704,7 @@ private javax.swing.JLabel getJLabelVoltDmdRate() {
 			ivjJLabelVoltDmdRate.setEnabled(true);
 			ivjJLabelVoltDmdRate.setMinimumSize(new java.awt.Dimension(150, 16));
 			
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1009,7 +714,6 @@ private javax.swing.JLabel getJLabelVoltDmdRate() {
  * Return the JLabelVoltIntervalDmdRate property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabelVoltIntervalDmdRate() {
 	if (ivjJLabelVoltIntervalDmdRate == null) {
 		try {
@@ -1022,11 +726,7 @@ private javax.swing.JLabel getJLabelVoltIntervalDmdRate() {
 			ivjJLabelVoltIntervalDmdRate.setEnabled(true);
 			ivjJLabelVoltIntervalDmdRate.setMinimumSize(new java.awt.Dimension(150, 16));
 			
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1036,28 +736,21 @@ private javax.swing.JLabel getJLabelVoltIntervalDmdRate() {
  * Return the DemandIntervalComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getLastIntervalDemandRateComboBox() {
 	if (ivjLastIntervalDemandRateComboBox == null) {
 		try {
 			ivjLastIntervalDemandRateComboBox = new javax.swing.JComboBox();
 			ivjLastIntervalDemandRateComboBox.setName("LastIntervalDemandRateComboBox");
 			ivjLastIntervalDemandRateComboBox.setEnabled(true);
-			// user code begin {1}
-         
-		 ivjLastIntervalDemandRateComboBox.addItem("1 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("2 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("3 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("5 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("10 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("15 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("30 minute");
-		 ivjLastIntervalDemandRateComboBox.addItem("1 hour");
-         
-			// user code end
+    		ivjLastIntervalDemandRateComboBox.addItem("1 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("2 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("3 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("5 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("10 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("15 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("30 minute");
+    		ivjLastIntervalDemandRateComboBox.addItem("1 hour");
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1067,7 +760,6 @@ private javax.swing.JComboBox getLastIntervalDemandRateComboBox() {
  * Return the DemandIntervalLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getLastIntervalDemandRateLabel() {
 	if (ivjLastIntervalDemandRateLabel == null) {
 		try {
@@ -1079,11 +771,7 @@ private javax.swing.JLabel getLastIntervalDemandRateLabel() {
 			ivjLastIntervalDemandRateLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjLastIntervalDemandRateLabel.setEnabled(true);
 			ivjLastIntervalDemandRateLabel.setMinimumSize(new java.awt.Dimension(150, 16));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1093,7 +781,6 @@ private javax.swing.JLabel getLastIntervalDemandRateLabel() {
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getLoadProfileCollectionPanel() {
 	if (ivjLoadProfileCollectionPanel == null) {
 		try {
@@ -1157,11 +844,7 @@ private javax.swing.JPanel getLoadProfileCollectionPanel() {
 			constraintsJComboBoxlVoltRate.ipadx = -10;
 			constraintsJComboBoxlVoltRate.insets = new java.awt.Insets(4, 4, 1, 67);
 			getLoadProfileCollectionPanel().add(getJComboBoxlVoltRate(), constraintsJComboBoxlVoltRate);
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1171,7 +854,6 @@ private javax.swing.JPanel getLoadProfileCollectionPanel() {
  * Return the LoadProfileDemandRateComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getLoadProfileDemandRateComboBox() {
 	if (ivjLoadProfileDemandRateComboBox == null) {
 		try {
@@ -1180,17 +862,12 @@ private javax.swing.JComboBox getLoadProfileDemandRateComboBox() {
 			ivjLoadProfileDemandRateComboBox.setPreferredSize(new java.awt.Dimension(133, 23));
 			ivjLoadProfileDemandRateComboBox.setEnabled(true);
 			ivjLoadProfileDemandRateComboBox.setMinimumSize(new java.awt.Dimension(133, 23));
-			// user code begin {1}
+    		ivjLoadProfileDemandRateComboBox.addItem("5 minute");
+    		ivjLoadProfileDemandRateComboBox.addItem("15 minute");
+    		ivjLoadProfileDemandRateComboBox.addItem("30 minute");
+    		ivjLoadProfileDemandRateComboBox.addItem("1 hour");
          
-		 ivjLoadProfileDemandRateComboBox.addItem("5 minute");
-		 ivjLoadProfileDemandRateComboBox.addItem("15 minute");
-		 ivjLoadProfileDemandRateComboBox.addItem("30 minute");
-		 ivjLoadProfileDemandRateComboBox.addItem("1 hour");
-         
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1200,7 +877,6 @@ private javax.swing.JComboBox getLoadProfileDemandRateComboBox() {
  * Return the LoadProfileDemandRateLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getLoadProfileDemandRateLabel() {
 	if (ivjLoadProfileDemandRateLabel == null) {
 		try {
@@ -1212,11 +888,7 @@ private javax.swing.JLabel getLoadProfileDemandRateLabel() {
 			ivjLoadProfileDemandRateLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjLoadProfileDemandRateLabel.setEnabled(true);
 			ivjLoadProfileDemandRateLabel.setMinimumSize(new java.awt.Dimension(150, 16));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1226,7 +898,6 @@ private javax.swing.JLabel getLoadProfileDemandRateLabel() {
  * Return the MeterNumberLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getMeterNumberLabel() {
 	if (ivjMeterNumberLabel == null) {
 		try {
@@ -1238,11 +909,7 @@ private javax.swing.JLabel getMeterNumberLabel() {
 			ivjMeterNumberLabel.setPreferredSize(new java.awt.Dimension(100, 16));
 			ivjMeterNumberLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjMeterNumberLabel.setMinimumSize(new java.awt.Dimension(95, 16));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1252,7 +919,6 @@ private javax.swing.JLabel getMeterNumberLabel() {
  * Return the MeterNumberTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getMeterNumberTextField()
 {
 	if (ivjMeterNumberTextField == null)
@@ -1261,16 +927,10 @@ private javax.swing.JTextField getMeterNumberTextField()
 		{
 			ivjMeterNumberTextField = new javax.swing.JTextField();
 			ivjMeterNumberTextField.setName("MeterNumberTextField");
-			// user code begin {1}
-			ivjMeterNumberTextField.setDocument(
-				new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_METER_NUMBER_LENGTH));
-
-			// user code end
+			ivjMeterNumberTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_METER_NUMBER_LENGTH));
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1336,22 +996,19 @@ public Object getValue(Object val)
 
 			dlp.setVoltageDmdRate(
 				CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxlVoltRate()) );
-
 		}
-		
 	}
-
 
 	//handle the devicemetergroup data below
 	DeviceMeterGroup dmg = ((IDeviceMeterGroup)val).getDeviceMeterGroup();
 
-	String cycleGroup = getCycleGroupComboBox().getSelectedItem().toString();
-	String alternateGroup = getAlternateGroupComboBox().getSelectedItem().toString();
+	String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
+	String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
 	String meterNumber = getMeterNumberTextField().getText();
-	String billingGroup = getJComboBoxBillingGroup().getSelectedItem().toString();
-    String customGroup1 = getCustomGroup1ComboBox().getSelectedItem().toString();
-    String customGroup2 = getCustomGroup2ComboBox().getSelectedItem().toString();
-    String customGroup3 = getCustomGroup3ComboBox().getSelectedItem().toString();
+	String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
+    String customGroup1 = (String)getCustomGroup1ComboBox().getSelectedItem();
+    String customGroup2 = (String)getCustomGroup2ComboBox().getSelectedItem();
+    String customGroup3 = (String)getCustomGroup3ComboBox().getSelectedItem();
     
     LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
     YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
@@ -1375,39 +1032,15 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	 com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	 com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
-/**
- * Initializes connections
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
-	getLastIntervalDemandRateComboBox().addItemListener(ivjEventHandler);
-	getCycleGroupComboBox().addActionListener(ivjEventHandler);
-	getAlternateGroupComboBox().addActionListener(ivjEventHandler);
-	getChannel2CheckBox().addActionListener(ivjEventHandler);
-	getChannel1CheckBox().addActionListener(ivjEventHandler);
-	getChannel3CheckBox().addActionListener(ivjEventHandler);
-	getChannel4CheckBox().addActionListener(ivjEventHandler);
-	getLoadProfileDemandRateComboBox().addActionListener(ivjEventHandler);
-	getCycleGroupComboBox().addKeyListener(ivjEventHandler);
-	getAlternateGroupComboBox().addKeyListener(ivjEventHandler);
-	getMeterNumberTextField().addCaretListener(ivjEventHandler);
-	getJComboBoxBillingGroup().addActionListener(ivjEventHandler);
-	getJComboBoxlVoltInterval().addActionListener(ivjEventHandler);
-	getJComboBoxlVoltRate().addActionListener(ivjEventHandler);
-}
+
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
 		setName("DeviceMeterGroupEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(411, 375);
@@ -1463,8 +1096,6 @@ private void initialize() {
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	// user code end
 }
 /**
  * This method was created in VisualAge.
@@ -1472,71 +1103,9 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-/*   if( getJCheckBoxScanWindow().isSelected() 
-	   && (getJTextFieldClose().getTimeTotalSeconds().intValue()
-		   == getJTextFieldOpen().getTimeTotalSeconds().intValue()) )
-   {
-	  setErrorString("The Device Window open and close values can not be equal");
-	  return false;
-   }
-*/
-	/*if(is410 && getMeterNumberTextField().getText().length() < 7)
-	{
-	   setErrorString("An MCT410 requires a meter number with seven digits");
-	   return false;
-	}*/
     return this.checkMeterNumber(getMeterNumberTextField().getText());
 }
-/**
- * Method to handle events for the ItemListener interface.
- * @param e java.awt.event.ItemEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void itemStateChanged(java.awt.event.ItemEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getLastIntervalDemandRateComboBox()) 
-		connEtoC4(e);
-	// user code begin {2}
-	// user code end
-}
-/**
- * Method to handle events for the KeyListener interface.
- * @param e java.awt.event.KeyEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void keyPressed(java.awt.event.KeyEvent e) {
-	// user code begin {1}
-	// user code end
-	// user code begin {2}
-	// user code end
-}
-/**
- * Method to handle events for the KeyListener interface.
- * @param e java.awt.event.KeyEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void keyReleased(java.awt.event.KeyEvent e) {
-	// user code begin {1}
-	// user code end
-	// user code begin {2}
-	// user code end
-}
-/**
- * Method to handle events for the KeyListener interface.
- * @param e java.awt.event.KeyEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void keyTyped(java.awt.event.KeyEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getCycleGroupComboBox()) 
-		connEtoC10(e);
-	if (e.getSource() == getAlternateGroupComboBox()) 
-		connEtoC11(e);
-	// user code begin {2}
-	// user code end
-}
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -1687,18 +1256,14 @@ public void setValue(Object val)
 		 getLoadProfileCollectionPanel().removeAll();
 		 getLoadProfileCollectionPanel().setBorder( null );
 	  }
-
 	}
 
-
-
 	//handle the DeviceMeterGroup data below
-	DeviceMeterGroup dmg = 
-			((IDeviceMeterGroup)val).getDeviceMeterGroup();
+	DeviceMeterGroup dmg = ((IDeviceMeterGroup)val).getDeviceMeterGroup();
 	
 	getMeterNumberTextField().setText( dmg.getMeterNumber() );
     
-    LiteYukonPAObject liteYuk = liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
+    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
     YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
     String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
     String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
