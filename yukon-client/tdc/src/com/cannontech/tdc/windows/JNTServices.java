@@ -1,6 +1,8 @@
 package com.cannontech.tdc.windows;
 
 import java.io.File;
+
+import com.cannontech.clientutils.CTILogger;
 /**
  * This class is an API for the Windows NT Services, here it is possible to
  * <ul>
@@ -64,7 +66,7 @@ public class JNTServices implements IServiceConstants
 {
 	private static final String DLL_FILE = "JNTServices.dll";
 	private String machineName = null; //local machine
-
+    //private String machineName = null; //local machine
 	private static boolean bLibraryLoaded = false;
    private static JNTServices scmManagerInstance = null;
 
@@ -525,24 +527,34 @@ public class JNTServices implements IServiceConstants
 					{
 						if (args[0].compareToIgnoreCase("-list") == 0)
 						{
-							String aServices[] = nts.getAllServices();
-							System.out.println("The following NT Services exists;");
-							int index = aServices.length - 1;
-							while (index >= 0)
-							{
-								System.out.println(index + ": " + aServices[index]);
-								index--;
-							}
-						}
-						else
-						{
-							System.out.println(
-								"Error; " + args[0] + " is not a valid parameter.");
-						}
+                            String [] aServices = null;
+                            try{
+                                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                //if this call causes a memory leak and aServices String[]
+                                //is not freed it causes EXCEPTION
+                                //TODO keep the JNTServices.DLL up to date because that could the
+                                //the reason it happens
+                                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                aServices = nts.getAllServices();
+    							int index = aServices.length - 1;
+    							while (index >= 0)
+    							{
+                                    CTILogger.info(index + ": " + aServices[index]);
+    								index--;
+    							}
+                        }
+                            catch(Exception e)
+                            {
+                                aServices = null;
+                                CTILogger.error("EXCEPTION Occured: Could not connect to services through JNTServices.DLL");
+                            }
+                            
+                         }
 					}
 				}
 			}
-			System.out.println("Status after " + args[0] + " was " + result);
+            CTILogger.info("Status after " + args[0] + " was " + result);
+            
 		}
 	}
 }
