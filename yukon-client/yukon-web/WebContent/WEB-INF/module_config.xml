@@ -337,6 +337,9 @@
           <option id="transmitter" name="Transmitter">
             <link>SelectDevice.jsp?SortBy=1000</link>
           </option>
+          <option id="group" name="Group">
+            <link>/spring/command/configure</link>
+          </option>
         </sublinks>
       </option>
       <option id="lm" name="Load Management">

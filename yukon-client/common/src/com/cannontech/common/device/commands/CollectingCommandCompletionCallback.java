@@ -10,6 +10,7 @@ public abstract class CollectingCommandCompletionCallback implements
         CommandCompletionCallback, CommandResultHolder {
     private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
     private List<PointValueHolder> values = new ArrayList<PointValueHolder>();
+    private List<String> lastResultStrings = new ArrayList<String>();
     private List<String> resultStrings = new ArrayList<String>();
 
     public void receivedError(DeviceErrorDescription error) {
@@ -20,8 +21,12 @@ public abstract class CollectingCommandCompletionCallback implements
         values.add(value);
     }
     
+    public void receivedResultString(String value) {
+        resultStrings.add(value);
+    }
+    
     public void receivedLastResultString(String resultString) {
-        resultStrings.add(resultString);
+        lastResultStrings.add(resultString);
     }
     
     public boolean isErrorsExist() {
@@ -36,14 +41,18 @@ public abstract class CollectingCommandCompletionCallback implements
         return values;
     }
     
-    public List<String> getLastResultStrings() {
+    public List<String> getResultStrings() {
         return resultStrings;
+    }
+    
+    public List<String> getLastResultStrings() {
+        return lastResultStrings;
     }
     
     public String getLastResultString() {
         
-        if(resultStrings.size() > 0){
-            return resultStrings.get(resultStrings.size() - 1);
+        if(lastResultStrings.size() > 0){
+            return lastResultStrings.get(lastResultStrings.size() - 1);
         }
         
         return "";

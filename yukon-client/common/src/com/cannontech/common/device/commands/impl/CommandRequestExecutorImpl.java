@@ -69,6 +69,8 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
                         }
                     }
                     
+                    callback.receivedResultString(retMessage.getResultString());
+                    
                     if (retMessage.getExpectMore() == 0) {
                         String resultString = retMessage.getResultString();
                         callback.receivedLastResultString(resultString);

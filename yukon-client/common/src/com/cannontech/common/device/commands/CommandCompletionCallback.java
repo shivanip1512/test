@@ -9,6 +9,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 public interface CommandCompletionCallback {
     public void receivedError(DeviceErrorDescription error);
     public void receivedValue(PointValueHolder value);
+    public void receivedResultString(String value);
     public void receivedLastResultString(String value);
     public void complete();
 }

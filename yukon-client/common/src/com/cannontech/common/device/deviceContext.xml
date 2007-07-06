@@ -39,6 +39,13 @@
         <property name="porterConnection" ref="porterConnection" />
         <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
     </bean>
+    
+	<bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl">
+		<property name="emailService" ref="emailService"/>
+		<property name="commandRequestExecutor" ref="commandRequestExecutor" />
+		<property name="meterDao" ref="meterDao" />
+		<property name="executor" ref="globalScheduledExecutor" />
+	</bean>
 
     <bean id="attrDynamicDataSource" class="com.cannontech.common.device.attribute.service.AttributeDynamicDataSource" singleton="true">
         <property name="dynamicDataSource" ref="dynamicDataSource"/>

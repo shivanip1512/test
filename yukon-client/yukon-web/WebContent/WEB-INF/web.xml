@@ -272,6 +272,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>command</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>httpRemote</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -763,6 +771,11 @@
 	<servlet-mapping>
 		<servlet-name>chart</servlet-name>
 		<url-pattern>/spring/chart/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>command</servlet-name>
+		<url-pattern>/spring/command/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
