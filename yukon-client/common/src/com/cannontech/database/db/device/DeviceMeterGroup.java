@@ -48,7 +48,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"CollectionGroup", "TestCollectionGroup", "MeterNumber", "BillingGroup"
+		"MeterNumber"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -67,8 +67,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	 */
 	public void add() throws java.sql.SQLException 
 	{
-		Object addValues[] = { getDeviceID(), getCollectionGroup(), 
-			getTestCollectionGroup(), getMeterNumber(), getBillingGroup() };
+		Object addValues[] = { getDeviceID(), getMeterNumber() };
 	
 		add( TABLE_NAME, addValues );
 	}
@@ -97,36 +96,6 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	 */
 	public java.lang.String getCollectionGroup() {
 		return collectionGroup;
-	}
-	
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Integer[]
-	 */
-	public final static String[] getDeviceBillingGroups() throws java.sql.SQLException
-	{
-	   String retVal[] = null; 
-	   
-	   com.cannontech.database.SqlStatement stmt =
-	      new com.cannontech.database.SqlStatement(
-	         "SELECT DISTINCT BillingGroup FROM " + TABLE_NAME + " ORDER BY BillingGroup", 
-	         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-	                                     
-	   try
-	   {                                
-	      stmt.execute();
-	
-	      retVal = new String[stmt.getRowCount()];
-	   
-	      for( int i = 0; i < stmt.getRowCount(); i++ )
-	         retVal[i] = new String( ((String)stmt.getRow(i)[0]) );   
-	   }
-	   catch( Exception e )
-	   {
-	      com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	   }  
-	
-	   return retVal;
 	}
 	
 	/**
@@ -194,66 +163,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	
 	 	return retVal;
 	}
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Integer[]
-	 */
-	public final static Integer[] getDeviceIDs_TestCollectionGroups(String databaseAlias, String areaCodeGroup) throws java.sql.SQLException
-	{
-		Integer retVal[] = null;	
-	
-		String sqlString = "SELECT DISTINCT DEVICEID FROM " + TABLE_NAME + 
-			" WHERE TestCollectionGroup = \'" + areaCodeGroup + "\'";
-	
-	 	com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement(sqlString, databaseAlias );
-			
-		try
-	 	{											
-			stmt.execute();
-	
-			retVal = new Integer[stmt.getRowCount()];
-	
-			for( int i = 0; i < stmt.getRowCount(); i++ )
-				retVal[i] = new Integer( ((java.math.BigDecimal) stmt.getRow(i)[0] ).intValue());
-		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}	
-	
-	 	return retVal;
-	}
-	
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Integer[]
-	 */
-	public final static String[] getDeviceTestCollectionGroups() throws java.sql.SQLException
-	{
-		String retVal[] = null;	
-	 	
-	 	com.cannontech.database.SqlStatement stmt =
-	 		new com.cannontech.database.SqlStatement(
-		 		"SELECT DISTINCT TestCollectionGroup FROM " + TABLE_NAME + " ORDER BY TESTCOLLECTIONGROUP", 
-	         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-	 												 
-	 	try
-	 	{											
-			stmt.execute();
-	
-			retVal = new String[stmt.getRowCount()];
 		
-			for( int i = 0; i < stmt.getRowCount(); i++ )
-				retVal[i] = new String( ((String)stmt.getRow(i)[0]) );	
-		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}	
-	
-	 	return retVal;
-	}
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
@@ -281,10 +191,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	
 		if( results.length == SETTER_COLUMNS.length )
 		{
-			setCollectionGroup( (String) results[0] );
-			setTestCollectionGroup( (String) results[1] );
-			setMeterNumber( (String) results[2] );
-			setBillingGroup( (String) results[3] );
+			setMeterNumber( (String) results[0] );
 		}
 	
 	}
@@ -331,8 +238,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	 */
 	public void update() throws java.sql.SQLException 
 	{
-		Object setValues[] = { getCollectionGroup(), 
-			getTestCollectionGroup(), getMeterNumber(), getBillingGroup() };
+		Object setValues[] = { getMeterNumber() };
 	
 		Object constraintValues[] = { getDeviceID() };
 	

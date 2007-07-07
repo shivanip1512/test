@@ -24,6 +24,9 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
+import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
@@ -55,6 +58,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yimp.util.ImportFuncs;
 import com.cannontech.yukon.IServerConnection;
@@ -211,6 +215,7 @@ public void start() {
 	 * This method also will call logging methods for those
 	 * that failed.
 	 */
+@SuppressWarnings("deprecation")
 public void runImport(List<ImportData> imps) {
 	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), true);
 	
@@ -225,6 +230,7 @@ public void runImport(List<ImportData> imps) {
 	Connection conn = null;
     boolean notUpdate = true;
     boolean usingSub = false;
+    FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack");
 	
 	for(int j = 0; j < imps.size(); j++) {
 		updateDeviceID = null;
@@ -238,7 +244,11 @@ public void runImport(List<ImportData> imps) {
 		String routeName = currentEntry.getRouteName();
 		Integer routeID = new Integer(-12);
 		String meterNumber = currentEntry.getMeterNumber();
-		String collectionGrp = currentEntry.getCollectionGrp();
+		/*
+         * TODO We will want to support any number of custom device groups in the future
+         * For now we will restrict to the original 3 columns
+		 */
+        String collectionGrp = currentEntry.getCollectionGrp();
 		String altGrp = currentEntry.getAltGrp();
 		String templateName = currentEntry.getTemplateName();
         String billGrp = currentEntry.getBillingGroup();
@@ -395,7 +405,7 @@ public void runImport(List<ImportData> imps) {
                                             errorMsg.toString(), now.getTime(), billGrp, 
                                             substationName, ImportFuncs.FAIL_INVALID_DATA);
 			failures.add(currentFailure);
-            log.error("Unable to update device with address " + address + "and name " + name + ".");
+            log.error("Unable to import or update device with address " + address + " and name " + name + ".");
 		}
 		else if( updateDeviceID != null) {
 			YukonPAObject pao = new YukonPAObject();
@@ -412,25 +422,28 @@ public void runImport(List<ImportData> imps) {
                     pao = (YukonPAObject)t.execute();
                 }
         
-                //update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
+                //update the deviceMeterGroup table if meternumber 
                 DeviceMeterGroup dmg = new DeviceMeterGroup();
                 dmg.setDeviceID(updateDeviceID);
                 t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
                 dmg = (DeviceMeterGroup)t.execute();
-        
-                if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
-                        !dmg.getTestCollectionGroup().equals(altGrp) || !dmg.getBillingGroup().equals(billGrp)) {
-                    if(!StringUtils.isBlank(meterNumber))
-                        dmg.setMeterNumber(meterNumber);
-                    if(!StringUtils.isBlank(collectionGrp))
-                        dmg.setCollectionGroup(collectionGrp);
-                    if(!StringUtils.isBlank(altGrp))
-                        dmg.setTestCollectionGroup(altGrp);
-                    if(!StringUtils.isBlank(billGrp))
-                        dmg.setBillingGroup(billGrp);
+                if( !dmg.getMeterNumber().equals(meterNumber)) {
                     t = Transaction.createTransaction( Transaction.UPDATE, dmg);
                     dmg = (DeviceMeterGroup)t.execute();
                 }
+                
+                //update device groups if they changed
+                YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(pao.getPaObjectID());
+                String oldBillingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
+                String oldAlternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
+                String oldCollectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
+                
+                if(!StringUtils.isBlank(collectionGrp) && ! collectionGrp.equals(oldCollectionGroup))
+                    hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, collectionGrp);
+                if(!StringUtils.isBlank(altGrp) && ! altGrp.equals(oldAlternateGroup))
+                    hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, altGrp);
+                if(!StringUtils.isBlank(billGrp) && ! billGrp.equals(oldBillingGroup))
+                    hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billGrp);
         
 				//update the deviceRoutes table if the routeID has changed.
 				if(routeID.intValue() != -12) {
@@ -474,9 +487,6 @@ public void runImport(List<ImportData> imps) {
 			current400Series.setDeviceID(deviceID);
 			current400Series.setAddress(new Integer(address));
 			current400Series.getDeviceMeterGroup().setMeterNumber(meterNumber);
-			current400Series.getDeviceMeterGroup().setCollectionGroup(collectionGrp);
-			current400Series.getDeviceMeterGroup().setTestCollectionGroup(altGrp);
-            current400Series.getDeviceMeterGroup().setBillingGroup(billGrp);
 			
             ImportPendingComm pc = new ImportPendingComm(deviceID, address, name, routeName, 
                                                          meterNumber, collectionGrp, altGrp, 
@@ -517,11 +527,16 @@ public void runImport(List<ImportData> imps) {
                     Transaction.createTransaction(Transaction.INSERT, current400Series).execute();
                 }
 				
+                YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(deviceID);
+                hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, collectionGrp);
+                hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, altGrp);
+                hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billGrp);
+                
                 //write pending communication entry for porter thread to pick up
                 Transaction.createTransaction(Transaction.INSERT, pc).execute();
                 
 				successVector.add(imps.get(j));
-				log.info(current400Series.getPAOType() + " with name " + name + " with address " + address + "successfully imported.");
+				log.info(current400Series.getPAOType() + " with name " + name + " with address " + address + " successfully imported.");
 				
 				successCounter++;
 			}
