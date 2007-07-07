@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/2/2007 4:39:20 PM                          */
+/* Created on:     7/7/2007 10:43:41 AM                         */
 /*==============================================================*/
 
 
@@ -11211,6 +11211,7 @@ go
 alter table DEVICEGROUPMEMBER
    add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
       references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table DEVICEIDLCREMOTE

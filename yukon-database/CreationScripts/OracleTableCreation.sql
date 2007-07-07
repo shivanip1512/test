@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/3/2007 4:13:31 PM                          */
+/* Created on:     7/7/2007 10:44:21 AM                         */
 /*==============================================================*/
 
 
@@ -9837,6 +9837,7 @@ alter table DEVICEGROUPMEMBER
 alter table DEVICEGROUPMEMBER
    add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
       references DEVICE (DEVICEID)
+      on delete cascade
 /
 
 alter table DEVICEIDLCREMOTE

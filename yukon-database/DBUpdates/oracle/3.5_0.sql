@@ -185,7 +185,8 @@ alter table DEVICEGROUPMEMBER
 
 alter table DEVICEGROUPMEMBER
    add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
-      references DEVICE (DEVICEID);
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table DEVICEGROUPMEMBER
    add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
