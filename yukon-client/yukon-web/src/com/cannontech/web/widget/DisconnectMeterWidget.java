@@ -41,7 +41,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         CONNECTED, DISCONNECTED, UNKNOWN}; 
 
     
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 

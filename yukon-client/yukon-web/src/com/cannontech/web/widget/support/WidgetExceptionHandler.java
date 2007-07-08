@@ -16,8 +16,6 @@ public class WidgetExceptionHandler implements HandlerExceptionResolver {
                                          Object handler, Exception ex) {
         log.warn("Error processing this widget", ex);
         ModelAndView mav = new ModelAndView("widgetError.jsp");
-        //TODO fix after ServletUtil is changed
-        mav.addObject("stackTrace", "keep your pants on, this is coming...");
         mav.addObject("errorMessage", ex.getMessage());
         return mav;
     }

@@ -42,7 +42,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     }
 
 
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 

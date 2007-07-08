@@ -93,7 +93,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     
     public PointValueComparator pointValueComparator = new PointValueComparator();
     
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         Meter meter = getMeter(request);

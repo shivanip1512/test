@@ -32,7 +32,6 @@ public class MeterInformationWidget extends WidgetControllerBase {
         this.paoGroupsWrapper = paoGroupsWrapper;
     }
 
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         ModelAndView mav = new ModelAndView();

@@ -47,7 +47,6 @@ public class TrendWidget extends WidgetControllerBase {
         }
     }
 
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         ModelAndView mav = new ModelAndView();

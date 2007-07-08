@@ -26,7 +26,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 
 <div id="widgetWrapper_${widgetParameters.widgetId}" style="width: ${widgetParameters.width}px;">
 
-<c:set var="showIdentity" value="${widgetParameters.identify and not empty beanInst.identityPath}"/>
+<c:set var="showIdentity" value="${widgetParameters.identify and beanInst.hasIdentity}"/>
 <c:if test="${showIdentity}">
 <c:import var="widgetIdentity" url="/spring/widget/${beanInst.shortName}/identity" scope="page"/>
 <c:set var="containerTitle" value="${beanInst.title}: ${widgetIdentity}"/>

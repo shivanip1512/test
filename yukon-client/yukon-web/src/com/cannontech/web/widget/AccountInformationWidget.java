@@ -16,7 +16,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class AccountInformationWidget extends WidgetControllerBase{
     private AccountInfoDao accountInfoDao;
     
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");

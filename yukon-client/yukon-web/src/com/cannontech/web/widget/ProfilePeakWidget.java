@@ -57,7 +57,6 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         this.commandRequestExecutor = commandRequestExecutor;
     }
 
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 

@@ -14,7 +14,6 @@ public class PointValueDisplayWidget extends WidgetControllerBase {
     private PointDao pointDao;
     private DeviceReadJobLogDao deviceReadJobLogDao;
 
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
         return new ModelAndView();

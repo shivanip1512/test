@@ -11,7 +11,6 @@ import com.cannontech.web.widget.support.WidgetControllerBase;
 
 public class ReadCurrentTimeWidget extends WidgetControllerBase {
 
-    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
         throws Exception {
         Thread.sleep(750);
