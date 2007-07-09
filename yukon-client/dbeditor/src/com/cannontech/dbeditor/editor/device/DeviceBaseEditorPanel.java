@@ -1723,16 +1723,7 @@ public Object getValue(Object val)
         catch( NumberFormatException e )
         {
             ((GridAdvBase)val).getDeviceAddress().setMasterAddress( new Integer(0) );
-        }
-        
-        Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
-        if( postCommWaitSpinVal instanceof Long )
-            postCommWait = new Integer( ((Long)postCommWaitSpinVal).intValue() );
-        else if( postCommWaitSpinVal instanceof Integer )
-            postCommWait = new Integer( ((Integer)postCommWaitSpinVal).intValue() );
-        
-        ((GridAdvBase)val).getDeviceIDLCRemote().setPostCommWait( postCommWait );
-        
+        }        
     }
     
 	if( val instanceof RemoteBase )
@@ -2337,9 +2328,10 @@ private void setGridBaseValue ( GridAdvBase gBase, int intType )
 
     getPortLabel().setVisible(true);
     getPortComboBox().setVisible(true);
-    getPostCommWaitLabel().setVisible(true);
-    getPostCommWaitSpinner().setVisible(true);
-    getWaitLabel().setVisible(true);
+    getPostCommWaitLabel().setVisible(false);
+    getPostCommWaitSpinner().setVisible(false);
+    getDialupSettingsPanel().setVisible(false);
+    getWaitLabel().setVisible(false);
 
     if( getRouteComboBox().getModel().getSize() > 0 )
         getRouteComboBox().removeAllItems();
@@ -2368,12 +2360,6 @@ private void setGridBaseValue ( GridAdvBase gBase, int intType )
             }
         }
     }
-    Integer postComm = null;
-    postComm = gBase.getDeviceIDLCRemote().getPostCommWait();
-    if( postComm != null )
-        getPostCommWaitSpinner().setValue( postComm );
-    else
-        getPostCommWaitSpinner().setValue( 0 );
     
     getPhysicalAddressLabel().setVisible(true);
     getPhysicalAddressLabel().setText("Serial Number:");
