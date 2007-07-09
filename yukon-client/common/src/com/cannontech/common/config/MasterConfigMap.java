@@ -50,6 +50,7 @@ public class MasterConfigMap implements ConfigurationSource {
                     configMap.put(key, value);
                 }
             }
+            bufReader.close();
         } catch (IOException e) {
             log.error(e);
         }
