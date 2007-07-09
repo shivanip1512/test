@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2007/06/29 16:27:33 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2007/07/09 21:51:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,9 +84,6 @@ DLLEXPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
-static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGroupName);
-static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
-static bool findBillingGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
 
 int CtiPILServer::execute()
 {
@@ -1616,30 +1613,44 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         if(parse.isKeyValid("freeze") && pReq->DeviceId())
         {
             boost::regex coll_grp("collection_group +((\"|')[^\"']+(\"|'))");
-            CtiString tmp, group_name;
+            CtiString tmp, groupname;
 
             int next_freeze = parse.getiValue("freeze");
 
             if( !(tmp = CtiString(parse.getCommandStr().c_str()).match(coll_grp)).empty() )
             {
                 //  pull out the group name
-                group_name = tmp.match(boost::regex("(\"|')[^\"']+(\"|')"));
+                groupname = tmp.match(boost::regex("(\"|')[^\"']+(\"|')"));
                 //  trim off the quotes
-                group_name = group_name.substr(1, group_name.size() - 2);
+                groupname = groupname.substr(1, groupname.size() - 2);
 
+                queue<long> members;
+
+                //  this catches any old-style group names with embedded slashes
+                if( groupname.find_first_of('/') > 0 )
                 {
-                    CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
-                    CtiDeviceManager::spiterator itr_dev;
-
-                    vector< CtiDeviceManager::ptr_type > match_coll;
-                    DeviceManager->select(findMeterGroupName, (void*)(group_name.data()), match_coll);
-                    CtiDeviceSPtr device;
-
-                    while(!match_coll.empty())
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - groupname \"" << groupname << "\" is malformed - cannot determine group hierarchy **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                else
+                {
+                    //  if it's not a new-style group, convert it
+                    if( groupname.find_first_of('/') == string::npos )
                     {
-                        device = match_coll.back();
-                        match_coll.pop_back();
+                        groupname = "/Meters/Collection/" + groupname;
+                    }
 
+                    std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
+
+                    getDeviceGroupMembers(groupname, members);
+                }
+
+                while( !members.empty() )
+                {
+                    CtiDeviceManager::ptr_type device = DeviceManager->getEqual(members.front());
+
+                    if( device )
+                    {
                         //  if a freeze wasn't specified, grab the first MCT and initialize the freeze counter
                         //    with what he expects to hear next
                         if( !next_freeze )
@@ -1652,8 +1663,10 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         device->setExpectedFreeze(next_freeze);
                     }
 
-                    //  this is where we'd attempt to correct devices that have an incorrect freeze counter
+                    members.pop();
                 }
+
+                //  this is where we'd attempt to correct devices that have an incorrect freeze counter
             }
 
             if(parse.isKeyValid("voltage"))
@@ -1921,55 +1934,6 @@ static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdev
     return bstat;
 }
 
-
-static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
-{
-    bool bstat = false;
-
-    if(otherdevice->isMeter() || isION(otherdevice->getType()))
-    {
-        string gname((char*)vptrGname);
-        string mgname = otherdevice->getMeterGroupName();
-        std::transform(mgname.begin(), mgname.end(), mgname.begin(), ::tolower);
-
-        if( !mgname.empty() && !stringCompareIgnoreCase(gname,mgname) )
-        {
-            bstat = true;
-        }
-    }
-
-    return bstat;
-}
-
-static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
-{
-    bool bstat = false;
-    string gname((char*)vptrGname);
-    string mgname = otherdevice->getAlternateMeterGroupName();
-    std::transform(mgname.begin(), mgname.end(), mgname.begin(), ::tolower);
-
-    if( !mgname.empty() && !stringCompareIgnoreCase(gname,mgname) )
-    {
-        bstat = true;
-    }
-
-    return bstat;
-}
-
-static bool findBillingGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
-{
-    bool bstat = false;
-    string gname((char*)vptrGname);
-    string mgname = otherdevice->getBillingGroupName();
-    CtiToLower(mgname);
-
-    if( !mgname.empty() && !findStringIgnoreCase(gname,mgname) )
-    {
-        bstat = true;
-    }
-
-    return bstat;
-}
 
 /*
  *  This method takes a look at the parsed request and processes the command into the event log.  This will happen if and only if
