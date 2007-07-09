@@ -54,6 +54,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
         sql.append("where dg.parentdevicegroupid = ?");
+        sql.append("order by GroupName");
         StoredDeviceGroupRowMapper mapper = new StoredDeviceGroupRowMapper(group);
         List<StoredDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
         return groups;
