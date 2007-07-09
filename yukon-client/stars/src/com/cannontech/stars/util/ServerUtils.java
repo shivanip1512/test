@@ -70,7 +70,7 @@ public class ServerUtils {
 		if (routeID == 0)
 			throw new WebClientException("The route to send the switch command is not specified.");
 		
-		int priority = (command.indexOf("putcofig service") >= 0)? COMMAND_PRIORITY_SERVICE : COMMAND_PRIORITY_CONFIG;
+		int priority = (command.indexOf("putconfig service") >= 0)? COMMAND_PRIORITY_SERVICE : COMMAND_PRIORITY_CONFIG;
 		YCDefaults ycDefaults = new YCDefaults( priority, false, true, false, null );
 		
 		YC yc = getYC();
