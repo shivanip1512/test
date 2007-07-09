@@ -82,8 +82,6 @@
 				form.FilterValue.value = form.RouteFilterValue.value;
 			else if(document.getElementById("DivCommChannel").style.display == "")
 				form.FilterValue.value = form.CommChannelFilterValue.value;
-			else if( document.getElementById("DivCollectionGroup").style.display == "")
-				form.FilterValue.value = form.CollGroupFilterValue.value;
 		    else if( document.getElementById("DivCBCType").style.display == "")
 		        form.FilterValue.value = form.CBCTypeFilterValue.value;        
 			form.submit();
@@ -137,7 +135,6 @@
 				<!-- See if any filters are selected -->
 				<c:set var="noSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" />
 				<c:set var="routeSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ROUTE_FILTER')}" />
-				<c:set var="collectionGroupSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COLLECTION_GROUP_FILTER')}" />
 				<c:set var="commChannelSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" />
 				<c:set var="cbcSelected" scope="page" value="${commandDeviceBean.filterBy == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.CBC_TYPE_FILTER')}" />
 				
