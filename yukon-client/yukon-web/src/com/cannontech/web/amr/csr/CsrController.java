@@ -124,8 +124,7 @@ public class CsrController extends MultiActionController {
         int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
         YukonDevice device = deviceDao.getYukonDevice(deviceId);
-        boolean highBillSupported = attributeService.isAttributeSupported(device,
-                                                                          BuiltInAttribute.LOAD_PROFILE);
+        boolean highBillSupported = DeviceTypesFuncs.isMCT4XX(device.getType());
 
         mav.addObject("deviceId", deviceId);
         mav.addObject("highBillSupported", highBillSupported);
