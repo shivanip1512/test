@@ -16,8 +16,9 @@ import com.cannontech.spring.YukonSpringHook;
 public class OutageBlock implements Block{
 
     public String meterNumber;
-    public double blinkCount;
+    public Double blinkCount;
     public Date blinkCountDateTime;
+    public boolean hasData = false;
     
     public OutageBlock() {
         super();
@@ -28,6 +29,7 @@ public class OutageBlock implements Block{
         this.meterNumber = meterNumber;
         this.blinkCount = blinkCount;
         this.blinkCountDateTime = blinkCountDateTime;
+        hasData = true;
     }
     
     public void setMeterNumber(String meterNumber) {
@@ -40,11 +42,14 @@ public class OutageBlock implements Block{
             return meterNumber;
         
         else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT))
-            return String.valueOf(blinkCount);
+            if( blinkCount != null)
+                return String.valueOf(blinkCount);
             
         else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT_DATETIME)){
-            SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
-            return sdf.format(blinkCountDateTime);
+            if( blinkCountDateTime != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
+                return sdf.format(blinkCountDateTime);
+            }
         }
         else {
             CTILogger.error("SyntaxItem: " + syntaxItem + " - Not Valid for LoadBlock");
@@ -53,10 +58,16 @@ public class OutageBlock implements Block{
         return "";
     }
 
-    public void populate(Meter meter, PointValueHolder pointValue) {
+    public void populate(Meter meter) {
         
         //TODO - Probably shouldn't set this everytime...need to find a better way.
         meterNumber = meter.getMeterNumber();
+        hasData = true;
+    }
+
+    public void populate(Meter meter, PointValueHolder pointValue) {
+        
+        populate(meter);
         
         AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
         try {
@@ -68,5 +79,9 @@ public class OutageBlock implements Block{
                 blinkCountDateTime = pointValue.getPointDataTimeStamp();
             }
         } catch (IllegalArgumentException e) {}
+    }
+    
+    public boolean hasData() {
+        return hasData;
     }
 }

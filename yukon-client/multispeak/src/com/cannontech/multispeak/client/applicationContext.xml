@@ -39,6 +39,7 @@
     </property>
   	<property name="porterConnection" ref="porterConnection"/>
   	<property name="multispeak" ref="multispeak"/>
+ 	<property name="mspRawPointHistoryDao" ref="mspRawPointHistoryDao"/>
   </bean>
   <bean id="mr_oa" class="com.cannontech.multispeak.service.impl.MR_OAImpl">
   </bean>
@@ -62,6 +63,9 @@
     <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="paoDao" ref="paoDao"/>
     <property name="deviceDao" ref="deviceDao"/>
+    <property name="deviceGroupService" ref="deviceGroupService"/>
+	<property name="deviceGroupMemberEditorDao" ref="deviceGroupEditorDao"/>
+    <property name="meterDao" ref="meterDao"/>
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
@@ -70,7 +74,7 @@
     <property name="nextValueHelper" ref="nextValueHelper"/>  
   </bean>
   
-  <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.RawPointHistoryDaoImpl">
+  <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl">
   </bean>
 
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">

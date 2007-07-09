@@ -6,8 +6,6 @@
  */
 package com.cannontech.multispeak.event;
 
-import java.util.Observable;
-
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.spring.YukonSpringHook;
@@ -18,7 +16,7 @@ import com.cannontech.spring.YukonSpringHook;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public abstract class MultispeakEvent extends Observable implements MspEvent{
+public abstract class MultispeakEvent implements MspEvent{
     
 	/** The unique vendor name who initiated the event */
 	private MultispeakVendor mspVendor = null;

@@ -19,14 +19,13 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterDao;
-import com.cannontech.multispeak.dao.RawPointHistoryDao;
-import com.cannontech.multispeak.dao.RawPointHistoryDao.ReadBy;
+import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
+import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.service.ArrayOfCustomer;
@@ -54,7 +53,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
     public Multispeak multispeak;
     public MspMeterDao mspMeterDao;
     public MultispeakFuncs multispeakFuncs;
-    public RawPointHistoryDao mspRawPointHistoryDao;
+    public MspRawPointHistoryDao mspRawPointHistoryDao;
     private BasicServerConnection porterConnection;
     
     public void setMspMeterDao(MspMeterDao mspMeterDao) {
@@ -69,7 +68,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         this.multispeakFuncs = multispeakFuncs;
     }
 
-    public void setMspRawPointHistoryDao(RawPointHistoryDao mspRawPointHistoryDao) {
+    public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
         this.mspRawPointHistoryDao = mspRawPointHistoryDao;
     }
 
@@ -95,7 +94,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
                                          "getLatestReadingByMeterNo",
 //                                         "getReadingsByDate",
                                          "getReadingsByMeterNo",
-                                         "getReadingsByBillingCycle",
+//                                         "getReadingsByBillingCycle", //NO LONGER SUPPORTED WITH NEW GROUPING SCHEMA
                                          "meterRemoveNotification",
                                          "meterAddNotification",
                                          "initiateUsageMonitoring",
@@ -246,28 +245,28 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
     public ArrayOfErrorObject initiateUsageMonitoring(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
+        ErrorObject[] errorObject = multispeak.initiateUsageMonitoringStatus(vendor, meterNos.getString());
         return new ArrayOfErrorObject(errorObject);
     }
     
     public ArrayOfErrorObject cancelUsageMonitoring(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
+        ErrorObject[] errorObject = multispeak.cancelUsageMonitoringStatus(vendor, meterNos.getString());
         return new ArrayOfErrorObject(errorObject);
     }
     
     public ArrayOfErrorObject initiateDisconnectedStatus(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
+        ErrorObject[] errorObject = multispeak.initiateDisconnectedStatus(vendor, meterNos.getString());
         return new ArrayOfErrorObject(errorObject);
     }
     
     public ArrayOfErrorObject cancelDisconnectedStatus(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
+        ErrorObject[] errorObject = multispeak.cancelDisconnectedStatus(vendor, meterNos.getString());
         return new ArrayOfErrorObject(errorObject);
     }
 

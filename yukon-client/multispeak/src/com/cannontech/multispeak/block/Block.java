@@ -7,5 +7,7 @@ import com.cannontech.multispeak.block.syntax.SyntaxItem;
 public interface Block {
     public String defaultDateFormat = "MM/dd/yyyy HH:mm:ss zzz";
     public String getField(SyntaxItem syntaxItem);
+    public void populate(Meter meter);
     public void populate(Meter meter, PointValueHolder pointValue);
+    public boolean hasData();
 }

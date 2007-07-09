@@ -131,7 +131,6 @@ public class MeterReadEvent extends MultispeakEvent{
         if(returnMsg.getExpectMore() == 0){
             updateReturnMessageCount();
             if( getReturnMessages() == 0) {
-                notify();
                 eventNotification();
                 return true;
             }

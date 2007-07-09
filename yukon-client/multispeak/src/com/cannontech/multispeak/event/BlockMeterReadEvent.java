@@ -120,7 +120,6 @@ public class BlockMeterReadEvent extends MultispeakEvent {
         if(returnMsg.getExpectMore() == 0){
             updateReturnMessageCount();
             if( getReturnMessages() == 0) {
-//                notify();
                 populated = true;
                 eventNotification();
                 return true;

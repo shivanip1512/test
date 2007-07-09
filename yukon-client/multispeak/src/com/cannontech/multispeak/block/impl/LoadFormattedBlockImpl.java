@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.data.device.KV;
 import com.cannontech.multispeak.block.data.FormattedBlockBase;
 import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.data.load.LoadFormattedBlock;
@@ -55,13 +56,28 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
     }
     
     public LoadBlock getBlock(Meter meter) {
-        PointValueHolder loadProfile =
-            attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.LOAD_PROFILE);
+        LoadBlock loadBlock = new LoadBlock();
+        loadBlock.populate(meter);
 
-        LoadBlock loadBlock = new LoadBlock(meter.getMeterNumber(),
-                                            loadProfile.getValue(),
-                                            loadProfile.getPointDataTimeStamp()
-                                            );
+        try {
+            PointValueHolder loadProfile =
+                attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.LOAD_PROFILE);
+            loadBlock.populate(meter, loadProfile);
+        } catch (IllegalArgumentException e) {}      
+        
+        try {
+            PointValueHolder kVar =
+                attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.KVAR);
+            loadBlock.populate(meter, kVar);
+
+        } catch (IllegalArgumentException e) {}
+        
+        try {
+            PointValueHolder voltage =
+                attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.VOLTAGE);
+            loadBlock.populate(meter, voltage);
+
+        } catch (IllegalArgumentException e) {}
         return loadBlock;
     }
 }

@@ -10,7 +10,11 @@ public class LoadValList extends FormattedBlockValueListBase{
     public static SyntaxItem[] syntaxItem = new SyntaxItem[]{
             SyntaxItem.METER_NUMBER,
             SyntaxItem.LOAD_PROFILE_DEMAND,
-            SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME
+            SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME,
+            SyntaxItem.KVAR,
+            SyntaxItem.KVAR_DATETIME,
+            SyntaxItem.VOLTAGE,
+            SyntaxItem.VOLTAGE_DATETIME
     };
 
     public LoadValList(List<LoadBlock> block) {

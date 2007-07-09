@@ -8,6 +8,8 @@ package com.cannontech.multispeak.client;
 
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +18,16 @@ import java.util.Vector;
 
 import org.apache.axis.AxisFault;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
 
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
+import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -60,6 +70,7 @@ import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.MeterRead;
 import com.cannontech.multispeak.service.ServiceLocation;
 import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -78,7 +89,17 @@ public class Multispeak implements MessageListener {
     private PaoDao paoDao;
     private DeviceDao deviceDao;
     private MspObjectDao mspObjectDao;
+    private DeviceGroupService deviceGroupService;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private MeterDao meterDao;
     private SystemLogHelper _systemLogHelper = null;
+        
+    /** Static Flags names */
+    private static String INVENTORY_FLAG = "/Meters/Flags/Inventory";
+    private static String DISCONNECTED_STATUS_FLAG = "/Meters/Flags/DisconnectedStatus";
+    private static String USAGE_MONITORING_FLAG = "/Meters/Flags/UsageMonitoring";
+
+    public static final String REMOVED_METER_NUMBER_SUFFIX = "_REM";
     
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -111,6 +132,19 @@ public class Multispeak implements MessageListener {
     
     public void setMspObjectDao(MspObjectDao mspObjectDao) {
         this.mspObjectDao = mspObjectDao;
+    }
+    
+    public void setDeviceGroupMemberEditorDao(
+            DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
+    
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
     }
     
     /**
@@ -280,13 +314,7 @@ public class Multispeak implements MessageListener {
 			}
 		}
     		
-		if( !errorObjects.isEmpty()) {
-            
-			ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-			errorObjects.toArray(errors);
-			return errors;
-		}
-		return new ErrorObject[0];
+		return toErrorObject(errorObjects);
 	}
 	
     /**
@@ -329,13 +357,7 @@ public class Multispeak implements MessageListener {
             
         }
         
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+        return toErrorObject(errorObjects);
     }
     
     /**
@@ -362,35 +384,44 @@ public class Multispeak implements MessageListener {
                 
                 long id = generateMessageID();
                 
-                BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block);
-                
-                getEventsMap().put(new Long(id), event);
-                String commandStr = "getvalue kwh update";
                 if (block instanceof LoadFormattedBlockImpl){
+                    int returnMessages = 0;
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-                    commandStr = "getvalue lp channel 1 " + format.format(new Date());
+                    String lpCommandStr = "getvalue lp channel 1 " + format.format(new Date());
+                    returnMessages++;
+                    
+                    
+                    String commandStr = null;
+                    if( DeviceTypesFuncs.isMCT410(meter.getType())) {
+                        commandStr = "getvalue demand update";
+                        returnMessages++;
+                    }
+                    else if (DeviceTypesFuncs.isMCT430(meter.getType()) ||
+                            DeviceTypesFuncs.isMCT470(meter.getType())) {
+                        commandStr = "getvalue ied kvar update";
+                        returnMessages++;
+                    }
+                    
+                    BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block, returnMessages);
+                    getEventsMap().put(new Long(id), event);
+
+                    writePilRequest(meter, lpCommandStr, id, 13);
+                    if( commandStr != null)
+                        writePilRequest(meter, commandStr, id, 13);
                 }
                 else if ( block instanceof OutageFormattedBlockImpl) {
-                    commandStr = "getvalue demand update";
+                    
+                    BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block);
+                    getEventsMap().put(new Long(id), event);
+                    String commandStr = "getvalue demand update";
+                    writePilRequest(meter, commandStr, id, 13);
                 }
 
-                writePilRequest(meter, commandStr, id, 13);
-
-                //Second message (legacy but kept here for reminder.
-//                MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
-//                pilRequest.setCommandString("getvalue demand update");
-//                porterConnection.write(pilRequest);
             }
             
         }
         
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+        return toErrorObject(errorObjects);
     }
     
     /**
@@ -441,13 +472,7 @@ public class Multispeak implements MessageListener {
             }
         }
             
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+        return toErrorObject(errorObjects);
     }
     
     /*
@@ -491,89 +516,24 @@ public class Multispeak implements MessageListener {
 		return eventsMap;
 	}
     
-    public ErrorObject[] initiateStatusChange(MultispeakVendor mspVendor, String[] meterNos, String statusPrefix) {
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+    public ErrorObject[] initiateDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos) {
         
-        for  (int i = 0; i < meterNos.length; i++){
-            String meterNo = meterNos[i];
-            com.cannontech.amr.meter.model.Meter meter =
-                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
-            if( meter != null){
-                LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
-                YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
-                if (yukonPaobject instanceof MCTBase){
-                    String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
-                    if( origCollGroup.indexOf(statusPrefix) < 0) {
-                    	String newCollGroup = statusPrefix + origCollGroup;
-                        ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(newCollGroup);
-                        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
-                        logMSPActivity("initiateStatusChange",
-                                "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + origCollGroup + " NEW:" + newCollGroup + ");", 
-                                mspVendor.getCompanyName());                        
-                    } else {
-                        ErrorObject err = multispeakFuncs.getErrorObject(meterNo,
-                                                                         "MeterNumber: " + meterNo + " - Is already in State (" + origCollGroup +").  Cannot initiate change.",
-                                                                         "Meter");
-                        errorObjects.add(err);
-                    }
-                }
-            }else {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
-                                                                 "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
-                                                                 "Meter");
-                errorObjects.add(err);              
-            }
-        }
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+        return addFlag(mspVendor, meterNos, DISCONNECTED_STATUS_FLAG, "initiateDisconnectedStatus");
+    }
+    
+    public ErrorObject[] initiateUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
+        
+        return addFlag(mspVendor, meterNos, USAGE_MONITORING_FLAG, "initiateUsageMonitoring");
     }
 
-    public ErrorObject[] cancelStatusChange(MultispeakVendor mspVendor, String[] meterNos, String statusPrefix) {
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        
-        for  (int i = 0; i < meterNos.length; i++){
-            String meterNo = meterNos[i];
-            com.cannontech.amr.meter.model.Meter meter =
-                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
-            if( meter != null) {
-                LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
-                YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
-                if (yukonPaobject instanceof MCTBase){
-                    String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
-                    if( origCollGroup.indexOf(statusPrefix) > -1) {
-                    	String newCollGroup = origCollGroup.replaceAll(statusPrefix, "");
-                        ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(newCollGroup);
-                        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
-                        logMSPActivity("cancelStatusChange",
-                                "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + origCollGroup + " NEW:" + newCollGroup + ");", 
-                                mspVendor.getCompanyName());                        
-                    }
-                    else {
-                        ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
-                                                                         "MeterNumber: " + meterNo + " - Is not in State (" + statusPrefix+").  Cannot cancel.",
-                                                                         "Meter");
-                        errorObjects.add(err);
-                    }
-                }
-            } else {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
-                                                                 "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
-                                                                 "Meter");
-                errorObjects.add(err);
-            }
-        }
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+    public ErrorObject[] cancelDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos) {
+
+        return removeFlag(mspVendor, meterNos, DISCONNECTED_STATUS_FLAG, "cancelDisconnectedStatus");
+    }
+
+    public ErrorObject[] cancelUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
+
+        return removeFlag(mspVendor, meterNos, USAGE_MONITORING_FLAG, "cancelUsageMonitoring");
     }
     
     public ErrorObject[] addMeterObject(MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException{
@@ -603,13 +563,14 @@ public class Multispeak implements MessageListener {
                         	//Load the CIS serviceLocation.
                         	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                         	String billingCycle = mspServiceLocation.getBillingCycle();
+                            
                             //Enable Meter and update applicable fields.
-                            String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                            String oldBillGroup = deviceMeterGroup.getBillingGroup();
-                            deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                            yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
-                            if (!StringUtils.isBlank(billingCycle))
-                            	deviceMeterGroup.setBillingGroup(billingCycle);
+                            removeFlag(meter, INVENTORY_FLAG, "MeterAddNotification", mspVendor);
+
+                            //update the billing group from CIS billingCyle
+                            updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
+
+                            yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(REMOVED_METER_NUMBER_SUFFIX, ""));
                             
                             yukonPaobject.setDisabled(false);
                             String logTemp = "";
@@ -634,10 +595,6 @@ public class Multispeak implements MessageListener {
                             }
                             dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
                             logMSPActivity("MeterAddNotification",
-                                           "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
-                                           "BillingGroup(OLD:" + oldBillGroup + " NEW:" + billingCycle +").", 
-                                           mspVendor.getCompanyName());
-                            logMSPActivity("MeterAddNotification",
                                            "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp, 
                                            mspVendor.getCompanyName());
                             //TODO Read the Meter.
@@ -660,18 +617,16 @@ public class Multispeak implements MessageListener {
                             
                             if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                                 //Need to "remove" the existing (disabled) Meter Number
-                                deviceMeterGroup.setMeterNumber(meterNo + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
-                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
-                                String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                                if( deviceMeterGroup.getCollectionGroup().indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) < 0) {
-                                    deviceMeterGroup.setCollectionGroup(DeviceMeterGroup.INVENTORY_GROUP_PREFIX + oldCollGroup);
-                                }
+                                deviceMeterGroup.setMeterNumber(meterNo + REMOVED_METER_NUMBER_SUFFIX);
+                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + REMOVED_METER_NUMBER_SUFFIX);
+                                
+//                              Add meter to Inventory
+                                addFlag(meter, INVENTORY_FLAG, "MeterAddNotification", mspVendor);
+                                
                                 dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
                                 logMSPActivity("MeterAddNotification",
-                                               "MeterNumber(" + meterNo + ") - _REM disabled MeterNo with conflicting Address; " + 
-                                               "CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ").", 
+                                               "MeterNumber(" + meterNo + ") - _REM disabled MeterNo with conflicting Address; ", 
                                                mspVendor.getCompanyName());
-                                
                                 
 //                                  Find a valid Template!
                                 String templateName = getMeterTemplate(mspMeter);
@@ -726,12 +681,14 @@ public class Multispeak implements MessageListener {
                                 	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                                 	String billingCycle = mspServiceLocation.getBillingCycle();
                                     //TODO deleteRawPointHistory(yukonPaobject);
-                                    String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                                    String oldBillGroup = deviceMeterGroup.getBillingGroup();
-                                    deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                                    yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
-                                    if (!StringUtils.isBlank(billingCycle))
-                                    	deviceMeterGroup.setBillingGroup(billingCycle);
+
+//                                  Remove meter from Inventory
+                                    removeFlag(meter, INVENTORY_FLAG, "MeterAddNotification", mspVendor);
+
+//                                  update the billing group from CIS billingCyle
+                                    updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
+                                    
+                                    yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(REMOVED_METER_NUMBER_SUFFIX, ""));
                                     
                                     String oldAddress = String.valueOf(deviceCarrierSettings.getAddress());
                                     deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
@@ -759,10 +716,6 @@ public class Multispeak implements MessageListener {
                                     }
                                     
                                     dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
-                                    logMSPActivity("MeterAddNotification",
-                                                   "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + "); " +
-                                                   "BillingGroup(OLD:" + oldBillGroup + " NEW:" + billingCycle +").",
-                                                   mspVendor.getCompanyName());
                                     logMSPActivity("MeterAddNotification",
                                                    "MeterNumber(" + meterNo + ") - Address(OLD:" + oldAddress + " NEW:" + deviceCarrierSettings.getAddress().toString() + ").", 
                                                    mspVendor.getCompanyName());
@@ -877,22 +830,21 @@ public class Multispeak implements MessageListener {
                         }
                         
                         DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup();
-                        String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                        String oldBillGroup = deviceMeterGroup.getBillingGroup();
+                        
+//                      Remove meter from Inventory
+                        removeFlag(meter, INVENTORY_FLAG, "MeterAddNotification", mspVendor);
+
+//                      update the billing group from CIS billingCyle
+                        updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
+
                         String oldMeterNo = deviceMeterGroup.getMeterNumber();
                         deviceMeterGroup.setMeterNumber(meterNo);
-                        deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                        yukonPaobjectByAddress.setPAOName(yukonPaobjectByAddress.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
-                        if (!StringUtils.isBlank(billingCycle))
-                        	deviceMeterGroup.setBillingGroup(billingCycle);
+
+                        yukonPaobjectByAddress.setPAOName(yukonPaobjectByAddress.getPAOName().replaceAll(REMOVED_METER_NUMBER_SUFFIX, ""));
                         
                         dbPersistentDao.performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
                         logMSPActivity("MeterAddNotification",
-                                       "MeterNumber(" + meterNo + ") - MeterNumber(OLD:" +oldMeterNo + "); CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
-                                       "BillingGroup(OLD:" + oldBillGroup + " NEW:" + billingCycle +").",
-                                       mspVendor.getCompanyName());
-                        logMSPActivity("MeterAddNotification",
-                                       "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp,
+                                       "MeterNumber(" + meterNo + ") - MeterNumber(OLD:" +oldMeterNo + "); Meter Enabled" + logTemp,
                                        mspVendor.getCompanyName());
                         //TODO Read the Meter.
                                                             
@@ -913,12 +865,7 @@ public class Multispeak implements MessageListener {
             }
         }//end for
 
-        if( !errorObjects.isEmpty()) {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+        return toErrorObject(errorObjects);
     }
     
     /**
@@ -944,20 +891,21 @@ public class Multispeak implements MessageListener {
                     if( !disabled ) {//enabled
                         yukonPaobject.setDisabled(true);
                         DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
-                        String oldCollGroup = deviceMeterGroup.getCollectionGroup();
+                        
                         String oldMeterNo = deviceMeterGroup.getMeterNumber();
                         String oldPaoName = yukonPaobject.getPAOName();
-                        if( oldMeterNo.indexOf(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX) < 0)
-                            deviceMeterGroup.setMeterNumber(oldMeterNo + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
-                        if( oldCollGroup.indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) < 0)
-                            ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(DeviceMeterGroup.INVENTORY_GROUP_PREFIX + oldCollGroup);
-                        if( oldPaoName.indexOf(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX) < 0)
-                            yukonPaobject.setPAOName(oldPaoName + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
+                        if( oldMeterNo.indexOf(REMOVED_METER_NUMBER_SUFFIX) < 0)
+                            deviceMeterGroup.setMeterNumber(oldMeterNo + REMOVED_METER_NUMBER_SUFFIX);
+
+//                      Added meter to Inventory
+                        addFlag(meter, INVENTORY_FLAG, "MeterRemovedNotification", mspVendor);
+
+                        if( oldPaoName.indexOf(REMOVED_METER_NUMBER_SUFFIX) < 0)
+                            yukonPaobject.setPAOName(oldPaoName + REMOVED_METER_NUMBER_SUFFIX);
                         
                         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
                         logMSPActivity("MeterRemoveNotification",
-                                       "MeterNumber(" + oldMeterNo + ") - MeterNumber(NEW:" +deviceMeterGroup.getMeterNumber() +");" + 
-                                       "CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ").",
+                                       "MeterNumber(" + oldMeterNo + ") - MeterNumber(NEW:" +deviceMeterGroup.getMeterNumber() +");",
                                        mspVendor.getCompanyName());
                         logMSPActivity("MeterRemoveNotification",
                                        "MeterNumber(" + meterNo + ") - Meter Disabled;" +
@@ -984,13 +932,8 @@ public class Multispeak implements MessageListener {
                                mspVendor.getCompanyName());
             }
         }
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+        
+        return toErrorObject(errorObjects);
     }
     
     /**
@@ -1004,6 +947,7 @@ public class Multispeak implements MessageListener {
         
         for  (int i = 0; i < serviceLocations.length; i++){
             ServiceLocation mspServiceLocation = serviceLocations[i];
+            String billingCycle = mspServiceLocation.getBillingCycle();
             String serviceLocationStr = mspServiceLocation.getObjectID();
             String paoName = null;
             LiteYukonPAObject liteYukonPaobject = null;
@@ -1084,14 +1028,10 @@ public class Multispeak implements MessageListener {
                             update = true;
                         }
                     }
-                    if( !deviceMeterGroup.getBillingGroup().equals(mspServiceLocation.getBillingCycle())) {
-                        String oldBillGroup = deviceMeterGroup.getBillingGroup();
-                        deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
-                        logMSPActivity("ServiceLocationChangedNotification",
-                                       "MeterNumber(" + deviceMeterGroup.getMeterNumber()+ ") - BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
-                                       mspVendor.getCompanyName());
-                        update = true;
-                    }
+
+                    //update the billing group from CIS billingCyle
+                    com.cannontech.amr.meter.model.Meter meter = meterDao.getForId(liteYukonPaobject.getYukonID());
+                    updateBillingCyle(billingCycle, meter, "ServiceLocationChangedNotificatoin", mspVendor);
                     
                     if (update) {
                         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
@@ -1112,13 +1052,8 @@ public class Multispeak implements MessageListener {
                                mspVendor.getCompanyName());
             }
         }
-        if( !errorObjects.isEmpty())
-        {
-            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
-            errorObjects.toArray(errors);
-            return errors;
-        }
-        return new ErrorObject[0];
+
+        return toErrorObject(errorObjects);
     }
 
     public SystemLogHelper getSystemLogHelper() {
@@ -1182,5 +1117,125 @@ public class Multispeak implements MessageListener {
        }
 
        return templateName;
+   }
+   
+   private void updateBillingCyle(String newBilling, com.cannontech.amr.meter.model.Meter meter, String logActionStr, MultispeakVendor mspVendor) {
+       
+       // update the billing group from CIS billingCyle
+       FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack"); 
+       String oldBilling = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, meter);
+       
+       if (!StringUtils.isBlank(newBilling) && !oldBilling.equalsIgnoreCase(newBilling)) {
+       
+           //Remove from old billing
+           DeviceGroup billingGroup = deviceGroupService.resolveGroupName(oldBilling);
+           deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup)billingGroup, Collections.singletonList(meter));
+           
+           //Add to new billing group
+           hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, meter, newBilling);
+           logMSPActivity(logActionStr,
+                          "MeterNumber(" + meter.getMeterNumber()+ ") - BillingGroup(OLD:" + oldBilling + " NEW:" + newBilling +").",
+                          mspVendor.getCompanyName());
+       }
+   }
+   
+   private void removeFlag(com.cannontech.amr.meter.model.Meter meter, String flag, String logActionStr, MultispeakVendor mspVendor){
+
+       DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(flag);
+       deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter));
+       
+       logMSPActivity(logActionStr,
+                      "MeterNumber(" + meter.getMeterNumber() + ") - Removed from Inventory flag; ",
+                      mspVendor.getCompanyName());
+   }
+   
+   private void addFlag(com.cannontech.amr.meter.model.Meter meter, String flag, String logActionStr, MultispeakVendor mspVendor){
+
+       DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(flag);
+       deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter));
+       
+       logMSPActivity(logActionStr,
+                      "MeterNumber(" + meter.getMeterNumber() + ") - Added to " + flag, 
+                      mspVendor.getCompanyName());
+
+   }
+   
+   private ErrorObject[] addFlag(MultispeakVendor mspVendor, String[] meterNos, String flag, String logActionStr) {
+       Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+       
+       DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(flag);
+       
+       for  (int i = 0; i < meterNos.length; i++){
+           String meterNo = meterNos[i];
+           com.cannontech.amr.meter.model.Meter meter =
+               multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+
+           if( meter != null){
+               try {
+                   deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter) );
+
+                   logMSPActivity(logActionStr,
+                                  "MeterNumber(" + meterNo + ") - Added to " + flag, 
+                                  mspVendor.getCompanyName());
+               }catch (DataAccessException e) {
+                   ErrorObject err = multispeakFuncs.getErrorObject(meterNo,
+                                                                    "MeterNumber: " + meterNo + " - Is already in " + flag + ".  Cannot initiate change.",
+                                                                    "Meter");
+                   errorObjects.add(err);
+               } 
+               
+           }else {
+               ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
+                                                                "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
+                                                                "Meter");
+               errorObjects.add(err);              
+           }
+       }
+       
+       return toErrorObject(errorObjects);
+   }
+   
+   public ErrorObject[] removeFlag(MultispeakVendor mspVendor, String[] meterNos, String flag, String logActionStr) {
+
+       Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+       List<com.cannontech.amr.meter.model.Meter> meters =
+           new ArrayList<com.cannontech.amr.meter.model.Meter>(meterNos.length); 
+       
+       DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(flag);
+       
+       for  (int i = 0; i < meterNos.length; i++){
+           String meterNo = meterNos[i];
+           com.cannontech.amr.meter.model.Meter meter =
+               multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+
+           if( meter != null){
+               meters.add(meter);
+               
+           }else {
+               ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
+                                                                "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
+                                                                "Meter");
+               errorObjects.add(err);              
+           }
+       }
+       
+       deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup)deviceGroup, meters);
+
+       logMSPActivity(logActionStr,
+                      "Removed " + meters.size() + " meters to from " + flag, 
+                      mspVendor.getCompanyName());
+       
+       return toErrorObject(errorObjects);
+   }
+
+   public ErrorObject[] toErrorObject(Vector<ErrorObject> errorObjects) {
+       
+       if( !errorObjects.isEmpty())
+       {
+           ErrorObject[] errors = new ErrorObject[errorObjects.size()];
+           errorObjects.toArray(errors);
+           return errors;
+       }
+       return new ErrorObject[0];
    }
 }

@@ -20,6 +20,8 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterReadDao;
+import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
+import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfFormattedBlock;
@@ -44,6 +46,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     public Map<String, YukonFormattedBlock> readingTypesMap;
     private BasicServerConnection porterConnection;
     public Multispeak multispeak;
+    public MspRawPointHistoryDao mspRawPointHistoryDao;
     
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
@@ -63,6 +66,11 @@ public class MR_EAImpl implements MR_EASoap_PortType
     
     public void setMultispeak(Multispeak multispeak) {
         this.multispeak = multispeak;
+    }
+    
+    public void setMspRawPointHistoryDao(
+            MspRawPointHistoryDao mspRawPointHistoryDao) {
+        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
     }
     
     private void init() {
@@ -188,18 +196,33 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public ArrayOfFormattedBlock getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
+        if( formattedBlock == null)
+            throw new AxisFault(readingType + " is NOT a supported ReadingType.");
+        
+        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlock, startDate.getTime(), endDate.getTime(), lastReceived);
+        ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock(new FormattedBlock[]{mspBlock});
+     
+        return arrayOfFormattedBlock;
     }
 
     public ArrayOfFormattedBlock getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+        if( ! mr_cb.isAMRMeter(meterNo))
+            throw new AxisFault( "Meter Number (" + meterNo + "): NOT Found.");
+        
+        YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
+        if( formattedBlock == null)
+            throw new AxisFault(readingType + " is NOT a supported ReadingType.");
+        
+        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlock, startDate.getTime(), endDate.getTime(), meterNo);
+        ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock(new FormattedBlock[]{mspBlock});
+     
+        return arrayOfFormattedBlock;
     }
-
     
     public ArrayOfString getSupportedReadingTypes() throws RemoteException {
-
+        init();
         Set<String> keys = readingTypesMap.keySet();
         String[] types = new String[keys.size()];
         keys.toArray(types);
@@ -225,6 +248,8 @@ public class MR_EAImpl implements MR_EASoap_PortType
         }
         
         YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
+        if( formattedBlock == null)
+            throw new AxisFault(readingType + " is NOT a supported ReadingType.");
         errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNos.getString(), formattedBlock);
 
         multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
