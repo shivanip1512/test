@@ -4387,6 +4387,8 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         if(!(temp = CmdStr.match(" duty " + str_num)).empty())
         {
             iValue = atoi(valStr.c_str());
+            if (iValue == 100) 
+                iValue = 0;
             _cmd["xcbacklightduty"] = CtiParseValue( iValue );
         }
         if(!(temp = CmdStr.match(" bperiod " + str_num)).empty())
