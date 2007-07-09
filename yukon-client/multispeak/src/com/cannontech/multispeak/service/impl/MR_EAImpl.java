@@ -21,7 +21,6 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterReadDao;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
-import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.service.ArrayOfDomainMember;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfFormattedBlock;
@@ -90,8 +89,17 @@ public class MR_EAImpl implements MR_EASoap_PortType
     public ArrayOfString getMethods() throws java.rmi.RemoteException {
         init();
         String [] methods = new String[]{"pingURL", "getMethods", 
-                                         "getAMRSupportedMeters", "getLatestReadingByMeterNo",
-                                         "getReadingsByMeterNo", "getLatestReadings"};
+                                         "getAMRSupportedMeters", 
+                                         "getLatestReadingByMeterNo",
+                                         "getReadingsByMeterNo", 
+                                         "getLatestReadings",
+                                         "getLatestReadingByMeterNoAndType",
+                                         "getLatestReadingByType",
+                                         "getReadingsByDateAndType",
+                                         "getReadingsByMeterNoAndType",
+                                         "getSupportedReadingTypes",
+                                         "initiateMeterReadByMeterNoAndType"};
+        
         return multispeakFuncs.getMethods(MultispeakDefines.MR_EA_STR, methods );
     }
 

@@ -209,7 +209,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
         return arrayOfMeterReads;
         */
-        return null;
+        throw new AxisFault("Method getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) is NOT supported.");
     }
     
     public ArrayOfHistoryLog getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
