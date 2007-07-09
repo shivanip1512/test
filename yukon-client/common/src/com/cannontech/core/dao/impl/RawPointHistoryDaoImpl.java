@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -58,26 +59,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             final double value = rs.getDouble("value");
 
             final int type = PointTypes.getType(rs.getString("pointtype"));
-            
-            return new PointValueHolder() {
 
-                public double getValue() {
-                    return value;
-                }
-
-                public int getType() {
-                    return type;
-                }
-
-                public Date getPointDataTimeStamp() {
-                    return timestamp;
-                }
-
-                public int getId() {
-                    return pointId;
-                }
-
-            };
+            return new SimplePointValue(pointId, timestamp, type, value);
         }
 
     }
