@@ -9,7 +9,9 @@ public enum BuiltInAttribute implements Attribute {
     DISCONNECT_STATUS("Disconnect Status"),
     OUTAGE_LOG("Outage Log"),
     VOLTAGE("Voltage"), 
-    VOLTAGE_PROFILE("Voltage Profile");
+    VOLTAGE_PROFILE("Voltage Profile"),
+    KVAR("kVAr"),
+    KVARH("kVArh");
     
     private BuiltInAttribute(String description) {
         this.description = description;
