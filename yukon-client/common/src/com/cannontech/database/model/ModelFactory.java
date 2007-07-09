@@ -1,8 +1,5 @@
 package com.cannontech.database.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.lang.Validate;
 
 /**
@@ -291,21 +288,18 @@ public static DBTreeModel create(int type) {
 	    return typeToStringMap[modelType];
 	}
 	
-    private static final Set<Class<? extends LiteBaseTreeModel>> editableSerialClasses = new HashSet<Class<? extends LiteBaseTreeModel>>();
-    {
-        editableSerialClasses.add(EditableSA205Model.class);
-        editableSerialClasses.add(EditableSA305Model.class);
-        editableSerialClasses.add(EditableVersacomModel.class);
-        editableSerialClasses.add(EditableExpresscomModel.class);
-        editableSerialClasses.add(EditableLCRSerialModel.class);
-    }
-
 	/**
 	 * @param type
 	 * @return
 	 */
-	public static boolean isEditableSerial(Class<? extends LiteBaseTreeModel> model)
+	public static final boolean isEditableSerial(Class<? extends LiteBaseTreeModel> model)
 	{
-	    return editableSerialClasses.contains(model);
+        if( model == EditableVersacomModel.class ||
+            model == EditableExpresscomModel.class ||
+            model == EditableSA205Model.class ||
+            model == EditableSA305Model.class ||
+            model == EditableLCRSerialModel.class )
+            return true;
+        return false;
 	}
 }
