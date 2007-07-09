@@ -118,6 +118,12 @@ public class CSV2PointData {
             }, date);
             
         }
+        
+        timer.schedule(new TimerTask() {
+            public void run() {
+                System.exit(0);
+            }
+        }, new Date(time + 5000));
     }
     
 }
