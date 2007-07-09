@@ -1900,6 +1900,8 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		constraintsScriptNamePanel.weightx = 1.0;
     		constraintsScriptNamePanel.insets = new java.awt.Insets(15, 4, 15, 4);
     		add(getScriptNamePanel(), constraintsScriptNamePanel);
+            initializeConnections();
+            initSwingCompValues();
     	} catch (java.lang.Throwable ivjExc) {
     		handleException(ivjExc);
     	}
@@ -2243,7 +2245,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(file.getFileContents(), ScriptTemplate.PARAMETER_LIST));
     			//load up the swing components with the parameter values from the script file.
     			initSwingCompValues();
-                // turn on listeners after we are actually done with setuping up components
+                // turn on listeners after we are actually done with setting up components
     			initializeConnections();
     			CTILogger.info("		** Done setting script contents");
     		}
