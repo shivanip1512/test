@@ -7,7 +7,13 @@ insert into DeviceGroup values (9,'Inventory',8,'Y','STATIC');
 insert into DeviceGroup values (10,'DisconnectedStatus',8,'Y','STATIC');
 insert into DeviceGroup values (11,'UsageMonitoring',8,'Y','STATIC');
 
-/*David, but your prefix stripping script here */
+update 
+	devicemetergroup
+set 
+	CollectionGroup = replace(replace(replace(CollectionGroup,'@_INV_',''),'@_UM_',''),'@_DISC_','')
+	, BillingGroup = replace(replace(replace(BillingGroup,'@_INV_',''),'@_UM_',''),'@_DISC_','')
+	, TestCollectionGroup = replace(replace(replace(TestCollectionGroup,'@_INV_',''),'@_UM_',''),'@_DISC_','')
+
 
 insert into DeviceGroup select distinct 100, CollectionGroup, 3, 'N', 'STATIC' from DeviceMeterGroup;
 insert into DeviceGroup select distinct 100, TestCollectionGroup, 4, 'N', 'STATIC' from DeviceMeterGroup;
