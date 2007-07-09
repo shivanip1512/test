@@ -77,14 +77,6 @@ if (request.getParameter("Submit") != null)
 		errorMsg = "Changes have been made to data by another user.  Please try again";
 	}
 	
-	//CollectionGroup Updated
-	String updateCollGroup = (String)request.getParameter("CollGroup");
-	if (!updateCollGroup.equalsIgnoreCase(devMeterGroup.getCollectionGroup()))
-	{
-		devMeterGroup.setCollectionGroup(updateCollGroup.toString());
-		updateYukonPAO = true;
-	}
-
 	//Physical Address Updated
 	String updateAddress = (String)request.getParameter("Address");
 	String prevAddressStr = (String)request.getParameter("PrevAddress");
@@ -226,22 +218,6 @@ if (request.getParameter("Submit") != null)
                       %>
                       </select>
                       <input type="hidden" name="PrevRouteID" value="<%=((CarrierBase)yukonPao).getDeviceRoutes().getRouteID().intValue()%>">
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td width="30%" class="SubtitleHeader" height="2" align="right">Collection Group:</td>
-                    <td width="70%" height="2"> 
-                      <select id="collgroup" onchange="setValueChanged()" name="CollGroup">
-                        <% /* Fill in the period drop down and attempt to match the current period with one of the options */
-					  String [] collGroups = DeviceMeterGroup.getDeviceCollectionGroups();
-                      for( int i = 0; i < collGroups.length; i++ )
-                      {
-                        if( collGroups[i].equals(devMeterGroup.getCollectionGroup()) )
-                          out.println("<OPTION SELECTED>" + collGroups[i]);
-                        else
-                          out.println("<OPTION>" + collGroups[i]);
-                      }%>
-                      </select>
                     </td>
                   </tr>
                   <tr> 
