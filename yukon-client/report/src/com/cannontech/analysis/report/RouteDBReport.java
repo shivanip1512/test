@@ -18,7 +18,6 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.RouteDBModel;
-import com.cannontech.analysis.tablemodel.RouteMacroModel;
 
 /**
  * Created on Dec 15, 2003
@@ -96,10 +95,10 @@ public class RouteDBReport extends YukonReportBase
 		
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(),RouteMacroModel.MACRO_ROUTE_NAME_COLUMN);
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(),RouteDBModel.ROUTE_NAME_COLUMN);
 		header.addElement(factory.createElement());
 		
-		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), RouteMacroModel.MACRO_ROUTE_NAME_COLUMN);
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), RouteDBModel.ROUTE_NAME_COLUMN);
 		tfactory.setAbsolutePosition(new Point2D.Float(130, 1));	//override posX
 		factory.setMinimumSize(new FloatDimension( 300, 18));
 		header.addElement(tfactory.createElement());
