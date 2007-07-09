@@ -515,6 +515,22 @@
   </tag>
   
   <tag>
+    <name>pointValueFormatter</name>
+    <tag-class>com.cannontech.web.util.PointValueFormatterTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>format</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>deviceName</name>
     <tag-class>com.cannontech.web.amr.taglib.DeviceNameTag</tag-class>
     <body-content>empty</body-content>

@@ -125,6 +125,7 @@
         <property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
+        <property name="rphDao" ref="rphDao"/>
         <property name="attributesToShow">
           <list>
             <value>USAGE</value>
@@ -132,6 +133,9 @@
             <value>DEMAND</value>
             <value>VOLTAGE</value>
           </list>
+        </property>
+        <property name="startDate">
+        	<value>-93</value>
         </property>
     </bean>
     
@@ -222,6 +226,12 @@
         abstract="false" singleton="true" lazy-init="default" autowire="default"
         dependency-check="default">
         <property name="meterDao" ref="meterDao"/>
+    </bean>
+
+    <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.util.PointValueFormatterTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="pointFormattingService" ref="pointFormattingService"/>
     </bean>
 
     <bean id="trendWidget"

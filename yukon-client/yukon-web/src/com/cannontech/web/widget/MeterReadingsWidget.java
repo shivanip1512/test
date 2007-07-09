@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,10 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -30,7 +35,9 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     private MeterDao meterDao;
     private MeterReadService meterReadService;
     private AttributeService attributeService;
+    private RawPointHistoryDao rphDao;
     private List<? extends Attribute> attributesToShow;
+    private int startDate;
 
     public void setMeterReadService(MeterReadService meterReadService) {
         this.meterReadService = meterReadService;
@@ -40,7 +47,10 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         // this setter accepts the enum to make Spring happy
         this.attributesToShow = attributesToShow;
     }
-
+    
+    public void setStartDate(int startDate) {
+        this.startDate = startDate;
+    }
 
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
@@ -55,6 +65,11 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
         Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAtributes);
         mav.addObject("existingAttributes", existingAttributes);
+        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
+        Date endDate = new Date();
+        Date startingDate = TimeUtil.addDays(endDate, startDate);
+        List<PointValueHolder> previousReadings = rphDao.getPointData(lp.getPointID(), startingDate, endDate);
+        mav.addObject("previousReadings", previousReadings);
         
         return mav;
     }
@@ -103,4 +118,10 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
+    
+    @Required
+    public void setRphDao(RawPointHistoryDao rphDao) {
+        this.rphDao = rphDao;
+    }
+
 }
