@@ -1711,9 +1711,28 @@ public Object getValue(Object val)
     if( val instanceof GridAdvBase )
     {
         LiteYukonPAObject litePort = null;
+        Integer postCommWait = null;
+        
         litePort = (LiteYukonPAObject)getPortComboBox().getSelectedItem();
         //get new port from combo box and set it.
         ((GridAdvBase)val).getDeviceDirectCommSettings().setPortID(litePort.getLiteID());
+        try
+        {
+            ((GridAdvBase)val).getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
+        }
+        catch( NumberFormatException e )
+        {
+            ((GridAdvBase)val).getDeviceAddress().setMasterAddress( new Integer(0) );
+        }
+        
+        Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
+        if( postCommWaitSpinVal instanceof Long )
+            postCommWait = new Integer( ((Long)postCommWaitSpinVal).intValue() );
+        else if( postCommWaitSpinVal instanceof Integer )
+            postCommWait = new Integer( ((Integer)postCommWaitSpinVal).intValue() );
+        
+        ((GridAdvBase)val).getDeviceIDLCRemote().setPostCommWait( postCommWait );
+        
     }
     
 	if( val instanceof RemoteBase )
@@ -2349,6 +2368,17 @@ private void setGridBaseValue ( GridAdvBase gBase, int intType )
             }
         }
     }
+    Integer postComm = null;
+    postComm = gBase.getDeviceIDLCRemote().getPostCommWait();
+    if( postComm != null )
+        getPostCommWaitSpinner().setValue( postComm );
+    else
+        getPostCommWaitSpinner().setValue( 0 );
+    
+    getPhysicalAddressLabel().setVisible(true);
+    getPhysicalAddressLabel().setText("Serial Number:");
+    getPhysicalAddressTextField().setVisible(true);
+    getPhysicalAddressTextField().setText( gBase.getDeviceAddress().getMasterAddress().toString() );
     getPasswordLabel().setVisible(false);
     getPasswordTextField().setVisible(false);
     getSlaveAddressLabel().setVisible(false);
