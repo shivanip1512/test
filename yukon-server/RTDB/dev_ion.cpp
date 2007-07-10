@@ -65,30 +65,9 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
 }
 
 
-string CtiDeviceION::getMeterGroupName() const
+void CtiDeviceION::setMeterGroupData( const string &meterNumber )
 {
-    return _collectionGroup;
-}
-
-
-string CtiDeviceION::getAlternateMeterGroupName() const
-{
-    return _testCollectionGroup;
-}
-
-
-string CtiDeviceION::getBillingGroupName() const
-{
-    return _billingGroup;
-}
-
-
-void CtiDeviceION::setMeterGroupData( const string &collectionGroup, const string &testCollectionGroup, const string &meterNumber, const string &billingGroup)
-{
-    _collectionGroup     = collectionGroup;
-    _testCollectionGroup = testCollectionGroup;
     _meterNumber         = meterNumber;
-    _billingGroup        = billingGroup;
 }
 
 

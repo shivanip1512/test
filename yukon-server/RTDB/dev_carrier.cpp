@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:20 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/07/10 16:59:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,20 +112,5 @@ LONG CtiDeviceCarrier::getLastIntervalDemandRate() const
 inline bool CtiDeviceCarrier::isMeter() const
 {
     return true;
-}
-
-inline string CtiDeviceCarrier::getMeterGroupName() const
-{
-    return getMeterGroup().getCollectionGroup();
-}
-
-inline string CtiDeviceCarrier::getAlternateMeterGroupName() const
-{
-    return getMeterGroup().getTestCollectionGroup();
-}
-
-inline string CtiDeviceCarrier::getBillingGroupName() const
-{
-    return getMeterGroup().getBillingGroup();
 }
 

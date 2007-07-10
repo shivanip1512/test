@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/04/30 21:20:35 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2007/07/10 16:59:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,9 +157,6 @@ public:
     virtual INT  getPostDelay() const;
 
     virtual string getPassword() const;
-    virtual string getMeterGroupName() const;
-    virtual string getAlternateMeterGroupName() const;
-    virtual string getBillingGroupName() const;
     virtual string getPhoneNumber() const;
     virtual LONG getMinConnectTime() const;
     virtual LONG getMaxConnectTime() const;
@@ -367,9 +364,6 @@ inline LONG   CtiDeviceBase::getDemandInterval() const      { return LONG_MAX;}
 inline Protocol::Interface *CtiDeviceBase::getProtocol()    { return NULL;}
 inline void   CtiDeviceBase::invalidateScanRates()          { }
 inline void   CtiDeviceBase::deleteNonUpdatedScanRates()    { }
-inline string CtiDeviceBase::getMeterGroupName() const           { return string();}
-inline string CtiDeviceBase::getAlternateMeterGroupName() const  { return string();}
-inline string CtiDeviceBase::getBillingGroupName() const         { return string();}
 
 inline INT  CtiDeviceBase::getCommFailCount() const         { LockGuard guard(monitor()); return _commFailCount;}
 inline INT  CtiDeviceBase::getAttemptCount() const          { LockGuard guard(monitor()); return _attemptCount;}

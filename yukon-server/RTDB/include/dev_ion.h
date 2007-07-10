@@ -66,18 +66,11 @@ public:
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
-    virtual string getMeterGroupName() const;
-    virtual string getAlternateMeterGroupName() const;
-    virtual string getBillingGroupName() const;
-
     CtiTableDeviceMeterGroup  getMeterGroup() const;
     CtiTableDeviceMeterGroup& getMeterGroup();
     CtiDeviceION& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
     //----
-    void setMeterGroupData( const string &collectionGroup,
-                            const string &testCollectionGroup,
-                            const string &meterNumber,
-                            const string &billingGroup);
+    void setMeterGroupData( const string &meterNumber);
 
     //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
