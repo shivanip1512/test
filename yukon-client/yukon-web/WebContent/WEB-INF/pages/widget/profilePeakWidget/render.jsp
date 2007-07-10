@@ -104,7 +104,7 @@
 												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">LP</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
-												<div title="Load Profile Collection is unavailable for collection periods of more than 90 days.">
+												<div title="The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.">
 													LP N/A
 												</div>
 											</c:otherwise>
