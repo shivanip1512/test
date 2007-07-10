@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.167 $
-* DATE         :  $Date: 2007/06/27 17:37:22 $
+* REVISION     :  $Revision: 1.168 $
+* DATE         :  $Date: 2007/07/10 21:06:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4346,10 +4346,7 @@ int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
                         CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 
                         pCmd->setSource(getMyServerName());
-                        pCmd->insert(-1);
-                        pCmd->insert(CompileInfo.major);
-                        pCmd->insert(CompileInfo.minor);
-                        pCmd->insert(CompileInfo.build);
+                        pCmd->setOpString(CompileInfo.version);
 
                         Mgr->WriteConnQue(pCmd, 500);   // Ask the old guy to respond to us..
                         CM->setClientRegistered(FALSE); // New guy is not quite kosher yet...
