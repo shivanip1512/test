@@ -39,6 +39,15 @@ public class FixedDeviceGroupingHack {
         return devices;
     }
     
+    public Set<Integer> getDeviceIds(FixedDeviceGroups group, String groupName) {
+        String fullName = group.getPrefix() + "/" + groupName;
+        
+        DeviceGroup resovledGroup = deviceGroupService.resolveGroupName(fullName);
+        Set<Integer> devices = deviceGroupService.getDeviceIds(Collections.singleton(resovledGroup));
+        
+        return devices;
+    }
+    
     public List<String> getGroups(FixedDeviceGroups group) {
         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(group.getPrefix());
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(deviceGroup);
