@@ -114,9 +114,9 @@ $(BIN)\*.exe
 
 #UPDATE#
 dbsigsend.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
-		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h clrdump.h \
-		cticonnect.h netports.h tbl_signal.h ctitime.h dbmemobject.h \
-		pointdefs.h utility.h queues.h numstr.h sorted_vector.h
+		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
+		clrdump.h cticonnect.h netports.h tbl_signal.h ctitime.h \
+		dbmemobject.h pointdefs.h utility.h queues.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 tbl_rawpthistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_rawpthistory.h ctitime.h dlldefs.h pointdefs.h utility.h \

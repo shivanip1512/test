@@ -90,38 +90,39 @@ deps:
 
 #UPDATE#
 decodetextcmdfile.obj:	yukon.h precompiled.h ctidbgmem.h ctidate.h \
-		dlldefs.h logger.h thread.h mutex.h guard.h clrdump.h \
-		ctitime.h CtiPCPtrQueue.h decodeTextCmdFile.h types.h \
-		rwutil.h boost_time.h utility.h queues.h numstr.h \
-		sorted_vector.h
+		dlldefs.h logger.h thread.h mutex.h guard.h numstr.h \
+		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
+		types.h sorted_vector.h decodeTextCmdFile.h rwutil.h \
+		boost_time.h
 mccmd.obj:	yukon.h precompiled.h ctidbgmem.h mccmd.h msg_pcrequest.h \
 		dlldefs.h message.h collectable.h rwutil.h ctitime.h \
 		boost_time.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h logger.h thread.h mutex.h guard.h clrdump.h \
-		CtiPCPtrQueue.h ctdpcptrq.h dllBase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h tbl_meterreadlog.h \
-		utility.h queues.h numstr.h sorted_vector.h dbaccess.h sema.h \
-		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		pointdefs.h logger.h thread.h mutex.h guard.h numstr.h \
+		clrdump.h CtiPCPtrQueue.h utility.h queues.h types.h \
+		sorted_vector.h ctdpcptrq.h dllBase.h os2_2w32.h cticalls.h \
+		dsm2.h cticonnect.h netports.h tbl_meterreadlog.h dbaccess.h \
+		sema.h connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h configparms.h \
 		msg_queuedata.h msg_signal.h msg_dbchg.h msg_notif_email.h \
-		msg_notif_email_attachment.h ctibase.h ctinexus.h \
-		pointtypes.h ctistring.h mgr_holiday.h ctidate.h dsm2err.h \
-		wpsc.h xcel.h decodetextcmdfile.h
+		msg_notif_email_attachment.h tbl_devicereadrequestlog.h \
+		ctibase.h ctinexus.h pointtypes.h ctistring.h mgr_holiday.h \
+		ctidate.h dsm2err.h wpsc.h xcel.h decodetextcmdfile.h
 mcs8100test.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h clrdump.h ctitime.h \
-		CtiPCPtrQueue.h types.h
+		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
+		ctitime.h CtiPCPtrQueue.h utility.h queues.h types.h \
+		sorted_vector.h
 mcsh.obj:	yukon.h precompiled.h ctidbgmem.h mcsh.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h clrdump.h ctitime.h CtiPCPtrQueue.h \
+		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
+		CtiPCPtrQueue.h utility.h queues.h types.h sorted_vector.h \
 		mccmd.h msg_pcrequest.h message.h collectable.h rwutil.h \
 		boost_time.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h ctdpcptrq.h dllBase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h tbl_meterreadlog.h \
-		utility.h queues.h numstr.h sorted_vector.h
+		pointdefs.h ctdpcptrq.h dllBase.h os2_2w32.h cticalls.h \
+		dsm2.h cticonnect.h netports.h tbl_meterreadlog.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 wpsc.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h clrdump.h ctitime.h CtiPCPtrQueue.h \
-		types.h numstr.h
+		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
+		CtiPCPtrQueue.h utility.h queues.h types.h sorted_vector.h
 xcel.obj:	yukon.h precompiled.h ctidbgmem.h xcel.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h clrdump.h ctitime.h CtiPCPtrQueue.h \
-		types.h
+		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
+		CtiPCPtrQueue.h utility.h queues.h types.h sorted_vector.h
 #ENDUPDATE#
