@@ -255,22 +255,12 @@
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
 					<property name="attribute" value="USAGE"/>
 					<property name="graphType" value="NORMALIZED_DELTA_LINE"/>
-					<property name="label" value="Normalized Usage"/>
+					<property name="label" value="Usage (Normalized)"/>
 					<property name="description">
 						<value>
 							<![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
 							point on the graph is generated using the following formula: (reading - 
 							previousReading) / (days between readings)]]>
-						</value>
-					</property>
-				</bean>
-				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="USAGE"/>
-					<property name="graphType" value="RAW_LINE"/>
-					<property name="label" value="Usage"/>
-					<property name="description">
-						<value>
-							<![CDATA[Raw Usage data.]]>
 						</value>
 					</property>
 				</bean>
