@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   id_vg
@@ -8,22 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/id_vg.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2002/10/08 20:13:45 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2007/07/10 20:54:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include "utility.h"
-#include "id_build.h"
 
-#define PROJECT   "CTI Dispatch "
+PROJECT_ID("CTI Dispatch");
 
-CTICOMPILEINFO CompileInfo = {
-   PROJECT,
-   MAJORREVISION,
-   MINORREVISION,
-   BUILDNUMBER,
-   __TIMESTAMP__
-};
 

@@ -1,6 +1,3 @@
-#include "utility.h"
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   id_tcpdll
@@ -9,23 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_tcpdll.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2002/10/08 20:13:45 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/07/10 20:54:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include "utility.h"
-#include "id_build.h"
 
+PROJECT_ID("CTI TCPSup DLL");
 
-#define PROJECT   "CTI TCPSup DLL "
-
-CTICOMPILEINFO CompileInfo = {
-   PROJECT,
-   MAJORREVISION,
-   MINORREVISION,
-   BUILDNUMBER,
-   __TIMESTAMP__
-};
 

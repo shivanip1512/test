@@ -1,14 +1,20 @@
+/*-----------------------------------------------------------------------------*
+*
+* File:   id_ctiprot
+*
+* Date:   7/16/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/id_ctimsg.h-arc  $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/07/10 20:54:25 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include "utility.h"
-#include "id_build.h"
 
-#define PROJECT   "CTI Protocol DLL "
+PROJECT_ID("CTI Protocol DLL");
 
-CTICOMPILEINFO CompileInfo = {
-   PROJECT,
-   MAJORREVISION,
-   MINORREVISION,
-   BUILDNUMBER,
-   __TIMESTAMP__
-};
 

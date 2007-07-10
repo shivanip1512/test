@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   id_prtdll
@@ -8,22 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_prtdll.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2002/10/08 20:13:45 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/07/10 20:54:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include "utility.h"
-#include "id_build.h"
 
-#define PROJECT   "CTI Port RTDB DLL "
+PROJECT_ID("CTI Port RTDB DLL");
 
-CTICOMPILEINFO CompileInfo = {
-   PROJECT,
-   MAJORREVISION,
-   MINORREVISION,
-   BUILDNUMBER,
-   __TIMESTAMP__
-};
 
