@@ -15,8 +15,12 @@ package com.cannontech.importer.point;
 import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -25,20 +29,23 @@ import com.cannontech.yukon.IDatabaseCache;
 //INSTEAD, USE A CSV-READING JAVA CLASS.
 public class PointImportUtility
 {
-
-	private static String analogPointFileName;
-	private static String statusPointFileName;
-    private static String accumulatorPointFileName;
     
     public static final int STATUS_PT_TOKEN_COUNT = 16;
 	public static final int ANALOG_PT_TOKEN_COUNT = 23;
     public static final int ACCUMULATOR_PT_TOKEN_COUNT = 22;
+    public static final int CALC_PT_TOKEN_COUNT = 20;
+    
+    public static final int STATUS_PT_TYPE = 1;
+    public static final int ANALOG_PT_TYPE = 2;
+    public static final int ACCUMULATOR_PT_TYPE = 3;
+    public static final int CALC_PT_TYPE = 4;
+
     
 	public static boolean processAnalogPoints(String fileLocation) 
 	{
 		CTILogger.info("Starting analog point file process...");
 			
-		java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ANALOG_PT_TOKEN_COUNT);
+		java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ANALOG_PT_TOKEN_COUNT, ANALOG_PT_TYPE);
 
 		if( lines == null )
 			return true; //continue the process
@@ -462,7 +469,7 @@ public class PointImportUtility
     {
         CTILogger.info("Starting analog point file process...");
             
-        java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ACCUMULATOR_PT_TOKEN_COUNT);
+        java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ACCUMULATOR_PT_TOKEN_COUNT, ACCUMULATOR_PT_TYPE);
 
         if( lines == null )
             return true; //continue the process
@@ -857,12 +864,478 @@ public class PointImportUtility
     
         return success;
     }
+
+    public static boolean processCalcPoints(String fileLocation)
+    {
+        CTILogger.info("Starting calc point file process...");
+            
+        java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), CALC_PT_TOKEN_COUNT, CALC_PT_TYPE);
+
+        if( lines == null )
+            return true; //continue the process
+
+
+        //create an object to hold all of our DBPersistent objects
+        com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+
+        // if this is not set to false it will create its own PointIDs
+        multi.setCreateNewPAOIDs( false );
+    
+        int addCount = 0;
+            
+        for( int i = 0; i < lines.size(); i++ )
+        {
+            int tokenCounter = 0;
+
+            CTILogger.info("CALC_PT line: " + lines.get(i).toString());
+            
+            java.util.StringTokenizer tokenizer = new java.util.StringTokenizer(lines.get(i).toString(), ",");
+            
+            //DEBUG
+            System.out.println(lines.get(i).toString());
+            
+            if( tokenizer.countTokens() < CALC_PT_TOKEN_COUNT )
+            {
+                CTILogger.info("** Calc point line #" + i + " has less than " + CALC_PT_TOKEN_COUNT + " tokens, EXITING.");
+                return false;
+            }
+            /*
+             * PointName,PointType,DeviceName,UOM_Text,PeriodicRate,CalculatedQuality,UpdateType,DecimalPlaces,HiLimit1,
+             * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,
+             * LimitSet1,LimitSet2,HighReasonablility,LowReasonability,
+             * {(CALC STUFF)[FunctionType],[Operand(Devicename/pointname)],[OperationType]}(repeat for more)
+             */
+            Integer pointID = DaoFactory.getPointDao().getNextPointId();
+            
+            String pointName = tokenizer.nextElement().toString();
+            if(emptyField(pointName))
+            {
+                missingRequiredCalcField(i, tokenCounter);
+                return false;
+            }
+            
+            String pointType = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(pointType))
+            {
+                missingRequiredCalcField(i, tokenCounter);
+                return false;
+            }
+
+            com.cannontech.database.data.point.CalculatedPoint calcPoint = null;
+            
+            //if pointType
+            if (pointType.equals(new String("CalcAnalog")))
+            {
+                calcPoint = new com.cannontech.database.data.point.CalculatedPoint();
+            
+                // default state group ID
+                calcPoint.getPoint().setStateGroupID( new Integer(-1) );
+            }else{
+                return false; // not an expected format
+            }
+            
+            calcPoint.getPoint().setPointID(pointID);
+            calcPoint.setPointID(pointID);
+            calcPoint.getPoint().setPointType( pointType );
+            calcPoint.getPoint().setPointName( pointName );
+
+            String deviceName = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(deviceName))
+            {
+                missingRequiredCalcField(i, tokenCounter);
+                return false;
+            }
+            
+            Integer deviceID = findDeviceID(deviceName);
+            calcPoint.getPoint().setPaoID( deviceID );
+            
+            // set Point Units
+            calcPoint.getPointUnit().setDecimalPlaces(new Integer(2));
+            String comparer = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(comparer))
+            {
+                comparer = "kW";
+            }
+            
+            calcPoint.getPoint().setPointOffset(new Integer(0));
+            
+            comparer = comparer.toUpperCase();
+            if( comparer.compareTo( "KW" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 0 ) );
+            else if( comparer.compareTo( "KWH" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 1 ) );
+            else if( comparer.compareTo( "KVA" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 2) );
+            else if( comparer.compareTo( "KVAR" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 3 ) );
+            else if( comparer.compareTo( "KVAH" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer (4) );
+            else if( comparer.compareTo( "KVARH" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 5 ) );
+            else if( comparer.compareTo( "KVOLTS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 6 ) );
+            else if( comparer.compareTo( "KQ" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 7 ) );
+            else if( comparer.compareTo( "AMPS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 8 ) );
+            else if( comparer.compareTo( "COUNTS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 9 ) );
+            else if( comparer.compareTo( "DEGREES" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 10 ) );
+            else if( comparer.compareTo( "DOLLARS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 11 ) );
+            else if( comparer.compareTo( "$" ) == 0 || comparer.compareTo( "DOLLAR CHAR" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 12 ) );
+            else if( comparer.compareTo( "FEET" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 13 ) );
+            else if( comparer.compareTo( "GALLONS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 14 ) );
+            else if( comparer.compareTo( "GAL/PM"  ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 15 ) );
+            else if( comparer.compareTo( "GAS-CFT" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 16 ) );
+            else if( comparer.compareTo( "HOURS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 17 ) );
+            else if( comparer.compareTo( "LEVEL") == 0 || comparer.compareTo( "LEVELS") == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 18 ) );
+            else if( comparer.compareTo( "MINUTES") == 0 || comparer.compareTo( "MIN") == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 19 ) );
+            else if( comparer.compareTo( "MW" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 20 ) );
+            else if( comparer.compareTo( "MWH" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 21 ) );
+            else if( comparer.compareTo( "MVA" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 22 ) );
+            else if( comparer.compareTo( "MVAR" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 23 ) );
+            else if( comparer.compareTo( "MVAH" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 24 ) );   
+            else if( comparer.compareTo( "MVARH" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 25 ) );
+            else if( comparer.compareTo( "OPS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 26 ) );
+            else if( comparer.compareTo( "PF" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 27 ) );
+            else if( comparer.compareTo( "PERCENT" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 28 ) );
+            else if( comparer.compareTo( "%" ) == 0 || comparer.compareTo( "PERCENT CHAR" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 29 ) );
+            else if( comparer.compareTo( "PSI") == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 30 ) );
+            else if( comparer.compareTo( "SECONDS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 31 ) );
+            else if( comparer.compareTo( "F" ) == 0 || comparer.compareTo( "TEMP-F" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 32 ) );
+            else if( comparer.compareTo( "C" ) == 0 || comparer.compareTo( "TEMP-C" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 33 ) );
+            else if( comparer.compareTo( "VARS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 34 ) );
+            else if( comparer.compareTo( "VOLTS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 35 ) );
+            else if( comparer.compareTo( "VOLTAMPS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 36 ) );
+            else if( comparer.compareTo( "VA" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 37 ) );
+            else if( comparer.compareTo( "WATR-CFT" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 38 ) );
+            else if( comparer.compareTo( "WATTS" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 39 ) );
+            else if( comparer.compareTo( "HERTZ" ) == 0 || comparer.compareTo( "HZ" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 40 ) );
+            else if( comparer.compareTo( "VOLTS FROM V2H" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 41 ) );
+            else if( comparer.compareTo( "AMPS FROM V2H" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 42 ) );
+            else if( comparer.compareTo( "LTC TAP POSITION" ) == 0 || comparer.compareTo( "TAP" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 43 ) );
+            else if( comparer.compareTo( "MILES" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 44 ) );
+            else if( comparer.compareTo( "MS" ) == 0 || comparer.compareTo("MILLISECONDS") == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 45 ) );
+            else if( comparer.compareTo( "LTC TAP POSITION" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 45 ) );
+            else if( comparer.compareTo( "PARTS PER MILLION" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 46 ) );
+            else if( comparer.compareTo( "MILES PER HOUR" ) == 0 || comparer.compareTo( "MPH" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 47 ) );
+            else if( comparer.compareTo( "INCHES" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 48 ) );
+            else if( comparer.compareTo( "KILOMETERS PER HOUR" ) == 0 || comparer.compareTo( "KPH" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 49 ) );
+            else if( comparer.compareTo( "MILIBARS" ) == 0 || comparer.compareTo( "MILLIBARS" ) == 0)
+                calcPoint.getPointUnit().setUomID( new Integer( 50 ) );
+            else if( comparer.compareTo( "INCHES" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 51 ) );
+            else if( comparer.compareTo( "METERS PER SECOND" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 52 ) );
+            else if( comparer.compareTo( "UNDEFINED" ) == 0 )
+                calcPoint.getPointUnit().setUomID( new Integer( 54 ) );
+            else 
+                calcPoint.getPointUnit().setUomID( new Integer( 0 ) );
+            
+            // set default settings for BASE point
+            calcPoint.getPoint().setLogicalGroup(new String("Default"));
+            calcPoint.getPoint().setServiceFlag(new Character('N'));
+            calcPoint.getPoint().setAlarmInhibit(new Character('N'));
+
+            // set default settings for point ALARMING
+            calcPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+            calcPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
+            calcPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
+            calcPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
+            String tokenHolder;
+
+            // Calc points have these values
+            tokenHolder = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder))
+            {
+                ((CalculatedPoint)calcPoint).getCalcBase().setPeriodicRate(new Integer(1));
+            }
+            ((CalculatedPoint)calcPoint).getCalcBase().setPeriodicRate(new Integer(tokenHolder));
+            
+            tokenHolder = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder))
+            {
+                ((CalculatedPoint)calcPoint).getCalcBase().setCalculateQuality(new Character('c'));
+            }
+            ((CalculatedPoint)calcPoint).getCalcBase().setCalculateQuality(tokenHolder);
+
+            tokenHolder = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder))
+            {
+                ((CalculatedPoint)calcPoint).getCalcBase().setUpdateType(null);
+            }
+            ((CalculatedPoint)calcPoint).getCalcBase().setUpdateType(tokenHolder);
+
+            //this is a little out of place...one last pointunit field that needs to be grabbed
+            String decimalPlaces = tokenizer.nextElement().toString();
+            if(emptyField(decimalPlaces))
+            {
+                decimalPlaces = "2";
+            }
+            calcPoint.getPointUnit().setDecimalPlaces(new Integer(decimalPlaces));
+                      
+            // make a vector for the repeaters
+            HashMap limitMap = new HashMap();
+                
+            int limitCount = 0;
+            com.cannontech.database.db.point.PointLimit myPointLimit = null;
+
+            // set RPT stuff
+            for(int count = 0; count < 2; count++)
+            {
+                Double myHighLimit, myLowLimit;
+                Integer myDuration;
+                
+                tokenHolder = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(tokenHolder))
+                {
+                    tokenHolder = "0";
+                }
+                myHighLimit = new Double( tokenHolder );
+                
+                tokenHolder = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(tokenHolder))
+                {
+                    tokenHolder = "0";
+                }
+                myLowLimit = new Double( tokenHolder );
+                
+                tokenHolder = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(tokenHolder))
+                {
+                    tokenHolder = "0";
+                }
+                myDuration = new Integer(tokenHolder);
+
+                if(myHighLimit.intValue() != 0 && myLowLimit.intValue() != 0)
+                {
+                    ++limitCount;
+                    myPointLimit = new com.cannontech.database.db.point.PointLimit();
+        
+                    myPointLimit.setPointID(calcPoint.getPoint().getPointID());
+                    myPointLimit.setLowLimit(myLowLimit);
+                    myPointLimit.setHighLimit(myHighLimit);
+                    myPointLimit.setLimitDuration(myDuration) ;
+                    myPointLimit.setLimitNumber( new Integer(limitCount) );
+    
+                    limitMap.put( myPointLimit.getLimitNumber(), myPointLimit );
+
+                    myPointLimit = null;
+                }
+            }
+            if (limitCount > 0)
+            {
+                // stuff the repeaters into the CCU Route
+                calcPoint.setPointLimitsMap( limitMap );
+            }
+        
+            //archiving settings
+            String tokenHolder2 = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder2))
+            {
+                tokenHolder2 = "None";
+            }
+            calcPoint.getPoint().setArchiveType(tokenHolder2);
+            
+            tokenHolder2 = tokenizer.nextElement().toString();
+            tokenCounter++;
+            if(emptyField(tokenHolder2) || tokenHolder2.compareTo("0") == 0)
+            {
+                tokenHolder2 = "0 second";
+            }
+            calcPoint.getPoint().setArchiveInterval( getArchiveIntervalSeconds(tokenHolder2) );
+            
+            //alarm categories
+            //grab all the alarm chars
+            String alarmCategory = new String();
+            String alarmStates = new String();
+            int inputCounter = 0;
+                
+            IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+            synchronized( cache )   
+            {
+                java.util.List liteAlarms = cache.getAllAlarmCategories();
+                
+                int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
+
+                for( int x = 0; x < 4; x++)
+                {
+                    inputCounter++;
+                    
+                    alarmCategory = tokenizer.nextElement().toString();
+                    tokenCounter++;
+                    if(emptyField(alarmCategory))
+                    {
+                        alarmCategory = "(none)";
+                    }
+                    if(alarmCategory.compareTo("none") == 0)
+                        alarmCategory = "(none)";
+                                        
+                    for( int j = 0; j < liteAlarms.size(); j++ )
+                    {
+                        if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+                        {
+                            alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+                            break;
+                        }
+                    }
+                    
+                    //get the char value to put into the alarm state string for the database
+                    char generate = (char)alarmCategoryID;
+                    alarmStates += generate;
+                                    
+                }   
+                    
+                //fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+                alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
+                //System.out.println(alarmStates);
+                calcPoint.getPointAlarming().setAlarmStates(alarmStates);
+                calcPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
+                calcPoint.getPointAlarming().setNotifyOnAcknowledge("N"); 
+                calcPoint.getPointAlarming().setPointID(pointID);
+             
+                //Read in Calc table things;
+                boolean ok = true;
+                int cmpOrder = 1;
+                do{
+                    String FunctionType = null;
+                    String DeviceName = null;
+                    String PointName = null;
+                    String OperationType = null;
+                    String temp = null;
+                    
+                    if( tokenizer.hasMoreElements() ){
+                        FunctionType = tokenizer.nextElement().toString();
+                    }else{
+                        ok = false;
+                        break;
+                    }
+                    if( tokenizer.hasMoreElements() ){
+                        temp = tokenizer.nextElement().toString();
+                        int pos = temp.indexOf('/');
+                        if( pos != -1){
+                            DeviceName = temp.substring(0, pos);
+                            PointName = temp.substring(pos+1,temp.length());
+                        }//assuming these are correct.
+                    }else{
+                        ok = false;
+                    }                        
+                    if( tokenizer.hasMoreElements() ){
+                        OperationType = tokenizer.nextElement().toString();
+                    }else{
+                        ok = false;
+                    }
+                    // CtiUtilities.NONE_ZERO_ID
+                    int pid = 0;
+                    if( FunctionType.compareTo("Constant") == 0 || temp.compareTo("@") == 0 )
+                    {
+                        pid = 0;
+                    }else{
+                        pid = findPointIdOnDeviceName(PointName,DeviceName);
+                    }
+                    CalcComponent cmp= new CalcComponent();
+                    cmp.setPointID( pointID );
+                    cmp.setComponentOrder(cmpOrder);
+                    cmp.setComponentType(FunctionType);
+                    cmp.setComponentPointID(pid);
+                    if( FunctionType.compareTo("Function") == 0)
+                        cmp.setOperation("(none)");
+                    else
+                        cmp.setOperation(OperationType);
+                    if( FunctionType.compareTo("Constant") == 0 )
+                        cmp.setConstant(Double.parseDouble(temp) );
+                    else
+                        cmp.setConstant( new Double(0) );
+                    if( FunctionType.compareTo("Function") == 0)
+                        cmp.setFunctionName(OperationType);
+                    else
+                        cmp.setFunctionName("(none)");
+                    System.out.println( cmp.getPointID() + " " + cmp.getComponentOrder() + " " + cmp.getComponentType() + " " + 
+                            cmp.getComponentPointID() + " " + cmp.getOperation() + " " + cmp.getConstant() + " " + cmp.getFunctionName() );
+                    
+                    //add object to vector
+                    calcPoint.getCalcComponentVector().add(cmp);
+                    
+                    cmpOrder++;
+                }while(ok);
+                
+                multi.getDBPersistentVector().add( calcPoint );
+                ++addCount;
+                System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
+            }
+        }
+        boolean success = writeToSQLDatabase(multi);
+
+        if( success )
+        {
+            
+            CTILogger.info(" Calculated point file was processed and inserted successfully");
+            
+            CTILogger.info(" " + addCount + " Calculated points were added to the database");
+        }
+        else
+            CTILogger.info(" Calculated points could NOT be added to the database");
+        
+    
+        return success;
+    }    
     
 	public static boolean processStatusPoints(String fileLocation)
 	{
 		CTILogger.info("Starting status point file process...");
 			
-		java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), STATUS_PT_TOKEN_COUNT);
+		java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), STATUS_PT_TOKEN_COUNT, STATUS_PT_TYPE);
 
 		if( lines == null )
 			return true; //continue the process
@@ -1176,6 +1649,93 @@ public class PointImportUtility
 		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	}
 
+    public static Integer findPointID(String dName)
+    {
+        java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+    
+        java.sql.Statement stmt = null;
+        java.sql.ResultSet rset = null;
+        
+        try 
+        {       
+            stmt = conn.createStatement();
+            rset = stmt.executeQuery( "SELECT POINTID FROM POINT WHERE POINTNAME = '" + dName + "'");  
+                
+            //get the first returned result
+            rset.next();
+            return new Integer( rset.getInt(1) );
+        }
+            
+        catch (java.sql.SQLException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        finally 
+        {
+            try 
+            {
+                if ( stmt != null) stmt.close();
+            }
+            catch (java.sql.SQLException e2) 
+            {
+                e2.printStackTrace();
+            }
+            try {
+                    conn.close();
+                } catch(java.sql.SQLException e) { }
+        }
+        //strange, should not get here
+        return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
+    }
+    
+    public static Integer findPointIdOnDeviceName(String pName, String devName)
+    {
+        java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+    
+        java.sql.Statement stmt = null;
+        java.sql.ResultSet rset = null;
+        
+        try 
+        {       
+            stmt = conn.createStatement();
+
+            // ex:
+            //select POINTID from YukonPAObject dev, POINT pnt where dev.paobjectid = pnt.paobjectid 
+            //       and dev.paoname = 'EBA1' and pnt.pointname = 'Reg 4003';                
+            
+            rset = stmt.executeQuery( "select POINTID from YukonPAObject dev, POINT pnt "
+                  + "where dev.paobjectid = pnt.paobjectid and dev.paoname = '" + devName + "' and pnt.pointname = '"
+                  + pName + "'" );
+            
+            //get the first returned result
+            rset.next();
+            return new Integer( rset.getInt(1) );
+        }
+            
+        catch (java.sql.SQLException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        finally 
+        {
+            try 
+            {
+                if ( stmt != null) stmt.close();
+            }
+            catch (java.sql.SQLException e2) 
+            {
+                e2.printStackTrace();
+            }
+            try {
+                    conn.close();
+                } catch(java.sql.SQLException e) { }
+        }
+        //strange, should not get here
+        return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
+    }
+    
 	public static Integer findStateGroupID(String sgName)
 	{
 		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
@@ -1217,8 +1777,9 @@ public class PointImportUtility
 	}
 	
 	//Oh the hackishness...
-	private static java.util.ArrayList preprocessTokenStrings(java.util.ArrayList inputLines, int pointTypeTotalFields)
+	private static java.util.ArrayList preprocessTokenStrings(java.util.ArrayList inputLines, int pointTypeTotalFields, int pointType)
 	{
+        boolean success = true;
 		java.util.ArrayList alteredInput = new java.util.ArrayList();		
 		for( int i = 0; i < inputLines.size(); i++ )
 		{
@@ -1227,46 +1788,90 @@ public class PointImportUtility
 			String currentNewLine = new String();
 			String nextToken = tokenizer.nextElement().toString();
 			int totalRealTokens = 0;
-			while(tokenizer.hasMoreElements())
+			
+            for(int j = 0; j < pointTypeTotalFields; j++ )
 			{
-				totalRealTokens++;
+                if( !tokenizer.hasMoreTokens() ){
+                    break;
+                }
+                totalRealTokens++;
 				if(nextToken.equals(","))
 				{
 					currentNewLine += "@,";
 					nextToken = tokenizer.nextElement().toString();
-					
 				}
 				else
 				{
 					currentNewLine += nextToken + ",";
 					//move past that extra token (the delimiter itself)
 					Object holder = tokenizer.nextElement();
-					if(tokenizer.countTokens() != 0)
-						nextToken = tokenizer.nextElement().toString();
-					else
-						break;
 					
-				}
-				
+					if(tokenizer.countTokens() != 0){
+						nextToken = tokenizer.nextElement().toString();	
+                    }
+					else{
+						break;
+                    }
+				}				
 			}
-			//with delimiter flag set to true so that commas can be seen, things
-			//get a little more interesting...
-			if(totalRealTokens < pointTypeTotalFields)
-			{
-				int diff = pointTypeTotalFields - totalRealTokens;
-				for(int y = diff; y > 0; y--)
-				{
-					currentNewLine += "@,";
-				}
-			}
-			
-			//System.out.println(currentNewLine);
-			alteredInput.add(i, currentNewLine);
-		}
+            
+            //with delimiter flag set to true so that commas can be seen, things
+            //get a little more interesting...
+            if(totalRealTokens < pointTypeTotalFields)
+            {
+                int diff = pointTypeTotalFields - totalRealTokens;
+                for(int y = diff; y > 0; y--)
+                {
+                    currentNewLine += "@,";
+                }
+            }
+            
+            if( pointType == CALC_PT_TYPE )
+            { //Line has X number of calculated entries
+                int multipleOfThreeTest = 0;
+                while(tokenizer.hasMoreElements())
+                {
+                    totalRealTokens++;
+                    if(nextToken.equals(","))
+                    {
+                        currentNewLine += "@,";
+                        nextToken = tokenizer.nextElement().toString();
+                        
+                    }
+                    else
+                    {
+                        currentNewLine += nextToken + ",";
+                        //move past that extra token (the delimiter itself)
+                        Object holder = tokenizer.nextElement();
+                        if(tokenizer.countTokens() != 0)
+                            nextToken = tokenizer.nextElement().toString();
+                        else
+                            break;
+                        
+                    }
+                    multipleOfThreeTest++;
+                }
+                if( (multipleOfThreeTest % 3) != 0){
+                    if(nextToken.equals(","))
+                        nextToken = "@";
+                    //not sure why I have to do this....
+                    currentNewLine += nextToken;
+                    multipleOfThreeTest++;
+                }
+                if( (multipleOfThreeTest % 3) != 0 )
+                    success = false;
+                
+                if( success )
+                    alteredInput.add(i, currentNewLine);
+                else
+                    System.out.println("A line failed the parse");
+            }else
+                alteredInput.add(i, currentNewLine);
+        }
 		
 		return alteredInput;
 	}
-	
+    
 	private static boolean emptyField(String input)
 	{
 		if(input.equals("@"))
@@ -1308,6 +1913,40 @@ public class PointImportUtility
 			javax.swing.JOptionPane.WARNING_MESSAGE );
 	
 	}
+
+    private static void missingRequiredCalcField(int lineNumber, int fieldNumber)
+    {
+        String accumulatorFields[] = new String[CALC_PT_TOKEN_COUNT];
+            accumulatorFields[0] = "PointName";
+            accumulatorFields[1] = "PointType";
+            accumulatorFields[2] = "DeviceName";
+            accumulatorFields[3] = "PointOffset";
+            accumulatorFields[4] = "UOM_Text";
+            accumulatorFields[5] = "PeriodicRate";
+            accumulatorFields[6] = "CalculatedQuality";
+            accumulatorFields[7] = "UpdateType";
+            accumulatorFields[8] = "HiLimit1";
+            accumulatorFields[9] = "LowLimit1";
+            accumulatorFields[10] = "Duration1";
+            accumulatorFields[11] = "Limit2";
+            accumulatorFields[12] = "HiLimit2";
+            accumulatorFields[13] = "LowLimit2";
+            accumulatorFields[14] = "Duration2";
+            accumulatorFields[15] = "Archivetype";
+            accumulatorFields[16] = "ArchInterval";
+            accumulatorFields[17] = "NonUpdate";
+            accumulatorFields[18] = "RateOfChange";
+            accumulatorFields[19] = "LimitSet1";
+            accumulatorFields[20] = "LimitSet2";
+            accumulatorFields[21] = "HighReasonablility";
+            accumulatorFields[22] = "LowReasonability";
+        
+        javax.swing.JOptionPane.showMessageDialog(
+        PointImportWarningBox.getWarningFrame(), 
+            "You are missing a required field on line number " + lineNumber + "\n The missing field is " + accumulatorFields[fieldNumber]    ,"Item Not Found",
+            javax.swing.JOptionPane.WARNING_MESSAGE );
+    
+    }    
     
     private static void missingRequiredAccumulatorField(int lineNumber, int fieldNumber)
     {
@@ -1412,5 +2051,46 @@ public class PointImportUtility
 
 		return retVal;
 	}
-	
+    /**
+     * main entrypoint - starts the part when it is run as an application
+     * @param args java.lang.String[]
+     */
+    public static void main(java.lang.String[] args) {
+        if( args.length < 2 ){
+            System.out.println("Input Format: number filename ");
+            System.out.println("1: Analog ");
+            System.out.println("2: Status ");
+            System.out.println("3: Accumulator ");
+            System.out.println("4: Calc ");
+        }else{
+            try {
+                boolean success = false;
+                switch( Integer.parseInt(args[0]) ){ 
+                    case 1:
+                        success = PointImportUtility.processAnalogPoints(args[1]);
+                        break;
+                    case 2:
+                        success = PointImportUtility.processStatusPoints(args[1]);
+                        break;
+                    case 3:
+                        success = PointImportUtility.processAccumulatorPoints(args[1]);
+                        break;
+                    case 4:
+                        success = PointImportUtility.processCalcPoints(args[1]);
+                        break;
+                    default:
+    
+                        break;
+                }
+                if( !success )
+                    System.out.println("Failed import, please check your input file.");
+                else
+                    System.out.println("Import Successful.");
+                
+            } catch (Throwable exception) {
+                System.err.println("Exception occurred in main() of java.lang.Object");
+                exception.printStackTrace(System.out);
+            }
+        }
+    }
 }
