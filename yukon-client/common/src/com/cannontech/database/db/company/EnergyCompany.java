@@ -124,6 +124,7 @@ public static long[] getAllEnergyCompanyIDs(String dbAlias) {
 		try
 		{
 			if( stmt != null ) stmt.close();
+            if (rset != null) rset.close();
 			if( conn != null ) conn.close();
 		}
 		catch( java.sql.SQLException e2 )
@@ -183,6 +184,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 		try
 		{
 			if( pstmt != null ) pstmt.close();
+            if (rset != null) rset.close();
 		} 
 		catch( java.sql.SQLException e2 )
 		{

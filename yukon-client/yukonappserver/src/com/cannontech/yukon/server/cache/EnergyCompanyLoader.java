@@ -91,6 +91,8 @@ public class EnergyCompanyLoader implements Runnable
          	try {
             	if( stmt != null )
                		stmt.close();
+                if (rset != null)
+                    rset.close();
             	if( conn != null )
                	conn.close();
          	}
