@@ -13,9 +13,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/db/reader.h>
 #include <rw/db/connect.h>
 
+#include "id_calc.h"
 #include "dbaccess.h"
 #include "ctinexus.h"
-#include "id_build.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"
@@ -43,18 +43,6 @@ bool _runCalcBaseline = false;
 
 //Boolean if debug messages are printed
 ULONG _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
-
-#define CALCLOGICNAME "Calc & Logic"
-
-static CTICOMPILEINFO CompileInfo = {
-    CALCLOGICNAME,
-    MAJORREVISION,
-    MINORREVISION,
-    BUILDNUMBER,
-    __TIMESTAMP__
-};
-
-string CALCVERSION = "1.50";
 
 BOOL MyCtrlHandler( DWORD fdwCtrlType )
 {
@@ -114,6 +102,7 @@ void CtiCalcLogicService::Init( )
         //defaults
         string logFile("calc");
 
+        dout.setOwnerInfo(CompileInfo);
         dout.setOutputFile(logFile);
         dout.setOutputPath(gLogDirectory);
         dout.setToStdOut(true);
@@ -157,14 +146,12 @@ void CtiCalcLogicService::Run( )
 
     pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc);
 
-    CALCVERSION = identifyProjectVersion(CompileInfo);
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_running_in_console)
-            dout << CtiTime( ) << " - Calc and Logic Version: " << CALCVERSION << " starting console mode ..." << endl;
+            dout << CtiTime( ) << " - " << CompileInfo.project << " [Version " << CompileInfo.version << "] starting console mode ..." << endl;
         else
-            dout << CtiTime( ) << " - Calc and Logic Service Version: " << CALCVERSION << " starting ..." << endl;
+            dout << CtiTime( ) << " - " << CompileInfo.project << " [Version " << CompileInfo.version << "] starting as service..." << endl;
 
     }
 
@@ -490,7 +477,7 @@ void CtiCalcLogicService::Run( )
                                 _dispatchPingedFailed = pingTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
 
                                 CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
-                                pCmd->setUser(CALCLOGICNAME);
+                                pCmd->setUser(CompileInfo.project);
                                 if(_conxion) _conxion->WriteConnQue( pCmd );
                                 else delete pCmd;
                             }
@@ -707,7 +694,7 @@ void CtiCalcLogicService::_outputThread( void )
                     {
                         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::sendUserQuit, CTIDBG_new string("CalcLogic _outputThread")) );
                     }
-                    
+
                 }
             } while( !entries && !interrupted );
 
@@ -791,7 +778,7 @@ void CtiCalcLogicService::_inputThread( void )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " _inputThread active. TID: " << rwThreadId() << endl;
                             }
-        
+
                             if(!_shutdownOnThreadTimeout)
                             {
                                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::inComplain, 0) );
@@ -986,7 +973,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                         // echo back the same message - we are here
 
                         CtiCommandMsg *pCmd = (CtiCommandMsg*)message;
-                        if(pCmd->getUser() != CALCLOGICNAME)
+                        if(pCmd->getUser() != CompileInfo.project)
                         {
                             if(_conxion) _conxion->WriteConnQue( pCmd->replicateMessage() );
 
@@ -1054,7 +1041,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                         calcThread->pointSignal( pSignal->getId(), pSignal->getTags() );
                     }
                     _dispatchConnectionBad = false;
-                
+
                     if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1310,7 +1297,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
                 long limitNum, hlim, llim, limitdur;
                 rdr["limitnumber"] >> limitNum;
                 rdr["highlimit"] >> hlim;
-                rdr["lowlimit"] >> llim; 
+                rdr["lowlimit"] >> llim;
                 rdr["limitduration"] >> limitdur;
 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1904,7 +1891,7 @@ void CtiCalcLogicService::loadConfigParameters()
     {
         _runCalcBaseline = false;
     }
-    
+
     SET_CRT_OUTPUT_MODES;
     if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
         ENABLE_CRT_SHUTDOWN_CHECK;
