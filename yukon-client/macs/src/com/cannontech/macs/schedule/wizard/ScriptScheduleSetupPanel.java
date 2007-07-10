@@ -1991,7 +1991,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getBillingFormatComboBox().setSelectedItem(getScriptTemplate().getParameterValue(BILLING_FORMAT_PARAM));
         getDemandDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_DEMAND_DAYS_PARAM));
         getEnergyDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_ENERGY_DAYS_PARAM));
-        String billGroupName = getScriptTemplate().getParameterValue(GROUP_NAME_PARAM);
+        String billGroupName = getScriptTemplate().getParameterValue(BILLING_GROUP_NAME_PARAM);
         if(StringUtils.isNotEmpty(billGroupName)) {
             DeviceGroup group = deviceGroupService.resolveGroupName(billGroupName);
             TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getBillingGroupTree().getModel().getRoot(), group);
