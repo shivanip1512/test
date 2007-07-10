@@ -340,6 +340,20 @@ PAOClass
 );
 go
 
+insert into command values(-133, 'putconfig xcom utility usage ?''Channel'':?''Value''', 'Thermostat Register Download', 'ExpresscomSerial');
+insert into command values(-134, 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable priority 7 timeout 30 hour clear', 'Thermostat Text Message', 'ExpresscomSerial');
+insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
+go
+
+insert into DeviceTypeCommand values (-670, -133, 'ExpresscomSerial', 21, 'Y', -1);
+insert into DeviceTypeCommand values (-671, -134, 'ExpresscomSerial', 22, 'Y', -1);
+insert into DeviceTypeCommand values (-672, -135, 'ExpresscomSerial', 23, 'Y', -1);
+go
+
+insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1);
+insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
+insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

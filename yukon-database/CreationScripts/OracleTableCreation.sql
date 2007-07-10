@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/7/2007 10:44:21 AM                         */
+/* Created on:     7/10/2007 12:44:05 PM                        */
 /*==============================================================*/
 
 
@@ -2201,6 +2201,10 @@ insert into command values(-130, 'getvalue lp channel ?''Channel #'' ?''Enter St
 insert into command values(-131, 'getvalue lp status', 'Read LP Channel Data Status', 'ALL MCT-4xx Series');
 insert into command values(-132, 'getvalue lp cancel', 'Read LP Channel Data Cancel', 'ALL MCT-4xx Series');
 
+insert into command values(-133, 'putconfig xcom utility usage ?''Channel'':?''Value''', 'Thermostat Register Download', 'ExpresscomSerial');
+insert into command values(-134, 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable priority 7 timeout 30 hour clear', 'Thermostat Text Message', 'ExpresscomSerial');
+insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
+
 alter table Command
    add constraint PK_COMMAND primary key (CommandID)
 /
@@ -4200,6 +4204,13 @@ insert into devicetypecommand values(-666, -132, 'MCT-430A', 25, 'N', -1);
 insert into devicetypecommand values(-667, -132, 'MCT-430S4', 25, 'N', -1);
 insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1);
 insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1);
+
+insert into DeviceTypeCommand values (-670, -133, 'ExpresscomSerial', 21, 'Y', -1);
+insert into DeviceTypeCommand values (-671, -134, 'ExpresscomSerial', 22, 'Y', -1);
+insert into DeviceTypeCommand values (-672, -135, 'ExpresscomSerial', 23, 'Y', -1);
+insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1);
+insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
+insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
 
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID)

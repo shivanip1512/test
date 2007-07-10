@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/7/2007 10:43:41 AM                         */
+/* Created on:     7/10/2007 12:41:42 PM                        */
 /*==============================================================*/
 
 
@@ -3575,6 +3575,10 @@ insert into command values(-130, 'getvalue lp channel ?''Channel #'' ?''Enter St
 insert into command values(-131, 'getvalue lp status', 'Read LP Channel Data Status', 'ALL MCT-4xx Series');
 insert into command values(-132, 'getvalue lp cancel', 'Read LP Channel Data Cancel', 'ALL MCT-4xx Series');
 
+insert into command values(-133, 'putconfig xcom utility usage ?''Channel'':?''Value''', 'Thermostat Register Download', 'ExpresscomSerial');
+insert into command values(-134, 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable priority 7 timeout 30 hour clear', 'Thermostat Text Message', 'ExpresscomSerial');
+insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
+
 alter table Command
    add constraint PK_COMMAND primary key nonclustered (CommandID)
 go
@@ -5574,6 +5578,13 @@ insert into devicetypecommand values(-666, -132, 'MCT-430A', 25, 'N', -1);
 insert into devicetypecommand values(-667, -132, 'MCT-430S4', 25, 'N', -1);
 insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1);
 insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1);
+
+insert into DeviceTypeCommand values (-670, -133, 'ExpresscomSerial', 21, 'Y', -1);
+insert into DeviceTypeCommand values (-671, -134, 'ExpresscomSerial', 22, 'Y', -1);
+insert into DeviceTypeCommand values (-672, -135, 'ExpresscomSerial', 23, 'Y', -1);
+insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1);
+insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
+insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
 
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key nonclustered (DeviceCommandID, CommandGroupID)
@@ -10513,7 +10524,7 @@ FROM CAPBANK cb INNER JOIN
                       DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
                       PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      capbankadditional capa on capa.deviceid = cb.deviceid;
+                      capbankadditional capa on capa.deviceid = cb.deviceid
 go
 
 /*==============================================================*/
@@ -12292,65 +12303,4 @@ BEGIN
 END
 go
 
-
-create or replace procedure RenCol(
-  User in varchar2,       -- name of the schema. 
-  Table_Name in varchar2, -- name of the table. 
-  Old_Name in varchar2,   -- name of the column to be renamed. 
-  New_Name in varchar2    -- new name of the column. 
-) 
-As
-declare
-  obj_id number; 
-  col_id number; 
-  cursor_name1 INTEGER; 
-  cursor_name2 INTEGER; 
-  ret1 INTEGER; 
-  ret2 INTEGER; 
-
-begin
-  Select object_id 
-  Into obj_id 
-  From dba_objects 
-  Where object_name=UPPER(table_name) 
-  And owner=UPPER(user) 
-  And object_type='TABLE'; 
-
-  --DBMS_OutPut.put_line(obj_id); 
-
-  Select col# 
-  Into col_id 
-  From col$ 
-  Where obj#=obj_id 
-  And name=UPPER(old_name); 
-
-  --DBMS_OutPut.put_line(col_id); 
-
-  Update col$ 
-  Set name=UPPER(new_name) 
-  Where obj#=obj_id 
-  And col#=col_id; 
-
-  Commit; 
-
-  cursor_name1 := DBMS_Sql.Open_Cursor; 
-  DBMS_Sql.Parse(cursor_name1, 'ALTER SYSTEM FLUSH SHARED_POOL',DBMS_Sql.Native); 
-  ret1 := DBMS_Sql.Execute(cursor_name1); 
-  DBMS_Sql.Close_Cursor(cursor_name1); 
-
-  cursor_name2:= DBMS_Sql.Open_Cursor; 
-  DBMS_Sql.Parse(cursor_name2, 'ALTER SYSTEM CHECKPOINT',DBMS_Sql.Native); 
-  ret2:= DBMS_Sql.Execute(cursor_name2); 
-  DBMS_Sql.Close_Cursor(cursor_name2); 
-end;
-/**************************************************************************************/
-/* Example of use:                                                                    */
-/*  SQL> Exec RenCol( 'username', 'tablename', 'old col name', 'new col name' );      */
-/*                                                                                    */
-/**************************************************************************************/
-/
-
-alter procedure RenCol compile
-/
-go
 
