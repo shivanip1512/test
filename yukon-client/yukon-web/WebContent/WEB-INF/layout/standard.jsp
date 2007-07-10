@@ -11,6 +11,7 @@
           <cti:includeCss link="/WebConfig/yukon/styles/StandardStyles.css"/>
           <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
           <cti:includeScript link="/JavaScript/prototype.js"/>
+          <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
           <cti:includeScript link="/JavaScript/CtiMenu.js"/>
         </cti:outputHeadContent>
     </head>
