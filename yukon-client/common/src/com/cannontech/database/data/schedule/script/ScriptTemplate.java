@@ -164,13 +164,38 @@ public class ScriptTemplate {
 	{
         switch (template) {
         case ScriptTemplateTypes.METER_READ_SCRIPT:
-            return buildScriptFromFiles("main_quit_by.tcl", "main_read_group_1.tcl", "main_send_log.tcl", "main_read_group_2.tcl", "main_end.tcl");
+            return buildScriptFromFiles("main_quit_by.tcl", 
+                                        "main_read_group_1.tcl", 
+                                        "main_send_log.tcl", 
+                                        "main_read_group_2.tcl", 
+                                        "main_end.tcl");
         case ScriptTemplateTypes.IED_METER_READ_SCRIPT:
-            return buildScriptFromFiles("main_quit_by.tcl", "main_set_demand.tcl", "main_read_group_1_ied.tcl", "main_send_log.tcl", "main_read_group_2_ied.tcl", "main_end.tcl");
+            return buildScriptFromFiles("main_quit_by.tcl", 
+                                        "main_set_demand.tcl", 
+                                        "main_read_group_1_ied.tcl", 
+                                        "main_send_log.tcl", 
+                                        "main_read_group_2_ied.tcl", 
+                                        "main_end.tcl");
         case ScriptTemplateTypes.METER_READ_RETRY_SCRIPT:
-            return buildScriptFromFiles("retry_start.tcl", "retry_read.tcl", "retry_end.tcl");
+            return buildScriptFromFiles("retry_start.tcl", 
+                                        "retry_read.tcl", 
+                                        "retry_end.tcl");
         case ScriptTemplateTypes.IED_METER_READ_RETRY_SCRIPT:
-            return buildScriptFromFiles("retry_start.tcl", "retry_read_ied.tcl", "retry_end.tcl");
+            return buildScriptFromFiles("retry_start.tcl", 
+                                        "retry_read_ied.tcl", 
+                                        "retry_end.tcl");
+        case ScriptTemplateTypes.OUTAGE_METER_READ_SCRIPT:
+            return buildScriptFromFiles("main_quit_by.tcl", 
+                                        "main_read_outages_group_1.tcl", 
+                                        "main_send_log.tcl", 
+                                        "main_read_outages_group_2.tcl", 
+                                        "main_end.tcl");
+        case ScriptTemplateTypes.VOLTAGE_METER_READ_SCRIPT:
+            return buildScriptFromFiles("main_quit_by.tcl", 
+                                        "main_read_voltage_group_1.tcl", 
+                                        "main_send_log.tcl", 
+                                        "main_read_voltage_group_2.tcl", 
+                                        "main_end.tcl");
         }
 	    return "";
 	}

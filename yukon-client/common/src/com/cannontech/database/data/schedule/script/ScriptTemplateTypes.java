@@ -18,6 +18,8 @@ public class ScriptTemplateTypes
 	public static final String METER_READ_RETRY_SCRIPT_STRING = "Meter Read Retry";
 	public static final String IED_METER_READ_SCRIPT_STRING = "IED Meter Read";
 	public static final String IED_METER_READ_RETRY_SCRIPT_STRING = "IED Meter Read Retry";
+	public static final String OUTAGE_METER_READ_STRING = "Outages Meter Read";
+	public static final String VOLTAGE_METER_READ_STRING = "Voltage Meter Read";
 	public static final String NO_TEMPLATE_SCRIPT_STRING = "No Template";
 	
 	public static final int NO_TEMPLATE_SCRIPT = 0;
@@ -25,13 +27,17 @@ public class ScriptTemplateTypes
 	public static final int METER_READ_RETRY_SCRIPT = 2;
 	public static final int IED_METER_READ_SCRIPT = 3;
 	public static final int IED_METER_READ_RETRY_SCRIPT = 4;
+	public static final int OUTAGE_METER_READ_SCRIPT = 5;
+	public static final int VOLTAGE_METER_READ_SCRIPT = 6;
 		
 	public static final String[] SCRIPT_TEMPLATES = new String[]{
         NO_TEMPLATE_SCRIPT_STRING,
 		METER_READ_SCRIPT_STRING,
 		METER_READ_RETRY_SCRIPT_STRING,
 		IED_METER_READ_SCRIPT_STRING,
-		IED_METER_READ_RETRY_SCRIPT_STRING
+		IED_METER_READ_RETRY_SCRIPT_STRING,
+		OUTAGE_METER_READ_STRING,
+		VOLTAGE_METER_READ_STRING,
 	};
 	
 	public static int getScriptTemplateFromString(String string)
@@ -44,6 +50,10 @@ public class ScriptTemplateTypes
 			return IED_METER_READ_SCRIPT;
 		else if( string.equalsIgnoreCase(IED_METER_READ_RETRY_SCRIPT_STRING))
 			return IED_METER_READ_RETRY_SCRIPT;
+		else if( string.equalsIgnoreCase(OUTAGE_METER_READ_STRING))
+		    return OUTAGE_METER_READ_SCRIPT;
+		else if( string.equalsIgnoreCase(VOLTAGE_METER_READ_STRING))
+		    return VOLTAGE_METER_READ_SCRIPT;
 		else if( string.equalsIgnoreCase(NO_TEMPLATE_SCRIPT_STRING))
 		    return NO_TEMPLATE_SCRIPT;
 		else
@@ -69,7 +79,10 @@ public class ScriptTemplateTypes
 	    return (template == METER_READ_SCRIPT
 				|| template == METER_READ_RETRY_SCRIPT 
 				|| template == IED_METER_READ_SCRIPT
-				|| template == IED_METER_READ_RETRY_SCRIPT);	    
+				|| template == IED_METER_READ_RETRY_SCRIPT
+				|| template == OUTAGE_METER_READ_SCRIPT
+				|| template == VOLTAGE_METER_READ_SCRIPT
+                );	    
 	}	
 	public static boolean isRetryTemplate(int template)
 	{
@@ -88,13 +101,19 @@ public class ScriptTemplateTypes
 		return (template == METER_READ_SCRIPT 
 				|| template == METER_READ_RETRY_SCRIPT
 				|| template == IED_METER_READ_SCRIPT
-				|| template == IED_METER_READ_RETRY_SCRIPT);
+				|| template == IED_METER_READ_RETRY_SCRIPT
+				|| template == OUTAGE_METER_READ_SCRIPT
+				|| template == VOLTAGE_METER_READ_SCRIPT
+                );
 	}
 	public static boolean hasNotification(int template)
 	{
 		return (template == METER_READ_SCRIPT 
 				|| template == METER_READ_RETRY_SCRIPT
 				|| template == IED_METER_READ_SCRIPT
-				|| template == IED_METER_READ_RETRY_SCRIPT);
+				|| template == IED_METER_READ_RETRY_SCRIPT
+				|| template == OUTAGE_METER_READ_SCRIPT
+				|| template == VOLTAGE_METER_READ_SCRIPT
+                );
 	}
 }
