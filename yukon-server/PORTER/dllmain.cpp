@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/dllmain.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/09/26 14:03:32 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/07/10 21:00:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,49 +61,52 @@ BOOL APIENTRY DllMain(HANDLE hModule,
                       DWORD  ul_reason_for_call,
                       LPVOID lpReserved)
 {
-   switch( ul_reason_for_call )
-   {
-   case DLL_PROCESS_ATTACH:
-      {
-         identifyProject(CompileInfo);
+    switch( ul_reason_for_call )
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+            identifyProject(CompileInfo);
 
-         PorterListenNexus.NexusState = CTINEXUS_STATE_NULL;
+            PorterListenNexus.NexusState = CTINEXUS_STATE_NULL;
 
-         if((hPorterEvents[ P_QUIT_EVENT ] = OpenEvent(EVENT_ALL_ACCESS, FALSE, PorterSyncs[P_QUIT_EVENT].syncObjName))!= NULL)
-         {
-            // Oh no, porter is running on this machine already.
-            CloseHandle(hPorterEvents[ P_QUIT_EVENT ]);
-            std::cout << "Porter is already running!" << endl;
-            exit(-1);
-         }
-
-         for(int i = 0 ;i < NUMPORTEREVENTS; i++)
-         {
-            hPorterEvents[ i ] = CreateEvent(NULL, PorterSyncs[i].manualReset, PorterSyncs[i].initState, PorterSyncs[i].syncObjName);
-
-            if(hPorterEvents[ i ] == (HANDLE)NULL)
+            if((hPorterEvents[ P_QUIT_EVENT ] = OpenEvent(EVENT_ALL_ACCESS, FALSE, PorterSyncs[P_QUIT_EVENT].syncObjName))!= NULL)
             {
-               std::cerr << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << endl;
-               exit(-1);
-            }
-         }
+                // Oh no, porter is running on this machine already.
+                CloseHandle(hPorterEvents[ P_QUIT_EVENT ]);
 
-         break;
-      }
-   case DLL_THREAD_ATTACH:
-      {
-         break;
-      }
-   case DLL_THREAD_DETACH:
-      {
-         break;
-      }
-   case DLL_PROCESS_DETACH:
-      {
-         // printf("PortGlob DLL is exiting!\n");
-         GlobalsCleanUp();
-         break;
-      }
+                std::cout << "Porter is already running!" << endl;
+
+                exit(-1);
+            }
+
+            for(int i = 0 ;i < NUMPORTEREVENTS; i++)
+            {
+                hPorterEvents[ i ] = CreateEvent(NULL, PorterSyncs[i].manualReset, PorterSyncs[i].initState, PorterSyncs[i].syncObjName);
+
+                if(hPorterEvents[ i ] == (HANDLE)NULL)
+                {
+                    std::cerr << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << endl;
+                    exit(-1);
+                }
+            }
+
+            break;
+        }
+        case DLL_THREAD_ATTACH:
+        {
+            break;
+        }
+        case DLL_THREAD_DETACH:
+        {
+            break;
+        }
+        case DLL_PROCESS_DETACH:
+        {
+            GlobalsCleanUp();
+
+            break;
+        }
    }
+
    return TRUE;
 }

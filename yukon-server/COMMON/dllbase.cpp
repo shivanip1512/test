@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/06/25 19:04:28 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/07/10 20:59:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,30 +92,32 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 {
     switch( ul_reason_for_call )
     {
-    case DLL_PROCESS_ATTACH:
+        case DLL_PROCESS_ATTACH:
         {
-            // cout << "CTIBase DLL initializing!" << endl;
             identifyProject(CompileInfo);
+
             PorterNexus.NexusState  = CTINEXUS_STATE_NULL;     // Make sure no one thinks we are connected
             InitYukonBaseGlobals();                            // Load up the config file.
 
             // Set default database connection params
             setDatabaseParams(0, dbDll, dbName, dbUser, dbPassword);
+
             break;
         }
-    case DLL_THREAD_ATTACH:
+        case DLL_THREAD_ATTACH:
         {
             break;
         }
-    case DLL_THREAD_DETACH:
+        case DLL_THREAD_DETACH:
         {
             break;
         }
-    case DLL_PROCESS_DETACH:
+        case DLL_PROCESS_DETACH:
         {
             PortPipeCleanup(0);                                // Get that connection closed (if open)!
             freeUCTMemory();
             cleanupDB();
+
             break;
         }
     }

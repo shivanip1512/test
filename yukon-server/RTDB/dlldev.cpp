@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/12/06 22:12:51 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/07/10 21:01:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
 
 #include <rw/db/db.h>
 
-// #include "rtdb.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
 #include "mgr_point.h"
@@ -34,35 +33,30 @@
 #include "utility.h"
 
 
-//#include "dllyukon.h"
-
-// Global DLL Object... for C interface...
-
-// DLLEXPORT CtiDeviceManager gPortManager;
-
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
     switch( ul_reason_for_call )
     {
-    case DLL_PROCESS_ATTACH:
+        case DLL_PROCESS_ATTACH:
         {
             identifyProject(CompileInfo);
+
             break;
         }
-    case DLL_THREAD_ATTACH:
+        case DLL_THREAD_ATTACH:
         {
             break;
         }
-    case DLL_THREAD_DETACH:
+        case DLL_THREAD_DETACH:
         {
             break;
         }
-    case DLL_PROCESS_DETACH:
+        case DLL_PROCESS_DETACH:
         {
-            // cout << "Yukon DB Miner RTDB DLL is exiting!" << endl;
             break;
         }
     }
+
     return TRUE;
 }
 

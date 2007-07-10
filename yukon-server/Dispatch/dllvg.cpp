@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dllvg.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/07/10 20:59:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,28 +33,29 @@ IM_EX_CTIVANGOGH INT gCommErrorDays = 7;
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-   switch( ul_reason_for_call )
-   {
-   case DLL_PROCESS_ATTACH:
-      {
-         identifyProject(CompileInfo);
-         break;
-      }
-   case DLL_THREAD_ATTACH:
-      {
-         break;
-      }
-   case DLL_THREAD_DETACH:
-      {
-         break;
-      }
-   case DLL_PROCESS_DETACH:
-      {
-         //cout << "Van Gogh DLL is exiting!" << endl;
-         break;
-      }
-   }
-   return TRUE;
+    switch( ul_reason_for_call )
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+            identifyProject(CompileInfo);
+
+            break;
+        }
+        case DLL_THREAD_ATTACH:
+        {
+            break;
+        }
+        case DLL_THREAD_DETACH:
+        {
+            break;
+        }
+        case DLL_PROCESS_DETACH:
+        {
+            break;
+        }
+    }
+
+    return TRUE;
 }
 
 

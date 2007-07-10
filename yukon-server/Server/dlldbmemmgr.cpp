@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/dlldbmemmgr.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/07/10 21:01:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,29 +28,29 @@ using namespace std;
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-   switch( ul_reason_for_call )
-   {
-   case DLL_PROCESS_ATTACH:
-      {
-         // cout << "MemPoint RTDB DLL is initializing!" << endl;
-         identifyProject(CompileInfo);
-         break;
-      }
-   case DLL_THREAD_ATTACH:
-      {
-         break;
-      }
-   case DLL_THREAD_DETACH:
-      {
-         break;
-      }
-   case DLL_PROCESS_DETACH:
-      {
-         // cout << "MemPoint RTDB DLL is exiting!" << endl;
-         break;
-      }
-   }
-   return TRUE;
+    switch( ul_reason_for_call )
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+            identifyProject(CompileInfo);
+
+            break;
+        }
+        case DLL_THREAD_ATTACH:
+        {
+            break;
+        }
+        case DLL_THREAD_DETACH:
+        {
+            break;
+        }
+        case DLL_PROCESS_DETACH:
+        {
+            break;
+        }
+    }
+
+    return TRUE;
 }
 
 
