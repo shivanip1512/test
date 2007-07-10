@@ -28,6 +28,8 @@
 #include "rtdb.h"
 #include "ctibase.h"
 
+extern compileinfo_t CompileInfo;
+
 using namespace std;
 
 int main(int argc, char* argv[] )
@@ -60,7 +62,7 @@ int main(int argc, char* argv[] )
        exit(-1);
     }
 
-    if( SetConsoleTitle("Cap Control") ) // We are a console application
+    if( setConsoleTitle(CompileInfo) ) // We are a console application
     {
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )

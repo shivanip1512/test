@@ -12,6 +12,7 @@
 #include "yukon.h"
 #include <io.h>
 
+#include "id_capcontrol.h"
 #include "ccservice.h"
 #include "eventlog.h"
 #include "configparms.h"
@@ -107,6 +108,7 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 void CtiCCService::Init()
 {
     string logFile = "capcontrol";
+    dout.setOwnerInfo(CompileInfo);
     dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory);
     dout.setToStdOut(true);

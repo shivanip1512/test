@@ -23,8 +23,6 @@ int remove( void );
 LPTSTR szServiceName = "CALCLOGIC";
 LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 
-extern string CALCVERSION;
-
 int main( int argc, char *argv[] )
 {
     RWWinSockInfo sock_init;        // global declare for winsock
@@ -36,7 +34,7 @@ int main( int argc, char *argv[] )
     {
        // Oh no, calc_logic is running on this machine already.
        CloseHandle(hExclusion);
-       cout << "Calc Logic is already running!!!" << endl;
+       cout << CompileInfo.project << " is already running!" << endl;
        exit(-1);
     }
 
@@ -44,11 +42,11 @@ int main( int argc, char *argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create CalcLogic!!!" << endl;
+       cout << "Couldn't create CalcLogic event!" << endl;
        exit(-1);
     }
 
-    if( SetConsoleTitle(szDisplayName) )
+    if( setConsoleTitle(CompileInfo) )
     {
         //  Process command line
         //  Process command line
@@ -66,11 +64,10 @@ int main( int argc, char *argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-version" ) == 0 )
         {
-            cout << " - Yukon Calculation and Logic Version " << CALCVERSION << endl;
+            cout << CompileInfo.project << " [Version " << CompileInfo.version << "]" << endl;
         }
         else
         {
-            cout << CtiTime( ) << " - Calc and Logic starting up..." << endl;
             CtiCalcLogicService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
             service.RunInConsole( argc, argv );
@@ -133,7 +130,7 @@ int install( DWORD dwStart )
         }
     }*/
 
-    cout << CtiTime( )  << " - Installing Calc and Logic service..." << endl;
+    cout << CtiTime( )  << " - Installing " << szDisplayName << "..." << endl;
 
     /*char* tmp = str;
 
@@ -159,7 +156,7 @@ int install( DWORD dwStart )
 
 int remove( void )
 {
-    cout << CtiTime( )  << " - Removing Calc and Logic service..." << endl;
+    cout << CtiTime( )  << " - Removing " << szDisplayName << "..." << endl;
     CServiceConfig si(szServiceName, szDisplayName);
     si.Remove( );
 
