@@ -47,6 +47,7 @@
 		<property name="commandRequestExecutor" ref="commandRequestExecutor" />
 		<property name="meterDao" ref="meterDao" />
 		<property name="executor" ref="globalScheduledExecutor" />
+		<property name="pointFormattingService" ref="pointFormattingService" />
 	</bean>
 
     <bean id="attrDynamicDataSource" class="com.cannontech.common.device.attribute.service.AttributeDynamicDataSource" singleton="true">
