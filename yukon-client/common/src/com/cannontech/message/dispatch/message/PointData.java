@@ -1,5 +1,7 @@
 package com.cannontech.message.dispatch.message;
 
+import org.springframework.core.style.ToStringCreator;
+
 import com.cannontech.core.dynamic.PointValueHolder;
 
 /**
@@ -217,17 +219,12 @@ public void setValue(double newValue) {
  * @return java.lang.String
  */
 public String toString() {
-	String retStr = "com.cannontech.message.dispatch.message.PointData:  \n";
-
-	retStr += "Id:  " + getId() + "\n";
-	retStr += "Limit:  " + getLimit() + "\n";
-	retStr += "Attributes:  " + getAttributes() + "\n";
-	retStr += "String:  " + getStr() + "\n";
-	retStr += "Tags:  " + getTags() + "\n";
-	retStr += "Type:  " + getType() + "\n";
-	retStr += "Value:  " + getValue() + "\n";	
-
-	return retStr;
+    ToStringCreator tsc = new ToStringCreator(this);
+    tsc.append("id", getId());
+    tsc.append("value", getValue());
+    tsc.append("type", getType());
+    tsc.append("quality", getQuality());
+    return tsc.toString(); 
 }
 	/**
 	 * @return
