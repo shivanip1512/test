@@ -60,12 +60,6 @@ public interface IDatabaseCache {
 
     public List<LiteDeviceMeterNumber> getAllDeviceMeterGroups();
 
-    public List<String> getAllDMG_CollectionGroups(); //distinct DeviceMeterGroup.CollectionGroups
-
-    public List<String> getAllDMG_AlternateGroups(); //distinct DeviceMeterGroup.AlternateGroups
-
-    public List<String> getAllDMG_BillingGroups(); //distinct DeviceMeterGroup.BillingGroups
-
     public List<LiteYukonPAObject> getAllDevices();
 
     public List<LiteYukonPAObject> getAllMCTs();

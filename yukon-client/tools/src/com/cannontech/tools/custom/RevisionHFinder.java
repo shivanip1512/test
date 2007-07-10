@@ -9,16 +9,24 @@ package com.cannontech.tools.custom;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
+import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.MessageEvent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -357,7 +365,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	public void readFromMissedList()
 	{
 		CTILogger.info("Attempting to parse Missed List for deviceIDS from file: " + missedListFileName);
-		Vector devIDs = new Vector();
+		List<Integer> devIDs = new Vector<Integer>();
 		File file = new File(missedListFileName);	
 		java.io.RandomAccessFile raFile = null;
 		try
@@ -410,40 +418,30 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	}		
 	public void readCollectionGroup(String collGroup)
 	{
-		try
-		{
-			Integer[] devIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), collGroup);
-			Vector vectorDevIds = new Vector(devIds.length);
-			for (int i = 0; i< devIds.length; i++)
-				vectorDevIds.add(devIds[i]);
-			
-			readDevIDs(vectorDevIds);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+        FixedDeviceGroupingHack hacker = YukonSpringHook.getBean("fixedDeviceGroupingHack", FixedDeviceGroupingHack.class); 
+        Set<Integer> devIds = hacker.getDeviceIds(FixedDeviceGroups.COLLECTIONGROUP, collGroup);
+        readDevIDs(devIds);
 		
 	}
 
 	/**
 	 * 
 	 */
-	private void readDevIDs(Vector deviceIDs)
+	private void readDevIDs(Collection<Integer> deviceIDs)
 	{
 		numDevices = deviceIDs.size();
 		//remove all previously missed deviceIds...this is new life
 		missedIDs.clear();
 		getPilConn().isValid();
-		for(int i = 0; i < deviceIDs.size(); i++)
+		for(Integer deviceId : deviceIDs)
 		{
-			porterRequest = new Request( ((Integer)deviceIDs.get(i)).intValue(), "getconfig model", currentUserMessageID );
+			porterRequest = new Request( deviceId, "getconfig model", currentUserMessageID );
 			porterRequest.setPriority(14);
 			if( getPilConn().isValid() )
 			{
 				getPilConn().write( porterRequest);
 				getRequestMessageIDs().add(new Long(currentUserMessageID));
-				receivedDevIDs.add(deviceIDs.get(i));
+				receivedDevIDs.add(deviceId);
 				generateMessageID();
 			}
 		}

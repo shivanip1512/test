@@ -3,13 +3,19 @@ package com.cannontech.dbconverter.converter;
 import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
+import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.MCTIEDBase;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
@@ -1085,6 +1091,7 @@ public boolean processLoadGroups()
  * Creation date: (4/25/2001 7:42:09 PM)
  * @return boolean
  */
+@SuppressWarnings("deprecation")
 public boolean processMCTDevices() 
 {
 	CTILogger.info("Starting MCT Device file process...");
@@ -1144,14 +1151,20 @@ public boolean processMCTDevices()
 		device.getDeviceRoutes().setRouteID(new Integer( Integer.parseInt(tokenizer.nextElement().toString() )));
 	    		
 		// set group info
-		device.getDeviceMeterGroup().setCollectionGroup( tokenizer.nextElement().toString() );
+        String newCollectionGroup = tokenizer.nextElement().toString();
 
-		device.getDeviceMeterGroup().setTestCollectionGroup( tokenizer.nextElement().toString() );
+		String newTestCollectionGroup = tokenizer.nextElement().toString();
 
 		device.getDeviceMeterGroup().setMeterNumber(new String("0"));
 
 		//added
-		device.getDeviceMeterGroup().setBillingGroup( device.getDeviceMeterGroup().getBillingGroup() );
+		String newBillingGroup = tokenizer.nextElement().toString();
+
+        // this is a little bit of a hack and I don't have a way to test it, hopefully if anyone
+        // ever wants to use this class again, they'll have a better idea about what they wan to
+        // do with groups
+		YukonDevice yd = new YukonDevice(deviceID,PAOGroups.getDeviceType(deviceType));
+		DeviceGroupMember dgm = new DeviceGroupMember(yd, newBillingGroup, newCollectionGroup, newTestCollectionGroup, null, null, null);
 	
 		// set LoadProfile Interval
 		device.getDeviceLoadProfile().setLoadProfileDemandRate(new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ));
@@ -1185,6 +1198,7 @@ public boolean processMCTDevices()
 
 		
 		multi.getDBPersistentVector().add( device );
+		multi.getDBPersistentVector().add( dgm );
 		++addCount;
 	}
 

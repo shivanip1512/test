@@ -374,63 +374,6 @@ public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups()
 
 }
 
-public synchronized List<String> getAllDMG_CollectionGroups()
-{
-	if (allDMG_CollectionGroups != null)
-		return allDMG_CollectionGroups;
-	else
-	{
-		allDMG_CollectionGroups = new ArrayList<String>();
-		List<LiteDeviceMeterNumber> groups = getAllDeviceMeterGroups();
-		for (int i = 0; i < groups.size(); i++)
-		{
-			LiteDeviceMeterNumber ldmn = groups.get(i);
-			if( !allDMG_CollectionGroups.contains(ldmn.getCollGroup()))
-				allDMG_CollectionGroups.add(ldmn.getCollGroup());
-		}
-
-		Collections.sort(allDMG_CollectionGroups);
-		return allDMG_CollectionGroups;
-	}
-}
-public synchronized List<String> getAllDMG_AlternateGroups()
-{
-	if (allDMG_AlternateGroups != null)
-		return allDMG_AlternateGroups;
-	else
-	{
-		allDMG_AlternateGroups = new ArrayList<String>();
-		List<LiteDeviceMeterNumber> groups = getAllDeviceMeterGroups();
-		for (int i = 0; i < groups.size(); i++)
-		{
-			LiteDeviceMeterNumber ldmn = groups.get(i);
-			if( !allDMG_AlternateGroups.contains(ldmn.getTestCollGroup()))
-				allDMG_AlternateGroups.add(ldmn.getTestCollGroup());
-		}
-		Collections.sort(allDMG_AlternateGroups);
-		return allDMG_AlternateGroups;
-	}
-}
-
-public synchronized List<String> getAllDMG_BillingGroups()
-{
-	if (allDMG_BillingGroups != null)
-		return allDMG_BillingGroups;
-	else
-	{
-		allDMG_BillingGroups = new ArrayList<String>();
-		List<LiteDeviceMeterNumber> groups = getAllDeviceMeterGroups();
-		for (int i = 0; i < groups.size(); i++)
-		{
-			LiteDeviceMeterNumber ldmn = groups.get(i);
-			if( !allDMG_BillingGroups.contains(ldmn.getBillGroup()))
-				allDMG_BillingGroups.add(ldmn.getBillGroup());
-		}
-		Collections.sort(allDMG_BillingGroups);
-		return allDMG_BillingGroups;
-	}
-}
-
 /**
  * getAllDevices method comment.
  *

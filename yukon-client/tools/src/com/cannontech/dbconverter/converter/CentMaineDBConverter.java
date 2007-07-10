@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.data.device.CCU711;
@@ -24,6 +25,7 @@ import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.LocalSharedPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.point.PointAlarming;
@@ -871,16 +873,14 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 				}
 				device.getDeviceRoutes().setRouteID((Integer) myRouteID);
 
-				// set group info
-				device.getDeviceMeterGroup().setCollectionGroup(leadMeter);
-
-				device.getDeviceMeterGroup().setTestCollectionGroup(leadLoad);
-
 				device.getDeviceMeterGroup().setMeterNumber("10" + address);
 
 				//added
-				device.getDeviceMeterGroup().setBillingGroup(
-					device.getDeviceMeterGroup().getBillingGroup());
+                // this is a little bit of a hack and I don't have a way to test it, hopefully if anyone
+                // ever wants to use this class again, they'll have a better idea about what they wan to
+                // do with groups
+                YukonDevice yd = new YukonDevice(deviceID,PAOGroups.getDeviceType(deviceType));
+				DeviceGroupMember dgm = new DeviceGroupMember(yd,null,leadMeter,leadLoad,null,null,null);
 
 				if (deviceType.equals(new String("MCT-240"))
 					|| deviceType.equals(new String("MCT-248"))
@@ -990,6 +990,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 				multi.getDBPersistentVector().add(device);
 				multi.getDBPersistentVector().add(accumPoint);
 				multi.getDBPersistentVector().add(pulseAccumPoint);
+				multi.getDBPersistentVector().add(dgm);
 				++addCount;
 			}
 		}

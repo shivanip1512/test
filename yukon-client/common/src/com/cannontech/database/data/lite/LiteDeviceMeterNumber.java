@@ -12,9 +12,6 @@ import com.cannontech.database.SqlStatement;
 public class LiteDeviceMeterNumber extends LiteBase
 {
 	String meterNumber = null;
-	String collGroup = null;
-	String testCollGroup = null;
-	String billGroup = null;
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
@@ -33,14 +30,11 @@ public LiteDeviceMeterNumber(int devID)
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
-public LiteDeviceMeterNumber(int devID, String meterNum, String collGrp, String testCollGrp, String billGrp)
+public LiteDeviceMeterNumber(int devID, String meterNum)
 {
 	super();
 	setDeviceID(devID);
 	meterNumber = new String(meterNum);
-	collGroup = new String(collGrp);
-	testCollGroup = new String(testCollGrp);
-	billGroup = new String(billGrp);
 
 	setLiteType(LiteTypes.DEVICE_METERNUMBER);	
 }
@@ -62,7 +56,7 @@ public String getMeterNumber() {
 public void retrieve(String databaseAlias) 
 {
    SqlStatement s = new SqlStatement(
-         "SELECT METERNUMBER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, BILLINGGROUP FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
+         "SELECT METERNUMBER FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
          CtiUtilities.getDatabaseAlias() );
 
 	try 
@@ -74,13 +68,10 @@ public void retrieve(String databaseAlias)
 
 
       setMeterNumber( s.getRow(0)[0].toString() );
-      setCollGroup(s.getRow(0)[1].toString());
-      setTestCollGroup( s.getRow(0)[2].toString());
-      setBillGroup(s.getRow(0)[3].toString());
 	}
 	catch( Exception e )
 	{
-		CTILogger.error( e.getMessage(), e );
+		CTILogger.error( "Unable to retrieve LiteDeviceMeterNumber for deviceId=" + getDeviceID(), e );
 	}
 
 }
@@ -117,52 +108,5 @@ public boolean equals(Object o)
 	else
 		return super.equals(o);
 }
-
-    /**
-     * @return Returns the collGroup.
-     */
-    public String getCollGroup()
-    {
-        return collGroup;
-    }
-    /**
-     * @param collGroup The collGroup to set.
-     */
-    public void setCollGroup(String collGroup)
-    {
-        this.collGroup = new String(collGroup);
-    }
-
-	/**
-	 * @return
-	 */
-	public String getBillGroup()
-	{
-		return billGroup;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setBillGroup(String billGrp)
-	{
-		billGroup = new String(billGrp);
-	}
-
-	/**
-	 * @return
-	 */
-	public String getTestCollGroup()
-	{
-		return testCollGroup;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setTestCollGroup(String testCollGrp)
-	{
-		testCollGroup = new String(testCollGrp);
-	}
 
 }

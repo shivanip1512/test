@@ -26,7 +26,7 @@ public DeviceMeterGroupLoader(java.util.ArrayList deviceList, String alias) {
 public void run()
 {
 	long timer = System.currentTimeMillis();
-	String sqlString = "SELECT DEVICEID, METERNUMBER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, BILLINGGROUP FROM DEVICEMETERGROUP ORDER BY METERNUMBER";
+	String sqlString = "SELECT DEVICEID, METERNUMBER FROM DEVICEMETERGROUP ORDER BY METERNUMBER";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -42,14 +42,11 @@ public void run()
 		{
 			int deviceID = rset.getInt(1);
 			String meterNumber = rset.getString(2).trim();
-			String collGrp = rset.getString(3).trim();
-			String testCollGrp = rset.getString(4).trim();
-			String billGrp = rset.getString(5).trim();
 			
 			//20050602 - SN - removed this check, we want all of them in the cache
 //			if(meterNumber.compareToIgnoreCase("default") != 0)
 //			{
-				LiteDeviceMeterNumber liteDevMetNum = new LiteDeviceMeterNumber(deviceID, meterNumber, collGrp, testCollGrp, billGrp);
+				LiteDeviceMeterNumber liteDevMetNum = new LiteDeviceMeterNumber(deviceID, meterNumber);
 				devMetNumList.add(liteDevMetNum);
 //			}
 		}

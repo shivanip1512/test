@@ -1,5 +1,8 @@
 package com.cannontech.database.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.Validate;
 
 /**
@@ -35,8 +38,8 @@ public final class ModelFactory
 	public static final int DEVICE_CUSTOMPOINTS = 22;
 	public static final int HOLIDAY_SCHEDULE = 23;
 	public static final int DEVICE_METERNUMBER = 24;
-	public static final int COLLECTIONGROUP = 25;
-	public static final int TESTCOLLECTIONGROUP = 26;
+	//public static final int COLLECTIONGROUP = 25;
+	//public static final int TESTCOLLECTIONGROUP = 26;
 	public static final int CAPCONTROLFEEDER = 27;
 
 	public static final int MCTBROADCAST = 28;
@@ -55,7 +58,7 @@ public final class ModelFactory
 	public static final int DEVICE_CHECKBOX=37;
 	public static final int TRANSMITTER_CHECKBOX=38;
 	public static final int COMMCHANNEL_CHECKBOX=39;
-	public static final int COLLECTIONGROUP_CHECKBOX=40;
+	//public static final int COLLECTIONGROUP_CHECKBOX=40;
 		
 	public static final int LMCONSTRAINT = 41;
 	public static final int LMSCENARIO = 42;
@@ -79,7 +82,7 @@ public final class ModelFactory
 	public static final int TOUSCHEDULE = 55;
 	public static final int CBC_ORDER_BY = 56;
 	
-	public static final int BILLING_GROUP = 57;
+	//public static final int BILLING_GROUP = 57;
 	
 	public static final int RECEIVERS = 58;
     public static final int SYSTEM_DEVICE = 59;
@@ -131,7 +134,7 @@ public final class ModelFactory
 		DeviceCheckBoxTreeModel.class,
 		TransmitterCheckBoxTreeModel.class,
 		CommChannelCheckBoxTreeModel.class,
-		CollectionGroupCheckBoxTreeModel.class,
+		null,
 		LMConstraintModel.class,
 /* 42*/LMScenarioModel.class,
 		EditableVersacomModel.class,
@@ -288,18 +291,22 @@ public static DBTreeModel create(int type) {
 	    return typeToStringMap[modelType];
 	}
 	
+    private static final Set<Class<? extends LiteBaseTreeModel>> editableSerialClasses = new HashSet<Class<? extends LiteBaseTreeModel>>();
+    
+    static {
+        editableSerialClasses.add(EditableSA205Model.class);
+        editableSerialClasses.add(EditableSA305Model.class);
+        editableSerialClasses.add(EditableVersacomModel.class);
+        editableSerialClasses.add(EditableExpresscomModel.class);
+        editableSerialClasses.add(EditableLCRSerialModel.class);
+    }
+
 	/**
 	 * @param type
 	 * @return
 	 */
-	public static final boolean isEditableSerial(Class<? extends LiteBaseTreeModel> model)
+	public static boolean isEditableSerial(Class<? extends LiteBaseTreeModel> model)
 	{
-        if( model == EditableVersacomModel.class ||
-            model == EditableExpresscomModel.class ||
-            model == EditableSA205Model.class ||
-            model == EditableSA305Model.class ||
-            model == EditableLCRSerialModel.class )
-            return true;
-        return false;
+	    return editableSerialClasses.contains(model);
 	}
 }
