@@ -18,10 +18,10 @@ public class DatabaseDebugHelper {
     }
     
     public static Logger getMainLogger() {
-        return YukonLogManager.getLogger("com.cannontech.databasedebug");
+        return YukonLogManager.getLogger("databasedebug");
     }
     public static Logger getStackTraceLogger() {
-        return YukonLogManager.getLogger("com.cannontech.databasedebug.stack");
+        return YukonLogManager.getLogger("databasedebug.stack");
     }
 
 }
