@@ -2,6 +2,7 @@ package com.cannontech.web.amr.csr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import com.cannontech.amr.csr.model.FilterBy;
 import com.cannontech.amr.csr.model.OrderBy;
 import com.cannontech.amr.csr.service.CsrService;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
@@ -128,6 +130,10 @@ public class CsrController extends MultiActionController {
 
         mav.addObject("deviceId", deviceId);
         mav.addObject("highBillSupported", highBillSupported);
+        
+        Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
+        mav.addObject("outageSupported", availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG));
+        
         mav.addObject("mspSupported",
                       Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
                              .intValue() > 0);

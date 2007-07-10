@@ -62,7 +62,9 @@
 				<ct:widget bean="disconnectMeterWidget" identify="false" deviceId="${deviceId}"/>
 			</c:if>
 	
-			<ct:widget bean="meterOutagesWidget" identify="false" deviceId="${deviceId}"/>
+			<c:if test="${outageSupported}">
+				<ct:widget bean="meterOutagesWidget" identify="false" deviceId="${deviceId}"/>
+			</c:if>
 
 		</div>
 	</div>
