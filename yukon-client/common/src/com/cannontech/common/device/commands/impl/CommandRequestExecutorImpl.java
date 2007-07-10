@@ -143,6 +143,11 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
                 throw new TimeoutException("Commander command execution did not complete with " + time + " seconds");
             }
         }
+        
+        @Override
+        public String toString() {
+            return new ToStringCreator(this).toString();
+        }
     }
 
     public CommandResultHolder execute(CommandRequest command, LiteYukonUser user)  throws CommandCompletionException, PaoAuthorizationException {
