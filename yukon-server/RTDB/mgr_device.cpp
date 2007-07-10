@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2007/03/14 19:32:52 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2007/07/10 19:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2181,10 +2181,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
         }
 
         selector << tblMeterGroup["DeviceID"]
-        << tblMeterGroup["CollectionGroup"]
-        << tblMeterGroup["TestCollectionGroup"]
-        << tblMeterGroup["MeterNumber"]
-        << tblMeterGroup["BillingGroup"];
+        << tblMeterGroup["MeterNumber"];
         selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) && (tblPAObject["Type"].like("ION%")));
 
         if(paoID)
@@ -2203,10 +2200,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
             while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
             {
                 rdr["DeviceID"]            >> tmpDeviceID;
-                rdr["CollectionGroup"]     >> tmpCollectionGroup;
-                rdr["TestCollectionGroup"] >> tmpTestCollectionGroup;
                 rdr["MeterNumber"]         >> tmpMeterNumber;
-                rdr["BillingGroup"]        >> tmpBillingGroup;
 
                 pTempCtiDevice = getEqual(tmpDeviceID);
 
@@ -2214,10 +2208,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
                 {
                     CtiDeviceION *tmpION = (CtiDeviceION *)(pTempCtiDevice.get());
 
-                    tmpION->setMeterGroupData(tmpCollectionGroup,
-                                              tmpTestCollectionGroup,
-                                              tmpMeterNumber,
-                                              tmpBillingGroup);
+                    tmpION->setMeterGroupData(tmpMeterNumber);
                 }
             }
         }
