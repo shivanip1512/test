@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/05/31 21:41:20 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2007/07/10 20:56:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,10 +130,7 @@ int  CtiServer::clientRegistration(CtiServer::ptr_type CM)
                         CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 
                         pCmd->setSource(getMyServerName());
-                        pCmd->insert(-1);
-                        pCmd->insert(CompileInfo.major);
-                        pCmd->insert(CompileInfo.minor);
-                        pCmd->insert(CompileInfo.build);
+                        pCmd->setOpString(CompileInfo.version);
 
                         Mgr->WriteConnQue(pCmd);  // Ask the old guy to respond to us..
 
@@ -261,21 +258,15 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                         dout << CtiTime() << " Client " << pConn->getClientName() << " responded to AreYouThere " << endl;
                     }
 
-                    if(Cmd->getOpArgList().size() >= 4)
+                    if( !(Cmd->getOpString().empty()) )
                     {
-                        LONG token = Cmd->getOpArgList()[0];  // Unused token
-                        LONG major = Cmd->getOpArgList()[1];  // major revision
-                        LONG minor = Cmd->getOpArgList()[2];  // minor revision
-                        LONG build = Cmd->getOpArgList()[3];  // build number
-
-                        if((CompileInfo.major && major != 0) &&
-                           (CompileInfo.major != major || CompileInfo.minor != minor || CompileInfo.build != build) )
+                        if( CompileInfo.version != Cmd->getOpString() )
                         {
                             // This is a mismatch.  We should yelp about it.
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " !!!! WARNING !!!!   Client " << pConn->getClientName() << " has a version mismatch.  Client revision " << major << "." << minor << "." << build << endl;
+                                dout << CtiTime() << " !!!! WARNING !!!!   Client " << pConn->getClientName() << " has a version mismatch.  Client revision " << Cmd->getOpString() << endl;
                             }
                         }
                     }
@@ -417,11 +408,7 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
             CtiCommandMsg *Cmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 
             Cmd->setSource(getMyServerName());
-            Cmd->setOpString("Are You There");
-            Cmd->insert(-1);
-            Cmd->insert(CompileInfo.major);
-            Cmd->insert(CompileInfo.minor);
-            Cmd->insert(CompileInfo.build);
+            Cmd->setOpString(CompileInfo.version);
 
             Mgr->WriteConnQue(Cmd);
         }
