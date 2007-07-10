@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.108 $
-* DATE         :  $Date: 2007/06/25 19:08:35 $
+* REVISION     :  $Revision: 1.109 $
+* DATE         :  $Date: 2007/07/10 21:07:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -754,12 +754,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     /* Print out the program name and revison */
     identifyProject(CompileInfo);
-
-    {
-        char tstr[256];
-        ::sprintf(tstr,"Port Control - YUKON (Build %d.%d.%d)", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
-        SetConsoleTitle( tstr );
-    }
+    setConsoleTitle(CompileInfo);
 
     SetThreadName(-1, "PortrMain");
 

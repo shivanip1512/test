@@ -49,45 +49,48 @@ ULONG DoRequestMutexSem(HMTX MyMutex, ULONG MyTimeOut, INT iLine, CHAR *szFuncti
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-   WORD    wVersionRequested = MAKEWORD(1,1);
-   WSADATA wsaData;
+    WORD    wVersionRequested = MAKEWORD(1,1);
+    WSADATA wsaData;
 
-   switch( ul_reason_for_call )
-   {
-   case DLL_PROCESS_ATTACH:
-      {
-         // Initialize WinSock and check version
-         int err = WSAStartup(wVersionRequested, &wsaData);
-         if(wsaData.wVersion != wVersionRequested)
-         {
-            fprintf(stderr,"\nWrong WINSOCK version\n");
-            return FALSE;
-         }
-         else if(err)
-         {
-            fprintf(stderr,"\nFatal WINSOCK error %d in TCPSUP.DLL\n", err);
-            return FALSE;
-         }
+    switch( ul_reason_for_call )
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+            identifyProject(CompileInfo);
 
-         identifyProject(CompileInfo);
+            // Initialize WinSock and check version
+            int err = WSAStartup(wVersionRequested, &wsaData);
 
-         break;
-      }
-   case DLL_THREAD_ATTACH:
-      {
-         break;
-      }
-   case DLL_THREAD_DETACH:
-      {
-         break;
-      }
-   case DLL_PROCESS_DETACH:
-      {
-         WSACleanup();
-         break;
-      }
-   }
-   return TRUE;
+            if(wsaData.wVersion != wVersionRequested)
+            {
+                fprintf(stderr,"\nWrong WINSOCK version\n");
+                return FALSE;
+            }
+            else if(err)
+            {
+                fprintf(stderr,"\nFatal WINSOCK error %d in TCPSUP.DLL\n", err);
+                return FALSE;
+            }
+
+            break;
+        }
+        case DLL_THREAD_ATTACH:
+        {
+            break;
+        }
+        case DLL_THREAD_DETACH:
+        {
+            break;
+        }
+        case DLL_PROCESS_DETACH:
+        {
+            WSACleanup();
+
+            break;
+        }
+    }
+
+    return TRUE;
 }
 
 IM_EX_TCPSUP INT TCPInit (NETCXPORTINFO *MyPortInfo, CtiPort *PortRecord, UINT InitFlags)

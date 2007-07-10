@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/07/10 21:04:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@
 #include <rw/toolpro/winsock.h>
 
 #include "CServiceConfig.h"
+#include "id_macs.h"
 #include "mc_svc.h"
 #include "ctibase.h"
 
@@ -63,15 +64,13 @@ int main(int argc, char* argv[] )
 
     if( hExclusion == (HANDLE)NULL )
     {
-       cout << "Couldn't create macs" << endl;
+       cout << "Couldn't create MACS event" << endl;
        exit(-1);
     }
 
     // Hack to detect whether we are running as a service
     // or in a console
-    BOOL bConsole = SetConsoleTitle("MACS");
-
-    if (bConsole)
+    if( setConsoleTitle(CompileInfo) )
     {
         if ( argc > 1 )
         {

@@ -5,6 +5,7 @@
 #include <rw/thr/thrutil.h>
 #include <rw/collstr.h>
 
+#include "id_loadmanagement.h"
 #include "lmcontrolareastore.h"
 #include "loadmanager.h"
 #include "dbaccess.h"
@@ -48,7 +49,7 @@ int main(int argc, char* argv[] )
        exit(-1);
     }
 
-    if( SetConsoleTitle("Load Management") ) // We are a console application
+    if( setConsoleTitle(CompileInfo) ) // We are a console application
     {
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )

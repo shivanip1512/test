@@ -4,8 +4,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:17:12 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/07/10 21:07:09 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -45,7 +45,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "cparms.h"
 #include "CServiceConfig.h"
 #include "fdrservice.h"
-#include "id_ctibase.h"
+#include "id_fdr.h"
 
 
 int install( DWORD dwStart = SERVICE_DEMAND_START );
@@ -57,15 +57,16 @@ LPTSTR szDisplayName = "Yukon Foreign Data Service";
 int main( int argc, char *argv[] )
 {
     RWWinSockInfo sock_init;        // global declare for winsock
-    BOOL consoleRet;
     HANDLE hExclusion;
 
     if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "FDR_EXCLUSION_EVENT")) != NULL )
     {
-    // Oops, fdr is running on this machine already.
-    CloseHandle(hExclusion);
-    cout << "FDR is already running on this machine, exiting." << endl;
-    exit(-1);
+        // Oops, fdr is running on this machine already.
+        CloseHandle(hExclusion);
+
+        cout << "FDR is already running on this machine, exiting." << endl;
+
+        exit(-1);
     }
 
     // Set event so to avoid additional copies of FDR on this machine
@@ -78,13 +79,9 @@ int main( int argc, char *argv[] )
     }
 
 //    InitYukonBaseGlobals();
-    identifyProject(CompileInfo);
+//    identifyProject(CompileInfo);
 
-    char tstr[256];
-    sprintf(tstr,"Foreign Data Router - YUKON (Build %d.%d.%d)", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
-    consoleRet = SetConsoleTitle( tstr );
-
-    if(consoleRet) // We are a console application
+    if( setConsoleTitle(CompileInfo) ) // We are a console application
     {
         // Process command line if in console
 
@@ -103,20 +100,22 @@ int main( int argc, char *argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-version" ) == 0 )
         {
-            cout << " - " << string (tstr) << endl;
+            cout << " - " << CompileInfo.project << " Version [" << CompileInfo.version << "]" << endl;
         }
         else
         {
             dout.start();     // fire up the logger thread
+            dout.setOwnerInfo(CompileInfo);
             dout.setOutputPath(gLogDirectory);
             dout.setOutputFile("fdr");
             dout.setToStdOut(true);
             dout.setWriteInterval(0);
 
+            identifyProject(CompileInfo);
+
             {
-                sprintf(tstr," (Build %d.%d.%d) Foreign Data Router", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << string (tstr) << " starting console mode ..." << endl;
+                dout << CtiTime( ) << "Starting " << CompileInfo.project << " in console mode" << endl;
             }
 
 
@@ -129,15 +128,17 @@ int main( int argc, char *argv[] )
     else
     {
         dout.start();     // fire up the logger thread
+        dout.setOwnerInfo(CompileInfo);
         dout.setOutputPath(gLogDirectory);
         dout.setOutputFile("fdr");
-      dout.setToStdOut(false);
+        dout.setToStdOut(false);
         dout.setWriteInterval(5000);
 
+        identifyProject(CompileInfo);
+
         {
-            sprintf(tstr," (Build %d.%d.%d) Foreign Data Router", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << string (tstr) << " starting up..." << endl;
+            dout << CtiTime( ) << "Starting " << CompileInfo.project << " as service" << endl;
         }
 
 

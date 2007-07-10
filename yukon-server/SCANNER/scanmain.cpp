@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:20:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/07/10 21:07:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@ int main(int argc, char* argv[] )
    LPTSTR szDesc = "Manages the periodic - timed scanning of field devices";
 
    dout.start();     // fire up the logger thread
+   dout.setOwnerInfo(CompileInfo);
    dout.setOutputPath(gLogDirectory);
    dout.setOutputFile("scanner");
    dout.setToStdOut(true);

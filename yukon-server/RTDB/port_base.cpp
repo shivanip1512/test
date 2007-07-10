@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2007/06/25 19:00:55 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2007/07/10 21:03:19 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.72  2007/07/10 21:03:19  mfisher
+* changed project identification to use new build labels (compileinfo_t)
+*
 * Revision 1.71  2007/06/25 19:00:55  mfisher
 * formatting
 *
@@ -571,6 +574,7 @@ void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
             CreateDirectoryEx( gLogDirectory.c_str(), comlogdir.c_str(), NULL);
 
             _portLog.setToStdOut(false);  // Not to std out.
+            _portLog.setOwnerInfo(CompileInfo);
             _portLog.setOutputPath(comlogdir.c_str());
             _portLog.setOutputFile( of.c_str() );
             _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.

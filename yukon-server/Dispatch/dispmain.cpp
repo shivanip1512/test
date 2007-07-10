@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/05/23 21:48:52 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/07/10 21:07:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,7 @@ int main(int argc, char* argv[] )
    InitDispatchGlobals();
 
    dout.start();     // fire up the logger thread
+   dout.setOwnerInfo(CompileInfo);
    dout.setOutputPath(gLogDirectory);
    dout.setOutputFile("dispatch");
    dout.setToStdOut(true);
@@ -73,13 +74,7 @@ int main(int argc, char* argv[] )
 
    identifyProject(CompileInfo);
 
-   {
-      char tstr[256];
-      sprintf(tstr,"Dispatch - YUKON (Build %d.%d.%d)", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
-      bConsole = SetConsoleTitle( tstr );
-   }
-
-   if( bConsole )
+   if( setConsoleTitle(CompileInfo) )
    {
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )

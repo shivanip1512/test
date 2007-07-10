@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/07/10 21:03:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,6 +50,7 @@ int main(int argc, char* argv[] )
    InitYukonBaseGlobals();
 
    dout.start();     // fire up the logger thread
+   dout.setOwnerInfo(CompileInfo);
    dout.setOutputPath(gLogDirectory);
    dout.setOutputFile("porter");
    dout.setToStdOut(true);
@@ -60,12 +61,14 @@ int main(int argc, char* argv[] )
    CreateDirectoryEx( gLogDirectory.c_str(), dbglogdir.c_str(), NULL);
 
    slog.start();     // fire up the simulator thread
+   slog.setOwnerInfo(CompileInfo);
    slog.setOutputPath(dbglogdir.c_str());
    slog.setOutputFile("simulate");
    slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
    slog.setWriteInterval(15000);
 
    blog.start();
+   blog.setOwnerInfo(CompileInfo);
    blog.setOutputPath(dbglogdir.c_str());
    blog.setOutputFile("comstats");
    blog.setToStdOut( false );

@@ -85,6 +85,7 @@ void CtiLMService::Init()
 {
     string logFile = "loadmanagement";
     dout.start();     // fire up the logger thread
+    dout.setOwnerInfo(CompileInfo);
     dout.setOutputPath(gLogDirectory);
     dout.setToStdOut(true);
     dout.setWriteInterval(1);

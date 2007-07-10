@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2007/05/31 21:41:20 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2007/07/10 21:07:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -345,10 +345,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     };
 
     identifyProject(CompileInfo);
-
-    sprintf(tstr,"Scanner - YUKON (Build %d.%d.%d)", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
-
-    SetConsoleTitle( tstr );
+    setConsoleTitle(CompileInfo);
 
     /* Give us a tiny attitude */
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0);

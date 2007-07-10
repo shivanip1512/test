@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mcsvc
@@ -9,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_svc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/07/10 21:04:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +24,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
 ---------------------------------------------------------------------------*/
+#include "yukon.h"
 #include "mc_svc.h"
 #include "CParms.h"
 #include "mc_script.h"
@@ -44,12 +42,12 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
 
-	if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )	
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << CtiTime() << " **Checkpoint** " << "MACS received one of these events, Ctrl-C, Shutdown, or Close.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
-	}
-    
+    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime() << " **Checkpoint** " << "MACS received one of these events, Ctrl-C, Shutdown, or Close.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+
         SetEvent(hShutdown);
         Sleep(30000);
         return TRUE;
@@ -83,7 +81,6 @@ void CtiMCService::RunInConsole(DWORD argc, LPTSTR* argv)
     if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
         cerr << "Could not install control handler" << endl;
 
-    SetConsoleTitle(MC_CONSOLE_DISPLAY_NAME);
     Run();
 }
 
@@ -100,12 +97,12 @@ void CtiMCService::DeInit()
 
 void CtiMCService::OnStop()
 {
-    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )	
+    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
-	CtiLockGuard<CtiLogger> dout_guard(dout);
-	dout << CtiTime() << " **Checkpoint** " << "MACS service received an OnStop event.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
+    CtiLockGuard<CtiLogger> dout_guard(dout);
+    dout << CtiTime() << " **Checkpoint** " << "MACS service received an OnStop event.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
-	
+
     SetEvent(hShutdown);
 }
 
@@ -137,6 +134,7 @@ void CtiMCService::Run()
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
     // Initialize the global logger
+    dout.setOwnerInfo(CompileInfo);
     dout.setOutputFile("macs");
     dout.setOutputPath(gLogDirectory);
     dout.setWriteInterval(0);
