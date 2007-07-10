@@ -80,7 +80,7 @@ int main( int argc, char **argv )
                         {
                             if( !var.compare(argv[i]) )
                             {
-                                cout << "set " << argv[i+1] << "=\"" << value << "\"" << endl;
+                                cout << "set " << argv[i+1] << "=" << value << endl;
                             }
                         }
                     }
