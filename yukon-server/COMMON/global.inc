@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.13 $                               #
-#       $Date: 2006/03/17 23:37:53 $                  #
+#       $Revision: 1.14 $                               #
+#       $Date: 2007/07/10 20:29:06 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -112,18 +112,18 @@ TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 
 BOOSTLIBS = $(BOOST)\stage\lib\libboost_date_time-vc6-mt-gd-1_31.lib $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.lib $(BOOST)\stage\lib\libboost_regex-vc6-mt-gd-1_31.lib
-BOOSTTHREAD = $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.lib 
+BOOSTTHREAD = $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.lib
 BOOSTTESTLIBS = $(BOOST)\stage\lib\libboost_unit_test_framework-vc6-mt-gd-1_31.lib
-                                                     
+
 !IFDEF DEBUG
-CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD
-DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD 
+CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD /DBUILD_VERSION="$(BUILD_VERSION)" /DBUILD_VERSION_DETAILS="$(BUILD_VERSION_DETAILS)"
+DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD /DBUILD_VERSION="$(BUILD_VERSION)" /DBUILD_VERSION_DETAILS="$(BUILD_VERSION_DETAILS)"
 TCL_LIB = tcl81d
 XERCES_LIB = xerces-c_1D
 XERCES_DLL = xerces-c_1_7_0D
 !ELSE
-CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD
-DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD 
+CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD /DBUILD_VERSION="$(BUILD_VERSION)" /DBUILD_VERSION_DETAILS="$(BUILD_VERSION_DETAILS)"
+DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD /DBUILD_VERSION="$(BUILD_VERSION)" /DBUILD_VERSION_DETAILS="$(BUILD_VERSION_DETAILS)"
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0
