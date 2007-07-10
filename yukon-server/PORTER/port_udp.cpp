@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/03/12 16:51:20 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/07/10 21:09:36 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,6 +200,7 @@ void UDPInterface::startLog( void )
         CreateDirectoryEx(gLogDirectory.data(), comlogdir.data(), NULL);
 
         _portLog.setToStdOut(false);  // Not to std out.
+        _portLog.setOwnerInfo(CompileInfo);
         _portLog.setOutputPath(comlogdir);
         _portLog.setOutputFile(of);
         _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
@@ -440,13 +441,11 @@ bool UDPInterface::getPackets( int wait )
 
         if( p )
         {
-            //  this is where we'd add any other protocols in the future - right now, this is very DNP-centric
             const int DNPHeaderLength   = 10,
-                      GPUFFHeaderLength = 11;
+                      GPUFFHeaderLength = 13;
 
-            if( p->len >= DNPHeaderLength
-                  && p->data[0] == 0x05
-                  && p->data[1] == 0x64 )
+            if( p->len >= DNPHeaderLength && p->data[0] == 0x05
+                                          && p->data[1] == 0x64 )
             {
                 unsigned short header_crc = p->data[8] | (p->data[9] << 8);
                 unsigned short crc = Protocol::DNP::Datalink::crc(p->data, DNPHeaderLength - 2);
@@ -531,20 +530,22 @@ bool UDPInterface::getPackets( int wait )
                     dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-            else if( p->len >= GPUFFHeaderLength
-                       && p->data[0] == 0xa5
-                       && p->data[1] == 0x96 )
+            else if( p->len >= GPUFFHeaderLength && p->data[0] == 0xa5
+                                                 && p->data[1] == 0x96 )
             {
-                //  a5 96 len[lsb msb] devt[lsb msb] devr ser[lsb .. .. msb] pkg[n]
+                unsigned len, seq, devt, devr, ser, crc;
+                bool crc_included, ack_required;
 
-                unsigned len, devt, devr, ser, crc;
+                len  = p->data[2] | (p->data[3] & 0x03 << 8);
+                crc_included = p->data[3] & 0x80;
+                ack_required = p->data[3] & 0x40;
 
-                len  = p->data[2] | (p->data[3] << 8);
-                devt = p->data[4] | (p->data[5] << 8);
-                devr = p->data[6];
-                ser  = p->data[7] | (p->data[8]  <<  8)
-                                  | (p->data[9]  << 16)
-                                  | (p->data[10] << 24);
+                seq  = p->data[4] | (p->data[5] << 8);
+                devt = p->data[6] | (p->data[7] << 8);
+                devr = p->data[8];
+                ser  = p->data[9] | (p->data[10] <<  8)
+                                  | (p->data[11] << 16)
+                                  | (p->data[12] << 24);
 
                 if( p->len < len + 4 )
                 {
@@ -558,6 +559,19 @@ bool UDPInterface::getPackets( int wait )
                              << " is too small (" << p->len << " < " << len << " + 4) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
+                else if( CheckCCITT16CRC(-1, p->data, len + 4) )
+                {
+                    //  CRC failed.
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - incoming packet from "
+                             << ((p->ip >> 24) & 0xff) << "."
+                             << ((p->ip >> 16) & 0xff) << "."
+                             << ((p->ip >>  8) & 0xff) << "."
+                             << ((p->ip >>  0) & 0xff) << ":" << p->port
+                             << " failed its CRC check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
                 else
                 {
                     {
@@ -569,36 +583,64 @@ bool UDPInterface::getPackets( int wait )
                              << ((p->ip >>  0) & 0xff) << ":" << p->port << ": " << endl;
 
                         dout << "LEN  : " << len << endl;
+                        dout << "CRC? : " << crc_included << endl;
+                        dout << "ACK? : " << ack_required << endl;
+                        dout << "SEQ  : " << seq << endl;
                         dout << "DEVT : " << devt << endl;
                         dout << "DEVR : " << devr << endl;
                         dout << "SER  : " << ser << endl;
-                        dout << "PKG  : ";
-
-                        for( int xx = 0; xx < len - 7; xx++ )
-                        {
-                            dout << CtiNumStr(p->data[11+xx]).hex().zpad(2).toString() << " ";
-                        }
 
                         dout << endl;
+                    }
 
-                        int pointid = gConfigParms.getValueAsInt("SERIAL_" + CtiNumStr(ser) + "_POINTID", 0);
+                    int pos = 13, usedbytes = 0;
 
-                        if( pointid )
+                    switch( devt )
+                    {
+                        case 1:  //  Faulted Circuit Indicator
                         {
-                            CtiReturnMsg    *vgMsg = CTIDBG_new CtiReturnMsg(0);
-
-                            CtiPointDataMsg *pdm   = CTIDBG_new CtiPointDataMsg(pointid, p->data[11] - 1);
-
-                            vgMsg->PointData().push_back(pdm);
-
-                            VanGoghConnection.WriteConnQue(vgMsg);
-                        }
-                        else
-                        {
+                            while( usedbytes < len + 2 )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - no pointid for serial " << ser << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                switch( p->data[pos] )
+                                {
+                                    case 0x00:
+                                    {
+
+
+                                        break;
+                                    }
+                                    case 0x01:
+                                    {
+
+                                    }
+                                    case 0x02:
+                                    {
+
+                                    }
+                                    case 0x03:
+                                    {
+
+                                    }
+                                    case 0x04:
+                                    {
+
+                                    }
+                                }
                             }
+
+                            break;
+                        }
+
+                        case 2:  //  Neutral Current Sensor
+                        {
+
+
+                            break;
+                        }
+
+                        default:
+                        {
+
                         }
                     }
                 }
