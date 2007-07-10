@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/06/25 18:58:32 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2007/07/10 20:53:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,15 @@ IM_EX_CTIBASE CtiLogger   slog;           // Global instance. Simulator log
 IM_EX_CTIBASE CtiLogger   blog;           // Global instance. Statistics
 
 
-CtiLogger::CtiLogger(const string& file, bool to_stdout)
-: _filename(file), _std_out(to_stdout), _path("..\\log"), _fillChar(' '), _write_interval(5000)
+CtiLogger::CtiLogger(const string& file, bool to_stdout) :
+    _new_day(true),
+    _first_output(true),
+    _base_filename(file),
+    _day_of_month(-1),
+    _std_out(to_stdout),
+    _path("..\\log"),
+    _fillChar(' '),
+    _write_interval(5000)
 {
     _current_stream = new strstream;
     _current_stream->fill(_fillChar);
@@ -53,7 +60,17 @@ CtiLogger& CtiLogger::setOutputFile(const string& file)
 {
     CtiLockGuard<CtiMutex> guard(_log_mux);
 
-    _filename = scrub(file);
+    _base_filename = scrub(file);
+    return *this;
+}
+
+CtiLogger& CtiLogger::setOwnerInfo(const compileinfo_t &ownerinfo)
+{
+    CtiLockGuard<CtiMutex> guard(_log_mux);
+
+    _project = ownerinfo.project;
+    _version = ownerinfo.version;
+
     return *this;
 }
 
@@ -91,7 +108,6 @@ CtiLogger& CtiLogger::write()
 
 void CtiLogger::run()
 {
-
     if( gConfigParms.isOpt("LOG_MAXPRIORITY") && !stricmp(gConfigParms.getValueAsString("LOG_MAXPRIORITY").data(), "TRUE") )
     {
         {
@@ -204,28 +220,23 @@ void CtiLogger::doOutput()
 
     try
     {
-        if( !_filename.empty() )
+        if( !_base_filename.empty() )
         {
             {
                 CtiLockGuard<CtiMutex> guard(_log_mux);
 
-                // Is the output file, if any, valid?
-                string file_name = getTodaysFileName();
+                _new_day = verifyTodayFileName();
 
-                if( file_name.length() > 0 && !tryOpenOutputFile( outfile, _path + "\\" + file_name) )
+                if( _today_filename.length() > 0 && !tryOpenOutputFile( outfile, _path + "\\" + _today_filename) )
                 {
-                    //tryCreatePath(_path);
-                    if( !tryOpenOutputFile( outfile, _path + "\\" + file_name) )
+                    if(!nag)
                     {
-                        if(!nag)
-                        {
-                            nag = true;
-                            RWMutexLock::LockGuard  guard(coutMux);
-                            cout << endl << "*********************" << endl;
-                            cout << "ERROR!  Unable to open output file " << _path + "\\" + file_name << endl;
-                            cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << endl;
-                            cout << "*********************" << endl << endl;
-                        }
+                        nag = true;
+                        RWMutexLock::LockGuard  guard(coutMux);
+                        cout << endl << "*********************" << endl;
+                        cout << "ERROR!  Unable to open output file " << _path + "\\" + _today_filename << endl;
+                        cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << endl;
+                        cout << "*********************" << endl << endl;
                     }
                 }
             }
@@ -237,7 +248,6 @@ void CtiLogger::doOutput()
                 {
                     if( _std_out )
                     {
-                        // 081001 CGP Deadlock prevention?? RWMutexLock::LockGuard  guard(coutMux);
                         int acquireloops = 0;
 
                         RWMutexLock::TryLockGuard guard(coutMux);
@@ -251,11 +261,40 @@ void CtiLogger::doOutput()
                     }
 
                     if( outfile )
+                    {
+                        if( _new_day )
+                        {
+                            _new_day = false;
+
+                            strstream s;
+                            CtiTime now;
+
+                            if( !_project.empty() && !_version.empty() )
+                            {
+                                s << now << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
+                            }
+
+                            if( _first_output )
+                            {
+                                _first_output = false;
+
+                                s << now << " --------  LOG BEGINS  --------\n";
+                            }
+                            else
+                            {
+                                s << now << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------\n";
+                            }
+
+                            outfile.write(s.str(), s.pcount());
+                        }
+
                         outfile.write( to_write->str(), n );
+                    }
                 }
 
                 // unfreeze to_write's buffer
                 to_write->rdbuf()->freeze(false);
+
                 delete to_write;
             }
             outfile.close();
@@ -268,15 +307,17 @@ void CtiLogger::doOutput()
             outfile.close();
             {
                 cerr << "*********************" << endl;
-                cerr << "EXCEPTION in LOGGER " << _filename << endl;
+                cerr << "EXCEPTION in LOGGER " << _base_filename << endl;
                 cerr << "*********************" << endl;
             }
         }
     }
 }
 
-string CtiLogger::getTodaysFileName() const
+bool CtiLogger::verifyTodayFileName()
 {
+    bool new_day = false;
+
     time_t ltime;
     // convert the day of the month into a string
     ::time(&ltime);
@@ -285,15 +326,20 @@ string CtiLogger::getTodaysFileName() const
 
     int daynum = CtiTime::localtime_r(&ltime)->tm_mday;
 
-    if( daynum < 10 )
-        itos_buffer << "0" << daynum;
-    else
+    if( _day_of_month != daynum )
+    {
+        new_day = true;
+
+        _day_of_month = daynum;
+
+        if( daynum < 10 )  itos_buffer << "0";
+
         itos_buffer << daynum;
 
-    string retVal = itos_buffer.str();
-    retVal = _filename + retVal + ".log";           // 081001 CGP make the associations work..
+        _today_filename = _base_filename + itos_buffer.str() + ".log";
+    }
 
-    return(retVal);
+    return new_day;
 }
 
 

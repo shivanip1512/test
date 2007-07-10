@@ -58,6 +58,7 @@
 #include "mutex.h"
 #include "ctitime.h"
 #include "CtiPCPtrQueue.h"
+#include "utility.h"
 
 
 using std::endl;
@@ -72,6 +73,7 @@ public:
 
     CtiLogger& setOutputPath(const string& path);
     CtiLogger& setOutputFile(const string& file);
+    CtiLogger& setOwnerInfo(const compileinfo_t &ownerinfo);
     CtiLogger& setWriteInterval(long millis);
     CtiLogger& setToStdOut(bool to_stdout);
 
@@ -115,10 +117,18 @@ protected:
     void run();
 
 private:
-    char   _fillChar;
-    string _filename;
-    string _path;
+    char    _fillChar;
+    string  _base_filename, _today_filename;
 
+    int     _day_of_month;
+    bool    _new_day, _first_output;
+    CtiTime _running_since;
+
+    string  _path;
+
+    string  _project, _version;
+
+    compileinfo_t _owner_info;
     volatile long _write_interval;
     volatile bool _std_out;
 
@@ -128,10 +138,10 @@ private:
 
     std::strstream* _current_stream;
 
-    void doOutput();
+    void   doOutput();
     string scrub(const string& filename);
-    bool tryOpenOutputFile(std::ofstream& strm, const string& file);
-    string getTodaysFileName() const;
+    bool   tryOpenOutputFile(std::ofstream& strm, const string& file);
+    bool   verifyTodayFileName();
 };
 
 
