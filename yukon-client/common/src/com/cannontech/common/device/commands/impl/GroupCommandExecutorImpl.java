@@ -21,6 +21,8 @@ import com.cannontech.common.device.commands.CommandRequest;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
 
@@ -50,8 +52,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         this.executor = executor;
     }
 
-    public void execute(final Set<Integer> deviceIds, final String command, final String emailAddresses)
-            throws MessagingException {
+    public void execute(final Set<Integer> deviceIds, final String command, 
+                        final String emailAddresses, LiteYukonUser user)
+            throws MessagingException, PaoAuthorizationException {
 
         final Date startTime = new Date();
         
@@ -68,53 +71,55 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             request.setDeviceId(id);
             request.setCommand(command);
 
+            CollectingCommandCompletionCallback collectingCommandCompletionCallback = new CollectingCommandCompletionCallback() {
+
+                public void complete() {
+
+                    synchronized (resultBuffer) {
+
+                        Meter device = meterDao.getForId(id);
+                        String formattedDeviceName = meterDao.getFormattedDeviceName(device);
+                        resultBuffer.append("\n\n" + format.format(new Date()) + 
+                                            " - " + formattedDeviceName + "\n\n");
+
+
+                        // Add any errors to the result string buffer
+                        List<DeviceErrorDescription> errors = getErrors();
+                        for (DeviceErrorDescription ded : errors) {
+                            resultBuffer.append(ded.toString() + "\n");
+
+                        }
+
+                        // An error means we missed this device
+                        if (errors.size() > 0) {
+                            missedList.add(id);
+                        }
+
+                        // Add any results strings to the result string buffer
+                        List<String> resultStrings = getResultStrings();
+                        for (String result : resultStrings) {
+                            resultBuffer.append(result + "\n");
+                        }
+
+                        pendingIdList.remove(id);
+
+                        if (pendingIdList.size() == 0) {
+                            sendResultEmail(command,
+                                            resultBuffer.toString(),
+                                            missedList,
+                                            emailAddresses,
+                                            startTime,
+                                            deviceIds.size());
+                        }
+
+                    }
+
+                }
+            };
             commandRequestExecutor.execute(
                    Collections.singletonList(request),
-                   new CollectingCommandCompletionCallback() {
-
-                       public void complete() {
-
-                           synchronized (resultBuffer) {
-
-                               Meter device = meterDao.getForId(id);
-                               String formattedDeviceName = meterDao.getFormattedDeviceName(device);
-                               resultBuffer.append("\n\n" + format.format(new Date()) + 
-                                                   " - " + formattedDeviceName + "\n\n");
-                               
-                               
-                               // Add any errors to the result string buffer
-                               List<DeviceErrorDescription> errors = getErrors();
-                               for (DeviceErrorDescription ded : errors) {
-                                   resultBuffer.append(ded.toString() + "\n");
-
-                               }
-
-                               // An error means we missed this device
-                               if (errors.size() > 0) {
-                                   missedList.add(id);
-                               }
-
-                               // Add any results strings to the result string buffer
-                               List<String> resultStrings = getResultStrings();
-                               for (String result : resultStrings) {
-                                   resultBuffer.append(result + "\n");
-                               }
-
-                               pendingIdList.remove(id);
-
-                               if (pendingIdList.size() == 0) {
-                                   sendResultEmail(command,
-                                                   resultBuffer.toString(),
-                                                   missedList,
-                                                   emailAddresses,
-                                                   startTime,
-                                                   deviceIds.size());
-                               }
-
-                           }
-
-                       }
-                   });
+                   collectingCommandCompletionCallback,
+                   user);
         }
 
     }

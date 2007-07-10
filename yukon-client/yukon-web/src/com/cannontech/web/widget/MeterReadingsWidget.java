@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,8 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -37,7 +40,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     private AttributeService attributeService;
     private RawPointHistoryDao rphDao;
     private List<? extends Attribute> attributesToShow;
-    private int startDate;
+    private int defaultStartDaysOffset;
 
     public void setMeterReadService(MeterReadService meterReadService) {
         this.meterReadService = meterReadService;
@@ -48,8 +51,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         this.attributesToShow = attributesToShow;
     }
     
-    public void setStartDate(int startDate) {
-        this.startDate = startDate;
+    public void setDefaultStartDaysOffset(int startDate) {
+        this.defaultStartDaysOffset = startDate;
     }
 
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
@@ -67,8 +70,10 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         mav.addObject("existingAttributes", existingAttributes);
         LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
         Date endDate = new Date();
-        Date startingDate = TimeUtil.addDays(endDate, startDate);
+        int startOffset = -WidgetParameterHelper.getIntParameter(request, "startOffset", defaultStartDaysOffset);
+        Date startingDate = TimeUtil.addDays(endDate, startOffset);
         List<PointValueHolder> previousReadings = rphDao.getPointData(lp.getPointID(), startingDate, endDate);
+        Collections.reverse(previousReadings);
         mav.addObject("previousReadings", previousReadings);
         
         return mav;
@@ -83,7 +88,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         
         // allExisting is a copy...
         allExistingAtributes.retainAll(attributesToShow);
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAtributes);
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAtributes, user);
         
         mav.addObject("errorsExist", result.isErrorsExist());
         

@@ -31,6 +31,8 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -115,7 +117,8 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         
         ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
 
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes);
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
         PerishableOutageData data = addOutageData(meter, result.getValues());
         
         mav.addObject("data", data);

@@ -11,19 +11,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.groups.dao.DeviceGroupDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.util.ServletUtil;
 
 public class CommandController extends MultiActionController {
 
+    Logger log = YukonLogManager.getLogger(CommandController.class);
     private CommandDao commandDao = null;
     private DeviceGroupDao deviceGroupDao = null;
     private DeviceGroupService deviceGroupService = null;
@@ -66,6 +72,7 @@ public class CommandController extends MultiActionController {
         ModelAndView mav = new ModelAndView();
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupSelect");
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         mav.addObject("group", groupName);
@@ -105,9 +112,13 @@ public class CommandController extends MultiActionController {
             mav.setViewName("redirect:/spring/command/commandExecuted");
 
             try {
-                groupCommandExecutor.execute(deviceIds, command, emailAddresses);
+                groupCommandExecutor.execute(deviceIds, command, emailAddresses, user);
             } catch (MessagingException e) {
+                log.warn("Unable to execute, putting error in model", e);
                 mav.addObject("error", "Unable to send email");
+            } catch (PaoAuthorizationException e) {
+                log.warn("Unable to execute, putting error in model", e);
+                mav.addObject("error", "Unable to execute specified commands");
             }
         }
 

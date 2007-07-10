@@ -20,7 +20,7 @@
 </c:forEach>
 
 <ct:nameValue name="Previous Usage">
-<select onChange="updatePrevious()"  name="prevSelect" id="${widgetParameters.widgetId}_prevSelect">
+<select onChange="${widgetParameters.widgetId}_usageUpdate()"  name="prevSelect" id="${widgetParameters.widgetId}_prevSelect">
 	<c:forEach items="${previousReadings}" var = "reading">
 		<option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
 	</c:forEach>
@@ -29,7 +29,6 @@
 
 <ct:nameValue name="Total Consumption">
 	<div id="${widgetParameters.widgetId}_totalConsumption" > 
-		
 	</div>
 </ct:nameValue>
 
@@ -39,14 +38,11 @@
 </div>
 
 <script type="text/javascript">
-Event.observe(window,"load", function(){updatePrevious()
-});
-function updatePrevious() {
-	var currentVal = $('${widgetParameters.widgetId}_currentUsage').firstDescendant().innerHTML;
-	var previousVal = $('${widgetParameters.widgetId}_prevSelect').value;
-	var totalUsage = currentVal - previousVal;
-	
-	$('${widgetParameters.widgetId}_totalConsumption').innerHTML = totalUsage.toFixed(3);
+Event.observe(window,"load", ${widgetParameters.widgetId}_usageUpdate);
+function ${widgetParameters.widgetId}_usageUpdate() {
+	yukonGeneral_updatePrevious('${widgetParameters.widgetId}_currentUsage', 
+    	                        '${widgetParameters.widgetId}_prevSelect', 
+                                '${widgetParameters.widgetId}_totalConsumption');
 }
 </script>
 </ct:nameValueContainer>

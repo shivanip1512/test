@@ -1,5 +1,6 @@
 package com.cannontech.core.authorization.service.impl;
 
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.authorization.support.AuthorizationService;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
@@ -27,6 +28,15 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
         Permission permission = converter.getPermission(command);
         boolean authorized = authorizationService.isAuthorized(user, permission, pao);
         return authorized;
+    }
+    
+    public void verifyAuthorized(LiteYukonUser user, String command, LiteYukonPAObject pao) throws PaoAuthorizationException {
+        Permission permission = converter.getPermission(command);
+        boolean authorized = authorizationService.isAuthorized(user, permission, pao);
+        if (!authorized) {
+            throw new PaoAuthorizationException("User " + user + " does not have " + permission 
+                                                + " permission required to execute '" + command + "' on " + pao);
+        }
     }
 
 }

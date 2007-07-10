@@ -120,6 +120,11 @@
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
+              <bean class="com.cannontech.web.widget.support.SimpleWidgetInput">
+                  <property name="name" value="startOffset"/>
+                  <property name="description" value="the number of prior day's of point history to display"/>
+                  <property name="required" value="false"/>
+              </bean>
            </set>
         </property>
         <property name="meterReadService" ref="meterReadService"/>
@@ -134,8 +139,8 @@
             <value>VOLTAGE</value>
           </list>
         </property>
-        <property name="startDate">
-        	<value>-93</value>
+        <property name="defaultStartDaysOffset">
+        	<value>93</value>
         </property>
     </bean>
     

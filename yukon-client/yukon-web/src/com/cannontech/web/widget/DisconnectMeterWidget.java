@@ -25,6 +25,8 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -71,7 +73,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         ModelAndView mav = getReadModelAndView(meter);
         
-        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute);
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, user);
         
         mav.addObject("state", getDisconnectedState(result));
         mav.addObject("errorsExist", result.isErrorsExist());
@@ -83,16 +86,14 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
 
     public ModelAndView connect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        Meter meter = getMeter(request);
-        ModelAndView mav = getControlModelAndView(meter, "control connect");
+        ModelAndView mav = getControlModelAndView(request, "control connect");
         
         return mav;
     }
     
     public ModelAndView disconnect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        Meter meter = getMeter(request);
-        ModelAndView mav = getControlModelAndView(meter, "control disconnect");
+        ModelAndView mav = getControlModelAndView(request, "control disconnect");
         return mav;
     }
     private Meter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
@@ -112,11 +113,13 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private ModelAndView getControlModelAndView(Meter meter, String command) throws Exception{
+    private ModelAndView getControlModelAndView(HttpServletRequest request, String command) throws Exception {
+        Meter meter = getMeter(request);
         
         ModelAndView mav = getReadModelAndView(meter);
         
-        CommandResultHolder result = sendCommand(meter, command);
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        CommandResultHolder result = sendCommand(meter, command, user);
         
         mav.addObject("state", getDisconnectedState(result));
         
@@ -126,11 +129,11 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private CommandResultHolder sendCommand(Meter meter, String command) throws Exception {
+    private CommandResultHolder sendCommand(Meter meter, String command, LiteYukonUser user) throws Exception {
         CommandRequest cmdRequest = new CommandRequest();
         cmdRequest.setDeviceId(meter.getDeviceId());
         cmdRequest.setCommand(command);
-        return commandRequestExecutor.execute(cmdRequest);
+        return commandRequestExecutor.execute(cmdRequest, user);
     }
     
     private DISCONNECT_STATE getDisconnectedState(CommandResultHolder result) {

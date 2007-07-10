@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.cannontech.common.device.commands;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;

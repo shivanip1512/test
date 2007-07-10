@@ -26,6 +26,7 @@ import com.cannontech.common.device.profilePeak.dao.ProfilePeakDao;
 import com.cannontech.common.device.profilePeak.model.ProfilePeakResult;
 import com.cannontech.common.device.profilePeak.model.ProfilePeakResultType;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.ConnectionException;
@@ -165,7 +166,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
             // Execute pre command to get profile peak summary results for user
             // request
-            preResult = executeCommand(preCommand.toString(), deviceId, ProfilePeakResultType.PRE);
+            preResult = executeCommand(preCommand.toString(), deviceId, ProfilePeakResultType.PRE, user);
             preResult.setStartDate(DISPLAY_FORMAT.format(preCommandStartDate));
 
             // Stop date is actually 1 day later - stop date is inclusive
@@ -177,7 +178,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             if (!StringUtils.isBlank(postCommand.toString())) {
                 postResult = executeCommand(postCommand.toString(),
                                             deviceId,
-                                            ProfilePeakResultType.POST);
+                                            ProfilePeakResultType.POST, user);
                 postResult.setStartDate(DISPLAY_FORMAT.format(TimeUtil.addDays(preCommandStopDate, 1)));
 
                 // Stop date is actually 1 day later - stop date is inclusive
@@ -236,16 +237,18 @@ public class ProfilePeakWidget extends WidgetControllerBase {
      * @param command - Command to execute
      * @param deviceId - Id of device to execute command for
      * @param type - Type of results
+     * @param user 
      * @return Results
      * @throws CommandCompletionException
+     * @throws PaoAuthorizationException 
      */
     private ProfilePeakResult executeCommand(String command, int deviceId,
-            ProfilePeakResultType type) throws CommandCompletionException {
+            ProfilePeakResultType type, LiteYukonUser user) throws CommandCompletionException, PaoAuthorizationException {
 
         CommandRequest commandRequest = new CommandRequest();
         commandRequest.setCommand(command);
         commandRequest.setDeviceId(deviceId);
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(commandRequest);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(commandRequest, user);
 
         ProfilePeakResult result = parseResults(resultHolder);
         result.setRunDate(DISPLAY_FORMAT.format(new Date()));

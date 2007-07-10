@@ -5,26 +5,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequest;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class MeterReadServiceImpl implements MeterReadService {
+    private Logger log = YukonLogManager.getLogger(MeterReadServiceImpl.class);
     private DeviceDefinitionDao deviceDefinitionDao;
     private CommandRequestExecutor commandExecutor;
 
     public CommandResultHolder readMeter(Meter device,
-            Set<Attribute> attributes) {
+            Set<Attribute> attributes,
+            LiteYukonUser user) {
+        log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         // figure out which commands to send
         Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
@@ -33,10 +38,11 @@ public class MeterReadServiceImpl implements MeterReadService {
             pointSet.add(pointTemplateForAttribute);
         }
         
-        return readMeterPoints(device, pointSet);
+        return readMeterPoints(device, pointSet, user);
     }
     
-    private CommandResultHolder readMeterPoints(Meter device, Set<DevicePointIdentifier> pointSet) {
+    private CommandResultHolder readMeterPoints(Meter device, Set<DevicePointIdentifier> pointSet, LiteYukonUser user) {
+        log.debug("Reading " + pointSet + " on device " + device + " for " + user);
         Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getAffected(device, pointSet);
         
         Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
@@ -50,6 +56,7 @@ public class MeterReadServiceImpl implements MeterReadService {
         if (minimalCommands == null) {
             throw new RuntimeException("It isn't possible to read " + pointSet + " for device type " + device.getType());
         }
+        log.debug("Using " + minimalCommands + " for read");
         
         
         // send commands
@@ -68,8 +75,8 @@ public class MeterReadServiceImpl implements MeterReadService {
         // wait for results
         CommandResultHolder holder;
         try {
-            holder = commandExecutor.execute(commands);
-        } catch (CommandCompletionException e) {
+            holder = commandExecutor.execute(commands, user);
+        } catch (Exception e) {
             throw new RuntimeException("There was a Yukon error while reading the meter", e);
         }
         

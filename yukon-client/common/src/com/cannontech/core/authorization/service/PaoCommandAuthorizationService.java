@@ -1,5 +1,6 @@
 package com.cannontech.core.authorization.service;
 
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -18,4 +19,5 @@ public interface PaoCommandAuthorizationService {
      */
     public boolean isAuthorized(LiteYukonUser user, String command, LiteYukonPAObject pao);
 
+    public void verifyAuthorized(LiteYukonUser user, String command, LiteYukonPAObject pao) throws PaoAuthorizationException;
 }
