@@ -1,5 +1,7 @@
 package com.cannontech.message.porter.message;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/17/00 1:12:27 PM)
@@ -161,5 +163,13 @@ public void setTransmissionID(long newTransmissionID) {
  */
 public void setUserMessageID(long newUserMessageID) {
 	userMessageID = newUserMessageID;
+}
+
+public String toString() {
+    ToStringCreator tsc = new ToStringCreator(this);
+    tsc.append("deviceId", getDeviceID());
+    tsc.append("command", getCommandString());
+    tsc.append("userMessageId", getUserMessageID());
+    return tsc.toString(); 
 }
 }

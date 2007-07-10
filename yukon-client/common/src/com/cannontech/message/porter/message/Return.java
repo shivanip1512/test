@@ -2,6 +2,8 @@ package com.cannontech.message.porter.message;
 
 import java.util.Vector;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/17/00 1:12:51 PM)
@@ -211,5 +213,17 @@ public java.util.Vector getVector() {
  */
 public void setVector(java.util.Vector newVector) {
 	vector = newVector;
+}
+
+public String toString() {
+    ToStringCreator tsc = new ToStringCreator(this);
+    tsc.append("deviceId", getDeviceID());
+    tsc.append("command", getCommandString());
+    tsc.append("result", getResultString());
+    tsc.append("userMessageId", getUserMessageID());
+    tsc.append("status", getStatus());
+    tsc.append("expectMore", getExpectMore());
+    tsc.append("points", getVector());
+    return tsc.toString(); 
 }
 }
