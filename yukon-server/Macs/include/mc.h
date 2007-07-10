@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/05/03 18:20:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/07/10 20:54:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,8 +35,6 @@
 
 #define MC_SERVICE_NAME "MACS"
 #define MC_SERVICE_DISPLAY_NAME "Yukon MAC Scheduler Service"
-
-#define MC_CONSOLE_DISPLAY_NAME "MAC Scheduler"
 
 #define MC_FTP_INTERFACE_USER "MACS FTP Interface"
 
@@ -73,7 +71,7 @@
 #define DEFAULT_MC_FTP_INTERFACE_EXT ".ctl"
 
 #define MC_EXCLUSION_EVENT "macs"
- 
+
 extern unsigned gMacsDebugLevel;
 
 #endif
