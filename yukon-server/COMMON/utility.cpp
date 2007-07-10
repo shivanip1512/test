@@ -496,69 +496,6 @@ INT SynchronizedIdGen(string name, int count)
     return(last);
 }
 
-/* Routine to calculate time a VHF shed will take */
-INT VCUTime (OUTMESS *OutMessage, PULONG Seconds)
-{
-    SHORT Count;
-    SHORT Repeats;
-    PSZ RepEnv;
-
-    /* Check for number of repeats on message transmit */
-    if(CTIScanEnv ("VCOMREPEATS", &RepEnv))
-    {
-        Repeats = 3;
-    }
-    else
-    {
-        if(!(Repeats = atoi (RepEnv)))
-        {
-            Repeats = 3;
-        }
-    }
-
-    /* first see how many bytes are involved */
-    Count = OutMessage->Buffer.OutMessage[PREIDLEN + 3] + 1;
-
-    /* Calculate the number of bits involved */
-    Count *= 8;
-    Count += 27; /* Preamble, Postamble, BCH and trailing bits */;
-
-    /* Now Calculate the time */
-    *Seconds = (((Count * 20L) + 200L) * Repeats) + 80L;
-    *Seconds /= 1000L;
-    *Seconds += 2;
-
-    return(NORMAL);
-}
-
-BOOL isFileTooBig(const string& fileName, DWORD thisBig)
-{
-    BOOL big = FALSE;
-
-    HANDLE hFile = CreateFile(fileName.c_str(),
-                              GENERIC_READ,
-                              FILE_SHARE_READ,
-                              NULL,
-                              OPEN_EXISTING,
-                              FILE_ATTRIBUTE_NORMAL,
-                              NULL);
-
-    if(hFile != INVALID_HANDLE_VALUE)
-    {
-        DWORD fSize = GetFileSize(hFile, NULL);
-
-        if(fSize < 0xFFFFFFFF && fSize > thisBig)
-        {
-            // Valid and bigger than 5 MB in size
-            big = TRUE;
-        }
-    }
-
-    CloseHandle(hFile);
-
-    return big;
-}
-
 BOOL InEchoToOut(const INMESS *In, OUTMESS *Out)
 {
     BOOL bRet = FALSE;
@@ -671,52 +608,35 @@ void LogMessage( LPCTSTR lpszMsg )
 
 
 
-void identifyProject(const CTICOMPILEINFO &Info)
+void identifyProject(const compileinfo_t &Info)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if((DebugLevel & DEBUGLEVEL_LUDICROUS) && Info.date)      // DEBUGLEVEL added 012903 CGP
         {
-            dout << CtiTime() << " (Build " <<
-            Info.major << "." <<
-            Info.minor << "." <<
-            Info.build << ", " <<
-            Info.date  << ") " <<
-            Info.proj << endl;
+            dout << CtiTime() << " " << Info.project << " [Version " << Info.version << "]" /* << endl */ << " [Version Details: " << Info.details << ", " << Info.date << "]" << endl;
         }
         else
         {
-            dout << CtiTime() << " (Build " <<
-            Info.major << "." <<
-            Info.minor << "." <<
-            Info.build << ") " <<
-            Info.proj << endl;
+            dout << CtiTime() << " " << Info.project << " [Version " << Info.version << "]" /* << endl */ << " [Version Details: " << Info.details << "]" << endl;
         }
     }
 
     return;
 }
 
-string identifyProjectVersion(const CTICOMPILEINFO &Info)
+bool setConsoleTitle(const compileinfo_t &Info)
 {
-    return string(CtiNumStr(Info.major)) + "." + string(CtiNumStr(Info.minor)) + "." + string(CtiNumStr(Info.build));
+    strstream s;
+
+    //  std::ends is required to null-terminate the strstream.str()
+    s << Info.project << " - YUKON " << Info.version << std::ends;
+
+    return SetConsoleTitle( s.str() );
 }
 
-void identifyProjectComponents(const CTICOMPONENTINFO *pInfo)
-{
-    for(int i = 0 ; pInfo[i].fname != NULL ; i++)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " <<
-            pInfo[i].fname << " Rev. " <<
-            pInfo[i].rev << "  " <<
-            pInfo[i].date << endl;
-        }
-    }
 
-    return;
-}
+
 
 CtiMutex gOutMessageMux;
 ULONG gOutMessageCounter = 0;
@@ -2623,15 +2543,6 @@ double limitValue(double input, double min, double max)
     }
 
     return input;
-}
-
-void identifyCompile( int & major, int & minor, int & build)
-{
-    major = CompileInfo.major;
-    minor = CompileInfo.minor;
-    build = CompileInfo.build;
-
-    return;
 }
 
 CtiHighPerfTimer::CtiHighPerfTimer( string name, UINT gripeDelta, string file, UINT line ) :
