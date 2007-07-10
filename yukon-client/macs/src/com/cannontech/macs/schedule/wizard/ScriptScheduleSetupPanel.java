@@ -601,7 +601,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjDemandResetSpinBox = new com.klg.jclass.util.swing.JCSpinNumberBox();
     			ivjDemandResetSpinBox.setName("DemandResetSpinBox");
-    			ivjDemandResetSpinBox.setValueRange(new Integer(1), new Integer(5));
+    			ivjDemandResetSpinBox.setValueRange(new Integer(0), new Integer(5));
     			ivjDemandResetSpinBox.setValue(new Integer(2));
                 ivjDemandResetSpinBox.setToolTipText(getScriptTemplate().getParamaterDescription(RESET_COUNT_PARAM));
     			
@@ -1802,6 +1802,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			ivjTOURateComboBox.addItem("rate A");
     			ivjTOURateComboBox.addItem("rate B");
     			ivjTOURateComboBox.addItem("rate C");
+                ivjTOURateComboBox.addItem("rate T");
                 ivjTOURateComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(TOU_RATE_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
