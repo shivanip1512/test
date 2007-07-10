@@ -868,7 +868,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 				(val instanceof IEDBase)
 				 //|| (val instanceof ICapBankController)
 				 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP)
-				 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL);
+				 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL)
+                 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GRID);
 	
 		getAddressTextField().setVisible( !showAddress );
 		getPhysicalAddressLabel().setVisible( !showAddress );
