@@ -21,6 +21,7 @@
 
         
 <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/YukonGeneralStyles.css" >
 <link rel="stylesheet" href="WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" />
 
@@ -61,23 +62,24 @@
 			</div>
 		</div>
 	
-		<div class="loginTopSection">
-			<div class="loginTitleIntroText">Welcome to</div>
-			<div class="loginTitleText">Yukon Administration Setup</div>
-		</div>
-  
-  		<div class="loginMainSection">
-			
-			<cti:titledContainer title="Database" styleClass="styledContainer">
-    			<div align="center" class="redMsg"><p>Database settings are now configured via the master.cfg file.<br> 
-    			Seperate configuration for client and server is no longer required.</p></div>
-			</cti:titledContainer>
-			
-			<br/>
-			
-			<cti:titledContainer title="Server" styleClass="styledContainer">
-
-				<div class="loginIntroText">
+		<div class="loginMain">
+			<div class="loginTopSection">
+				<div class="loginTitleIntroText">Welcome to</div>
+				<div class="loginTitleText">Yukon Administration Setup</div>
+			</div>
+	  
+	  		<div class="loginMainSection">
+				
+				<cti:titledContainer title="Database" styleClass="styledContainer">
+	    			<div align="center" class="redMsg"><p>Database settings are now configured via the master.cfg file.<br> 
+	    			Seperate configuration for client and server is no longer required.</p></div>
+				</cti:titledContainer>
+				
+				<br/>
+				
+				<cti:titledContainer title="Server" styleClass="styledContainer">
+	
+					<div class="loginIntroText">
     			
 <%
 	String retMsg = "";
@@ -111,12 +113,12 @@
 	}
 %>
 			
-					<span class="MainText"><span class="defaultText">Blue</span> items are default values.<br/>
-					<span class="redMsg">Red</span> items are required.</span>
-				</div>
-			
-				<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
-					<table align="center" >
+						<span class="MainText"><span class="defaultText">Blue</span> items are default values.<br/>
+						<span class="redMsg">Red</span> items are required.</span>
+					</div>
+				
+					<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
+						<table align="center" >
 	  
 <%
 	boolean isValidConn = false;
@@ -138,19 +140,19 @@
 		{
 			LiteYukonRoleProperty p = props[i];
 %>
-				        <tr> 
-					    	<td class = "MainText" align="right"  
-					    		onMouseOver="dispStatusMsg('<%= p.getDescription() %>');return document.statVal" 
-					    		onMouseOut="dispStatusMsg('');return document.statVal">
-								<%= p.getKeyName() %>
-							</td>
-					        <td valign="bottom" class="MainText"> 
-					        	<input type="text" name="<%= p.getKeyName() %>" 
-										value="<%= DaoFactory.getAuthDao().getRolePropValueGroup(
-										DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>" />
-								<span class="defaultText"> <%= p.getDefaultValue()%></span> 
-							</td>
-						</tr>
+					        <tr> 
+						    	<td class = "MainText" align="right"  
+						    		onMouseOver="dispStatusMsg('<%= p.getDescription() %>');return document.statVal" 
+						    		onMouseOut="dispStatusMsg('');return document.statVal">
+									<%= p.getKeyName() %>
+								</td>
+						        <td valign="bottom" class="MainText"> 
+						        	<input type="text" name="<%= p.getKeyName() %>" 
+											value="<%= DaoFactory.getAuthDao().getRolePropValueGroup(
+											DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>" />
+									<span class="defaultText"> <%= p.getDefaultValue()%></span> 
+								</td>
+							</tr>
 <%
 		}
 		
@@ -158,15 +160,15 @@
 		if( admin != null )
 		{
 %>
-						<tr>
-				             <td class="redMsg" align="right" 
-				             	onMouseOver="dispStatusMsg('For security reasons, enter the password for the admin account');return document.statVal" 
-				             	onMouseOut="dispStatusMsg('');return document.statVal">
-							 	<%= admin.getUsername() %> password:</td>
-				             <td valign="bottom" class="MainText">
-				             	<input type="password" name="admin_password" />
-				             </td>
-						</tr>
+							<tr>
+					             <td class="redMsg" align="right" 
+					             	onMouseOver="dispStatusMsg('For security reasons, enter the password for the admin account');return document.statVal" 
+					             	onMouseOut="dispStatusMsg('');return document.statVal">
+								 	<%= admin.getUsername() %> password:</td>
+					             <td valign="bottom" class="MainText">
+					             	<input type="password" name="admin_password" />
+					             </td>
+							</tr>
 
 <%
 		}
@@ -174,47 +176,48 @@
 	
 	if( !isValidConn ) {
 %>
-						<tr> 
-				        	<td class = "ErrorMsg" align="right" 
-								onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
-							  	onMouseOut="dispStatusMsg('');return document.statVal">
-						  		UNABLE TO 
-						  	</td>
-				            <td valign="bottom" class="ErrorMsg"
-								onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
-								onMouseOut="dispStatusMsg('');return document.statVal">                  
-						  		CONNECT TO THE DATABASE
-				            </td>
-						</tr>
+							<tr> 
+					        	<td class = "ErrorMsg" align="right" 
+									onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
+								  	onMouseOut="dispStatusMsg('');return document.statVal">
+							  		UNABLE TO 
+							  	</td>
+					            <td valign="bottom" class="ErrorMsg"
+									onMouseOver="dispStatusMsg('No database connection found, configure your DB connection above');return document.statVal" 
+									onMouseOut="dispStatusMsg('');return document.statVal">                  
+							  		CONNECT TO THE DATABASE
+					            </td>
+							</tr>
 <%
 	} else if( admin == null ) {
 %>
-						<tr> 
-					    	<td class = "ErrorMsg" align="right" 
-								onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
-								onMouseOut="dispStatusMsg('');return document.statVal">
-						  		NO ADMIN 
-						  	</td>
-					        <td valign="bottom" class="ErrorMsg"
-								onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
-							  	onMouseOut="dispStatusMsg('');return document.statVal">                  
-						  		USER FOUND IN DATABASE
-							</td>
-						</tr>
+							<tr> 
+						    	<td class = "ErrorMsg" align="right" 
+									onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
+									onMouseOut="dispStatusMsg('');return document.statVal">
+							  		NO ADMIN 
+							  	</td>
+						        <td valign="bottom" class="ErrorMsg"
+									onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
+								  	onMouseOut="dispStatusMsg('');return document.statVal">                  
+							  		USER FOUND IN DATABASE
+								</td>
+							</tr>
 <%
 	}
 %>
 
-					</table>	
+						</table>	
+								  
+		            	<div align="center"> 
+		            		<br/>
+		                	<input type="submit" name="Submit2" value="Submit">
+		              	</div>
 							  
-	            	<div align="center"> 
-	            		<br/>
-	                	<input type="submit" name="Submit2" value="Submit">
-	              	</div>
-						  
-				</form>
-
-			</cti:titledContainer>
+					</form>
+	
+				</cti:titledContainer>
+			</div>
 		</div>
 	</body>
 </html>
