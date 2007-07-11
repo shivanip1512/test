@@ -64,7 +64,7 @@
     <property name="paoDao" ref="paoDao"/>
     <property name="deviceDao" ref="deviceDao"/>
     <property name="deviceGroupService" ref="deviceGroupService"/>
-	<property name="deviceGroupMemberEditorDao" ref="deviceGroupEditorDao"/>
+	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
     <property name="meterDao" ref="meterDao"/>
   </bean>   
   
