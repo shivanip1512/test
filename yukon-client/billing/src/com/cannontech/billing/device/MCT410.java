@@ -70,10 +70,18 @@ public class MCT410 extends BillingDeviceBase {
 
             switch (offSet) {
 
-            case 11: // KW
+            case 11: // Peak kW 
                 addData(Channel.ONE, readingType, BillableField.totalPeakDemand, data);
                 break;
 
+            case 12: // Peak kW (Channel 2)
+                addData(Channel.TWO, readingType, BillableField.totalPeakDemand, data);
+                break;
+                
+            case 13: // Peak kW (Channel 3)
+                addData(Channel.THREE, readingType, BillableField.totalPeakDemand, data);
+                break;
+                
             case 111: // Rate A KW
                 addData(Channel.ONE, readingType, BillableField.rateADemand, data);
                 break;
