@@ -58,6 +58,16 @@
     </property>
   </bean>
   
+  <bean id="deviceIdLookup" class="com.cannontech.sensus.ConfigurablePaoLookup">
+    <property name="paoDao" ref="paoDao"/>
+    <property name="paoMapping">
+      <map>
+        <entry key="1" value="3"/>
+        <!-- Put your device mappings here.  repId to yukon device name  -->
+      </map>
+    </property>
+  </bean>
+  
   <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor">
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
       <property name="yukonDeviceLookup" ref="oneDeviceLookup"/>
