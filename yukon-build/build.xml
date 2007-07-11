@@ -338,12 +338,7 @@
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}.zip">
             <fileset dir="${temp.dir}" />
         </zip>
-        
-        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}-src.zip">
-            <zipfileset dir="${module.name}/yukon-server" prefix="yukon-server"/>
-            <zipfileset dir="${module.name}/yukon-client" prefix="yukon-client"/>
-        </zip>
-        
+
         <delete dir="${temp.dir}" />
     </target>
 
@@ -409,6 +404,10 @@
     <target name="tag">
         <echo message="command: rtag -D '${currenttime}' ${tag.name} yukon"/>
         <cvs command="rtag -D '${currenttime}' ${tag.name} yukon"/>
+        
+        <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
+            <arg line='/c symstore add /r /f ${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
+        </exec>
     </target>
     
     <target name="branch">
@@ -420,6 +419,9 @@
         <replace file="yukon-build/build_version.properties" token="branch = ${branch}" value="branch = ${branch.name}"/>
         <cvs command="commit -m 'branch property update' -r ${branch} yukon-build/build_version.properties"/>
         
+        <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
+            <arg line='/c symstore add /r /f ${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
+        </exec>
     </target>
     
 </project>
