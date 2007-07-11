@@ -2,11 +2,9 @@ package com.cannontech.web.widget;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +12,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,6 +29,7 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ExpireLRUMap;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -47,9 +45,10 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     private PointFormattingService pointFormattingService;
 
     //Contains <DeviceID>,<PerishableOutageData>
-    private LRUMap recentOutageLogs = new LRUMap();
+    private ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
+        new ExpireLRUMap<Integer,PerishableOutageData>();
     
-    public class PerishableOutageData {
+    public class PerishableOutageData implements ExpireLRUMap.ReadDate{
         public Date readDate;
         
         public List<OutageData> outageData;
@@ -65,6 +64,18 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         public List<OutageData> getOutageData() {
             return outageData;
         }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj != null && obj instanceof MeterOutagesWidget.PerishableOutageData) {
+                MeterOutagesWidget.PerishableOutageData data = (MeterOutagesWidget.PerishableOutageData) obj;
+                return (data.outageData.equals(this.outageData) &&
+                        data.readDate.equals(this.readDate));
+            }
+            return false;
+        }
+        
     }
 
     public class OutageData {
@@ -180,31 +191,13 @@ public class MeterOutagesWidget extends WidgetControllerBase {
             }
         }
         PerishableOutageData data = new PerishableOutageData(new Date(), outageData);
-        recentOutageLogs.put(meter.getDeviceId(), data);
+            recentOutageLogs.put(meter.getDeviceId(), data);
         return data;
     }
     
     private PerishableOutageData getOutageData(Meter meter) {
-        PerishableOutageData data = (PerishableOutageData)recentOutageLogs.get(meter.getDeviceId());
-        if ( data != null) {
-            Date now = new Date();
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(now);
-            int day = cal.get(Calendar.DAY_OF_YEAR);
-            int year = cal.get(Calendar.YEAR);
-            
-            cal.setTime(data.readDate);
-            int readDay = cal.get(Calendar.DAY_OF_YEAR);
-            int readYear = cal.get(Calendar.YEAR);
-            
-            if( day == readDay && year == readYear)
-                return data;
-            else
-                recentOutageLogs.remove(data);
-        }
-        return null;
+            return recentOutageLogs.get(meter.getDeviceId());
     }
-    
     
     @Required
     public void setMeterDao(MeterDao meterDao) {
