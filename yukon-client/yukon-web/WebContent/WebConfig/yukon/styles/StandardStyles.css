@@ -42,11 +42,11 @@ body {
 }
 
 #CopyRight {
-    text-align: right;
-    margin-top: 2.5em;
+    text-align: center;
+    margin-top: 4em;
     margin-bottom: .5em;
     font-size: .7em;
-    color: black;
+    color: #666;
 }
 
 #Menu  div.stdhdr_rightSide form {
