@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="Yukon CruiseControl Ant Build Script" default="targets" basedir="..">
+<project name="Yukon CruiseControl Ant Build Script" basedir="..">
 
     <property file="yukon-build/build_version.properties"/>
     <property environment="env" />
@@ -72,7 +72,7 @@
     </target>
     
     <target name="build-client" depends="update-client,build-clientTarget"/>
-    <target name="build-client_noupdate" depends="build-clientTarget"/>
+    <target name="build-client_noupdate" depends="init,build-clientTarget"/>
     <target name="build-clientTarget">
 
     	<exec failonerror="true" dir="${module.name}/yukon-client/build" executable="cmd.exe" >
@@ -82,7 +82,7 @@
     </target>
     
     <target name="build-server" depends="update-server,build-serverTarget"/>
-    <target name="build-server_noupdate" depends="build-serverTarget"/>
+    <target name="build-server_noupdate" depends="init,build-serverTarget"/>
     <target name="build-serverTarget">
 
     	<exec failonerror="true" dir="${module.name}/yukon-server/" executable="cmd.exe">

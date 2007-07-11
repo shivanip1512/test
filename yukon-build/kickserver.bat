@@ -5,6 +5,11 @@ echo:
 echo Executing %~df0 %1
 echo:
 
+echo:
+echo: updating yukon-build...
+echo:
+cvs update yukon-build
+
 if NOT exist "yukon-client\build\ant" (
 	echo:
 	echo: checking out ant
@@ -27,4 +32,9 @@ if NOT exist "..\yukon\yukon-server" (
 	cmd.exe /c %ANT_HOME%\bin\ant -f build.xml checkout
 )
 
-%ANT_HOME%\bin\ant -f build.xml build-server
+if "%1" == "noupdate" (
+	%ANT_HOME%\bin\ant -f build-verbose.xml build-server_noupdate
+) else (
+	%ANT_HOME%\bin\ant -f build-verbose.xml build-server
+)
+

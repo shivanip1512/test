@@ -5,6 +5,11 @@ echo:
 echo Executing %~df0 %1
 echo:
 
+echo:
+echo: updating yukon-build...
+echo:
+cvs update yukon-build
+
 if NOT exist "yukon-client\build\ant" (
 	echo:
 	echo: checking out ant
