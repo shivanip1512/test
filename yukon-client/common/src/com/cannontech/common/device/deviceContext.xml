@@ -58,7 +58,7 @@
     <bean id="staticDeviceGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
     
@@ -68,6 +68,8 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
     </bean>
+    
+    <alias alias="deviceGroupMemberEditorDao" name="deviceGroupEditorDao"/>
     
     <bean id="deviceGroupDao"
         class="com.cannontech.common.device.groups.dao.impl.DeviceGroupDaoMain">
@@ -88,7 +90,7 @@
         class="com.cannontech.common.device.groups.service.FixedDeviceGroupingHack">
         <property name="deviceGroupDao" ref="deviceGroupDao"/>
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
