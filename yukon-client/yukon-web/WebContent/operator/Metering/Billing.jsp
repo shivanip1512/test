@@ -63,9 +63,16 @@
     <tr> 
     <td align="right" valign="top">Billing Group:</td>
       <td> 
+        <c:set value="${true}" var="isFirst"/>
         <select name="billGroup" size="10" multiple>
          <c:forEach items="${BILLING_BEAN.availableGroups}" var="item">
+           <c:if test="${isFirst}">
+            <option selected>${item}</option>
+           </c:if>
+           <c:if test="${!isFirst}">
             <option>${item}</option>
+           </c:if>
+           <c:set value="${false}" var="isFirst"/>
          </c:forEach>
         </select>
       </td>

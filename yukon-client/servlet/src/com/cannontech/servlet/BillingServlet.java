@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServlet;
 
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.mainprograms.BillingBean;
 import com.cannontech.clientutils.CTILogger;
@@ -58,6 +60,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		
 		String fileFormat = req.getParameter("fileFormat");
 		String[] billGroupArray = req.getParameterValues("billGroup");
+        Validate.notNull(billGroupArray, "a billing group must be selected");
 		String removeMultiplier = req.getParameter("removeMultiplier");
 		String demandDays = req.getParameter("demandDays");
 		String energyDays = req.getParameter("energyDays");
