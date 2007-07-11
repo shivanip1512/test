@@ -12,10 +12,10 @@
 <cti:uniqueIdentifier prefix="llp_" var="thisId"/>
 
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
-<div style="position:relative">
-<a class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')"><jsp:doBody/></a>
+<a style="position:relative;" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')"><jsp:doBody/></a>
+<div style="position:relative;z-index:2;">
 <span id="${thisId}_indicator" style="visibility:hidden"><img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>"></span>
-<div id="${thisId}_holder" style="display:none; position:absolute; background-color: white; padding: .5em; border: 1px #888 solid;z-index:2" class="longLoadProfileHolder">
+<div id="${thisId}_holder" style="display:none; position:absolute; right: 0px; top: 5px; background-color: white; padding: .5em; border: 1px #888 solid;" class="longLoadProfileHolder">
 <input id="${thisId}_startOffset" type="hidden" value="${startOffset}">
 <input id="${thisId}_deviceId" type="hidden" value="${deviceId}">
   <table>

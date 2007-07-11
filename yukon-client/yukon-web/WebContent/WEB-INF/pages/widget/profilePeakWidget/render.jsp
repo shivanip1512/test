@@ -10,7 +10,7 @@
 	<c:if test="${errorMsg != null}">
 		<div style="color: red;margin: 10px 0px;">Error: ${errorMsg}</div>
 	</c:if>
-	<table width="100%">
+	<table width="95%">
 		<tr>
 			<td>
 				Report:
@@ -43,11 +43,11 @@
 			</td>
 			<td>
 				Start Date:
-				<input type="text" id="startDate" name="startDate" value="${startDate}" />
+				<input type="text" id="startDate" name="startDate" value="${startDate}" size="10" />
 			</td>
 			<td>
 				End Date:
-				<input type="text" id="stopDate" name="stopDate" value="${stopDate}" />
+				<input type="text" id="stopDate" name="stopDate" value="${stopDate}" size="10" />
 			</td>
 			<td align="right">
 				<tags:widgetActionRefresh method="getReport" label="Get Report" labelBusy="Get Report" />
@@ -63,9 +63,9 @@
 	<br/><br/>
 	
 	<c:if test="${! empty preResult || ! empty postResult}">
-		<table class="resultsTable">
+		<table class="miniResultsTable" width="100%">
 			<tr>
-				<th>
+				<th width="150px">
 					Range
 				</th>
 				<th>
@@ -83,7 +83,7 @@
 					<c:choose>
 						<c:when test="${!preResult.noData}">
 							<tr>
-								<td>
+								<td width="150px">
 									${preResult.startDate} - ${preResult.stopDate}
 								</td>
 								<td>
@@ -130,7 +130,7 @@
 					<c:choose>
 						<c:when test="${!postResult.noData}">
 							<tr>
-								<td>
+								<td width="150px">
 									${postResult.startDate} - ${postResult.stopDate}
 								</td>
 								<td>
