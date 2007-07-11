@@ -103,11 +103,6 @@
 <!-- Metering section -->
 <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,BillingRole.ROLEID,TrendingRole.ROLEID">
 	<tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
-		<cti:checkRole role="BillingRole.ROLEID">
-			<tags:sectionLink>
-	        	<a href="Metering/Billing.jsp"><cti:getProperty property="BillingRole.HEADER_LABEL" defaultvalue="Billing"/></a>
-	        </tags:sectionLink>
-        </cti:checkRole>
 		<cti:checkRole role="TrendingRole.ROLEID">
 			<tags:sectionLink>
 	        	<a href="Metering/Metering.jsp">All Trends</a>
@@ -119,7 +114,7 @@
 	        </tags:sectionLink>
         </cti:checkProperty>
 		<tags:sectionLink>
-        	<a href="<c:url value="/spring/csr/search"/>">Device Selection</a>
+        	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
         </tags:sectionLink>
 	</tags:operationSection>
 
