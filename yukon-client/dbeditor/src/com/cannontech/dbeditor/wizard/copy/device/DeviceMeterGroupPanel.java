@@ -462,7 +462,7 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         String customGroup2 = (String)getCustomGroup2ComboBox().getSelectedItem();
         String customGroup3 = (String)getCustomGroup3ComboBox().getSelectedItem();
         
-        DeviceGroupMember dgm = new DeviceGroupMember(yd, cycleGroup, alternateGroup, billingGroup, customGroup1, customGroup2, customGroup3);
+        DeviceGroupMember dgm = new DeviceGroupMember(yd, billingGroup, cycleGroup, alternateGroup, customGroup1, customGroup2, customGroup3);
         ((MultiDBPersistent) val).getDBPersistentVector().add(dgm);
         
         return val;
