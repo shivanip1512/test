@@ -415,19 +415,37 @@ public class ReportTypes
         CI_REPORTS_GOUP_STRING,
 	};
 
-	private static int[] adminGroupReportTypes = new int[]{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA};
-	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, 
+	private static int[] adminGroupReportTypes = new int[]{
+        POINT_DATA_INTERVAL_DATA, 
+        POINT_DATA_SUMMARY_DATA, 
+        EC_ACTIVITY_LOG_DATA, 
+        SYSTEM_LOG_DATA
+        };
+    
+	private static int[] amrGroupReportTypes = new int[]{
+        METER_READ_DATA, 
         SCHEDULED_METER_READ_DATA, 
         METER_OUTAGE_DATA, 
 		POWER_FAIL_DATA, 
         DISCONNECT_METER_DATA, 
         LP_SETUP_DATA, 
         LP_SUMMARY_DATA,
-        REPEATER_ROLE_COLLISION,
-        METER_KWH_DIFFERENCE,
-        DISCONNECT_COLLAR};
-	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA, STATISTIC_HISTORY_PORT_DATA, STATISTIC_HISTORY_DEVICE_DATA, STATISTIC_HISTORY_TRANSMITTER_DATA};
-	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
+        METER_KWH_DIFFERENCE
+        };
+    
+	private static int[] statGroupReportTypes = new int[]{
+        STATISTIC_DATA, 
+        STATISTIC_HISTORY_PORT_DATA, 
+        STATISTIC_HISTORY_DEVICE_DATA, 
+        STATISTIC_HISTORY_TRANSMITTER_DATA
+        };
+	private static int[] lmGroupReportTypes = new int[]{
+        LM_CONTROL_LOG_DATA, 
+        LG_ACCOUNTING_DATA, 
+        LM_DAILY_PEAKS_DATA, 
+        LOAD_CONTROL_VERIFICATION_DATA
+        };
+    
 	private static int[] capControlGroupReportTypes = new int[]{
         CBC_BANK_DATA, 
         CAP_CONTROL_NEW_ACTIVITY_DATA, 
@@ -442,10 +460,23 @@ public class ReportTypes
         CAP_BANK_OPERATIONS_PERFORMANCE, 
         CAP_CONTROL_SCHEDULE_DETAIL};
     
-	private static int[] databaseGroupReportTypes = new int[]{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA};
-	private static int[] starsGroupReportTypes = new int[]{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
-			STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,
-			/*TODO STARS_AMR_SUMMARY_DATA,*/ STARS_AMR_DETAIL_DATA};
+	private static int[] databaseGroupReportTypes = new int[]{
+        CARRIER_DB_DATA, 
+        CARRIER_ROUTE_MACRO_DATA, 
+        ROUTE_DATA, 
+        REPEATER_ROLE_COLLISION, 
+        DISCONNECT_COLLAR};
+    
+	private static int[] starsGroupReportTypes = new int[]{
+        EC_ACTIVITY_LOG_DATA, 
+        EC_ACTIVITY_DETAIL_DATA, 
+        PROGRAM_DETAIL_DATA, 
+        EC_WORK_ORDER_DATA, 
+		STARS_LM_SUMMARY_DATA, 
+        STARS_LM_DETAIL_DATA,
+		/*TODO STARS_AMR_SUMMARY_DATA,*/ 
+        STARS_AMR_DETAIL_DATA
+        };
 	private static int[] otherGroupReportTypes = new int[0];
 	private static int[] settlementGroupReportTypes = new int[0];
     private static int[] ciGroupReportTypes = new int[]{CCURT_EVENT_SUMMARY_DATA, CCURT_INTERRUPTION_SUMMARY_DATA};
