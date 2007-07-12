@@ -25,7 +25,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 {
 	private BillingFileDefaults billingDefaults = null;
 	private FileFormatBase fileFormatBase = null;
-	private java.util.Vector allBillGroupsVector = null;
     
     private BillingFormatter billingFormatter = null;
 
@@ -85,8 +84,13 @@ public class BillingFile extends java.util.Observable implements Runnable
 				else if( argLowerCase.startsWith("coll") ||  argLowerCase.startsWith("group") )
 				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
+				    String group;
 					String subString = args[i].substring(startIndex);
-                    String group = FixedDeviceGroups.COLLECTIONGROUP.getGroup(subString);
+                    if (subString.startsWith("/")) {
+                        group = subString;
+                    } else {
+                        group = FixedDeviceGroups.COLLECTIONGROUP.getGroup(subString);
+                    }
 					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("test") ||  argLowerCase.startsWith("alt") )
@@ -329,15 +333,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 	public FileFormatBase getFileFormatBase()
 	{
 		return fileFormatBase;
-	}
-
-	/**
-	 * Sets the allBillGroupsVector.
-	 * @param allBillGroupsVector The allBillGroupsVector to set
-	 */
-	public void setAllBillGroupsVector(java.util.Vector allBillGroupsVector)
-	{
-		this.allBillGroupsVector = allBillGroupsVector;
 	}
 
 	/**
