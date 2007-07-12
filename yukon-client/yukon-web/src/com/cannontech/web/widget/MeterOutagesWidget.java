@@ -46,7 +46,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
 
     //Contains <DeviceID>,<PerishableOutageData>
     private ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
-        new ExpireLRUMap<Integer,PerishableOutageData>();
+        new ExpireLRUMap<Integer,PerishableOutageData>(100);
     
     public class PerishableOutageData implements ExpireLRUMap.ReadDate{
         public Date readDate;

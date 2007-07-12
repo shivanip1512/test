@@ -1,31 +1,43 @@
 package com.cannontech.util;
 
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.map.LRUMap;
 
 @SuppressWarnings("unchecked")
-public class ExpireLRUMap<E, T extends ExpireLRUMap.ReadDate> {
-    private final Map map = Collections.synchronizedMap(new LRUMap());
+public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
+    private final Map map;
+    private int expireDays = 1;
     
-    public T put(final E key, final T value) {
-        return (T) map.put(key, value);
+    public ExpireLRUMap() {
+        map = Collections.synchronizedMap(new LRUMap());
     }
     
-    public T remove(final E key) {
-        return (T) map.remove(key);
+    public ExpireLRUMap(final int size) {
+        map = Collections.synchronizedMap(new LRUMap(size));
     }
     
-    public T get(final E key) {
-        return get(key, 1);
+    public V put(final K key, final V value) {
+        return (V) map.put(key, value);
     }
     
-    public T get(final E key, final int days) {
-        T t = (T) map.get(key);
+    public V remove(final K key) {
+        return (V) map.remove(key);
+    }
+    
+    public V get(final K key) {
+        return get(key, expireDays);
+    }
+    
+    public V get(final K key, final int days) {
+        V t = (V) map.get(key);
         if (t != null && !isExpired(t, days)) {
             return t;
         }
@@ -33,26 +45,26 @@ public class ExpireLRUMap<E, T extends ExpireLRUMap.ReadDate> {
         return null;
     }
     
-    public boolean containsKey(final E key) {
-        return containsKey(key, 1);
+    public boolean containsKey(final K key) {
+        return containsKey(key, expireDays);
     }
     
-    public boolean containsKey(final E key, final int days) {
+    public boolean containsKey(final K key, final int days) {
         boolean parentContainsKey = map.containsKey(key);
         if (parentContainsKey) {
-            T t = this.get(key, days);
+            V t = this.get(key, days);
             return (t != null);
         }
         return false;    
     }
     
-    public boolean containsValue(T value) {
-        return containsValue(value, 1);
+    public boolean containsValue(V value) {
+        return containsValue(value, expireDays);
     }
     
-    public boolean containsValue(T value, int days) {
-        for (final Object obj : map.keySet()) {
-            E key = (E) obj;
+    public boolean containsValue(V value, int days) {
+        for (final Object obj : this.keySet()) {
+            K key = (K) obj;
             if (map.get(key).equals(value)) {
                 if (!isExpired(value, days)) {
                     return true;
@@ -64,16 +76,31 @@ public class ExpireLRUMap<E, T extends ExpireLRUMap.ReadDate> {
         return false;
     }
     
-    public boolean isExpired(final T t, final int days) {
-        final GregorianCalendar cal = new GregorianCalendar();
-        
-        cal.setTime(new Date());
-        int day = cal.get(Calendar.DAY_OF_YEAR);
-        
-        cal.setTime(t.getReadDate());
-        int readDay = cal.get(Calendar.DAY_OF_YEAR);
+    public boolean isExpired(final V t, final int days) {
+        final GregorianCalendar now = new GregorianCalendar();
+        int currentDay = now.get(GregorianCalendar.DAY_OF_YEAR);
 
-        return ((day - readDay) >= days);
+        now.setTime(t.getReadDate());
+        int readDay = now.get(GregorianCalendar.DAY_OF_YEAR);
+
+        boolean result = Math.abs(currentDay - readDay) >= days;
+        return result;
+    }
+    
+    public int size() {
+        return map.size();
+    }
+    
+    public Collection<V> values() {
+        return new ArrayList<V>(map.values());
+    }
+    
+    public Set<K> keySet() {
+        return new HashSet<K>(map.keySet());
+    }
+    
+    public void setDefaultExpire(final int expireDays) {
+        this.expireDays = expireDays;
     }
     
     public interface ReadDate {
